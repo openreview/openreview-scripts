@@ -181,7 +181,6 @@ var iclrData = fs.readFile('/Users/akobren/data/or3/iclr-workshop/reviewsForAndr
     if (err) throw err;
     csv.parse(data, function(err, data) {
 	if (err) throw err;
-
 	var prevSubNum = 0;
 	var revNum;
 	for (var i = 1; i<10; i++) {
@@ -190,9 +189,15 @@ var iclrData = fs.readFile('/Users/akobren/data/or3/iclr-workshop/reviewsForAndr
 	    if (prevSubNum == subNum) {
 		revNum++;
 	    } else {
+		//////////////////////////////
+		// CREATE SUBMISSION (NOTE) //
+		//////////////////////////////
 		revNum = 1;
 	    }
 	    var email = submission.email;
+	    ////////////////////////////////////////
+	    // CREATE GROUP FOR USER IF NOT EXISTS//
+	    ////////////////////////////////////////
 	    var assignment = assignReviewer(subNum, revNum, email);
 	    console.log(assignment);
 	}
