@@ -6,6 +6,7 @@ var request = require('request');
 // The open review local url
 var loginUrl = 'http://localhost:8529/_db/_system/openreview/login';
 var inviteUrl = 'http://localhost:8529/_db/_system/openreview/invitations';
+var noteUrl = 'http://localhost:8529/_db/_system/openreview/notes';
 
 var headers = { 'User-Agent': 'test-create-script' };
 
@@ -27,7 +28,6 @@ function or3post(url, body, headers) {
 function callback(error, response, body) {
   if (!error && response.statusCode == 200) {
       console.log("SUCCESS");
-      console.log(response);
       console.log(body);
   } else {
   console.log("ERROR: " + error);
@@ -42,30 +42,22 @@ function loggedInHdr(token) {
   };
 }
 
-// INVITATION TO SUBMIT PAPER
+// NOTE RESPONDING TO SIMPLE INVITATION
 var subInv = {
-  'id': 'arisconf/-/submission',
-  'authors': ['ari@host.com'],
-  'writers': ['ari@host.com'],
-  'readers': ['*'],
-  'invitees':['~'],
-  'reply': {
+    'invitation': 'arisconf/-/simple',
+    //    'id':             // I think this should be specified automatically?
     'forum': null,      // should this be set automatically?
     'parent': null,     // should this be set to whatever is being commented on?
-    'authors': '~.*',
-    'writers': '.+',
-    'readers': '.*',
+    'authors': ['~Ari_Kobren'],
+    'writers': ['~Ari_Kobren'],
+    'readers': ['*'],
     'content': {
-	'title': '.{1,100}',
-	'abstract': '.{1,5000}',
-	'authors': '.*',
-	'pdf': 'upload|http://arxiv.org/pdf/.*'
+	'title': 'A Paper that I wrote one time'
+    },
+    'process': function(noteID) {
+  	return true;  	       //send email to paper’s authors’ and reviewers’ email addresses
     }
-  },
-  'process': function(noteID) {
-  	     return true;  	       //send email to paper’s authors’ and reviewers’ email addresses
-	     }
-}
+};
 
 function create_submission_invite(url, o) {
     var loginReq = new or3post(loginUrl, userpass, headers);
@@ -79,4 +71,4 @@ function create_submission_invite(url, o) {
   });
 }
 
-create_submission_invite(inviteUrl, subInv);
+create_submission_invite(noteUrl, subInv);
