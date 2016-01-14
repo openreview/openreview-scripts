@@ -44,7 +44,6 @@ function loggedInHdr(token) {
 // ICLR SUBMISSION INVITE
 var subInv = {
     'id': 'ICLR.cc/2016/-/workshop/submission',
-    // I need to put myself first in the following because it will be passed to process
     'authors': ['ICLR.cc/2016'],
     'writers': ['ICLR.cc/2016'],
     'readers': ['*'],
@@ -116,10 +115,18 @@ var subInv = {
 	console.log(resp);
 	console.log(resp.statusCode);
 
-	// UNTESTED //
-	/*
+	// CREATE REVIEWER GROUPS
 	var paper_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count,
+	    'authors': ['ICLR.cc/2016'],
+	    'writers': ['ICLR.cc/2016'],
+	    'readers': ['*'],
+	    'members': ['ICLR.cc/2016'],
+	    'signatories': ['ICLR.cc/2016']
+	};
+
+	var rev_grp = {
+	    'id': 'ICLR.cc/2016/workshop/paper/' + count + '/reviewers',
 	    'authors': ['ICLR.cc/2016'],
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['*'],
@@ -138,13 +145,30 @@ var subInv = {
 	    }
 	};
 
-	resp = request(or3paper_grp);
-	console.log("RESPONSE");
-	console.log(resp);
-	console.log(resp.statusCode);
-	*/
+	var or3rev_grp = {
+	    'url': 'http://localhost:8529/_db/_system/openreview/groups',
+	    'method': 'POST',
+	    'port': 8529,
+	    'json': true,
+	    'body': rev_grp,
+	    'headers': {
+		'Authorization': 'Bearer ' + token
+	    }
+	};
 
-	// NN = a paper # (by finding the max of ICLR.cc/2016/-/workshop/paper/*/comment)
+	var request_with_callback = function (o, callback) {
+	    resp = request(o);
+	    console.log('FIRST GROUP');
+	    console.log(resp);
+	    callback();
+	};
+
+	request_with_callback(or3paper_grp, function () {
+	    resp = request(rev_grp);
+	    console.log('SECOND GROUP');
+	    console.log(resp);
+	});
+
 	//   reply email receipt to reply.authors
 	//   create ICLR.cc/2016/workshop/paper/123/reviewers // to be filled in later
 	//   add note.authors to ICLR.cc/2016/workshop/authors
