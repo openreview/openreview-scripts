@@ -115,6 +115,35 @@ var subInv = {
 	console.log("RESPONSE");
 	console.log(resp);
 	console.log(resp.statusCode);
+
+	// UNTESTED //
+	/*
+	var paper_grp = {
+	    'id': 'ICLR.cc/2016/workshop/paper/' + count,
+	    'authors': ['ICLR.cc/2016'],
+	    'writers': ['ICLR.cc/2016'],
+	    'readers': ['*'],
+	    'members': ['ICLR.cc/2016'],
+	    'signatories': ['ICLR.cc/2016']
+	};
+
+	var or3paper_grp = {
+	    'url': 'http://localhost:8529/_db/_system/openreview/groups',
+	    'method': 'POST',
+	    'port': 8529,
+	    'json': true,
+	    'body': paper_grp,
+	    'headers': {
+		'Authorization': 'Bearer ' + token
+	    }
+	};
+
+	resp = request(or3paper_grp);
+	console.log("RESPONSE");
+	console.log(resp);
+	console.log(resp.statusCode);
+	*/
+
 	// NN = a paper # (by finding the max of ICLR.cc/2016/-/workshop/paper/*/comment)
 	//   reply email receipt to reply.authors
 	//   create ICLR.cc/2016/workshop/paper/123/reviewers // to be filled in later
