@@ -83,10 +83,10 @@ var subInv = {
 		    'parent': noteID,
 		    'authors': '~.*',
 		    'writers': '~.*',
-		    'readers': '\\*',
+		    'readers': '\\\*',
 		    'content': {
 			'qualEval': '.{1,5000}',
-			'quantEval': '1|2|3|4|5|6|7|8|9|10',
+			'quantEval': '0|1|2|3|4|5|6|7|8|9',
 			'confidence': '1|2|3|4|5'
 		    },
 		    'process': (function (token, invitation, note, count, lib) {
@@ -126,7 +126,7 @@ var subInv = {
 	};
 
 	var rev_grp = {
-	    'id': 'ICLR.cc/2016/workshop/paper/' + count + '/reviewers',
+	    'id': 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer',
 	    'authors': ['ICLR.cc/2016'],
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['*'],
@@ -164,7 +164,7 @@ var subInv = {
 	};
 
 	request_with_callback(or3paper_grp, function () {
-	    resp = request(rev_grp);
+	    resp = request(or3rev_grp);
 	    console.log('SECOND GROUP');
 	    console.log(resp);
 	});
