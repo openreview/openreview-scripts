@@ -60,12 +60,11 @@ var subInv = {
 	    'authors': '(.*,)+',
 	    'conflicts': '(.*;)+',
 	    'resubmit': 'Yes|No',
-	    'cmtID': '.*',                            // if this is a resubmit, specify the CMT ID
+//	    'cmtID': '.*',                            // if this is a resubmit, specify the CMT ID
 	    'pdf': 'upload|http://arxiv.org/pdf/.+'   // either an actual pdf or an arxiv link
 	}
     },
     'process': (function (token, invitation, note, count, lib) {
-	console.log('HERE');
 	var request = require('org/arangodb/request');
 	var noteID = note.id;
 	var forum = note.forum;
@@ -83,11 +82,12 @@ var subInv = {
 		    'parent': noteID,
 		    'authors': '~.*',
 		    'writers': '~.*',
-		    'readers': '\\\*',
+		    'readers': '\\*,',
 		    'content': {
-			'qualEval': '.{1,5000}',
-			'quantEval': '0|1|2|3|4|5|6|7|8|9',
-			'confidence': '1|2|3|4|5'
+			'title': '.{0,500}',
+			'comment': '.{1,5000}'
+//			'quantEval': '0|1|2|3|4|5|6|7|8|9',
+//			'confidence': '1|2|3|4|5'
 		    },
 		    'process': (function (token, invitation, note, count, lib) {
 			// SEND EMAIL TO AUTHORS THAT THEIR PAPER RECIEVED A COMMENT
@@ -158,7 +158,7 @@ var subInv = {
 
 	var request_with_callback = function (o, callback) {
 	    resp = request(o);
-	    console.log('FIRST GROUP');
+	    console.log('GROUP');
 	    console.log(resp);
 	    callback();
 	};
@@ -168,6 +168,41 @@ var subInv = {
 	    console.log('SECOND GROUP');
 	    console.log(resp);
 	});
+
+	var rev_inv_1 = {
+	    'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/reviewer/1',
+	    'authors': ['ICLR.cc/2016'],
+	    'writers': ['ICLR.cc/2016'],
+	    'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
+	    'invitees': ['ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
+	    'reply': {
+		'forum': noteID,
+		'parent': noteID,
+		'authors': '~.*|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1',
+		'writers': '~.*',
+		'readers': '\\*,',     // must be world readable
+		'content': {
+		    'qualEval': '.{1,5000}',
+		    'quantEval': '0|1|2|3|4|5|6|7|8|9',
+		    'confidence': '1|2|3|4|5'
+		}
+	    }
+	};
+
+	var or3rev_inv_1 = {
+	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
+	    'method': 'POST',
+	    'port': 8529,
+	    'json': true,
+	    'body': rev_inv_1,
+	    'headers': {
+		'Authorization': 'Bearer ' + token
+	    }
+	};
+
+	resp = request(or3rev_inv_1);
+	console.log("RESPONSE");
+	console.log(resp);
 
 	//   reply email receipt to reply.authors
 	//   create ICLR.cc/2016/workshop/paper/123/reviewers // to be filled in later
