@@ -44,14 +44,14 @@ function loggedInHdr(token) {
 
 // ICLR SUBMISSION
 var iclrSub = {
-    'invitation': 'ICLR.cc/2016/-/workshop2/submission',
+    'invitation': 'ICLR.cc/2016/-/workshop11/submission',
     'forum': null,        // this will be set automatically
     'parent': null,       // this will be the root of the forum
     'authors': ['~Ari_Kobren'],
     'writers': ['~Ari_Kobren'],
     'readers': ['*'],
     'content': {
-	'title': 'ari submission 1',
+	'title': 'workshop10 submission',
 	'abstract': 'this is my abstract',
 	'authors': 'Ari Kobren',
 	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'   // either an actual pdf or an arxiv link

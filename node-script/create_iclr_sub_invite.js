@@ -43,32 +43,15 @@ function loggedInHdr(token) {
 
 // ICLR SUBMISSION INVITE
 var subInv = {
-    'id': 'ICLR.cc/2016/-/workshop2/submission',
-    //    'authors': 'ICLR.cc/2016',
-    'authors': ['ari@host.com'],
+    'id': 'ICLR.cc/2016/-/workshop11/submission',
+    // I need to put myself first in the following because it will be passed to process
+    'authors': ['ari@host.com','ICLR.cc/2016'],
     'writers': ['ICLR.cc/2016'],
     'readers': ['*'],
     'invitees': ['~'],
 //    cdate: 1/1/2016        // are these working yet?
 //    duedate: 2/3/2016
 //    ddate: 2/3/2016
-    'process': function (noteID) {
-	var subNum = 1;
-	var forum = noteID;
-	var comment_invite = create_comment_invite(forum, subNum);
-	console.log('FORUM:' + forum);
-	console.log('COMMENT_INVITE')
-	console.log(comment_invite);
-	create_submission_invite(inviteUrl, comment_invite);
-	// NN = a paper # (by finding the max of ICLR.cc/2016/-/workshop/paper/*/comment)
-	//   reply email receipt to reply.authors
-	//   create ICLR.cc/2016/workshop/paper/123/reviewers // to be filled in later
-	//   add note.authors to ICLR.cc/2016/workshop/authors
-	//   # allow anyone to comment
-	//   create comment invitation:
-  	//send email to paper’s authors’ and reviewers’ email addresses
-  	return true;
-    },
     'reply': {
 	'forum': null,        // this will be set automatically
 	'parent': null,       // the response to this invite will be a forum root
@@ -78,57 +61,78 @@ var subInv = {
 	'content': {
 	    'title': '.{1,100}',
 	    'abstract': '.{1,2000}',
-	    'authors': '.*',
+	    'authors': '(.*,)+',
 	    'pdf': 'upload|http://arxiv.org/pdf/.*'   // either an actual pdf or an arxiv link
 	}
-    }
-};
+    },
+    'process': (function (firstAuthorToken, invite, note) {
+	console.log("PROCESS FUNCTION");
+	console.log("FIRST AUTHOR TOKEN");
+	console.log(firstAuthorToken);
+	console.log("INVITATION");
+	console.log(invite);
+	console.log("NOTE");
+	console.log(note);
 
-function create_comment_invite(forumID, subNum) {
-    var comment_invite = {
-	'id': 'ICLR.cc/2016/-/workshop/paper/' + subNum + '/comment',
-	'forum': forumID,
-	'parent': null,
-	'author': ['ICLR.cc/2016'],
-	'readers': ['*'],
-	//     super: ICLR.cc/2016/-/workshop/comment
-	'reply': {
-	    'forum': forumID,
-	    'authors': ['~.*'],
-	    'writers': ['~.*'],
-	    'readers': ['*'],
-	    'content': {
-		'title': '.{1,100}',
-		'comment': '.{1,5000}'
+	var request = require('org/arangodb/request');
+	var subNum = 2;
+	var noteID = note.id;
+	// CREATE INVITATION TO COMMENT
+	var create_comment_invite = function(noteid, subNum) {
+	    return {
+		'id': 'ICLR.cc/2016/-/workshop/paper/' + subNum + '/comment',
+		'forum': noteid,   // this links this invitation to the note (paper)
+		'parent': null,
+		'authors': ['ICLR.cc/2016'],
+		'writers': ['ICLR.cc/2016'],
+		'invitees': ['~'],
+		'readers': ['*'],
+		//     super: ICLR.cc/2016/-/workshop/comment
+		'reply': {
+		    'forum': noteid,  // this links this note to the previously posted note (paper)
+//		    'parent': THIS SHOULD BE FILLED IN
+		    'authors': '~.*',
+		    'writers': '~.*',
+    //		    'readers': '.*',
+		    'readers': '\\*',
+		    'content': {
+			'title': '.{1,100}',
+			'comment': '.{1,5000}'
+		    },
+		    'process': (function (token, invite, note) {
+			// SEND EMAIL TO AUTHORS THAT THEIR PAPER RECIEVED A COMMENT
+			return true;
+		    }) + ""
+		}
+	    };
+	};
+
+	var comment_invite = create_comment_invite(noteID, subNum);
+	var or3comment_invite = {
+	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
+	    'method': 'POST',
+	    'port': 8529,
+	    'json': true,
+	    'body': comment_invite,
+	    'headers': {
+		'Authorization': 'Bearer ' + firstAuthorToken
 	    }
-	}
-    };
-    return comment_invite;
+	};
+	console.log(or3comment_invite);
+	var resp = request(or3comment_invite);
+	console.log("RESPONSE");
+	console.log(resp);
+	console.log(resp.statusCode);
+	// NN = a paper # (by finding the max of ICLR.cc/2016/-/workshop/paper/*/comment)
+	//   reply email receipt to reply.authors
+	//   create ICLR.cc/2016/workshop/paper/123/reviewers // to be filled in later
+	//   add note.authors to ICLR.cc/2016/workshop/authors
+	//   # allow anyone to comment
+	//   create comment invitation:
+  	//send email to paper’s authors’ and reviewers’ email addresses
+  	    return true;
+    }) + ""
 };
-
-// ICLR COMMENT PROTOTYPE - CURRENTLY UNUSED
-function iclr_comment() {
-    this.id = 'ICLR.cc/2016/-/workshop/comment';
-    this.authors = ['ICLR.cc/2016'];
-    this.writers = ['ICLR.cc/2016'];
-    this.readers = ['*'];
-    //cdate:
-    //rdate:
-    this.reply = {
-	//parent: null
-	'authors': ['~.*'],
-	'writers': ['~.*'],
-	'readers': ['*'],
-	'content': {
-	    'title': '.{1,100}',
-	    'comment': '.{1,5000}'
-	}
-    };
-    this.process = function (noteID) {
-	//send email to paper’s authors’ and reviewers’ email addresses
-	return true;
-    };
-}
 
 function create_submission_invite(url, o) {
     var loginReq = new or3post(loginUrl, userpass, headers);

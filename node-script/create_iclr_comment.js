@@ -42,16 +42,16 @@ function loggedInHdr(token) {
   };
 }
 
-// ICLR SUBMISSION
+// ICLR COMMENT
 var iclr_comment = {
     'invitation': 'ICLR.cc/2016/-/workshop/paper/1/comment', //hard coded for testing
     'forum': '101733856316',  // hard coded for testing
     'parent': '101733856316', // hard coded for testing
     'authors': ['~Ari_Kobren'],
     'writers': ['~Ari_Kobren'],
-    'readers': ['.*'],
+    'readers': ['*'],
     'content': {
-	'title': 'A TITLE',
+	'title': 'A TITLE2',
 	'comment': 'A COMMENT'
     }
 }
