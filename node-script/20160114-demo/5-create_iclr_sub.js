@@ -57,7 +57,7 @@ var sub = {
 	    'authors': 'Ari Kobren,',
 	    'conflicts': 'umass.edu;',
 	    'resubmit': 'Yes',
-	    'cmtID': '98',
+//	    'cmtID': '98',
 	    'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
     }
 };

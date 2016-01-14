@@ -79,7 +79,7 @@ var subInv = {
 		//     super: ICLR.cc/2016/-/workshop/comment
 		'reply': {
 		    'forum': forum,  // links this note to the previously posted note (paper)
-		    'parent': noteID,
+//		    'parent': noteID, // not specified so we can allow comments on comments
 		    'authors': '~.*',
 		    'writers': '~.*',
 		    'readers': '\\*,',
