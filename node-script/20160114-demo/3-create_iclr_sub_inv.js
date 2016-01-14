@@ -43,7 +43,7 @@ function loggedInHdr(token) {
 
 // ICLR SUBMISSION INVITE
 var subInv = {
-    'id': 'ICLR.cc/2016/-/workshop/submission',
+    'id': 'ICLR.cc/2016/-/workshop/submission2',
     // I need to put myself first in the following because it will be passed to process
     'authors': ['ICLR.cc/2016'],
     'writers': ['ICLR.cc/2016'],
@@ -66,21 +66,22 @@ var subInv = {
 	}
     },
     'process': (function (token, invitation, note, count, lib) {
+	console.log('HERE');
 	var request = require('org/arangodb/request');
 	var noteID = note.id;
+	var forum = note.forum;
 	// CREATE INVITATION TO COMMENT
-	var create_comment_invite = function(noteID, count) {
+	var create_comment_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/comment',
-		'forum': noteID,   // this links this invitation to the note (paper)
-		'parent': null,
 		'authors': ['ICLR.cc/2016'],
 		'writers': ['ICLR.cc/2016'],
 		'invitees': ['~'],
 		'readers': ['*'],
 		//     super: ICLR.cc/2016/-/workshop/comment
 		'reply': {
-		    'forum': noteID,  // links this note to the previously posted note (paper)
+		    'forum': forum,  // links this note to the previously posted note (paper)
+		    'parent': noteID,
 		    'authors': '~.*',
 		    'writers': '~.*',
 		    'readers': '\\*',
@@ -97,7 +98,7 @@ var subInv = {
 	    };
 	};
 
-	var comment_invite = create_comment_invite(noteID, count);
+	var comment_invite = create_comment_invite(noteID, forum, count);
 	var or3comment_invite = {
 	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
 	    'method': 'POST',
@@ -121,7 +122,7 @@ var subInv = {
 	//   # allow anyone to comment
 	//   create comment invitation:
   	//send email to paper’s authors’ and reviewers’ email addresses
-  	    return true;
+  	return true;
     }) + ""
 };
 

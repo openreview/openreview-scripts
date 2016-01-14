@@ -28,7 +28,7 @@ var u3 = {
 function or3post(url, body, headers) {
   this.url = url;
   this.method = 'POST';
-  this.port = 80;
+  this.port = 8529;
   this.json = true;
   this.body = body;
   this.headers = headers;
@@ -44,7 +44,30 @@ function callback(error, response, body) {
   }
 }
 
-var headers = {};
-request(new or3post(grpUrl, u1, headers), callback);
-request(new or3post(grpUrl, u2, headers), callback);
-request(new or3post(grpUrl, u3, headers), callback);
+//or3 request bodies
+var userpass = {
+  'id': 'ari@host.com',
+  'password': '12345678'
+};
+
+function loggedInHdr(token) {
+  return {
+  'Authorization': 'Bearer ' + token,
+  'User-Agent': 'test-create-script',
+  };
+}
+
+function make_post_req(url, o) {
+    var loginReq = new or3post(loginUrl, userpass, headers);
+    request(loginReq, function(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var token = body.token;
+	var or3postReq = new or3post(url, o, loggedInHdr(token));
+	request(or3postReq, callback);
+    }
+  });
+}
+
+make_post_req(grpUrl, u1);
+make_post_req(grpUrl, u2);
+make_post_req(grpUrl, u3);

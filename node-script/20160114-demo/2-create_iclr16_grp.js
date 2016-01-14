@@ -47,7 +47,7 @@ var iclr16 = {
     'authors': ['ICLR.cc'],
     'writers': ['ICLR.cc/2016'],
     'readers': ['*'],
-    'members': ['u1@host.com','u2@host.com', 'u3@host.com'],
+    'members': ['u1@host.com','u2@host.com', 'u3@host.com', 'ari@host.com'],
     'signatories': ['ICLR.cc/2016']
 };
 

@@ -48,6 +48,7 @@ var iclr = {
     'writers': ['ICLR.cc'],
     'members': ['ari@host.com'],
     'readers': ['ari@host.com'],
+    'signatories': ['ari@host.com']
 };
 
 function make_post_req(url, o) {
