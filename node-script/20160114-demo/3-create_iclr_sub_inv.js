@@ -43,7 +43,7 @@ function loggedInHdr(token) {
 
 // ICLR SUBMISSION INVITE
 var subInv = {
-    'id': 'ICLR.cc/2016/-/workshop/submission2',
+    'id': 'ICLR.cc/2016/-/workshop/submission',
     // I need to put myself first in the following because it will be passed to process
     'authors': ['ICLR.cc/2016'],
     'writers': ['ICLR.cc/2016'],
