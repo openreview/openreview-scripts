@@ -53,7 +53,7 @@ var subInv = {
 	'parent': null,       // the response to this invite will be a forum root
 	'authors': '~.*',     // authors must reveal their ~ handle
 	'writers': '~.*',
-	'readers': '.*',
+	'readers': '\\*,',
 	'content': {
 	    'title': '.{1,100}',
 	    'abstract': '.{1,2000}',
