@@ -44,7 +44,7 @@ function loggedInHdr(token) {
 // ICLR SUBMISSION INVITE
 var subInv = {
     'id': 'ICLR.cc/2016/-/workshop/submission',
-    'authors': [rootUsr.id],
+    'authors': ['ICLR.cc/2016'],                     // I can only sign as this author because I'm creating this invitation with the root user
     'writers': ['ICLR.cc/2016'],
     'readers': ['*'],
     'invitees': ['~'],
@@ -74,7 +74,7 @@ var subInv = {
 	var create_comment_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/comment',
-		'authors': [rootUsr.id],
+		'authors': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
 		'writers': ['ICLR.cc/2016'],
 		'invitees': ['~'],              // this indicates the ~ group
 		'readers': ['*'],               // this indicates the * group
@@ -125,7 +125,7 @@ var subInv = {
 	// CREATE REVIEWER GROUPS
 	var paper_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count,
-	    'authors': [rootUsr.id],
+	    'authors': ['OpenReview.net'],
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['*'],
 	    'members': ['ICLR.cc/2016'],
@@ -134,7 +134,7 @@ var subInv = {
 
 	var rev_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer',
-	    'authors': [rootUsr.id],
+	    'authors': ['OpenReview.net'],
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['*'],
 	    'members': ['ICLR.cc/2016'],
@@ -178,7 +178,7 @@ var subInv = {
 
 	var rev_inv_1 = {
 	    'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/reviewer/1',
-	    'authors': [rootUsr],
+	    'authors': ['ICLR.cc/2016'],  // super user can sign as anyone
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
 	    'invitees': ['ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
