@@ -10,8 +10,8 @@ var loginUrl = 'http://localhost:8529/_db/_system/openreview/login';
 var headers = { 'User-Agent': 'test-create-script' };
 
 //or3 request bodies
-var userpass = {
-  'id': 'ari@host.com',
+var rootUsr = {
+  'id': 'OpenReview.net',
   'password': '12345678'
 };
 
@@ -44,15 +44,15 @@ function loggedInHdr(token) {
 // GROUPS TO CREATE
 var iclr16 = {
     'id': 'ICLR.cc/2016',
-    'authors': ['ICLR.cc'],
+    'authors': [rootUsr.id],
     'writers': ['ICLR.cc/2016'],
     'readers': ['*'],
-    'members': ['u1@host.com','u2@host.com', 'u3@host.com', 'ari@host.com'],
+    'members': ['u1@host.com','u2@host.com', 'u3@host.com'],
     'signatories': ['ICLR.cc/2016']
 };
 
 function make_post_req(url, o) {
-    var loginReq = new or3post(loginUrl, userpass, headers);
+    var loginReq = new or3post(loginUrl, rootUsr, headers);
     request(loginReq, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var token = body.token;

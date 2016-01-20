@@ -9,6 +9,11 @@ var loginUrl = 'http://localhost:8529/_db/_system/openreview/login';
 
 var headers = { 'User-Agent': 'test-create-script' };
 
+var rootUsr = {
+    'id': 'OpenReview.net',
+    'password': '12345678'
+}
+
 //PCs
 var u1 = {
     'id': 'u1@host.com',
@@ -44,12 +49,6 @@ function callback(error, response, body) {
   }
 }
 
-//or3 request bodies
-var userpass = {
-  'id': 'ari@host.com',
-  'password': '12345678'
-};
-
 function loggedInHdr(token) {
   return {
   'Authorization': 'Bearer ' + token,
@@ -58,7 +57,7 @@ function loggedInHdr(token) {
 }
 
 function make_post_req(url, o) {
-    var loginReq = new or3post(loginUrl, userpass, headers);
+    var loginReq = new or3post(loginUrl, rootUsr, headers);
     request(loginReq, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var token = body.token;
