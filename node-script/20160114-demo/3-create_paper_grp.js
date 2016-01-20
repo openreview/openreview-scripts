@@ -57,7 +57,7 @@ var paper = {
     'writers': [workshop.id],
     'readers': ['*'],
     'members': [workshop.id],
-    'signatories': ['']
+    'signatories': []
 };
 
 function create_groups() {

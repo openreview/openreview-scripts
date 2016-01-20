@@ -10,8 +10,8 @@ var inviteUrl = 'http://localhost:8529/_db/_system/openreview/invitations';
 var headers = { 'User-Agent': 'test-create-script' };
 
 //or3 request bodies
-var userpass = {
-  'id': 'ari@host.com',
+var rootUsr = {
+  'id': 'OpenReview.net',
   'password': '12345678'
 };
 
@@ -44,7 +44,7 @@ function loggedInHdr(token) {
 // ICLR SUBMISSION INVITE
 var subInv = {
     'id': 'ICLR.cc/2016/-/workshop/submission',
-    'authors': ['ICLR.cc/2016'],
+    'authors': [rootUsr.id],
     'writers': ['ICLR.cc/2016'],
     'readers': ['*'],
     'invitees': ['~'],
@@ -52,7 +52,7 @@ var subInv = {
 	'forum': null,        // this will be set automatically
 	'parent': null,       // the response to this invite will be a forum root
 	'authors': '~.*',     // authors must reveal their ~ handle
-	'writers': '~.*',
+	'writers': '~.*',     // the writers must also reveal their ~ handle
 	'readers': '\\*,',
 	'content': {
 	    'title': '.{1,100}',
@@ -65,24 +65,29 @@ var subInv = {
 	}
     },
     'process': (function (token, invitation, note, count, lib) {
-	var request = require('org/arangodb/request');
+	var request = require('org/arangodb/request');             // this is messy; on the server I can only use arango's request library
+	// TODO AK: should we move away from using the node.js request library in favor of arango only?
+
 	var noteID = note.id;
 	var forum = note.forum;
 	// CREATE INVITATION TO COMMENT
 	var create_comment_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/comment',
-		'authors': ['ICLR.cc/2016'],
+		'authors': [rootUsr.id],
 		'writers': ['ICLR.cc/2016'],
-		'invitees': ['~'],
-		'readers': ['*'],
+		'invitees': ['~'],              // this indicates the ~ group
+		'readers': ['*'],               // this indicates the * group
+
 		//     super: ICLR.cc/2016/-/workshop/comment
+		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
+
 		'reply': {
-		    'forum': forum,  // links this note to the previously posted note (paper)
-//		    'parent': noteID, // not specified so we can allow comments on comments
-		    'authors': '~.*',
-		    'writers': '~.*',
-		    'readers': '\\*,',
+		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
+//		    'parent': noteID,    // not specified so we can allow comments on comments
+		    'authors': '~.*',    // this regex demands that the author reveal his/her ~ handle
+		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
+		    'readers': '\\*,',   // the reply must allow ANYONE (i.e., the * group) to read this note (comment)
 		    'content': {
 			'title': '.{0,500}',
 			'comment': '.{1,5000}'
@@ -108,8 +113,10 @@ var subInv = {
 		'Authorization': 'Bearer ' + token
 	    }
 	};
+
 	console.log("OR3 COMMENT INVITE");
 	console.log(or3comment_invite);
+
 	var resp = request(or3comment_invite);
 	console.log("RESPONSE");
 	console.log(resp);
@@ -118,20 +125,20 @@ var subInv = {
 	// CREATE REVIEWER GROUPS
 	var paper_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count,
-	    'authors': ['ICLR.cc/2016'],
+	    'authors': [rootUsr.id],
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['*'],
 	    'members': ['ICLR.cc/2016'],
-	    'signatories': ['ICLR.cc/2016']
+	    'signatories': []
 	};
 
 	var rev_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer',
-	    'authors': ['ICLR.cc/2016'],
+	    'authors': [rootUsr.id],
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['*'],
 	    'members': ['ICLR.cc/2016'],
-	    'signatories': ['ICLR.cc/2016']
+	    'signatories': []
 	};
 
 	var or3paper_grp = {
@@ -171,16 +178,17 @@ var subInv = {
 
 	var rev_inv_1 = {
 	    'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/reviewer/1',
-	    'authors': ['ICLR.cc/2016'],
+	    'authors': [rootUsr],
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
 	    'invitees': ['ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
 	    'reply': {
 		'forum': noteID,
 		'parent': noteID,
-		'authors': '~.*|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1',
+		'authors': '~.*|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1',  // author reveals their ~ handle or remains anonymous
+		// This reviewer has not been assigned yet
 		'writers': '~.*',
-		'readers': '\\*,',     // must be world readable
+		'readers': '\\*,',     // review must be world readable
 		'content': {
 		    'qualEval': '.{1,5000}',
 		    'quantEval': '0|1|2|3|4|5|6|7|8|9',
@@ -215,7 +223,7 @@ var subInv = {
 };
 
 function create_iclr_paper_submission_invite(url, o) {
-    var loginReq = new or3post(loginUrl, userpass, headers);
+    var loginReq = new or3post(loginUrl, rootUsr, headers);
     request(loginReq, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var token = body.token;
