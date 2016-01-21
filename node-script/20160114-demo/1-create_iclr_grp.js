@@ -41,7 +41,7 @@ function loggedInHdr(token) {
   };
 }
 
-//
+// ICLR ROOT GROUP
 var iclr = {
     'id': 'ICLR.cc',
     'authors': [rootUsr.id],

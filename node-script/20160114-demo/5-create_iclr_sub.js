@@ -47,18 +47,18 @@ var sub = {
     'invitation': 'ICLR.cc/2016/-/workshop/submission',
     'forum': null,
     'parent': null,
-    'authors': ['~Ari_Kobren'],
-    'writers': ['~Ari_Kobren'],
+    'authors': ['~Ari_Kobren1'],
+    'writers': ['~Ari_Kobren1'],
     'readers': ['*'],
     'pdfTransfer': 'url',
     'content': {
 	'title': 'My Title',
-	    'abstract': 'My Abstract',
-	    'authors': 'Ari Kobren,',
-	    'conflicts': 'umass.edu;',
-	    'resubmit': 'Yes',
-//	    'cmtID': '98',
-	    'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
+	'abstract': 'My Abstract',
+	'authors': 'Ari Kobren',
+	'conflicts': 'umass.edu',
+	'resubmit': 'Yes',
+	'cmtID': '98',
+	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
     }
 };
 
