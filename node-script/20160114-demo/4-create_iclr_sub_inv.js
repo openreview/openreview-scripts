@@ -56,13 +56,38 @@ var subInv = {
 	'writers': '~.*',     // the writers must also reveal their ~ handle
 	'readers': '\\*,',
 	'content': {
-	    'title': '.{1,100}',
-	    'abstract': '[\\S\\s]{1,5000}',
-	    'authors': '[^,\\n]+(,[^,\\n]+)*',
-	    'conflicts': '[^;\\n]+(;[^;\\n]+)*',
+	    'title': {
+		'order': 2,
+		'value-regex': '.{1,100}',
+		'description': 'Title of the paper.'
+	    },
+	    'abstract': {
+		'order': 3,
+		'value-regex': '[\\S\\s]{1,5000}',
+		'description': 'Abstract.'
+	    },
+	    'authors': {
+		'order': 1,
+		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+		'description': 'Comma separated list of authors.'
+	    },
+	    'conflicts': {
+		'order': 100,
+		'value-regex': '[^;\\n]+(;[^;\\n]+)*',
+		'description': 'Semi-colon separate list of conflicted email domains (e.g., cs.umass.edu;google.com, etc.).'
+	    },
 //	    'resubmit': 'Yes|No',
-	    'cmt_id': '.*',                            // if this is a resubmit, specify the CMT ID
-	    'pdf': 'upload|http://arxiv.org/pdf/.+'   // either an actual pdf or an arxiv link
+	    'cmt_id': {
+		'order': 5,
+		'value-regex': '.*',                            // if this is a resubmit, specify the CMT ID
+		'description': 'If the paper is a resubmission, enter the CMT ID; otherwise, leave blank.'
+	    },
+	    'pdf':  'upload|http://arxiv.org/pdf/.+'   // either an actual pdf or an arxiv link
+	    //	    'pdf': {
+//		'order': 4,
+//		'value-regex': 'upload|http://arxiv.org/pdf/.+',   // either an actual pdf or an arxiv link
+//		'description': 'Either upload a file or provide a link to your paper on arxiv.'
+//	}
 	}
     },
     'process': (function (token, invitation, note, count, lib) {
@@ -90,10 +115,24 @@ var subInv = {
 		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
 		    'readers': '\\*,',   // the reply must allow ANYONE (i.e., the * group) to read this note (comment)
 		    'content': {
-			'title': '.{0,500}',
-			'review': '[\\S\\s]{1,5000}',
-			'rating': '10: Top 5% of accepted papers, seminal paper|9: Top 15% of accepted papers, strong accept|8: Top 50% of accepted papers, clear accept|7: Good paper, accept|6: Marginally above acceptance threshold|5: Marginally below acceptance threshold|4: Ok but not good enough - rejection|3: Clear rejection|2: Strong rejection|1: Trivial or wrong',
-			'confidence': '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature|4: The reviewer is confident but not absolutely certain that the evaluation is correct|3: The reviewer is fairly confident that the evaluation is correct|2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper|1: The reviewer\'s evaluation is an educated guess'
+			'title': {
+			    'order': 1,
+			    'value-regex': '.{0,500}',
+			    'description': 'Title of the comment.'
+			},
+			'review': {
+			    'order': 2,
+			    'value-regex': '[\\S\\s]{1,5000}',
+			    'description': 'Your review of the paper.'
+			},
+			'rating': {
+			    'order': 3,
+			    'value-regex': '10: Top 5% of accepted papers, seminal paper|9: Top 15% of accepted papers, strong accept|8: Top 50% of accepted papers, clear accept|7: Good paper, accept|6: Marginally above acceptance threshold|5: Marginally below acceptance threshold|4: Ok but not good enough - rejection|3: Clear rejection|2: Strong rejection|1: Trivial or wrong'
+			},
+			'confidence': {
+			    'order': 4,
+			    'value-regex': '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature|4: The reviewer is confident but not absolutely certain that the evaluation is correct|3: The reviewer is fairly confident that the evaluation is correct|2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper|1: The reviewer\'s evaluation is an educated guess'
+			}
 		    },
 		    'process': (function (token, invitation, note, count, lib) {
 			var mail = {
@@ -196,10 +235,24 @@ var subInv = {
 		'writers': '~.*',
 		'readers': '\\*,',     // review must be world readable
 		'content': {
-//			'title': '.{0,500}',
-			'qualEval': '[\\S\\s]{1,5000}',
-			'quantEval': '(10: Top 5% of accepted papers, seminal paper)|(9: Top 15% of accepted papers, strong accept)|(8: Top 50% of accepted papers, clear accept)|(7: Good paper, accept)|(6: Marginally above acceptance threshold)|(5: Marginally below acceptance threshold)|(4: Ok but not good enough - rejection)|(3: Clear rejection)|(2: Strong rejection)|(1: Trivial or wrong)',
-			'confidence': '(5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature)|(4: The reviewer is confident but not absolutely certain that the evaluation is correct)|(3: The reviewer is fairly confident that the evaluation is correct)|(2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper)|(1: The reviewer\'s evaluation is an educated guess)'
+		    'title': {
+			'order': 1,
+			'value-regex': '.{0,500}',
+			'description': 'Title of your review.'
+		    },
+		    'review': {
+			'order': 2,
+			'value-regex': '[\\S\\s]{1,5000}',
+			'description': 'Your review.'
+		    },
+		    'rating': {
+			'order': 3,
+			'value-regex': '(10: Top 5% of accepted papers, seminal paper)|(9: Top 15% of accepted papers, strong accept)|(8: Top 50% of accepted papers, clear accept)|(7: Good paper, accept)|(6: Marginally above acceptance threshold)|(5: Marginally below acceptance threshold)|(4: Ok but not good enough - rejection)|(3: Clear rejection)|(2: Strong rejection)|(1: Trivial or wrong)'
+		    },
+		    'confidence': {
+			'order': 4,
+			'value-regex': '(5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature)|(4: The reviewer is confident but not absolutely certain that the evaluation is correct)|(3: The reviewer is fairly confident that the evaluation is correct)|(2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper)|(1: The reviewer\'s evaluation is an educated guess)'
+		    }
 		}
 	    }
 	};
