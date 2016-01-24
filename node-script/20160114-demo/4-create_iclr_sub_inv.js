@@ -97,9 +97,9 @@ var subInv = {
 	var noteID = note.id;
 	var forum = note.forum;
 	// CREATE INVITATION TO COMMENT
-	var create_comment_invite = function(noteID, forum, count) {
+	var create_review_invite = function(noteID, forum, count) {
 	    return {
-		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/comment',
+		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/unofficialreview',
 		'authors': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
 		'writers': ['ICLR.cc/2016'],
 		'invitees': ['~'],              // this indicates the ~ group
@@ -147,13 +147,62 @@ var subInv = {
 	    };
 	};
 
-	var comment_invite = create_comment_invite(noteID, forum, count);
+	var create_quick_comment_invite = function(noteID, forum, count) {
+	    return {
+		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/comment',
+		'authors': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
+		'writers': ['ICLR.cc/2016'],
+		'invitees': ['~'],              // this indicates the ~ group
+		'readers': ['*'],               // this indicates the * group
+
+		//     super: ICLR.cc/2016/-/workshop/comment
+		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
+
+		'reply': {
+		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
+//		    'parent': noteID,    // not specified so we can allow comments on comments
+		    'authors': '~.*',    // this regex demands that the author reveal his/her ~ handle
+		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
+		    'readers': '\\*,',   // the reply must allow ANYONE (i.e., the * group) to read this note (comment)
+		    'content': {
+			'comment': {
+			    'order': 1,
+			    'value-regex': '[\\S\\s]{1,5000}',
+			    'description': 'Enter your comment here.'
+			}
+		    },
+		    'process': (function (token, invitation, note, count, lib) {
+			var mail = {
+			    'to': 'how do we get the authors?',
+			    'from': 'openreview@beta.openreview.net',
+			    'message': 'Your recent submission has received a new comment.  To view the comment, log into http://beta.openreview.net.'
+			};
+			// SEND EMAIL TO AUTHORS THAT THEIR PAPER RECIEVED A COMMENT
+			return true;
+		    }) + ""
+		}
+	    };
+	};
+
+	var unofficialreview_invite = create_quick_comment_invite(noteID, forum, count);
+	var quick_comment_invite = create_quick_comment_invite(noteID, forum, count);
 	var or3comment_invite = {
 	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
 	    'method': 'POST',
 	    'port': 8529,
 	    'json': true,
-	    'body': comment_invite,
+	    'body': quick_comment_invite,
+	    'headers': {
+		'Authorization': 'Bearer ' + token
+	    }
+	};
+
+	var or3unofficialreview_invite = {
+	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
+	    'method': 'POST',
+	    'port': 8529,
+	    'json': true,
+	    'body': unofficialreview_invite,
 	    'headers': {
 		'Authorization': 'Bearer ' + token
 	    }
@@ -163,6 +212,11 @@ var subInv = {
 	console.log(or3comment_invite);
 
 	var resp = request(or3comment_invite);
+	console.log("RESPONSE");
+	console.log(resp);
+	console.log(resp.statusCode);
+
+	resp = request(or3comment_invite);
 	console.log("RESPONSE");
 	console.log(resp);
 	console.log(resp.statusCode);
