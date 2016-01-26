@@ -12,7 +12,7 @@ var headers = { 'User-Agent': 'test-create-script' };
 
 //or3 request bodies
 var userpass = {
-  'id': 'ari@host.com',
+  'id': 'OpenReview.net',
   'password': '12345678'
 };
 
@@ -57,7 +57,7 @@ var sub = {
 	'authors': 'Ari Kobren',
 	'conflicts': 'umass.edu',
 	'resubmit': 'Yes',
-	'cmtID': '98',
+	'cmt_id': '98',
 	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
     }
 };
