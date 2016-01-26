@@ -1,0 +1,33 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'install' ]
+2 info using npm@1.4.29
+3 info using node@v0.10.41
+4 verbose node symlink /usr/bin/node
+5 warn deprecated This version of npm lacks support for important features,
+6 warn deprecated such as scoped packages, offered by the primary npm
+7 warn deprecated registry. Consider upgrading to at least npm@2, if not the
+8 warn deprecated latest stable version. To upgrade to npm@2, run:
+9 warn deprecated npm -g install npm@latest-2
+10 warn deprecated To upgrade to the latest stable version, run:
+11 warn deprecated npm -g install npm@latest
+12 warn deprecated (Depending on how Node.js was installed on your system, you
+13 warn deprecated may need to prefix the preceding commands with `sudo`, or if
+14 warn deprecated on Windows, run them from an Administrator prompt.)
+15 warn deprecated If you're running the version of npm bundled with
+16 warn deprecated Node.js 0.10 LTS, be aware that the next version of 0.10 LTS
+17 warn deprecated will be bundled with a version of npm@2, which has some small
+18 warn deprecated backwards-incompatible changes made to `npm run-script` and
+19 warn deprecated semver behavior.
+20 error install Couldn't read dependencies
+21 error package.json ENOENT, open '/home/thomas/iesl/or3scripts/package.json'
+21 error package.json This is most likely not a problem with npm itself.
+21 error package.json npm can't find a package.json file in your current directory.
+22 error System Linux 3.19.0-42-generic
+23 error command "/usr/bin/node" "/usr/bin/npm" "install"
+24 error cwd /home/thomas/iesl/or3scripts
+25 error node -v v0.10.41
+26 error npm -v 1.4.29
+27 error path /home/thomas/iesl/or3scripts/package.json
+28 error code ENOPACKAGEJSON
+29 error errno 34
+30 verbose exit [ 34, true ]

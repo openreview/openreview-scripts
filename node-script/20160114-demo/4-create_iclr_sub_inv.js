@@ -133,6 +133,7 @@ var subInv = {
 		    var or3origNote = {
 			'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
 			'method': 'GET',
+      'json': true,
 			'port': 8529,
 			'headers': {
 			    'Authorization': 'Bearer ' + token
