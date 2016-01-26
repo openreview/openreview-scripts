@@ -75,6 +75,25 @@ function make_post_req(url, o) {
     }
   });
 }
+// ICLR SUBMISSION
+var sub = {
+    'invitation': 'ICLR.cc/2016/-/workshop/submission',
+    'forum': null,
+    'parent': null,
+    'authors': ['~Ari_Kobren1'],
+    'writers': ['~Ari_Kobren1'],
+    'readers': ['*'],
+    'pdfTransfer': 'url',
+    'content': {
+	'title': 'My Title',
+	'abstract': 'My Abstract',
+	'authors': 'Ari Kobren',
+	'conflicts': 'umass.edu',
+	'resubmit': 'Yes',
+	'cmt_id': '98',
+	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
+    }
+};
 
 function process_record(record) {
 	var sub = {
@@ -86,81 +105,40 @@ function process_record(record) {
     'readers': ['*'],
     'pdfTransfer': 'url',
     'content': {
-	'title': record[1],
-	'abstract': record[2],
-	'authors': record[3],
-	'conflicts': record[4],
-	'resubmit': 'Yes',
-	'cmtID': '98',
-	'pdf': record[9]
+		'title': record[1],
+		'abstract': record[2],
+		'authors': record[3],
+		'conflicts': record[4],
+		'resubmit': 'No',
+		'cmt_id': null,
+		'pdf': record[9]
     }
 	}
 	//console.log(sub);
 	make_post_req(noteUrl, sub);
 };
 	
-
-var submissionFilepath = "/Users/csgreenberg/workspace/data/iesl/openreview/iclr_submissions.txt"
-var output = [];
-// Create the parser
-//var parser = csvparse({delimiter: ':'});
-var parser = csvparse({delimiter: '\t'});
-// Use the writable stream api
-parser.on('readable', function(){
-	while(record = parser.read()){
-		//output.push(record);
-		process_record(record);
-	}
-});
-// Catch any error
-parser.on('error', function(err){
-	console.log(err.message);
-});
-// When we are done, test that the parsed output matched what expected
-parser.on('finish', function(){
-	console.log('finished')
-	/*
-	output.should.eql([
-		[ 'root','x', '0','0','root','/root','/bin/bash' ],
-		[ 'someone','x','1022','1022','a funny cat','/home/someone','/bin/bash' ]
-	]);
-*/
-});
-// Now that setup is done, write data to the stream
-fs.readFile(submissionFilepath, function(err, data) {
-	parser.write(data);
-	/*
-	parser.parseString(data, function (err, result) {
-		console.log(result);
-		console.log('Done');
+function main(){
+	// get tsv filepath with iclr submissions from stdin
+	//var submissionFilepath = "/Users/csgreenberg/workspace/data/iesl/openreview/iclr_submissions.txt"
+	var submissionFilepath = process.argv[2];
+	// Create the parser
+	var parser = csvparse({delimiter: '\t'});
+	// Use the writable stream api
+	parser.on('readable', function(){
+		while(record = parser.read()){
+			process_record(record);
+		}
 	});
-	*/
-	parser.end();
-});
-
-//parser.write("root:x:0:0:root:/root:/bin/bash\n");
-//parser.write("someone:x:1022:1022:a funny cat:/home/someone:/bin/bash\n");
-// Close the readable stream
-//parser.end();
-		  
-/*
-var submissionFilepath = "/Users/csgreenberg/workspace/data/iesl/openreview/iclr_submissions.xml"
-var parser = new xml2js.Parser();
-fs.readFile(submissionFilepath, function(err, data) {
-	parser.parseString(data, function (err, result) {
-		console.log(result);
-		console.log('Done');
+	// Catch any error
+	parser.on('error', function(err){
+		console.log(err.message);
 	});
-});
-*/
+	
+	fs.readFile(submissionFilepath, function(err, data) {
+		parser.write(data);
+		parser.end();
+	});
+}
 
-/*
-var parseString = xml2js.parseString;
-parseString(txt, function (err, result) {
-	console.log(result);
-});
-*/
-
-
-
-//make_post_req(noteUrl, sub);
+main()
