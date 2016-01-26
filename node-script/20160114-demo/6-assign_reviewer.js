@@ -11,7 +11,7 @@ var headers = { 'User-Agent': 'test-create-script' };
 
 //or3 request bodies
 var userpass = {
-  'id': 'ari@host.com',
+  'id': 'OpenReview.net',
   'password': '12345678'
 };
 
@@ -65,4 +65,4 @@ function make_post_req(url, o) {
   });
 }
 
-make_post_req(grpUrl,assn_rev(1,1,'u4@host.com'));
+make_post_req(grpUrl,assn_rev(1,1,'ari@host.com'));
