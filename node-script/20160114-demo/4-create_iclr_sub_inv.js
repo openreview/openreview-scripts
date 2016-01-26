@@ -128,8 +128,25 @@ var subInv = {
 		    }
 		},
 		'process': (function (token, invitation, note, count, lib) {
+		    var request = require('org/arangodb/request');
+		    //figure out the authors of the original note
+		    var or3origNote = {
+			'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
+			'method': 'GET',
+			'port': 8529,
+			'headers': {
+			    'Authorization': 'Bearer ' + token
+			}
+		    };
+
+		    var origNote = request(or3origNote);
+		    console.log("ORIG NOTE");
+		    console.log(origNote);
+		    console.log(origNote.body);
+		    console.log(origNote.body.notes[0].authors);
+
 		    var mail = {
-			"groups": [note.authors],
+			"groups": invitation.authors,
 			"subject": "New comments on your submission.",
 			"message": 'Your recent submission has received a new comment.  To view the comment, log into http://beta.openreview.net.'
 		    };
@@ -327,9 +344,9 @@ var subInv = {
 	    'reply': {
 		'forum': noteID,
 		'parent': noteID,
-		'authors': '(~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1',  // author reveals their ~ handle or remains anonymous
+		'authors': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1),',  // author reveals their ~ handle or remains anonymous
 		// This reviewer has not been assigned yet
-		'writers': '~.*',
+		'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1),',  // author reveals their ~ handle or remains anonymous
 		'readers': '\\*,',     // review must be world readable
 		'content': {
 		    'title': {
@@ -354,7 +371,7 @@ var subInv = {
 	    },
 	    'process': (function (token, invitation, note, count, lib) {
 		var mail = {
-		    "groups": [note.authors],
+		    "groups": invitation.authors,
 		    "subject": "Your submission has been reviewed.",
 		    "message": 'Your recent submission has received a new review.  To view the comment, log into http://beta.openreview.net.'
 		};

@@ -50,7 +50,8 @@ var assn_rev = function (subNum, revNum, rev) {
 	'members': [rev],
 	'readers': ['ICLR.cc/2016',
 		    'ICLR.cc/2016/workshop/paper/' + subNum + '/reviewer/' + revNum],
-	'signatories': ['ICLR.cc/2016/workshop/paper/' + subNum + '/reviewer/' + revNum]
+	//	'signatories': ['ICLR.cc/2016/workshop/paper/' + subNum + '/reviewer/' + revNum]
+	'signatories': [rev]
     };
 };
 
