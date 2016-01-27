@@ -128,12 +128,11 @@ var subInv = {
 		    }
 		},
 		'process': (function (token, invitation, note, count, lib) {
-		    var request = require('org/arangodb/request');
 		    //figure out the authors of the original note
 		    var or3origNote = {
 			'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
 			'method': 'GET',
-      'json': true,
+			'json': true,
 			'port': 8529,
 			'headers': {
 			    'Authorization': 'Bearer ' + token
@@ -141,13 +140,11 @@ var subInv = {
 		    };
 
 		    var origNote = request(or3origNote);
-		    console.log("ORIG NOTE");
-		    console.log(origNote);
-		    console.log(origNote.body);
+		    console.log("ORIG NOTE AUTHORS");
 		    console.log(origNote.body.notes[0].authors);
 
 		    var mail = {
-			"groups": invitation.authors,
+			"groups": origNote.body.notes[0].authors,
 			"subject": "New comments on your submission.",
 			"message": 'Your recent submission has received a new comment.  To view the comment, log into http://beta.openreview.net.'
 		    };
@@ -371,10 +368,25 @@ var subInv = {
 		}
 	    },
 	    'process': (function (token, invitation, note, count, lib) {
+		//figure out the authors of the original note
+		var or3origNote = {
+		    'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
+		    'method': 'GET',
+		    'json': true,
+		    'port': 8529,
+		    'headers': {
+			'Authorization': 'Bearer ' + token
+		    }
+		};
+
+		var origNote = request(or3origNote);
+		console.log("ORIG NOTE AUTHORS");
+		console.log(origNote.body.notes[0].authors);
+
 		var mail = {
-		    "groups": invitation.authors,
-		    "subject": "Your submission has been reviewed.",
-		    "message": 'Your recent submission has received a new review.  To view the comment, log into http://beta.openreview.net.'
+		    "groups": origNote.body.notes[0].authors,
+		    "subject": "New comments on your submission.",
+		    "message": 'Your recent submission has received an official review.  To view the review, log into http://beta.openreview.net.'
 		};
 
 		var or3commentMail = {
