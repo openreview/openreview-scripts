@@ -406,6 +406,30 @@ var subInv = {
 		    console.log(resp);
 		};
 		sendMail(or3commentMail);
+
+		// Now submit a new version of the review invitation that has no invitees
+		// This effectively makes it impossible to submit another review
+		var fulfilled_review_invite = invitation;
+		fulfilled_review_invite.invitees = [];
+		fulfilled_review_invite.process = (function (token, invitation, note, count, lib) {
+		    console.log("THIS REVIEW HAS ALREADY BEEN SUBMITTED");
+		    return true;
+		}) + "";
+
+		var or3fulfilled_rev = {
+		    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
+		    'method': 'POST',
+		    'port': 8529,
+		    'json': true,
+		    'body': fulfilled_review_invite,
+		    'headers': {
+			'Authorization': 'Bearer ' + token
+		    }
+		};
+		var resp = request(or3fulfilled_rev);
+		console.log("CREATING FULFILLED REVIEW");
+		console.log(fulfilled_review_invite);
+		console.log(resp);
 		return true;
 	    }) + ""
 	};
