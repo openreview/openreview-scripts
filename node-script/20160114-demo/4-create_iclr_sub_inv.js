@@ -194,7 +194,7 @@ var subInv = {
 	// CREATE INVITATION FOR UNOFFICIAL REVIEW
 	var create_unofficialreview_invite = function(noteID, forum, count) {
 	    return {
-		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/review',
+		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/unofficial_review',
 		'signatures': ['ICLR.cc/2016'],    // can the root sign as anyone? Maybe this should change??
 		'writers': ['ICLR.cc/2016'],
 		'invitees': ['~'],              // this indicates the ~ group
