@@ -52,12 +52,11 @@ var sub = {
     'readers': ['everyone'],
     'pdfTransfer': 'url',
     'content': {
-	'title': 'My Title',
-	'abstract': 'My Abstract',
-	'signatures': 'Ari Kobren',
+	'title': 'Test Paper 1',
+	'abstract': 'The abstract of test paper 1',
+	'authors': 'Ari Kobren',
 	'conflicts': 'umass.edu',
-	'resubmit': 'Yes',
-	'cmt_id': '98',
+	'cmt_id': '',
 	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
     }
 };

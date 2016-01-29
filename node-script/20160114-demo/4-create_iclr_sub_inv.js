@@ -66,23 +66,21 @@ var subInv = {
 		'value-regex': '[\\S\\s]{1,5000}',
 		'description': 'Abstract.'
 	    },
-	    'signatures': {
+	    'authors': {
 		'order': 1,
 		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
-		'description': 'Comma separated list of signatures.'
+		'description': 'Comma separated list of authors.'
 	    },
 	    'conflicts': {
 		'order': 100,
 		'value-regex': '[^;\\n]+(;[^;\\n]+)*',
 		'description': 'Semi-colon separate list of conflicted email domains (e.g., cs.umass.edu;google.com, etc.).'
 	    },
-//	    'resubmit': 'Yes|No',
 	    'cmt_id': {
 		'order': 5,
 		'value-regex': '.*',                            // if this is a resubmit, specify the CMT ID
 		'description': 'If the paper is a resubmission, enter the CMT ID; otherwise, leave blank.'
 	    },
-//	    'pdf':  'upload|http://arxiv.org/pdf/.+'   // either an actual pdf or an arxiv link
 	    'pdf': {
 		'order': 4,
 		'value-regex': 'upload|http://arxiv.org/pdf/.+',   // either an actual pdf or an arxiv link
