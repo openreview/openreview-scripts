@@ -45,16 +45,16 @@ function loggedInHdr(token) {
 // ICLR SUBMISSION INVITE
 var subInv = {
     'id': 'ICLR.cc/2016/-/workshop/submission',
-    'authors': ['ICLR.cc/2016'],                     // I can only sign as this author because I'm creating this invitation with the root user
+    'signatures': ['ICLR.cc/2016'],                     // I can only sign as this author because I'm creating this invitation with the root user
     'writers': ['ICLR.cc/2016'],
-    'readers': ['*'],
+    'readers': ['everyone'],
     'invitees': ['~'],
     'reply': {
 	'forum': null,        // this will be set automatically
 	'parent': null,       // the response to this invite will be a forum root
-	'authors': '~.*',     // authors must reveal their ~ handle
+	'signatures': '~.*',     // signatures must reveal their ~ handle
 	'writers': '~.*',     // the writers must also reveal their ~ handle
-	'readers': '\\*,',
+	'readers': 'everyone,',
 	'content': {
 	    'title': {
 		'order': 2,
@@ -66,10 +66,10 @@ var subInv = {
 		'value-regex': '[\\S\\s]{1,5000}',
 		'description': 'Abstract.'
 	    },
-	    'authors': {
+	    'signatures': {
 		'order': 1,
 		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
-		'description': 'Comma separated list of authors.'
+		'description': 'Comma separated list of signatures.'
 	    },
 	    'conflicts': {
 		'order': 100,
@@ -100,10 +100,10 @@ var subInv = {
 	var create_quick_comment_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/comment',
-		'authors': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
+		'signatures': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
 		'writers': ['ICLR.cc/2016'],
 		'invitees': ['~'],              // this indicates the ~ group
-		'readers': ['*'],               // this indicates the * group
+		'readers': ['everyone'],
 
 		//     super: ICLR.cc/2016/-/workshop/comment
 		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
@@ -111,9 +111,9 @@ var subInv = {
 		'reply': {
 		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
 //		    'parent': noteID,    // not specified so we can allow comments on comments
-		    'authors': '~.*',    // this regex demands that the author reveal his/her ~ handle
+		    'signatures': '~.*',    // this regex demands that the author reveal his/her ~ handle
 		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
-		    'readers': '\\*,',   // the reply must allow ANYONE (i.e., the * group) to read this note (comment)
+		    'readers': 'everyone,',   // the reply must allow ANYONE to read this note (comment)
 		    'content': {
 			'title': {
 			    'order': 1,
@@ -128,7 +128,7 @@ var subInv = {
 		    }
 		},
 		'process': (function (token, invitation, note, count, lib) {
-		    //figure out the authors of the original note
+		    //figure out the signatures of the original note
 		    var or3origNote = {
 			'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
 			'method': 'GET',
@@ -140,11 +140,11 @@ var subInv = {
 		    };
 
 		    var origNote = request(or3origNote);
-		    console.log("ORIG NOTE AUTHORS");
-		    console.log(origNote.body.notes[0].authors);
+		    console.log("ORIG NOTE SIGNATURES");
+		    console.log(origNote.body.notes[0].signatures);
 
 		    var mail = {
-			"groups": origNote.body.notes[0].authors,
+			"groups": origNote.body.notes[0].signatures,
 			"subject": "New comments on your submission.",
 			"message": 'Your recent submission has received a new comment.  To view the comment, log into http://beta.openreview.net.'
 		    };
@@ -197,10 +197,10 @@ var subInv = {
 	var create_review_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/review',
-		'authors': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
+		'signatures': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
 		'writers': ['ICLR.cc/2016'],
 		'invitees': ['~'],              // this indicates the ~ group
-		'readers': ['*'],               // this indicates the * group
+		'readers': ['everyone'],
 
 		//     super: ICLR.cc/2016/-/workshop/comment
 		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
@@ -208,9 +208,9 @@ var subInv = {
 		'reply': {
 		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
 //		    'parent': noteID,    // not specified so we can allow comments on comments
-		    'authors': '~.*',    // this regex demands that the author reveal his/her ~ handle
+		    'signatures': '~.*',    // this regex demands that the author reveal his/her ~ handle
 		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
-		    'readers': '\\*,',   // the reply must allow ANYONE (i.e., the * group) to read this note (comment)
+		    'readers': 'everyone,',   // the reply must allow ANYONE
 		    'content': {
 			'title': {
 			    'order': 1,
@@ -282,18 +282,18 @@ var subInv = {
 	// CREATE REVIEWER GROUPS
 	var paper_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count,
-	    'authors': ['ICLR.cc/2016'],
+	    'signatures': ['ICLR.cc/2016'],
 	    'writers': ['ICLR.cc/2016'],
-	    'readers': ['*'],
+	    'readers': ['everyone'],
 	    'members': ['ICLR.cc/2016'],
 	    'signatories': []
 	};
 
 	var rev_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer',
-	    'authors': ['ICLR.cc/2016'],
+	    'signatures': ['ICLR.cc/2016'],
 	    'writers': ['ICLR.cc/2016'],
-	    'readers': ['*'],
+	    'readers': ['everyone'],
 	    'members': ['ICLR.cc/2016'],
 	    'signatories': []
 	};
@@ -335,17 +335,17 @@ var subInv = {
 
 	var rev_inv_1 = {
 	    'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/reviewer/1',
-	    'authors': ['ICLR.cc/2016'],  // super user can sign as anyone
+	    'signatures': ['ICLR.cc/2016'],  // super user can sign as anyone
 	    'writers': ['ICLR.cc/2016'],
 	    'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
 	    'invitees': ['ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
 	    'reply': {
 		'forum': noteID,
 		'parent': noteID,
-		'authors': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1),',  // author reveals their ~ handle or remains anonymous
+		'signatures': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1),',  // author reveals their ~ handle or remains anonymous
 		// This reviewer has not been assigned yet
 		'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1),',  // author reveals their ~ handle or remains anonymous
-		'readers': '\\*,',     // review must be world readable
+		'readers': 'everyone,',     // review must be world readable
 		'content': {
 		    'title': {
 			'order': 1,
@@ -368,7 +368,7 @@ var subInv = {
 		}
 	    },
 	    'process': (function (token, invitation, note, count, lib) {
-		//figure out the authors of the original note
+		//figure out the signatures of the original note
 		var or3origNote = {
 		    'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
 		    'method': 'GET',
@@ -380,11 +380,11 @@ var subInv = {
 		};
 
 		var origNote = request(or3origNote);
-		console.log("ORIG NOTE AUTHORS");
-		console.log(origNote.body.notes[0].authors);
+		console.log("ORIG NOTE SIGNATURES");
+		console.log(origNote.body.notes[0].signatures);
 
 		var mail = {
-		    "groups": origNote.body.notes[0].authors,
+		    "groups": origNote.body.notes[0].signatures,
 		    "subject": "New comments on your submission.",
 		    "message": 'Your recent submission has received an official review.  To view the review, log into http://beta.openreview.net.'
 		};
@@ -449,12 +449,12 @@ var subInv = {
 	console.log("RESPONSE");
 	console.log(resp);
 
-	//   reply email receipt to reply.authors
+	//   reply email receipt to reply.signatures
 	//   create ICLR.cc/2016/workshop/paper/123/reviewers // to be filled in later
-	//   add note.authors to ICLR.cc/2016/workshop/authors
+	//   add note.signatures to ICLR.cc/2016/workshop/signatures
 	//   # allow anyone to comment
 	//   create comment invitation:
-  	//send email to paper’s authors’ and reviewers’ email addresses
+  	//send email to paper’s signatures’ and reviewers’ email addresses
   	return true;
     }) + ""
 };

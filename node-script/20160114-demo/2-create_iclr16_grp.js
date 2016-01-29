@@ -44,9 +44,9 @@ function loggedInHdr(token) {
 // GROUPS TO CREATE
 var iclr16 = {
     'id': 'ICLR.cc/2016',
-    'authors': [rootUsr.id],
+    'signatures': [rootUsr.id],
     'writers': ['ICLR.cc/2016'],
-    'readers': ['*'],
+    'readers': ['everyone'],
     'members': ['u1@host.com','u2@host.com', 'u3@host.com'],
     'signatories': ['ICLR.cc/2016']
 };

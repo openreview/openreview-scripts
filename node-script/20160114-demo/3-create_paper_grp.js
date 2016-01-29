@@ -44,18 +44,18 @@ function loggedInHdr(token) {
 // GROUPS TO CREATE
 var workshop = {
     'id': 'ICLR.cc/2016/workshop',
-    'authors': [rootUsr.id],
+    'signatures': [rootUsr.id],
     'writers': ['ICLR.cc/2016'],
-    'readers': ['*'],
+    'readers': ['everyone'],
     'members': ['ICLR.cc/2016'],
     'signatories': ['ICLR.cc/2016']
 };
 
 var paper = {
     'id': 'ICLR.cc/2016/workshop/paper',
-    'authors': [rootUsr.id],
+    'signatures': [rootUsr.id],
     'writers': [workshop.id],
-    'readers': ['*'],
+    'readers': ['everyone'],
     'members': [workshop.id],
     'signatories': []
 };

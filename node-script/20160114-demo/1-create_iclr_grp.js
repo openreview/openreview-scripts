@@ -3,7 +3,7 @@
 var fs = require('fs');
 var request = require('request');
 
-// The open review local url
+// The open iew local url
 var grpUrl = 'http://localhost:8529/_db/_system/openreview/groups';
 var loginUrl = 'http://localhost:8529/_db/_system/openreview/login';
 
@@ -44,10 +44,10 @@ function loggedInHdr(token) {
 // ICLR ROOT GROUP
 var iclr = {
     'id': 'ICLR.cc',
-    'authors': [rootUsr.id],
+    'signatures': [rootUsr.id],
     'writers': ['ICLR.cc', rootUsr.id],
     'members': [rootUsr.id],
-    'readers': ['*'],
+    'readers': ['everyone'],
     'signatories': ['ICLR.cc']
 };
 

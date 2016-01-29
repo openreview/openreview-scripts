@@ -45,7 +45,7 @@ function loggedInHdr(token) {
 var assn_rev = function (subNum, revNum, rev) {
     return {
 	'id': 'ICLR.cc/2016/workshop/paper/' + subNum + '/reviewer/' + revNum,
-	'authors': ['ICLR.cc/2016'],
+	'signatures': ['ICLR.cc/2016'],
 	'writers': ['ICLR.cc/2016'],
 	'members': [rev],
 	'readers': ['ICLR.cc/2016',
