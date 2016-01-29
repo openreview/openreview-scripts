@@ -98,7 +98,7 @@ var subInv = {
 	var create_quick_comment_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/comment',
-		'signatures': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
+		'signatures': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone.
 		'writers': ['ICLR.cc/2016'],
 		'invitees': ['~'],              // this indicates the ~ group
 		'readers': ['everyone'],
@@ -190,12 +190,12 @@ var subInv = {
 	console.log(resp.statusCode);
 
 
-	/*
+
 	// CREATE INVITATION FOR UNOFFICIAL REVIEW
-	var create_review_invite = function(noteID, forum, count) {
+	var create_unofficialreview_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/review',
-		'signatures': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone. Maybe this should change??
+		'signatures': ['ICLR.cc/2016'],    // can the root sign as anyone? Maybe this should change??
 		'writers': ['ICLR.cc/2016'],
 		'invitees': ['~'],              // this indicates the ~ group
 		'readers': ['everyone'],
@@ -231,10 +231,25 @@ var subInv = {
 		    }
 		},
 		'process': (function (token, invitation, note, count, lib) {
+		    //figure out the signatures of the original note
+		    var or3origNote = {
+			'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
+			'method': 'GET',
+			'json': true,
+			'port': 8529,
+			'headers': {
+			    'Authorization': 'Bearer ' + token
+			}
+		    };
+
+		    var origNote = request(or3origNote);
+		    console.log("ORIG NOTE SIGNATURES");
+		    console.log(origNote.body.notes[0].signatures);
+
 		    var mail = {
-			"groups": ["ari@host.com"],
-			"subject": "hello world",
-			"message": 'Your recent submission has received a new review.  To see the review, log into http://beta.openreview.net.'
+			"groups": origNote.body.notes[0].signatures,
+			"subject": "New comments on your submission.",
+			"message": 'Your recent submission has received a new comment.  To view the comment, log into http://beta.openreview.net.'
 		    };
 
 		    var or3commentMail = {
@@ -250,7 +265,7 @@ var subInv = {
 
 		    var sendMail = function (o) {
 			var resp = request(o);
-			console.log("REVIEW MAIL");
+			console.log("MAIL");
 			console.log(resp);
 		    };
 		    sendMail(or3commentMail);
@@ -258,24 +273,24 @@ var subInv = {
 		}) + ""
 	    };
 	};
-    */
-//	var unofficialreview_invite = create_unofficialreview_invite(noteID, forum, count);
 
-//	var or3unofficialreview_invite = {
-//	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
-//	    'method': 'POST',
-//	    'port': 8529,
-//	    'json': true,
-//	    'body': unofficialreview_invite,
-//	    'headers': {
-//		'Authorization': 'Bearer ' + token
-//	    }
-//	};
-//
-//	resp = request(or3unofficialreview_invite);
-//	console.log("RESPONSE");
-//	console.log(resp);
-//	console.log(resp.statusCode);
+	var unofficialreview_invite = create_unofficialreview_invite(noteID, forum, count);
+
+	var or3unofficialreview_invite = {
+	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
+	    'method': 'POST',
+	    'port': 8529,
+	    'json': true,
+	    'body': unofficialreview_invite,
+	    'headers': {
+		'Authorization': 'Bearer ' + token
+	    }
+	};
+
+	resp = request(or3unofficialreview_invite);
+	console.log("RESPONSE");
+	console.log(resp);
+	console.log(resp.statusCode);
 
 	// CREATE REVIEWER GROUPS
 	var paper_grp = {

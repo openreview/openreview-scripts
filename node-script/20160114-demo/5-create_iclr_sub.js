@@ -12,7 +12,7 @@ var headers = { 'User-Agent': 'test-create-script' };
 
 //or3 request bodies
 var userpass = {
-  'id': 'OpenReview.net',
+  'id': 'ari@host.com',
   'password': '12345678'
 };
 
