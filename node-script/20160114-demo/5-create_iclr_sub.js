@@ -56,7 +56,7 @@ var sub = {
 	'abstract': 'The abstract of test paper 1',
 	'authors': 'Ari Kobren',
 	'conflicts': 'umass.edu',
-	'cmt_id': '',
+	'CMT_id': '',
 	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
     }
 };
