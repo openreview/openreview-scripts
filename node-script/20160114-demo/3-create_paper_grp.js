@@ -51,6 +51,15 @@ var workshop = {
     'signatories': ['ICLR.cc/2016']
 };
 
+var conference = {
+    'id': 'ICLR.cc/2016/conference',
+    'signatures': [rootUsr.id],
+    'writers': ['ICLR.cc/2016'],
+    'readers': ['everyone'],
+    'members': ['ICLR.cc/2016'],
+    'signatories': ['ICLR.cc/2016']
+};
+
 var paper = {
     'id': 'ICLR.cc/2016/workshop/paper',
     'signatures': [rootUsr.id],
@@ -68,7 +77,10 @@ function create_groups() {
 	  var or3workshopGrp = new or3post(grpUrl, workshop, loggedInHdr(token));
 	  request(or3workshopGrp, function(error, response, body) {
 	      var or3paperGrp = new or3post(grpUrl, paper, loggedInHdr(token));
-	      request(or3paperGrp, callback);
+	      request(or3paperGrp, function(error, response, body) {
+		  var or3conferenceGrp = new or3post(grpUrl, conference, loggedInHdr(token));
+		  request(or3conferenceGrp, callback);
+	      });
 	  });
       }
     });

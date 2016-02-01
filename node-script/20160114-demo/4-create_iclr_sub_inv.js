@@ -45,8 +45,8 @@ function loggedInHdr(token) {
 // ICLR SUBMISSION INVITE
 var subInv = {
     'id': 'ICLR.cc/2016/-/workshop/submission',
-    'signatures': ['ICLR.cc/2016'],                     // I can only sign as this author because I'm creating this invitation with the root user
-    'writers': ['ICLR.cc/2016'],
+    'signatures': ['ICLR.cc/2016/workshop'],                     // I can only sign as this author because I'm creating this invitation with the root user
+    'writers': ['ICLR.cc/2016/workshop'],
     'readers': ['everyone'],
     'invitees': ['~'],
     'reply': {
@@ -98,8 +98,8 @@ var subInv = {
 	var create_quick_comment_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/comment',
-		'signatures': ['ICLR.cc/2016'],    // the root is allowed to sign as anyone.
-		'writers': ['ICLR.cc/2016'],
+		'signatures': ['ICLR.cc/2016/workshop'],    // the root is allowed to sign as anyone.
+		'writers': ['ICLR.cc/2016/workshop'],
 		'invitees': ['~'],              // this indicates the ~ group
 		'readers': ['everyone'],
 
@@ -195,8 +195,8 @@ var subInv = {
 	var create_unofficialreview_invite = function(noteID, forum, count) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/unofficial_review',
-		'signatures': ['ICLR.cc/2016'],    // can the root sign as anyone? Maybe this should change??
-		'writers': ['ICLR.cc/2016'],
+		'signatures': ['ICLR.cc/2016/workshop'],    // can the root sign as anyone? Maybe this should change??
+		'writers': ['ICLR.cc/2016/workshop'],
 		'invitees': ['~'],              // this indicates the ~ group
 		'readers': ['everyone'],
 
@@ -295,19 +295,19 @@ var subInv = {
 	// CREATE REVIEWER GROUPS
 	var paper_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count,
-	    'signatures': ['ICLR.cc/2016'],
-	    'writers': ['ICLR.cc/2016'],
+	    'signatures': ['ICLR.cc/2016/workshop'],
+	    'writers': ['ICLR.cc/2016/workshop'],
 	    'readers': ['everyone'],
-	    'members': ['ICLR.cc/2016'],
+	    'members': ['ICLR.cc/2016/workshop'],
 	    'signatories': []
 	};
 
 	var rev_grp = {
 	    'id': 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer',
-	    'signatures': ['ICLR.cc/2016'],
-	    'writers': ['ICLR.cc/2016'],
+	    'signatures': ['ICLR.cc/2016/workshop'],
+	    'writers': ['ICLR.cc/2016/workshop'],
 	    'readers': ['everyone'],
-	    'members': ['ICLR.cc/2016'],
+	    'members': ['ICLR.cc/2016/workshop'],
 	    'signatories': []
 	};
 
@@ -349,9 +349,9 @@ var subInv = {
 	var create_reviewer_invite = function(rev_num) {
 	    return {
 		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/reviewer/' + rev_num,
-		'signatures': ['ICLR.cc/2016'],  // super user can sign as anyone
-		'writers': ['ICLR.cc/2016'],
-		'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num],
+		'signatures': ['ICLR.cc/2016/workshop'],  // super user can sign as anyone
+		'writers': ['ICLR.cc/2016/workshop'],
+		'readers': ['ICLR.cc/2016/workshop', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num],
 		'invitees': ['ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num],
 		'reply': {
 		    'forum': noteID,
