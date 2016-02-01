@@ -471,7 +471,7 @@ var subInv = {
 	    'method': 'POST',
 	    'port': 8529,
 	    'json': true,
-	    'body': rev_inv_1,
+	    'body': rev_inv_2,
 	    'headers': {
 		'Authorization': 'Bearer ' + token
 	    }
