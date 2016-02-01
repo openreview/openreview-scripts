@@ -59,32 +59,32 @@ var subInv = {
 	    'title': {
 		'order': 2,
 		'value-regex': '.{1,100}',
-		'description': 'Title of the paper.'
+		'description': 'Title of paper.'
 	    },
 	    'abstract': {
 		'order': 3,
 		'value-regex': '[\\S\\s]{1,5000}',
-		'description': 'Abstract.'
+		'description': 'Abstract of paper.'
 	    },
 	    'authors': {
 		'order': 1,
 		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
-		'description': 'Comma separated list of authors.'
+		'description': 'Comma separated list of author names, as they appear in the paper.'
 	    },
 	    'conflicts': {
 		'order': 100,
 		'value-regex': '[^;\\n]+(;[^;\\n]+)*',
-		'description': 'Semi-colon separate list of conflicted email domains (e.g., cs.umass.edu;google.com, etc.).'
+		'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).'
 	    },
-	    'cmt_id': {
+	    'CMT_id': {
 		'order': 5,
 		'value-regex': '.*',                            // if this is a resubmit, specify the CMT ID
-		'description': 'If the paper is a resubmission, enter the CMT ID; otherwise, leave blank.'
+		'description': 'If the paper is a resubmission from the ICLR 2016 Conference Track, enter its CMT ID; otherwise, leave blank.'
 	    },
 	    'pdf': {
 		'order': 4,
 		'value-regex': 'upload|http://arxiv.org/pdf/.+',   // either an actual pdf or an arxiv link
-		'description': 'Either upload a file or provide a link to your paper on arxiv.'
+		'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv.'
 	    }
 	}
     },
@@ -116,12 +116,12 @@ var subInv = {
 			'title': {
 			    'order': 1,
 			    'value-regex': '.{1,500}',
-			    'description': 'The title of your comment.'
+			    'description': 'Brief summary of your comment.'
 			},
 			'comment': {
 			    'order': 2,
 			    'value-regex': '[\\S\\s]{1,5000}',
-			    'description': 'Enter your comment here.'
+			    'description': 'Your comment or reply.'
 			}
 		    }
 		},
@@ -143,8 +143,8 @@ var subInv = {
 
 		    var mail = {
 			"groups": origNote.body.notes[0].signatures,
-			"subject": "New comments on your submission.",
-			"message": 'Your recent submission has received a new comment.  To view the comment, log into http://beta.openreview.net.'
+			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
+			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum=" + note.id
 		    };
 
 		    var or3commentMail = {
@@ -213,12 +213,12 @@ var subInv = {
 			'title': {
 			    'order': 1,
 			    'value-regex': '.{0,500}',
-			    'description': 'Title of the comment.'
+			    'description': 'Brief summary of your review.'
 			},
 			'review': {
 			    'order': 2,
 			    'value-regex': '[\\S\\s]{1,5000}',
-			    'description': 'Your review of the paper.'
+			    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons..'
 			},
 			'rating': {
 			    'order': 3,
@@ -248,8 +248,8 @@ var subInv = {
 
 		    var mail = {
 			"groups": origNote.body.notes[0].signatures,
-			"subject": "New comments on your submission.",
-			"message": 'Your recent submission has received a new comment.  To view the comment, log into http://beta.openreview.net.'
+			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
+			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum=" + note.id
 		    };
 
 		    var or3commentMail = {
@@ -346,106 +346,110 @@ var subInv = {
 	    console.log(resp);
 	});
 
-	var rev_inv_1 = {
-	    'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/reviewer/1',
-	    'signatures': ['ICLR.cc/2016'],  // super user can sign as anyone
-	    'writers': ['ICLR.cc/2016'],
-	    'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
-	    'invitees': ['ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1'],
-	    'reply': {
-		'forum': noteID,
-		'parent': noteID,
-		'signatures': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1),',  // author reveals their ~ handle or remains anonymous
-		// This reviewer has not been assigned yet
-		'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/1),',  // author reveals their ~ handle or remains anonymous
-		'readers': 'everyone,',     // review must be world readable
-		'content': {
-		    'title': {
-			'order': 1,
-			'value-regex': '.{0,500}',
-			'description': 'Title of your review.'
-		    },
-		    'review': {
-			'order': 2,
-			'value-regex': '[\\S\\s]{1,5000}',
-			'description': 'Your review.'
-		    },
-		    'rating': {
-			'order': 3,
-			'value-regex': '10: Top 5% of accepted papers, seminal paper|9: Top 15% of accepted papers, strong accept|8: Top 50% of accepted papers, clear accept|7: Good paper, accept|6: Marginally above acceptance threshold|5: Marginally below acceptance threshold|4: Ok but not good enough - rejection|3: Clear rejection|2: Strong rejection|1: Trivial or wrong'
-		    },
-		    'confidence': {
-			'order': 4,
-			'value-regex': '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature|4: The reviewer is confident but not absolutely certain that the evaluation is correct|3: The reviewer is fairly confident that the evaluation is correct|2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper|1: The reviewer\'s evaluation is an educated guess'
+	var create_reviewer_invite = function(rev_num) {
+	    return {
+		'id': 'ICLR.cc/2016/-/workshop/paper/' + count + '/reviewer/' + rev_num,
+		'signatures': ['ICLR.cc/2016'],  // super user can sign as anyone
+		'writers': ['ICLR.cc/2016'],
+		'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num],
+		'invitees': ['ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num],
+		'reply': {
+		    'forum': noteID,
+		    'parent': noteID,
+		    'signatures': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
+		    // This reviewer has not been assigned yet
+		    'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
+		    'readers': 'everyone,',     // review must be world readable
+		    'content': {
+			'title': {
+			    'order': 1,
+			    'value-regex': '.{0,500}',
+			    'description': 'Brief summary of your review.'
+			},
+			'review': {
+			    'order': 2,
+			    'value-regex': '[\\S\\s]{1,5000}',
+			    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+			},
+			'rating': {
+			    'order': 3,
+			    'value-regex': '10: Top 5% of accepted papers, seminal paper|9: Top 15% of accepted papers, strong accept|8: Top 50% of accepted papers, clear accept|7: Good paper, accept|6: Marginally above acceptance threshold|5: Marginally below acceptance threshold|4: Ok but not good enough - rejection|3: Clear rejection|2: Strong rejection|1: Trivial or wrong'
+			},
+			'confidence': {
+			    'order': 4,
+			    'value-regex': '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature|4: The reviewer is confident but not absolutely certain that the evaluation is correct|3: The reviewer is fairly confident that the evaluation is correct|2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper|1: The reviewer\'s evaluation is an educated guess'
+			}
 		    }
-		}
-	    },
-	    'process': (function (token, invitation, note, count, lib) {
-		//figure out the signatures of the original note
-		var or3origNote = {
-		    'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
-		    'method': 'GET',
-		    'json': true,
-		    'port': 8529,
-		    'headers': {
-			'Authorization': 'Bearer ' + token
-		    }
-		};
+		},
+		'process': (function (token, invitation, note, count, lib) {
+		    //figure out the signatures of the original note
+		    var or3origNote = {
+			'url': 'http://localhost:8529/_db/_system/openreview/notes?id=' + note.forum,
+			'method': 'GET',
+			'json': true,
+			'port': 8529,
+			'headers': {
+			    'Authorization': 'Bearer ' + token
+			}
+		    };
 
-		var origNote = request(or3origNote);
-		console.log("ORIG NOTE SIGNATURES");
-		console.log(origNote.body.notes[0].signatures);
+		    var origNote = request(or3origNote);
+		    console.log("ORIG NOTE SIGNATURES");
+		    console.log(origNote.body.notes[0].signatures);
 
-		var mail = {
-		    "groups": origNote.body.notes[0].signatures,
-		    "subject": "New comments on your submission.",
-		    "message": 'Your recent submission has received an official review.  To view the review, log into http://beta.openreview.net.'
-		};
+		    var mail = {
+			"groups": origNote.body.notes[0].signatures,
+			"subject": "Review of your ICLR submission \"" + note.content.title + "\".",
+			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new review.\n\nTo view the review, click here: http://beta.openreview.net/forum=" + note.id
+		    };
 
-		var or3commentMail = {
-		    'url': 'http://localhost:8529/_db/_system/openreview/mail',
-		    'method': 'POST',
-		    'port': 8529,
-		    'json': true,
-		    'body': mail,
-		    'headers': {
-			'Authorization': 'Bearer ' + token
-		    }
-		};
+		    var or3commentMail = {
+			'url': 'http://localhost:8529/_db/_system/openreview/mail',
+			'method': 'POST',
+			'port': 8529,
+			'json': true,
+			'body': mail,
+			'headers': {
+			    'Authorization': 'Bearer ' + token
+			}
+		    };
 
-		var sendMail = function (o) {
-		    var resp = request(o);
-		    console.log("MAIL");
+		    var sendMail = function (o) {
+			var resp = request(o);
+			console.log("MAIL");
+			console.log(resp);
+		    };
+		    sendMail(or3commentMail);
+
+		    // Now submit a new version of the review invitation that has no invitees
+		    // This effectively makes it impossible to submit another review
+		    var fulfilled_review_invite = invitation;
+		    fulfilled_review_invite.invitees = [];
+		    fulfilled_review_invite.process = (function (token, invitation, note, count, lib) {
+			console.log("THIS REVIEW HAS ALREADY BEEN SUBMITTED");
+			return true;
+		    }) + "";
+
+		    var or3fulfilled_rev = {
+			'url': 'http://localhost:8529/_db/_system/openreview/invitations',
+			'method': 'POST',
+			'port': 8529,
+			'json': true,
+			'body': fulfilled_review_invite,
+			'headers': {
+			    'Authorization': 'Bearer ' + token
+			}
+		    };
+		    var resp = request(or3fulfilled_rev);
+		    console.log("CREATING FULFILLED REVIEW");
+		    console.log(fulfilled_review_invite);
 		    console.log(resp);
-		};
-		sendMail(or3commentMail);
-
-		// Now submit a new version of the review invitation that has no invitees
-		// This effectively makes it impossible to submit another review
-		var fulfilled_review_invite = invitation;
-		fulfilled_review_invite.invitees = [];
-		fulfilled_review_invite.process = (function (token, invitation, note, count, lib) {
-		    console.log("THIS REVIEW HAS ALREADY BEEN SUBMITTED");
 		    return true;
-		}) + "";
-
-		var or3fulfilled_rev = {
-		    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
-		    'method': 'POST',
-		    'port': 8529,
-		    'json': true,
-		    'body': fulfilled_review_invite,
-		    'headers': {
-			'Authorization': 'Bearer ' + token
-		    }
-		};
-		var resp = request(or3fulfilled_rev);
-		console.log("CREATING FULFILLED REVIEW");
-		console.log(fulfilled_review_invite);
-		console.log(resp);
-		return true;
-	    }) + ""
+		}) + ""
+	    };
 	};
+	var rev_inv_1 = create_reviewer_invite(1);
+	var rev_inv_2 = create_reviewer_invite(2);
 
 	var or3rev_inv_1 = {
 	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
@@ -459,6 +463,21 @@ var subInv = {
 	};
 
 	resp = request(or3rev_inv_1);
+	console.log("RESPONSE");
+	console.log(resp);
+
+	var or3rev_inv_2 = {
+	    'url': 'http://localhost:8529/_db/_system/openreview/invitations',
+	    'method': 'POST',
+	    'port': 8529,
+	    'json': true,
+	    'body': rev_inv_1,
+	    'headers': {
+		'Authorization': 'Bearer ' + token
+	    }
+	};
+
+	resp = request(or3rev_inv_2);
 	console.log("RESPONSE");
 	console.log(resp);
 
