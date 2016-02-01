@@ -44,7 +44,7 @@ function loggedInHdr(token) {
 
 // ICLR SUBMISSION
 var sub = {
-    'invitation': 'ICLR.cc/2016/-/workshop/submission',
+    'invitation': 'ICLR.cc/2016/workshop/-/submission',
     'forum': null,
     'parent': null,
     'signatures': ['~Ari_Kobren1'],
