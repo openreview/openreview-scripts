@@ -60,7 +60,7 @@ function make_post_req(url, o) {
 
 function process_record(record) {	
 var sub = {
-    'invitation': 'ICLR.cc/2016/workshop/-/submission',
+    'invitation': 'ICLR.cc/2016/conference/-/submission',
     'forum': null,
     'parent': null,
     'signatures': ['~Ari_Kobren1'],

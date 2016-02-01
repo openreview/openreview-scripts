@@ -44,9 +44,9 @@ function loggedInHdr(token) {
 
 // ICLR SUBMISSION INVITE
 var subInv = {
-    'id': 'ICLR.cc/2016/workshop/-/submission',
-    'signatures': ['ICLR.cc/2016/workshop'],                     // I can only sign as this author because I'm creating this invitation with the root user
-    'writers': ['ICLR.cc/2016/workshop'],
+    'id': 'ICLR.cc/2016/conference/-/submission',
+    'signatures': ['ICLR.cc/2016/conference'],                     // I can only sign as this author because I'm creating this invitation with the root user
+    'writers': ['ICLR.cc/2016/conference'],
     'readers': ['everyone'],
     'invitees': ['~'],
     'reply': {
@@ -97,13 +97,13 @@ var subInv = {
 
 	var create_quick_comment_invite = function(noteID, forum, count) {
 	    return {
-		'id': 'ICLR.cc/2016/workshop/-/paper/' + count + '/comment',
-		'signatures': ['ICLR.cc/2016/workshop'],    // the root is allowed to sign as anyone.
-		'writers': ['ICLR.cc/2016/workshop'],
+		'id': 'ICLR.cc/2016/conference/-/paper/' + count + '/comment',
+		'signatures': ['ICLR.cc/2016/conference'],    // the root is allowed to sign as anyone.
+		'writers': ['ICLR.cc/2016/conference'],
 		'invitees': ['~'],              // this indicates the ~ group
 		'readers': ['everyone'],
 
-		//     super: ICLR.cc/2016/-/workshop/comment
+		//     super: ICLR.cc/2016/-/conference/comment
 		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
 
 		'reply': {
@@ -144,7 +144,7 @@ var subInv = {
 		    var mail = {
 			"groups": origNote.body.notes[0].signatures,
 			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 conferences title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {
@@ -194,13 +194,13 @@ var subInv = {
 	// CREATE INVITATION FOR UNOFFICIAL REVIEW
 	var create_unofficialreview_invite = function(noteID, forum, count) {
 	    return {
-		'id': 'ICLR.cc/2016/workshop/-/paper/' + count + '/unofficial_review',
-		'signatures': ['ICLR.cc/2016/workshop'],    // can the root sign as anyone? Maybe this should change??
-		'writers': ['ICLR.cc/2016/workshop'],
+		'id': 'ICLR.cc/2016/conference/-/paper/' + count + '/unofficial_review',
+		'signatures': ['ICLR.cc/2016/conference'],    // can the root sign as anyone? Maybe this should change??
+		'writers': ['ICLR.cc/2016/conference'],
 		'invitees': ['~'],              // this indicates the ~ group
 		'readers': ['everyone'],
 
-		//     super: ICLR.cc/2016/-/workshop/comment
+		//     super: ICLR.cc/2016/-/conference/comment
 		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
 
 		'reply': {
@@ -249,7 +249,7 @@ var subInv = {
 		    var mail = {
 			"groups": origNote.body.notes[0].signatures,
 			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 conferences title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {
@@ -294,20 +294,20 @@ var subInv = {
 
 	// CREATE REVIEWER GROUPS
 	var paper_grp = {
-	    'id': 'ICLR.cc/2016/workshop/paper/' + count,
-	    'signatures': ['ICLR.cc/2016/workshop'],
-	    'writers': ['ICLR.cc/2016/workshop'],
+	    'id': 'ICLR.cc/2016/conference/paper/' + count,
+	    'signatures': ['ICLR.cc/2016/conference'],
+	    'writers': ['ICLR.cc/2016/conference'],
 	    'readers': ['everyone'],
-	    'members': ['ICLR.cc/2016/workshop'],
+	    'members': ['ICLR.cc/2016/conference'],
 	    'signatories': []
 	};
 
 	var rev_grp = {
-	    'id': 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer',
-	    'signatures': ['ICLR.cc/2016/workshop'],
-	    'writers': ['ICLR.cc/2016/workshop'],
+	    'id': 'ICLR.cc/2016/conference/paper/' + count + '/reviewer',
+	    'signatures': ['ICLR.cc/2016/conference'],
+	    'writers': ['ICLR.cc/2016/conference'],
 	    'readers': ['everyone'],
-	    'members': ['ICLR.cc/2016/workshop'],
+	    'members': ['ICLR.cc/2016/conference'],
 	    'signatories': []
 	};
 
@@ -348,17 +348,17 @@ var subInv = {
 
 	var create_reviewer_invite = function(rev_num) {
 	    return {
-		'id': 'ICLR.cc/2016/workshop/-/paper/' + count + '/reviewer/' + rev_num,
-		'signatures': ['ICLR.cc/2016/workshop'],  // super user can sign as anyone
-		'writers': ['ICLR.cc/2016/workshop'],
-		'readers': ['ICLR.cc/2016/workshop', 'ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num],
-		'invitees': ['ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num],
+		'id': 'ICLR.cc/2016/conference/-/paper/' + count + '/reviewer/' + rev_num,
+		'signatures': ['ICLR.cc/2016/conference'],  // super user can sign as anyone
+		'writers': ['ICLR.cc/2016/conference'],
+		'readers': ['ICLR.cc/2016/conference', 'ICLR.cc/2016/conference/paper/' + count + '/reviewer/' + rev_num],
+		'invitees': ['ICLR.cc/2016/conference/paper/' + count + '/reviewer/' + rev_num],
 		'reply': {
 		    'forum': noteID,
 		    'parent': noteID,
-		    'signatures': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
+		    'signatures': '((~.*)|ICLR.cc/2016/conference/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
 		    // This reviewer has not been assigned yet
-		    'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
+		    'writers': '((~.*)|ICLR.cc/2016/conference/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
 		    'readers': 'everyone,',     // review must be world readable
 		    'content': {
 			'title': {
@@ -400,7 +400,7 @@ var subInv = {
 		    var mail = {
 			"groups": origNote.body.notes[0].signatures,
 			"subject": "Review of your ICLR submission \"" + note.content.title + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new review.\n\nTo view the review, click here: http://beta.openreview.net/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 conferences title \"" + note.content.title + "\" has received a new review.\n\nTo view the review, click here: http://beta.openreview.net/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {
@@ -482,8 +482,8 @@ var subInv = {
 	console.log(resp);
 
 	//   reply email receipt to reply.signatures
-	//   create ICLR.cc/2016/workshop/paper/123/reviewers // to be filled in later
-	//   add note.signatures to ICLR.cc/2016/workshop/signatures
+	//   create ICLR.cc/2016/conference/paper/123/reviewers // to be filled in later
+	//   add note.signatures to ICLR.cc/2016/conference/signatures
 	//   # allow anyone to comment
 	//   create comment invitation:
   	//send email to paper’s signatures’ and reviewers’ email addresses

@@ -61,11 +61,11 @@ var conference = {
 };
 
 var paper = {
-    'id': 'ICLR.cc/2016/workshop/paper',
+    'id': 'ICLR.cc/2016/conference/paper',
     'signatures': [rootUsr.id],
-    'writers': [workshop.id],
+    'writers': [conference.id],
     'readers': ['everyone'],
-    'members': [workshop.id],
+    'members': [conference.id],
     'signatories': []
 };
 
