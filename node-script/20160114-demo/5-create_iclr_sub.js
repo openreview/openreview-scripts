@@ -61,6 +61,24 @@ var sub = {
     }
 };
 
+var sub2 = {
+    'invitation': 'ICLR.cc/2016/workshop/-/submission',
+    'forum': null,
+    'parent': null,
+    'signatures': ['~Ari_Kobren1'],
+    'writers': ['~Ari_Kobren1','~Ari_Kobren2'],
+    'readers': ['everyone'],
+    'pdfTransfer': 'url',
+    'content': {
+	'title': 'Test Paper 2',
+	'abstract': 'The paper has two authors',
+	'authors': 'Ari Kobren, Ari Kobren 2',
+	'conflicts': 'umass.edu',
+	'CMT_id': '',
+	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
+    }
+};
+
 function make_post_req(url, o) {
     var loginReq = new or3post(loginUrl, userpass, headers);
     request(loginReq, function(error, response, body) {
@@ -74,3 +92,4 @@ function make_post_req(url, o) {
 }
 
 make_post_req(noteUrl, sub);
+make_post_req(noteUrl, sub2);
