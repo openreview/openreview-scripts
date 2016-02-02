@@ -149,7 +149,7 @@ var subInv = {
 		    var mail = {
 			"groups": origNote.body.notes[0].content.author_emails.trim().split(","),
 			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {
@@ -254,7 +254,7 @@ var subInv = {
 		    var mail = {
 			"groups": origNote.body.notes[0].content.author_emails.trim().split(","),
 			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {
