@@ -55,6 +55,7 @@ var sub = {
 	'title': 'Test Paper 1',
 	'abstract': 'The abstract of test paper 1',
 	'authors': 'Ari Kobren',
+	'author_emails': 'ari@host.com',
 	'conflicts': 'umass.edu',
 	'CMT_id': '',
 	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
@@ -73,6 +74,7 @@ var sub2 = {
 	'title': 'Test Paper 2',
 	'abstract': 'The paper has two authors',
 	'authors': 'Ari Kobren, Ari Kobren 2',
+	'author_emails': 'ari@host.com,a@host.com',
 	'conflicts': 'umass.edu',
 	'CMT_id': '',
 	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
