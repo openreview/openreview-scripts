@@ -205,7 +205,7 @@ var subInv = {
 
 		'reply': {
 		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
-//		    'parent': noteID,    // not specified so we can allow comments on comments
+		    'parent': noteID,    // specified as the root
 		    'signatures': '~.*',    // this regex demands that the author reveal his/her ~ handle
 		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
 		    'readers': 'everyone,',   // the reply must allow ANYONE
