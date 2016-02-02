@@ -198,8 +198,8 @@ var subInv = {
 		'signatures': ['ICLR.cc/2016/workshop'],    // can the root sign as anyone? Maybe this should change??
 		'writers': ['ICLR.cc/2016/workshop'],
 		'invitees': ['~'],              // this indicates the ~ group
+		'noninvitees': note.signatures, // should this be note.writers?
 		'readers': ['everyone'],
-
 		//     super: ICLR.cc/2016/-/workshop/comment
 		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
 
