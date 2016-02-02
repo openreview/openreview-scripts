@@ -155,7 +155,7 @@ var subInv = {
 		    var or3commentMail = {
 			'url': 'http://beta.openreview.net/mail',  //production
 			'method': 'POST',
-			'port': 8529,
+			'port': 80,
 			'json': true,
 			'body': mail,
 			'headers': {
@@ -260,7 +260,7 @@ var subInv = {
 		    var or3commentMail = {
 			'url': 'http://beta.openreview.net/mail',  //production
 			'method': 'POST',
-			'port': 8529,
+			'port': 80,
 			'json': true,
 			'body': mail,
 			'headers': {
@@ -411,7 +411,7 @@ var subInv = {
 		    var or3commentMail = {
 			'url': 'http://beta.openreview.net/mail',  //produce
 			'method': 'POST',
-			'port': 8529,
+			'port': 80,
 			'json': true,
 			'body': mail,
 			'headers': {
