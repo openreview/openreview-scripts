@@ -223,7 +223,7 @@ var subInv = {
 			'review': {
 			    'order': 2,
 			    'value-regex': '[\\S\\s]{1,5000}',
-			    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons..'
+			    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
 			},
 			'rating': {
 			    'order': 3,
@@ -254,7 +254,7 @@ var subInv = {
 		    var mail = {
 			"groups": origNote.body.notes[0].content.author_emails.trim().split(","),
 			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 workshops titled \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {
