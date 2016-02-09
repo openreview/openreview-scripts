@@ -42,7 +42,7 @@ function loggedInHdr(token) {
   };
 }
 
-var mailSubject = "Subject";
+var mailSubject = "Welcome to ICLR 2016 Workshop Track reviewers";
 var mailMessage = "Dear $RecipientName$,\n\nThanks for agreeing to review Workshop Track submissions for ICLR 2016. We are happy to report that we will be managing the Workshop Track review process through OpenReview.net:\n\nhttp://beta.openreview.net/group?id=ICLR.cc/2016/workshop\n\nThe time table for the workshop track will be as follows:\n\n   18 February 2016 - Submission deadline\n   26 February 2016 - Review assignments are completed\n   10 March 2016 - Review submission deadline\n   28 March 2016 - Decisions sent to authors\n\nOur plan is to keep the reviewing load very low, to 1 or 2 extended abstracts (2-3 pages each). No author response period will be explicitly held beyond the open commenting feature that is supported by the reviewing platform.  However, as for the Conference Track, interaction with the authors is strongly encouraged.\n\nThank you for your help in putting together the ICLR technical program!\n\nHugo, Samy, and Brian - the ICLR 2016 program committee";
 
 var revMail = {
