@@ -57,12 +57,12 @@ var subInv = {
 	'readers': 'everyone,',
 	'content': {
 	    'title': {
-		'order': 2,
+		'order': 3,
 		'value-regex': '.{1,100}',
 		'description': 'Title of paper.'
 	    },
 	    'abstract': {
-		'order': 3,
+		'order': 4,
 		'value-regex': '[\\S\\s]{1,5000}',
 		'description': 'Abstract of paper.'
 	    },
@@ -70,6 +70,11 @@ var subInv = {
 		'order': 1,
 		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
 		'description': 'Comma separated list of author names, as they appear in the paper.'
+	    },
+	    'author_emails': {
+		'order': 2,
+		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+		'description': 'Comma separated list of author email addresses, in the same order as above.'
 	    },
 	    'conflicts': {
 		'order': 100,
@@ -139,12 +144,12 @@ var subInv = {
 
 		    var origNote = request(or3origNote);
 		    console.log("ORIG NOTE SIGNATURES");
-		    console.log(origNote.body.notes[0].signatures);
+		    console.log(origNote.body.notes[0].content.author_emails.trim().split(","));
 
 		    var mail = {
-			"groups": origNote.body.notes[0].signatures,
+			"groups": origNote.body.notes[0].content.author_emails.trim().split(","),
 			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 workshops has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {
@@ -198,14 +203,14 @@ var subInv = {
 		'signatures': ['ICLR.cc/2016/workshop'],    // can the root sign as anyone? Maybe this should change??
 		'writers': ['ICLR.cc/2016/workshop'],
 		'invitees': ['~'],              // this indicates the ~ group
+		'noninvitees': note.content.author_emails.trim().split(","), // should this be note.writers?
 		'readers': ['everyone'],
-
 		//     super: ICLR.cc/2016/-/workshop/comment
 		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
 
 		'reply': {
 		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
-//		    'parent': noteID,    // not specified so we can allow comments on comments
+		    'parent': noteID,    // specified as the root
 		    'signatures': '~.*',    // this regex demands that the author reveal his/her ~ handle
 		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
 		    'readers': 'everyone,',   // the reply must allow ANYONE
@@ -218,7 +223,7 @@ var subInv = {
 			'review': {
 			    'order': 2,
 			    'value-regex': '[\\S\\s]{1,5000}',
-			    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons..'
+			    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
 			},
 			'rating': {
 			    'order': 3,
@@ -244,12 +249,12 @@ var subInv = {
 
 		    var origNote = request(or3origNote);
 		    console.log("ORIG NOTE SIGNATURES");
-		    console.log(origNote.body.notes[0].signatures);
+		    console.log(origNote.body.notes[0].content.author_emails.trim().split(","));
 
 		    var mail = {
-			"groups": origNote.body.notes[0].signatures,
+			"groups": origNote.body.notes[0].content.author_emails.trim().split(","),
 			"subject": "New comment on your ICLR submission \"" + note.content.title  + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.ent/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 workshops has received a new comment.\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {
@@ -395,12 +400,12 @@ var subInv = {
 
 		    var origNote = request(or3origNote);
 		    console.log("ORIG NOTE SIGNATURES");
-		    console.log(origNote.body.notes[0].signatures);
+		    console.log(origNote.body.notes[0].content.author_emails.trim().split(","));
 
 		    var mail = {
-			"groups": origNote.body.notes[0].signatures,
+			"groups": origNote.body.notes[0].content.author_emails.trim().split(","),
 			"subject": "Review of your ICLR submission \"" + note.content.title + "\".",
-			"message": "Your submission to ICLR 2016 workshops title \"" + note.content.title + "\" has received a new review.\n\nTo view the review, click here: http://beta.openreview.net/forum?id=" + note.forum
+			"message": "Your submission to ICLR 2016 workshops has received a new review.\n\nTo view the review, click here: http://beta.openreview.net/forum?id=" + note.forum
 		    };
 
 		    var or3commentMail = {

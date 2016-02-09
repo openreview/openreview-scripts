@@ -2,17 +2,19 @@
 
 var fs = require('fs');
 var request = require('request');
+var csvparse = require('csv-parse');
 
 // The open review local url
 var loginUrl = 'http://localhost:8529/_db/_system/openreview/login';
 var inviteUrl = 'http://localhost:8529/_db/_system/openreview/invitations';
 var noteUrl = 'http://localhost:8529/_db/_system/openreview/notes';
+var grpUrl = 'http://localhost:8529/_db/_system/openreview/groups';
 
 var headers = { 'User-Agent': 'test-create-script' };
 
 //or3 request bodies
-var userpass = {
-  'id': 'ari@host.com',
+var rootUsr = {
+  'id': 'OpenReview.net',
   'password': '12345678'
 };
 
@@ -42,47 +44,8 @@ function loggedInHdr(token) {
   };
 }
 
-// ICLR SUBMISSION
-var sub = {
-    'invitation': 'ICLR.cc/2016/workshop/-/submission',
-    'forum': null,
-    'parent': null,
-    'signatures': ['~Ari_Kobren1'],
-    'writers': ['~Ari_Kobren1'],
-    'readers': ['everyone'],
-    'pdfTransfer': 'url',
-    'content': {
-	'title': 'Test Paper 1',
-	'abstract': 'The abstract of test paper 1',
-	'authors': 'Ari Kobren',
-	'author_emails': 'ari@host.com',
-	'conflicts': 'umass.edu',
-	'CMT_id': '',
-	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
-    }
-};
-
-var sub2 = {
-    'invitation': 'ICLR.cc/2016/workshop/-/submission',
-    'forum': null,
-    'parent': null,
-    'signatures': ['~Ari_Kobren1'],
-    'writers': ['~Ari_Kobren1','~Ari_Kobren2'],
-    'readers': ['everyone'],
-    'pdfTransfer': 'url',
-    'content': {
-	'title': 'Test Paper 2',
-	'abstract': 'The paper has two authors',
-	'authors': 'Ari Kobren, Ari Kobren 2',
-	'author_emails': 'ari@host.com,a@host.com',
-	'conflicts': 'umass.edu',
-	'CMT_id': '',
-	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
-    }
-};
-
 function make_post_req(url, o) {
-    var loginReq = new or3post(loginUrl, userpass, headers);
+    var loginReq = new or3post(loginUrl, rootUsr, headers);
     request(loginReq, function(error, response, body) {
       if (!error && response.statusCode == 200) {
         var token = body.token;
@@ -93,5 +56,48 @@ function make_post_req(url, o) {
   });
 }
 
-make_post_req(noteUrl, sub);
-make_post_req(noteUrl, sub2);
+// REVIEWER GROUP
+var revGrp = {
+    'id': 'ICLR.cc/2016/workshop/reviewers',
+    'signatures': [rootUsr.id],
+    'writers': ['ICLR.cc/2016'],
+    'readers': ['ICLR.cc/2016'],
+    'members': [],
+    'signatories': ['ICLR.cc/2016']
+};
+
+//FirstName,LastName,Organization,ContactEMail,TPMSEMail
+function parseLine(line) {
+    return { 'id': line[3],
+	     'needsPassword': true
+	   };
+}
+
+function main(){
+    var reviewerFile = process.argv[2];
+    var parser = csvparse({delimiter: ','});
+    // Use the writable stream api
+    parser.on('readable', function(){
+	while(record = parser.read()){
+	    var usrGrp = parseLine(record);
+	    revGrp.members.push(usrGrp.id);
+	    make_post_req(grpUrl, usrGrp);
+	}
+    });
+    // Catch any error
+    parser.on('error', function(err){
+	console.log(err);
+    });
+    // When finished with file create group and send mail
+    parser.on('finish', function(){
+	make_post_req(grpUrl, revGrp);
+    });
+
+    fs.readFile(reviewerFile, function(err, data) {
+	parser.write(data);
+	parser.end();
+    });
+}
+
+
+main();
