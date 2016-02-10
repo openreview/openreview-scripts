@@ -10,6 +10,7 @@ var inviteUrl = 'http://localhost:8529/_db/_system/openreview/invitations';
 var noteUrl = 'http://localhost:8529/_db/_system/openreview/notes';
 var grpUrl = 'http://localhost:8529/_db/_system/openreview/groups';
 var mailUrl = 'http://localhost:8529/_db/_system/openreview/mail';
+var linksUrl = 'http://localhost:8529/_db/_system/openreview/links';
 
 var headers = { 'User-Agent': 'test-create-script' };
 
@@ -64,7 +65,8 @@ function revMail(first, last, revEmail) {
 function revFromRecord(record) {
     return { 'first': record[0],
 	     'last': record[1],
-	     'email': record[3]
+	     'contactEmail': record[3],
+	     'tpmsEmail': record[4]
 	   };
 };
 
@@ -72,13 +74,23 @@ function createGrpAndEmail(token, reader, cb) {
     var record = reader.read();
     if (record) {
 	var rev = revFromRecord(record);
-	var usrGrp = new or3post(grpUrl, { 'id': rev.email, 'needsPassword': true }, loggedInHdr(token));
-	var email = new or3post(mailUrl, revMail(rev.first, rev.last, rev.email), loggedInHdr(token));
-	request(usrGrp, function() {
-	    console.log("I'm Mailing " + rev.email);
-	    console.log(email);
-	    request(email, cb);
-	});
+	var usrGrp = new or3post(grpUrl, { 'id': rev.contactEmail, 'needsPassword': true }, loggedInHdr(token));
+	var email = new or3post(mailUrl, revMail(rev.first, rev.last, rev.contactEmail), loggedInHdr(token));
+	if (rev.contactEmail != rev.tpmsEmail) {
+	    var linkEmails = new or3post(linksUrl, { 'mainGroupId': rev.contactEmail, 'alternateGroupId': rev.tpmsEmail }, loggedInHdr(token));
+	    request(usrGrp, function() {
+		console.log("CREATING GROUP: " + usrGrp.body.id);
+		request(linkEmails, function() {
+		    console.log("LINKING EMAIL: " + linkEmails.body.alternateGroupId);
+		    request(email, cb);
+		});
+	    });
+	} else {
+	    request(usrGrp, function() {
+		console.log("CREATING GROUP: " + usrGrp.body.id);
+		request(email, cb);
+	    });
+	}
     }
 };
 
@@ -88,7 +100,6 @@ function emailAll(url, reader) {
 	if (!error && response.statusCode == 200) {
             var token = body.token;
 	    var emailNextCallback = function(error, response, body){
-		console.log("holler back");
 		createGrpAndEmail(token, reader, emailNextCallback);
 	    };
 	    createGrpAndEmail(token, reader, emailNextCallback);
