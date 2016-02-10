@@ -99,22 +99,17 @@ function emailAll(url, reader) {
 function main(){
     var reviewerFile = process.argv[2];
     var parser = csvparse({delimiter: ','});
-    emailAll(mailUrl, parser);
 
     // Use the writable stream api
-    /*
-      parser.on('readable', function(){
-	while(record = parser.read()){
-	    var usrGrp = parseLine(record);
-	    revGrp.members.push(usrGrp.id);
-	    make_post_req(grpUrl, usrGrp);
-	}
+    parser.on('readable', function(){
+	emailAll(mailUrl, parser);
     });
+
     // When finished with file create group and send mail
-    parser.on('finish', function(){
-	make_post_req(grpUrl, revGrp);
-    });
-*/
+//    parser.on('finish', function(){
+//	make_post_req(grpUrl, revGrp);
+//    });
+
     // Catch any error
     parser.on('error', function(err){
 	console.log(err);
