@@ -70,6 +70,10 @@ function revFromRecord(record) {
 	   };
 };
 
+// This function should be modified so that it also creates a group of all reviewers
+// To do this just pass in the rGrp and call rGrp.members.push(rev.contactEmail)
+// when you see a record. When the record is finally done (and the reader is empty)
+// simply create the reviewers group.
 function createGrpAndEmail(token, reader, cb) {
     var record = reader.read();
     if (record) {

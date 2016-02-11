@@ -78,7 +78,8 @@ var subInv = {
 	    },
 	    'conflicts': {
 		'order': 100,
-		'value-regex': '[^;\\n]+(;[^;\\n]+)*',
+		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+//		'value-regex': "^(((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,}))+(;((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,}))*$",
 		'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).'
 	    },
 	    'CMT_id': {
