@@ -12,7 +12,7 @@ var headers = { 'User-Agent': 'test-create-script' };
 
 //or3 request bodies
 var userpass = {
-  'id': 'ari@host.com',
+  'id': 'a@host.com',
   'password': '12345678'
 };
 
@@ -52,7 +52,7 @@ var sub = {
     'readers': ['everyone'],
     'pdfTransfer': 'url',
     'content': {
-	'title': 'Test Paper 1',
+	'title': 'SHOULD SUCCEED 1',
 	'abstract': 'The abstract of test paper 1',
 	'authors': 'Ari Kobren',
 	'author_emails': 'ari@host.com',
@@ -71,15 +71,111 @@ var sub2 = {
     'readers': ['everyone'],
     'pdfTransfer': 'url',
     'content': {
-	'title': 'Test Paper 2',
+	'title': 'SHOULD SUCCEED 2',
 	'abstract': 'The paper has two authors',
 	'authors': 'Ari Kobren, Ari Kobren 2',
 	'author_emails': 'ari@host.com,a@host.com',
-	'conflicts': 'umass.edu',
+	'conflicts': 'umass.edu;google.com',
 	'CMT_id': '',
 	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
     }
 };
+
+var sub3 = {
+    'invitation': 'ICLR.cc/2016/workshop/-/submission',
+    'forum': null,
+    'parent': null,
+    'signatures': ['~Ari_Kobren1'],
+    'writers': ['~Ari_Kobren1','~Ari_Kobren2'],
+    'readers': ['everyone'],
+    'pdfTransfer': 'url',
+    'content': {
+	'title': 'SHOULD FAIL 1',
+	'abstract': 'The paper has two authors',
+	'authors': 'Ari Kobren, Ari Kobren 2',
+	'author_emails': 'ari@host.com,a@host.com',
+	'conflicts': ',',
+	'CMT_id': '',
+	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
+    }
+};
+
+var sub4 = {
+    'invitation': 'ICLR.cc/2016/workshop/-/submission',
+    'forum': null,
+    'parent': null,
+    'signatures': ['~Ari_Kobren1'],
+    'writers': ['~Ari_Kobren1','~Ari_Kobren2'],
+    'readers': ['everyone'],
+    'pdfTransfer': 'url',
+    'content': {
+	'title': 'SHOULD FAIL 2',
+	'abstract': 'The paper has two authors',
+	'authors': 'Ari Kobren, Ari Kobren 2',
+	'author_emails': 'ari@host.com,a@host.com',
+	'conflicts': 'aksjdkflja',
+	'CMT_id': '',
+	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
+    }
+};
+
+var sub5 = {
+    'invitation': 'ICLR.cc/2016/workshop/-/submission',
+    'forum': null,
+    'parent': null,
+    'signatures': ['~Ari_Kobren1'],
+    'writers': ['~Ari_Kobren1','~Ari_Kobren2'],
+    'readers': ['everyone'],
+    'pdfTransfer': 'url',
+    'content': {
+	'title': 'SHOULD FAIL 3',
+	'abstract': 'The paper has two authors',
+	'authors': 'Ari Kobren, Ari Kobren 2',
+	'author_emails': 'ari@host.com,a@host.com',
+	'conflicts': 'kasjdflkas;askjdflkajs.edu',
+	'CMT_id': '',
+	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
+    }
+};
+
+var sub6 = {
+    'invitation': 'ICLR.cc/2016/workshop/-/submission',
+    'forum': null,
+    'parent': null,
+    'signatures': ['~Ari_Kobren1'],
+    'writers': ['~Ari_Kobren1','~Ari_Kobren2'],
+    'readers': ['everyone'],
+    'pdfTransfer': 'url',
+    'content': {
+	'title': 'SHOULD SUCCEED 3',
+	'abstract': 'The paper has two authors',
+	'authors': 'Ari Kobren, Ari Kobren 2',
+	'author_emails': 'ari@host.com,a@host.com',
+	'conflicts': 'iitk.ac.in;toronto.edu;cs.toronto.edu;utoronto.ca;cornell.edu;cs.cornell.edu;umontreal.ca',
+	'CMT_id': '',
+	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
+    }
+};
+
+var sub7 = {
+    'invitation': 'ICLR.cc/2016/workshop/-/submission',
+    'forum': null,
+    'parent': null,
+    'signatures': ['~Ari_Kobren1'],
+    'writers': ['~Ari_Kobren1','~Ari_Kobren2'],
+    'readers': ['everyone'],
+    'pdfTransfer': 'url',
+    'content': {
+	'title': 'SHOULD SUCCEED 4',
+	'abstract': 'The paper has two authors',
+	'authors': 'Ari Kobren, Ari Kobren 2',
+	'author_emails': 'ari@host.com,a@host.com',
+	'conflicts': 'microsoft.com;huawei.com;ict.ac.cn',
+	'CMT_id': '',
+	'pdf': 'http://arxiv.org/pdf/1506.03425v1.pdf'
+    }
+};
+
 
 function make_post_req(url, o) {
     var loginReq = new or3post(loginUrl, userpass, headers);
@@ -95,3 +191,8 @@ function make_post_req(url, o) {
 
 make_post_req(noteUrl, sub);
 make_post_req(noteUrl, sub2);
+make_post_req(noteUrl, sub3);
+make_post_req(noteUrl, sub4);
+make_post_req(noteUrl, sub5);
+make_post_req(noteUrl, sub6);
+make_post_req(noteUrl, sub7);
