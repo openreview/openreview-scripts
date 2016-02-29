@@ -331,7 +331,6 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
             method: 'GET',
             url: urlPrefix + 'notes', 
             json: true,
-            body: {},
             headers: {
               'Authorization': 'Bearer ' + token 
             }
@@ -340,11 +339,11 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
             console.log("getting notes");
             if (!error && response.statusCode == 200) {
               console.log("got notes");
-              var notes = _.filter(body.notes, function(n) {
-                return n.id == n.forum;
-              });
+              var notes = body.notes;
 
-              var dubArr = _.map(notes, function(note) {
+              var dubArr = _.map(_.filter(notes, function(n) {
+                return n.id == n.forum;
+              }), function(note) {
                 var commentInvitation = _.find(note.replyInvitations, function(invId) {
                   var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/comment");
                   var matches = invId.match(regex);
@@ -371,22 +370,21 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
                     return row[1].trim();
                   });
 
-                  console.log("tpmsId: " + tpmsId);
-                  console.log("noteId: " + (note ? note.id : null));
                   if (note) {
+
 
                     _.forEach(reviewerEmails, function(reviewerEmail, index) {
                       request(
                         {
                           method: 'GET',
-                          url: urlPrefix + 'invitations', 
+                          url: urlPrefix + 'invitations?invitee=' + reviewerEmail,
                           json: true,
-                          body: {'invitee': reviewerEmail},
                           headers: {
                             'Authorization': 'Bearer ' + token 
                           }
                         },
                         function (error, response, body) {
+
 
                           if (!error && response.statusCode == 200) {
                             var reviewerInvitations = body.invitations; 
@@ -396,11 +394,27 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
                               return inv.id;
                             }); 
 
+
+                            console.log("\n***** ");
+                            console.log("tpmsId: " + tpmsId);
+                            console.log("noteId: " + (note ? note.id : null));
+                            console.log("reviewerEmail: " + reviewerEmail);
+                            console.log("invs " + invIds.toString());
+
                             var hasReviewInvitation = _.some(invIds, function(id) {
                               return id.indexOf('/review/') > -1;
                             });
 
-                            if (!hasReviewInvitation) {
+                            var hasPublishedReview = _.some(notes, function(note) {
+                              return (
+                                note.invitation.indexOf('paper/' + tpmsId + '/review/') > -1
+                              );
+                              return (_.indexOf(note.tauthors, reviewerEmail) > -1);
+                            });
+
+                            console.log("hasReviewInvitation: " + hasReviewInvitation);
+                            console.log("hasPublishedReview: " + hasPublishedReview);
+                            if (!hasReviewInvitation && !hasPublishedReview) {
                               console.log("assigning reviewer: " + reviewerEmail);
                               console.log("assigning tpmsId: " + tpmsId);
                               console.log("assigning noteId: " + (note ? note.id : 'missing'));
@@ -425,6 +439,17 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
           }
         );
       }
+
+
+
+
+
+
+
+
+
+
+
   });
 
 

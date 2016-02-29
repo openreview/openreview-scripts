@@ -27,7 +27,6 @@ request(
           method: 'GET',
           url: urlPrefix + 'notes', 
           json: true,
-          body: {},
           headers: {
             'Authorization': 'Bearer ' + token 
           }
@@ -71,9 +70,11 @@ request(
               var count = commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
               return [count, note];
             });
-            var tpmsId2note = _.filter(_.fromPairs(dubArr), function(note) {
+
+            var tpmsId2note = _.fromPairs(_.filter(dubArr, function(row) {
+              var note = row[1];
               return note.id == note.forum;
-            });
+            }));
 
             var assignmentFile = process.argv[2];
             fs.createReadStream(assignmentFile).pipe(csvparse({delimiter: ','}, function(err, csvDubArr) {
@@ -85,14 +86,13 @@ request(
               _.forEach(csvDubArr, function(row) {
                 var tpmsId = row[0].trim();
                 var reviewerEmail = row[1].trim();
-                var note = tpmsId2note[tpmsId] || null;
+                var note = tpmsId2note[tpmsId + ''];
 
                 request(
                   {
                     method: 'GET',
-                    url: urlPrefix + 'invitations', 
+                    url: urlPrefix + 'invitations?invitee=' + reviewerEmail,
                     json: true,
-                    body: {'invitee': reviewerEmail},
                     headers: {
                       'Authorization': 'Bearer ' + token 
                     }
