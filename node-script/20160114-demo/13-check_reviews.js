@@ -71,7 +71,9 @@ request(
               var count = commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
               return [count, note];
             });
-            var tpmsId2note = _.fromPairs(dubArr);
+            var tpmsId2note = _.filter(_.fromPairs(dubArr), function(note) {
+              return note.id == note.forum;
+            });
 
             var assignmentFile = process.argv[2];
             fs.createReadStream(assignmentFile).pipe(csvparse({delimiter: ','}, function(err, csvDubArr) {
