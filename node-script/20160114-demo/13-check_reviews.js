@@ -45,6 +45,19 @@ request(
                 console.log("*****NOTE******");
                 console.log("noteId: " + note.id);
                 console.log("replyInvitations: " + JSON.stringify(note.replyInvitations));
+
+                var hasComment = _.some(note.replyInvitations, function(id) {
+                  return id.indexOf('/comment') > -1;
+                });
+                console.log("note missing comment: " + !hasComment);
+
+                var hasUnofficial = _.some(note.replyInvitations, function(id) {
+                  return id.indexOf('/unofficial_review') > -1;
+                });
+
+                console.log("note missing unofficial: " + !hasUnofficial);
+                console.log("has unofficial but missing commment: " + (hasUnofficial && !hasComment));
+
               }
 
 
