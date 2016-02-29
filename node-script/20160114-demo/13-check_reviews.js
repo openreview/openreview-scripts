@@ -61,13 +61,17 @@ request(
 
               }
 
-
               var commentInvitation = _.find(note.replyInvitations, function(invId) {
                 var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/comment");
                 var matches = invId.match(regex);
                 return matches && matches[0] == invId;
               });
-              var count = commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
+              var unofficialInvitation = _.find(note.replyInvitations, function(invId) {
+                var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/unofficial_review");
+                var matches = invId.match(regex);
+                return matches && matches[0] == invId;
+              });
+              var count = commentInvitation ? commentInvitation.substring(30).slice(0, -8) : (unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -18) : '');
               return [count, note];
             });
 

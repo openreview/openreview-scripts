@@ -408,8 +408,7 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
                             var hasPublishedReview = _.some(notes, function(note) {
                               return (
                                 note.invitation.indexOf('paper/' + tpmsId + '/review/') > -1
-                              );
-                              return (_.indexOf(note.tauthors, reviewerEmail) > -1);
+                              ) && (_.indexOf(note.tauthors, reviewerEmail) > -1);
                             });
 
                             console.log("hasReviewInvitation: " + hasReviewInvitation);
