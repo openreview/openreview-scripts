@@ -57,6 +57,8 @@ request(
 
                 console.log("note missing unofficial: " + !hasUnofficial);
                 console.log("has unofficial but missing commment: " + (hasUnofficial && !hasComment));
+                console.log("has comment but missing unofficial: " + (!hasUnofficial && hasComment));
+                console.log("has neither: " + (!hasUnofficial && !hasComment));
 
               }
 
