@@ -213,6 +213,8 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
         console.log("creating reviewers");
         if (!error && response.statusCode == 200) {
           console.log("created reviewer: " + body.id);
+        } else {
+          console.log("error adding reviewer: " + JSON.stringify(reviewerData));
         }
       }
     );
@@ -232,6 +234,8 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
         console.log("creating invitation");
         if (!error && response.statusCode == 200) {
           console.log("created invitation: " + body.id);
+        } else {
+          console.log("error creating invitation: " + JSON.stringify(invitationData));
         }
       }
     );
@@ -346,12 +350,15 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
                   var matches = invId.match(regex);
                   return matches && matches[0] == invId;
                 });
-                var count = commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
+                var unofficialInvitation = _.find(note.replyInvitations, function(invId) {
+                  var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/unofficial_review");
+                  var matches = invId.match(regex);
+                  return matches && matches[0] == invId;
+                });
+                var count = commentInvitation ? commentInvitation.substring(30).slice(0, -8) : (unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -18) : '');
                 return [count, note];
               });
               var tpmsPaperId2note = _.fromPairs(dubArr);
-
-              console.log("tpmsPaperId2note: " + JSON.stringify(tpmsPaperId2note));
 
               var assignmentFile = process.argv[2];
               fs.createReadStream(assignmentFile).pipe(csvparse({delimiter: ','}, function(err, csvDubArr) {
@@ -364,11 +371,50 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
                     return row[1].trim();
                   });
 
-                  console.log("note: " + note);
+                  console.log("tpmsId: " + tpmsId);
+                  console.log("noteId: " + (note ? note.id : null));
                   if (note) {
+
                     _.forEach(reviewerEmails, function(reviewerEmail, index) {
-                      console.log("assigning: " + index);
-                      assignReviewer(reviewerEmail, index + 10, note, tpmsId, token);
+                      request(
+                        {
+                          method: 'GET',
+                          url: urlPrefix + 'invitations', 
+                          json: true,
+                          body: {'invitee': reviewerEmail},
+                          headers: {
+                            'Authorization': 'Bearer ' + token 
+                          }
+                        },
+                        function (error, response, body) {
+
+                          if (!error && response.statusCode == 200) {
+                            var reviewerInvitations = body.invitations; 
+                            var invIds = _.map(_.filter(reviewerInvitations, function(inv) {
+                              return note && ((inv.reply.parent == note.id) || (inv.reply.forum == note.id));
+                            }), function(inv) {
+                              return inv.id;
+                            }); 
+
+                            var hasReviewInvitation = _.some(invIds, function(id) {
+                              return id.indexOf('/review/') > -1;
+                            });
+
+                            if (!hasReviewInvitation) {
+                              console.log("assigning reviewer: " + reviewerEmail);
+                              console.log("assigning tpmsId: " + tpmsId);
+                              console.log("assigning noteId: " + (note ? note.id : 'missing'));
+                              assignReviewer(reviewerEmail, index + 10, note, tpmsId, token);
+                            }
+
+                          } else {
+                            console.log("get invitations error where reviewerEmail = " + reviewerEmail);
+                            console.log("get invitations error where note id = " + (note ? note.id : ''));
+                          }
+                        }
+                      );
+
+
                     });
                   }
                 });
