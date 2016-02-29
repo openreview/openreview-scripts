@@ -39,6 +39,15 @@ request(
             });
 
             var dubArr = _.map(notes, function(note) {
+
+              if (note.id == note.forum) {
+                console.log("\n");
+                console.log("*****NOTE******");
+                console.log("noteId: " + note.id);
+                console.log("replyInvitations: " + JSON.stringify(note.replyInvitations));
+              }
+
+
               var commentInvitation = _.find(note.replyInvitations, function(invId) {
                 var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/comment");
                 var matches = invId.match(regex);
