@@ -341,23 +341,34 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
               console.log("got notes");
               var notes = body.notes;
 
-              var dubArr = _.map(_.filter(notes, function(n) {
+              var tpmsIdNotePairs = _.flatten(_.map(_.filter(notes, function(n) {
                 return n.id == n.forum;
               }), function(note) {
-                var commentInvitation = _.find(note.replyInvitations, function(invId) {
+                var commentInvitations = _.filter(note.replyInvitations, function(invId) {
                   var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/comment");
                   var matches = invId.match(regex);
                   return matches && matches[0] == invId;
                 });
-                var unofficialInvitation = _.find(note.replyInvitations, function(invId) {
+                var unofficialInvitations = _.filter(note.replyInvitations, function(invId) {
                   var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/unofficial_review");
                   var matches = invId.match(regex);
                   return matches && matches[0] == invId;
                 });
-                var count = commentInvitation ? commentInvitation.substring(30).slice(0, -8) : (unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -18) : '');
-                return [count, note];
-              });
-              var tpmsPaperId2note = _.fromPairs(dubArr);
+                var commentCounts = _.map(commentInvitations, function(commentInvitation) {
+                  return commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
+                }); 
+                var unofficialCounts = _.map(unofficialInvitations, function(unofficialInvitation) {
+                  return unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -8) : '';
+                }); 
+
+                var counts = _.flatten([commentCounts, unofficialCounts]);
+                return _.map(counts, function(count) {
+                  return {tpmsId: count, note: note};
+                });
+              }));
+              var tpmsPaperId2note = _.fromPairs(_.filter(_.map(tpmsIdNotePairs, function(pair) {
+                return [pair.tpmsId, pair.note];
+              })));
 
               var assignmentFile = process.argv[2];
               fs.createReadStream(assignmentFile).pipe(csvparse({delimiter: ','}, function(err, csvDubArr) {
