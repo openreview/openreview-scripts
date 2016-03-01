@@ -34,6 +34,7 @@ request(
         function (error, response, body) {
           if (!error && response.statusCode == 200) {
             var notes = body.notes;
+
             var tpmsIdNotePairs = _.flatten(_.map(_.filter(notes, function(n) {
               return n.id == n.forum;
             }), function(note) {
@@ -74,7 +75,7 @@ request(
                 return commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
               }); 
               var unofficialCounts = _.map(unofficialInvitations, function(unofficialInvitation) {
-                return unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -8) : '';
+                return unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -18) : '';
               }); 
 
               var counts = _.flatten([commentCounts, unofficialCounts]);

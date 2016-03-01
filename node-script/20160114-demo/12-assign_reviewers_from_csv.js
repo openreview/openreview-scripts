@@ -190,34 +190,6 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
   };};
 
   var assignReviewer = function(reviewerEmail, count, note, tpmsId, token) {
-    var reviewerData = {
-      'id': 'ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/' + count,
-      'signatures': ['ICLR.cc/2016'],
-      'writers': ['ICLR.cc/2016'],
-      'members': [reviewerEmail],
-      'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/' + count],
-      'signatories': [reviewerEmail]
-    };
-    request(
-      {
-        'method': 'POST',
-        'url': urlPrefix + 'groups', 
-        'json': true,
-        'body': reviewerData,
-        'headers': {
-          'Authorization': 'Bearer ' + token 
-        }
-      },
-      function (error, response, body) {
-
-        console.log("creating reviewers");
-        if (!error && response.statusCode == 200) {
-          console.log("created reviewer: " + body.id);
-        } else {
-          console.log("error adding reviewer: " + JSON.stringify(reviewerData));
-        }
-      }
-    );
 
     var invitationData = createInvitationData(count, note, tpmsId);
     request(
@@ -234,6 +206,94 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
         console.log("creating invitation");
         if (!error && response.statusCode == 200) {
           console.log("created invitation: " + body.id);
+
+          var reviewerData = {
+            'id': 'ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/' + count,
+            'signatures': ['ICLR.cc/2016'],
+            'writers': ['ICLR.cc/2016'],
+            'members': [reviewerEmail],
+            'readers': ['ICLR.cc/2016', 'ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/' + count],
+            'signatories': [reviewerEmail]
+          };
+          request(
+            {
+              'method': 'POST',
+              'url': urlPrefix + 'groups', 
+              'json': true,
+              'body': reviewerData,
+              'headers': {
+                'Authorization': 'Bearer ' + token 
+              }
+            },
+            function (error, response, body) {
+
+              console.log("creating reviewers");
+              if (!error && response.statusCode == 200) {
+                console.log("created reviewer: " + body.id);
+
+
+                var name = email2name[reviewerEmail] || 'Reviewer';
+                var message = (
+                  "Dear " + name + ",\n\n"
+                  + "Thanks for agreeing to review Workshop Track submissions for ICLR 2016.\n\n"
+                  + "Your assignment is now available on OpenReview.net.  Please log in at\n\n"
+                  + "http://beta.openreview.net/forum?id=" + note.forum + "\n\n"
+                  + "to find your assignment.  Please check it now to ensure that you do not have a conflict of interest and that you feel qualified to review the paper.  If there are any problems, alert the program chairs as quickly as you can by e-mail to iclr2016.programchairs@gmail.com\n\n"
+                  + "*Important* - your reviews are due on Thursday, March 10, by 5 pm Eastern Standard Time.\n\n"
+                  + "In your review's text comments, please provide:\n\n"
+                  +  "- A brief summary of the paper's contributions, in the context of prior work.\n"
+                  +  "- An assessment of novelty, clarity, significance, and quality.\n"
+                  +  "- A list of pros and cons (reasons to accept/reject).\n\n"
+                  + "When you submit a review, its text will be immediately publicly viewable.\n\n"
+                  + "While most of the interactions in OpenReview.net are non-anonymous, the assigned reviewers of each paper can have their comments posted anonymously. Thus your identity as a reviewer for each of your assigned papers can remain hidden. You can also reply to the review of another reviewer for your assigned papers and choose to remain anonymous. The choice of publishing a comment anonymously is made before you submit your message (see your selection right above the comment text box).\n"
+                  + "*Important* - remember that while you know the name of the other reviewers of your assigned papers, the other users of OpenReview (including the authors) don't! Thus, please do not reveal reviewers’ names in your comments.\n\n\n"
+                  + "Thank you for your help in putting together the ICLR technical program!\n\n"
+                  + "Hugo, Samy, and Brian - the ICLR 2016 program committee"
+                );
+
+                request(
+                  {
+                    'method': 'POST',
+                    'url': urlPrefix + 'mail', 
+                    'json': true,
+                    'body': {
+                      'groups' : [reviewerEmail], 
+                      'subject': 'ICLR 2016 Workshop Track reviewer assignment',
+                      'message': message 
+                    },
+                    'headers': {
+                      'Authorization': 'Bearer ' + token 
+                    }
+                  },
+                  function (error, response, body) {
+
+                    console.log("creating reviewers");
+                    if (!error && response.statusCode == 200) {
+                      console.log("created reviewer: " + body.id);
+                      console.log(body);
+                    }
+                  }
+                );
+
+              } else {
+                console.log("error adding reviewer: " + JSON.stringify(reviewerData));
+              }
+            }
+          );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         } else {
           console.log("error creating invitation: " + JSON.stringify(invitationData));
         }
@@ -259,49 +319,6 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
       }
     );
 
-
-    var name = email2name[reviewerEmail] || 'Reviewer';
-    var message = (
-      "Dear " + name + ",\n\n"
-      + "Thanks for agreeing to review Workshop Track submissions for ICLR 2016.\n\n"
-      + "Your assignment is now available on OpenReview.net.  Please log in at\n\n"
-      + "http://beta.openreview.net/forum?id=" + note.forum + "\n\n"
-      + "to find your assignment.  Please check it now to ensure that you do not have a conflict of interest and that you feel qualified to review the paper.  If there are any problems, alert the program chairs as quickly as you can by e-mail to iclr2016.programchairs@gmail.com\n\n"
-      + "*Important* - your reviews are due on Thursday, March 10, by 5 pm Eastern Standard Time.\n\n"
-      + "In your review's text comments, please provide:\n\n"
-      +  "- A brief summary of the paper's contributions, in the context of prior work.\n"
-      +  "- An assessment of novelty, clarity, significance, and quality.\n"
-      +  "- A list of pros and cons (reasons to accept/reject).\n\n"
-      + "When you submit a review, its text will be immediately publicly viewable.\n\n"
-      + "While most of the interactions in OpenReview.net are non-anonymous, the assigned reviewers of each paper can have their comments posted anonymously. Thus your identity as a reviewer for each of your assigned papers can remain hidden. You can also reply to the review of another reviewer for your assigned papers and choose to remain anonymous. The choice of publishing a comment anonymously is made before you submit your message (see your selection right above the comment text box).\n"
-      + "*Important* - remember that while you know the name of the other reviewers of your assigned papers, the other users of OpenReview (including the authors) don't! Thus, please do not reveal reviewers’ names in your comments.\n\n\n"
-      + "Thank you for your help in putting together the ICLR technical program!\n\n"
-      + "Hugo, Samy, and Brian - the ICLR 2016 program committee"
-    );
-
-    request(
-      {
-        'method': 'POST',
-        'url': urlPrefix + 'mail', 
-        'json': true,
-        'body': {
-          'groups' : [reviewerEmail], 
-          'subject': 'ICLR 2016 Workshop Track reviewer assignment',
-          'message': message 
-        },
-        'headers': {
-          'Authorization': 'Bearer ' + token 
-        }
-      },
-      function (error, response, body) {
-
-        console.log("creating reviewers");
-        if (!error && response.statusCode == 200) {
-          console.log("created reviewer: " + body.id);
-          console.log(body);
-        }
-      }
-    );
 
 
   };  
@@ -358,7 +375,7 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
                   return commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
                 }); 
                 var unofficialCounts = _.map(unofficialInvitations, function(unofficialInvitation) {
-                  return unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -8) : '';
+                  return unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -18) : '';
                 }); 
 
                 var counts = _.flatten([commentCounts, unofficialCounts]);
@@ -449,16 +466,6 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
           }
         );
       }
-
-
-
-
-
-
-
-
-
-
 
   });
 
