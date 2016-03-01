@@ -33,33 +33,32 @@ request(
         },
         function (error, response, body) {
           if (!error && response.statusCode == 200) {
-            var notes = _.filter(body.notes, function(n) {
+            var notes = body.notes;
+            var dubArr = _.map(_.filter(notes, function(n) {
               return n.id == n.forum;
-            });
+            }), function(note) {
 
-            var dubArr = _.map(notes, function(note) {
+              //if (note.id == note.forum) {
+              //  console.log("\n");
+              //  console.log("*****NOTE******");
+              //  console.log("noteId: " + note.id);
+              //  console.log("replyInvitations: " + JSON.stringify(note.replyInvitations));
 
-              if (note.id == note.forum) {
-                console.log("\n");
-                console.log("*****NOTE******");
-                console.log("noteId: " + note.id);
-                console.log("replyInvitations: " + JSON.stringify(note.replyInvitations));
+              //  var hasComment = _.some(note.replyInvitations, function(id) {
+              //    return id.indexOf('/comment') > -1;
+              //  });
+              //  console.log("note missing comment: " + !hasComment);
 
-                var hasComment = _.some(note.replyInvitations, function(id) {
-                  return id.indexOf('/comment') > -1;
-                });
-                console.log("note missing comment: " + !hasComment);
+              //  var hasUnofficial = _.some(note.replyInvitations, function(id) {
+              //    return id.indexOf('/unofficial_review') > -1;
+              //  });
 
-                var hasUnofficial = _.some(note.replyInvitations, function(id) {
-                  return id.indexOf('/unofficial_review') > -1;
-                });
+              //  console.log("note missing unofficial: " + !hasUnofficial);
+              //  console.log("has unofficial but missing commment: " + (hasUnofficial && !hasComment));
+              //  console.log("has comment but missing unofficial: " + (!hasUnofficial && hasComment));
+              //  console.log("has neither: " + (!hasUnofficial && !hasComment));
 
-                console.log("note missing unofficial: " + !hasUnofficial);
-                console.log("has unofficial but missing commment: " + (hasUnofficial && !hasComment));
-                console.log("has comment but missing unofficial: " + (!hasUnofficial && hasComment));
-                console.log("has neither: " + (!hasUnofficial && !hasComment));
-
-              }
+              //}
 
               var commentInvitation = _.find(note.replyInvitations, function(invId) {
                 var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/comment");
@@ -111,27 +110,24 @@ request(
                         return inv.id;
                       }); 
 
-                      console.log("\n");
-                      console.log("******ASSIGNMENT*****");
-                      console.log("tpmsId: " + tpmsId);
-                      console.log("noteId: " + (note ? note.id : 'missing'));
-                      console.log("reviewerEmail: " + reviewerEmail);
-                      console.log('reviewer invitations: ' + JSON.stringify(invIds));
-
-                      var missingReviewInvitation = !_.some(invIds, function(id) {
+                      var hasReviewInvitation = _.some(invIds, function(id) {
                         return id.indexOf('/review/') > -1;
                       });
-                      console.log("missing review invitation: " + missingReviewInvitation);
-                      if (missingReviewInvitation) {
-                        missingReviewPairs.push({reviewer: reviewerEmail, tpmsId: tpmsId, noteId: note ? note.id : null});
-                      }
 
-                      var missingCommentInvitation = !_.some(invIds, function(id) {
-                        return id.indexOf('/comment') > -1;
+                      var hasPublishedReview = _.some(notes, function(note) {
+                        return (
+                          note.invitation.indexOf('paper/' + tpmsId + '/review/') > -1
+                        ) && (_.indexOf(note.tauthors, reviewerEmail) > -1);
                       });
-                      console.log("missing comment invitation: " + missingCommentInvitation);
-                      if (missingCommentInvitation) {
-                        missingCommentPairs.push({reviewer: reviewerEmail, tpmsId: tpmsId, noteId: note ? note.id : null});
+
+                      if (!hasReviewInvitation && !hasPublishedReview) {
+
+                        console.log("\n");
+                        console.log("******ASSIGNMENT*****");
+                        console.log("tpmsId: " + tpmsId);
+                        console.log("noteId: " + (note ? note.id : 'missing'));
+                        console.log("reviewerEmail: " + reviewerEmail);
+                        console.log('reviewer invitations: ' + JSON.stringify(invIds));
                       }
 
                     }
