@@ -374,129 +374,181 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
         console.log("logged in");
 
         var token = body.token; 
-        //GET notes
+
+
+        //GET invitations 
         request(
           {
             method: 'GET',
-            url: urlPrefix + 'notes', 
+            url: urlPrefix + 'invitations', 
             json: true,
             headers: {
               'Authorization': 'Bearer ' + token 
             }
           },
           function (error, response, body) {
-            console.log("getting notes");
+            console.log("getting invitations");
             if (!error && response.statusCode == 200) {
-              console.log("got notes");
-              var notes = body.notes;
-
-              var tpmsIdNotePairs = _.flatten(_.map(_.filter(notes, function(n) {
-                return n.id == n.forum;
-              }), function(note) {
-                var commentInvitations = _.filter(note.replyInvitations, function(invId) {
-                  var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/comment");
-                  var matches = invId.match(regex);
-                  return matches && matches[0] == invId;
-                });
-                var unofficialInvitations = _.filter(note.replyInvitations, function(invId) {
-                  var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/unofficial_review");
-                  var matches = invId.match(regex);
-                  return matches && matches[0] == invId;
-                });
-                var commentCounts = _.map(commentInvitations, function(commentInvitation) {
-                  return commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
-                }); 
-                var unofficialCounts = _.map(unofficialInvitations, function(unofficialInvitation) {
-                  return unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -18) : '';
-                }); 
-
-                var counts = _.flatten([commentCounts, unofficialCounts]);
-                return _.map(counts, function(count) {
-                  return {tpmsId: count, note: note};
-                });
-              }));
-              var tpmsPaperId2note = _.fromPairs(_.filter(_.map(tpmsIdNotePairs, function(pair) {
-                return [pair.tpmsId, pair.note];
-              })));
-
-              var assignmentFile = process.argv[2];
-              fs.createReadStream(assignmentFile).pipe(csvparse({delimiter: ','}, function(err, csvDubArr) {
-
-                var notesWithReviewers = _.map(_.groupBy(csvDubArr, function(row) { 
-                  return row[0];
-                }), function(rows, tpmsId) {
-                  var note = tpmsPaperId2note[tpmsId + ""];
-                  var reviewerEmails = _.map(rows, function(row) {
-                    return row[1].trim();
-                  });
-
-                  if (note) {
+              console.log("got invitations");
+              var invitations = body.invitations;
 
 
-                    _.forEach(reviewerEmails, function(reviewerEmail, index) {
-                      request(
-                        {
-                          method: 'GET',
-                          url: urlPrefix + 'invitations?invitee=' + reviewerEmail,
-                          json: true,
-                          headers: {
-                            'Authorization': 'Bearer ' + token 
-                          }
-                        },
-                        function (error, response, body) {
+              var note2replyInvitationMap = _.reduce(invitations, function(acc, inv) {
+                var forumInvs = acc[inv.reply.forum] || [];
+                var parentInvs = acc[inv.reply.parent] || [];
 
+                return _.assign(acc, _.fromPairs([
+                  [inv.reply.forum, _.flatten([forumInvs, inv.id])],
+                  [inv.reply.parent, _.flatten([parentInvs, inv.id])]
+                ]));
+                  
+              }, {});
 
-                          if (!error && response.statusCode == 200) {
-                            var reviewerInvitations = body.invitations; 
-                            var invIds = _.map(_.filter(reviewerInvitations, function(inv) {
-                              return note && ((inv.reply.parent == note.id) || (inv.reply.forum == note.id));
-                            }), function(inv) {
-                              return inv.id;
-                            }); 
+              console.log('MAP: ' + JSON.stringify(note2replyInvitationMap))
 
-
-                            console.log("\n***** ");
-                            console.log("tpmsId: " + tpmsId);
-                            console.log("noteId: " + (note ? note.id : null));
-                            console.log("reviewerEmail: " + reviewerEmail);
-                            console.log("invs " + invIds.toString());
-
-                            var hasReviewInvitation = _.some(invIds, function(id) {
-                              return id.indexOf('/review/') > -1;
-                            });
-
-                            var hasPublishedReview = _.some(notes, function(note) {
-                              return (
-                                note.invitation.indexOf('paper/' + tpmsId + '/review/') > -1
-                              ) && (_.indexOf(note.tauthors, reviewerEmail) > -1);
-                            });
-
-                            console.log("hasReviewInvitation: " + hasReviewInvitation);
-                            console.log("hasPublishedReview: " + hasPublishedReview);
-                            if (!hasReviewInvitation && !hasPublishedReview) {
-                              console.log("assigning reviewer: " + reviewerEmail);
-                              console.log("assigning tpmsId: " + tpmsId);
-                              console.log("assigning noteId: " + (note ? note.id : 'missing'));
-                              assignReviewer(reviewerEmail, index + 10, note, tpmsId, token);
-                            }
-
-                          } else {
-                            console.log("get invitations error where reviewerEmail = " + reviewerEmail);
-                            console.log("get invitations error where note id = " + (note ? note.id : ''));
-                          }
-                        }
-                      );
-
-
-                    });
+              //GET notes
+              request(
+                {
+                  method: 'GET',
+                  url: urlPrefix + 'notes', 
+                  json: true,
+                  headers: {
+                    'Authorization': 'Bearer ' + token 
                   }
-                });
+                },
+                function (error, response, body) {
+                  console.log("getting notes");
+                  if (!error && response.statusCode == 200) {
+                    console.log("got notes");
+                    var notes = body.notes;
 
-              }));
+                    var tpmsIdNotePairs = _.flatten(_.map(_.filter(notes, function(n) {
+                      return n.id == n.forum;
+                    }), function(note) {
+
+                      var replyInvitations = note2replyInvitationMap[note.id]
+
+                      var commentInvitations = _.filter(replyInvitations, function(invId) {
+                        var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/comment");
+                        var matches = invId.match(regex);
+                        return matches && matches[0] == invId;
+                      });
+                      var unofficialInvitations = _.filter(replyInvitations, function(invId) {
+                        var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/[0-9]+/unofficial_review");
+                        var matches = invId.match(regex);
+                        return matches && matches[0] == invId;
+                      });
+                      var commentCounts = _.map(commentInvitations, function(commentInvitation) {
+                        return commentInvitation ? commentInvitation.substring(30).slice(0, -8) : '';
+                      }); 
+                      var unofficialCounts = _.map(unofficialInvitations, function(unofficialInvitation) {
+                        return unofficialInvitation ? unofficialInvitation.substring(30).slice(0, -18) : '';
+                      }); 
+
+                      var counts = _.flatten([commentCounts, unofficialCounts]);
+                      return _.map(counts, function(count) {
+                        return {tpmsId: count, note: note};
+                      });
+                    }));
+                    var tpmsPaperId2note = _.fromPairs(_.filter(_.map(tpmsIdNotePairs, function(pair) {
+                      return [pair.tpmsId, pair.note];
+                    })));
+
+                    var assignmentFile = process.argv[2];
+                    fs.createReadStream(assignmentFile).pipe(csvparse({delimiter: ','}, function(err, csvDubArr) {
+
+                      var notesWithReviewers = _.map(_.groupBy(csvDubArr, function(row) { 
+                        return row[0];
+                      }), function(rows, tpmsId) {
+                        var note = tpmsPaperId2note[tpmsId + ""];
+                        var reviewerEmails = _.map(rows, function(row) {
+                          return row[1].trim();
+                        });
+
+                        if (note) {
+
+
+                          _.forEach(reviewerEmails, function(reviewerEmail, index) {
+                            request(
+                              {
+                                method: 'GET',
+                                url: urlPrefix + 'invitations?invitee=' + reviewerEmail,
+                                json: true,
+                                headers: {
+                                  'Authorization': 'Bearer ' + token 
+                                }
+                              },
+                              function (error, response, body) {
+
+
+                                if (!error && response.statusCode == 200) {
+                                  var reviewerInvitations = body.invitations; 
+                                  var invIds = _.map(_.filter(reviewerInvitations, function(inv) {
+                                    return note && ((inv.reply.parent == note.id) || (inv.reply.forum == note.id));
+                                  }), function(inv) {
+                                    return inv.id;
+                                  }); 
+
+
+                                  console.log("\n***** ");
+                                  console.log("tpmsId: " + tpmsId);
+                                  console.log("noteId: " + (note ? note.id : null));
+                                  console.log("reviewerEmail: " + reviewerEmail);
+                                  console.log("invs " + invIds.toString());
+
+                                  var hasReviewInvitation = _.some(invIds, function(id) {
+                                    return id.indexOf('/review/') > -1;
+                                  });
+
+                                  var hasPublishedReview = _.some(notes, function(note) {
+                                    return (
+                                      note.invitation.indexOf('paper/' + tpmsId + '/review/') > -1
+                                    ) && (_.indexOf(note.tauthors, reviewerEmail) > -1);
+                                  });
+
+                                  console.log("hasReviewInvitation: " + hasReviewInvitation);
+                                  console.log("hasPublishedReview: " + hasPublishedReview);
+                                  if (!hasReviewInvitation && !hasPublishedReview) {
+                                    console.log("assigning reviewer: " + reviewerEmail);
+                                    console.log("assigning tpmsId: " + tpmsId);
+                                    console.log("assigning noteId: " + (note ? note.id : 'missing'));
+                                    assignReviewer(reviewerEmail, index + 10, note, tpmsId, token);
+                                  }
+
+                                } else {
+                                  console.log("get invitations error where reviewerEmail = " + reviewerEmail);
+                                  console.log("get invitations error where note id = " + (note ? note.id : ''));
+                                }
+                              }
+                            );
+
+
+                          });
+                        } else {
+                          console.log("note missing: " + tpmsId);
+                        };
+                      });
+
+                    }));
+
+                  }
+                }
+              );
+
+
+
 
             }
           }
         );
+
+
+
+
+
+
+
+
       }
 
   });
