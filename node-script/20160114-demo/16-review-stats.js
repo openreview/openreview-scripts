@@ -146,39 +146,53 @@ p.when(tokenP, function(token) {
       var paperId = paper.id;
       var cmtId = paper.content.CMT_id;
       var assignments = tpmsId2Assignments[tpmsId];
-      return _.map(assignments, function(assignment) {
-        var reviewer = assignment.email;
-        var replyNotes = parentId2ChildList[paperId];
 
-        var review = _.find(replyNotes, function(reply) {
-          var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/" + tpmsId + "/review/.+");
-          var matches = reply.invitation.match(regex);
-          return  matches && (matches[0] == reply.invitation) && _.some(reply.tauthors, function(tauthor) {
-           return tauthor == reviewer;
-          });
-        }); 
+      if (assignments && assignments.length > 0) {
+        return _.map(assignments, function(assignment) {
+          var reviewer = assignment.email;
+          var replyNotes = parentId2ChildList[paperId];
 
-        var title = review ? review.content.title : '';
-        var rating = review ? review.content.rating.substring(0, 2) : '';
-        var confidence = review ? review.content.confidence.substring(0, 1) : '';
-        var signature = review ? review.signatures[0] : '';
+          var review = _.find(replyNotes, function(reply) {
+            var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/" + tpmsId + "/review/.+");
+            var matches = reply.invitation.match(regex);
+            return  matches && (matches[0] == reply.invitation) && _.some(reply.tauthors, function(tauthor) {
+             return tauthor == reviewer;
+            });
+          }); 
 
-        return {
+          var title = review ? review.content.title : '';
+          var rating = review ? review.content.rating.substring(0, 2) : '';
+          var confidence = review ? review.content.confidence.substring(0, 1) : '';
+          var signature = review ? review.signatures[0] : '';
+
+          return {
+            cmtId: cmtId,
+            tpmsId: tpmsId, 
+            url: "beta.openreview.net/forum?id=" + paper.id,
+            reviewer: reviewer,
+            title: title,
+            rating: rating,
+            confidence: confidence,
+            signature: signature
+          };
+        });
+      } else {
+        return [{
+          cmtId: cmtId,
           tpmsId: tpmsId, 
           url: "beta.openreview.net/forum?id=" + paper.id,
-          cmt_id: cmtId,
-          reviewer: reviewer,
-          title, title,
-          rating: rating,
-          confidence: confidence,
-          signature: signature
-        }
-      });
+          reviewer: '',
+          title: '',
+          rating: '',
+          confidence: '',
+          signature:'' 
+        }];
+      }
 
     }));
 
     var header = {
-      cmt_id: "CMT ID",
+      cmtId: "CMT ID",
       tpmsId: "TPMS ID", 
       url: "Paper URL",
       reviewer: "Reviewer email",
@@ -188,9 +202,9 @@ p.when(tokenP, function(token) {
       signature: "Signature" 
     };
 
-    var rowsWithHeader = _.flatten([header, _.orderBy(rows, ['cmt_id', 'tpmsId'], ['asc', 'asc'])]);
+    var rowsWithHeader = _.flatten([header, _.orderBy(rows, ['cmtId', 'tpmsId'], ['asc', 'asc'])]);
     var dubArr = _.map(rowsWithHeader, function(row) {
-      return [row.cmt_id, row.tpmsId, row.url, row.reviewer, row.title, row.rating, row.confidence, row.signature];
+      return [row.cmtId, row.tpmsId, row.url, row.reviewer, row.title, row.rating, row.confidence, row.signature];
     });
     stringify(dubArr, function(err, str) {
       console.log(str);
