@@ -106,12 +106,44 @@ p.when(tokenP, function(token) {
     return df.promise;
   }();
 
+  var reviewerEmailMapP = assignmentsP.then(function(assignments) {
+    var ps = _.map(assignments, function(assignment) {
+      var df = p.defer();
+      request(
+        {
+          method: 'GET',
+          url: urlPrefix + 'groups?host='+assignment.email, 
+          json: true,
+          headers: {
+              'Authorization': 'Bearer ' + token
+          }
+        },
+        function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            df.resolve({host: assignment.email, members: _.map(body.groups, function(g) {
+              return g.id;
+            })});
+          } else {
+            df.resolve({host: assignment.email, members: []}); 
+          }
+        }
+      );
+      return df.promise;
+    });
+    return p.all(ps).then(function(os) {
+      return _.fromPairs(_.map(os, function(o) {
+        return [o.host, _.flatten([o.host, o.members])];
+      }));
+    });
+  });
 
-  p.when(p.all(assignmentsP, papersP, replyNotesP, invitationsP), function(all) {
+
+  p.when(p.all(assignmentsP, papersP, replyNotesP, invitationsP, reviewerEmailMapP), function(all) {
     var assignments = all[0];
     var papers = all[1];
     var notes = all[2];
     var invitations = all[3];
+    var reviewerEmailMap = all[4];
 
     var tpmsId2Assignments = _.groupBy(assignments, 'tpmsId');
     var tpmsIdNoteIdPairs = _.map(invitations, function(inv) {
@@ -155,9 +187,10 @@ p.when(tokenP, function(token) {
           var review = _.find(replyNotes, function(reply) {
             var regex = new RegExp("ICLR.cc/2016/workshop/-/paper/" + tpmsId + "/review/.+");
             var matches = reply.invitation.match(regex);
-            return  matches && (matches[0] == reply.invitation) && _.some(reply.tauthors, function(tauthor) {
-             return tauthor == reviewer;
-            });
+
+            var possibleAuthors = reviewerEmailMap[reviewer];
+            var authored = _.intersection(reply.tauthors, possibleAuthors).length > 0;
+            return  matches && (matches[0] == reply.invitation) && authored;
           }); 
 
           var title = review ? review.content.title : '';
