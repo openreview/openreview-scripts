@@ -170,10 +170,10 @@ p.when(tokenP, function(token) {
             tpmsId: tpmsId, 
             url: "beta.openreview.net/forum?id=" + paper.id,
             reviewer: reviewer,
-            title: title,
             rating: rating,
             confidence: confidence,
-            signature: signature
+            signature: signature,
+            title: title
           };
         });
       } else {
@@ -182,10 +182,10 @@ p.when(tokenP, function(token) {
           tpmsId: tpmsId, 
           url: "beta.openreview.net/forum?id=" + paper.id,
           reviewer: '',
-          title: '',
           rating: '',
           confidence: '',
-          signature:'' 
+          signature:'',
+          title: ''
         }];
       }
 
@@ -196,15 +196,15 @@ p.when(tokenP, function(token) {
       tpmsId: "TPMS ID", 
       url: "Paper URL",
       reviewer: "Reviewer email",
-      title: "Review title",
       rating: "Rating",
       confidence: "Confidence",
-      signature: "Signature" 
+      signature: "Signature", 
+      title: "Review title"
     };
 
     var rowsWithHeader = _.flatten([header, _.orderBy(rows, ['cmtId', 'tpmsId'], ['asc', 'asc'])]);
     var dubArr = _.map(rowsWithHeader, function(row) {
-      return [row.cmtId, row.tpmsId, row.url, row.reviewer, row.title, row.rating, row.confidence, row.signature];
+      return [row.cmtId, row.tpmsId, row.url, row.reviewer, row.rating, row.confidence, row.signature, row.title];
     });
     stringify(dubArr, function(err, str) {
       console.log(str);
