@@ -23,16 +23,16 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
 		'id': 'ICLR.cc/2016/workshop/-/paper/' + tpmsId + '/comment',
 		'signatures': ['ICLR.cc/2016/workshop'],    // the root is allowed to sign as anyone.
 		'writers': ['ICLR.cc/2016/workshop'],
-    'invitees': ['~', 'ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/' + rev_num],
-		'readers': ['everyone'],
+    'invitees': ['~', 'ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer'],
+    'readers': ['everyone'],
 
-		//     super: ICLR.cc/2016/-/workshop/comment
-		// TODO AK: eventually we want to create a superclass of comment but for now this is OK
+    //     super: ICLR.cc/2016/-/workshop/comment
+    // TODO AK: eventually we want to create a superclass of comment but for now this is OK
 
-		'reply': {
-		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
-        'signatures': '((~.*)|ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/' + rev_num + '),',
-        'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/' + rev_num + '),',
+    'reply': {
+        'forum': forum,      // links this note (comment) to the previously posted note (paper)
+        'signatures': '((~.*)|ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/.*),',
+        'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + tpmsId + '/reviewer/.*),',
 		    'readers': 'everyone,',   // the reply must allow ANYONE to read this note (comment)
 		    'content': {
 			'title': {
