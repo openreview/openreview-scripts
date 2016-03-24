@@ -168,7 +168,7 @@ p.when(tokenP, function(token) {
 
     var table = _.map(papers, function(paper) {
       var title = paper.content.title;
-      var authorList = _.map(paper.content.authors, function(s) {
+      var authorList = _.map(paper.content.authors.split(","), function(s) {
         return s.trim();
       });
       var authorEmailList = _.map(paper.content.author_emails.split(","), function(s) {
