@@ -196,7 +196,7 @@ p.when(tokenP, function(token) {
         }});
       } else if (result == "Reject") {
         _.forEach(nameEmailPairs, function(p) { if (p.email && p.name) {
-          sendReject(p.name, p.name, title);
+          sendReject(p.email, p.name, title);
         }});
       } else {
         console.log("Wrong Result: " + result + " - " + paper.id);
