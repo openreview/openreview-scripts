@@ -37,19 +37,19 @@ var noteId2ResultP = function() {
   fs.createReadStream(resultFile).pipe(csvparse({delimiter: ','}, function(err, csvDubArr) {
     var noteIdResultPairs = _.map(csvDubArr, function(row) {
       var noteId = row[3] && row[3].substring('beta.openreview.net/forum?id='.length);
-      return {noteId: noteId, accepted: row[0] == "Accept"};
+      return {noteId: noteId, result: row[0]};
     });
 
     var noteId2Result = _.fromPairs(_.map(_.groupBy(noteIdResultPairs, 'noteId'), function(pairs, noteId) {
       var allAccept = _.every(pairs, function(p) {
-        return p.accepted;
+        return p.result == "Accept";
       });
 
-      var someAccept = _.every(pairs, function(p) {
-        return p.accepted;
+      var allReject = _.every(pairs, function(p) {
+        return p.result == "Reject";
       });
 
-      return [noteId, allAccept ? "Accept" : (someAccept ? "Both" : "Reject")];
+      return [noteId, allAccept ? "Accept" : (allReject ? "Reject" : "Neither")];
 
     }));
 
