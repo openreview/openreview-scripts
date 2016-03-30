@@ -45,7 +45,7 @@ p.when(tokenP, function(token) {
       },
       function (error, response, body) {
         if (!error && response.statusCode == 200) {
-          df.resolve(body.notes);
+          df.resolve(body.groups);
         } else {
           df.resolve([]);
         }
@@ -78,25 +78,67 @@ p.when(tokenP, function(token) {
 
   p.when(p.all(groupsP, papersP), function(all) {
     var groups = all[0];
-    var specialId2Group = _.fromPairs(_.map(groups, function(group) {
-      return [group.specialId, group];
+    var id2Group = _.fromPairs(_.map(groups, function(group) {
+      return [group.id, group];
     }));
+
     var papers = _.filter(all[1], function(p) {
       return !p.content.CMT_id.trim();
     });
+
+
 
     _.forEach(papers, function(paper) {
       var tauthor = paper.tauthors[0];
       var emailList = _.map(paper.content.author_emails.split(","), function(e) {
         return e.trim();
       });
-      if (_.includes(emailList, tauthor)) {
+      var allEmailed = emailList.length > 0 && _.every(emailList, function(email) {
+        return id2Group[email] && id2Group[email].emailable;
+      });
+      if (allEmailed) {
       } else {
-        //the author is not listed:
-        console.log("\n"); 
-        console.log("Error");
-        console.log("user: " + tauthor); 
-        console.log("author_emails: " + paper.content.author_emails); 
+        var success = _.filter(emailList, function(email) {
+          return id2Group[email] && id2Group[email].emailable;
+        });
+        var failure = _.filter(emailList, function(email) {
+          return !(id2Group[email] && id2Group[email].emailable);
+        });
+        console.log("Some authors not emailed - ");
+        console.log("paper: " + paper.id); 
+        console.log("user: " + tauthor);
+        console.log("email success: " + JSON.stringify(success));
+        console.log("email failure: " + JSON.stringify(failure));
+        console.log("---");
+      }
+    });
+
+    console.log("**********");
+    console.log("**********");
+    console.log("**********");
+
+    _.forEach(papers, function(paper) {
+      var tauthor = paper.tauthors[0];
+      var emailList = _.map(paper.content.author_emails.split(","), function(e) {
+        return e.trim();
+      });
+      var someEmailed = emailList.length > 0 && _.some(emailList, function(email) {
+        return id2Group[email] && id2Group[email].emailable;
+      });
+      if (someEmailed) {
+      } else {
+        var success = _.filter(emailList, function(email) {
+          return id2Group[email] && id2Group[email].emailable;
+        });
+        var failure = _.filter(emailList, function(email) {
+          return !(id2Group[email] && id2Group[email].emailable);
+        });
+        console.log("not one author emailed - ");
+        console.log("paper: " + paper.id); 
+        console.log("user: " + tauthor);
+        console.log("email success: " + JSON.stringify(success));
+        console.log("email failure: " + JSON.stringify(failure));
+        console.log("---");
       }
     });
   });
