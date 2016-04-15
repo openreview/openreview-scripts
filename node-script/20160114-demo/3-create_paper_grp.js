@@ -48,7 +48,8 @@ var workshop = {
     'writers': ['ICLR.cc/2016'],
     'readers': ['everyone'],
     'members': ['ICLR.cc/2016'],
-    'signatories': ['ICLR.cc/2016']
+    'signatories': ['ICLR.cc/2016'],
+    'web': fs.readFileSync('web-field-workshop.js', "utf8")
 };
 
 var conference = {
@@ -57,7 +58,8 @@ var conference = {
     'writers': ['ICLR.cc/2016'],
     'readers': ['everyone'],
     'members': ['ICLR.cc/2016'],
-    'signatories': ['ICLR.cc/2016']
+    'signatories': ['ICLR.cc/2016'],
+    'web': fs.readFileSync('web-field-conference.js', "utf8")
 };
 
 var paper = {
@@ -66,7 +68,8 @@ var paper = {
     'writers': [workshop.id],
     'readers': ['everyone'],
     'members': [workshop.id],
-    'signatories': []
+    'signatories': [],
+    'web': fs.readFileSync('web-field-paper.js', "utf8")
 };
 
 function create_groups() {
