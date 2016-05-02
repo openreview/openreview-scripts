@@ -4,6 +4,7 @@ var fs = require('fs');
 var request = require('request');
 
 // The open review local url
+var regUrl = 'http://localhost:3000/register';
 var grpUrl = 'http://localhost:3000/groups';
 var loginUrl = 'http://localhost:3000/login';
 
@@ -67,6 +68,6 @@ function make_post_req(url, o) {
   });
 }
 
-make_post_req(grpUrl, u1);
-make_post_req(grpUrl, u2);
-make_post_req(grpUrl, u3);
+make_post_req(regUrl, u1);
+make_post_req(regUrl, u2);
+make_post_req(regUrl, u3);
