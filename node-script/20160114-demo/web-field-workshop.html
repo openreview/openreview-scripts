@@ -6,69 +6,116 @@
     <link rel="stylesheet" type="text/css" href="scrollbar.css">
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js" type="text/javascript"></script>
-    
   </head>
   <body>
     <div id='main'>
-      <div class='panel'>
-        <h1>ICLR 2016 - Conference Track</h1>
-        <h2>International Conference on Learning Representations</h2>
-        <h3>May 2 - 4, 2016, Caribe Hilton, San Juan, Puerto Rico</h3>
-        <div class='row'>
-          <span>
-            Please see the venue website (
-          </span>
-          <a href="http://www.iclr.cc/doku.php?id=iclr2016:main">
-            http://www.iclr.cc/doku.php?id=iclr2016:main
-          </a>
-          <span>
-          ) for more information
-          </span>
-        </div>
-        <div>
-          Submission deadline: 18 Feb 2016
-        </div>
-      </div>
+      <div id='header'></div>
+      <div id='invitation'></div>
+      <div id='notes'></div>
     </div>
     <script type="text/javascript">
-      var headers = { 'Authorization': 'Bearer ' + context.token };
-      var data = {
-        replyForum: null, 
-        signature: 'ICLR.cc/2016/workshop'
+    $(function() {
+
+      $attach('#header', 'mkHostHeader', [
+        "ICLR 2016 - Workshop Track",
+        "International Conference on Learning Representations",
+        "May 2 - 4, 2016, Caribe Hilton, San Juan, Puerto Rico",
+        "http://www.iclr.cc/doku.php?id=iclr2016:main",
+        "18 Feb 2016"
+      ], true);
+
+      var sm = mkStateManager();
+
+      var httpGetP = function(url, queryOrBody) {
+        var df = $.Deferred();
+        httpGet(url, queryOrBody, function(result) {
+          df.resolve(result);
+        }, function(err) {
+          df.reject(result);
+        });
+        return df.promise();
       };
 
-      $.ajax({
-        cache: false,
-        dataType: 'json',
-        type: 'get',
-        contentType: 'application/json',
-        url: 'invitations',
-        data: data,
-        headers: headers,
-        success: function(result) {
-          var $main = $('#main');
-          _.map(result.invitations, function(inv) {
-            
-            var $buttonPanel = $('<div>', {class: 'panel', id: inv._key }).append(
-              $('<span>', {class: 'item hint', text: 'Add'}), 
-              $('<button>').text(inv.id)).click(function() {
-                handleInvitationClick(inv, context.user, inv._key);
-              });
-            
-            var $row = $('<div>', {class: 'row'}).append($buttonPanel);
-            $main.append($row);
+      var invitationP = httpGetP('invitations', {id: 'iclr.cc/2016/workshop/-/submission'}).then(function(result) {
+        return result.invitations[0];
+      });
 
-            buildNotes(inv, context.user, 'main');
-            
-
+      var readersP = invitationP.then(function(invitation) {
+        return httpGetP('groups', {listRegex: invitation.reply.readers}).then(function(result) {
+          return _.map(result.groups, function(g) {
+            return g.id;
           });
-          
-        },
-        error: function(error) {
-          console.log('error!');
+        });
+      });
+
+      var signaturesP = invitationP.then(function(invitation) {
+        if (user) {
+          return httpGetP('groups', {listRegex: invitation.reply.signatures, signatory: user.id}).then(function(result) {
+            return _.map(result.groups, function(g) {
+              return g.id;
+            });
+          });
+        } else {
+          return [];
         }
       });
 
+      var notesP = httpGetP('notes', {invitation: 'iclr.cc/2016/workshop/-/submission', maxtcdate: Date.now()}).then(function(result) {
+        return result.notes;
+      });
+
+
+      $.when(invitationP, readersP, signaturesP, notesP).done(function(invitation, readers, signatures, notes) {
+        sm.update('invitationTrip', {
+          invitation: invitation,
+          readers: readers,
+          signatures: signatures
+        });
+        sm.update('notes', notes);
+      });
+
+      sm.addHandler('workshop', {
+
+        invitationTrip: function(invitationTrip) { if (invitationTrip) {
+          var invitation = invitationTrip.invitation;
+          var readers = invitationTrip.readers;
+          var signatures = invitationTrip.signatures;
+          $attach('#invitation', 'mkInvitationButton', [invitation, function() {
+            if (signatures.length > 0) {
+              $attach('#notes', 'mkSlimNewNoteEditor', [invitation, null, user, readers, signatures, {
+                onNoteCreated: function(idRecord) {
+                  httpGetP('notes', {
+                    invitation: 'iclr.cc/2016/workshop/-/submission', 
+                    maxtcdate: Date.now()
+                  }).then(function(result) {
+                    console.log("time to update notes: " + result.notes.length);
+                    sm.update('notes', result.notes);
+                  });
+                }
+              }], false);
+            } else {
+             promptLogin(user);
+            }
+          }], true);
+        }},
+
+        notes: function(notes) {
+          if (notes) {
+            $('#notes').empty();
+            _.forEach(notes, function(note) {
+              $attach('#notes', 'mkNotePanel', [note, {
+                titleLink: 'HREF',
+                withReplyCount: true
+              }], true);
+            });
+          }
+        }
+      });
+      
+
+
+
+    });
     </script>
  </body>
 </html>
