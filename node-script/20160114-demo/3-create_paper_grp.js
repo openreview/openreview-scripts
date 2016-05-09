@@ -58,8 +58,7 @@ var conference = {
     'writers': ['ICLR.cc/2016'],
     'readers': ['everyone'],
     'members': ['ICLR.cc/2016'],
-    'signatories': ['ICLR.cc/2016'],
-    'web': fs.readFileSync('web-field-conference.html', "utf8")
+    'signatories': ['ICLR.cc/2016']
 };
 
 var paper = {
@@ -68,8 +67,7 @@ var paper = {
     'writers': [workshop.id],
     'readers': ['everyone'],
     'members': [workshop.id],
-    'signatories': [],
-    'web': fs.readFileSync('web-field-paper.html', "utf8")
+    'signatories': []
 };
 
 function create_groups() {
