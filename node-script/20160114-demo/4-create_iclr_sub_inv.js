@@ -216,6 +216,10 @@ var subInv = {
 		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
 		    'readers': 'everyone,',   // the reply must allow ANYONE
 		    'content': {
+		    	'type': {
+					    'order': 0,
+					    'value': 'Unofficial review'
+					},
 					'title': {
 				    'order': 1,
 				    'value-regex': '.{0,500}',
@@ -384,6 +388,11 @@ var subInv = {
 		    'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
 		    'readers': 'everyone,',     // review must be world readable
 		    'content': {
+					'type': {
+					    'order': 0,
+					    'value': 'Paper review',
+					    'description': 'Type of review.'
+					},
 					'title': {
 					    'order': 1,
 					    'value-regex': '.{0,500}',
