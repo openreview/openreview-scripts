@@ -50,49 +50,49 @@ var subInv = {
     'readers': ['everyone'],
     'invitees': ['~'],
     'reply': {
-	'forum': null,        // this will be set automatically
-	'parent': null,       // the response to this invite will be a forum root
-	'signatures': '~.*',     // signatures must reveal their ~ handle
-	'writers': '~.*',     // the writers must also reveal their ~ handle
-	'readers': 'everyone,',
-	'content': {
-	    'title': {
-		'order': 3,
-		'value-regex': '.{1,100}',
-		'description': 'Title of paper.'
-	    },
-	    'abstract': {
-		'order': 4,
-		'value-regex': '[\\S\\s]{1,5000}',
-		'description': 'Abstract of paper.'
-	    },
-	    'authors': {
-		'order': 1,
-		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
-		'description': 'Comma separated list of author names, as they appear in the paper.'
-	    },
-	    'author_emails': {
-		'order': 2,
-		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
-		'description': 'Comma separated list of author email addresses, in the same order as above.'
-	    },
-	    'conflicts': {
-		'order': 100,
-//		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
-		'value-regex': "^([a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))+(;[a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))*$",
-		'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).'
-	    },
-	    'CMT_id': {
-		'order': 5,
-		'value-regex': '.*',                            // if this is a resubmit, specify the CMT ID
-		'description': 'If the paper is a resubmission from the ICLR 2016 Conference Track, enter its CMT ID; otherwise, leave blank.'
-	    },
-	    'pdf': {
-		'order': 4,
-		'value-regex': 'upload|http://arxiv.org/pdf/.+',   // either an actual pdf or an arxiv link
-		'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv.'
-	    }
-	}
+			'forum': null,        // this will be set automatically
+			'parent': null,       // the response to this invite will be a forum root
+			'signatures': { 'values-regex': '~.*' },     // signatures must reveal their ~ handle
+			'writers': { 'values-regex': '~.*' },     // the writers must also reveal their ~ handle
+			'readers': { values: ['everyone'] },
+			'content': {
+			    'title': {
+				'order': 3,
+				'value-regex': '.{1,100}',
+				'description': 'Title of paper.'
+			    },
+			    'abstract': {
+				'order': 4,
+				'value-regex': '[\\S\\s]{1,5000}',
+				'description': 'Abstract of paper.'
+			    },
+			    'authors': {
+				'order': 1,
+				'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+				'description': 'Comma separated list of author names, as they appear in the paper.'
+			    },
+			    'author_emails': {
+				'order': 2,
+				'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+				'description': 'Comma separated list of author email addresses, in the same order as above.'
+			    },
+			    'conflicts': {
+				'order': 100,
+		//		'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+				'value-regex': "^([a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))+(;[a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))*$",
+				'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).'
+			    },
+			    'CMT_id': {
+				'order': 5,
+				'value-regex': '.*',                            // if this is a resubmit, specify the CMT ID
+				'description': 'If the paper is a resubmission from the ICLR 2016 Conference Track, enter its CMT ID; otherwise, leave blank.'
+			    },
+			    'pdf': {
+				'order': 4,
+				'value-regex': 'upload|http://arxiv.org/pdf/.+',   // either an actual pdf or an arxiv link
+				'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv.'
+			    }
+			}
     },
     'process': (function (token, invitation, note, count, lib) {
 	var request = lib.request;             // this is messy; on the server I can only use arango's request library
@@ -115,9 +115,12 @@ var subInv = {
 		'reply': {
 		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
 //		    'parent': noteID,    // not specified so we can allow comments on comments
-		    'signatures': '~.*',    // this regex demands that the author reveal his/her ~ handle
-		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
-		    'readers': 'everyone,',   // the reply must allow ANYONE to read this note (comment)
+		    'signatures': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
+		    'writers': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
+		    'readers': { 
+		    	values: ['everyone'] ,
+		    	description: 'The users who will be allowed to read the above content.'
+		    },   // the reply must allow ANYONE to read this note (comment)
 		    'content': {
 			'title': {
 			    'order': 1,
@@ -212,15 +215,14 @@ var subInv = {
 		'reply': {
 		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
 		    'parent': noteID,    // specified as the root
-		    'signatures': '~.*',    // this regex demands that the author reveal his/her ~ handle
-		    'writers': '~.*',    // this regex demands that the author reveal his/her ~ handle
-		    'readers': 'everyone,',   // the reply must allow ANYONE
+		    'signatures': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
+		    'writers': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
+		    'readers': { 
+		    	'values': ['everyone'], 
+		    	description: 'The users who will be allowed to read the above content.'
+		    },
 		    'content': {
-		    	'type': {
-					    'order': 0,
-					    'value': 'Unofficial review'
-					},
-					'title': {
+		    	'title': {
 				    'order': 1,
 				    'value-regex': '.{0,500}',
 				    'description': 'Brief summary of your review.'
@@ -383,16 +385,14 @@ var subInv = {
 		'reply': {
 		    'forum': noteID,
 		    'parent': noteID,
-		    'signatures': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
+		    'signatures': { 'values-regex': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + ')' },  // author reveals their ~ handle or remains anonymous
 		    // This reviewer has not been assigned yet
-		    'writers': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + '),',  // author reveals their ~ handle or remains anonymous
-		    'readers': 'everyone,',     // review must be world readable
+		    'writers': { 'values-regex': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + ')' },  // author reveals their ~ handle or remains anonymous
+		    'readers': { 
+		    	values: ['everyone'] ,
+		    	description: 'The users who will be allowed to read the above content.'
+		    },
 		    'content': {
-					'type': {
-					    'order': 0,
-					    'value': 'Paper review',
-					    'description': 'Type of review.'
-					},
 					'title': {
 					    'order': 1,
 					    'value-regex': '.{0,500}',

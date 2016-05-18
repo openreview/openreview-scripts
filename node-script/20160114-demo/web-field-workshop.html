@@ -36,36 +36,14 @@
         return result.invitations[0];
       });
 
-      var readersP = invitationP.then(function(invitation) {
-        return httpGetP('groups', {listRegex: invitation.reply.readers}).then(function(result) {
-          return _.map(result.groups, function(g) {
-            return g.id;
-          });
-        });
-      });
-
-      var signaturesP = invitationP.then(function(invitation) {
-        if (user) {
-          return httpGetP('groups', {listRegex: invitation.reply.signatures, signatory: user.id}).then(function(result) {
-            return _.map(result.groups, function(g) {
-              return g.id;
-            });
-          });
-        } else {
-          return [];
-        }
-      });
-
       var notesP = httpGetP('notes', {invitation: 'iclr.cc/2016/workshop/-/submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
       });
 
 
-      $.when(invitationP, readersP, signaturesP, notesP).done(function(invitation, readers, signatures, notes) {
+      $.when(invitationP, notesP).done(function(invitation, notes) {
         sm.update('invitationTrip', {
-          invitation: invitation,
-          readers: readers,
-          signatures: signatures
+          invitation: invitation
         });
         sm.update('notes', notes);
       });
@@ -74,11 +52,9 @@
 
         invitationTrip: function(invitationTrip) { if (invitationTrip) {
           var invitation = invitationTrip.invitation;
-          var readers = invitationTrip.readers;
-          var signatures = invitationTrip.signatures;
           $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-            if (signatures.length > 0) {
-              $attach('#notes', 'mkSlimNewNoteEditor', [invitation, null, user, readers, signatures, {
+            if (user) {
+              $attach('#notes', 'mkNewNoteEditor', [invitation, null, user, {
                 onNoteCreated: function(idRecord) {
                   httpGetP('notes', {
                     invitation: 'iclr.cc/2016/workshop/-/submission', 
