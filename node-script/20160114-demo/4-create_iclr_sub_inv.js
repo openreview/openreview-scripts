@@ -115,8 +115,13 @@ var subInv = {
 		'reply': {
 		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
 //		    'parent': noteID,    // not specified so we can allow comments on comments
-		    'signatures': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
-		    'writers': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
+		    'signatures': { 
+		    	'values-regex': '~.*',
+		    	description: 'Your displayed identity associated with the above content.' 
+		    },    // this regex demands that the author reveal his/her ~ handle
+		    'writers': { 
+		    	'values-regex': '~.*' 
+		    },    // this regex demands that the author reveal his/her ~ handle
 		    'readers': { 
 		    	values: ['everyone'] ,
 		    	description: 'The users who will be allowed to read the above content.'
@@ -215,8 +220,13 @@ var subInv = {
 		'reply': {
 		    'forum': forum,      // links this note (comment) to the previously posted note (paper)
 		    'parent': noteID,    // specified as the root
-		    'signatures': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
-		    'writers': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
+		    'signatures': { 
+		    	'values-regex': '~.*', 
+		    	description: 'Your displayed identity associated with the above content.'
+		    },    // this regex demands that the author reveal his/her ~ handle
+		    'writers': { 
+		    	'values-regex': '~.*' 
+		    },    // this regex demands that the author reveal his/her ~ handle
 		    'readers': { 
 		    	'values': ['everyone'], 
 		    	description: 'The users who will be allowed to read the above content.'
@@ -385,9 +395,14 @@ var subInv = {
 		'reply': {
 		    'forum': noteID,
 		    'parent': noteID,
-		    'signatures': { 'values-regex': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + ')' },  // author reveals their ~ handle or remains anonymous
+		    'signatures': { 
+		    	'values-regex': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + ')',
+		    	description: 'Your displayed identity associated with the above content.' 
+		    },  // author reveals their ~ handle or remains anonymous
 		    // This reviewer has not been assigned yet
-		    'writers': { 'values-regex': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + ')' },  // author reveals their ~ handle or remains anonymous
+		    'writers': { 
+		    	'values-regex': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + ')'
+		    },  // author reveals their ~ handle or remains anonymous
 		    'readers': { 
 		    	values: ['everyone'] ,
 		    	description: 'The users who will be allowed to read the above content.'
