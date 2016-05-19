@@ -32,11 +32,11 @@
         return df.promise();
       };
 
-      var invitationP = httpGetP('invitations', {id: 'iclr.cc/2016/workshop/-/submission'}).then(function(result) {
+      var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2016/workshop/-/submission'}).then(function(result) {
         return result.invitations[0];
       });
 
-      var notesP = httpGetP('notes', {invitation: 'iclr.cc/2016/workshop/-/submission', maxtcdate: Date.now()}).then(function(result) {
+      var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2016/workshop/-/submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
       });
 
@@ -57,7 +57,7 @@
               $attach('#notes', 'mkNewNoteEditor', [invitation, null, user, {
                 onNoteCreated: function(idRecord) {
                   httpGetP('notes', {
-                    invitation: 'iclr.cc/2016/workshop/-/submission', 
+                    invitation: 'ICLR.cc/2016/workshop/-/submission', 
                     maxtcdate: Date.now()
                   }).then(function(result) {
                     console.log("time to update notes: " + result.notes.length);
