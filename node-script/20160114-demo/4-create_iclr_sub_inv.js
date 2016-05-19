@@ -218,15 +218,11 @@ var subInv = {
 		    'signatures': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
 		    'writers': { 'values-regex': '~.*' },    // this regex demands that the author reveal his/her ~ handle
 		    'readers': { 
-		    	'values-regex': '~.*', 
+		    	'values': ['everyone'], 
 		    	description: 'The users who will be allowed to read the above content.'
 		    },
 		    'content': {
-		    	'type': {
-					    'order': 0,
-					    'value': 'Unofficial review'
-					},
-					'title': {
+		    	'title': {
 				    'order': 1,
 				    'value-regex': '.{0,500}',
 				    'description': 'Brief summary of your review.'
@@ -397,11 +393,6 @@ var subInv = {
 		    	description: 'The users who will be allowed to read the above content.'
 		    },
 		    'content': {
-					'type': {
-					    'order': 0,
-					    'value': 'Paper review',
-					    'description': 'Type of review.'
-					},
 					'title': {
 					    'order': 1,
 					    'value-regex': '.{0,500}',
