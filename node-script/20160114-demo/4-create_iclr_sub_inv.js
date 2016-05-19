@@ -120,8 +120,7 @@ var subInv = {
 		    	description: 'Your displayed identity associated with the above content.' 
 		    },    // this regex demands that the author reveal his/her ~ handle
 		    'writers': { 
-		    	'values-regex': '~.*',
-		    	description: 'Your displayed identity associated with the above content.' 
+		    	'values-regex': '~.*' 
 		    },    // this regex demands that the author reveal his/her ~ handle
 		    'readers': { 
 		    	values: ['everyone'] ,
@@ -226,8 +225,7 @@ var subInv = {
 		    	description: 'Your displayed identity associated with the above content.'
 		    },    // this regex demands that the author reveal his/her ~ handle
 		    'writers': { 
-		    	'values-regex': '~.*', 
-		    	description: 'Your displayed identity associated with the above content.'
+		    	'values-regex': '~.*' 
 		    },    // this regex demands that the author reveal his/her ~ handle
 		    'readers': { 
 		    	'values': ['everyone'], 
@@ -403,8 +401,7 @@ var subInv = {
 		    },  // author reveals their ~ handle or remains anonymous
 		    // This reviewer has not been assigned yet
 		    'writers': { 
-		    	'values-regex': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + ')',
-		    	 description: 'Your displayed identity associated with the above content.'
+		    	'values-regex': '((~.*)|ICLR.cc/2016/workshop/paper/' + count + '/reviewer/' + rev_num + ')'
 		    },  // author reveals their ~ handle or remains anonymous
 		    'readers': { 
 		    	values: ['everyone'] ,
