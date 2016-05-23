@@ -52,9 +52,15 @@ var subInv = {
     'reply': {
 			'forum': null,        // this will be set automatically
 			'parent': null,       // the response to this invite will be a forum root
-			'signatures': { 'values-regex': '~.*' },     // signatures must reveal their ~ handle
+			'signatures': { 
+				'values-regex': '~.*',
+				description: 'Your displayed identity associated with the above content.' 
+			},     // signatures must reveal their ~ handle
 			'writers': { 'values-regex': '~.*' },     // the writers must also reveal their ~ handle
-			'readers': { values: ['everyone'] },
+			'readers': { 
+				values: ['everyone'],
+				description: 'The users who will be allowed to read the above content.'
+			},
 			'content': {
 			    'title': {
 				'order': 3,
