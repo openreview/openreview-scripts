@@ -100,7 +100,7 @@ var subInv = {
 			    }
 			}
     },
-    'process': (function (token, invitation, note, count, lib) {
+    'process': (function () {
 	var request = lib.request;             // this is messy; on the server I can only use arango's request library
 	// TODO AK: should we move away from using the node.js request library in favor of arango only?
 
@@ -145,7 +145,7 @@ var subInv = {
 			}
 		    }
 		},
-		'process': (function (token, invitation, note, count, lib) {
+		'process': (function () {
 		    //figure out the signatures of the original note
 		    var or3origNote = {
 			'url': 'http://localhost:3000/notes?id=' + note.forum,
@@ -275,7 +275,7 @@ var subInv = {
 					}
 		  }
 		},
-		'process': (function (token, invitation, note, count, lib) {
+		'process': (function () {
 		    //figure out the signatures of the original note
 		    var or3origNote = {
 			'url': 'http://localhost:3000/notes?id=' + note.forum,
@@ -451,7 +451,7 @@ var subInv = {
 					}
 		    }
 		},
-		'process': (function (token, invitation, note, count, lib) {
+		'process': (function () {
 		    //figure out the signatures of the original note
 		    var or3origNote = {
 			'url': 'http://localhost:3000/notes?id=' + note.forum,
@@ -495,7 +495,7 @@ var subInv = {
 		    // This effectively makes it impossible to submit another review
 		    var fulfilled_review_invite = invitation;
 		    fulfilled_review_invite.invitees = [];
-		    fulfilled_review_invite.process = (function (token, invitation, note, count, lib) {
+		    fulfilled_review_invite.process = (function () {
 			console.log("THIS REVIEW HAS ALREADY BEEN SUBMITTED");
 			return true;
 		    }) + "";
