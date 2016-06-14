@@ -4,8 +4,8 @@ var fs = require('fs');
 var request = require('request');
 
 // The open iew local url
-var grpUrl = 'http://localhost:3000/groups';
-var loginUrl = 'http://localhost:3000/login';
+var grpUrl = 'http://localhost:80/groups';
+var loginUrl = 'http://localhost:80/login';
 
 var headers = { 'User-Agent': 'test-create-script' };
 
