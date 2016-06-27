@@ -4,9 +4,9 @@ var fs = require('fs');
 var request = require('request');
 
 // The open review local url
-var loginUrl = 'http://localhost:3000/login';
-var inviteUrl = 'http://localhost:3000/invitations';
-var mailUrl = 'http://localhost:3000/mail';
+var loginUrl = 'http://localhost:80/login';
+var inviteUrl = 'http://localhost:80/invitations';
+var mailUrl = 'http://localhost:80/mail';
 
 var headers = { 'User-Agent': 'test-create-script' };
 
@@ -100,7 +100,7 @@ var subInv = {
 			    }
 			}
     },
-    'process': (function (token, invitation, note, count, lib) {
+    'process': (function () {
 	var request = lib.request;             // this is messy; on the server I can only use arango's request library
 	// TODO AK: should we move away from using the node.js request library in favor of arango only?
 
@@ -145,10 +145,10 @@ var subInv = {
 			}
 		    }
 		},
-		'process': (function (token, invitation, note, count, lib) {
+		'process': (function () {
 		    //figure out the signatures of the original note
 		    var or3origNote = {
-			'url': 'http://localhost:3000/notes?id=' + note.forum,
+			'url': 'http://localhost:80/notes?id=' + note.forum,
 			'method': 'GET',
 			'json': true,
 			'port': 8529,
@@ -168,7 +168,7 @@ var subInv = {
 		    };
 
 		    var or3commentMail = {
-			'url': 'http://localhost:3000/mail',
+			'url': 'http://localhost:80/mail',
 			'method': 'POST',
 			'port': 8529,
 			'json': true,
@@ -191,7 +191,7 @@ var subInv = {
 
 	var quick_comment_invite = create_quick_comment_invite(noteID, forum, count);
 	var or3comment_invite = {
-	    'url': 'http://localhost:3000/invitations',
+	    'url': 'http://localhost:80/invitations',
 	    'method': 'POST',
 	    'port': 8529,
 	    'json': true,
@@ -275,10 +275,10 @@ var subInv = {
 					}
 		  }
 		},
-		'process': (function (token, invitation, note, count, lib) {
+		'process': (function () {
 		    //figure out the signatures of the original note
 		    var or3origNote = {
-			'url': 'http://localhost:3000/notes?id=' + note.forum,
+			'url': 'http://localhost:80/notes?id=' + note.forum,
 			'method': 'GET',
 			'json': true,
 			'port': 8529,
@@ -298,7 +298,7 @@ var subInv = {
 		    };
 
 		    var or3commentMail = {
-			'url': 'http://localhost:3000/mail',
+			'url': 'http://localhost:80/mail',
 			'method': 'POST',
 			'port': 8529,
 			'json': true,
@@ -322,7 +322,7 @@ var subInv = {
 	var unofficialreview_invite = create_unofficialreview_invite(noteID, forum, count);
 
 	var or3unofficialreview_invite = {
-	    'url': 'http://localhost:3000/invitations',
+	    'url': 'http://localhost:80/invitations',
 	    'method': 'POST',
 	    'port': 8529,
 	    'json': true,
@@ -357,7 +357,7 @@ var subInv = {
 	};
 
 	var or3paper_grp = {
-	    'url': 'http://localhost:3000/groups',
+	    'url': 'http://localhost:80/groups',
 	    'method': 'POST',
 	    'port': 8529,
 	    'json': true,
@@ -368,7 +368,7 @@ var subInv = {
 	};
 
 	var or3rev_grp = {
-	    'url': 'http://localhost:3000/groups',
+	    'url': 'http://localhost:80/groups',
 	    'method': 'POST',
 	    'port': 8529,
 	    'json': true,
@@ -451,10 +451,10 @@ var subInv = {
 					}
 		    }
 		},
-		'process': (function (token, invitation, note, count, lib) {
+		'process': (function () {
 		    //figure out the signatures of the original note
 		    var or3origNote = {
-			'url': 'http://localhost:3000/notes?id=' + note.forum,
+			'url': 'http://localhost:80/notes?id=' + note.forum,
 			'method': 'GET',
 			'json': true,
 			'port': 8529,
@@ -474,7 +474,7 @@ var subInv = {
 		    };
 
 		    var or3commentMail = {
-			'url': 'http://localhost:3000/mail',
+			'url': 'http://localhost:80/mail',
 			'method': 'POST',
 			'port': 8529,
 			'json': true,
@@ -495,13 +495,13 @@ var subInv = {
 		    // This effectively makes it impossible to submit another review
 		    var fulfilled_review_invite = invitation;
 		    fulfilled_review_invite.invitees = [];
-		    fulfilled_review_invite.process = (function (token, invitation, note, count, lib) {
+		    fulfilled_review_invite.process = (function () {
 			console.log("THIS REVIEW HAS ALREADY BEEN SUBMITTED");
 			return true;
 		    }) + "";
 
 		    var or3fulfilled_rev = {
-			'url': 'http://localhost:3000/invitations',
+			'url': 'http://localhost:80/invitations',
 			'method': 'POST',
 			'port': 8529,
 			'json': true,
@@ -522,7 +522,7 @@ var subInv = {
 	var rev_inv_2 = create_reviewer_invite(2);
 
 	var or3rev_inv_1 = {
-	    'url': 'http://localhost:3000/invitations',
+	    'url': 'http://localhost:80/invitations',
 	    'method': 'POST',
 	    'port': 8529,
 	    'json': true,
@@ -537,7 +537,7 @@ var subInv = {
 	console.log(resp);
 
 	var or3rev_inv_2 = {
-	    'url': 'http://localhost:3000/invitations',
+	    'url': 'http://localhost:80/invitations',
 	    'method': 'POST',
 	    'port': 8529,
 	    'json': true,

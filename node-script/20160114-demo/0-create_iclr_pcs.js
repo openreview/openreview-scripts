@@ -4,9 +4,9 @@ var fs = require('fs');
 var request = require('request');
 
 // The open review local url
-var regUrl = 'http://localhost:3000/register';
-var grpUrl = 'http://localhost:3000/groups';
-var loginUrl = 'http://localhost:3000/login';
+var regUrl = 'http://localhost:80/register';
+var grpUrl = 'http://localhost:80/groups';
+var loginUrl = 'http://localhost:80/login';
 
 var headers = { 'User-Agent': 'test-create-script' };
 

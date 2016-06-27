@@ -2,10 +2,12 @@
 
 var fs = require('fs');
 var request = require('request');
+var or3lib = require('../../../or3/or3lib');
+
 
 // The open review local url
-var grpUrl = 'http://localhost:3000/groups';
-var loginUrl = 'http://localhost:3000/login';
+var grpUrl = 'http://localhost:80/groups';
+var loginUrl = 'http://localhost:80/login';
 
 var headers = { 'User-Agent': 'test-create-script' };
 
@@ -86,4 +88,10 @@ function create_groups() {
       }
     });
 }
+
 create_groups();
+
+//add workshop to host group:
+or3lib.getRootTokenP().then(token => or3lib.addHostMember("ICLR.cc/2016/workshop", token))
+
+
