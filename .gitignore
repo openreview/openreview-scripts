@@ -1,1 +1,2 @@
 *.sw?
+node-script/node_modules/*

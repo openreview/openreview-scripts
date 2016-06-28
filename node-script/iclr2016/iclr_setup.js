@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var port = process.argv[2] || 3000;
 
-var or3client = require('../../or3/client').mkClient(port);
+var or3client = require('../../../or3/client').mkClient(port);
 var fs = require('fs');
 var request = require('request');
 var iclr_params = require('./iclr_params.js')

@@ -1,4 +1,4 @@
-var or3client = require('../../or3/client');
+var or3client = require('../../../or3/client');
 var fs = require('fs');
 var _ = require('lodash');
 
