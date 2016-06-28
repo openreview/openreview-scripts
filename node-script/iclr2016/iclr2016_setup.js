@@ -1,10 +1,9 @@
 #!/usr/bin/env node
-var port = process.argv[2] || 3000;
+var url = process.argv[2] || 'http://localhost:3000';
 
-var or3client = require('../../../or3/client').mkClient(port);
+var or3client = require('../../../or3/client').mkClient(url);
 var fs = require('fs');
-var request = require('request');
-var iclr_params = require('./iclr_params.js')
+var iclr_params = require('./iclr2016_params.js')
 
 // The open review local url
 var grpUrl = or3client.grpUrl;
@@ -52,7 +51,7 @@ var submissionProcess = function() {
       'signatures': ['ICLR.cc/2016/workshop'],
       'writers': ['ICLR.cc/2016/workshop'],
       'invitees': ['~'],
-      'noninvitees': note.content.author_emails.trim().split(",")
+      'noninvitees': note.content.author_emails.trim().split(","),
       'process': or3client.reviewProcess,
       'reply':{
         'forum': note.id, 
@@ -88,6 +87,4 @@ or3client.getUserTokenP(rootUser).then(function(token){
   ), 'POST', token))
   .then(result => or3client.addHostMember(workshop.id, token))
   .then(result => console.log(workshop.id+' added to homepage'))
-
-
 })

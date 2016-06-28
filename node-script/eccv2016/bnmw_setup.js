@@ -2,9 +2,9 @@
   This script sets the basic settings for the ECCV BNMW conference from scratch.
 */
 
-var port = process.argv[2] || 3000;
+var url = process.argv[2] || 'http://localhost:3000';
 
-var or3client = require('../../or3/client').mkClient(port);
+var or3client = require('../../../or3/client').mkClient(url);
 var bnmw = require('./bnmw_params.js')
 var fs = require('fs');
 var _ = require('lodash');
@@ -29,7 +29,7 @@ var wrapper_group2 = bnmw.wrapper_group2;
 
 //REMINDER: Any variables in the submissionProcess function must be accessible from 'lib'
 var submissionProcess = function () {
-  var or3client = lib.or3client.mkClient(3000);
+  var or3client = lib.or3client;
   console.log(lib)
   var list = note.invitation.split('/')
   list.splice(list.indexOf('-',1));
@@ -40,7 +40,7 @@ var submissionProcess = function () {
       'signatures':['ECCV2016.org/BNMW'],
       'writers':['ECCV2016.org/BNMW'],
       'invitees': ['~'],
-      'process':or3client.commentProcess,
+      'process':or3client.commentProcess+'',
       'reply': { 
         'forum': note.forum
       }
@@ -54,7 +54,7 @@ var submissionProcess = function () {
       'signatures': ['ECCV2016.org/BNMW'],
       'writers': ['ECCV2016.org/BNMW'],
       'invitees': ['~'],
-      'process':or3client.reviewProcess,
+      'process':or3client.reviewProcess+'',
       'reply': { 
         'forum': note.id, 
         'parent': note.id,

@@ -26,7 +26,7 @@ var workshop = {
   'readers': ['everyone'],
   'members': [eccv.id],
   'signatories': [eccv.id,eccv.id+'/BNMW'],
-  'web': fs.readFileSync('web-field-workshop.html', "utf8")
+  'web': fs.readFileSync('bnmw_webfield.html', "utf8")
 };
 
 var paper = {
