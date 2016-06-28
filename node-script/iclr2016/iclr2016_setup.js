@@ -28,7 +28,7 @@ var rootUser = {
 }
 
 var submissionProcess = function() {
-  var or3client = lib.or3client.mkClient(3000);
+  var or3client = lib.or3client;
 
   //create a comment invitation
   var comment_invite = or3client.createCommentInvitation(
@@ -36,7 +36,7 @@ var submissionProcess = function() {
       'signatures':['ICLR.cc/2016/workshop'],
       'writers':['ICLR.cc/2016/workshop'],
       'invitees': ['~'],
-      'process':or3client.commentProcess,
+      'process':or3client.commentProcess+'',
       'reply': { 
         'forum': note.forum,
       }
@@ -52,7 +52,7 @@ var submissionProcess = function() {
       'writers': ['ICLR.cc/2016/workshop'],
       'invitees': ['~'],
       'noninvitees': note.content.author_emails.trim().split(","),
-      'process': or3client.reviewProcess,
+      'process': or3client.reviewProcess+'',
       'reply':{
         'forum': note.id, 
         'parent': note.id,
