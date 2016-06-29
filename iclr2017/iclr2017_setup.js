@@ -1,6 +1,6 @@
 var url = process.argv[2] || 'http://localhost:3000';
 
-var or3client = require('../../../or3/client').mkClient(url);
+var or3client = require('../../or3/client').mkClient(url);
 var fs = require('fs');
 var iclr_params = require('./iclr2017_params.js')
 
@@ -13,14 +13,30 @@ var mailUrl = or3client.mailUrl;
 var notesUrl = or3client.notesUrl;
 
 or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
-  or3client.or3request(grpUrl, iclr_params.iclr17, 'POST', token)
-  .then(result=> or3client.or3request(grpUrl, iclr_params.workshop, 'POST', token))
-  .then(result=> or3client.addHostMember("ICLR.cc/2017/workshop", token))
+  or3client.or3request(grpUrl, iclr_params.iclr, 'POST', token)
+  .then(result=> or3client.or3request(regUrl, {id: iclr_params.hugo.id, needsPassword: true}, 'POST', token))
+  .then(result=> or3client.activateUser(iclr_params.hugo.first, iclr_params.hugo.last, iclr_params.hugo.id))
+
+  /*
+  .then(result=> or3client.or3request(regUrl, {id: iclr_params.oriol.id, needsPassword: true}, 'POST', token))
+  .then(result=> or3client.activateUser(iclr_params.oriol.first, iclr_params.oriol.last, iclr_params.oriol.id))
+
+  .then(result=> or3client.or3request(regUrl, {id: iclr_params.marcAurelio.id, needsPassword: true}, 'POST', token))
+  .then(result=> or3client.activateUser(iclr_params.marcAurelio.first, iclr_params.marcAurelio.last, iclr_params.marcAurelio.id))
+  
+  .then(result=> or3client.or3request(regUrl, {id: iclr_params.tara.id, needsPassword: true}, 'POST', token))
+  .then(result=> or3client.activateUser(iclr_params.tara.first, iclr_params.tara.last, iclr_params.tara.id))
+  
+  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshop, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshopProgramChairs, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshopAreaChairs, 'POST', token))
+  .then(result=> or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
   .then(result=> or3client.or3request(inviteUrl, or3client.createSubmissionInvitation(
     { 
-      'id':iclr_params.workshop.id+'/-/submission', 
-      'signatures':[iclr_params.workshop.id], 
-      'writers':[iclr_params.workshop.id], 
+      'id':iclr_params.iclr2017workshop.id+'/-/submission', 
+      'signatures':[iclr_params.iclr2017workshop.id], 
+      'writers':[iclr_params.iclr2017workshop.id], 
       'invitees':['~'],
       'reply':{
         'content': {
@@ -64,7 +80,7 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
       }
     }
   ), 'POST', token))
-  .then(result => or3client.addHostMember(workshop.id, token))
-  .then(result => console.log(workshop.id+' added to homepage'))
-  
+  .then(result => or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
+  .then(result => console.log(iclr_params.iclr2017workshop.id+' added to homepage'))
+  */
 })
