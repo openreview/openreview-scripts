@@ -4,7 +4,7 @@
 
 var url = process.argv[2] || 'http://localhost:3000';
 
-var or3client = require('../../../or3/client').mkClient(url);
+var or3client = require('../../or3/client').mkClient(url);
 var bnmw = require('./bnmw_params.js')
 var fs = require('fs');
 var _ = require('lodash');
