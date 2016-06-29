@@ -1,6 +1,6 @@
 var url = process.argv[2] || 'http://localhost:3000';
 
-var or3client = require('../../../or3/client').mkClient(url);
+var or3client = require('../../or3/client').mkClient(url);
 var fs = require('fs');
 var iclr_params = require('./iclr2017_params.js')
 
