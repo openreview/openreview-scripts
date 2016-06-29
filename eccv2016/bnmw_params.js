@@ -55,7 +55,6 @@ var noteBody = {
   'readers':["everyone"],
   'signatures':["~super_user1"],
   'writers':["~super_user1"],
-  'ddateStack':[1466453400000]
 };
 
 //DEMO HACK
