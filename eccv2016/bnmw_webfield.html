@@ -55,7 +55,7 @@
         httpGet(url, queryOrBody, function(result) {
           df.resolve(result);
         }, function(err) {
-          df.reject(result);
+          df.reject(err);
         });
         return df.promise();
       };
@@ -86,7 +86,7 @@
           $attach('#invitation', 'mkInvitationButton', [invitation, function() {
             var signaturesP = invitationP.then(function(invitation) {
               if (user) {
-                return httpGetP('groups', {listRegex: invitation.reply.signatures['values-regex'], signatory: user.id}).then(function(result) {
+                return httpGetP('groups', {regex: invitation.reply.signatures['values-regex'], signatory: user.id}).then(function(result) {
                   return result.groups.map(function(g) {
                     return g.id;
                   });

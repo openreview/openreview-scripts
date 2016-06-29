@@ -11,7 +11,6 @@ module.exports = {
   'rootUser':rootUser
 };
 
-
 /*
 
 SCENARIO DETAILS:
