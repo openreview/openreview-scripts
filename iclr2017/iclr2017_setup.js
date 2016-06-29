@@ -12,25 +12,41 @@ var inviteUrl = or3client.inviteUrl;
 var mailUrl = or3client.mailUrl;
 var notesUrl = or3client.notesUrl;
 
+//REMINDER: Any variables in the submissionProcess function must be accessible from 'lib'
+var submissionProcess = function () {
+  var or3client = lib.or3client;
+
+  var open_review_invitation = or3client.createReviewInvitation(
+    { 'id': 'iclr.cc/2017/workshop/-/review/'+note.id,
+      'signatures': ['iclr.cc/2017/workshop/areachairs/1','iclr.cc/2017/workshop'],
+      'writers': ['iclr.cc/2017/workshop/areachairs/1','iclr.cc/2017/workshop'],
+      'invitees': ['~'],
+      'process':or3client.reviewProcess+'',
+      'reply': { 
+        'forum': note.id, 
+        'parent': note.id,
+        'writers': {'values-regex':'~.*|reviewer-.+'},
+        'signatures': {'values-regex':'~.*|reviewer-.+'}
+      }
+    }
+  );
+  or3client.or3request(or3client.inviteUrl, open_review_invitation, 'POST', token).catch(error=>console.log(error));
+
+  return true;
+};
+
+
 or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
   or3client.or3request(grpUrl, iclr_params.iclr, 'POST', token)
-  .then(result=> or3client.or3request(regUrl, {id: iclr_params.hugo.id, needsPassword: true}, 'POST', token))
-  .then(result=> or3client.activateUser(iclr_params.hugo.first, iclr_params.hugo.last, iclr_params.hugo.id))
 
-  /*
-  .then(result=> or3client.or3request(regUrl, {id: iclr_params.oriol.id, needsPassword: true}, 'POST', token))
-  .then(result=> or3client.activateUser(iclr_params.oriol.first, iclr_params.oriol.last, iclr_params.oriol.id))
-
-  .then(result=> or3client.or3request(regUrl, {id: iclr_params.marcAurelio.id, needsPassword: true}, 'POST', token))
-  .then(result=> or3client.activateUser(iclr_params.marcAurelio.first, iclr_params.marcAurelio.last, iclr_params.marcAurelio.id))
-  
-  .then(result=> or3client.or3request(regUrl, {id: iclr_params.tara.id, needsPassword: true}, 'POST', token))
-  .then(result=> or3client.activateUser(iclr_params.tara.first, iclr_params.tara.last, iclr_params.tara.id))
-  
   .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshop, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshopProgramChairs, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshopAreaChairs, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.programChair1, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair1, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair1reviewers, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer1, 'POST', token))
   .then(result=> or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
   .then(result=> or3client.or3request(inviteUrl, or3client.createSubmissionInvitation(
     { 
@@ -38,6 +54,7 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
       'signatures':[iclr_params.iclr2017workshop.id], 
       'writers':[iclr_params.iclr2017workshop.id], 
       'invitees':['~'],
+      'process':submissionProcess+'',
       'reply':{
         'content': {
           'title': {
@@ -82,5 +99,6 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
   ), 'POST', token))
   .then(result => or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
   .then(result => console.log(iclr_params.iclr2017workshop.id+' added to homepage'))
-  */
+  .then(result => or3client.or3request(notesUrl, iclr_params.note1, 'POST',token))
+  
 })
