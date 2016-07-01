@@ -79,9 +79,14 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
   .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshopAreaChairs, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.programChair1, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair1, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair2, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair1reviewers, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair2reviewers, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer1, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer2, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer3, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer4, 'POST', token))
+
   .then(result=> or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
   .then(result=> or3client.or3request(inviteUrl, or3client.createSubmissionInvitation(
     { 
