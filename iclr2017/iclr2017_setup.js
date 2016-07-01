@@ -32,6 +32,40 @@ var submissionProcess = function () {
   );
   or3client.or3request(or3client.inviteUrl, open_review_invitation, 'POST', token).catch(error=>console.log(error));
 
+  var messageProcess = function(){
+    return true;
+  };
+
+  var messageInvite = or3client.createCommentInvitation({
+    'id': 'iclr.cc/2017/workshop/-/reviewer/message',
+    'signatures':['iclr.cc/2017/workshop'],
+    'writers':['iclr.cc/2017/workshop'],
+    'invitees': ['iclr.cc/2017/workshop/areachairs/1'],
+    'readers': ['everyone'],
+    'process':messageProcess+'',
+    'reply': { 
+      'forum': note.forum,
+      'readers': { 
+        'values-regex': 'reviewer-.*',        
+        description: 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'Subject': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Subject line of your message.'
+        },
+        'Message': {
+          'order': 3,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your message.'
+        }
+      }
+    }
+  });
+
+  or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
+
   return true;
 };
 
@@ -47,6 +81,7 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
   .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair1, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair1reviewers, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer1, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer2, 'POST', token))
   .then(result=> or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
   .then(result=> or3client.or3request(inviteUrl, or3client.createSubmissionInvitation(
     { 
