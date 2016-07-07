@@ -204,7 +204,7 @@ var note1 = {
     'conflicts':'cs.berkeley.edu',
     'pdf':'http://arxiv.org/pdf/1407.1808v1.pdf',
     'title':'Note 1',
-    'keywords':'keyword'
+    'keywords':['keyword']
   },
   'forum': null,
   'invitation': iclr2017workshop.id+'/-/submission',
