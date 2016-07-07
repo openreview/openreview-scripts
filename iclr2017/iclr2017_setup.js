@@ -17,9 +17,9 @@ var submissionProcess = function () {
   var or3client = lib.or3client;
 
   var open_review_invitation = or3client.createReviewInvitation(
-    { 'id': 'iclr.cc/2017/workshop/-/review/'+note.id,
-      'signatures': ['iclr.cc/2017/workshop/areachairs/1','iclr.cc/2017/workshop'],
-      'writers': ['iclr.cc/2017/workshop/areachairs/1','iclr.cc/2017/workshop'],
+    { 'id': 'ICLR.cc/2017/workshop/-/review/'+note.id,
+      'signatures': ['ICLR.cc/2017/workshop/areachairs/1','ICLR.cc/2017/workshop'],
+      'writers': ['ICLR.cc/2017/workshop/areachairs/1','ICLR.cc/2017/workshop'],
       'invitees': ['~'],
       'process':or3client.reviewProcess+'',
       'reply': { 
@@ -37,10 +37,10 @@ var submissionProcess = function () {
   };
 
   var messageInvite = or3client.createCommentInvitation({
-    'id': 'iclr.cc/2017/workshop/-/reviewer/message',
-    'signatures':['iclr.cc/2017/workshop'],
-    'writers':['iclr.cc/2017/workshop'],
-    'invitees': ['iclr.cc/2017/workshop/areachairs/1'],
+    'id': 'ICLR.cc/2017/workshop/-/reviewer/message',
+    'signatures':['ICLR.cc/2017/workshop'],
+    'writers':['ICLR.cc/2017/workshop'],
+    'invitees': ['ICLR.cc/2017/workshop/areachairs/1'],
     'readers': ['everyone'],
     'process':messageProcess+'',
     'reply': { 
@@ -88,8 +88,7 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer4, 'POST', token))
 
   .then(result=> or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
-  .then(result=> or3client.createSubmissionInvitation(
-      { 
+  .then(result=> or3client.or3request(inviteUrl, or3client.createSubmissionInvitation({ 
         'id':iclr_params.iclr2017workshop.id+'/-/submission', 
         'signatures':[iclr_params.iclr2017workshop.id],
         'writers':[iclr_params.iclr2017workshop.id], 
@@ -133,12 +132,10 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
               //'value-regex': '[^,\\n]+(,[^,\\n]+)*',
               'values-regex': '.*',
               'description': 'Comma separated list of keywords.'
-            },
+            }
           }
         }
-      }
-    }
-  ), 'POST', token);
+      }), 'POST', token))
   .then(result => or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
   .then(result => console.log(iclr_params.iclr2017workshop.id+' added to homepage'))
   .then(result => or3client.or3request(notesUrl, iclr_params.note1, 'POST',token))
