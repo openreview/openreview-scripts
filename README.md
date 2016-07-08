@@ -1,2 +1,2 @@
 # or3scripts
-scripts to populate or3.  Tons of unused code that I got from zach. Very much under construction; not intended to be used by anyone yet. Makes use of Nodejs.
+scripts to populate or3. Written in Javascript, with plans to move over to Python. Currently contains multiple conferences organized by directory and year. This is a work in progress and is changing frequently.  
