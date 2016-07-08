@@ -20,7 +20,6 @@ var eccv = { //scrap this
 // GROUPS TO CREATE
 var workshop = {
   'id': eccv.id+'/BNMW',
-  'tagline':'Brave New Motion Representations Workshop 2016',
   'signatures': [rootUser.id],
   'writers': [eccv.id],
   'readers': ['everyone'],
