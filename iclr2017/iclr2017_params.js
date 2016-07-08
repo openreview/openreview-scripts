@@ -116,7 +116,7 @@ var reviewer1 = {
   'id': 'reviewer-1',
   'signatures': [areaChair1.id],
   'writers': [areaChair1.id],
-  'readers': ['everyone'],
+  'readers': [areaChair1.id, programChair1.id],
   'members': [michael.id],
   'signatories':[michael.id]
 }
@@ -130,7 +130,7 @@ var reviewer2 = {
   'id': 'reviewer-2',
   'signatures': [areaChair1.id],
   'writers': [areaChair1.id],
-  'readers': ['everyone'],
+  'readers': [areaChair1.id, programChair1.id],
   'members': [melisa.id],
   'signatories':[melisa.id]
 }
@@ -171,7 +171,7 @@ var reviewer3 = {
   'id': 'reviewer-3',
   'signatures': [areaChair2.id],
   'writers': [areaChair2.id],
-  'readers': ['everyone'],
+  'readers': [areaChair2.id, programChair1.id],
   'members': [thomas.id],
   'signatories':[thomas.id]
 }
@@ -185,7 +185,7 @@ var reviewer4 = {
   'id': 'reviewer-4',
   'signatures': [areaChair2.id],
   'writers': [areaChair2.id],
-  'readers': ['everyone'],
+  'readers': [areaChair2.id, programChair1.id],
   'members': [andrew.id],
   'signatories':[andrew.id]
 }
