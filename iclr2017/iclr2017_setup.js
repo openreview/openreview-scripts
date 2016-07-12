@@ -63,8 +63,36 @@ var submissionProcess = function () {
       }
     }
   });
-
   or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
+
+  var publicCommentInvite = or3client.createCommentInvitation({
+    'id': 'ICLR.cc/2017/workshop/-/public/comment',
+    'signatures':['ICLR.cc/2017/workshop'],
+    'writers':['ICLR.cc/2017/workshop'],
+    'invitees': ['~'],
+    'readers': ['everyone'],
+    'process':messageProcess+'',
+    'reply': { 
+      'forum': note.forum,
+      'readers': { 
+        'values-regex': '~.*',        
+        description: 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'Subject': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Subject line of your message.'
+        },
+        'Message': {
+          'order': 3,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your message.'
+        }
+      }
+    }
+  });
+  or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error));
 
   return true;
 };
@@ -86,8 +114,6 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer2, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer3, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer4, 'POST', token))
-
-  .then(result=> or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
   .then(result=> or3client.or3request(inviteUrl, or3client.createSubmissionInvitation({ 
         'id':iclr_params.iclr2017workshop.id+'/-/submission', 
         'signatures':[iclr_params.iclr2017workshop.id],
@@ -137,7 +163,6 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
         }
       }), 'POST', token))
   .then(result => or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
-  .then(result => console.log(iclr_params.iclr2017workshop.id+' added to homepage'))
   .then(result => or3client.or3request(notesUrl, iclr_params.note1, 'POST',token))
   
 })
