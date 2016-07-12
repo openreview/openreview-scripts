@@ -28,6 +28,9 @@ class client(object):
         hash = HMAC.new(secret, msg=data, digestmod=SHA256)
         return hash.hexdigest()
 
+    def printPrettyNote(self,request):
+        print json.dumps(json.loads(request.text), indent=4, sort_keys=True)
+
     def createBaseInvitation(self, params=None):
         invitation = {
             'id': None,

@@ -1,3 +1,10 @@
+###############################################################################
+# Setup python script takes as input the CSV files above and creates group for 
+# ICLR.cc/2017/pc, areachairs, individual ACs, reviewers-invited, and creates 
+# reviewers-invited.web Javascript for handling reviewer invitations; if they 
+# accept, their email address is added to group ICLR.cc/2017/reviewers.
+###############################################################################
+
 import os, sys
 import csv
 
@@ -9,6 +16,13 @@ import iclr2017_params
 pcs_arg = sys.argv[1]
 acs_arg = sys.argv[2]
 reviewer_candidates_arg = sys.argv[3]
+
+## Initialize the client library with username and password
+or3 = client.client('OpenReview.net','12345678')
+
+
+
+
 
 ## Read in and save the program chairs, area chairs, and reviewer candidates from csv files
 with open(pcs_arg, 'rb') as csvfile:
@@ -32,13 +46,6 @@ with open(reviewer_candidates_arg, 'rb') as csvfile:
 print "program chairs: "+str(iclr2017_params.iclr2017programChairs['members'])
 print "area chairs: "+str(iclr2017_params.iclr2017areaChairs['members'])
 print "reviewers invited: "+str(iclr2017_params.iclr2017reviewersInvited['members'])
-
-
-
-
-
-## Initialize the client library with username and password
-or3 = client.client('OpenReview.net','12345678')
 
 
 
