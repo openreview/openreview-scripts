@@ -136,11 +136,11 @@ for count, reviewer in enumerate(iclr2017_params.iclr2017reviewersInvited['membe
     print 'hash:' + str(hashKey)
     url = "http://localhost:3000/invitation?id=" + requestForReviewerId + "&email=" + reviewer + "&key=" + hashKey + "&response="
     message = "You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.\n\n"
-    message = message+"To ACCEPT the invitation, please click on the following link: \n\n"
-    message = message+url + "Yes\n\n"
+    message = message+ "To ACCEPT the invitation, please click on the following link: \n\n"
+    message = message+ url + "Yes\n\n"
     message = message+ "To DECLINE the invitation, please click on the following link: \n\n"
     message = message+ url + "No\n\n" + "Thank you"
-    requests.post(or3.mailUrl, json={ 'groups': [reviewer], 'subject': "OpenReview invitation response" , 'message': message}, headers=or3.headers);
+    requests.post(or3.mailUrl, json={'groups': [reviewer], 'subject': "OpenReview invitation response" , 'message': message}, headers=or3.headers);
 
 
 

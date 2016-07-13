@@ -230,7 +230,8 @@ class client(object):
         r = requests.get(self.grpUrl, params={'id':groupId}, headers=self.headers)
         group = json.loads(r.content)['groups'][0]
         pydash.assign(group, {'members': group['members']+[member]})
-        requests.post(self.grpUrl, json=group, headers=self.headers)
+        rp = requests.post(self.grpUrl, json=group, headers=self.headers)
+        rp.raise_for_status()
         print "Group " + member + " added to " + groupId
     
     def removeGroupMember(self,groupId, member):
