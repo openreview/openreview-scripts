@@ -5,7 +5,7 @@ import json
 import os
 from Crypto.Hash import HMAC, SHA256
 
-class client(object):
+class Client(object):
 
     def __init__(self, username, password, base_url='http://localhost:3000', process_dir='../process/', webfield_dir='../webfield/'):
         self.base_url = base_url
@@ -286,8 +286,10 @@ class client(object):
             return r
 
     def set_invitation(self, inputs, outputdir=None):
+        print inputs
         r = requests.post(self.invitations_url, json=inputs, headers=self.headers)
         r.raise_for_status()
+        print r.text
         if outputdir == None:
             return r
         else:
@@ -308,28 +310,54 @@ class client(object):
 
 
 
-class group(object):
+class Group(object):
+    
     def __init__(self, id_, writers=None, members=None, readers=None, signatories=None, web=None):
         self.body = {
             'id': id_,
-            'signatures': [id_] if writers==None else writers,
-            'writers': [id_] if writers==None else writers,
-            'members': [] if members==None else members,
-            'readers': [id_] if readers==None and writers==None else writers if readers==None else readers,
-            'signatories': [id_] if signatories==None else signatories,
-            'web': web
-        }
+            ## id is always id_
 
-class invitation(object):
-    def __init__(self, id_, web=None, process=None):
-        self.body = {
-            'id': id_,
-            'signatures': [id_],
-            'writers': [id_],
-            'members': [],
-            'readers': [id_],
-            'signatories': [id_],
-            'web': web,
-            'process': process,
-            'reply':{}
+            'signatures': ['/'.join(id_.split('/')[:-1])] if writers==None else writers,
+            'writers': ['/'.join(id_.split('/')[:-1])] if writers==None else writers,
+            ## signatures and writers default to the id of this group's assumed parent group
+            ##      eg. if id_ is /this/is/a/group/path, then the parent group is assumed to be /this/is/a/group
+            ## signatures = writers because the first writer is considered to have edited the document
+
+            'members': [] if members==None else members,
+            ## members defaults to the empty list
+            
+            'readers': [id_] if readers==None and writers==None else writers if readers==None else readers,
+            ## readers defaults to id_. 
+            ## if readers is explicitly set, then readers = readers.
+            ## if readers is NOT set, but writers is, then readers = writers
+
+            'signatories': [id_] if signatories==None else signatories,
+            ## signatories defaults to id_
         }
+        if web != None:
+            with open(web) as f:
+                self.body['web'] = f.read()
+
+class Invitation(object):
+    def __init__(self, inviter, suffix, writers=None, invitees=None, readers=None, reply=None, web=None, process=None):
+        self.body = {
+            'id': inviter+'/-/'+suffix,
+            ## e.g. inviter = 'ICLR.cc/2017/conference', suffix = 'submission'
+
+            'signatures': [inviter] if writers==None else writers,
+            'writers': [inviter] if writers==None else writers,
+            'invitees': ['~'] if invitees==None else invitees,
+
+            'readers': [inviter] if readers==None else readers,
+            ## double check that this is not a problem for the invitees;
+            ## i.e., if readers are restricted but invitees are not, can the right invitees still respond to this invitation?
+
+            'reply':{} if reply==None else reply
+        }
+        if web != None:
+            with open(web) as f:
+                self.body['web'] = f.read()
+
+        if process != None:
+            with open(process) as f:
+                self.body['process'] = f.read()
