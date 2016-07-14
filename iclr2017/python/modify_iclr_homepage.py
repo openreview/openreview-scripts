@@ -11,7 +11,6 @@ import sys
 import re
 import client
 import requests
-import getopt
 import argparse
 import json
 

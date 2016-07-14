@@ -5,94 +5,97 @@
 # accept, their email address is added to group ICLR.cc/2017/reviewers.
 ###############################################################################
 
+
 import os, sys
 import csv
-
-import client
 import pydash
 import requests
-import iclr2017_params
 
-pcs_arg = sys.argv[1]
-acs_arg = sys.argv[2]
-reviewer_candidates_arg = sys.argv[3]
+import params
+
+sys.path.append('/Users/michaelspector/projects/openreview/or3scripts/')
+print sys.path 
+from client import *
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
+parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
+parser.add_argument('programchairs', help="csv file containing the email addresses of the program chair(s)")
+parser.add_argument('areachairs', help="csv file containing the email addresses of the area chairs")
+parser.add_argument('reviewers', help="csv file containing the email addresses of the candidate reviewers")
+args = parser.parse_args()
+
+pcs_arg = args.programchairs
+acs_arg = args.areachairs
+reviewer_candidates_arg = args.reviewers
 
 ## Initialize the client library with username and password
-or3 = client.client('OpenReview.net','12345678')
-
-
-
-
+or3 = client(args.username,args.password)
 
 ## Read in and save the program chairs, area chairs, and reviewer candidates from csv files
 with open(pcs_arg, 'rb') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='|')
     for row in reader:
         for email in row:
-            iclr2017_params.iclr2017programChairs['members'].append(email)
+            params.iclr2017programchairs['members'].append(email)
 
 with open(acs_arg, 'rb') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='|')
     for row in reader:
         for email in row:
-            iclr2017_params.iclr2017areaChairs['members'].append(email)
+            params.iclr2017areaChairs['members'].append(email)
 
 with open(reviewer_candidates_arg, 'rb') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='|')
     for row in reader:
         for email in row:
-            iclr2017_params.iclr2017reviewersInvited['members'].append(email)
+            params.iclr2017reviewersInvited['members'].append(email)
 
-print "program chairs: "+str(iclr2017_params.iclr2017programChairs['members'])
-print "area chairs: "+str(iclr2017_params.iclr2017areaChairs['members'])
-print "reviewers invited: "+str(iclr2017_params.iclr2017reviewersInvited['members'])
-
-
-
+print "program chairs: "+str(params.iclr2017programchairs['members'])
+print "area chairs: "+str(params.iclr2017areaChairs['members'])
+print "reviewers invited: "+str(params.iclr2017reviewersInvited['members'])
 
 
 ## Collect groups to be generated
-groups = [  iclr2017_params.iclr,
-            iclr2017_params.iclr2017,
-            iclr2017_params.iclr2017programChairs,
-            iclr2017_params.iclr2017areaChairs,
-            iclr2017_params.iclr2017reviewers,
-            iclr2017_params.iclr2017reviewersInvited,
-            iclr2017_params.iclr2017reviewersDeclined,
-            iclr2017_params.iclr2017conference
+groups = [  params.iclr,
+            params.iclr2017,
+            params.iclr2017programchairs,
+            params.iclr2017areaChairs,
+            params.iclr2017reviewers,
+            params.iclr2017reviewersInvited,
+            params.iclr2017reviewersDeclined,
+            params.iclr2017conference
             ]
 
 ## Create groups for individual area chairs and add them to list of groups
-for count, ac in enumerate(iclr2017_params.iclr2017areaChairs['members']):
+for count, ac in enumerate(params.iclr2017areaChairs['members']):
     acGroup = {
-        'id': iclr2017_params.iclr2017['id']+'/areachair'+str(count), #Note the singular form of "areachair"
-        'signatures':[iclr2017_params.iclr2017areaChairs['id']],
-        'writers':[iclr2017_params.iclr2017areaChairs['id']],
+        'id': params.iclr2017['id']+'/areachair'+str(count), #Note the singular form of "areachair"
+        'signatures':[params.iclr2017areaChairs['id']],
+        'writers':[params.iclr2017areaChairs['id']],
         'readers':['everyone'],
         'members': [ac],
-        'signatories': [iclr2017_params.iclr2017areaChairs['id']+str(count), ac]
+        'signatories': [params.iclr2017areaChairs['id']+str(count), ac]
     }
     groups.append(acGroup)
 
 ## Post the groups
 for g in groups:
-    requests.post(or3.grpUrl, json=g, headers=or3.headers)
-or3.addGroupMember('host',iclr2017_params.iclr2017conference['id'])
+    or3.set_group(g)
 
-
-
-
+or3.add_group_member('host',params.iclr2017conference['id'])
 
 ## Collect invitations to be generated
-invitations = [ or3.createSubmissionInvitation(iclr2017_params.subInvitationBody) ]
+invitations = [ or3.create_submission_invitation(params.subInvitationBody) ]
 
 ## Create 'request for availability to review' invitations
 
-requestForReviewerId = iclr2017_params.iclr2017['id'] + '/-/request/to/review/invitation'
+requestForReviewerId = params.iclr2017['id'] + '/-/request/to/review/invitation'
 requestForReviewerBody = {
     'id': requestForReviewerId,
-    'signatures': [iclr2017_params.iclr2017['id']],
-    'writers': [iclr2017_params.iclr2017['id']],
+    'signatures': [params.iclr2017['id']],
+    'writers': [params.iclr2017['id']],
     'readers': ['everyone'],
     'invitees': ['everyone'],
     'reply' : { 
@@ -118,36 +121,37 @@ requestForReviewerBody = {
         }
     }
 }
-with open('./process/responseInvitationProcess_iclr2017.js') as f: 
+with open('../process/submissionProcess_iclr2017.js') as f: 
     requestForReviewerBody['process'] = f.read()
-with open('../iclr2017/web-field-invitation.html') as f:
-    requestForReviewerBody['web'] = f.read()
 
-invitations.append(or3.createBaseInvitation(requestForReviewerBody))
+with open('../webfield/web-field-invitation.html') as f: 
+    requestForReviewerBody['web'] = f.read()
+    
+invitations.append(or3.create_base_invitation(requestForReviewerBody))
 
 ## Post the invitations
 for i in invitations:
-    requests.post(or3.inviteUrl, json=i, headers=or3.headers)
+    or3.set_invitation(i)
 
 ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
-for count, reviewer in enumerate(iclr2017_params.iclr2017reviewersInvited['members']):
+for count, reviewer in enumerate(params.iclr2017reviewersInvited['members']):
     print 'reviewer:' + str(reviewer)
-    hashKey = or3.createHash(reviewer, requestForReviewerId)
-    print 'hash:' + str(hashKey)
-    url = "http://localhost:3000/invitation?id=" + requestForReviewerId + "&email=" + reviewer + "&key=" + hashKey + "&response="
+    hashkey = or3.get_hash(reviewer, requestForReviewerId)
+    print 'hash:' + str(hashkey)
+    url = "http://localhost:3000/invitation?id=" + requestForReviewerId + "&email=" + reviewer + "&key=" + hashkey + "&response="
     message = "You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.\n\n"
     message = message+ "To ACCEPT the invitation, please click on the following link: \n\n"
     message = message+ url + "Yes\n\n"
     message = message+ "To DECLINE the invitation, please click on the following link: \n\n"
     message = message+ url + "No\n\n" + "Thank you"
-    requests.post(or3.mailUrl, json={'groups': [reviewer], 'subject': "OpenReview invitation response" , 'message': message}, headers=or3.headers);
+    or3.send_mail("OpenReview invitation response", [reviewer], message)
 
 
 
 
 
 ## Post a sample note
-requests.post(or3.notesUrl, json=iclr2017_params.note1, headers=or3.headers)
+or3.set_note(params.note1)
 
 
 
