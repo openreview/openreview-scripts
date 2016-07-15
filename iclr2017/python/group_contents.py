@@ -7,12 +7,17 @@ import sys
 import client
 import requests
 
-username = sys.argv[1]
-password = sys.argv[2]
-input_group = sys.argv[3]
+## Import statements and argument handling
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
+parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
+parser.add_argument('group', help="the group to examine")
+parser.add_argument('--output', help="the directory to save the output csv")
+args = parser.parse_args()
 
 ## Initialize the client library with username and password
-or3 = client.client(username, password)
+or3 = client.client(args.username, args.password)
 
 group = requests.get(or3.grpUrl, params={'id':input_group}, headers=or3.headers)
 

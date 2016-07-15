@@ -22,7 +22,7 @@ iclr2017 = {
     'readers': ['everyone'],
     'signatories': [iclr['id'], iclr['id']+'/2017'],
     'signatures': [iclr['id']],
-    'writers': [iclr['id']+'/2017',iclr['id']]
+    'writers': [iclr['id']] #iclr['id']+'/2017',
 }
 
 iclr2017programchairs = {

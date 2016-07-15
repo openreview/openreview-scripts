@@ -37,32 +37,32 @@ var iclr2017 = {
   'signatories': [iclr.id, iclr.id+'/2017']
 };
 
-var iclr2017workshop = {
-  'id': iclr2017.id+'/workshop',
+var iclr2017conference = {
+  'id': iclr2017.id+'/conference',
   'signatures': [iclr2017.id],
   'writers': [iclr2017.id],
   'readers': ['everyone'],
-  'members': [], //members of the workshop group are set below
-  'signatories': [iclr2017.id, iclr2017.id+'/workshop'],
-  'web': fs.readFileSync('./iclr2017_webfield.html', "utf8")
+  'members': [], //members of the conference group are set below
+  'signatories': [iclr2017.id, iclr2017.id+'/conference'],
+  'web': fs.readFileSync('../webfield/iclr2017_webfield.html', "utf8")
 };
 
-var iclr2017workshopAreaChairs = {
-  'id': iclr2017workshop.id+'/areachairs',
-  'signatures':[iclr2017workshop.id],
-  'writers':[iclr2017workshop.id],
+var iclr2017conferenceAreaChairs = {
+  'id': iclr2017conference.id+'/areachairs',
+  'signatures':[iclr2017conference.id],
+  'writers':[iclr2017conference.id],
   'readers':['everyone'],
   'members':[], //members of the area chairs group are set below
-  'signatories':[iclr2017workshop.id+'/areachairs']
+  'signatories':[iclr2017conference.id+'/areachairs']
 }
 
-var iclr2017workshopProgramChairs = {
-  'id': iclr2017workshop.id+'/programchairs',
-  'signatures': [iclr2017workshop.id],
-  'writers': [iclr2017workshop.id],
+var iclr2017conferenceProgramChairs = {
+  'id': iclr2017conference.id+'/programchairs',
+  'signatures': [iclr2017conference.id],
+  'writers': [iclr2017conference.id],
   'readers': ['everyone'],
   'members': [], //members of program chairs group are set below
-  'signatories':[iclr2017workshop.id+'/programchairs']
+  'signatories':[iclr2017conference.id+'/programchairs']
 };
 
 
@@ -73,14 +73,14 @@ var hugo = {
   'last':'LaRochelle'
 };
 var programChair1 = {
-  'id': iclr2017workshopProgramChairs.id+'/1',
-  'signatures':[iclr2017workshopProgramChairs.id],
-  'writers':[iclr2017workshopProgramChairs.id],
+  'id': iclr2017conferenceProgramChairs.id+'/1',
+  'signatures':[iclr2017conferenceProgramChairs.id],
+  'writers':[iclr2017conferenceProgramChairs.id],
   'readers':['everyone'],
   'members': [hugo.id],
-  'signatories': [iclr2017workshopProgramChairs.id+'/1', hugo.id]
+  'signatories': [iclr2017conferenceProgramChairs.id+'/1', hugo.id]
 };
-iclr2017workshopProgramChairs.members = [programChair1.id];
+iclr2017conferenceProgramChairs.members = [programChair1.id];
 
 
 
@@ -90,12 +90,12 @@ var oriol = {
   'last': 'Vinyals'
 }
 var areaChair1 = {
-  'id': iclr2017workshopAreaChairs.id+'/1',
-  'signatures':[iclr2017workshopAreaChairs.id],
-  'writers':[iclr2017workshopAreaChairs.id],
+  'id': iclr2017conferenceAreaChairs.id+'/1',
+  'signatures':[iclr2017conferenceAreaChairs.id],
+  'writers':[iclr2017conferenceAreaChairs.id],
   'readers':['everyone'],
   'members': [oriol.id],
-  'signatories': [iclr2017workshopAreaChairs.id+'/1', oriol.id]
+  'signatories': [iclr2017conferenceAreaChairs.id+'/1', oriol.id]
 };
 
 var areaChair1reviewers = {
@@ -143,15 +143,15 @@ var tara = {
   'last': 'Sainath'
 }
 var areaChair2 = {
-  'id': iclr2017workshopAreaChairs.id+'/2',
-  'signatures':[iclr2017workshopAreaChairs.id],
-  'writers':[iclr2017workshopAreaChairs.id],
+  'id': iclr2017conferenceAreaChairs.id+'/2',
+  'signatures':[iclr2017conferenceAreaChairs.id],
+  'writers':[iclr2017conferenceAreaChairs.id],
   'readers':['everyone'],
   'members': [tara.id],
-  'signatories': [iclr2017workshopAreaChairs.id+'/2', tara.id]
+  'signatories': [iclr2017conferenceAreaChairs.id+'/2', tara.id]
 };
 
-iclr2017workshopAreaChairs.members = [areaChair1.id, areaChair2.id];
+iclr2017conferenceAreaChairs.members = [areaChair1.id, areaChair2.id];
 
 var areaChair2reviewers = {
   'id': areaChair2.id+'/reviewers',
@@ -193,7 +193,7 @@ areaChair2reviewers.members = [reviewer3.id, reviewer4.id]
 
 
 
-iclr2017workshop.members = [].concat(iclr2017workshopProgramChairs.members, iclr2017workshopAreaChairs.members);
+iclr2017conference.members = [].concat(iclr2017conferenceProgramChairs.members, iclr2017conferenceAreaChairs.members);
 
 var note1 = {
   'content': {
@@ -207,7 +207,7 @@ var note1 = {
     'keywords':['keyword']
   },
   'forum': null,
-  'invitation': iclr2017workshop.id+'/-/submission',
+  'invitation': iclr2017conference.id+'/-/submission',
   'parent': null,
   'pdfTransfer':"url",
   'readers':["everyone"],
@@ -218,9 +218,9 @@ var note1 = {
 
 module.exports.iclr = iclr;
 module.exports.iclr2017 = iclr2017;
-module.exports.iclr2017workshop = iclr2017workshop
-module.exports.iclr2017workshopAreaChairs = iclr2017workshopAreaChairs;
-module.exports.iclr2017workshopProgramChairs = iclr2017workshopProgramChairs;
+module.exports.iclr2017conference = iclr2017conference
+module.exports.iclr2017conferenceAreaChairs = iclr2017conferenceAreaChairs;
+module.exports.iclr2017conferenceProgramChairs = iclr2017conferenceProgramChairs;
 module.exports.hugo = hugo;
 module.exports.programChair1 = programChair1;
 module.exports.oriol = oriol;

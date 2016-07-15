@@ -16,7 +16,6 @@ class Client(object):
         self.mail_url = self.base_url+'/mail'
         self.notes_url = self.base_url+'/notes'
         self.user = {'id':username, 'password':password}
-        print str(requests.post(self.login_url, json=self.user).json())
         self.token = str(requests.post(self.login_url, json=self.user).json()['token'])
         self.headers = self.get_header(self.token)
 
@@ -286,7 +285,6 @@ class Client(object):
             return r
 
     def set_invitation(self, inputs, outputdir=None):
-        print inputs
         r = requests.post(self.invitations_url, json=inputs, headers=self.headers)
         r.raise_for_status()
         print r.text
