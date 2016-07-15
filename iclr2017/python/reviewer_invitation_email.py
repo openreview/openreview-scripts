@@ -4,42 +4,35 @@
 ###############################################################################
 
 import sys
-import client
-import requests
+sys.path.append('/Users/michaelspector/projects/openreview/or3scripts/')
+from client import *
 
-username = sys.argv[1]
-password = sys.argv[2]
-include_unconfirmed = True if len(sys.argv) < 4 else sys.argv[3]
+## Import statements and argument handling
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
+parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
+parser.add_argument('--recipients', help="the group that will recieve this message")
+parser.add_argument('--subject', help="your email's subject line in string form (e.g. 'this is a subject line')")
+parser.add_argument('--message', help="your email's message in string form (e.g. 'this is a message')")
+args = parser.parse_args()
+
 
 ## Initialize the client library with username and password
-or3 = client.client(username, password)
+or3 = Client(args.username, args.password)
 
-messageToAll = """
-Dear (prospective) reviewer,
+message = """
+Dear invited reviewer,
 
-For those of you that have accepted, we are pleased that you have decided
-to participate as a reviewer for ICLR 2017. 
+Thank you for deciding to participate as a reviewer for ICLR 2017! 
+You will be notified of further instructions shortly.
+
+Sincerely,
+the ICLR 2017 program chairs
 ...
-"""
+""" if args.message == None else args.message
 
-messageToAccepted = """
-Dear Reviewer,
+subject = 'A message to reviewers' if args.subject == None else args.subject,
+recipients = ['ICLR.cc/2017/reviewers'] if args.recipients == None else [args.recipients]
 
-Thank you for deciding to serve as a reviewer for ICLR 2017.
-...
-"""
-
-if include_unconfirmed == True:
-    mail = {
-        'groups': ['ICLR.cc/2017/reviewers', 'ICLR.cc/2017/reviewers-invited'],
-        'subject': 'A message to all invited reviewers',
-        'message': messageToAll
-    }
-else:
-    mail = {
-        'groups': ['ICLR.cc/2017/reviewers'],
-        'subject': 'A message to reviewers',
-        'message': messageToAccepted
-    }
-
-requests.post(or3.mailUrl, json=mail, headers=or3.headers)
+or3.send_mail(subject, recipients, message)

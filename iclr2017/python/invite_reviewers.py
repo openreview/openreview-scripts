@@ -7,35 +7,40 @@
 ###############################################################################
 
 import sys
+sys.path.append('/Users/michaelspector/projects/openreview/or3scripts/')
+from client import *
 import re
-import client
-import requests
 
-username = sys.argv[1]
-password = sys.argv[2]
+## Import statements and argument handling
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
+parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
+parser.add_argument('invitee', help="the group that will be invited to review")
+args = parser.parse_args()
+
 
 ## Initialize the client library with username and password
-or3 = client.client(username, password)
+or3 = Client(args.username, args.password)
 
 email_addresses=[]
 
-for arg in sys.argv[3:len(sys.argv)]:
-    if re.match(r"[^@]+@[^@]+\.[^@]+", arg):
-        email_addresses.append(arg)
-    else:
-        print "Invalid email address: "+arg
+if re.match(r"[^@]+@[^@]+\.[^@]+", args.invitee):
+    email_addresses.append(args.invitee)
+else:
+    print "Invalid email address: "+arg
 
-requestForReviewerId = 'ICLR.cc/2017/-/request/to/review/invitation'
+invitation_id = 'ICLR.cc/2017/-/reviewer_invitation'
 
 
 ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
 for count, reviewer in enumerate(email_addresses):
-    or3.addGroupMember('ICLR.cc/2017/reviewers-invited',reviewer)
-    hashKey = or3.createHash(reviewer, requestForReviewerId)
-    url = "http://localhost:3000/invitation?id=" + requestForReviewerId + "&email=" + reviewer + "&key=" + hashKey + "&response="
+    or3.add_group_member('ICLR.cc/2017/reviewers-invited',reviewer)
+    hashKey = or3.get_hash(reviewer, invitation_id)
+    url = "http://localhost:3000/invitation?id=" + invitation_id + "&email=" + reviewer + "&key=" + hashKey + "&response="
     message = "You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.\n\n"
     message = message+ "To ACCEPT the invitation, please click on the following link: \n\n"
     message = message+ url + "Yes\n\n"
     message = message+ "To DECLINE the invitation, please click on the following link: \n\n"
     message = message+ url + "No\n\n" + "Thank you"
-    requests.post(or3.mailUrl, json={'groups': [reviewer], 'subject': "OpenReview invitation response" , 'message': message}, headers=or3.headers)
+    or3.send_mail("OpenReview invitation response", [reviewer], message)

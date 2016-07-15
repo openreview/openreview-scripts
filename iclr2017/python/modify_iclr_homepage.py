@@ -8,9 +8,8 @@
 ###############################################################################
 
 import sys
-import re
-import client
-import requests
+sys.path.append('/Users/michaelspector/projects/openreview/or3scripts/')
+from client import *
 import argparse
 import json
 
@@ -21,17 +20,16 @@ parser.add_argument('webfield', help="html file that will replace the current IC
 parser.add_argument('-g','--group', help="the group whose webfield will be replaced (default: ICLR.cc/2017/conference)")
 args = parser.parse_args()
 
-or3 = client.client(args.username, args.password)
+or3 = Client(args.username, args.password)
 
 if args.group:
     group = args.group
 else:
     group = 'ICLR.cc/2017/conference'
-rGet = requests.get(or3.grpUrl, params={'id':group}, headers=or3.headers)
-rGet.raise_for_status()
-iclr2017conference = json.loads(rGet.content)['groups'][0]
+get_request = or3.get_group({'id':group})
+get_request.raise_for_status()
+iclr2017conference = json.loads(get_request.content)['groups'][0]
 with open(args.webfield) as f: 
-    print args.webfield
     iclr2017conference['web'] = f.read()
-    rPost = requests.post(or3.grpUrl, json=iclr2017conference, headers=or3.headers)
-    rPost.raise_for_status()
+    post_request = or3.set_group(iclr2017conference)
+    post_request.raise_for_status()

@@ -304,7 +304,8 @@ class Client(object):
             return r
 
     def send_mail(self, subject, recipients, message):
-        requests.post(self.mail_url, json={'groups': recipients, 'subject': subject , 'message': message}, headers=self.headers)
+        r = requests.post(self.mail_url, json={'groups': recipients, 'subject': subject , 'message': message}, headers=self.headers)
+        r.raise_for_status()
 
 
 

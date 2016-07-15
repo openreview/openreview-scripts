@@ -4,8 +4,9 @@
 ###############################################################################
 
 import sys
-import client
 import requests
+sys.path.append('/Users/michaelspector/projects/openreview/or3scripts/')
+from client import *
 
 ## Import statements and argument handling
 import argparse
@@ -16,9 +17,10 @@ parser.add_argument('group', help="the group to examine")
 parser.add_argument('--output', help="the directory to save the output csv")
 args = parser.parse_args()
 
+
 ## Initialize the client library with username and password
-or3 = client.client(args.username, args.password)
+or3 = Client(args.username, args.password)
 
-group = requests.get(or3.grpUrl, params={'id':input_group}, headers=or3.headers)
+group = or3.get_group({'id':args.group})
 
-or3.printPrettyNote(group)
+print or3.pretty_json(group)
