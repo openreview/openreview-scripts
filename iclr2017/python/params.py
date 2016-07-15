@@ -1,35 +1,37 @@
 import pydash
+import sys
 
 rootUser = {
-    'id':'OpenReview.net',
-    'password':'12345678'
+    'id':'OpenReview.net'
 }
 
+## This group should probably already exist by the time these scripts get sent to the PCs,
+## so remember to remove it and test before then
 iclr = {
     'id': 'ICLR.cc',
-    'signatures': [rootUser['id']],
-    'writers': ['ICLR.cc',rootUser['id']],
     'members': [rootUser['id']],
     'readers': ['everyone'],
-    'signatories': ['ICLR.cc', rootUser['id']]
+    'signatories': ['ICLR.cc', rootUser['id']],
+    'signatures': [rootUser['id']],
+    'writers': ['ICLR.cc',rootUser['id']]
 }
 
 iclr2017 = {
     'id': iclr['id']+'/2017',
-    'signatures': [iclr['id']],
-    'writers': [iclr['id']+'/2017',iclr['id']],
-    'readers': ['everyone'],
     'members': [],
-    'signatories': [iclr['id'], iclr['id']+'/2017']
+    'readers': ['everyone'],
+    'signatories': [iclr['id'], iclr['id']+'/2017'],
+    'signatures': [iclr['id']],
+    'writers': [iclr['id']] #iclr['id']+'/2017',
 }
 
-iclr2017programChairs = {
+iclr2017programchairs = {
     'id': iclr2017['id']+'/pc',
-    'signatures': [iclr2017['id']],
-    'writers': [iclr2017['id']+'/pc',iclr2017['id']],
-    'readers': ['everyone'],
     'members': [iclr2017['id']], #members of program chairs group are set by script
-    'signatories':[iclr2017['id']+'/pc']
+    'readers': ['everyone'],
+    'signatories':[iclr2017['id']+'/pc'],
+    'signatures': [iclr2017['id']],
+    'writers': [iclr2017['id']+'/pc',iclr2017['id']]
 }
 
 iclr2017areaChairs = {
@@ -53,7 +55,7 @@ iclr2017reviewersInvited = {
     'id': iclr2017['id']+'/reviewers-invited',
     'signatures': [iclr2017['id']],
     'writers': [iclr2017['id']+'/reviewers-invited',iclr2017['id']],
-    'readers': [iclr2017programChairs['id']],
+    'readers': [iclr2017programchairs['id']],
     'members': [], #members of reviewers-invited group are set by script
     'signatories': []   
 }
@@ -61,7 +63,7 @@ iclr2017reviewersDeclined = {
     'id': iclr2017['id']+'/reviewers-declined',
     'signatures': [iclr2017['id']],
     'writers': [iclr2017['id']],
-    'readers': [iclr2017programChairs['id']],
+    'readers': [iclr2017programchairs['id']],
     'members': [], #members of reviewers-declined group are added based on reviewer responses
     'signatories': []
 }
@@ -71,63 +73,12 @@ iclr2017conference = {
     'signatures': [iclr2017['id']],
     'writers': [iclr2017['id']],
     'readers': ['everyone'],
-    'members': [iclr2017programChairs['id'], iclr2017areaChairs['id']], #members of workshop group are set below
+    'members': [iclr2017programchairs['id'], iclr2017areaChairs['id']], #members of workshop group are set below
     'signatories': [iclr2017['id'], iclr2017['id']+'/conference']
 }
 
-with open('../iclr2017/iclr2017_webfield.html') as f: 
+with open('../webfield/iclr2017_webfield.html') as f: 
     iclr2017conference['web'] = f.read()
-
-
-
-
-
-oriol = {
-    'id': 'oriol@openreview.net',
-    'first': 'Oriol',
-    'last': 'Vinyals'
-}
-hugo = {
-    'id': 'hugo@openreview.net',
-    'first':'Hugo',
-    'last':'LaRochelle'
-}
-michael = {
-    'id': 'spector@cs.umass.edu',
-    'first':'Michael',
-    'last':'Spector'
-}
-melisa = {
-    'id':'melisabok@gmail.com',
-    'first':'Melisa',
-    'last':'Bok'
-}
-tara = {
-    'id': 'tara@openreview.net',
-    'first': 'Tara',
-    'last': 'Sainath'
-}
-thomas = {
-    'id': 'thomas@openreview.net',
-    'first':'Thomas',
-    'last':'Logan'
-}
-andrew = {
-    'id':'andrew@openreview.net',
-    'first':'Andrew',
-    'last':'McCallum'
-}
-
-
-# reviewer1 = {
-#     'id': 'reviewer-1',
-#     'signatures': [areaChair1['id']],
-#     'writers': [areaChair1['id']],
-#     'readers': [areaChair1['id'], iclr2017programChairs['id']],
-#     'members': [michael['id']],
-#     'signatories':[michael['id']]
-# }
-
 
 note1 = {
     'content': {
@@ -195,6 +146,6 @@ subInvitationBody = {
         }
     }
 }
-with open('./process/submissionProcess_iclr2017.js') as f: 
+with open('../process/submissionProcess_iclr2017.js') as f: 
     subInvitationBody['process'] = f.read()
 

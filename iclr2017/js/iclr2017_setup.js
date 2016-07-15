@@ -1,6 +1,6 @@
 var url = process.argv[2] || 'http://localhost:3000';
 
-var or3client = require('../../or3/client').mkClient(url);
+var or3client = require('../../../or3/client').mkClient(url);
 var fs = require('fs');
 var iclr_params = require('./iclr2017_params.js')
 
@@ -17,9 +17,9 @@ var submissionProcess = function () {
   var or3client = lib.or3client;
 
   var open_review_invitation = or3client.createReviewInvitation(
-    { 'id': 'ICLR.cc/2017/workshop/-/review/'+note.id,
-      'signatures': ['ICLR.cc/2017/workshop/areachairs/1','ICLR.cc/2017/workshop'],
-      'writers': ['ICLR.cc/2017/workshop/areachairs/1','ICLR.cc/2017/workshop'],
+    { 'id': 'ICLR.cc/2017/conference/-/review/'+note.id,
+      'signatures': ['ICLR.cc/2017/conference/areachairs/1','ICLR.cc/2017/conference'],
+      'writers': ['ICLR.cc/2017/conference/areachairs/1','ICLR.cc/2017/conference'],
       'invitees': ['~'],
       'process':or3client.reviewProcess+'',
       'reply': { 
@@ -37,10 +37,10 @@ var submissionProcess = function () {
   };
 
   var messageInvite = or3client.createCommentInvitation({
-    'id': 'ICLR.cc/2017/workshop/-/reviewer/message',
-    'signatures':['ICLR.cc/2017/workshop'],
-    'writers':['ICLR.cc/2017/workshop'],
-    'invitees': ['ICLR.cc/2017/workshop/areachairs/1'],
+    'id': 'ICLR.cc/2017/conference/-/reviewer/message',
+    'signatures':['ICLR.cc/2017/conference'],
+    'writers':['ICLR.cc/2017/conference'],
+    'invitees': ['ICLR.cc/2017/conference/areachairs/1'],
     'readers': ['everyone'],
     'process':messageProcess+'',
     'reply': { 
@@ -66,9 +66,9 @@ var submissionProcess = function () {
   or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
 
   var publicCommentInvite = or3client.createCommentInvitation({
-    'id': 'ICLR.cc/2017/workshop/-/public/comment',
-    'signatures':['ICLR.cc/2017/workshop'],
-    'writers':['ICLR.cc/2017/workshop'],
+    'id': 'ICLR.cc/2017/conference/-/public/comment',
+    'signatures':['ICLR.cc/2017/conference'],
+    'writers':['ICLR.cc/2017/conference'],
     'invitees': ['~'],
     'readers': ['everyone'],
     'process':messageProcess+'',
@@ -102,9 +102,9 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
   or3client.or3request(grpUrl, iclr_params.iclr, 'POST', token)
 
   .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017, 'POST', token))
-  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshop, 'POST', token))
-  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshopProgramChairs, 'POST', token))
-  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017workshopAreaChairs, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017conference, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017conferenceProgramChairs, 'POST', token))
+  .then(result=> or3client.or3request(grpUrl, iclr_params.iclr2017conferenceAreaChairs, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.programChair1, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair1, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.areaChair2, 'POST', token))
@@ -115,9 +115,9 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer3, 'POST', token))
   .then(result=> or3client.or3request(grpUrl, iclr_params.reviewer4, 'POST', token))
   .then(result=> or3client.or3request(inviteUrl, or3client.createSubmissionInvitation({ 
-        'id':iclr_params.iclr2017workshop.id+'/-/submission', 
-        'signatures':[iclr_params.iclr2017workshop.id],
-        'writers':[iclr_params.iclr2017workshop.id], 
+        'id':iclr_params.iclr2017conference.id+'/-/submission', 
+        'signatures':[iclr_params.iclr2017conference.id],
+        'writers':[iclr_params.iclr2017conference.id], 
         'invitees':['~'],
         'process':submissionProcess+'',
         'reply':{
@@ -162,7 +162,7 @@ or3client.getUserTokenP(iclr_params.rootUser).then(function(token){
           }
         }
       }), 'POST', token))
-  .then(result => or3client.addHostMember(iclr_params.iclr2017workshop.id, token))
+  .then(result => or3client.addHostMember(iclr_params.iclr2017conference.id, token))
   .then(result => or3client.or3request(notesUrl, iclr_params.note1, 'POST',token))
   
 })
