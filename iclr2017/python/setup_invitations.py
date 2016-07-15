@@ -11,7 +11,7 @@ import pydash
 import requests
 import params
 
-sys.path.append('/Users/michaelspector/projects/openreview/or3scripts/')
+sys.path.append('../..')
 from client import *
 
 ## Initialize the client library with username and password

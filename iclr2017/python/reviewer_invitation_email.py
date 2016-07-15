@@ -4,7 +4,7 @@
 ###############################################################################
 
 import sys
-sys.path.append('/Users/michaelspector/projects/openreview/or3scripts/')
+sys.path.append('../..')
 from client import *
 
 ## Import statements and argument handling
