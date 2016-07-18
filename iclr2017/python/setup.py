@@ -7,8 +7,6 @@
 
 
 
-
-
 ## Import statements and argument handling
 import argparse
 parser = argparse.ArgumentParser()
@@ -27,8 +25,6 @@ import params
 
 sys.path.append('../..')
 from client import *
-
-
 
 
 
@@ -57,20 +53,17 @@ or3 = Client(args.username,args.password)
 
 
 
-
-
-
 ## Initialize the groups
-iclr                     = Group('ICLR.cc', writers=['OpenReview.net'])
-iclr2017                 = Group('ICLR.cc/2017', readers=['everyone'], writers=['ICLR.cc'])
-iclr2017programchairs    = Group('ICLR.cc/2017/pc', readers=['everyone'], members=program_chairs)
-iclr2017areachairs       = Group('ICLR.cc/2017/areachairs', readers=['everyone'], members=area_chairs)
-iclr2017reviewers        = Group('ICLR.cc/2017/reviewers', readers=['everyone'])
-iclr2017reviewersinvited = Group('ICLR.cc/2017/reviewers-invited', readers=['ICLR.cc/2017/pc','ICLR.cc/2017'], members=reviewers_invited)
-iclr2017reviewersdeclined= Group('ICLR.cc/2017/reviewers-declined', readers=['ICLR.cc/2017/pc'])
-iclr2017conference       = Group('ICLR.cc/2017/conference', readers=['everyone'], members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], web='../webfield/iclr2017_webfield.html')
-groups = [iclr, iclr2017, iclr2017programchairs, iclr2017areachairs, iclr2017reviewers, iclr2017reviewersinvited, iclr2017reviewersdeclined, iclr2017conference]
-
+iclr                        = Group('ICLR.cc', writers=['OpenReview.net'])
+iclr2017                    = Group('ICLR.cc/2017', readers=['everyone'], writers=['ICLR.cc'], web='../webfield/iclr2017_webfield.html')
+iclr2017programchairs       = Group('ICLR.cc/2017/pc', readers=['everyone'], members=program_chairs)
+iclr2017areachairs          = Group('ICLR.cc/2017/areachairs', readers=['everyone'], members=area_chairs)
+iclr2017reviewers           = Group('ICLR.cc/2017/reviewers', readers=['everyone'])
+iclr2017reviewersinvited    = Group('ICLR.cc/2017/reviewers-invited', readers=['ICLR.cc/2017/pc','ICLR.cc/2017'], members=reviewers_invited)
+iclr2017reviewersdeclined   = Group('ICLR.cc/2017/reviewers-declined', readers=['ICLR.cc/2017/pc'])
+iclr2017conference          = Group('ICLR.cc/2017/conference', readers=['everyone'], members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], web='../webfield/iclr2017conference_webfield.html')
+iclr2017workshop            = Group('ICLR.cc/2017/workshop', readers=['everyone'], members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], web='../webfield/iclr2017workshop_webfield.html')
+groups = [iclr, iclr2017, iclr2017programchairs, iclr2017areachairs, iclr2017reviewers, iclr2017reviewersinvited, iclr2017reviewersdeclined, iclr2017conference, iclr2017workshop]
 
 ## Create groups for individual area chairs and add them to the groups dict
 for count, ac in enumerate(iclr2017areachairs.body['members']):
@@ -78,7 +71,6 @@ for count, ac in enumerate(iclr2017areachairs.body['members']):
                     writers=['ICLR.cc/2017/areachairs'],
                     readers=['everyone'],
                     members=[ac])
-
     print "Adding area chair "+str(ac)+" as a member of group ICLR.cc/2017/areachair"+str(count)
     groups.append(acgroup)
 
@@ -87,5 +79,7 @@ for g in groups:
     print "Posting group: "+g.body['id']
     or3.set_group(g.body)
 
+
+
 ## Add the conference group to the home page
-or3.add_group_member('host',iclr2017conference.body['id'])
+or3.add_group_member('host',iclr2017.body['id'])
