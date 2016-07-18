@@ -19,9 +19,7 @@ args = parser.parse_args()
 
 import os, sys
 import csv
-import pydash
 import requests
-import params
 
 sys.path.append('../..')
 from client import *
