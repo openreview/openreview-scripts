@@ -77,7 +77,7 @@ iclr2017conference = {
     'signatories': [iclr2017['id'], iclr2017['id']+'/conference']
 }
 
-with open('../webfield/iclr2017_webfield.html') as f: 
+with open('../webfield/iclr2017conference_webfield.html') as f: 
     iclr2017conference['web'] = f.read()
 
 note1 = {
