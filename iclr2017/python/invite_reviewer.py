@@ -38,9 +38,22 @@ for count, reviewer in enumerate(email_addresses):
     or3.add_group_member('ICLR.cc/2017/reviewers-invited',reviewer)
     hashKey = or3.get_hash(reviewer, invitation_id)
     url = "http://localhost:3000/invitation?id=" + invitation_id + "&email=" + reviewer + "&key=" + hashKey + "&response="
-    message = "You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.\n\n"
-    message = message+ "To ACCEPT the invitation, please click on the following link: \n\n"
-    message = message+ url + "Yes\n\n"
-    message = message+ "To DECLINE the invitation, please click on the following link: \n\n"
-    message = message+ url + "No\n\n" + "Thank you"
+    
+    message = """You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.
+
+    To ACCEPT the invitation, please click on the following link:
+    
+    """+url+"""Yes
+
+    To DECLINE the invitation, please click on the following link:
+
+    """+url+"""No
+
+    Thank you,
+    The ICLR 2017 Program Chairs
+
+    """
+
     or3.send_mail("OpenReview invitation response", [reviewer], message)
+
+
