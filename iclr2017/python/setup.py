@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 ###############################################################################
 # Setup python script takes as input the CSV files above and creates group for 
 # ICLR.cc/2017/pc, areachairs, individual ACs, reviewers-invited, and creates 

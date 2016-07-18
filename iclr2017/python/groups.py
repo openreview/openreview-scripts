@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 ###############################################################################
 # Group dump python script will simply print the contents of any given group.  
 # PCs can run this as they wish to inspect the system.

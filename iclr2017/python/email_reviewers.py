@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 ###############################################################################
 # Reviewer invitation python script sends email to all invited reviewers.  PCs 
 # can edit the message and run this script themselves.
