@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 ###############################################################################
 # Individual reviewer invitation python script allows PCs to invite an 
 # additional individual reviewer, taking any number of email addresses as 

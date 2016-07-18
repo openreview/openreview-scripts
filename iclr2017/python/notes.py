@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 ###############################################################################
 # Note dump python script will simply print the contents of papers/reviews/
 # comments matching certain criteria. PCs can run this as they wish to inspect 

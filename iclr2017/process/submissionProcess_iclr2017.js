@@ -10,8 +10,8 @@ function () {
       'reply': { 
         'forum': note.id, 
         'parent': note.id,
-        'writers': {'values-regex':'~.*|reviewer-.+'},
-        'signatures': {'values-regex':'~.*|reviewer-.+'}
+        'writers': {'values-regex':'~.*|ICLR.cc/2017/conference/paper.+/reviewer.+'},
+        'signatures': {'values-regex':'~.*|ICLR.cc/2017/conference/paper.+/reviewer.+'}
       }
     }
   );
@@ -96,7 +96,7 @@ function () {
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
   
-  // Create an empty group for reviewers of this paper, e.g. "ICLR.cc/2017/conference/paper/444"
+  // Create an empty group for reviewers of this paper, e.g. "ICLR.cc/2017/conference/paper444"
   var reviewer_group = {
     'id': 'ICLR.cc/2017/conference/paper444',
     'signatures': ['ICLR.cc/2017/conference'],
