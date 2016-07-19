@@ -4,22 +4,25 @@
 # Not to spec
 ###############################################################################
 
-
-## Import statements and argument handling
+## Import statements
 import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
-parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
-args = parser.parse_args()
-
-import os, sys
-import requests
-
+import csv
+import getpass
+import sys
 sys.path.append('../..')
 from client import *
 
+## Argument handling
+parser = argparse.ArgumentParser()
+parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
+args = parser.parse_args()
+
 ## Initialize the client library with username and password
-or3 = Client(args.username,args.password)
+username = raw_input("OpenReview username (e.g. username@umass.edu): ")
+password = getpass.getpass()
+or3 = Client(username,password)
+
+
 
 reviewers = or3.get_group({'id':'ICLR.cc/2017/reviewers'}).json()['groups'][0]['members']
 

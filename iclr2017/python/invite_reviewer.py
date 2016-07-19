@@ -8,22 +8,24 @@
 # needed.
 ###############################################################################
 
+## Import statements
+import argparse
+import csv
+import getpass
+import re
 import sys
 sys.path.append('../..')
 from client import *
-import re
 
-## Import statements and argument handling
-import argparse
+## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
-parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
-parser.add_argument('invitee', help="the group that will be invited to review")
+parser.add_argument('-i','--invitee', help="the group that will be invited to review")
 args = parser.parse_args()
 
-
 ## Initialize the client library with username and password
-or3 = Client(args.username, args.password)
+username = raw_input("OpenReview username (e.g. username@umass.edu): ")
+password = getpass.getpass("Password: ")
+or3 = Client(username,password)
 
 email_addresses=[]
 

@@ -23,20 +23,29 @@
 
       var httpGetP = function(url, queryOrBody) {
         var df = $.Deferred();
-        httpGet(url, queryOrBody, function(result) {
+        httpGet(url, queryOrBody, 
+        function(result) {
           df.resolve(result);
-        }, function(err) {
+        },
+        function(result) {
           df.reject(result);
         });
         return df.promise();
       };
 
       var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
+        console.log('result',result)
         return result.invitations[0];
+      },
+      function(error){
+        return error
       });
 
       var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
+      },      
+      function(error){
+        return error
       });
 
 
@@ -45,43 +54,50 @@
           invitation: invitation
         });
         sm.update('notes', notes);
-      });
+        
+        sm.addHandler('conference', {
+          invitationTrip: function(invitationTrip) { if (invitationTrip) {
+            var invitation = invitationTrip.invitation;
+            $attach('#invitation', 'mkInvitationButton', [invitation, function() {
+              if (user) {
+                $attach('#notes', 'mkNewNoteEditor', [invitation, null, user, {
+                  onNoteCreated: function(idRecord) {
+                    httpGetP('notes', {
+                      invitation: 'ICLR.cc/2017/conference/-/submission', 
+                      maxtcdate: Date.now()
+                    }).then(function(result) {
+                      console.log("time to update notes: " + result.notes.length);
+                      sm.update('notes', result.notes);
+                    },
+                    function(error){
+                      return error
+                    });
+                  }
+                }], false);
+              } else {
+               promptLogin(user);
+              }
+            }], true);
+          }},
 
-      sm.addHandler('conference', {
-
-        invitationTrip: function(invitationTrip) { if (invitationTrip) {
-          var invitation = invitationTrip.invitation;
-          $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-            if (user) {
-              $attach('#notes', 'mkNewNoteEditor', [invitation, null, user, {
-                onNoteCreated: function(idRecord) {
-                  httpGetP('notes', {
-                    invitation: 'ICLR.cc/2017/conference/-/submission', 
-                    maxtcdate: Date.now()
-                  }).then(function(result) {
-                    console.log("time to update notes: " + result.notes.length);
-                    sm.update('notes', result.notes);
-                  });
-                }
-              }], false);
-            } else {
-             promptLogin(user);
+          notes: function(notes) {
+            if (notes) {
+              $('#notes').empty();
+              _.forEach(notes, function(note) {
+                $attach('#notes', 'mkNotePanel', [note, {
+                  titleLink: 'HREF',
+                  withReplyCount: true
+                }], true);
+              });
             }
-          }], true);
-        }},
-
-        notes: function(notes) {
-          if (notes) {
-            $('#notes').empty();
-            _.forEach(notes, function(note) {
-              $attach('#notes', 'mkNotePanel', [note, {
-                titleLink: 'HREF',
-                withReplyCount: true
-              }], true);
-            });
           }
-        }
+        });
+
+      })
+      .fail(function(){
+        console.log("Invitation and/or notes not found")
       });
+
       
 
 

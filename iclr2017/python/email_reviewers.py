@@ -5,23 +5,26 @@
 # can edit the message and run this script themselves.
 ###############################################################################
 
+## Import statements
+import argparse
+import csv
+import getpass
+import json
 import sys
 sys.path.append('../..')
 from client import *
 
-## Import statements and argument handling
-import argparse
+## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
-parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
-parser.add_argument('--recipients', help="the group that will recieve this message")
-parser.add_argument('--subject', help="your email's subject line in string form (e.g. 'this is a subject line')")
-parser.add_argument('--message', help="your email's message in string form (e.g. 'this is a message')")
+parser.add_argument('-r','--recipients', help="the group that will recieve this message")
+parser.add_argument('-s','--subject', help="your email's subject line in string form (e.g. 'this is a subject line')")
+parser.add_argument('-m','--message', help="your email's message in string form (e.g. 'this is a message')")
 args = parser.parse_args()
 
-
 ## Initialize the client library with username and password
-or3 = Client(args.username, args.password)
+username = raw_input("OpenReview username (e.g. username@umass.edu): ")
+password = getpass.getpass()
+or3 = Client(username,password)
 
 message = """
 Dear invited reviewer,
