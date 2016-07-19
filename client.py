@@ -5,6 +5,8 @@ import json
 import os
 from Crypto.Hash import HMAC, SHA256
 
+
+
 class Client(object):
 
     def __init__(self, username, password, base_url='http://localhost:3000', process_dir='../process/', webfield_dir='../webfield/'):
@@ -309,6 +311,7 @@ class Client(object):
 
 
 
+
 class Group(object):
     
     def __init__(self, id_, writers=None, members=None, readers=None, signatories=None, web=None):
@@ -336,6 +339,9 @@ class Group(object):
         if web != None:
             with open(web) as f:
                 self.body['web'] = f.read()
+
+
+
 
 class Invitation(object):
     def __init__(self, inviter, suffix, writers=None, invitees=None, readers=None, reply=None, web=None, process=None):

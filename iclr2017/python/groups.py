@@ -5,30 +5,47 @@
 # PCs can run this as they wish to inspect the system.
 ###############################################################################
 
-import sys
-import requests
+## Import statements
+import argparse
+import csv
+import getpass
 import json
+import sys
 sys.path.append('../..')
 from client import *
 
 ## Import statements and argument handling
-import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('username', help="Your OpenReview username (e.g. michael@openreview.net)")
-parser.add_argument('password', help="Your OpenReview password (e.g. abcd1234)")
-parser.add_argument('group', help="The group (or regex expression for a set of groups) to examine. (Example: ICLR.cc/2017/.* searches for all groups starting with ICLR.cc/2017/)")
-parser.add_argument('--output', help="the directory to save the output csv")
+parser.add_argument('-g','--group', help="The group (or regex expression for a set of groups) to examine. (Example: ICLR.cc/2017/.* searches for all groups starting with ICLR.cc/2017/)")
+parser.add_argument('-o','--output', help="The directory to save the output file")
+parser.add_argument('-f','--format', help="The file format to save. Choose either json or csv.")
 args = parser.parse_args()
 
-
 ## Initialize the client library with username and password
-or3 = Client(args.username, args.password)
+username = raw_input("OpenReview username (e.g. username@umass.edu): ")
+password = getpass.getpass()
+or3 = Client(username,password)
 
-group = or3.get_group({'regex':args.group})
 
-if args.output!=None:
+groups = json.loads(or3.get_group({'regex':args.group}).text)['groups']
+print groups
+print groups[0]
+if args.output!=None and args.format.lower()=="json":
     with open(args.output, 'w') as outfile:
-        json.dump(json.loads(group.text), outfile, indent=4, sort_keys=True)
+        json.dump(groups, outfile, indent=4, sort_keys=True)
 else:
-    print json.dumps(json.loads(group.text), indent=4, sort_keys=True)
+    print json.dumps(groups, indent=4, sort_keys=True)
 
+
+if args.output!=None and args.format.lower()=="csv":
+    with open(args.output, 'w') as outfile:
+        csvwriter = csv.writer(outfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        csvwriter.writerow(['original_id, members, readers, nonreaders'])
+        fmt = '%s%25s%25s%25s'
+        for count, group in enumerate(groups):
+            csvwriter.writerow(fmt % (groups[count]['origId'], groups[count]['members'], groups[count]['readers'],groups[count]['nonreaders']))
+
+# with open(write_dir, 'wb') as csvfile:
+#        csvwriter = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+#        for observation in data_to_write:
+#                csvwriter.writerow([observation.time,observation.feature_vector])

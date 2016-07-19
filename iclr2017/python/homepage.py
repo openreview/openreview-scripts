@@ -7,20 +7,28 @@
 # script and run it again later as they wish, to change home page contents.
 ###############################################################################
 
+## Import statements
+import argparse
+import csv
+import getpass
+import json
 import sys
 sys.path.append('../..')
 from client import *
-import argparse
-import json
 
+## Parse the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
-parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
-parser.add_argument('group', help="the group whose webfield will be replaced (default: ICLR.cc/2017/conference)")
-parser.add_argument('webfield', help="html file that will replace the current ICLR 2017 homepage")
+parser.add_argument('-g','--group', help="the group whose webfield will be replaced (default: ICLR.cc/2017/conference)")
+parser.add_argument('-w','--webfield', help="html file that will replace the current ICLR 2017 homepage")
 args = parser.parse_args()
 
-or3 = Client(args.username, args.password)
+## Initialize the client library with username and password
+username = raw_input("OpenReview username (e.g. username@umass.edu): ")
+password = getpass.getpass()
+or3 = Client(username,password)
+
+
+
 
 get_request = or3.get_group({'id':args.group})
 get_request.raise_for_status()

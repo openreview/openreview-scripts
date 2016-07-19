@@ -6,26 +6,27 @@
 # the system.
 ###############################################################################
 
-# This script depends on being able to search by prefix
-
+## Import statements
+import argparse
+import csv
+import getpass
 import sys
-import requests
 sys.path.append('../..')
 from client import *
 
-## Import statements and argument handling
-import argparse
+## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
-parser.add_argument('password', help="your OpenReview password (e.g. abcd1234)")
 parser.add_argument('--id', help="Id of the note to examine")
 parser.add_argument('--invitation','-inv', help="Notes that respond to this invitation")
 parser.add_argument('--output', '-o',help="the directory to save the output csv")
 args = parser.parse_args()
 
-
 ## Initialize the client library with username and password
-or3 = Client(args.username, args.password)
+username = raw_input("OpenReview username (e.g. username@umass.edu): ")
+password = getpass.getpass()
+or3 = Client(username,password)
+
+
 
 data = {}
 
