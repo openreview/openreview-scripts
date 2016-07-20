@@ -20,19 +20,23 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-p','--programchairs', help="csv file containing the email addresses of the program chair(s)")
 parser.add_argument('-a','--areachairs', help="csv file containing the email addresses of the area chairs")
 parser.add_argument('-r','--reviewers', help="csv file containing the email addresses of the candidate reviewers")
+parser.add_argument('-u','--baseurl', help="base URL for the server to connect to")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
-or3 = Client(username,password)
+if args.baseurl != None:
+    or3 = Client(username,password, baseurl=args.baseurl)
+else:
+    or3 = Client(username,password)
 
 
 
 ## Initialize the groups list
 iclr                        = Group('ICLR.cc', writers=['OpenReview.net'])
 iclr2017                    = Group('ICLR.cc/2017', readers=['everyone'], writers=['ICLR.cc'], web='../webfield/iclr2017_webfield.html')
-iclr2017conference          = Group('ICLR.cc/2017/conference', readers=['everyone'], members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], web='../webfield/iclr2017conference_webfield.html')
+iclr2017conference          = Group('ICLR.cc/2017/conference', readers=['everyone'], members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], signatories=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], web='../webfield/iclr2017conference_webfield.html')
 iclr2017workshop            = Group('ICLR.cc/2017/workshop', readers=['everyone'], members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], web='../webfield/iclr2017workshop_webfield.html')
 groups = [iclr, iclr2017, iclr2017conference, iclr2017workshop]
 

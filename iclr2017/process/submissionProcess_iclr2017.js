@@ -15,7 +15,7 @@ function () {
       }
     }
   );
-  or3client.or3request(or3client.inviteUrl, open_review_invitation, 'POST', token).catch(error=>console.log(error));
+  //or3client.or3request(or3client.inviteUrl, open_review_invitation, 'POST', token).catch(error=>console.log(error));
 
   var messageProcess = function(){
     return true;
@@ -49,7 +49,7 @@ function () {
       }
     }
   });
-  or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
+  //or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
   
   var publicCommentInvite = or3client.createCommentInvitation({
     'id': 'ICLR.cc/2017/conference/-/public/comment',
@@ -98,14 +98,14 @@ function () {
   
   // Create an empty group for reviewers of this paper, e.g. "ICLR.cc/2017/conference/paper444"
   var reviewer_group = {
-    'id': 'ICLR.cc/2017/conference/paper444',
+    'id': 'ICLR.cc/2017/conference/paper'+note.number,
     'signatures': ['ICLR.cc/2017/conference'],
     'writers': ['ICLR.cc/2017/conference'],
     'members': [],
     'readers': ['everyone'],
     'signatories': ['ICLR.cc/2017/conference']
   };
-  or3client.or3request( or3client.grpUrl, reviewer_group, 'POST', token )
+  //or3client.or3request( or3client.grpUrl, reviewer_group, 'POST', token )
 
   return true;
 };
