@@ -314,12 +314,12 @@ class Client(object):
 
 class Group(object):
     
-    def __init__(self, id_, writers=None, members=None, readers=None, signatories=None, web=None):
+    def __init__(self, id_, writers=None, members=None, readers=None, signatories=None, signatures=None, web=None):
         self.body = {
             'id': id_,
             ## id is always id_
 
-            'signatures': ['/'.join(id_.split('/')[:-1])] if writers==None else writers,
+            'signatures': ['/'.join(id_.split('/')[:-1])] if signatures==None and writers==None else writers if signatures==None else signatures, 
             'writers': ['/'.join(id_.split('/')[:-1])] if writers==None else writers,
             ## signatures and writers default to the id of this group's assumed parent group
             ##      eg. if id_ is /this/is/a/group/path, then the parent group is assumed to be /this/is/a/group
