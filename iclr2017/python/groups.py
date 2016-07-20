@@ -10,6 +10,7 @@ import argparse
 import csv
 import getpass
 import json
+import pydash
 import sys
 sys.path.append('../..')
 from client import *
@@ -28,8 +29,7 @@ or3 = Client(username,password)
 
 
 groups = json.loads(or3.get_group({'regex':args.group}).text)['groups']
-print groups
-print groups[0]
+
 if args.output!=None and args.format.lower()=="json":
     with open(args.output, 'w') as outfile:
         json.dump(groups, outfile, indent=4, sort_keys=True)
@@ -38,12 +38,12 @@ else:
 
 
 if args.output!=None and args.format.lower()=="csv":
-    with open(args.output, 'w') as outfile:
-        csvwriter = csv.writer(outfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-        csvwriter.writerow(['original_id, members, readers, nonreaders'])
-        fmt = '%s%25s%25s%25s'
+    with open(args.output, 'wb') as outfile:
+        fieldnames=['origId','members','readers']
+        csvwriter = csv.writer(outfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for count, group in enumerate(groups):
-            csvwriter.writerow(fmt % (groups[count]['origId'], groups[count]['members'], groups[count]['readers'],groups[count]['nonreaders']))
+            trimmed_group = {key: group[key] for key in fieldnames}
+            csvwriter.writerow(trimmed_group)
 
 # with open(write_dir, 'wb') as csvfile:
 #        csvwriter = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)

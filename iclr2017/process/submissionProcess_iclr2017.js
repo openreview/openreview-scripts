@@ -98,7 +98,7 @@ function () {
   
   // Create an empty group for reviewers of this paper, e.g. "ICLR.cc/2017/conference/paper444"
   var reviewer_group = {
-    'id': 'ICLR.cc/2017/conference/paper444',
+    'id': 'ICLR.cc/2017/conference/paper'+note.number,
     'signatures': ['ICLR.cc/2017/conference'],
     'writers': ['ICLR.cc/2017/conference'],
     'members': [],
