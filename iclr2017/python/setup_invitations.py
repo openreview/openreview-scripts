@@ -77,7 +77,7 @@ submission_reply = {
         }
     }
 }
-submission_invitation = Invitation('ICLR.cc/2017/conference','submission', readers=['everyone'], invitees=['~'], reply=submission_reply, process='../process/submissionProcess_iclr2017.js')
+submission_invitation = Invitation('ICLR.cc/2017/conference','submission', readers=['everyone'], invitees=['~'], signatures=['ICLR.cc/2017/pcs','ICLR.cc/2017/conference'] reply=submission_reply, process='../process/submissionProcess_iclr2017.js')
 
 ## Create 'request for availability to review' invitation
 reviewer_invitation_reply = {
