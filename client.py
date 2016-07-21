@@ -344,7 +344,7 @@ class Group(object):
 
 
 class Invitation(object):
-    def __init__(self, inviter, suffix, writers=None, invitees=None, readers=None, reply=None, web=None, process=None):
+    def __init__(self, inviter, suffix, writers=None, invitees=None, readers=None, reply=None, web=None, process=None, signatures=None):
         self.body = {
             'id': inviter+'/-/'+suffix,
             ## e.g. inviter = 'ICLR.cc/2017/conference', suffix = 'submission'
