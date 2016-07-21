@@ -99,9 +99,9 @@ if args.reviewers != None:
             for email in row:
                 reviewers_invited.append(email)
     
-    iclr2017reviewersinvited    = Group('ICLR.cc/2017/reviewers-invited', readers=['ICLR.cc/2017/pc','ICLR.cc/2017'], members=reviewers_invited)
-    iclr2017reviewers           = Group('ICLR.cc/2017/reviewers', readers=['everyone'])
-    iclr2017reviewersdeclined   = Group('ICLR.cc/2017/reviewers-declined', readers=['ICLR.cc/2017/pc'])
+    iclr2017reviewersinvited    = Group('ICLR.cc/2017/conference/reviewers-invited', readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'], writers=['ICLR.cc/2017/pcs'],members=reviewers_invited)
+    iclr2017reviewers           = Group('ICLR.cc/2017/conference/reviewers', readers=['everyone'])
+    iclr2017reviewersdeclined   = Group('ICLR.cc/2017/conference/reviewers-declined', readers=['ICLR.cc/2017/pcs'])
     groups = groups+[iclr2017reviewersinvited, iclr2017reviewers, iclr2017reviewersdeclined]
 
 

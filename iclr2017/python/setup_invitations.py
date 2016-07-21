@@ -77,7 +77,7 @@ submission_reply = {
         }
     }
 }
-submission_invitation = Invitation('ICLR.cc/2017/conference','submission', readers=['everyone'], invitees=['~'], reply=submission_reply, process='../process/submissionProcess_iclr2017.js', writers=['ICLR.cc/2017/conference', 'ICLR.cc/2017/pcs'])
+submission_invitation = Invitation('ICLR.cc/2017/conference','submission', readers=['everyone'], invitees=['~'], reply=submission_reply, process='../process/submissionProcess_iclr2017.js')
 
 ## Create 'request for availability to review' invitation
 reviewer_invitation_reply = {
@@ -108,7 +108,7 @@ reviewer_invitation_reply = {
         'values-regex': '\\(anonymous\\)'
     }
 }
-reviewer_invitation = Invitation('ICLR.cc/2017','reviewer_invitation', readers=['everyone'], invitees=['everyone'], reply=reviewer_invitation_reply, process='../process/responseInvitationProcess_iclr2017.js', web='../webfield/web-field-invitation.html')
+reviewer_invitation = Invitation('ICLR.cc/2017/conference','reviewer_invitation', readers=['everyone'], invitees=['everyone'], reply=reviewer_invitation_reply, process='../process/responseInvitationProcess_iclr2017.js', web='../webfield/web-field-invitation.html')
 
 invitations = [submission_invitation, reviewer_invitation]
 
@@ -119,7 +119,7 @@ for i in invitations:
 
 
 
-reviewers_invited = or3.get_group({'id':'ICLR.cc/2017/reviewers-invited'}).json()['groups'][0]['members']
+reviewers_invited = or3.get_group({'id':'ICLR.cc/2017/conference/reviewers-invited'}).json()['groups'][0]['members']
 
 
 ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
@@ -155,8 +155,8 @@ note1 = {
     'parent': None,
     'pdfTransfer':"url",
     'readers':["everyone"],
-    'signatures':["~super_user1"],
-    'writers':["~super_user1"],
+    'signatures':["~oriol_vinyals1"],
+    'writers':["~oriol_vinyals1"]
 }
 
 or3.set_note(note1)
