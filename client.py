@@ -333,7 +333,7 @@ class Group(object):
             ## if readers is explicitly set, then readers = readers.
             ## if readers is NOT set, but writers is, then readers = writers
 
-            'signatories': [id_] if signatories==None else signatories,
+            'signatories': [id_] if signatories==None else signatories
             ## signatories defaults to id_
         }
         if web != None:

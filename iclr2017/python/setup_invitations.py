@@ -135,8 +135,8 @@ for count, reviewer in enumerate(reviewers_invited):
     or3.send_mail("OpenReview invitation response", [reviewer], message)
 
 
-
-
+note_writer = or3.get_group({'signatory':username, 'regex':'~.*'}).json()['groups'][0]['id']
+print "note authored by "+note_writer
 
 ## Define and post a sample note
 note1 = {
@@ -155,8 +155,8 @@ note1 = {
     'parent': None,
     'pdfTransfer':"url",
     'readers':["everyone"],
-    'signatures':["~oriol_vinyals1"],
-    'writers':["~oriol_vinyals1"]
+    'signatures':[note_writer],
+    'writers':[note_writer]
 }
 
 or3.set_note(note1)
