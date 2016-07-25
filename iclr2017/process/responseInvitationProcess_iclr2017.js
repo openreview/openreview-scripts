@@ -5,6 +5,8 @@ function() {
   if(hashKey == note.content.key) {
     if (note.content.response == 'Yes') {
       console.log("Invitation replied Yes")
+      //if a user is in the declined group, remove them from that group and add them to the reviewers group
+      or3client.removeGroupMember(invitation.signatures[0]+'/reviewers-declined', note.content.email, token)
       or3client.addGroupMember(invitation.signatures[0]+'/reviewers', note.content.email, token)
       .then(function(result) {
         var message = "The user " + note.content.email + " has accepted the invitation to do the review process."
@@ -13,6 +15,8 @@ function() {
       .catch(error => console.log(error));
     } else if (note.content.response == 'No'){
       console.log("Invitation replied No")
+      //if a user is in the reviewers group, remove them from that group and add them to the reviewers-declined group
+      or3client.removeGroupMember(invitation.signatures[0]+'/reviewers', note.content.email, token)
       or3client.addGroupMember(invitation.signatures[0] + '/reviewers-declined', note.content.email, token)
       .then(function(result) {
         var message = "The user " + note.content.email + " has rejected the invitation to do the review process."
