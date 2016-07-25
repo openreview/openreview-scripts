@@ -34,10 +34,33 @@ else:
 
 
 ## Initialize the groups list
-iclr                        = Group('ICLR.cc', writers=['OpenReview.net'])
-iclr2017                    = Group('ICLR.cc/2017', readers=['everyone'], writers=['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'], web='../webfield/iclr2017_webfield.html', signatories=['ICLR.cc/2017','ICLR.cc/2017/pcs'], signatures=['ICLR.cc'])
-iclr2017conference          = Group('ICLR.cc/2017/conference', readers=['everyone'], writers=['ICLR.cc/2017','ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], signatories=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], signatures=['ICLR.cc/2017'], web='../webfield/iclr2017conference_webfield.html')
-iclr2017workshop            = Group('ICLR.cc/2017/workshop', readers=['everyone'], members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], web='../webfield/iclr2017workshop_webfield.html')
+iclr                        = Group('ICLR.cc',      
+                                    readers=['OpenReview.net'], 
+                                    writers=['OpenReview.net'], 
+                                    signatures=['OpenReview.net'], 
+                                    signatories=['ICLR.cc'], 
+                                    members=[])
+iclr2017                    = Group('ICLR.cc/2017', 
+                                    readers=['everyone'],       
+                                    writers=['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'],  
+                                    signatures=['ICLR.cc'], 
+                                    signatories=['ICLR.cc/2017','ICLR.cc/2017/pcs'], 
+                                    members=[], 
+                                    web='../webfield/iclr2017_webfield.html')
+iclr2017conference          = Group('ICLR.cc/2017/conference', 
+                                    readers=['everyone'], 
+                                    writers=['ICLR.cc/2017','ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
+                                    signatures=['ICLR.cc/2017'],
+                                    signatories=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
+                                    members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'],  
+                                    web='../webfield/iclr2017conference_webfield.html')
+iclr2017workshop            = Group('ICLR.cc/2017/workshop', 
+                                    readers=['everyone'],
+                                    writers=['ICLR.cc/2017'],
+                                    signatures=['ICLR.cc/2017'], 
+                                    signatories=['ICLR.cc/2017/workshop'],
+                                    members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], 
+                                    web='../webfield/iclr2017workshop_webfield.html')
 groups = [iclr, iclr2017, iclr2017conference, iclr2017workshop]
 
 
@@ -78,10 +101,11 @@ if args.areachairs != None:
     # anonymizing wrappers for posting notes.
     for count, members in enumerate(areachair_subgroups):
         acgroup = Group('ICLR.cc/2017/areachair'+str(count),
-                        writers=['ICLR.cc/2017/areachairs'],
                         readers=['everyone'],
-                        members=members,
-                        signatories=members
+                        writers=['ICLR.cc/2017/areachairs'],
+                        signatories=members,
+                        signatures=['ICLR.cc/2017/areachairs'],
+                        members=members
                         )
         print "Adding members "+str(members)+" as a member of group ICLR.cc/2017/areachair"+str(count)
         groups.append(acgroup)
@@ -99,9 +123,24 @@ if args.reviewers != None:
             for email in row:
                 reviewers_invited.append(email)
     
-    iclr2017reviewersinvited    = Group('ICLR.cc/2017/conference/reviewers-invited', readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'], writers=['ICLR.cc/2017/pcs'],members=reviewers_invited)
-    iclr2017reviewers           = Group('ICLR.cc/2017/conference/reviewers', readers=['everyone'])
-    iclr2017reviewersdeclined   = Group('ICLR.cc/2017/conference/reviewers-declined',readers=['everyone'])
+    iclr2017reviewersinvited    = Group('ICLR.cc/2017/conference/reviewers-invited', 
+                                        readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'], 
+                                        writers=['ICLR.cc/2017/pcs'],
+                                        signatures=['ICLR.cc/2017/pcs'],
+                                        signatories=['ICLR.cc/2017/conference/reviewers-invited'],
+                                        members=reviewers_invited)
+    iclr2017reviewers           = Group('ICLR.cc/2017/conference/reviewers', 
+                                        readers=['everyone'],
+                                        writers=['ICLR.cc/2017/conference'],
+                                        signatures=['ICLR.cc/2017/conference'],
+                                        signatories=['ICLR.cc/2017/conference/reviewers'],
+                                        members=[])
+    iclr2017reviewersdeclined   = Group('ICLR.cc/2017/conference/reviewers-declined',
+                                        readers=['everyone'],
+                                        writers=['ICLR.cc/2017/conference'],
+                                        signatures=['ICLR.cc/2017/conference'],
+                                        signatories=['ICLR.cc/2017/conference/reviewers'],
+                                        members=[])
     groups = groups+[iclr2017reviewersinvited, iclr2017reviewers, iclr2017reviewersdeclined]
 
 
