@@ -101,7 +101,7 @@ if args.reviewers != None:
     
     iclr2017reviewersinvited    = Group('ICLR.cc/2017/conference/reviewers-invited', readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'], writers=['ICLR.cc/2017/pcs'],members=reviewers_invited)
     iclr2017reviewers           = Group('ICLR.cc/2017/conference/reviewers', readers=['everyone'])
-    iclr2017reviewersdeclined   = Group('ICLR.cc/2017/conference/reviewers-declined', readers=['ICLR.cc/2017/pcs'])
+    iclr2017reviewersdeclined   = Group('ICLR.cc/2017/conference/reviewers-declined',readers=['everyone'])
     groups = groups+[iclr2017reviewersinvited, iclr2017reviewers, iclr2017reviewersdeclined]
 
 
