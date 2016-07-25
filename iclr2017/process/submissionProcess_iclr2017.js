@@ -92,7 +92,7 @@ function () {
   var mail = {
     "groups": note.content.author_emails.trim().split(","),
     "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
-    "message": "Your submission to "+ conference +" has been posted.\n\nTo view the note, click here: http://beta.openreview.net/note?id=" + note.forum
+    "message": "Your submission to "+ conference +" has been posted.\n\nTo view the note, click here: http://dev.openreview.net/forum?id=" + note.forum
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
   
