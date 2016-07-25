@@ -30,22 +30,44 @@ or3 = Client(username,password)
 
 groups = json.loads(or3.get_group({'regex':args.group}).text)['groups']
 
-if args.output!=None and args.format.lower()=="json":
-    with open(args.output, 'w') as outfile:
-        json.dump(groups, outfile, indent=4, sort_keys=True)
-else:
-    print json.dumps(groups, indent=4, sort_keys=True)
+if args.output!=None and args.format==None:
+    print "Output file not saved: please specify a format."
+
+if args.format !=None:
+    if args.output!=None and args.format.lower()=="json":
+        with open(args.output, 'w') as outfile:
+            json.dump(groups, outfile, indent=4, sort_keys=True)
 
 
-if args.output!=None and args.format.lower()=="csv":
-    with open(args.output, 'wb') as outfile:
-        fieldnames=['origId','members','readers']
-        csvwriter = csv.writer(outfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for count, group in enumerate(groups):
-            trimmed_group = {key: group[key] for key in fieldnames}
-            csvwriter.writerow(trimmed_group)
+    if args.output!=None and args.format.lower()=="csv":
+        with open(args.output, 'wb') as outfile:
+            fieldnames = ['origId','members','readers','nonreaders','writers','signatories','signatures']
+            fieldnames_formatted = {}
+            for f in fieldnames:
+                fieldnames_formatted[f]='{:35}'.format(f.upper())
+            
+            space = '{:35}'.format('')
+            
+            csvwriter = csv.writer(outfile, delimiter='*')
+            csvwriter.writerow(['Query: '+args.group])
+            csvwriter.writerow([])
 
-# with open(write_dir, 'wb') as csvfile:
-#        csvwriter = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
-#        for observation in data_to_write:
-#                csvwriter.writerow([observation.time,observation.feature_vector])
+            for count, group in enumerate(groups):
+                csvwriter.writerow('-'*50)
+                csvwriter.writerow([])
+                trimmed_group = {key: group[key] for key in fieldnames}
+                id = '{:50}'.format(trimmed_group['origId'])
+                csvwriter.writerow([fieldnames_formatted['origId'],id])
+                csvwriter.writerow([])
+                for field in fieldnames[1:]:
+                    items = trimmed_group[field]
+                    row = [fieldnames_formatted[field]]
+                    for item in items:
+                        row.append(item)
+                        csvwriter.writerow(row)
+                        row=[space]
+                    if items==[]:
+                        csvwriter.writerow([fieldnames_formatted[field],'{:35}'.format('NONE')])
+                    csvwriter.writerow([])
+
+print json.dumps(groups, indent=4, sort_keys=True)

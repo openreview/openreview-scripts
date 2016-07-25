@@ -34,29 +34,29 @@ if re.match(r"[^@]+@[^@]+\.[^@]+", args.invitee):
 else:
     print "Invalid email address: "+arg
 
-invitation_id = 'ICLR.cc/2017/-/reviewer_invitation'
+invitation_id = 'ICLR.cc/2017/conference/-/reviewer_invitation'
 
 
 ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
 for count, reviewer in enumerate(email_addresses):
-    or3.add_group_member('ICLR.cc/2017/reviewers-invited',reviewer)
+    or3.add_group_member('ICLR.cc/2017/conference/reviewers-invited',reviewer)
     hashKey = or3.get_hash(reviewer, invitation_id)
     url = "http://localhost:3000/invitation?id=" + invitation_id + "&email=" + reviewer + "&key=" + hashKey + "&response="
     
     message = """You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.
 
-    To ACCEPT the invitation, please click on the following link:
+To ACCEPT the invitation, please click on the following link:
     
-    """+url+"""Yes
+"""+url+"""Yes
 
-    To DECLINE the invitation, please click on the following link:
+To DECLINE the invitation, please click on the following link:
 
-    """+url+"""No
+"""+url+"""No
 
-    Thank you,
-    The ICLR 2017 Program Chairs
+Thank you,
+The ICLR 2017 Program Chairs
 
-    """
+"""
 
     or3.send_mail("OpenReview invitation response", [reviewer], message)
 

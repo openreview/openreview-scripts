@@ -34,10 +34,19 @@ You will be notified of further instructions shortly.
 
 Sincerely,
 the ICLR 2017 program chairs
-...
+
 """ if args.message == None else args.message
 
-subject = 'A message to reviewers' if args.subject == None else args.subject,
-recipients = ['ICLR.cc/2017/reviewers'] if args.recipients == None else [args.recipients]
-
-or3.send_mail(subject, recipients, message)
+if args.subject == None:
+	subject = "A message to reviewers" 
+else:
+	subject = args.subject
+	
+if args.recipients!=None:
+	recipients = [args.recipients]
+	or3.send_mail(subject, recipients, message)
+else:
+	print "Please specify an OpenReview group to send this message to. (Hint: the group of invited reviewers is ICLR.cc/2017/conference/reviewers-invited)"
+	print "\nDEFAULT MESSAGE: "
+	print "Subject: "+str(subject)
+	print "Message: "+str(message)
