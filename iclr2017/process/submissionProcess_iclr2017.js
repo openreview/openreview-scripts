@@ -1,7 +1,7 @@
 function () {
   var or3client = lib.or3client;
 
-  var open_review_invitation = or3client.createReviewInvitation(
+  var openReviewInvitation = or3client.createReviewInvitation(
     { 'id': 'ICLR.cc/2017/conference/-/review/'+note.id,
       'signatures': ['ICLR.cc/2017/conference'],
       'writers': ['ICLR.cc/2017/conference'],
@@ -15,7 +15,7 @@ function () {
       }
     }
   );
-  or3client.or3request(or3client.inviteUrl, open_review_invitation, 'POST', token).catch(error=>console.log(error));
+  or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token).catch(error=>console.log(error));
 
   var messageProcess = function(){
     return true;
@@ -67,7 +67,7 @@ function () {
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'values': ['everyone'], 
+        'values-regex': ['everyone|reviewer-.*'], 
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -97,15 +97,15 @@ function () {
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
   
   // Create an empty group for reviewers of this paper, e.g. "ICLR.cc/2017/conference/paper444"
-  var reviewer_group = {
+  var reviewerGroup = {
     'id': 'ICLR.cc/2017/conference/paper'+note.number,
     'signatures': ['ICLR.cc/2017/conference'],
     'writers': ['ICLR.cc/2017/conference'],
     'members': [],
     'readers': ['everyone'],
-    'signatories': ['ICLR.cc/2017/conference']
+    'signatories': ['ICLR.cc/2017/conference', 'ICLR.cc/2017/conference/paper'+note.number]
   };
-  or3client.or3request( or3client.grpUrl, reviewer_group, 'POST', token )
+  or3client.or3request( or3client.grpUrl, reviewerGroup, 'POST', token )
 
   return true;
 };
