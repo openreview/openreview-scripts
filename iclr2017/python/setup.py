@@ -35,7 +35,7 @@ else:
 
 ## Initialize the groups list
 iclr                        = Group('ICLR.cc', writers=['OpenReview.net'])
-iclr2017                    = Group('ICLR.cc/2017', readers=['everyone'], writers=['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'], web='../webfield/iclr2017_webfield.html', signatories=['ICLR.cc/2017','ICLR.cc/2017/pcs'])
+iclr2017                    = Group('ICLR.cc/2017', readers=['everyone'], writers=['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'], web='../webfield/iclr2017_webfield.html', signatories=['ICLR.cc/2017','ICLR.cc/2017/pcs'], signatures=['ICLR.cc'])
 iclr2017conference          = Group('ICLR.cc/2017/conference', readers=['everyone'], writers=['ICLR.cc/2017','ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], signatories=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], signatures=['ICLR.cc/2017'], web='../webfield/iclr2017conference_webfield.html')
 iclr2017workshop            = Group('ICLR.cc/2017/workshop', readers=['everyone'], members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], web='../webfield/iclr2017workshop_webfield.html')
 groups = [iclr, iclr2017, iclr2017conference, iclr2017workshop]
