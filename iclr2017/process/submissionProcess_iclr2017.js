@@ -98,12 +98,12 @@ function () {
   
   // Create an empty group for reviewers of this paper, e.g. "ICLR.cc/2017/conference/paper444"
   var reviewerGroup = {
-    'id': 'ICLR.cc/2017/conference/paper'+note.number+'/reviewers',
+    'id': 'ICLR.cc/2017/conference/paper'+note.number,
     'signatures': ['ICLR.cc/2017/conference'],
     'writers': ['ICLR.cc/2017/conference'],
     'members': [],
     'readers': ['everyone'],
-    'signatories': ['ICLR.cc/2017/conference', 'ICLR.cc/2017/conference/paper'+note.number+'/reviewers']
+    'signatories': ['ICLR.cc/2017/conference', 'ICLR.cc/2017/conference/paper'+note.number]
   };
   or3client.or3request( or3client.grpUrl, reviewerGroup, 'POST', token )
 
