@@ -19,13 +19,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-r','--recipients', help="the group that will recieve this message")
 parser.add_argument('-s','--subject', help="your email's subject line in string form (e.g. 'this is a subject line')")
 parser.add_argument('-m','--message', help="your email's message in string form (e.g. 'this is a message')")
+parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
-or3 = Client(username,password)
-
+or3 = Client(username,password, base_url=args.baseurl)
+    
 message = """
 Dear invited reviewer,
 

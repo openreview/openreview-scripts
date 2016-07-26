@@ -20,14 +20,13 @@ from client import *
 parser = argparse.ArgumentParser()
 parser.add_argument('-g','--group', help="the group whose webfield will be replaced (default: ICLR.cc/2017/conference)")
 parser.add_argument('-w','--webfield', help="html file that will replace the current ICLR 2017 homepage")
+parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
-or3 = Client(username,password)
-
-
+or3 = Client(username,password, base_url=args.baseurl)
 
 
 get_request = or3.get_group({'id':args.group})

@@ -15,12 +15,13 @@ from client import *
 ## Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('username', help="your OpenReview username (e.g. michael@openreview.net)")
+parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
-or3 = Client(username,password)
+or3 = Client(username,password,baseurl=args.baseurl)
 
 
 
