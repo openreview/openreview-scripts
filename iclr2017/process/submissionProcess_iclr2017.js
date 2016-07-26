@@ -2,7 +2,7 @@ function () {
   var or3client = lib.or3client;
 
   var openReviewInvitation = or3client.createReviewInvitation(
-    { 'id': 'ICLR.cc/2017/conference/-/public/review/'+note.number,
+    { 'id': 'ICLR.cc/2017/conference/-/paper/'+note.number+'/public/review',
       'signatures': ['ICLR.cc/2017/conference'],
       'writers': ['ICLR.cc/2017/conference'],
       'invitees': ['~'],
@@ -52,7 +52,7 @@ function () {
   or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
   
   var publicCommentInvite = or3client.createCommentInvitation({
-    'id': 'ICLR.cc/2017/conference/-/public/comment/'+note.number,
+    'id': 'ICLR.cc/2017/conference/-/paper/'+note.number+'/public/comment',
     'signatures':['ICLR.cc/2017/conference'],
     'writers':['ICLR.cc/2017/conference'],
     'invitees': ['~'],
