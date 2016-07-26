@@ -251,6 +251,7 @@ class Client(object):
         print "Group " + member + " removed from " + groupId
 
     def get_group(self, inputs, outputdir=None):
+        #when you get groups, create Groups and return a list of them
         r = requests.get(self.groups_url, params=inputs, headers=self.headers)
         r.raise_for_status()
         if outputdir == None:
@@ -315,6 +316,10 @@ class Client(object):
 class Group(object):
     
     def __init__(self, id_, writers=None, members=None, readers=None, signatories=None, signatures=None, web=None):
+        # save attributes
+        # instead of body, have method called to_json
+        #implement a print function
+        # group class should also "get"
         self.body = {
             'id': id_,
             ## id is always id_

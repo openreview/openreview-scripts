@@ -15,7 +15,6 @@ from client import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('--username', help="your OpenReview username (e.g. michael@openreview.net)")
 parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
