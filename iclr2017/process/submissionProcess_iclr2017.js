@@ -2,7 +2,7 @@ function () {
   var or3client = lib.or3client;
 
   var openReviewInvitation = or3client.createReviewInvitation(
-    { 'id': 'ICLR.cc/2017/conference/-/review/'+note.id,
+    { 'id': 'ICLR.cc/2017/conference/-/public/review/'+note.number,
       'signatures': ['ICLR.cc/2017/conference'],
       'writers': ['ICLR.cc/2017/conference'],
       'invitees': ['~'],
@@ -52,7 +52,7 @@ function () {
   or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
   
   var publicCommentInvite = or3client.createCommentInvitation({
-    'id': 'ICLR.cc/2017/conference/-/public/comment',
+    'id': 'ICLR.cc/2017/conference/-/public/comment/'+note.number,
     'signatures':['ICLR.cc/2017/conference'],
     'writers':['ICLR.cc/2017/conference'],
     'invitees': ['~'],
@@ -67,7 +67,9 @@ function () {
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'values-regex': ['everyone|ICLR.cc/2017/conference/paper'+note.number+'.*'], 
+        'values-regex': ['everyone',
+                        'ICLR.cc/2017/conference/paper'+note.number+'/reviewer.*'
+                        ], 
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {

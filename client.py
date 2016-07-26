@@ -9,8 +9,9 @@ from Crypto.Hash import HMAC, SHA256
 
 class Client(object):
 
-    def __init__(self, username, password, base_url='http://localhost:3000', process_dir='../process/', webfield_dir='../webfield/'):
-        self.base_url = base_url
+    def __init__(self, username, password, base_url, process_dir='../process/', webfield_dir='../webfield/'):
+        
+        self.base_url = base_url if base_url!=None else 'http://localhost:3000'
         self.groups_url = self.base_url+'/groups'
         self.login_url = self.base_url+'/login'
         self.register_url = self.base_url+'/register'

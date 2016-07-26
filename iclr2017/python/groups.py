@@ -26,10 +26,7 @@ args = parser.parse_args()
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
-if args.baseurl != None:
-    or3 = Client(username,password, base_url=args.baseurl)
-else:
-    or3 = Client(username,password)
+or3 = Client(username,password, base_url=args.baseurl)
 
 
 groups = json.loads(or3.get_group({'regex':args.group}).text)['groups']

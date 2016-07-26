@@ -26,10 +26,7 @@ args = parser.parse_args()
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
-if args.baseurl != None:
-    or3 = Client(username,password, base_url=args.baseurl)
-else:
-    or3 = Client(username,password)
+or3 = Client(username,password, base_url=args.baseurl)
 
 
 
@@ -49,10 +46,10 @@ iclr2017                    = Group('ICLR.cc/2017',
                                     web='../webfield/iclr2017_webfield.html')
 iclr2017conference          = Group('ICLR.cc/2017/conference', 
                                     readers=['everyone'], 
-                                    writers=['ICLR.cc/2017','ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
+                                    writers=['ICLR.cc/2017','ICLR.cc/2017/conference'], 
                                     signatures=['ICLR.cc/2017'],
                                     signatories=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
-                                    members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'],  
+                                    members=['ICLR.cc/2017/pcs'],  
                                     web='../webfield/iclr2017conference_webfield.html')
 iclr2017workshop            = Group('ICLR.cc/2017/workshop', 
                                     readers=['everyone'],
