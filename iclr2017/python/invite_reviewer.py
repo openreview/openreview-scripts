@@ -20,13 +20,16 @@ from client import *
 ## Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('-i','--invitee', help="the group that will be invited to review")
+parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass("Password: ")
-or3 = Client(username,password)
-
+if args.baseurl != None:
+    or3 = Client(username,password, base_url=args.baseurl)
+else:
+    or3 = Client(username,password)
 email_addresses=[]
 
 if re.match(r"[^@]+@[^@]+\.[^@]+", args.invitee):

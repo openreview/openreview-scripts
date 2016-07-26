@@ -27,7 +27,7 @@ args = parser.parse_args()
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
 if args.baseurl != None:
-    or3 = Client(username,password, baseurl=args.baseurl)
+    or3 = Client(username,password, base_url=args.baseurl)
 else:
     or3 = Client(username,password)
 

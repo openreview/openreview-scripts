@@ -16,13 +16,17 @@ from client import *
 ## Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--username', help="your OpenReview username (e.g. michael@openreview.net)")
+parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
-or3 = Client(username,password)
-
+if args.baseurl != None:
+    or3 = Client(username,password, base_url=args.baseurl)
+else:
+    or3 = Client(username,password)
+base_url = or3.base_url
 
 ## Create the submission invitation
 submission_reply = {
@@ -126,7 +130,7 @@ reviewers_invited = or3.get_group({'id':'ICLR.cc/2017/conference/reviewers-invit
 for count, reviewer in enumerate(reviewers_invited):
     print "Sending message to "+reviewer
     hashkey = or3.get_hash(reviewer, reviewer_invitation.body['id'])
-    url = "http://localhost:3000/invitation?id=" + reviewer_invitation.body['id'] + "&email=" + reviewer + "&key=" + hashkey + "&response="
+    url = base_url+"/invitation?id=" + reviewer_invitation.body['id'] + "&email=" + reviewer + "&key=" + hashkey + "&response="
     message = "You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.\n\n"
     message = message+ "To ACCEPT the invitation, please click on the following link: \n\n"
     message = message+ url + "Yes\n\n"

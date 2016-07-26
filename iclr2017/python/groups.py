@@ -20,12 +20,16 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-g','--group', help="The group (or regex expression for a set of groups) to examine. (Example: ICLR.cc/2017/.* searches for all groups starting with ICLR.cc/2017/)")
 parser.add_argument('-o','--output', help="The directory to save the output file")
 parser.add_argument('-f','--format', help="The file format to save. Choose either json or csv.")
+parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
 username = raw_input("OpenReview username (e.g. username@umass.edu): ")
 password = getpass.getpass()
-or3 = Client(username,password)
+if args.baseurl != None:
+    or3 = Client(username,password, base_url=args.baseurl)
+else:
+    or3 = Client(username,password)
 
 
 groups = json.loads(or3.get_group({'regex':args.group}).text)['groups']
