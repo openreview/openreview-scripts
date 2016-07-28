@@ -51,25 +51,47 @@ function () {
   });
   or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
   
+
+  var commentProcess = function(){
+    var or3client = lib.or3client;
+    
+    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var conference = or3client.prettyConferenceName(note);
+
+    origNote.then(function(result){
+      var mail = {
+        "groups": result.notes[0].content.author_emails.trim().split(","),
+        "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
+        "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: http://dev.openreview.net/forum?id=" + note.forum
+      };
+      var mailP = or3client.or3request( mailUrl, mail, 'POST', token )
+      
+    });
+
+    note.readers=note.readers.concat(note.writers[0]);
+
+    or3client.or3request( or3client.notesUrl, note, 'POST', token)
+
+    return true;
+  }+''
+
   var publicCommentInvite = or3client.createCommentInvitation({
     'id': 'ICLR.cc/2017/conference/-/paper/'+note.number+'/public/comment',
     'signatures':['ICLR.cc/2017/conference'],
     'writers':['ICLR.cc/2017/conference'],
     'invitees': ['~'],
     'readers': ['everyone'],
-    'process':or3client.commentProcess+'',
+    'process':commentProcess,
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       //'parent': noteID,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'~.*',
-        'description': 'Your displayed identity associated with the above content.' 
+        'description': 'How your identity will be displayed with the above content.' 
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'values-regex': ['everyone',
-                        'ICLR.cc/2017/conference/paper'+note.number+'/reviewer.*'
-                        ], 
+        'values-regex': ['everyone|ICLR.cc/2017/conference/paper'+note.number+'/reviewer.*'], 
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -89,12 +111,13 @@ function () {
   or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error));
 
 
-  //Send an email to the author of the submitted note, confirming its receipt
   var conference = or3client.prettyConferenceName(note);
+  //Send an email to the author of the submitted note, confirming its receipt
+
   var mail = {
     "groups": note.content.author_emails.trim().split(","),
     "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
-    "message": "Your submission to "+ conference +" has been posted.\n\nTo view the note, click here: http://dev.openreview.net/forum?id=" + note.forum
+    "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: http://dev.openreview.net/forum?id=` + note.forum
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
   
