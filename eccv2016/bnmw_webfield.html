@@ -98,17 +98,23 @@
 
             signaturesP.then(function(signatures){
               if (signatures.length > 0) {
-                $attach('#notes', 'mkNewNoteEditor', [invitation, null, user, {
+                view.mkNewNoteEditor(invitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      invitation: submissionInvitation,
+                      invitation: submissionInvitation, 
                       maxtcdate: Date.now()
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);
                       sm.update('notes', result.notes);
+                    },
+                    function(error){
+                      return error
                     });
+                  },
+                  onCompleted: function(editor) {
+                    $('#notes').prepend(editor);
                   }
-                }], false);
+                });                
               } else {
                promptLogin(user);
               }
