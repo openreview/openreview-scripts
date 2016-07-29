@@ -1,7 +1,6 @@
 import sys
 import os
-sys.path.append('../..')
-from client import *
+from openreview import *
 
 openreview = Client()
 

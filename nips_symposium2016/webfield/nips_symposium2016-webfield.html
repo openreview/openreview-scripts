@@ -34,7 +34,7 @@
         return df.promise();
       };
 
-      var submissionInvitationP = httpGetP('invitations', {id: 'NIPS.cc/Symposium/2016/-/submission'}).then(function(result) {
+      var invitationP = httpGetP('invitations', {id: 'NIPS.cc/Symposium/2016/-/submission'}).then(function(result) {
         console.log('result',result)
         return result.invitations[0];
       },
@@ -49,27 +49,25 @@
         return error
       });
 
-
-      $.when(submissionInvitationP, notesP).done(function(submissionInvitation, notes) {
-        sm.update('submissionInvitationTrip', {
-          submissionInvitation: submissionInvitation
+      $.when(invitationP, notesP).done(function(invitation, notes) {
+        sm.update('invitationTrip_nips', {
+          invitation: invitation
         });
-
-        sm.update('notes', notes);
+        sm.update('notes_nips', notes);
         
         sm.addHandler('conference', {
-          submissionInvitationTrip: function(submissionInvitationTrip) { if (submissionInvitationTrip) {
-            var submissionInvitation = submissionInvitationTrip.submissionInvitation;
-            $attach('#invitation', 'mkInvitationButton', [submissionInvitation, function() {
+          invitationTrip_nips: function(invitationTrip) { if (invitationTrip) {
+            var invitation = invitationTrip.invitation;
+            $attach('#invitation', 'mkInvitationButton', [invitation, function() {
               if (user) {
-                view.mkNewNoteEditor(submissionInvitation, null, user, {
+                view.mkNewNoteEditor(invitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      submissionInvitation: 'NIPS.cc/Symposium/2016/-/submission', 
+                      invitation: 'NIPS.cc/Symposium/2016/-/submission', 
                       maxtcdate: Date.now()
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);
-                      sm.update('notes', result.notes);
+                      sm.update('notes_nips', result.notes);
                     },
                     function(error){
                       return error
@@ -85,7 +83,7 @@
             }], true);
           }},
 
-          notes: function(notes) {
+          notes_nips: function(notes) {
             if (notes) {
               $('#notes').empty();
               _.forEach(notes, function(note) {

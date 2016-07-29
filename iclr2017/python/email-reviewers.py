@@ -10,8 +10,7 @@ import argparse
 import csv
 import json
 import sys
-sys.path.append('../..')
-from client import *
+from openreview import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -19,10 +18,15 @@ parser.add_argument('-r','--recipients', help="the group that will recieve this 
 parser.add_argument('-s','--subject', help="your email's subject line in string form (e.g. 'this is a subject line')")
 parser.add_argument('-m','--message', help="your email's message in string form (e.g. 'this is a message')")
 parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--username')
+parser.add_argument('--password')
 args = parser.parse_args()
 
-## Initialize the client library
-openreview = Client(base_url=args.baseurl)
+## Initialize the client library with username and password
+if args.username!=None and args.password!=None:
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    openreview = Client(baseurl=args.baseurl)
     
 message = """
 Dear invited reviewer,

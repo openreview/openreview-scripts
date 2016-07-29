@@ -10,17 +10,21 @@ import csv
 import getpass
 import json
 import sys
-sys.path.append('../..')
-from client import *
+from openreview import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--username')
+parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-openreview = Client(config='./nips_symposium2016_config.ini')
-base_url = openreview.base_url
+if args.username!=None and args.password!=None:
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    openreview = Client(baseurl=args.baseurl)
+baseurl = openreview.baseurl
 
 ## Create the submission invitation
 submission_reply = {
@@ -59,9 +63,9 @@ submission_reply = {
             'value-regex': '[\\S\\s]{0,5000}'
         },
         'pdf': {
-            'description': 'Provide a direct link to your PDF (must have a .pdf extension)',
+            'description': 'Provide a direct link to your PDF (must be a arXiv link with .pdf extension)',
             'order': 5,
-            'value-regex': 'upload|http://arxiv.org/pdf/.+'
+            'value-regex': 'http://arxiv.org/pdf/.+'
         }
     }
 }
@@ -79,31 +83,4 @@ invitations = [submission_invitation]
 ## Post the invitations
 for i in invitations:
     print "Posting invitation: "+i.id
-    openreview.save_invitation(i)
-
-
-
-note_writer = openreview.get_groups(signatory=openreview.user['id'], prefix='~')[0].to_json()['id']
-print "Posting sample note with author "+note_writer
-
-## Define and post a sample note
-sample_note = Note(content=
-    {
-        'CMT_id':'',
-        'abstract':'This is a sample note to test the process functions for the invitation to which this note responds.',
-        'author_emails':"author@gmail.com",
-        'authors':'Author 1',
-        'conflicts':'cs.berkeley.edu',
-        'pdf':'http://arxiv.org/pdf/1407.1808v1.pdf',
-        'title':'Sample Note'
-    },
-    forum=None,
-    invitation='NIPS.cc/Symposium/2016/-/submission',
-    parent=None,
-    pdfTransfer="url",
-    readers=["everyone"],
-    signatures=[note_writer],
-    writers=[note_writer]
-)
-
-openreview.save_note(sample_note)
+    openreview.post_invitation(i)
