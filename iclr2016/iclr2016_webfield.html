@@ -54,7 +54,7 @@
           var invitation = invitationTrip.invitation;
           $attach('#invitation', 'mkInvitationButton', [invitation, function() {
             if (user) {
-              $attach('#notes', 'mkNewNoteEditor', [invitation, null, user, {
+              view.mkNewNoteEditor(invitation, null, user, {
                 onNoteCreated: function(idRecord) {
                   httpGetP('notes', {
                     invitation: 'ICLR.cc/2016/workshop/-/submission', 
@@ -62,9 +62,15 @@
                   }).then(function(result) {
                     console.log("time to update notes: " + result.notes.length);
                     sm.update('notes', result.notes);
+                  },
+                  function(error){
+                    return error
                   });
+                },
+                onCompleted: function(editor) {
+                  $('#notes').prepend(editor);
                 }
-              }], false);
+              });
             } else {
              promptLogin(user);
             }
