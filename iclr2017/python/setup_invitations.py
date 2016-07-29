@@ -33,7 +33,7 @@ submission_reply = {
         'values': ['everyone']
     },
     'signatures': {
-        'description': 'Your displayed identity associated with the above content.',
+        'description': 'How your identity will be displayed with the above content.',
         'values-regex': '~.*'
     },
     'writers': {
@@ -77,7 +77,14 @@ submission_reply = {
         }
     }
 }
-submission_invitation = Invitation('ICLR.cc/2017/conference','submission', readers=['everyone'], invitees=['~'], signatures=['ICLR.cc/2017/pcs','ICLR.cc/2017/conference'], reply=submission_reply, process='../process/submissionProcess_iclr2017.js')
+submission_invitation = Invitation( 'ICLR.cc/2017/conference',
+                                    'submission', 
+                                    readers=['everyone'], 
+                                    writers=['ICLR.cc/2017/conference'],
+                                    invitees=['~'], 
+                                    signatures=['ICLR.cc/2017/pcs'], 
+                                    reply=submission_reply, 
+                                    process='../process/submissionProcess_iclr2017.js')
 
 ## Create 'request for availability to review' invitation
 reviewer_invitation_reply = {
@@ -108,7 +115,16 @@ reviewer_invitation_reply = {
         'values-regex': '\\(anonymous\\)'
     }
 }
-reviewer_invitation = Invitation('ICLR.cc/2017/conference','reviewer_invitation', readers=['everyone'], invitees=['everyone'], reply=reviewer_invitation_reply, process='../process/responseInvitationProcess_iclr2017.js', web='../webfield/web-field-invitation.html')
+
+reviewer_invitation =Invitation('ICLR.cc/2017/conference',
+                                'reviewer_invitation', 
+                                readers=['everyone'],
+                                writers=['ICLR.cc/2017/conference'], 
+                                invitees=['everyone'],
+                                signatures=['ICLR.cc/2017/conference'], 
+                                reply=reviewer_invitation_reply, 
+                                process='../process/responseInvitationProcess_iclr2017.js', 
+                                web='../webfield/web-field-invitation.html')
 
 invitations = [submission_invitation, reviewer_invitation]
 
@@ -125,7 +141,7 @@ reviewers_invited = or3.get_group({'id':'ICLR.cc/2017/conference/reviewers-invit
 ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
 for count, reviewer in enumerate(reviewers_invited):
     print "Sending message to "+reviewer
-    hashkey = or3.get_hash(reviewer, reviewer_invitation.body['id'])
+    hashkey = or3.get_hash(reviewer, "4813408173804203984")
     url = base_url+"/invitation?id=" + reviewer_invitation.body['id'] + "&email=" + reviewer + "&key=" + hashkey + "&response="
     message = "You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.\n\n"
     message = message+ "To ACCEPT the invitation, please click on the following link: \n\n"

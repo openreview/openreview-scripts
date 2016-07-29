@@ -1,7 +1,7 @@
 function() {
 
   var or3client = lib.or3client;
-  var hashKey = or3client.createHash(note.content.email, invitation.id);
+  var hashKey = or3client.createHash(note.content.email, "4813408173804203984");
   if(hashKey == note.content.key) {
     if (note.content.response == 'Yes') {
       console.log("Invitation replied Yes")
@@ -9,8 +9,8 @@ function() {
       or3client.removeGroupMember(invitation.signatures[0]+'/reviewers-declined', note.content.email, token)
       or3client.addGroupMember(invitation.signatures[0]+'/reviewers', note.content.email, token)
       .then(function(result) {
-        var message = "The user " + note.content.email + " has accepted the invitation to do the review process."
-        return or3client.or3request(or3client.mailUrl, { groups: [invitation.signatures[0]], subject: "OpenReview invitation accepted" , message: message}, 'POST', token);
+        var message = "The user " + note.content.email + " has accepted the invitation to serve as a reviewer."
+        //return or3client.or3request(or3client.mailUrl, { groups: [invitation.signatures[0]], subject: "OpenReview invitation accepted" , message: message}, 'POST', token);
       })
       .catch(error => console.log(error));
     } else if (note.content.response == 'No'){
@@ -19,8 +19,8 @@ function() {
       or3client.removeGroupMember(invitation.signatures[0]+'/reviewers', note.content.email, token)
       or3client.addGroupMember(invitation.signatures[0] + '/reviewers-declined', note.content.email, token)
       .then(function(result) {
-        var message = "The user " + note.content.email + " has rejected the invitation to do the review process."
-        return or3client.or3request(or3client.mailUrl, { groups: [invitation.signatures[0]], subject: "OpenReview invitation rejected" , message: message}, 'POST', token);
+        var message = "The user " + note.content.email + " has rejected the invitation to serve as a reviewer."
+        //return or3client.or3request(or3client.mailUrl, { groups: [invitation.signatures[0]], subject: "OpenReview invitation rejected" , message: message}, 'POST', token);
       })  
       .catch(error => console.log(error));
     }

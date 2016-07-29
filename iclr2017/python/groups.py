@@ -39,36 +39,17 @@ if args.format !=None:
         with open(args.output, 'w') as outfile:
             json.dump(groups, outfile, indent=4, sort_keys=True)
 
-
+    ##todo: fix rows with lists (e.g. members)
     if args.output!=None and args.format.lower()=="csv":
         with open(args.output, 'wb') as outfile:
-            fieldnames = ['origId','members','readers','nonreaders','writers','signatories','signatures']
-            fieldnames_formatted = {}
-            for f in fieldnames:
-                fieldnames_formatted[f]='{:35}'.format(f.upper())
-            
-            space = '{:35}'.format('')
-            
-            csvwriter = csv.writer(outfile, delimiter='*')
-            csvwriter.writerow(['Query: '+args.group])
-            csvwriter.writerow([])
+            csvwriter = csv.writer(outfile, delimiter=',')
+            fieldnames = ['signatures','nonreaders','readers','origId','id','writers','members','signatories','active','emailable','tauthors','tcdate']
+            csvwriter.writerow(fieldnames)
 
             for count, group in enumerate(groups):
-                csvwriter.writerow('-'*50)
-                csvwriter.writerow([])
-                trimmed_group = {key: group[key] for key in fieldnames}
-                id = '{:50}'.format(trimmed_group['origId'])
-                csvwriter.writerow([fieldnames_formatted['origId'],id])
-                csvwriter.writerow([])
-                for field in fieldnames[1:]:
-                    items = trimmed_group[field]
-                    row = [fieldnames_formatted[field]]
-                    for item in items:
-                        row.append(item)
-                        csvwriter.writerow(row)
-                        row=[space]
-                    if items==[]:
-                        csvwriter.writerow([fieldnames_formatted[field],'{:35}'.format('NONE')])
-                    csvwriter.writerow([])
+                row = []
+                for key in fieldnames:
+                    row.append(group[key])
+                csvwriter.writerow(row)
 
 print json.dumps(groups, indent=4, sort_keys=True)
