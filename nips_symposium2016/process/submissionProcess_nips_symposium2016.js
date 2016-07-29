@@ -1,26 +1,45 @@
 function () {
   var or3client = lib.or3client;
 
-  // var openReviewInvitation = or3client.createReviewInvitation(
-  //   { 'id': 'ICLR.cc/2017/conference/-/paper/'+note.number+'/public/review',
-  //     'signatures': ['ICLR.cc/2017/conference'],
-  //     'writers': ['ICLR.cc/2017/conference'],
-  //     'invitees': ['~'],
-  //     'process':or3client.reviewProcess+'',
-  //     'reply': { 
-  //       'forum': note.id, 
-  //       'parent': note.id,
-  //       'writers': {'values-regex':'~.*|ICLR.cc/2017/conference/paper.+/reviewer.+'},
-  //       'signatures': {'values-regex':'~.*|ICLR.cc/2017/conference/paper.+/reviewer.+'}
-  //     }
-  //   }
-  // );
-  // or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token).catch(error=>console.log(error));
+  var reviewProcess = function(){
+    var or3client = lib.or3client;
+
+    var origNote = or3client.or3request(notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var conference = or3client.prettyConferenceName(note);
+
+    origNote.then(function(result){
+      var mail = {
+        "groups": result.notes[0].content.author_emails.trim().split(","),
+        "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\".",
+        "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: http://dev.openreview.net/forum?id=" + note.forum
+      };
+      var mailP = or3client.or3request( mailUrl, mail, 'POST', token )
+      
+    });
+
+    var fulfilledP = or3client.fulfillInvitation(invitation, note, token);
+    return true;
+  };
+
+  var openReviewInvitation = or3client.createReviewInvitation(
+    { 'id': 'NIPS/Symposium/2016/-/submission/'+note.number+'/public/review',
+      'signatures': ['NIPS/Symposium/2016'],
+      'writers': ['NIPS/Symposium/2016'],
+      'invitees': ['~'],
+      'process':reviewProcess+'',
+      'reply': { 
+        'forum': note.id, 
+        'parent': note.id,
+        'writers': {'values-regex':'~.*'},
+        'signatures': {'values-regex':'~.*'}
+      }
+    }
+  );
+  or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token).catch(error=>console.log(error));
 
   // var messageProcess = function(){
   //   return true;
   // };
-
   
   // var messageInvite = or3client.createCommentInvitation({
   //   'id': 'ICLR.cc/2017/conference/-/reviewer/message',
@@ -51,52 +70,73 @@ function () {
   // });
   // or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
   
-  // var publicCommentInvite = or3client.createCommentInvitation({
-  //   'id': 'ICLR.cc/2017/conference/-/paper/'+note.number+'/public/comment',
-  //   'signatures':['ICLR.cc/2017/conference'],
-  //   'writers':['ICLR.cc/2017/conference'],
-  //   'invitees': ['~'],
-  //   'readers': ['everyone'],
-  //   'process':or3client.commentProcess+'',
-  //   'reply': {
-  //     'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-  //     //'parent': noteID,    // not specified so we can allow comments on comments
-  //     'signatures': {
-  //       'values-regex':'~.*',
-  //       'description': 'Your displayed identity associated with the above content.' 
-  //       },    // this regex demands that the author reveal his/her ~ handle
-  //     'writers': {'values-regex':'~.*'},    // this regex demands that the author reveal his/her ~ handle
-  //     'readers': { 
-  //       'values-regex': ['everyone',
-  //                       'ICLR.cc/2017/conference/paper'+note.number+'/reviewer.*'
-  //                       ], 
-  //       'description': 'The users who will be allowed to read the above content.'
-  //       },   // the reply must allow ANYONE to read this note (comment)
-  //     'content': {
-  //       'title': {
-  //         'order': 1,
-  //         'value-regex': '.{1,500}',
-  //         'description': 'Brief summary of your comment.'
-  //       },
-  //       'comment': {
-  //         'order': 2,
-  //         'value-regex': '[\\S\\s]{1,5000}',
-  //         'description': 'Your comment or reply.'
-  //       }
-  //     }
-  //   }
-  // });
-  // or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error));
+  var commentProcess = function(){
+    var or3client = lib.or3client;
+    
+    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var conference = or3client.prettyConferenceName(note);
+
+    origNote.then(function(result){
+      var mail = {
+        "groups": result.notes[0].content.author_emails.trim().split(","),
+        "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
+        "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: http://dev.openreview.net/forum?id=" + note.forum
+      };
+      var mailP = or3client.or3request( mailUrl, mail, 'POST', token )
+      
+    });
+
+    note.readers=note.readers.concat(note.writers[0]);
+
+    or3client.or3request( or3client.notesUrl, note, 'POST', token)
+
+    return true;
+  }
+
+  var publicCommentInvite = or3client.createCommentInvitation({
+    'id': 'NIPS/Symposium/2016/-/submission/'+note.number+'/public/comment',
+    'signatures':['NIPS/Symposium/2016'],
+    'writers':['NIPS/Symposium/2016'],
+    'invitees': ['~'],
+    'readers': ['everyone'],
+    'process':commentProcess+'',
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      //'parent': noteID,    // not specified so we can allow comments on comments
+      'signatures': {
+        'values-regex':'~.*|\\(anonymous\\)',
+        'description': 'Your displayed identity associated with the above content.' 
+        },    // this regex demands that the author reveal his/her ~ handle
+      'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
+      'readers': { 
+        'values-regex': ['everyone'], 
+        'description': 'The users who will be allowed to read the above content.'
+        },   // the reply must allow ANYONE to read this note (comment)
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your comment.'
+        },
+        'comment': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your comment or reply.'
+        }
+      }
+    }
+  });
+  or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error));
 
 
-  // //Send an email to the author of the submitted note, confirming its receipt
-  // var conference = or3client.prettyConferenceName(note);
-  // var mail = {
-  //   "groups": note.content.author_emails.trim().split(","),
-  //   "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
-  //   "message": "Your submission to "+ conference +" has been posted.\n\nTo view the note, click here: http://dev.openreview.net/forum?id=" + note.forum
-  // };
-  // var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
+  //Send an email to the author of the submitted note, confirming its receipt
+  var conference = or3client.prettyConferenceName(note);
+  var mail = {
+    "groups": note.content.author_emails.trim().split(","),
+    "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
+    "message": "Your submission to "+ conference +" has been posted.\n\nTo view the note, click here: http://dev.openreview.net/forum?id=" + note.forum
+  };
+  var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
   
   // // Create an empty group for reviewers of this paper, e.g. "ICLR.cc/2017/conference/paper444"
   // var paperGroup = {

@@ -84,7 +84,16 @@ submission_invitation = Invitation( 'NIPS/Symposium/2016',
     process     = '../process/submissionProcess_nips_symposium2016.js',
     signatures  = ['NIPS/Symposium/2016'])
 
-invitations = [submission_invitation]
+recommendation_invitation = Invitation( 'NIPS/Symposium/2016',
+    'recommendation', 
+    writers     = ['NIPS/Symposium/2016'],
+    readers     = ['everyone'], 
+    invitees    = ['~'], 
+    reply       = submission_reply, 
+    process     = '../process/submissionProcess_nips_symposium2016.js',
+    signatures  = ['NIPS/Symposium/2016'])
+
+invitations = [submission_invitation,recommendation_invitation]
 
 ## Post the invitations
 for i in invitations:

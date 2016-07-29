@@ -44,7 +44,7 @@ nips_symposium2016  = Group('NIPS/Symposium/2016',
     signatories = ['NIPS/Symposium/2016'],
     writers     = ['NIPS/Symposium/2016'],
     members     = [],
-    readers     = ['NIPS/Symposium/2016'],
+    readers     = ['everyone'],
     web         = '../webfield/nips_symposium2016-webfield.html',
     signatures  = ['NIPS/Symposium'])
 

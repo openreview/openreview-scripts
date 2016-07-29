@@ -14,7 +14,9 @@
 
       $attach('#header', 'mkHostHeader', [
         "NIPS Symposium 2016",
-        "Neural Information Processing Systems",
+        "Neural Information Processing Systems - Symposium",
+        "Location TBD",
+        "https://nips.cc/",
         "Date TBD"
       ], true);
 
@@ -32,7 +34,16 @@
         return df.promise();
       };
 
-      var invitationP = httpGetP('invitations', {id: 'NIPS/Symposium/2016/-/submission'}).then(function(result) {
+      var submissionInvitationP = httpGetP('invitations', {id: 'NIPS/Symposium/2016/-/submission'}).then(function(result) {
+        console.log('result',result)
+        return result.invitations[0];
+      },
+      function(error){
+        return error
+      });
+
+      var recommendationInvitationP = httpGetP('invitations', {id: 'NIPS/Symposium/2016/-/recommendation'}).then(function(result) {
+        console.log('result',result)
         return result.invitations[0];
       },
       function(error){
@@ -47,21 +58,26 @@
       });
 
 
-      $.when(invitationP, notesP).done(function(invitation, notes) {
-        sm.update('invitationTrip', {
-          invitation: invitation
+      $.when(submissionInvitationP, recommendationInvitationP, notesP).done(function(submissionInvitation, recommendationInvitation, notes) {
+        sm.update('submissionInvitationTrip', {
+          submissionInvitation: submissionInvitation
         });
+
+        sm.update('recommendationInvitationTrip', {
+          recommendationInvitation: recommendationInvitation
+        });
+
         sm.update('notes', notes);
         
-        sm.addHandler('symposium', {
-          invitationTrip: function(invitationTrip) { if (invitationTrip) {
-            var invitation = invitationTrip.invitation;
-            $attach('#invitation', 'mkInvitationButton', [invitation, function() {
+        sm.addHandler('conference', {
+          submissionInvitationTrip: function(submissionInvitationTrip) { if (submissionInvitationTrip) {
+            var submissionInvitation = submissionInvitationTrip.submissionInvitation;
+            $attach('#invitation', 'mkInvitationButton', [submissionInvitation, function() {
               if (user) {
-                $attach('#notes', 'mkNewNoteEditor', [invitation, null, user, {
+                view.mkNewNoteEditor(submissionInvitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      invitation: 'NIPS/Symposium/2016/-/submission', 
+                      submissionInvitation: 'NIPS/Symposium/2016/-/submission', 
                       maxtcdate: Date.now()
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);
@@ -70,8 +86,38 @@
                     function(error){
                       return error
                     });
+                  },
+                  onCompleted: function(editor) {
+                    $('#notes').prepend(editor);
                   }
-                }], false);
+                });
+              } else {
+               promptLogin(user);
+              }
+            }], true);
+          }},
+
+          recommendationInvitationTrip: function(recommendationInvitationTrip) { if (recommendationInvitationTrip) {
+            var recommendationInvitation = recommendationInvitationTrip.recommendationInvitation;
+            $attach('#invitation', 'mkInvitationButton', [recommendationInvitation, function() {
+              if (user) {
+                view.mkNewNoteEditor(recommendationInvitation, null, user, {
+                  onNoteCreated: function(idRecord) {
+                    httpGetP('notes', {
+                      recommendationInvitation: 'NIPS/Symposium/2016/-/recommendation', 
+                      maxtcdate: Date.now()
+                    }).then(function(result) {
+                      console.log("time to update notes: " + result.notes.length);
+                      sm.update('notes', result.notes);
+                    },
+                    function(error){
+                      return error
+                    });
+                  },
+                  onCompleted: function(editor) {
+                    $('#notes').prepend(editor);
+                  }
+                });
               } else {
                promptLogin(user);
               }
