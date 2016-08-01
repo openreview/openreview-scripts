@@ -139,14 +139,33 @@ class Client(object):
 
         
 
-    def get_invitation(self, inputs, outputdir=None):
-        r = requests.get(self.invitations_url, params=inputs, headers=self.headers)
-        r.raise_for_status()
-        if outputdir == None:
-            return r
-        else:
-            print outputdir #TODO: Save output to csv
-            return r
+    def get_invitation(self, id, outputdir=None):
+        """Returns a single invitation by id if available"""
+        response = requests.get(self.invitations_url, params={'id':id}, headers=self.headers)
+        
+        try:
+            if response.status_code != 200:
+                response.raise_for_status()
+            else:
+                i = response.json()['invitations'][0]
+                invitation = Invitation(i['id'].split('/-/')[0],
+                    i['id'].split('/-/')[1],
+                    readers = i['readers'], 
+                    writers = i['writers'],
+                    invitees = i['invitees'], 
+                    signatures = i['signatures'], 
+                    reply = i['reply']
+                    )
+                if hasattr(invitation,'web'):
+                    invitation.web = i['web']
+                if hasattr(invitation,'process'):
+                    invitation.process = i['process']
+                return invitation
+
+        except requests.exceptions.HTTPError as e:
+            for error in response.json()['errors']:
+                print error
+
 
     def get_note(self, inputs, outputdir=None):
         r = requests.get(self.notes_url, params=inputs, headers=self.headers)
@@ -179,6 +198,7 @@ class Client(object):
             else:
                 return note
         except requests.exceptions.HTTPError as e:
+            print response.json()
             for error in response.json()['errors']:
                 print error
 
@@ -266,6 +286,12 @@ class Invitation(object):
             body['process']=self.process
         return body
 
+    def add_invitee(self, invitee):
+        if type(invitee) is Group:
+            self.invitees.append(invitee.id)
+        if type(invitee) is str:
+            self.invitees.append(invitee)
+        return self
 
 class Note(object):
     def __init__(self, content=None, forum=None, invitation=None, parent=None, pdfTransfer=None, readers=None, signatures=None, writers=None):
