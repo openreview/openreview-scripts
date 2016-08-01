@@ -1,11 +1,12 @@
 #!/usr/bin/python
 
-###############################################################################
-# Setup python script takes as input the CSV files above and creates group for 
-# ICLR.cc/2017/pc, areachairs, individual ACs, reviewers-invited, and creates 
-# reviewers-invited.web Javascript for handling reviewer invitations; if they 
-# accept, their email address is added to group ICLR.cc/2017/reviewers.
-###############################################################################
+"""
+Setup python script takes as input the CSV files above and creates group for 
+ICLR.cc/2017/pc, areachairs, individual ACs, reviewers-invited, and creates 
+reviewers-invited.web Javascript for handling reviewer invitations; if they 
+accept, their email address is added to group ICLR.cc/2017/reviewers.
+
+"""
 
 ## Import statements
 import argparse
@@ -20,6 +21,7 @@ parser.add_argument('-p','--programchairs', help="csv file containing the email 
 parser.add_argument('-a','--areachairs', help="csv file containing the email addresses of the area chairs")
 parser.add_argument('-r','--reviewers', help="csv file containing the email addresses of the candidate reviewers")
 parser.add_argument('-u','--baseurl', help="base URL for the server to connect to")
+
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
@@ -29,33 +31,37 @@ openreview = Client(base_url=args.baseurl)
 
 
 ## Initialize the groups list
-iclr                        = Group('ICLR.cc',      
-                                    readers=['OpenReview.net'], 
-                                    writers=['OpenReview.net'], 
-                                    signatures=['OpenReview.net'], 
-                                    signatories=['ICLR.cc'], 
-                                    members=[])
-iclr2017                    = Group('ICLR.cc/2017', 
-                                    readers=['everyone'],       
-                                    writers=['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'],  
-                                    signatures=['ICLR.cc'], 
-                                    signatories=['ICLR.cc/2017','ICLR.cc/2017/pcs'], 
-                                    members=[], 
-                                    web='../webfield/iclr2017_webfield.html')
-iclr2017conference          = Group('ICLR.cc/2017/conference', 
-                                    readers=['everyone'], 
-                                    writers=['ICLR.cc/2017','ICLR.cc/2017/conference'], 
-                                    signatures=['ICLR.cc/2017'],
-                                    signatories=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
-                                    members=['ICLR.cc/2017/pcs'],  
-                                    web='../webfield/iclr2017conference_webfield.html')
-iclr2017workshop            = Group('ICLR.cc/2017/workshop', 
-                                    readers=['everyone'],
-                                    writers=['ICLR.cc/2017'],
-                                    signatures=['ICLR.cc/2017'], 
-                                    signatories=['ICLR.cc/2017/workshop'],
-                                    members=['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], 
-                                    web='../webfield/iclr2017workshop_webfield.html')
+iclr            = Group('ICLR.cc',      
+    readers     = ['OpenReview.net'], 
+    writers     = ['OpenReview.net'], 
+    signatures  = ['OpenReview.net'], 
+    signatories = ['ICLR.cc'], 
+    members     = [] )
+
+iclr2017 = Group('ICLR.cc/2017', 
+    readers     = ['everyone'],       
+    writers     = ['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'],  
+    signatures  = ['ICLR.cc'], 
+    signatories = ['ICLR.cc/2017','ICLR.cc/2017/pcs'], 
+    members     = [], 
+    web         = '../webfield/iclr2017_webfield.html')
+
+iclr2017conference = Group('ICLR.cc/2017/conference', 
+    readers     = ['everyone'], 
+    writers     = ['ICLR.cc/2017','ICLR.cc/2017/conference'], 
+    signatures  = ['ICLR.cc/2017'],
+    signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
+    members     = ['ICLR.cc/2017/pcs'],  
+    web         = '../webfield/iclr2017conference_webfield.html')
+
+iclr2017workshop = Group('ICLR.cc/2017/workshop', 
+    readers     = ['everyone'],
+    writers     = ['ICLR.cc/2017'],
+    signatures  = ['ICLR.cc/2017'], 
+    signatories = ['ICLR.cc/2017/workshop'],
+    members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], 
+    web         = '../webfield/iclr2017workshop_webfield.html')
+
 groups = [iclr, iclr2017, iclr2017conference, iclr2017workshop]
 
 ## Read in a csv file with the names of the program chair(s).

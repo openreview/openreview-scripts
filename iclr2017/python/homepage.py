@@ -24,16 +24,14 @@ parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-username = raw_input("OpenReview username (e.g. username@umass.edu): ")
-password = getpass.getpass()
-or3 = Client(username,password, base_url=args.baseurl)
+openreview = Client(base_url=args.baseurl)
 
 
-get_request = or3.get_group({'id':args.group})
+get_request = openreview.get_group({'id':args.group})
 get_request.raise_for_status()
 
 group = json.loads(get_request.content)['groups'][0]
 with open(args.webfield) as f: 
     group['web'] = f.read()
-    post_request = or3.set_group(group)
+    post_request = openreview.set_group(group)
     post_request.raise_for_status()

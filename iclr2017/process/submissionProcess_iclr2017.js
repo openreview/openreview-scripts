@@ -17,39 +17,38 @@ function () {
   );
   or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token).catch(error=>console.log(error));
 
-  var messageProcess = function(){
-    return true;
-  };
+  // var messageProcess = function(){
+  //   return true;
+  // };
 
-  
-  var messageInvite = or3client.createCommentInvitation({
-    'id': 'ICLR.cc/2017/conference/-/reviewer/message',
-    'signatures':['ICLR.cc/2017/conference'],
-    'writers':['ICLR.cc/2017/conference'],
-    'invitees': ['ICLR.cc/2017/areachairs'],
-    'readers': ['everyone'],
-    'process':messageProcess+'',
-    'reply': { 
-      'forum': note.forum,
-      'readers': { 
-        'values-regex': 'reviewer-.*',        
-        description: 'The users who will be allowed to read the above content.'
-      },
-      'content': {
-        'Subject': {
-          'order': 1,
-          'value-regex': '.{1,500}',
-          'description': 'Subject line of your message.'
-        },
-        'Message': {
-          'order': 3,
-          'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Your message.'
-        }
-      }
-    }
-  });
-  or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
+  // var messageInvite = or3client.createCommentInvitation({
+  //   'id': 'ICLR.cc/2017/conference/-/reviewer/message',
+  //   'signatures':['ICLR.cc/2017/conference'],
+  //   'writers':['ICLR.cc/2017/conference'],
+  //   'invitees': ['ICLR.cc/2017/areachairs'],
+  //   'readers': ['everyone'],
+  //   'process':messageProcess+'',
+  //   'reply': { 
+  //     'forum': note.forum,
+  //     'readers': { 
+  //       'values-regex': 'reviewer-.*',        
+  //       description: 'The users who will be allowed to read the above content.'
+  //     },
+  //     'content': {
+  //       'Subject': {
+  //         'order': 1,
+  //         'value-regex': '.{1,500}',
+  //         'description': 'Subject line of your message.'
+  //       },
+  //       'Message': {
+  //         'order': 3,
+  //         'value-regex': '[\\S\\s]{1,5000}',
+  //         'description': 'Your message.'
+  //       }
+  //     }
+  //   }
+  // });
+  // or3client.or3request(or3client.inviteUrl, messageInvite, 'POST', token).catch(error=>console.log(error));
   
 
   var commentProcess = function(){
@@ -68,12 +67,8 @@ function () {
       
     });
 
-    note.readers=note.readers.concat(note.writers[0]);
-
-    or3client.or3request( or3client.notesUrl, note, 'POST', token)
-
     return true;
-  }+''
+  };
 
   var publicCommentInvite = or3client.createCommentInvitation({
     'id': 'ICLR.cc/2017/conference/-/paper/'+note.number+'/public/comment',
@@ -81,7 +76,7 @@ function () {
     'writers':['ICLR.cc/2017/conference'],
     'invitees': ['~'],
     'readers': ['everyone'],
-    'process':commentProcess,
+    'process':commentProcess+'',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       //'parent': noteID,    // not specified so we can allow comments on comments
@@ -91,7 +86,7 @@ function () {
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'values-regex': ['everyone|ICLR.cc/2017/conference/paper'+note.number+'/reviewer.*'], 
+        'values-regex': ['everyone|ICLR.cc/2017/conference/paper'+note.number+'/(reviewer.*|areachair|authors)'], 
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {

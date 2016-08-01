@@ -11,36 +11,33 @@ from Crypto.Hash import HMAC, SHA256
 
 class Client(object):
 
-    def __init__(self, base_url=None, config='./openreview_config.ini', process_dir='../process/', webfield_dir='../webfield/'):
+    def __init__(self, base_url=None, process_dir='../process/', webfield_dir='../webfield/',username=None,password=None):
         """CONSTRUCTOR DOCSTRING"""
-        
         self.base_url = base_url if base_url != None else 'http://localhost:3000'
-        self.config = config
         self.groups_url = self.base_url+'/groups'
         self.login_url = self.base_url+'/login'
         self.register_url = self.base_url+'/register'
         self.invitations_url = self.base_url+'/invitations'
         self.mail_url = self.base_url+'/mail'
         self.notes_url = self.base_url+'/notes'
-        self.token = self.__login_user()
+        self.token = self.__login_user(username,password)
         self.headers = {'Authorization': 'Bearer ' + self.token, 'User-Agent': 'test-create-script'}
-        self.user = {}
 
     ## PRIVATE FUNCTIONS
 
-    def __login_user(self):
+    def __login_user(self,username=None, password=None):
         
-        config = ConfigParser.ConfigParser()
-        config.read(self.config)
-        try:
-            username = config.get('credentials','username')
-        except ConfigParser.NoOptionError:
-            username = raw_input("Please provide your OpenReview username (e.g. username@umass.edu): ")
+        if username==None:
+            try:
+                username = os.environ["OPENREVIEW_USERNAME"]
+            except KeyError:
+                username = raw_input("Please provide your OpenReview username (e.g. username@umass.edu): ")
         
-        try:    
-            password = config.get('credentials','password')
-        except ConfigParser.NoOptionError:   
-            password = getpass.getpass("Please provide your OpenReview password: ")
+        if password==None:    
+            try:    
+                password = os.environ["OPENREVIEW_PASSWORD"]
+            except KeyError:   
+                password = getpass.getpass("Please provide your OpenReview password: ")
 
         self.user = {'id':username,'password':password}
         token_response = requests.post(self.login_url, json=self.user)
@@ -52,7 +49,7 @@ class Client(object):
                 return str(token_response.json()['token'])
         except requests.exceptions.HTTPError as e:
             for error in token_response.json()['errors']:
-                print "ERROR: "+error
+                print error
 
     ## PUBLIC FUNCTIONS
 
@@ -88,7 +85,7 @@ class Client(object):
 
         except requests.exceptions.HTTPError as e:
             for error in response.json()['errors']:
-                print "ERROR: "+error
+                print error
 
 
     def get_groups(self, prefix=None, member=None, host=None, signatory=None):
@@ -118,14 +115,15 @@ class Client(object):
                                 signatories=g['signatories'],
                                 signatures=g['signatures'],
                                 )
-                    group.web=g['web']
+                    if hasattr(g, 'web'):
+                        group.web=g['web']
                     groups.append(group)
                 groups.sort(key=lambda x: x.id)
                 return groups
                 
         except requests.exceptions.HTTPError as e:
             for error in response.json()['errors']:
-                print "ERROR: "+error
+                print error
 
     def save_group(self, group):
         """Saves the group. Upon success, returns the original Group object."""
@@ -136,9 +134,8 @@ class Client(object):
             else:
                 return group
         except requests.exceptions.HTTPError as e:
-            print response.json()
             for error in response.json()['errors']:
-                print "ERROR: "+error
+                print error
 
         
 
@@ -161,24 +158,29 @@ class Client(object):
             return r
 
 
-    def save_invitation(self, inputs, outputdir=None):
-        r = requests.post(self.invitations_url, json=inputs, headers=self.headers)
-        r.raise_for_status()
-        print r.text
-        if outputdir == None:
-            return r
-        else:
-            print outputdir #TODO: Save output to csv
-            return r
+    def save_invitation(self, invitation):
+        """Saves the invitation. Upon success, returns the original Invitation object."""
+        response = requests.post(self.invitations_url, json=invitation.to_json(), headers=self.headers)
+        try:
+            if response.status_code != 200:
+                response.raise_for_status()
+            else:
+                return invitation
+        except requests.exceptions.HTTPError as e:
+            for error in response.json()['errors']:
+                print "ERROR: "+error
 
-    def save_note(self, inputs, outputdir=None):
-        r = requests.post(self.notes_url, json=inputs, headers=self.headers)
-        r.raise_for_status()
-        if outputdir == None:
-            return r
-        else:
-            print outputdir #TODO: Save output to csv
-            return r
+    def save_note(self, note):
+        """Saves the note. Upon success, returns the original Note object."""
+        response = requests.post(self.notes_url, json=note.to_json(), headers=self.headers)
+        try:
+            if response.status_code != 200:
+                response.raise_for_status()
+            else:
+                return note
+        except requests.exceptions.HTTPError as e:
+            for error in response.json()['errors']:
+                print error
 
     def send_mail(self, subject, recipients, message):
         r = requests.post(self.mail_url, json={'groups': recipients, 'subject': subject , 'message': message}, headers=self.headers)
@@ -214,7 +216,7 @@ class Group(object):
             'readers': self.readers,
             'signatories': self.signatories
         }
-        if self.web:
+        if hasattr(self,'web'):
             body['web']=self.web
         return body
 
@@ -239,25 +241,52 @@ class Invitation(object):
         self.readers=readers
         self.writers=writers
         self.invitees=invitees
+        self.signatures=signatures
         self.reply={} if reply==None else reply
-
-        self.body = {
-            'id': inviter+'/-/'+suffix,
-            ## e.g. inviter = 'ICLR.cc/2017/conference', suffix = 'submission'
-
-            'readers': readers,
-            'writers': writers,
-            'invitees': invitees,
-            'signatures': signatures,
-            ## double check that this is not a problem for the invitees;
-            ## i.e., if readers are restricted but invitees are not, can the right invitees still respond to this invitation?
-
-            'reply':{} if reply==None else reply
-        }
         if web != None:
             with open(web) as f:
-                self.body['web'] = f.read()
-
+                self.web = f.read()
         if process != None:
             with open(process) as f:
-                self.body['process'] = f.read()
+                self.process = f.read()
+
+    def to_json(self):
+        body = {
+            'id': self.id,
+            'readers': self.readers,
+            'writers': self.writers,
+            'invitees': self.invitees,
+            'signatures': self.signatures,
+            'reply':self.reply
+        }
+
+        if hasattr(self,'web'):
+            body['web']=self.web
+        if hasattr(self,'process'):
+            body['process']=self.process
+        return body
+
+
+class Note(object):
+    def __init__(self, content=None, forum=None, invitation=None, parent=None, pdfTransfer=None, readers=None, signatures=None, writers=None):
+        self.content = content
+        self.forum = forum
+        self.invitation = invitation
+        self.parent = parent
+        self.pdfTransfer = pdfTransfer
+        self.readers = readers
+        self.signatures = signatures
+        self.writers = writers
+
+    def to_json(self):
+        body = {
+            'content': self.content,
+            'forum': self.forum,
+            'invitation': self.invitation,
+            'parent': self.parent,
+            'pdfTransfer': self.pdfTransfer,
+            'readers': self.readers,
+            'signatures': self.signatures,
+            'writers': self.writers
+        }
+        return body
