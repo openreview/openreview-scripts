@@ -367,7 +367,7 @@ fs.createReadStream(reviewerFile).pipe(csvparse({delimiter: ','}, function(err, 
       url: urlPrefix + 'login', 
       json: true, 
       body: {
-        'id': 'OpenReview.net', 'password': '12345678'
+        'id': 'OpenReview.net', 'password': ''
       }
     },
     function (error, response, body) {

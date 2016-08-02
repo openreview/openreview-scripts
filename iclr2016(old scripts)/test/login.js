@@ -17,7 +17,7 @@ var headers = { 'User-Agent': 'or3-tests' };
 //USERS
 var u1 = {
     'id': 'u1@host.com',
-    'password': '12345678'
+    'password': ''
 };
 
 // the body is a json object that will be sent

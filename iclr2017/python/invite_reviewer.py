@@ -11,7 +11,6 @@
 ## Import statements
 import argparse
 import csv
-import getpass
 import re
 import sys
 sys.path.append('../..')
@@ -23,10 +22,8 @@ parser.add_argument('-i','--invitee', help="the group that will be invited to re
 parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
-## Initialize the client library with username and password
-username = raw_input("OpenReview username (e.g. username@umass.edu): ")
-password = getpass.getpass("Password: ")
-or3 = Client(username,password, base_url=args.baseurl)
+## Initialize the client library
+openreview = Client(base_url=args.baseurl)
 email_addresses=[]
 
 if re.match(r"[^@]+@[^@]+\.[^@]+", args.invitee):
@@ -39,9 +36,9 @@ invitation_id = 'ICLR.cc/2017/conference/-/reviewer_invitation'
 
 ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
 for count, reviewer in enumerate(email_addresses):
-    or3.add_group_member('ICLR.cc/2017/conference/reviewers-invited',reviewer)
-    hashKey = or3.get_hash(reviewer, invitation_id)
-    url = "http://localhost:3000/invitation?id=" + invitation_id + "&email=" + reviewer + "&key=" + hashKey + "&response="
+    openreview.save_group(openreview.get_group('ICLR.cc/2017/conference/reviewers-invited').add_member(reviewer))
+    hashKey = openreview.get_hash(reviewer, "4813408173804203984")
+    url = openreview.base_url+"/invitation?id=" + invitation_id + "&email=" + reviewer + "&key=" + hashKey + "&response="
     
     message = """You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.
 
@@ -58,6 +55,6 @@ The ICLR 2017 Program Chairs
 
 """
 
-    or3.send_mail("OpenReview invitation response", [reviewer], message)
+    openreview.send_mail("OpenReview invitation response", [reviewer], message)
 
 

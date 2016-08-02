@@ -6,8 +6,6 @@
 
 ## Import statements
 import argparse
-import csv
-import getpass
 import json
 import sys
 sys.path.append('../..')
@@ -19,10 +17,8 @@ parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-username = raw_input("OpenReview username (e.g. username@umass.edu): ")
-password = getpass.getpass()
-or3 = Client(username,password, base_url=args.baseurl)
-base_url = or3.base_url
+openreview = Client(base_url=args.baseurl)
+base_url = openreview.base_url
 
 ## Create the submission invitation
 submission_reply = {
@@ -33,7 +29,7 @@ submission_reply = {
         'values': ['everyone']
     },
     'signatures': {
-        'description': 'Your displayed identity associated with the above content.',
+        'description': 'How your identity will be displayed with the above content.',
         'values-regex': '~.*'
     },
     'writers': {
@@ -77,7 +73,14 @@ submission_reply = {
         }
     }
 }
-submission_invitation = Invitation('ICLR.cc/2017/conference','submission', readers=['everyone'], invitees=['~'], signatures=['ICLR.cc/2017/pcs','ICLR.cc/2017/conference'], reply=submission_reply, process='../process/submissionProcess_iclr2017.js')
+submission_invitation = Invitation( 'ICLR.cc/2017/conference',
+                                    'submission', 
+                                    readers=['everyone'], 
+                                    writers=['ICLR.cc/2017/conference'],
+                                    invitees=['~'], 
+                                    signatures=['ICLR.cc/2017/pcs'], 
+                                    reply=submission_reply, 
+                                    process='../process/submissionProcess_iclr2017.js')
 
 ## Create 'request for availability to review' invitation
 reviewer_invitation_reply = {
@@ -108,55 +111,62 @@ reviewer_invitation_reply = {
         'values-regex': '\\(anonymous\\)'
     }
 }
-reviewer_invitation = Invitation('ICLR.cc/2017/conference','reviewer_invitation', readers=['everyone'], invitees=['everyone'], reply=reviewer_invitation_reply, process='../process/responseInvitationProcess_iclr2017.js', web='../webfield/web-field-invitation.html')
+
+reviewer_invitation= Invitation('ICLR.cc/2017/conference',
+                                'reviewer_invitation', 
+                                readers=['everyone'],
+                                writers=['ICLR.cc/2017/conference'], 
+                                invitees=['everyone'],
+                                signatures=['ICLR.cc/2017/conference'], 
+                                reply=reviewer_invitation_reply, 
+                                process='../process/responseInvitationProcess_iclr2017.js', 
+                                web='../webfield/web-field-invitation.html')
 
 invitations = [submission_invitation, reviewer_invitation]
 
 ## Post the invitations
 for i in invitations:
-    print "Posting invitation: "+i.body['id']
-    or3.set_invitation(i.body)
+    print "Posting invitation: "+i.id
+    openreview.save_invitation(i)
 
-
-
-reviewers_invited = or3.get_group({'id':'ICLR.cc/2017/conference/reviewers-invited'}).json()['groups'][0]['members']
+reviewers_invited = openreview.get_group('ICLR.cc/2017/conference/reviewers-invited').members
+print "reviewers invited:"+str(reviewers_invited)
 
 
 ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
 for count, reviewer in enumerate(reviewers_invited):
     print "Sending message to "+reviewer
-    hashkey = or3.get_hash(reviewer, reviewer_invitation.body['id'])
-    url = base_url+"/invitation?id=" + reviewer_invitation.body['id'] + "&email=" + reviewer + "&key=" + hashkey + "&response="
+    hashkey = openreview.get_hash(reviewer, "4813408173804203984")
+    url = base_url+"/invitation?id=" + reviewer_invitation.id+ "&email=" + reviewer + "&key=" + hashkey + "&response="
     message = "You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.\n\n"
     message = message+ "To ACCEPT the invitation, please click on the following link: \n\n"
     message = message+ url + "Yes\n\n"
     message = message+ "To DECLINE the invitation, please click on the following link: \n\n"
     message = message+ url + "No\n\n" + "Thank you"
-    or3.send_mail("OpenReview invitation response", [reviewer], message)
+    openreview.send_mail("OpenReview invitation response", [reviewer], message)
 
-
-note_writer = or3.get_group({'signatory':username, 'regex':'~.*'}).json()['groups'][0]['id']
-print "note authored by "+note_writer
+note_writer = openreview.get_groups(signatory=openreview.user['id'], prefix='~')[0].to_json()['id']
+print "Posting sample note with author "+note_writer
 
 ## Define and post a sample note
-note1 = {
-    'content': {
+sample_note = Note(content=
+    {
         'CMT_id':'',
-        'abstract':'This is note 1',
+        'abstract':'This is a sample note to test the process functions for the invitation to which this note responds.',
         'author_emails':"author@gmail.com",
         'authors':'Author 1',
         'conflicts':'cs.berkeley.edu',
         'pdf':'http://arxiv.org/pdf/1407.1808v1.pdf',
-        'title':'Note 1',
+        'title':'Sample Note',
         'keywords':['keyword']
     },
-    'forum': None,
-    'invitation': 'ICLR.cc/2017/conference/-/submission',
-    'parent': None,
-    'pdfTransfer':"url",
-    'readers':["everyone"],
-    'signatures':[note_writer],
-    'writers':[note_writer]
-}
+    forum=None,
+    invitation='ICLR.cc/2017/conference/-/submission',
+    parent=None,
+    pdfTransfer="url",
+    readers=["everyone"],
+    signatures=[note_writer],
+    writers=[note_writer]
+)
 
-or3.set_note(note1)
+openreview.save_note(sample_note)

@@ -24,7 +24,7 @@ var paper = iclr_params.paper;
 
 var rootUser = {
   'id': 'OpenReview.net',
-  'password': '12345678'
+  'password': ''
 };
 
 var submissionProcess = function() {
