@@ -8,7 +8,6 @@
 ## Import statements
 import argparse
 import csv
-import getpass
 import json
 import sys
 sys.path.append('../..')
@@ -22,10 +21,8 @@ parser.add_argument('-m','--message', help="your email's message in string form 
 parser.add_argument('--baseurl', help="base url")
 args = parser.parse_args()
 
-## Initialize the client library with username and password
-username = raw_input("OpenReview username (e.g. username@umass.edu): ")
-password = getpass.getpass()
-or3 = Client(username,password, base_url=args.baseurl)
+## Initialize the client library
+openreview = Client(base_url=args.baseurl)
     
 message = """
 Dear invited reviewer,
@@ -45,7 +42,7 @@ else:
 	
 if args.recipients!=None:
 	recipients = [args.recipients]
-	or3.send_mail(subject, recipients, message)
+	openreview.send_mail(subject, recipients, message)
 else:
 	print "Please specify an OpenReview group to send this message to. (Hint: the group of invited reviewers is ICLR.cc/2017/conference/reviewers-invited)"
 	print "\nDEFAULT MESSAGE: "

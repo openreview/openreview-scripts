@@ -13,7 +13,7 @@ var headers = { 'User-Agent': 'test-create-script' }; //what are these?
 
 var rootUser = {
   id:'OpenReview.net',
-  password:'12345678'
+  password:''
 }
 
 or3client.getUserTokenP(rootUser).then(function(token){

@@ -87,6 +87,56 @@ class Client(object):
             for error in response.json()['errors']:
                 print error
 
+    def get_invitation(self, id):
+        """Returns a single invitation by id if available"""
+        response = requests.get(self.invitations_url, params={'id':id}, headers=self.headers)
+        
+        try:
+            if response.status_code != 200:
+                response.raise_for_status()
+            else:
+                i = response.json()['invitations'][0]
+                invitation = Invitation(i['id'].split('/-/')[0],
+                    i['id'].split('/-/')[1],
+                    readers = i['readers'], 
+                    writers = i['writers'],
+                    invitees = i['invitees'], 
+                    signatures = i['signatures'], 
+                    reply = i['reply']
+                    )
+                if hasattr(invitation,'web'):
+                    invitation.web = i['web']
+                if hasattr(invitation,'process'):
+                    invitation.process = i['process']
+                return invitation
+
+        except requests.exceptions.HTTPError as e:
+            for error in response.json()['errors']:
+                print error
+
+    def get_note(self, id):
+        """Returns a single note by id if available"""
+        response = requests.get(self.notes_url, params={'id':id}, headers=self.headers)
+        
+        try:
+            if response.status_code != 200:
+                response.raise_for_status()
+            else:
+                n = response.json()['notes'][0]
+                note = Note(content=n['content'],
+                    forum=n['forum'],
+                    invitation=n['invitation'],
+                    parent=n['parent'],
+                    pdfTransfer=n['pdfTransfer'],
+                    readers=n['readers'],
+                    signatures=n['signatures'],
+                    writers=n['writers']
+                    )
+                return note
+
+        except requests.exceptions.HTTPError as e:
+            for error in response.json()['errors']:
+                print error
 
     def get_groups(self, prefix=None, member=None, host=None, signatory=None):
         """Returns a list of Group objects based on the filters provided."""
@@ -125,6 +175,52 @@ class Client(object):
             for error in response.json()['errors']:
                 print error
 
+    def get_notes(self, id=None, forum=None, invitation=None, parent=None, tauthor=None, signature=None, writer=None, includeTrash=None):
+        """Returns a list of Note objects based on the filters provided."""
+        notes=[]
+        params = {}
+        if id!=None:
+            params['id'] = id
+        if forum!=None:
+            params['forum'] = forum
+        if invitation!=None:
+            params['invitation'] = invitation
+        if parent!=None:
+            params['parent'] = parent
+        if tauthor!=None:
+            params['tauthor'] = tauthor
+        if signature!=None:
+            params['signature'] = signature
+        if writer!=None:
+            params['writer']=writer
+        if includeTrash==True:
+            params['trash']=True
+
+        response = requests.get(self.notes_url, params=params, headers=self.headers)
+        
+        try:
+            if response.status_code != 200:
+                response.raise_for_status()
+            else:
+                for n in response.json()['notes']:
+                    note = Note(content=n['content'],
+                        forum=n['forum'],
+                        invitation=n['invitation'],
+                        parent=n['parent'],
+                        pdfTransfer=n['pdfTransfer'],
+                        readers=n['readers'],
+                        signatures=n['signatures'],
+                        writers=n['writers']
+                        )
+
+                    notes.append(note)
+                notes.sort(key=lambda x: x.forum)
+                return notes
+                
+        except requests.exceptions.HTTPError as e:
+            for error in response.json()['errors']:
+                print error
+
     def save_group(self, group):
         """Saves the group. Upon success, returns the original Group object."""
         response = requests.post(self.groups_url, json=group.to_json(), headers=self.headers)
@@ -136,45 +232,6 @@ class Client(object):
         except requests.exceptions.HTTPError as e:
             for error in response.json()['errors']:
                 print error
-
-        
-
-    def get_invitation(self, id, outputdir=None):
-        """Returns a single invitation by id if available"""
-        response = requests.get(self.invitations_url, params={'id':id}, headers=self.headers)
-        
-        try:
-            if response.status_code != 200:
-                response.raise_for_status()
-            else:
-                i = response.json()['invitations'][0]
-                invitation = Invitation(i['id'].split('/-/')[0],
-                    i['id'].split('/-/')[1],
-                    readers = i['readers'], 
-                    writers = i['writers'],
-                    invitees = i['invitees'], 
-                    signatures = i['signatures'], 
-                    reply = i['reply']
-                    )
-                if hasattr(invitation,'web'):
-                    invitation.web = i['web']
-                if hasattr(invitation,'process'):
-                    invitation.process = i['process']
-                return invitation
-
-        except requests.exceptions.HTTPError as e:
-            for error in response.json()['errors']:
-                print error
-
-
-    def get_note(self, inputs, outputdir=None):
-        r = requests.get(self.notes_url, params=inputs, headers=self.headers)
-        r.raise_for_status()
-        if outputdir == None:
-            return r
-        else:
-            print outputdir #TODO: Save output to csv
-            return r
 
 
     def save_invitation(self, invitation):
@@ -250,6 +307,19 @@ class Group(object):
             self.members.append(member)
         return self
 
+    def remove_member(self, member):
+        if type(member) is Group:
+            try:
+                self.members.remove(member.id)
+            except(ValueError):
+                pass
+        if type(member) is str:
+            try:
+                self.members.remove(member)
+            except(ValueError):
+                pass
+        return self
+
     def save(self, client):
         client.save_group(self)
 
@@ -291,6 +361,13 @@ class Invitation(object):
             self.invitees.append(invitee.id)
         if type(invitee) is str:
             self.invitees.append(invitee)
+        return self
+
+    def add_noninvitee(self, noninvitee):
+        if type(noninvitee) is Group:
+            self.noninvitees.append(noninvitee.id)
+        if type(noninvitee) is str:
+            self.noninvitees.append(noninvitee)
         return self
 
 class Note(object):

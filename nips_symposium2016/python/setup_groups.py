@@ -26,34 +26,36 @@ args = parser.parse_args()
 
 openreview = Client(config='./nips_symposium2016_config.ini')
 
-nips            = Group('NIPS',      
-    signatories = ['NIPS'], 
+nips            = Group('NIPS.cc',      
+    signatories = ['NIPS.cc'], 
     writers     = ['OpenReview.net'], 
     members     = [],
     readers     = ['OpenReview.net'], 
     signatures  = ['OpenReview.net'])
 
-nips_symposium  = Group('NIPS/Symposium', 
-    signatories = ['NIPS/Symposium'], 
-    writers     = ['NIPS/Symposium'],  
+nips_symposium  = Group('NIPS.cc/Symposium', 
+    signatories = ['NIPS.cc/Symposium'], 
+    writers     = ['NIPS.cc/Symposium'],  
     members     = [],
-    readers     = ['NIPS/Symposium'],       
-    signatures  = ['NIPS'])
+    readers     = ['NIPS.cc/Symposium'],       
+    signatures  = ['NIPS.cc'])
 
-nips_symposium2016  = Group('NIPS/Symposium/2016',
-    signatories = ['NIPS/Symposium/2016'],
-    writers     = ['NIPS/Symposium/2016'],
+nips_symposium2016 = Group('NIPS.cc/Symposium/2016',
+    signatories = ['NIPS.cc/Symposium/2016'],
+    writers     = ['NIPS.cc/Symposium','NIPS.cc/Symposium/2016'],
     members     = [],
     readers     = ['everyone'],
     web         = '../webfield/nips_symposium2016-webfield.html',
-    signatures  = ['NIPS/Symposium'])
+    signatures  = ['NIPS.cc/Symposium'])
 
-nips_symposium2016pc  = Group('NIPS/Symposium/2016/PC', 
-    signatories = ['NIPS/Symposium/2016/PC'], 
-    writers     = ['NIPS/Symposium/2016'],
+nips_symposium2016pc = Group('NIPS.cc/Symposium/2016/PC', 
+    signatories = ['NIPS.cc/Symposium/2016/PC'], 
+    writers     = ['NIPS.cc/Symposium/2016'],
     members     = [],
-    readers     = ['NIPS/Symposium/2016/PC'], 
-    signatures  = ['NIPS/Symposium/2016'])
+    readers     = ['NIPS.cc/Symposium/2016','NIPS.cc/Symposium/2016/PC'], 
+    signatures  = ['NIPS.cc/Symposium/2016'])
+
+nips_symposium2016pc.add_member('spector@cs.umass.edu')
 
 groups = [nips, nips_symposium, nips_symposium2016, nips_symposium2016pc]
 

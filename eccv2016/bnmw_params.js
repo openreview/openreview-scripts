@@ -4,7 +4,7 @@ var headers = { 'User-Agent': 'test-create-script' }; //what are these?
 
 var rootUser = {
   id:'OpenReview.net',
-  password:'12345678'
+  password:''
 }
 
 // ECCV ROOT GROUP

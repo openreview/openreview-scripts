@@ -4,7 +4,7 @@ var _ = require('lodash');
 
 var rootUser = {
   id:'OpenReview.net',
-  password:'12345678'
+  password:''
 }
 
 // ECCV ROOT GROUP

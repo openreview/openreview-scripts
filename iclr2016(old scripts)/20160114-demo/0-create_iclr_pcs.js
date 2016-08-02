@@ -12,7 +12,7 @@ var headers = { 'User-Agent': 'test-create-script' };
 
 var rootUsr = {
     'id': 'OpenReview.net',
-    'password': '12345678'
+    'password': ''
 }
 
 //PCs

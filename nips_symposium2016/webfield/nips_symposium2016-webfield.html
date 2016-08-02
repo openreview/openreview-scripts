@@ -34,7 +34,7 @@
         return df.promise();
       };
 
-      var submissionInvitationP = httpGetP('invitations', {id: 'NIPS/Symposium/2016/-/submission'}).then(function(result) {
+      var submissionInvitationP = httpGetP('invitations', {id: 'NIPS.cc/Symposium/2016/-/submission'}).then(function(result) {
         console.log('result',result)
         return result.invitations[0];
       },
@@ -42,15 +42,7 @@
         return error
       });
 
-      var recommendationInvitationP = httpGetP('invitations', {id: 'NIPS/Symposium/2016/-/recommendation'}).then(function(result) {
-        console.log('result',result)
-        return result.invitations[0];
-      },
-      function(error){
-        return error
-      });
-
-      var notesP = httpGetP('notes', {invitation: 'NIPS/Symposium/2016/-/submission', maxtcdate: Date.now()}).then(function(result) {
+      var notesP = httpGetP('notes', {invitation: 'NIPS.cc/Symposium/2016/-/submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
       },      
       function(error){
@@ -58,13 +50,9 @@
       });
 
 
-      $.when(submissionInvitationP, recommendationInvitationP, notesP).done(function(submissionInvitation, recommendationInvitation, notes) {
+      $.when(submissionInvitationP, notesP).done(function(submissionInvitation, notes) {
         sm.update('submissionInvitationTrip', {
           submissionInvitation: submissionInvitation
-        });
-
-        sm.update('recommendationInvitationTrip', {
-          recommendationInvitation: recommendationInvitation
         });
 
         sm.update('notes', notes);
@@ -77,34 +65,7 @@
                 view.mkNewNoteEditor(submissionInvitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      submissionInvitation: 'NIPS/Symposium/2016/-/submission', 
-                      maxtcdate: Date.now()
-                    }).then(function(result) {
-                      console.log("time to update notes: " + result.notes.length);
-                      sm.update('notes', result.notes);
-                    },
-                    function(error){
-                      return error
-                    });
-                  },
-                  onCompleted: function(editor) {
-                    $('#notes').prepend(editor);
-                  }
-                });
-              } else {
-               promptLogin(user);
-              }
-            }], true);
-          }},
-
-          recommendationInvitationTrip: function(recommendationInvitationTrip) { if (recommendationInvitationTrip) {
-            var recommendationInvitation = recommendationInvitationTrip.recommendationInvitation;
-            $attach('#invitation', 'mkInvitationButton', [recommendationInvitation, function() {
-              if (user) {
-                view.mkNewNoteEditor(recommendationInvitation, null, user, {
-                  onNoteCreated: function(idRecord) {
-                    httpGetP('notes', {
-                      recommendationInvitation: 'NIPS/Symposium/2016/-/recommendation', 
+                      submissionInvitation: 'NIPS.cc/Symposium/2016/-/submission', 
                       maxtcdate: Date.now()
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);

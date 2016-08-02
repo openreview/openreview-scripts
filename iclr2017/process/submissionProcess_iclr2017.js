@@ -104,7 +104,51 @@ function () {
     }
   });
   or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error));
+  
 
+  var acceptanceProcess = function(){
+    return true;
+  };
+
+  var acceptanceInvite = {
+    'id': 'ICLR.cc/2017/conference/-/paper/'+note.number+'/acceptance',
+    'signatures': ['ICLR.cc/2017/conference'],
+    'writers': ['ICLR.cc/2017/conference'],
+    'invitees': ['ICLR.cc/2017/pcs'],
+    'noninvitees': [],
+    'readers': ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
+    'process': acceptanceProcess+'',
+    'reply': {
+      'forum': note.id,
+      'parent': null,
+      'signatures': {
+        'values-regex':'~.*',
+        'description':'Your displayed identity associated with the above content.'
+        },
+      'writers': {'values-regex':'~.*'}, 
+      'readers': { 
+        'values': ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], 
+        'description': 'The users who will be allowed to read the above content.'
+        },
+      'content': {
+        'verdict': {
+          'order': 1,
+          'value-radio': [
+            'undecided',
+            'accepted', 
+            'rejected' 
+          ]
+        },
+        'comments': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{0,2000}',
+          'description': 'Provide an additional comment on this verdict.'
+        }
+      } 
+    }
+  };
+
+  or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token).catch(error=>console.log(error));
 
   var conference = or3client.prettyConferenceName(note);
   //Send an email to the author of the submitted note, confirming its receipt

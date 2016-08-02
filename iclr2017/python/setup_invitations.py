@@ -129,8 +129,6 @@ for i in invitations:
     print "Posting invitation: "+i.id
     openreview.save_invitation(i)
 
-
-
 reviewers_invited = openreview.get_group('ICLR.cc/2017/conference/reviewers-invited').members
 print "reviewers invited:"+str(reviewers_invited)
 

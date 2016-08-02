@@ -38,7 +38,7 @@ iclr            = Group('ICLR.cc',
     signatories = ['ICLR.cc'], 
     members     = [] )
 
-iclr2017 = Group('ICLR.cc/2017', 
+iclr2017        = Group('ICLR.cc/2017', 
     readers     = ['everyone'],       
     writers     = ['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'],  
     signatures  = ['ICLR.cc'], 

@@ -38,93 +38,72 @@ submission_reply = {
         'values-regex': '~.*'
     },
     'content': {
-        'abstract': {
-            'description': 'Abstract of paper.',
-            'order': 4,
-            'value-regex': '[\\S\\s]{1,5000}'
-        },
-        'author_emails': {
-            'description': 'Comma separated list of author email addresses, in the same order as above.',
-            'order': 2,
-            'value-regex': '[^,\\n]+(,[^,\\n]+)*'
+        'title': {
+            'description': 'Title of paper.',
+            'order': 1,
+            'value-regex': '.{1,100}'
         },
         'authors': {
             'description': 'Comma separated list of author names, as they appear in the paper.',
-            'order': 1,
+            'order': 2,
             'value-regex': '[^,\\n]+(,[^,\\n]+)*'
         },
-        'conflicts': {
-            'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
-            'order': 100,
-            'value-regex': '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))+(;[a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))*$'
+        'author_emails': {
+            'description': 'Comma separated list of author email addresses, in the same order as above.',
+            'order': 3,
+            'value-regex': '[^,\\n]+(,[^,\\n]+)*'
         },
-        'keywords': {
-            'description': 'Comma separated list of keywords.',
-            'order': 5,
-            'values-regex': '.*'
+        'abstract': {
+            'description': 'Abstract of paper.',
+            'order': 4,
+            'value-regex': '[\\S\\s]{0,5000}'
         },
         'pdf': {
-            'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv.',
-            'order': 4,
+            'description': 'Provide a direct link to your PDF (must have a .pdf extension)',
+            'order': 5,
             'value-regex': 'upload|http://arxiv.org/pdf/.+'
-        },
-        'title': {
-            'description': 'Title of paper.',
-            'order': 3,
-            'value-regex': '.{1,100}'
         }
     }
 }
-submission_invitation = Invitation( 'NIPS/Symposium/2016',
+submission_invitation = Invitation('NIPS.cc/Symposium/2016',
     'submission', 
-    writers     = ['NIPS/Symposium/2016'],
+    writers     = ['NIPS.cc/Symposium/2016'],
     readers     = ['everyone'], 
     invitees    = ['~'], 
     reply       = submission_reply, 
     process     = '../process/submissionProcess_nips_symposium2016.js',
-    signatures  = ['NIPS/Symposium/2016'])
+    signatures  = ['NIPS.cc/Symposium/2016'])
 
-recommendation_invitation = Invitation( 'NIPS/Symposium/2016',
-    'recommendation', 
-    writers     = ['NIPS/Symposium/2016'],
-    readers     = ['everyone'], 
-    invitees    = ['~'], 
-    reply       = submission_reply, 
-    process     = '../process/submissionProcess_nips_symposium2016.js',
-    signatures  = ['NIPS/Symposium/2016'])
-
-invitations = [submission_invitation,recommendation_invitation]
+invitations = [submission_invitation]
 
 ## Post the invitations
 for i in invitations:
-    print "Posting invitation: "+i.body['id']
-    openreview.save_invitation(i.body)
+    print "Posting invitation: "+i.id
+    openreview.save_invitation(i)
 
 
 
+note_writer = openreview.get_groups(signatory=openreview.user['id'], prefix='~')[0].to_json()['id']
+print "Posting sample note with author "+note_writer
 
-# note_writer = openreview.get_group('signatory'=openreview.user['id'], 'regex'='~.*'})
-# print "note authored by "+note_writer
+## Define and post a sample note
+sample_note = Note(content=
+    {
+        'CMT_id':'',
+        'abstract':'This is a sample note to test the process functions for the invitation to which this note responds.',
+        'author_emails':"author@gmail.com",
+        'authors':'Author 1',
+        'conflicts':'cs.berkeley.edu',
+        'pdf':'http://arxiv.org/pdf/1407.1808v1.pdf',
+        'title':'Sample Note'
+    },
+    forum=None,
+    invitation='NIPS.cc/Symposium/2016/-/submission',
+    parent=None,
+    pdfTransfer="url",
+    readers=["everyone"],
+    signatures=[note_writer],
+    writers=[note_writer]
+)
 
-# ## Define and post a sample note
-# note1 = {
-#     'content': {
-#         'CMT_id':'',
-#         'abstract':'This is note 1',
-#         'author_emails':"author@gmail.com",
-#         'authors':'Author 1',
-#         'conflicts':'cs.berkeley.edu',
-#         'pdf':'http://arxiv.org/pdf/1407.1808v1.pdf',
-#         'title':'Note 1',
-#         'keywords':['keyword']
-#     },
-#     'forum': None,
-#     'invitation': 'NIPS/Symposium/2016/-/submission',
-#     'parent': None,
-#     'pdfTransfer':"url",
-#     'readers':["everyone"],
-#     'signatures':[note_writer],
-#     'writers':[note_writer]
-# }
-
-# openreview.set_note(note1)
+openreview.save_note(sample_note)
