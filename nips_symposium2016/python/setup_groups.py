@@ -19,11 +19,15 @@ parser.add_argument('-p','--programchairs', help="csv file containing the email 
 parser.add_argument('-a','--areachairs', help="csv file containing the email addresses of the area chairs")
 parser.add_argument('-r','--reviewers', help="csv file containing the email addresses of the candidate reviewers")
 parser.add_argument('-u','--baseurl', help="base URL for the server to connect to")
+parser.add_argument('--username')
+parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-
-openreview = Client(baseurl=args.baseurl)
+if args.username!=None and args.password!=None:
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    openreview = Client(baseurl=args.baseurl)
 
 nips            = Group('NIPS.cc',      
     signatories = ['NIPS.cc'], 
