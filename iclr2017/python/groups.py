@@ -10,19 +10,25 @@ import argparse
 import csv
 import json
 import sys
-sys.path.append('../..')
-from client import *
+from openreview import *
 
 ## Import statements and argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('-g','--group', help="The group to examine.")
 parser.add_argument('-p','--prefix', help="The prefix for the set of groups to examine")
 parser.add_argument('-o','--output', help="The directory to save the output file")
+parser.add_argument('-a','--add', help="a member to add to this group or set of groups")
+parser.add_argument('-r','--remove',help="a member to remove from this group or set of groups")
 parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--password')
+parser.add_argument('--username')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-openreview = Client(base_url=args.baseurl)
+if args.username!=None and args.password!=None:
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    openreview = Client(baseurl=args.baseurl)
 
 if args.group and args.prefix:
     print "Please specify either a group or a prefix, not both"
@@ -30,7 +36,13 @@ if args.group and args.prefix:
 if args.group!=None:
     groups = [openreview.get_group(args.group)]
 if args.prefix!=None:    
-    groups = openreview.get_groups(prefix=args.group)
+    groups = openreview.get_groups(prefix=args.prefix)
+if args.add!=None:
+    for g in groups:
+        openreview.post_group(g.add_member(args.add))
+if args.remove!=None:
+    for g in groups:
+        openreview.post_group(g.remove_member(args.remove))
 
 if args.output!=None:
     ext = args.output.split('.')[-1]
@@ -54,6 +66,6 @@ if args.output!=None:
                     except KeyError:
                         row.append('')
                 csvwriter.writerow(row)
-else:
+elif groups!=[None]:
     for g in groups:
         print json.dumps(g.to_json(), indent=4, sort_keys=True)

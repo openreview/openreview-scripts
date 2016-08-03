@@ -12,8 +12,7 @@ accept, their email address is added to group ICLR.cc/2017/reviewers.
 import argparse
 import csv
 import sys
-sys.path.append('../..')
-from client import *
+from openreview import *
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -21,21 +20,24 @@ parser.add_argument('-p','--programchairs', help="csv file containing the email 
 parser.add_argument('-a','--areachairs', help="csv file containing the email addresses of the area chairs")
 parser.add_argument('-r','--reviewers', help="csv file containing the email addresses of the candidate reviewers")
 parser.add_argument('-u','--baseurl', help="base URL for the server to connect to")
+parser.add_argument('--username')
+parser.add_argument('--password')
 
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-
-openreview = Client(base_url=args.baseurl)
-
+if args.username!=None and args.password!=None:
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    openreview = Client(baseurl=args.baseurl)
 
 
 ## Initialize the groups list
 iclr            = Group('ICLR.cc',      
     readers     = ['OpenReview.net'], 
-    writers     = ['OpenReview.net'], 
+    writers     = ['OpenReview.net','ICLR.cc/2017/pcs'], 
     signatures  = ['OpenReview.net'], 
-    signatories = ['ICLR.cc'], 
+    signatories = ['ICLR.cc','ICLR.cc/2017/pcs'], 
     members     = [] )
 
 iclr2017        = Group('ICLR.cc/2017', 
@@ -43,20 +45,20 @@ iclr2017        = Group('ICLR.cc/2017',
     writers     = ['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'],  
     signatures  = ['ICLR.cc'], 
     signatories = ['ICLR.cc/2017','ICLR.cc/2017/pcs'], 
-    members     = [], 
+    members     = ['ICLR.cc/2017/pcs'], 
     web         = '../webfield/iclr2017_webfield.html')
 
 iclr2017conference = Group('ICLR.cc/2017/conference', 
     readers     = ['everyone'], 
-    writers     = ['ICLR.cc/2017','ICLR.cc/2017/conference'], 
-    signatures  = ['ICLR.cc/2017'],
+    writers     = ['ICLR.cc/2017','ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
+    signatures  = ['ICLR.cc/2017',],
     signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
     members     = ['ICLR.cc/2017/pcs'],  
     web         = '../webfield/iclr2017conference_webfield.html')
 
 iclr2017workshop = Group('ICLR.cc/2017/workshop', 
     readers     = ['everyone'],
-    writers     = ['ICLR.cc/2017'],
+    writers     = ['ICLR.cc/2017','ICLR.cc/2017/pcs'],
     signatures  = ['ICLR.cc/2017'], 
     signatories = ['ICLR.cc/2017/workshop'],
     members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], 
@@ -101,7 +103,7 @@ if args.areachairs != None:
 
     iclr2017areachairs = Group('ICLR.cc/2017/areachairs', 
                                 readers=['everyone'],
-                                writers=['ICLR.cc/2017'],
+                                writers=['ICLR.cc/2017','ICLR.cc/2017/pcs'],
                                 signatures=['ICLR.cc/2017'],
                                 signatories=['ICLR.cc/2017/areachairs'],
                                 members=all_areachair_members)
@@ -140,13 +142,13 @@ if args.reviewers != None:
                                         members=reviewers_invited)
     iclr2017reviewers           = Group('ICLR.cc/2017/conference/reviewers', 
                                         readers=['everyone'],
-                                        writers=['ICLR.cc/2017/conference'],
+                                        writers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
                                         signatures=['ICLR.cc/2017/conference'],
                                         signatories=['ICLR.cc/2017/conference/reviewers'],
                                         members=[])
     iclr2017reviewersdeclined   = Group('ICLR.cc/2017/conference/reviewers-declined',
                                         readers=['everyone'],
-                                        writers=['ICLR.cc/2017/conference'],
+                                        writers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
                                         signatures=['ICLR.cc/2017/conference'],
                                         signatories=['ICLR.cc/2017/conference/reviewers'],
                                         members=[])
@@ -158,10 +160,9 @@ if args.reviewers != None:
 ## Post the groups
 for g in groups:
     print "Posting group: "+g.id
-    openreview.save_group(g)
+    openreview.post_group(g)
 
 
 
 ## Add the conference group to the host page
-## NOTE: Should this be refactored into a "save to homepage" function or something like that?
-openreview.save_group(openreview.get_group('host').add_member(iclr2017))
+openreview.post_group(openreview.get_group('host').add_member(iclr2017))

@@ -12,18 +12,23 @@ import argparse
 import csv
 import json
 import sys
-sys.path.append('../..')
-from client import *
+from openreview import *
 
 ## Parse the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-g','--group', help="the group whose webfield will be replaced (default: ICLR.cc/2017/conference)")
-parser.add_argument('-w','--webfield', help="html file that will replace the current ICLR 2017 homepage")
+parser.add_argument('group', help="the group whose webfield will be replaced (default: ICLR.cc/2017/conference)")
+parser.add_argument('webfield', help="html file that will replace the current ICLR 2017 homepage")
 parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--username')
+parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-openreview = Client(base_url=args.baseurl)
+if args.username!=None and args.password!=None:
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    openreview = Client(baseurl=args.baseurl)
+
 
 
 group = openreview.get_group(args.group)
@@ -31,4 +36,5 @@ print group.id
 
 with open(args.webfield) as f: 
     group.web = f.read()
-    updated_group = openreview.save_group(group)
+    #group.signatures=[openreview.user['id']]
+    updated_group = openreview.post_group(group)

@@ -11,8 +11,7 @@
 import argparse
 import csv
 import sys
-sys.path.append('../..')
-from client import *
+from openreview import *
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -20,11 +19,15 @@ parser.add_argument('-p','--programchairs', help="csv file containing the email 
 parser.add_argument('-a','--areachairs', help="csv file containing the email addresses of the area chairs")
 parser.add_argument('-r','--reviewers', help="csv file containing the email addresses of the candidate reviewers")
 parser.add_argument('-u','--baseurl', help="base URL for the server to connect to")
+parser.add_argument('--username')
+parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-
-openreview = Client(config='./nips_symposium2016_config.ini')
+if args.username!=None and args.password!=None:
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    openreview = Client(baseurl=args.baseurl)
 
 nips            = Group('NIPS.cc',      
     signatories = ['NIPS.cc'], 
@@ -75,10 +78,10 @@ if args.programchairs != None:
 ## Post the groups
 for g in groups:
     print "Posting group: "+g.id
-    openreview.save_group(g)
+    openreview.post_group(g)
 
 
 
 ## Add the conference group to the host page
 ## NOTE: Should this be refactored into a "save to homepage" function or something like that?
-openreview.save_group(openreview.get_group('host').add_member(nips_symposium2016))
+openreview.post_group(openreview.get_group('host').add_member(nips_symposium2016))
