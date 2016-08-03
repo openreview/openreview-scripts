@@ -1,6 +1,6 @@
 # openreview-scripts
-Scripts to populate OpenReview conferences. Most conferences use a client library written in Javascript. ICLR 2017 uses the latest Python library to allow conference organizers to run scripts themselves. This is a work in progress and is changing frequently.  
+Scripts to populate OpenReview conferences. Most conferences use a client library written in Javascript. ICLR 2017 uses the latest Python library to allow conference organizers to run scripts themselves. For details on ICLR 2017, please see the [ICLR 2017 readme](./iclr2017).
 
-For now, the Python library uses the environment variables OPENREVIEW_USERNAME and OPENREVIEW PASSWORD to avoid the need for the user to enter his/her credentials every time they run a script. Set these environment variables in your ~/.bash_profile, or enter your credentials each time. If you choose to set only one of these (e.g. if you set OPENREVIEW_USERNAME but not OPENREVIEW_PASSWORD), you will be prompted for the missing value when you execute the script.
+This is a work in progress and is changing frequently. 
 
 Please contact Michael Spector at spector@cs.umass.edu for technical support. 
