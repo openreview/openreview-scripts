@@ -22,6 +22,18 @@ If you do not set values for OPENREVIEW_USERNAME or OPENREVIEW_PASSWORD, you wil
 <h3>setup-invitations.py</h3>
 Initializes the invitation to submit a paper to the conference and the process functions that trigger when a submission is made. Intended to be executed by a member of ICLR.cc/2017/pcs.
 
+<h4>Usage</h4>
+```
+usage: setup-invitations.py [-h] [--baseurl BASEURL] [--username USERNAME]
+                            [--password PASSWORD]
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --baseurl BASEURL    base url
+  --username USERNAME
+  --password PASSWORD
+```
+
 <h4>Examples</h4>
 ```
 python setup-invitations.py
@@ -31,18 +43,59 @@ python setup-invitations.py
 <h3>groups.py</h3>
 Retrieves a single group based on id, or multiple groups based on id prefix. It is also capable of adding or removing members to or from the returned group(s). Please note that the specific groups that can be modified in this way are dependent on your OpenReview user permissions.
 
+<h4>Usage</h4>
+```
+usage: groups.py [-h] [-g GROUP] [-p PREFIX] [-o OUTPUT] [-a ADD] [-r REMOVE]
+                 [--baseurl BASEURL] [--password PASSWORD]
+                 [--username USERNAME]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -g GROUP, --group GROUP
+                        The group to examine.
+  -p PREFIX, --prefix PREFIX
+                        The prefix for the set of groups to examine
+  -o OUTPUT, --output OUTPUT
+                        The directory to save the output file
+  -a ADD, --add ADD     a member to add to this group or set of groups
+  -r REMOVE, --remove REMOVE
+                        a member to remove from this group or set of groups
+  --baseurl BASEURL     base url
+  --password PASSWORD
+  --username USERNAME
+```
+
 <h4>Examples</h4>
 ```
 python groups.py -g ICLR.cc/2017/conference                             # returns a single group, if available, with id = ICLR.cc/2017/conference
-python groups.py -p ICLR.cc/2017/conference                             # returns all the notes with ICLR.cc/2017/conference as a prefix
+python groups.py -p ICLR.cc/2017/conference                             # returns all the groups with ICLR.cc/2017/conference as a prefix
 
-python groups.py -p ICLR.cc/2017/conference -o conference.csv           # output files to csv
+python groups.py -p ICLR.cc/2017/conference -o conference.csv           # output groups to the file 'conference.csv'
 
-python groups.py -g ICLR.cc/2017/areachairs -a newAC@openreview.net     # add the email address newAC@openreview.net to the areachairs group
+python groups.py -g ICLR.cc/2017/areachairs -a newAC@openreview.net     # add the email address newAC@openreview.net as a member to the areachairs group
 ```
 
 <h3>notes.py</h3>
 Retrieves a single note based on forum id or invitation id
+
+<h4>Usage</h4>
+```
+usage: notes.py [-h] [-f FORUM] [-i INVITATION] [-o OUTPUT]
+                [--baseurl BASEURL] [--username USERNAME]
+                [--password PASSWORD]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FORUM, --forum FORUM
+                        The desired note's forum id
+  -i INVITATION, --invitation INVITATION
+                        the desired note's invitation
+  -o OUTPUT, --output OUTPUT
+                        The directory to save the output file
+  --baseurl BASEURL     base url
+  --username USERNAME
+  --password PASSWORD
+```
 
 <h4>Examples</h4>
 ```
@@ -52,6 +105,25 @@ python notes.py -i ICLR.cc/2017/conference/-/submission     # returns a list of 
 
 <h3>homepage.py</h3>
 Replaces a given group's webfield (for groups that represent conferences, workshops, or symposia, the webfield contains the html file that controls how the group is displayed in the UI)
+
+<h4>Usage</h4>
+```
+usage: homepage.py [-h] [--baseurl BASEURL] [--username USERNAME]
+                   [--password PASSWORD]
+                   group webfield
+
+positional arguments:
+  group                the group whose webfield will be replaced (default:
+                       ICLR.cc/2017/conference)
+  webfield             html file that will replace the current ICLR 2017
+                       homepage
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --baseurl BASEURL    base url
+  --username USERNAME
+  --password PASSWORD
+```
 
 <h4>Examples</h4>
 ```
@@ -79,6 +151,27 @@ the ICLR 2017 program chairs
 
 Defaults may be changed with optional arguments to the script.
 
+<h4>Usage</h4>
+```
+usage: email-reviewers.py [-h] [-r RECIPIENTS] [-s SUBJECT] [-m MESSAGE]
+                          [--baseurl BASEURL] [--username USERNAME]
+                          [--password PASSWORD]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -r RECIPIENTS, --recipients RECIPIENTS
+                        the group that will recieve this message
+  -s SUBJECT, --subject SUBJECT
+                        your email's subject line in string form (e.g. 'this
+                        is a subject line')
+  -m MESSAGE, --message MESSAGE
+                        your email's message in string form (e.g. 'this is a
+                        message')
+  --baseurl BASEURL     base url
+  --username USERNAME
+  --password PASSWORD
+```
+
 <h4>Examples</h4>
 ```
 python email-reviewers.py --message "this is my new message"
@@ -88,6 +181,22 @@ python email-reviewers.py --subject "This is a new subject line"
 
 <h3>invite-reviewer.py</h3>
 Allows PCs to invite an additional individual reviewer, taking a single email address as argument.  The script will add the email address to the reviewers-invited group, and send an invitation email to the person.
+
+<h4>Usage</h4>
+```
+usage: invite-reviewer.py [-h] [--baseurl BASEURL] [--username USERNAME]
+                          [--password PASSWORD]
+                          invitee
+
+positional arguments:
+  invitee              the group that will be invited to review
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --baseurl BASEURL    base url
+  --username USERNAME
+  --password PASSWORD
+```
 
 <h4>Examples</h4>
 ```
@@ -119,6 +228,23 @@ This message may be modified directly in the script.
 
 <h3>assign-reviewer.py</h3>
 Assigns an email address to serve as a reviewer for a particular paper by paper number (NOTE: paper number is an integer assigned to each paper in the order it was submitted, starting from 1. This is different from the forum ID, which is a six-digit sequence of letters, numbers, and symbols). The reviewer will be given membership to an anonymous reviewer group (e.g. ICLR.cc/2017/conference/paper123/reviewer1) which allows them to post reviews without revealing their identity.
+
+<h4>Usage</h4>
+```
+usage: assign-reviewer.py [-h] [--baseurl BASEURL] [--username USERNAME]
+                          [--password PASSWORD]
+                          reviewer paper_number
+
+positional arguments:
+  reviewer             the reviewer email address to assign
+  paper_number         the number of the paper to assign this reviewer to
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --baseurl BASEURL    base url
+  --username USERNAME
+  --password PASSWORD
+```
 
 <h4>Examples</h4>
 ```
