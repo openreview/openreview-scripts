@@ -103,6 +103,42 @@ python notes.py -f ABCxyz                                   # returns a list of 
 python notes.py -i ICLR.cc/2017/conference/-/submission     # returns a list of all notes that respond to this invitation (i.e. all paper submissions)
 ```
 
+<h3>invitations.py</h3>
+Retrieves invitations based on a set of provided parameters
+
+<h4>Usage</h4>
+```
+usage: invitations.py [-h] [-i ID] [-v INVITEE] [-p PARENTNOTE]
+                      [-r REPLYFORUM] [-s SIGNATURE] [-n NOTE] [-o OUTPUT]
+                      [--baseurl BASEURL] [--username USERNAME]
+                      [--password PASSWORD]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i ID, --id ID        return invitations with the given id
+  -v INVITEE, --invitee INVITEE
+                        return invitations that have this group as an invitee
+  -p PARENTNOTE, --parentNote PARENTNOTE
+                        return invitations that have this note as the
+                        invitation's parent
+  -r REPLYFORUM, --replyForum REPLYFORUM
+                        return invitations whose reply corresponds to the
+                        given forum id
+  -s SIGNATURE, --signature SIGNATURE
+                        return invitations signed by the given user
+  -n NOTE, --note NOTE  return invitations that the given note responds to
+  -o OUTPUT, --output OUTPUT
+                        The directory to save the output file
+  --baseurl BASEURL     base url
+  --username USERNAME
+  --password PASSWORD
+
+```
+
+<h4>Examples</h4>
+```
+python invitations.py -
+
 <h3>homepage.py</h3>
 Replaces a given group's webfield (for groups that represent conferences, workshops, or symposia, the webfield contains the html file that controls how the group is displayed in the UI)
 
