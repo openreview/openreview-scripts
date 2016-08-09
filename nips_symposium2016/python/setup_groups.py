@@ -36,27 +36,27 @@ nips            = Group('NIPS.cc',
     readers     = ['OpenReview.net'], 
     signatures  = ['OpenReview.net'])
 
-nips_symposium  = Group('NIPS.cc/Symposium', 
-    signatories = ['NIPS.cc/Symposium'], 
-    writers     = ['NIPS.cc/Symposium'],  
+nips_symposium  = Group('NIPS.cc/Deep_Learning_Symposium', 
+    signatories = ['NIPS.cc/Deep_Learning_Symposium'], 
+    writers     = ['NIPS.cc/Deep_Learning_Symposium'],  
     members     = [],
-    readers     = ['NIPS.cc/Symposium'],       
+    readers     = ['NIPS.cc/Deep_Learning_Symposium'],       
     signatures  = ['NIPS.cc'])
 
-nips_symposium2016 = Group('NIPS.cc/Symposium/2016',
-    signatories = ['NIPS.cc/Symposium/2016'],
-    writers     = ['NIPS.cc/Symposium','NIPS.cc/Symposium/2016'],
+nips_symposium2016 = Group('NIPS.cc/Deep_Learning_Symposium/2016',
+    signatories = ['NIPS.cc/Deep_Learning_Symposium/2016'],
+    writers     = ['NIPS.cc/Deep_Learning_Symposium','NIPS.cc/Deep_Learning_Symposium/2016'],
     members     = [],
     readers     = ['everyone'],
     web         = '../webfield/nips_symposium2016-webfield.html',
-    signatures  = ['NIPS.cc/Symposium'])
+    signatures  = ['NIPS.cc/Deep_Learning_Symposium'])
 
-nips_symposium2016pc = Group('NIPS.cc/Symposium/2016/PC', 
-    signatories = ['NIPS.cc/Symposium/2016/PC'], 
-    writers     = ['NIPS.cc/Symposium/2016'],
+nips_symposium2016pc = Group('NIPS.cc/Deep_Learning_Symposium/2016/PC', 
+    signatories = ['NIPS.cc/Deep_Learning_Symposium/2016/PC','spector@cs.umass.edu'], 
+    writers     = ['NIPS.cc/Deep_Learning_Symposium/2016'],
     members     = [],
-    readers     = ['NIPS.cc/Symposium/2016','NIPS.cc/Symposium/2016/PC'], 
-    signatures  = ['NIPS.cc/Symposium/2016'])
+    readers     = ['NIPS.cc/Deep_Learning_Symposium/2016','NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
+    signatures  = ['NIPS.cc/Deep_Learning_Symposium/2016'])
 
 nips_symposium2016pc.add_member('spector@cs.umass.edu')
 

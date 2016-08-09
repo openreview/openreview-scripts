@@ -26,8 +26,8 @@ else:
     openreview = Client(baseurl=args.baseurl)
 baseurl = openreview.baseurl
 
-## Create the submission invitation
-submission_reply = {
+## Create the recommendation invitation
+recommendation_reply = {
     'forum': None,
     'parent': None,
     'readers': {
@@ -44,41 +44,41 @@ submission_reply = {
     'content': {
         'title': {
             'description': 'Title of paper.',
-            'order': 1,
+            'order': 2,
             'value-regex': '.{1,100}'
         },
         'authors': {
             'description': 'Comma separated list of author names, as they appear in the paper.',
-            'order': 2,
-            'value-regex': '[^,\\n]+(,[^,\\n]+)*'
-        },
-        'author_emails': {
-            'description': 'Comma separated list of author email addresses, in the same order as above.',
             'order': 3,
             'value-regex': '[^,\\n]+(,[^,\\n]+)*'
         },
+        'author_emails': {
+            'description': 'Optional: please provide the e-mail address of one or more of the authors.',
+            'order': 4,
+            'value-regex': '.*'
+        },
         'abstract': {
             'description': 'Abstract of paper.',
-            'order': 4,
+            'order': 5,
             'value-regex': '[\\S\\s]{0,5000}'
         },
         'pdf': {
-            'description': 'Provide a direct link to your PDF (must be a arXiv link with .pdf extension)',
-            'order': 5,
-            'value-regex': 'http://arxiv.org/pdf/.+'
+            'description': 'Provide a direct link to your PDF (link must begin with http(s):// and end with .pdf extension)',
+            'order': 1,
+            'value-regex': '(http|https):\/\/.+\.pdf'
         }
     }
 }
-submission_invitation = Invitation('NIPS.cc/Symposium/2016',
-    'submission', 
-    writers     = ['NIPS.cc/Symposium/2016'],
+recommendation_invitation = Invitation('NIPS.cc/Deep_Learning_Symposium/2016',
+    'recommendation', 
+    writers     = ['NIPS.cc/Deep_Learning_Symposium/2016'],
     readers     = ['everyone'], 
     invitees    = ['~'], 
-    reply       = submission_reply, 
-    process     = '../process/submissionProcess_nips_symposium2016.js',
-    signatures  = ['NIPS.cc/Symposium/2016'])
+    reply       = recommendation_reply, 
+    process     = '../process/recommendationProcess_nips_symposium2016.js',
+    signatures  = ['NIPS.cc/Deep_Learning_Symposium/2016'])
 
-invitations = [submission_invitation]
+invitations = [recommendation_invitation]
 
 ## Post the invitations
 for i in invitations:
