@@ -57,7 +57,7 @@ function () {
 
   var commentInvite = 
   {
-    'id': 'NIPS.cc/Deep_Learning_Symposium/2016/-/comment',
+    'id': 'NIPS.cc/Deep_Learning_Symposium/2016/-/comment/'+note.number,
     'signatures':['NIPS.cc/Deep_Learning_Symposium/2016'],
     'writers': ['NIPS.cc/Deep_Learning_Symposium/2016'],
     'invitees': ['~'],
