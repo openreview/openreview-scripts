@@ -38,7 +38,7 @@ function () {
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'values-regex': ['everyone|NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
+        'value-dropdown': ['everyone','NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
         'description': 'The users who will be allowed to read the above content.'
         }, 
       'content': {
@@ -67,12 +67,7 @@ function () {
   or3client.or3request(or3client.inviteUrl, ratingInvite, 'POST', token).catch(error=>console.log(error));
 
 
-  var commentResponseProcess = function(){
-    var or3client= lib.or3client;
-    return true
-  }
-
-  var commentResponseInvite = 
+  var commentInvite = 
   {
     'id': 'NIPS.cc/Deep_Learning_Symposium/2016/-/comment',
     'signatures':['NIPS.cc/Deep_Learning_Symposium/2016'],
@@ -80,7 +75,7 @@ function () {
     'invitees': ['~'],
     'noninvitees':[],
     'readers': ['everyone'],
-    'process': commentResponseProcess+'',
+    'process': commentProcess+'',
     'reply': {
       'forum': note.forum,     // links this note (comment) to the previously posted note (paper)
       //'parent': note.id,    // not specified so we can allow comments on comments
@@ -90,7 +85,7 @@ function () {
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'values-regex': ['everyone'], 
+        'value-dropdown': ['everyone','NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -107,7 +102,7 @@ function () {
       }
     }
   };
-  or3client.or3request(or3client.inviteUrl, commentResponseInvite, 'POST', token).catch(error=>console.log(error));
+  or3client.or3request(or3client.inviteUrl, commentInvite, 'POST', token).catch(error=>console.log(error));
 
 
   var pcCommentInvite = 
@@ -129,7 +124,7 @@ function () {
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*|NIPS.cc/Deep_Learning_Symposium/2016/PC'},
       'readers': { 
-        'values-regex': ['everyone|NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
+        'value-dropdown': ['everyone','NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
         'description': 'The users who will be allowed to read the above content.'
         },
       'content': {
@@ -162,8 +157,8 @@ function () {
 
   var mail = {
     "groups": note.signatures,
-    "subject": "Your paper has been submitted to " + conference + ": \"" + note.content.title + "\".",
-    "message": "You have been listed as an author for a paper recommended  "+ conference +" has been posted.\n\nTo view the note, click here: http://dev.openreview.net/forum?id=" + note.forum
+    "subject": "Recommendation for " + conference + " received: \"" + note.content.title + "\".",
+    "message": "Your recommended paper for "+ conference +" has been posted.\n\nTo view the note, click here: http://dev.openreview.net/forum?id=" + note.forum
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
 
