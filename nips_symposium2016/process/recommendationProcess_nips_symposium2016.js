@@ -4,18 +4,6 @@ function () {
 
   var commentProcess = function(){
     var or3client = lib.or3client;
-    
-    // var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
-    // var conference = or3client.prettyConferenceName(note);
-
-    // origNote.then(function(result){
-    //   var mail = {
-    //     "groups": result.notes[0].signatures,
-    //     "subject": "Comment on your recommendation to " + conference + ": \"" + note.content.title + "\".",
-    //     "message": "Your recommendation to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: http://dev.openreview.net/forum?id=" + note.forum
-    //   };
-    //   var mailP = or3client.or3request( mailUrl, mail, 'POST', token )
-    // });
 
     return true;
   }
