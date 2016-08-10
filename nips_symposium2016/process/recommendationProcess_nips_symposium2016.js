@@ -10,9 +10,9 @@ function () {
 
   var ratingInvite = 
   {
-    'id': 'NIPS.cc/Deep_Learning_Symposium/2016/-/recommendation/'+note.number+'/public/rating',
-    'signatures':['NIPS.cc/Deep_Learning_Symposium/2016'],
-    'writers': ['NIPS.cc/Deep_Learning_Symposium/2016'],
+    'id': 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation/'+note.number+'/public/rating',
+    'signatures':['NIPS.cc/2016/Deep_Learning_Symposium'],
+    'writers': ['NIPS.cc/2016/Deep_Learning_Symposium'],
     'invitees': ['~'],
     'noninvitees':[],
     'readers': ['everyone'],
@@ -26,7 +26,7 @@ function () {
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'value-dropdown': ['everyone','NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
+        'value-dropdown': ['everyone','NIPS.cc/2016/Deep_Learning_Symposium/PC'], 
         'description': 'The users who will be allowed to read the above content.'
         }, 
       'content': {
@@ -57,9 +57,9 @@ function () {
 
   var commentInvite = 
   {
-    'id': 'NIPS.cc/Deep_Learning_Symposium/2016/-/comment/'+note.number,
-    'signatures':['NIPS.cc/Deep_Learning_Symposium/2016'],
-    'writers': ['NIPS.cc/Deep_Learning_Symposium/2016'],
+    'id': 'NIPS.cc/2016/Deep_Learning_Symposium/-/comment/'+note.number,
+    'signatures':['NIPS.cc/2016/Deep_Learning_Symposium'],
+    'writers': ['NIPS.cc/2016/Deep_Learning_Symposium'],
     'invitees': ['~'],
     'noninvitees':[],
     'readers': ['everyone'],
@@ -73,7 +73,7 @@ function () {
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'value-dropdown': ['everyone','NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
+        'value-dropdown': ['everyone','NIPS.cc/2016/Deep_Learning_Symposium/PC'], 
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -95,24 +95,24 @@ function () {
 
   var pcCommentInvite = 
   {
-    'id': 'NIPS.cc/Deep_Learning_Symposium/2016/-/recommendation/'+note.number+'/program/committee/post',
-    'signatures':['NIPS.cc/Deep_Learning_Symposium/2016'],
-    'writers': ['NIPS.cc/Deep_Learning_Symposium/2016'],
-    'invitees': ['NIPS.cc/Deep_Learning_Symposium/2016/PC'],
+    'id': 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation/'+note.number+'/program/committee/post',
+    'signatures':['NIPS.cc/2016/Deep_Learning_Symposium'],
+    'writers': ['NIPS.cc/2016/Deep_Learning_Symposium'],
+    'invitees': ['NIPS.cc/2016/Deep_Learning_Symposium/PC'],
     'noninvitees':[],
-    'readers': ['NIPS.cc/Deep_Learning_Symposium/2016/PC','NIPS.cc/Deep_Learning_Symposium/2016'],
+    'readers': ['NIPS.cc/2016/Deep_Learning_Symposium/PC','NIPS.cc/2016/Deep_Learning_Symposium'],
     'process': commentProcess+'',
     'ddate': 2470017651235,
     'reply': {
       'forum': note.forum,      // links this note (comment) to the previously posted note (paper)
       'parent': note.id,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'~.*|NIPS.cc/Deep_Learning_Symposium/2016/PC',
+        'values-regex':'~.*|NIPS.cc/2016/Deep_Learning_Symposium/PC',
         'description': 'Your displayed identity associated with the above content.' 
         },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'~.*|NIPS.cc/Deep_Learning_Symposium/2016/PC'},
+      'writers': {'values-regex':'~.*|NIPS.cc/2016/Deep_Learning_Symposium/PC'},
       'readers': { 
-        'value-dropdown': ['everyone','NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
+        'value-dropdown': ['everyone','NIPS.cc/2016/Deep_Learning_Symposium/PC'], 
         'description': 'The users who will be allowed to read the above content.'
         },
       'content': {
