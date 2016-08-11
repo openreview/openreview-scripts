@@ -10,7 +10,7 @@ function () {
 
   var ratingInvite = 
   {
-    'id': 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation/'+note.number+'/public/rating',
+    'id': 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation/'+note.number+'/comment',
     'signatures':['NIPS.cc/2016/Deep_Learning_Symposium'],
     'writers': ['NIPS.cc/2016/Deep_Learning_Symposium'],
     'invitees': ['~'],
@@ -42,7 +42,7 @@ function () {
         },
         'rating':{
           'order:':3,
-          'description':'Your rating of this paper'
+          'description':'Your rating of the paper being discussed',
           'value-dropdown': [
             "No Rating",
             "1 - Do Not Recommend",
