@@ -53,7 +53,7 @@ recommendation_reply = {
             'value-regex': '[^,\\n]+(,[^,\\n]+)*'
         },
         'author_emails': {
-            'description': 'Optional: please provide the e-mail address of one or more of the authors.',
+            'description': 'Optionally provide the e-mail address of the authors, or leave blank.',
             'order': 4,
             'value-regex': '.*'
         },
