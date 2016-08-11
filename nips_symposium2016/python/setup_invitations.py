@@ -53,7 +53,7 @@ recommendation_reply = {
             'value-regex': '[^,\\n]+(,[^,\\n]+)*'
         },
         'author_emails': {
-            'description': 'Optional: please provide the e-mail address of one or more of the authors.',
+            'description': 'Optionally provide the e-mail address of the authors, or leave blank.',
             'order': 4,
             'value-regex': '.*'
         },
@@ -69,14 +69,14 @@ recommendation_reply = {
         }
     }
 }
-recommendation_invitation = Invitation('NIPS.cc/Deep_Learning_Symposium/2016',
+recommendation_invitation = Invitation('NIPS.cc/2016/Deep_Learning_Symposium',
     'recommendation', 
-    writers     = ['NIPS.cc/Deep_Learning_Symposium/2016'],
+    writers     = ['NIPS.cc/2016/Deep_Learning_Symposium'],
     readers     = ['everyone'], 
     invitees    = ['~'], 
     reply       = recommendation_reply, 
     process     = '../process/recommendationProcess_nips_symposium2016.js',
-    signatures  = ['NIPS.cc/Deep_Learning_Symposium/2016'])
+    signatures  = ['NIPS.cc/2016/Deep_Learning_Symposium'])
 
 invitations = [recommendation_invitation]
 

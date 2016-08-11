@@ -36,31 +36,35 @@ nips            = Group('NIPS.cc',
     readers     = ['OpenReview.net'], 
     signatures  = ['OpenReview.net'])
 
-nips_symposium  = Group('NIPS.cc/Deep_Learning_Symposium', 
-    signatories = ['NIPS.cc/Deep_Learning_Symposium'], 
-    writers     = ['NIPS.cc/Deep_Learning_Symposium'],  
+nips_2016  = Group('NIPS.cc/2016', 
+    signatories = ['NIPS.cc/2016'], 
+    writers     = ['NIPS.cc/2016'],  
     members     = [],
-    readers     = ['NIPS.cc/Deep_Learning_Symposium'],       
+    readers     = ['NIPS.cc/2016'],       
     signatures  = ['NIPS.cc'])
 
-nips_symposium2016 = Group('NIPS.cc/Deep_Learning_Symposium/2016',
-    signatories = ['NIPS.cc/Deep_Learning_Symposium/2016'],
-    writers     = ['NIPS.cc/Deep_Learning_Symposium','NIPS.cc/Deep_Learning_Symposium/2016'],
+nips_2016symposium = Group('NIPS.cc/2016/Deep_Learning_Symposium',
+    signatories = ['NIPS.cc/2016/Deep_Learning_Symposium'],
+    writers     = ['NIPS.cc/2016','NIPS.cc/2016/Deep_Learning_Symposium'],
     members     = [],
     readers     = ['everyone'],
     web         = '../webfield/nips_symposium2016-webfield.html',
-    signatures  = ['NIPS.cc/Deep_Learning_Symposium'])
+    signatures  = ['NIPS.cc/2016'])
 
-nips_symposium2016pc = Group('NIPS.cc/Deep_Learning_Symposium/2016/PC', 
-    signatories = ['NIPS.cc/Deep_Learning_Symposium/2016/PC','spector@cs.umass.edu'], 
-    writers     = ['NIPS.cc/Deep_Learning_Symposium/2016'],
+nips_2016symposiumpc = Group('NIPS.cc/2016/Deep_Learning_Symposium/PC', 
+    signatories = ['NIPS.cc/2016/Deep_Learning_Symposium/PC','spector@cs.umass.edu'], 
+    writers     = ['NIPS.cc/2016/Deep_Learning_Symposium'],
     members     = [],
-    readers     = ['NIPS.cc/Deep_Learning_Symposium/2016','NIPS.cc/Deep_Learning_Symposium/2016/PC'], 
-    signatures  = ['NIPS.cc/Deep_Learning_Symposium/2016'])
+    readers     = ['NIPS.cc/2016/Deep_Learning_Symposium','NIPS.cc/2016/Deep_Learning_Symposium/PC'], 
+    signatures  = ['NIPS.cc/2016/Deep_Learning_Symposium'])
 
-nips_symposium2016pc.add_member('spector@cs.umass.edu')
+nips_2016symposiumpc.add_member('spector@cs.umass.edu')
+nips_2016symposiumpc.add_member('rgrosse@cs.toronto.edu')
+nips_2016symposiumpc.add_member('ndjaitly@gmail.com')
+nips_2016symposiumpc.add_member('mccallum@cs.umass.edu')
 
-groups = [nips, nips_symposium, nips_symposium2016, nips_symposium2016pc]
+
+groups = [nips, nips_2016, nips_2016symposium, nips_2016symposiumpc]
 
 ## Read in a csv file with the names of the program chair(s).
 ## Each name in the csv will be set as a member of ICLR.cc/2016/pc
@@ -71,8 +75,8 @@ if args.programchairs != None:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
             for email in row:
-                nips_symposium2016pc.add_member(email)
-    groups.append(nips_symposium2016pc)
+                nips_2016symposiumpc.add_member(email)
+    groups.append(nips_2016symposiumpc)
 
 
 ## Post the groups
@@ -84,4 +88,4 @@ for g in groups:
 
 ## Add the conference group to the host page
 ## NOTE: Should this be refactored into a "save to homepage" function or something like that?
-openreview.post_group(openreview.get_group('host').add_member(nips_symposium2016))
+openreview.post_group(openreview.get_group('host').add_member(nips_2016symposium))

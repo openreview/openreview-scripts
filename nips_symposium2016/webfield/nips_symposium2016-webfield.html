@@ -13,7 +13,7 @@
     $(function() {
 
       $attach('#header', 'mkHostHeader', [
-        "NIPS Deep Learning Symposium 2016",
+        "NIPS 2016 Deep Learning Symposium",
         "Neural Information Processing Systems - Deep Learning Symposium",
         "Location TBD",
         "https://nips.cc/",
@@ -34,7 +34,7 @@
         return df.promise();
       };
 
-      var invitationP = httpGetP('invitations', {id: 'NIPS.cc/Deep_Learning_Symposium/2016/-/recommendation'}).then(function(result) {
+      var invitationP = httpGetP('invitations', {id: 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation'}).then(function(result) {
         console.log('result',result)
         return result.invitations[0];
       },
@@ -42,7 +42,7 @@
         return error
       });
 
-      var notesP = httpGetP('notes', {invitation: 'NIPS.cc/Deep_Learning_Symposium/2016/-/recommendation', maxtcdate: Date.now()}).then(function(result) {
+      var notesP = httpGetP('notes', {invitation: 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
       },      
       function(error){
@@ -63,7 +63,7 @@
                 view.mkNewNoteEditor(invitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      invitation: 'NIPS.cc/Deep_Learning_Symposium/2016/-/recommendation', 
+                      invitation: 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation', 
                       maxtcdate: Date.now()
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);
