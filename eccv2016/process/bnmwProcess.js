@@ -4,7 +4,7 @@ function () {
   var commentProcess = function(){
     var or3client = lib.or3client;
 
-    var origNote = or3client.or3request(notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
 
     var conference = or3client.prettyConferenceName(note);
 
@@ -14,7 +14,7 @@ function () {
         "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
         "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
       };
-      var mailP = or3client.or3request( mailUrl, mail, 'POST', token )
+      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
       
     });
 
@@ -23,7 +23,7 @@ function () {
 
   var reviewProcess = function(){
     var or3client = lib.or3client;
-    var origNote = or3client.or3request(notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
     
     var conference = or3client.prettyConferenceName(note);
 
@@ -33,7 +33,7 @@ function () {
         "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\".",
         "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: http://beta.openreview.net/forum?id=" + note.forum
       };
-      var mailP = or3client.or3request( mailUrl, mail, 'POST', token )
+      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
       
     });
     var fulfilledP = or3client.fulfillInvitation(invitation, note, token);
@@ -141,7 +141,7 @@ function () {
   var conference = or3client.prettyConferenceName(note);
 
   var mail = {
-    "groups": note.signatures,
+    "groups": note.content.author_emails.trim().split(","),
     "subject": "Submission to " + conference + " received: \"" + note.content.title + "\".",
     "message": "Your submission to "+ conference +" has been posted.\n\nTo view the note, click here: http://beta.openreview.net/forum?id=" + note.forum
   };
