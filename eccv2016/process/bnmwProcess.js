@@ -4,11 +4,9 @@ function () {
   var commentProcess = function(){
     var or3client = lib.or3client;
 
-    var origNote = or3request(notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var origNote = or3client.or3request(notesUrl+'?id='+note.forum, {}, 'GET', token);
 
-    var list = note.invitation.replace(/_/g,' ').split('/')
-    list.splice(list.indexOf('-',1));
-    var conference = list.join(' ');
+    var conference = or3client.prettyConferenceName(note);
 
     origNote.then(function(result){
       var mail = {
@@ -16,7 +14,7 @@ function () {
         "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
         "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
       };
-      var mailP = or3request( mailUrl, mail, 'POST', token )
+      var mailP = or3client.or3request( mailUrl, mail, 'POST', token )
       
     });
 
@@ -25,11 +23,9 @@ function () {
 
   var reviewProcess = function(){
     var or3client = lib.or3client;
-    var origNote = or3request(notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var origNote = or3client.or3request(notesUrl+'?id='+note.forum, {}, 'GET', token);
     
-    var list = note.invitation.replace(/_/g,' ').split('/')
-    list.splice(list.indexOf('-',1));
-    var conference = list.join(' ');
+    var conference = or3client.prettyConferenceName(note);
 
     origNote.then(function(result){
       var mail = {
@@ -37,7 +33,7 @@ function () {
         "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\".",
         "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: http://beta.openreview.net/forum?id=" + note.forum
       };
-      var mailP = or3request( mailUrl, mail, 'POST', token )
+      var mailP = or3client.or3request( mailUrl, mail, 'POST', token )
       
     });
     var fulfilledP = or3client.fulfillInvitation(invitation, note, token);
