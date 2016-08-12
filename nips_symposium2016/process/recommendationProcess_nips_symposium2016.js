@@ -10,7 +10,7 @@ function () {
 
   var ratingInvite = 
   {
-    'id': 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation/'+note.number+'/comment',
+    'id': 'NIPS.cc/2016/Deep_Learning_Symposium/-/paper/'+note.number+'/comment',
     'signatures':['NIPS.cc/2016/Deep_Learning_Symposium'],
     'writers': ['NIPS.cc/2016/Deep_Learning_Symposium'],
     'invitees': ['~'],
@@ -19,7 +19,7 @@ function () {
     'process': commentProcess+'',
     'reply': {
       'forum': note.forum,     // links this note (comment) to the previously posted note (paper)
-      'parent': note.id,    // not specified so we can allow comments on comments
+      //'parent': note.id,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'~.*|\\(anonymous\\)',
         'description': 'Your displayed identity associated with the above content.' 
@@ -56,13 +56,21 @@ function () {
   or3client.or3request(or3client.inviteUrl, ratingInvite, 'POST', token).catch(error=>console.log(error));
 
   //Send an email to the author of the submitted note, confirming its receipt
-  var conference = or3client.prettyConferenceName(note);
+
+  var message = "The NIPS 2016 Deep Learning Symposium has received your paper recommendation.\n\n"
+
+  message = message + "To view the paper, click here: http://dev.openreview.net/forum?id="+note.forum+"\n\n"
+
+  message = message+"\""+note.content.title+"\"\n\n"
+  message = message+note.content.authors+"\n\n"
+  message = message+"Abstract: "+note.content.abstract
 
   var mail = {
     "groups": note.signatures,
-    "subject": "Recommendation for " + conference + " received: \"" + note.content.title + "\".",
-    "message": "Your recommended paper for "+ conference +" has been posted.\n\nTo view the note, click here: http://dev.openreview.net/forum?id=" + note.forum
+    "subject": "Recommendation for NIPS 2016 Deep Learning Symposium received: \"" + note.content.title + "\"",
+    "message": message
   };
+
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
 
   return true;
