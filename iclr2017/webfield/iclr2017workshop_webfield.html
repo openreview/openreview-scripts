@@ -6,6 +6,7 @@
   <body>
     <div id='main'>
       <div id='header'></div>
+      <div class='panel'>Workshop track currently not open for submissions.</div>
       <div id='invitation'></div>
       <div id='notes'></div>
     </div>
@@ -26,7 +27,7 @@
         httpGet(url, queryOrBody, function(result) {
           df.resolve(result);
         }, function(err) {
-          df.reject(result);
+          df.reject(err);
         });
         return df.promise();
       };

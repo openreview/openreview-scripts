@@ -28,28 +28,18 @@ else:
     openreview = Client(baseurl=args.baseurl)
 baseurl = openreview.baseurl
 
-reviewer_email = args.reviewer
 paper_number = args.paper_number
-reviewer = None
 
-if hasattr(openreview.get_group(reviewer_email),'members'):
-    ## regex search through this list for one that starts with ~
-    for member in openreview.get_group(reviewer_email).members:
-        match = re.compile('~.*').match(member)
-        if match:
-            reviewer = match.group()
-
-if reviewer==None:
-    print "~ id inaccessible by user or not found. Adding email address as member instead."
-    reviewer = reviewer_email
+reviewer = args.reviewer
 
 reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/reviewers')
 existing_reviewers = reviewers.members
 
 reviewer_number = len(existing_reviewers)-1
 
+new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/reviewer'+str(reviewer_number)
 new_reviewer = Group(
-    'ICLR.cc/2017/conference/paper'+str(paper_number)+'/reviewer'+str(reviewer_number),
+    new_reviewer_id,
     signatures=['ICLR.cc/2017/conference'],
     writers=['ICLR.cc/2017/conference'],
     members=[reviewer],
@@ -58,12 +48,12 @@ new_reviewer = Group(
 )
 openreview.post_group(new_reviewer)
 openreview.post_group(reviewers.add_member(new_reviewer.id))
-openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer))
+openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
+
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper/'+str(paper_number)+'/public/review').add_noninvitee(new_reviewer_id))
 
 
-
-
-
+## make sure that if a reviewer is already added, don't make a new reviewer group for them.
 
 
 

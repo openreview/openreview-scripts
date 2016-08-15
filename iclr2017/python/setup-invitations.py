@@ -58,7 +58,7 @@ submission_reply = {
         'conflicts': {
             'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
             'order': 100,
-            'value-regex': '^([a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))+(;[a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))*$'
+            'value-regex': '^$|([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*'
         },
         'keywords': {
             'description': 'Comma separated list of keywords.',
@@ -66,9 +66,9 @@ submission_reply = {
             'values-regex': '.*'
         },
         'pdf': {
-            'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv.',
+            'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv (link must begin with http(s) and end with .pdf)',
             'order': 5,
-            'value-regex': 'upload|http://arxiv.org/pdf/.+'
+            'value-regex': 'upload|(http|https):\/\/.+\.pdf'
         },
         'title': {
             'description': 'Title of paper.',
