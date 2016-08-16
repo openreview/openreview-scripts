@@ -150,18 +150,6 @@ function () {
 
     origNote.then(function(result){
       var note_authors = result.notes[0].content.author_emails.trim().split(",");
-      console.log('note authors before splice',note_authors)
-      console.log('note', note.tauthor)
-
-      //is note.signatures[0] a member of any of the values in note_authors?
-      // var comment_author = note.tauthor
-      // var auth = comment_authors
-      // var index = note_authors.indexOf(auth);
-      // if(index > -1){
-      //   note_authors.splice(index,1)
-      // };
-
-      console.log('note authors after splice',note_authors)
 
       var mail = {
         "groups": note_authors,
