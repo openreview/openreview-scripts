@@ -66,6 +66,14 @@ submission_reply = {
       'order': 4,
       'value-regex': 'upload|http://arxiv.org/pdf/.+',
       'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv.'
+    },
+    'submit for proceedings':{
+      'order':5,
+      'value-radio':[
+        'yes',
+        'no'
+      ],
+      'description': "Choose whether you would like your submission to appear in the conference proceedings."
     }
   }
 }
