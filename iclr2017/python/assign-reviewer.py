@@ -28,14 +28,23 @@ else:
     openreview = Client(baseurl=args.baseurl)
 baseurl = openreview.baseurl
 
-paper_number = args.paper_number
-
 reviewer = args.reviewer
+paper_number = args.paper_number
 
 reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/reviewers')
 existing_reviewers = reviewers.members
 
-reviewer_number = len(existing_reviewers)-1
+reviewer_number = len(existing_reviewers)+1
+
+for r in existing_reviewers:
+    existing_reviewer = openreview.get_group(r)
+    print existing_reviewer
+    if reviewer in existing_reviewer.members:
+        print "reviewer found in existing_reviewers.members"
+        reviewer_number = existing_reviewers.index(r)+1
+        break
+
+print reviewer_number
 
 new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/reviewer'+str(reviewer_number)
 new_reviewer = Group(
@@ -50,7 +59,7 @@ openreview.post_group(new_reviewer)
 openreview.post_group(reviewers.add_member(new_reviewer.id))
 openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
 
-openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper/'+str(paper_number)+'/public/review').add_noninvitee(new_reviewer_id))
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(new_reviewer_id))
 
 
 ## make sure that if a reviewer is already added, don't make a new reviewer group for them.
