@@ -45,7 +45,7 @@ recommendation_reply = {
         'title': {
             'description': 'Title of paper.',
             'order': 2,
-            'value-regex': '.{1,100}'
+            'value-regex': '.{1,300}'
         },
         'authors': {
             'description': 'Comma separated list of author names, as they appear in the paper.',
@@ -65,7 +65,7 @@ recommendation_reply = {
         'pdf': {
             'description': 'Provide a direct link to your PDF (link must begin with http(s):// and end with .pdf extension)',
             'order': 1,
-            'value-regex': '(http|https):\/\/.+\.pdf'
+            'value-regex': '.+\.pdf'
         },
         'recommender':{
             'description': 'The user that recommended this paper',

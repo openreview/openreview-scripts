@@ -59,7 +59,7 @@ function () {
 
   var message = "The NIPS 2016 Deep Learning Symposium has received your paper recommendation.\n\n"
 
-  message = message + "To view the paper, click here: http://dev.openreview.net/forum?id="+note.forum+"\n\n"
+  message = message + "To view the paper, click here: "+baseUrl+"/forum?id="+note.forum+"\n\n"
 
   message = message+"\""+note.content.title+"\"\n\n"
   message = message+note.content.authors+"\n\n"

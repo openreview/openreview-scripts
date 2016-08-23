@@ -12,7 +12,7 @@ function () {
       var mail = {
         "groups": result.notes[0].content.author_emails.trim().split(","),
         "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
-        "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: http://beta.openreview.net/forum?id=" + note.forum
+        "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
       };
       var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
       
@@ -31,7 +31,7 @@ function () {
       var mail = {
         "groups": result.notes[0].content.author_emails.trim().split(","),
         "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\".",
-        "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: http://beta.openreview.net/forum?id=" + note.forum
+        "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
       };
       var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
       
@@ -87,10 +87,10 @@ function () {
       'forum': note.id, 
       'parent': note.id,
       'signatures': {
-        'values-regex':'~.*|reviewer-.+',
+        'values-regex':'~.*|ECCV2016.org/BNMW/paper'+note.number+'/reviewer[0-9]+',
         'description': 'Your displayed identity associated with the above content.' 
       },
-      'writers': {'values-regex':'~.*|reviewer-.+'},
+      'writers': {'values-regex':'~.*|ECCV2016.org/BNMW/paper'+note.number+'/reviewer[0-9]+'},
       'readers': { 
         'values': ['everyone'], 
         'description': 'The users who will be allowed to read the above content.'
@@ -134,8 +134,27 @@ function () {
       } 
     }
   };
-
   or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token).catch(error=>console.log(error));
+
+
+  // Create an empty group for this paper, e.g. "ICLR.cc/2017/conference/paper444"
+  var paperGroup = {
+    'id': 'ECCV2016.org/BNMW/paper'+note.number,
+    'signatures': ['ECCV2016.org/BNMW'],
+    'writers': ['ECCV2016.org/BNMW'],
+    'members': [],
+    'readers': ['everyone'],
+    'signatories': ['ECCV2016.org/BNMW', 'ECCV2016.org/BNMW/paper'+note.number]
+  };
+
+  var reviewerGroup = {
+    'id': paperGroup.id+'/reviewers',
+    'signatures':['ECCV2016.org/BNMW'],
+    'writers':['ECCV2016.org/BNMW'],
+    'members':[],
+    'readers':['everyone'],
+    'signatories':['ECCV2016.org/BNMW',paperGroup.id+'/reviewers']
+  };
 
   //Send an email to the author of the submitted note, confirming its receipt
   var conference = or3client.prettyConferenceName(note);
@@ -143,7 +162,7 @@ function () {
   var mail = {
     "groups": note.content.author_emails.trim().split(","),
     "subject": "Submission to " + conference + " received: \"" + note.content.title + "\".",
-    "message": "Your submission to "+ conference +" has been posted.\n\nTo view the note, click here: http://beta.openreview.net/forum?id=" + note.forum
+    "message": "Your submission to "+ conference +" has been posted.\n\nTo view the note, click here: "+baseUrl+"/forum?id=" + note.forum
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
 
