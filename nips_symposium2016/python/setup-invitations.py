@@ -45,7 +45,7 @@ recommendation_reply = {
         'title': {
             'description': 'Title of paper.',
             'order': 2,
-            'value-regex': '.{1,100}'
+            'value-regex': '.{1,300}'
         },
         'authors': {
             'description': 'Comma separated list of author names, as they appear in the paper.',
