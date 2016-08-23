@@ -13,7 +13,7 @@ function () {
       var mail = {
         "groups": result.notes[0].content.author_emails.trim().split(","),
         "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\".",
-        "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: http://dev.openreview.net/forum?id=" + note.forum
+        "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
       };
       var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
     });
@@ -154,7 +154,7 @@ function () {
       var mail = {
         "groups": note_authors,
         "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
-        "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: http://dev.openreview.net/forum?id=" + note.forum
+        "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
       };
       var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
 
@@ -167,7 +167,7 @@ function () {
       var mail = {
         "groups": note.signatures,
         "subject":"You have received a comment",
-        "message": "You have received a comment on your comment/review.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: http://dev.openreview.net/forum?id=" + note.forum
+        "message": "You have received a comment on your comment/review.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
       }
       var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
     };
@@ -258,7 +258,7 @@ function () {
   var mail = {
     "groups": note.content.author_emails.trim().split(","),
     "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
-    "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: http://dev.openreview.net/forum?id=` + note.forum
+    "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
   
