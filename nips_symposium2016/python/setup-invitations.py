@@ -65,7 +65,7 @@ recommendation_reply = {
         'pdf': {
             'description': 'Provide a direct link to your PDF (link must begin with http(s):// and end with .pdf extension)',
             'order': 1,
-            'value-regex': '.+\.pdf'
+            'value-regex': '(http|https):\/\/.+\.pdf'
         },
         'recommender':{
             'description': 'The user that recommended this paper',
