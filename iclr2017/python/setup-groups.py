@@ -147,11 +147,11 @@ if args.reviewers != None:
                                         signatures=['ICLR.cc/2017/pcs'],
                                         signatories=['ICLR.cc/2017/conference/reviewers-invited'],
                                         members=reviewers_invited)
-    iclr2017reviewersaccepted   = Group('ICLR.cc/2017/conference/reviewers-accepted', 
+    iclr2017reviewers   = Group('ICLR.cc/2017/conference/reviewers', 
                                         readers=['everyone'],
                                         writers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
                                         signatures=['ICLR.cc/2017/conference'],
-                                        signatories=['ICLR.cc/2017/conference/reviewers-accepted'],
+                                        signatories=['ICLR.cc/2017/conference/reviewers'],
                                         members=[])
     iclr2017reviewersdeclined   = Group('ICLR.cc/2017/conference/reviewers-declined',
                                         readers=['everyone'],
@@ -159,7 +159,7 @@ if args.reviewers != None:
                                         signatures=['ICLR.cc/2017/conference'],
                                         signatories=['ICLR.cc/2017/conference/reviewers'],
                                         members=[])
-    groups = groups+[iclr2017reviewersinvited, iclr2017reviewersaccepted, iclr2017reviewersdeclined]
+    groups = groups+[iclr2017reviewersinvited, iclr2017reviewers, iclr2017reviewersdeclined]
 
 
 
