@@ -41,7 +41,7 @@ for a in existing_areachairs:
     print existing_areachair
     if areachair in existing_areachair.members:
         print "areachair found in existing_areachairs.members"
-        areachair_number = existing_areachairs.index(r)+1
+        areachair_number = existing_areachairs.index(a)+1
         break
 
 print areachair_number
@@ -58,12 +58,8 @@ new_areachair = Group(
 openreview.post_group(new_areachair)
 openreview.post_group(areachairs.add_member(new_areachair.id))
 
-
-
-## make sure that if a reviewer is already added, don't make a new reviewer group for them.
-
-
-
+conference_areachairs = openreview.get_group('ICLR.cc/2017/areachairs')
+openreview.post_group(conference_areachairs.add_member(new_areachair.id));
 
 
 
