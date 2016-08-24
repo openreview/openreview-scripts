@@ -59,7 +59,7 @@ openreview.post_group(new_areachair)
 openreview.post_group(areachairs.add_member(new_areachair.id))
 
 conference_areachairs = openreview.get_group('ICLR.cc/2017/areachairs')
-openreview.post_group(conference_areachairs.add_member(new_areachair.id));
+openreview.post_group(conference_areachairs.add_member(areachair));
 
 
 
