@@ -31,20 +31,24 @@ baseurl = openreview.baseurl
 
 if args.paper_id!=None:
     paper_id = args.paper_id
-    note = openreview.get_note(paper_id)
-    message = []
-    reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
-    for rev in reviewers.members:
-        reviewer_wrapper=openreview.get_group(rev)
-        reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
-        
-        pad = '{:50s}'.format("["+str(reviewer_wrapper.members[0])+"] ")
-        message.append(pad+"reviewer"+reviewerNumber+" ("+rev+")")
+    
+    try:
+        note = openreview.get_note(paper_id)
+        message = []
+        reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
+        for rev in reviewers.members:
+            reviewer_wrapper=openreview.get_group(rev)
+            reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
+            
+            pad = '{:50s}'.format("["+str(reviewer_wrapper.members[0])+"] ")
+            message.append(pad+"reviewer"+reviewerNumber+" ("+rev+")")
 
-    message.sort()
-    print 'Reviewers assigned to paper '+paper_id+':'
-    for m in message:
-        print m
+        message.sort()
+        print 'Reviewers assigned to paper '+paper_id+':'
+        for m in message:
+            print m
+    except IndexError:
+        print "Reviewer assignments not found. This submission may not yet have reviewers assigned to it."
 
 if args.user!=None:
     user = args.user
