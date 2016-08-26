@@ -60,6 +60,7 @@ openreview.post_group(reviewers.add_member(new_reviewer.id))
 openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
 
 openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(new_reviewer_id))
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(new_reviewer_id))
 
 
 ## make sure that if a reviewer is already added, don't make a new reviewer group for them.

@@ -21,6 +21,67 @@ function () {
     var fulfilledP = or3client.fulfillInvitation(invitation, note, token);
     return true;
   };
+
+  var metaReviewInvitation = {
+    'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/meta/review',
+    'signatures': ['ICLR.cc/2017/conference'],
+    'writers': ['ICLR.cc/2017/conference'],
+    'invitees': ['ICLR.cc/2017/conference/paper'+note.number+'/areachairs'],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process': reviewProcess+'',
+    'duedate': 1481932799000,
+    'reply': {
+      'forum': note.id, 
+      'parent': note.id,
+      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
+      'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
+      'readers': { 
+        'values': ['everyone'], 
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{0,500}',
+          'description': 'Brief summary of your review.'
+        },
+        'review': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+        },
+        'rating': {
+          'order': 3,
+          'value-dropdown': [
+            '10: Top 5% of accepted papers, seminal paper', 
+            '9: Top 15% of accepted papers, strong accept', 
+            '8: Top 50% of accepted papers, clear accept', 
+            '7: Good paper, accept',
+            '6: Marginally above acceptance threshold',
+            '5: Marginally below acceptance threshold',
+            '4: Ok but not good enough - rejection',
+            '3: Clear rejection',
+            '2: Strong rejection',
+            '1: Trivial or wrong'
+          ]
+        },
+        'confidence': {
+          'order': 4,
+          'value-radio': [
+            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature', 
+            '4: The reviewer is confident but not absolutely certain that the evaluation is correct', 
+            '3: The reviewer is fairly confident that the evaluation is correct',
+            '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
+            '1: The reviewer\'s evaluation is an educated guess'
+          ]
+        }
+      } 
+    }
+  };  
+  or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token).catch(error=>console.log(error));
+
+
   var openReviewInvitation = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/public/review',
     'signatures': ['ICLR.cc/2017/conference'],
@@ -32,8 +93,8 @@ function () {
     'reply': {
       'forum': note.id, 
       'parent': note.id,
-      'writers': {'values-regex':'~.*'},
-      'signatures': {'values-regex':'~.*'},
+      'writers': {'values-regex':'~.*|\\(anonymous\\)'},
+      'signatures': {'values-regex':'~.*|\\(anonymous\\)'},
       'readers': { 
         'values': ['everyone'], 
         'description': 'The users who will be allowed to read the above content.'
@@ -140,6 +201,7 @@ function () {
 
 
   var commentProcess = function(){
+    console.log('comment process triggered')
     var or3client = lib.or3client;
     
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
@@ -149,10 +211,14 @@ function () {
     var conference = list.join(' ')
 
     origNote.then(function(result){
-      var note_authors = result.notes[0].content.author_emails.trim().split(",");
+      var recipients = result.notes[0].content.author_emails.trim().split(",");
+      var note_number = result.notes[0].number
 
+      recipients.push('ICLR.cc/2017/conference/paper'+note_number+'/reviewers')
+      recipients.push('ICLR.cc/2017/conference/paper'+note_number+'/areachairs')
+      console.log('recipients:',recipients);
       var mail = {
-        "groups": note_authors,
+        "groups": recipients,
         "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
         "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
       };
@@ -176,6 +242,48 @@ function () {
     return true;
   };
 
+  // var reviewerQuestionInvite = {
+  //   'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/public/commentV2',
+  //   'signatures':['ICLR.cc/2017/conference'],
+  //   'writers':['ICLR.cc/2017/conference'],
+  //   'invitees': ['~'],
+  //   'noninvitees':[],
+  //   'readers': ['everyone'],
+  //   'process':commentProcess+'',
+  //   'reply': {
+  //     'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+  //     //'parent': noteID,    // not specified so we can allow comments on comments
+  //     'signatures': {
+  //       'values-regex':'~.*|\\(anonymous\\)',
+  //       'description': 'How your identity will be displayed with the above content.' 
+  //       },    // this regex demands that the author reveal his/her ~ handle
+  //     'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
+  //     'readers': { 
+  //       'value-dropdown': [
+  //         'everyone',
+  //         'ICLR.cc/2017/conference/organizers',
+  //         'ICLR.cc/2017/conference/ACs_and_organizers',
+  //         'ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'
+  //       ], 
+  //       'description': 'The users who will be allowed to read the above content.'
+  //       },   // the reply must allow ANYONE to read this note (comment)
+  //     'content': {
+  //       'title': {
+  //         'order': 1,
+  //         'value-regex': '.{1,500}',
+  //         'description': 'Brief summary of your question.'
+  //       },
+  //       'question': {
+  //         'order': 2,
+  //         'value-regex': '[\\S\\s]{1,5000}',
+  //         'description': 'Your question'
+  //       }
+  //     }
+  //   }
+  // };
+  // or3client.or3request(or3client.inviteUrl, reviewerQuestionInvite, 'POST', token).catch(error=>console.log(error));
+  
+
   var publicCommentInvite = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/public/comment',
     'signatures':['ICLR.cc/2017/conference'],
@@ -188,12 +296,17 @@ function () {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       //'parent': noteID,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'~.*',
+        'values-regex':'~.*|\\(anonymous\\)|ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+',
         'description': 'How your identity will be displayed with the above content.' 
         },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'~.*'},    // this regex demands that the author reveal his/her ~ handle
+      'writers': {'values-regex':'~.*|\\(anonymous\\)|ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'values-regex': ['everyone|ICLR.cc/2017/(pcs|conference/organizers|conference/paper'+note.number+'/reviewers_and_organizers)'], 
+        'value-dropdown': [
+          'everyone',
+          'ICLR.cc/2017/conference/organizers',
+          'ICLR.cc/2017/conference/ACs_and_organizers',
+          'ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'
+        ], 
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -211,7 +324,49 @@ function () {
     }
   };
   or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error));
-  
+
+  var reviewerCommentInvite = {
+    'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/reviewer/comment',
+    'signatures':['ICLR.cc/2017/conference'],
+    'writers':['ICLR.cc/2017/conference'],
+    'invitees': ['ICLR.cc/2017/conference/paper'+note.number+'/reviewers'],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process':commentProcess+'',
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      //'parent': noteID,    // not specified so we can allow comments on comments
+      'signatures': {
+        'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+',
+        'description': 'How your identity will be displayed with the above content.' 
+        },    // this regex demands that the author reveal his/her ~ handle
+      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
+      'readers': { 
+        'value-dropdown': [
+          'everyone',
+          'ICLR.cc/2017/conference/organizers',
+          'ICLR.cc/2017/conference/ACs_and_organizers',
+          'ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'
+        ], 
+        'description': 'The users who will be allowed to read the above content.'
+        },   // the reply must allow ANYONE to read this note (comment)
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your comment.'
+        },
+        'comment': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your comment or reply.'
+        }
+      }
+    }
+  };
+  or3client.or3request(or3client.inviteUrl, reviewerCommentInvite, 'POST', token).catch(error=>console.log(error));
+
+
   var acceptanceProcess = function(){
     return true;
   };
@@ -300,20 +455,20 @@ function () {
   };
 
   var areachairGroup = {
-    'id':paperGroup.id+'/areachair',
+    'id':paperGroup.id+'/areachairs',
     'signatures':['ICLR.cc/2017/conference'],
     'writers':['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
     'members':[],
     'readers':['everyone'],
-    'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/areachair']
+    'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/areachairs']
   };
 
   var reviewersAndOrganizers = {
-    'id': paperGroup.id+'/reviewers_and_organizers',
+    'id': paperGroup.id+'/reviewers_and_ACS_and_organizers',
     'readers': ['everyone'],
     'writers': ['ICLR.cc/2017/conference', 'ICLR.cc/2017/pcs'],
     'signatures': ['ICLR.cc/2017/conference'],
-    'signatories': [paperGroup.id+'/reviewers_and_organizers'],
+    'signatories': [paperGroup.id+'/reviewers_and_ACS_and_organizers'],
     'members':[reviewerGroup.id,'ICLR.cc/2017/conference/organizers']
   };
 

@@ -31,7 +31,7 @@ baseurl = openreview.baseurl
 areachair = args.areachair
 paper_number = args.paper_number
 
-areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/areachair')
+areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/areachairs')
 existing_areachairs = areachairs.members
 
 areachair_number = len(existing_areachairs)+1
