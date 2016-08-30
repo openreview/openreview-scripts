@@ -79,8 +79,6 @@ function () {
       } 
     }
   };  
-  or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token).catch(error=>console.log(error));
-
 
   var openReviewInvitation = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/public/review',
@@ -138,7 +136,6 @@ function () {
       } 
     }
   };  
-  or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token).catch(error=>console.log(error));
 
   var officialReviewInvitation = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/official/review',
@@ -197,11 +194,89 @@ function () {
       } 
     }
   };
-  or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token).catch(error=>console.log(error));
 
+  var questionProcess = function(){
+    var or3client = lib.or3client;
+    
+    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
+    
+    var list = note.invitation.replace(/_/g,' ').split('/')
+    list.splice(list.indexOf('-',1));
+    var conference = list.join(' ')
+
+    origNote.then(function(result){
+      var recipients = result.notes[0].content.author_emails.trim().split(",");
+      var note_number = result.notes[0].number
+
+      recipients.push('ICLR.cc/2017/conference/paper'+note_number+'/reviewers')
+      recipients.push('ICLR.cc/2017/conference/paper'+note_number+'/areachairs')
+      console.log('recipients:',recipients);
+      var mail = {
+        "groups": recipients,
+        "subject": "Pre-review question on your submission to " + conference + ": \"" + note.content.title + "\".",
+        "message": "Your submission to "+ conference +" has received a pre-review question from a reviewer.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.question+"\n\nTo view the pre-review question, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
+
+    },
+    function(error){
+        return error
+    });
+
+    if(note.forum!=note.parent){
+      var mail = {
+        "groups": note.signatures,
+        "subject":"You have received a comment",
+        "message": "You have received a comment on your comment/review.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+      }
+      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
+    };
+
+
+    return true;
+  };
+
+  var reviewerQuestionInvite = {
+    'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/pre-review/question',
+    'signatures':['ICLR.cc/2017/conference'],
+    'writers':['ICLR.cc/2017/conference'],
+    'invitees': ['ICLR.cc/2017/conference/paper'+note.number+'/reviewers'],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process':questionProcess+'',
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      //'parent': noteID,    // not specified so we can allow comments on comments
+      'signatures': {
+        'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+',
+        'description': 'How your identity will be displayed with the above content.' 
+        },    // this regex demands that the author reveal his/her ~ handle
+      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
+      'readers': { 
+        'value-dropdown': [
+          'everyone',
+          'ICLR.cc/2017/conference/organizers',
+          'ICLR.cc/2017/conference/ACs_and_organizers',
+          'ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'
+        ], 
+        'description': 'The users who will be allowed to read the above content.'
+        },   // the reply must allow ANYONE to read this note (comment)
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your question.'
+        },
+        'question': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your question'
+        }
+      }
+    }
+  };
 
   var commentProcess = function(){
-    console.log('comment process triggered')
     var or3client = lib.or3client;
     
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
@@ -241,49 +316,7 @@ function () {
 
     return true;
   };
-
-  // var reviewerQuestionInvite = {
-  //   'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/public/commentV2',
-  //   'signatures':['ICLR.cc/2017/conference'],
-  //   'writers':['ICLR.cc/2017/conference'],
-  //   'invitees': ['~'],
-  //   'noninvitees':[],
-  //   'readers': ['everyone'],
-  //   'process':commentProcess+'',
-  //   'reply': {
-  //     'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-  //     //'parent': noteID,    // not specified so we can allow comments on comments
-  //     'signatures': {
-  //       'values-regex':'~.*|\\(anonymous\\)',
-  //       'description': 'How your identity will be displayed with the above content.' 
-  //       },    // this regex demands that the author reveal his/her ~ handle
-  //     'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
-  //     'readers': { 
-  //       'value-dropdown': [
-  //         'everyone',
-  //         'ICLR.cc/2017/conference/organizers',
-  //         'ICLR.cc/2017/conference/ACs_and_organizers',
-  //         'ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'
-  //       ], 
-  //       'description': 'The users who will be allowed to read the above content.'
-  //       },   // the reply must allow ANYONE to read this note (comment)
-  //     'content': {
-  //       'title': {
-  //         'order': 1,
-  //         'value-regex': '.{1,500}',
-  //         'description': 'Brief summary of your question.'
-  //       },
-  //       'question': {
-  //         'order': 2,
-  //         'value-regex': '[\\S\\s]{1,5000}',
-  //         'description': 'Your question'
-  //       }
-  //     }
-  //   }
-  // };
-  // or3client.or3request(or3client.inviteUrl, reviewerQuestionInvite, 'POST', token).catch(error=>console.log(error));
   
-
   var publicCommentInvite = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/public/comment',
     'signatures':['ICLR.cc/2017/conference'],
@@ -296,10 +329,10 @@ function () {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       //'parent': noteID,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'~.*|\\(anonymous\\)|ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+',
+        'values-regex':'~.*|\\(anonymous\\)',
         'description': 'How your identity will be displayed with the above content.' 
         },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'~.*|\\(anonymous\\)|ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
+      'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
         'value-dropdown': [
           'everyone',
@@ -323,13 +356,12 @@ function () {
       }
     }
   };
-  or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error));
 
-  var reviewerCommentInvite = {
-    'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/reviewer/comment',
+  var officialCommentInvite = {
+    'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/official/comment',
     'signatures':['ICLR.cc/2017/conference'],
     'writers':['ICLR.cc/2017/conference'],
-    'invitees': ['ICLR.cc/2017/conference/paper'+note.number+'/reviewers'],
+    'invitees': ['ICLR.cc/2017/conference/paper'+note.number+'/reviewers','ICLR.cc/2017/conference/paper'+note.number+'/areachairs'],
     'noninvitees':[],
     'readers': ['everyone'],
     'process':commentProcess+'',
@@ -337,10 +369,10 @@ function () {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       //'parent': noteID,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+',
+        'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/(reviewer|areachair)[0-9]+',
         'description': 'How your identity will be displayed with the above content.' 
         },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
+      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/(reviewer|areachair)[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
         'value-dropdown': [
           'everyone',
@@ -364,7 +396,6 @@ function () {
       }
     }
   };
-  or3client.or3request(or3client.inviteUrl, reviewerCommentInvite, 'POST', token).catch(error=>console.log(error));
 
 
   var acceptanceProcess = function(){
@@ -396,14 +427,14 @@ function () {
           'order': 1,
           'value-radio': [
             'Accepted',
-            'Rejected'
+            'Rejected',
+            'Pending'
           ]
         }
       } 
     }
   };
 
-  or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token).catch(error=>console.log(error));
 
   var list = note.invitation.replace(/_/g,' ').split('/')
   list.splice(list.indexOf('-',1));
@@ -463,21 +494,27 @@ function () {
     'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/areachairs']
   };
 
-  var reviewersAndOrganizers = {
-    'id': paperGroup.id+'/reviewers_and_ACS_and_organizers',
-    'readers': ['everyone'],
-    'writers': ['ICLR.cc/2017/conference', 'ICLR.cc/2017/pcs'],
-    'signatures': ['ICLR.cc/2017/conference'],
-    'signatories': [paperGroup.id+'/reviewers_and_ACS_and_organizers'],
-    'members':[reviewerGroup.id,'ICLR.cc/2017/conference/organizers']
-  };
-
-  or3client.or3request( or3client.grpUrl, paperGroup, 'POST', token ).then(
-  result=>or3client.or3request( or3client.grpUrl, reviewerGroup, 'POST', token )).then(
-  result=>or3client.or3request( or3client.grpUrl, reviewNonreadersGroup, 'POST', token )).then(
-  result=>or3client.or3request( or3client.grpUrl, authorGroup, 'POST', token )).then(
-  result=>or3client.or3request( or3client.grpUrl, areachairGroup, 'POST', token )).then(
-  result=>or3client.or3request( or3client.grpUrl, reviewersAndOrganizers, 'POST', token))
+  or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token).catch(error=>console.log(error))
+  .then(result=>or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.grpUrl, reviewNonreadersGroup, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.inviteUrl, reviewerQuestionInvite, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.inviteUrl, officialCommentInvite, 'POST', token).catch(error=>console.log(error)))
+  .then(result=>or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token).catch(error=>console.log(error)))
 
   return true;
+
+    
+  
+  
+  
+  
+  
+  
+
 };

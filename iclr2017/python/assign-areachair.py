@@ -61,7 +61,8 @@ openreview.post_group(areachairs.add_member(new_areachair.id))
 conference_areachairs = openreview.get_group('ICLR.cc/2017/areachairs')
 openreview.post_group(conference_areachairs.add_member(areachair));
 
-
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(new_areachair_id))
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(new_areachair_id))
 
 
 
