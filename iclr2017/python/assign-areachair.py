@@ -31,7 +31,7 @@ baseurl = openreview.baseurl
 areachair = args.areachair
 paper_number = args.paper_number
 
-areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/areachair')
+areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/areachairs')
 existing_areachairs = areachairs.members
 
 areachair_number = len(existing_areachairs)+1
@@ -61,7 +61,8 @@ openreview.post_group(areachairs.add_member(new_areachair.id))
 conference_areachairs = openreview.get_group('ICLR.cc/2017/areachairs')
 openreview.post_group(conference_areachairs.add_member(areachair));
 
-
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(new_areachair_id))
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(new_areachair_id))
 
 
 

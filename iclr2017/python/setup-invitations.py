@@ -25,7 +25,7 @@ else:
 baseurl = openreview.baseurl
 
 ## Create the submission invitation
-submission_reply = {
+reply = {
     'forum': None,
     'parent': None,
     'readers': {
@@ -77,14 +77,29 @@ submission_reply = {
         }
     }
 }
+
+submission_reply=reply.copy()
+submission_reply['referenti']=['ICLR.cc/2017/conference/-/reference']
+
 submission_invitation = Invitation( 'ICLR.cc/2017/conference',
-                                    'submission', 
-                                    readers=['everyone'], 
-                                    writers=['ICLR.cc/2017/conference'],
-                                    invitees=['~'], 
-                                    signatures=['ICLR.cc/2017/pcs'], 
-                                    reply=submission_reply, 
-                                    process='../process/submissionProcess_iclr2017.js')
+    'submission', 
+    readers=['everyone'], 
+    writers=['ICLR.cc/2017/conference'],
+    invitees=['~'], 
+    signatures=['ICLR.cc/2017/pcs'], 
+    reply=submission_reply, 
+    process='../process/submissionProcess_iclr2017.js')
+
+reference_reply=reply.copy()
+
+reference_invitation = Invitation('ICLR.cc/2017/conference',
+    'reference',
+    readers=['everyone'], 
+    writers=['ICLR.cc/2017/conference'],
+    invitees=['~'], 
+    signatures=['ICLR.cc/2017/pcs'], 
+    reply=reference_reply)
+
 
 ## Create 'request for availability to review' invitation
 reviewer_invitation_reply = {
@@ -126,7 +141,7 @@ reviewer_invitation= Invitation('ICLR.cc/2017/conference',
                                 process='../process/responseInvitationProcess_iclr2017.js', 
                                 web='../webfield/web-field-invitation.html')
 
-invitations = [submission_invitation, reviewer_invitation]
+invitations = [submission_invitation, reference_invitation, reviewer_invitation]
 
 ## Post the invitations
 for i in invitations:

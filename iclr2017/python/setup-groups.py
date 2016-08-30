@@ -57,11 +57,27 @@ iclr2017conference = Group('ICLR.cc/2017/conference',
     web         = '../webfield/iclr2017conference_webfield.html')
 
 iclr2017conferenceorganizers = Group('ICLR.cc/2017/conference/organizers',
-        readers     = ['everyone'], 
-        writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/organizers','ICLR.cc/2017/pcs'], 
-        signatures  = ['ICLR.cc/2017/conference'],
-        signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs', 'ICLR.cc/2017/conference/organizers'], 
-        members     = ['ICLR.cc/2017/pcs', 'ICLR.cc/2017/areachairs'])
+    readers     = ['everyone'], 
+    writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/organizers','ICLR.cc/2017/pcs'], 
+    signatures  = ['ICLR.cc/2017/conference'],
+    signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs', 'ICLR.cc/2017/conference/organizers'], 
+    members     = ['ICLR.cc/2017/pcs'])
+
+iclr2017conferenceACsOrganizers = Group('ICLR.cc/2017/conference/ACs_and_organizers',
+    readers     = ['everyone'],
+    writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/ACs_and_organizers','ICLR.cc/2017/pcs'],
+    signatures  = ['ICLR.cc/2017/conference'],
+    signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs','ICLR.cc/2017/conference/ACs_and_organizers'],
+    members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs']
+    )
+
+iclr2017reviewersACsOrganizers = Group('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers',
+    readers     = ['everyone'],
+    writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers','ICLR.cc/2017/pcs'],
+    signatures  = ['ICLR.cc/2017/conference'],
+    signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs','ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'],
+    members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs','ICLR.cc/2017/conference/reviewers']
+    )
 
 iclr2017workshop = Group('ICLR.cc/2017/workshop', 
     readers     = ['everyone'],
@@ -71,7 +87,7 @@ iclr2017workshop = Group('ICLR.cc/2017/workshop',
     members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], 
     web         = '../webfield/iclr2017workshop_webfield.html')
 
-groups = [iclr, iclr2017, iclr2017conference, iclr2017conferenceorganizers, iclr2017workshop]
+groups = [iclr, iclr2017, iclr2017conference, iclr2017conferenceorganizers, iclr2017conferenceACsOrganizers,iclr2017reviewersACsOrganizers, iclr2017workshop]
 
 ## Read in a csv file with the names of the program chair(s).
 ## Each name in the csv will be set as a member of ICLR.cc/2017/pc
