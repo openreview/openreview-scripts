@@ -508,13 +508,4 @@ function () {
   .then(result=>or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token).catch(error=>console.log(error)))
 
   return true;
-
-    
-  
-  
-  
-  
-  
-  
-
 };
