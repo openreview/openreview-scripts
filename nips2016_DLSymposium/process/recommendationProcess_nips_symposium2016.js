@@ -1,7 +1,6 @@
 function () {
   var or3client = lib.or3client;
 
-
   var commentProcess = function(){
     var or3client = lib.or3client;
 

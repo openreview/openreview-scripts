@@ -29,7 +29,7 @@ if args.username!=None and args.password!=None:
 else:
     openreview = Client(baseurl=args.baseurl)
 
-nips            = Group('NIPS.cc',      
+nips            = Group('NIPS.cc',
     signatories = ['NIPS.cc'], 
     writers     = ['OpenReview.net'], 
     members     = [],
