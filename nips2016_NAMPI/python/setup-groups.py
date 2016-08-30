@@ -1,10 +1,7 @@
 #!/usr/bin/python
 
 ###############################################################################
-# Setup python script takes as input the CSV files above and creates group for 
-# ICLR.cc/2016/pc, areachairs, individual ACs, reviewers-invited, and creates 
-# reviewers-invited.web Javascript for handling reviewer invitations; if they 
-# accept, their email address is added to group ICLR.cc/2016/reviewers.
+# Setup groups script for NIPS 2016 workshop: NAMPI
 ###############################################################################
 
 ## Import statements
