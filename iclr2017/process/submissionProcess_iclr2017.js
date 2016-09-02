@@ -1,7 +1,7 @@
 function () {
   var or3client = lib.or3client;
-
-  var reviewProcess = function(){
+  
+  var metaReviewProcess = function(){
     var or3client = lib.or3client;
     
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
@@ -9,16 +9,34 @@ function () {
     list.splice(list.indexOf('-',1));
     var conference = list.join(' ');
 
-    origNote.then(function(result){
-      var mail = {
-        "groups": result.notes[0].content.author_emails.trim().split(","),
-        "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\".",
-        "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
-      };
-      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
-    });
 
-    var fulfilledP = or3client.fulfillInvitation(invitation, note, token);
+    var programchairs = ['ICLR.cc/2017/pcs'];
+
+    origNote.then(function(result){
+      var authors = result.notes[0].content.author_emails.trim().split(",");
+      var author_mail = {
+        "groups": authors,
+        "subject": "Meta-review of your submission to " + conference + ": \"" + note.content.title + "\".",
+        "message": "Your submission to "+ conference +" has received a meta-review by an area chair.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the meta-review, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+
+      var pc_mail = {
+        "groups": programchairs,
+        "subject": "["+conference+"] Meta-review by area chair posted: "+ "\"" + note.content.title + "\".",
+        "message": "A paper submission to "+ conference +" has received a meta-review by an area chair.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the meta-review, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+
+      var promises = [
+        or3client.or3request( or3client.mailUrl, author_mail, 'POST', token ),
+        or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token )
+      ];
+      return Promise.all(promises)
+
+    })
+    .then(or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token))   
+    .then(result => done())
+    .catch(error=>done(error));
+
     return true;
   };
 
@@ -29,7 +47,7 @@ function () {
     'invitees': ['ICLR.cc/2017/conference/paper'+note.number+'/areachairs'],
     'noninvitees':[],
     'readers': ['everyone'],
-    'process': reviewProcess+'',
+    'process': metaReviewProcess+'',
     'duedate': 1481932799000,
     'reply': {
       'forum': note.id, 
@@ -80,14 +98,55 @@ function () {
     }
   };  
 
+  var openReviewProcess = function(){
+    var or3client = lib.or3client;
+    
+    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var list = note.invitation.replace(/_/g,' ').split('/');
+    list.splice(list.indexOf('-',1));
+    var conference = list.join(' ');
+
+
+    origNote.then(function(result){
+      var note_number = result.notes[0].number
+
+      var reviewers = ['ICLR.cc/2017/conference/paper'+note_number+'/reviewers'];
+      var areachairs = ['ICLR.cc/2017/conference/paper'+note_number+'/areachairs'];
+
+      var authors = result.notes[0].content.author_emails.trim().split(",");
+      var author_mail = {
+        "groups": authors,
+        "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\"",
+        "message": "Your submission to "+ conference +" has received a public review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+
+      var areachair_mail = {
+        "groups": areachairs,
+        "subject": "Review posted to your assigned paper: \"" + note.content.title + "\"",
+        "message": "A submission to "+ conference+", for which you are an official area chair, has received a public review. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+
+      var promises = [
+        or3client.or3request( or3client.mailUrl, author_mail, 'POST', token ),
+        or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token )
+      ];
+      return Promise.all(promises)
+    })
+    .then(or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token))
+    .then(result=>done())
+    .catch(error=>done(error));
+
+    return true;
+  };
+
   var openReviewInvitation = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/public/review',
     'signatures': ['ICLR.cc/2017/conference'],
     'writers': ['ICLR.cc/2017/conference'],
     'invitees': ['~'],
-    'noninvitees':[],
+    'noninvitees':note.content.author_emails.trim().split(","),
     'readers': ['everyone'],
-    'process': reviewProcess+'',
+    'process': openReviewProcess+'',
     'reply': {
       'forum': note.id, 
       'parent': note.id,
@@ -137,14 +196,54 @@ function () {
     }
   };  
 
+  var officialReviewProcess = function(){
+    var or3client = lib.or3client;
+    
+    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var list = note.invitation.replace(/_/g,' ').split('/');
+    list.splice(list.indexOf('-',1));
+    var conference = list.join(' ');
+
+    origNote.then(function(result){
+      var note_number = result.notes[0].number
+
+      var reviewers = ['ICLR.cc/2017/conference/paper'+note_number+'/reviewers'];
+      var areachairs = ['ICLR.cc/2017/conference/paper'+note_number+'/areachairs'];
+      var authors = result.notes[0].content.author_emails.trim().split(",");
+
+      var author_mail = {
+        "groups": authors,
+        "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\"",
+        "message": "Your submission to "+ conference +" has received a public review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+
+      var areachair_mail = {
+        "groups": areachairs,
+        "subject": "Review posted to your assigned paper: \"" + note.content.title + "\"",
+        "message": "A submission to "+ conference+", for which you are an official area chair, has received a public review. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+      var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
+      var areachairMailP = or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
+
+      return Promise.all([
+        authorMailP,
+        areachairMailP
+      ])
+    })
+    .then(or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token))
+    .then(result => done())
+    .catch(error => console.log("ERROR:",error));
+    return true;
+  };
+
   var officialReviewInvitation = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/official/review',
     'signatures': ['ICLR.cc/2017/conference'],
     'writers': ['ICLR.cc/2017/conference'],
-    'invitees': ['ICLR.cc/2017/conference/paper'+note.number+'/reviewers'],
+    'invitees': [],
     'noninvitees':[],
     'readers': ['everyone'],
-    'process': reviewProcess+'',
+    'process': officialReviewProcess+'',
     'duedate': 1481932799000,
     'reply': {
       'forum': note.id, 
@@ -204,34 +303,59 @@ function () {
     list.splice(list.indexOf('-',1));
     var conference = list.join(' ')
 
+    var getReviewerEmails = function(origNoteNumber){
+
+      return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/conference/paper'+origNoteNumber+'/reviewers',{},'GET',token)
+      .then(result=>{
+        var reviewers = result.groups[0].members;
+        var signatureIdx = reviewers.indexOf(note.signatures[0]);
+        if(signatureIdx>=-1){
+          reviewers.splice(signatureIdx,1);
+        };
+        if(note.readers.indexOf('everyone') == -1 && note.readers.indexOf('iclr.cc/2017/conference/reviewers_and_acs_and_organizers') == -1){
+          reviewers = [];
+        };
+        var reviewer_mail = {
+        "groups": reviewers,
+        "subject": "Pre-review question posted to your assigned paper: \"" + note.content.title + "\"",
+        "message": "A submission to "+ conference+", for which you are an official reviewer, has received a pre-review question. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.question+"\n\nTo view the pre-review question, click here: "+baseUrl+"/forum?id=" + note.forum
+        };
+        return or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
+      })
+    };
+
     origNote.then(function(result){
-      var recipients = result.notes[0].content.author_emails.trim().split(",");
+      var origNoteAuthors = result.notes[0].content.author_emails.trim().split(",");
       var note_number = result.notes[0].number
 
-      recipients.push('ICLR.cc/2017/conference/paper'+note_number+'/reviewers')
-      recipients.push('ICLR.cc/2017/conference/paper'+note_number+'/areachairs')
-      console.log('recipients:',recipients);
-      var mail = {
-        "groups": recipients,
+      var areachairs = ['ICLR.cc/2017/conference/paper'+note_number+'/areachairs'];
+
+      var authors = (note.readers.indexOf('everyone') != -1) ? origNoteAuthors : [];
+      var author_mail = {
+        "groups": authors,
         "subject": "Pre-review question on your submission to " + conference + ": \"" + note.content.title + "\".",
         "message": "Your submission to "+ conference +" has received a pre-review question from a reviewer.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.question+"\n\nTo view the pre-review question, click here: "+baseUrl+"/forum?id=" + note.forum
       };
-      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
-
-    },
-    function(error){
-        return error
-    });
-
-    if(note.forum!=note.parent){
-      var mail = {
-        "groups": note.signatures,
-        "subject":"You have received a comment",
-        "message": "You have received a comment on your comment/review.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
-      }
-      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
-    };
-
+      
+      if(note.readers.indexOf('everyone') == -1 && note.readers.indexOf('iclr.cc/2017/conference/acs_and_organizers') == -1 && note.readers.indexOf('iclr.cc/2017/conference/reviewers_and_acs_and_organizers') == -1){
+        areachairs = []
+      };
+      var areachair_mail = {
+        "groups": areachairs,
+        "subject": "Pre-review question posted to your assigned paper: \"" + note.content.title + "\"",
+        "message": "A submission to "+ conference+", for which you are an official area chair, has received a pre-review question. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.question+"\n\nTo view the pre-review question, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+    
+      return or3client.addInvitationInvitee('ICLR.cc/2017/conference/-/paper'+note_number+'/official/review', note.signatures[0],token)
+      .then(or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token))
+      .then(Promise.all([ 
+        getReviewerEmails(note_number), 
+        or3client.or3request( or3client.mailUrl, author_mail, 'POST', token ),
+        or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token )
+      ]));
+    })
+    .then(result => done())
+    .catch(error => done(error));
 
     return true;
   };
@@ -246,19 +370,14 @@ function () {
     'process':questionProcess+'',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'parent': noteID,    // not specified so we can allow comments on comments
+      'parent': note.id,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+',
         'description': 'How your identity will be displayed with the above content.' 
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
-        'value-dropdown': [
-          'everyone',
-          'ICLR.cc/2017/conference/organizers',
-          'ICLR.cc/2017/conference/ACs_and_organizers',
-          'ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'
-        ], 
+        'values': ['everyone'], 
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -277,42 +396,163 @@ function () {
   };
 
   var commentProcess = function(){
+    console.log('comment process initiated')
     var or3client = lib.or3client;
     
-    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
-    
-    var list = note.invitation.replace(/_/g,' ').split('/')
+    var list = note.invitation.replace(/_/g,' ').split('/');
     list.splice(list.indexOf('-',1));
     var conference = list.join(' ')
 
-    origNote.then(function(result){
-      var recipients = result.notes[0].content.author_emails.trim().split(",");
-      var note_number = result.notes[0].number
+    var getAuthorEmails = function(origNote){
+      console.log('get author emails initiated')
+      var origNoteAuthors = origNote.content.author_emails.trim().split(",");
+      var origNoteSignature = origNote.signatures[0];
 
-      recipients.push('ICLR.cc/2017/conference/paper'+note_number+'/reviewers')
-      recipients.push('ICLR.cc/2017/conference/paper'+note_number+'/areachairs')
-      console.log('recipients:',recipients);
-      var mail = {
-        "groups": recipients,
+      var author_mail = {
+        "groups": origNoteAuthors,
         "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
         "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
       };
-      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
-
-    },
-    function(error){
-        return error
-    });
-
-    if(note.forum!=note.parent){
-      var mail = {
-        "groups": note.signatures,
-        "subject":"You have received a comment",
-        "message": "You have received a comment on your comment/review.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
-      }
-      var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
+      return or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
     };
 
+    var getReviewerEmails = function(origNoteNumber){
+      console.log('get reviewer emails initiated')
+      return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/conference/paper'+origNoteNumber+'/reviewers',{},'GET',token)
+      .then(result=>{
+        var reviewers = result.groups[0].members;
+        console.log('reviewers before filter',reviewers);
+        var signatureIdx = reviewers.indexOf(note.signatures[0]);
+        if(signatureIdx>-1){
+          reviewers.splice(signatureIdx,1);
+        };
+
+        console.log('reviewers after filter',reviewers);
+        var reviewer_mail = {
+          "groups": reviewers,
+          "subject": "Comment posted to your assigned paper: \"" + note.content.title + "\"",
+          "message": "A submission to "+ conference+", for which you are an official reviewer, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+        };
+        return or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
+      })
+    };
+
+    var getAreachairEmails = function(origNoteNumber){
+      console.log('get AC emails initiated')
+      return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/conference/paper'+origNoteNumber+'/areachairs',{},'GET',token)
+      .then(result=>{      
+        var areachairs = result.groups[0].members;
+        var signatureIdx = areachairs.indexOf(note.signatures[0]);
+        console.log('areachairs before filter:',areachairs);
+        if(signatureIdx>-1){
+          areachairs.splice(signatureIdx,1);
+        };
+        console.log('areachairs after filter:',areachairs);
+        var areachair_mail = {
+          "groups": areachairs,
+          "subject": "Comment posted to your assigned paper: \"" + note.content.title + "\"",
+          "message": "A submission to "+ conference+", for which you are an official area chair, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+        };
+        return or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
+      })
+    };
+
+    var getPCEmails = function(){
+      console.log('get PC emails initiated')
+      return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/pcs',{},'GET',token)
+      .then(result=>{      
+        var pcs = result.groups[0].members;
+        var signatureIdx = pcs.indexOf(note.signatures[0]);
+        console.log('pcs before filter:',pcs);
+        if(signatureIdx>-1){
+          pcs.splice(signatureIdx,1);
+        };
+        console.log('pcs after filter:',pcs);
+        var pc_mail = {
+          "groups": pcs,
+          "subject": "Private comment posted to a paper: \"" + note.content.title + "\"",
+          "message": "A submission to "+ conference+" has received a private comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+        };
+        return or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token );
+      })
+    };
+
+    var getCommentEmails = function(parentNoteSignatures){
+      console.log('parentNoteSignatures before filter:',parentNoteSignatures);
+
+      if(note.readers.indexOf('everyone') == -1){
+        parentNoteSignatures=[];
+      };
+      console.log('parentNoteSignatures after filter:',parentNoteSignatures);
+      var comment_mail = {
+        "groups": parentNoteSignatures,
+        "subject":"Your post has received a comment",
+        "message": "One of your posts has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+      };
+      return or3client.or3request( or3client.mailUrl, comment_mail, 'POST', token );
+    };
+
+    console.log('functions defined')
+    var origNoteP = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var parentNoteP = note.parent ? or3client.or3request(or3client.notesUrl+'?id='+note.parent,{},'GET',token) : null;
+    console.log('promises created')
+    Promise.all([
+      origNoteP,
+      parentNoteP
+    ]).then(result => {
+      console.log('promises resolving')
+      var origNote = result[0].notes[0];
+      var origNoteNumber = origNote.number;
+
+      var parentNote = note.parent ? result[1].notes[0] : null;
+      var parentNoteReaders = parentNote ? parentNote.readers : null;
+      var parentNoteSignatures = parentNote ? parentNote.signatures : null;
+
+      console.log('parentNote',parentNote);
+      console.log('parentNoteReaders',parentNoteReaders);
+      console.log('parentNoteSignatures',parentNoteSignatures);
+      var promises = [];
+      console.log('note',note)
+      console.log('note.readers',note.readers)
+      var visibleToEveryone = note.readers.indexOf('everyone')>-1 ? true : false;
+      console.log('visibleToEveryone',visibleToEveryone);
+      var visibleToReviewers = note.readers.indexOf('iclr.cc/2017/conference/reviewers_and_acs_and_organizers')>-1 ? true : false;
+      var visibleToAreachairs = note.readers.indexOf('iclr.cc/2017/conference/acs_and_organizers')>-1 ? true : false;
+      var visibleToPCs = note.readers.indexOf('iclr.cc/2017/conference/organizers')>-1 ? true : false;
+
+      if(visibleToEveryone){
+        var authorMailP = getAuthorEmails(origNote);
+        promises.push(authorMailP);
+      };
+
+      if(visibleToEveryone || visibleToReviewers){
+        var reviewerMailP = getReviewerEmails(origNoteNumber);
+        promises.push(reviewerMailP);
+      };
+
+      if(visibleToEveryone || visibleToReviewers || visibleToAreachairs){
+        var areachairMailP = getAreachairEmails(origNoteNumber);
+        promises.push(areachairMailP);
+      };
+
+      if(visibleToReviewers || visibleToAreachairs || visibleToPCs){
+        var pcMailP = getPCEmails();
+        promises.push(pcMailP);
+      }
+
+      var rootComment = note.forum == note.parent;
+      var anonComment = parentNoteSignatures.indexOf('(anonymous)')>-1 ? true : false;
+      var selfComment = parentNoteSignatures.indexOf(note.signatures[0])>-1 ? true : false;
+
+      if(!rootComment && !anonComment && !selfComment) { 
+        var commentMailP = getCommentEmails(parentNoteSignatures);
+        promises.push(commentMailP);
+      };
+
+      return Promise.all(promises);
+    })
+    .then(result => done())
+    .catch(error => done(error));
 
     return true;
   };
@@ -399,6 +639,10 @@ function () {
 
 
   var acceptanceProcess = function(){
+    var or3client = lib.or3client;
+    or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token)
+    .then(result => done())
+    .catch(error => done(error));
     return true;
   };
 
@@ -408,7 +652,7 @@ function () {
     'writers': ['ICLR.cc/2017/conference'],
     'invitees': ['ICLR.cc/2017/pcs'],
     'noninvitees': [],
-    'readers': ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
+    'readers': ['everyone'],
     'process': acceptanceProcess+'',
     'reply': {
       'forum': note.id,
@@ -419,7 +663,7 @@ function () {
         },
       'writers': {'values-regex':'ICLR.cc/2017/pcs'}, 
       'readers': { 
-        'values': ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], 
+        'values': ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs','ICLR.cc/2017/conference'], 
         'description': 'The users who will be allowed to read the above content.'
         },
       'content': {
@@ -438,7 +682,7 @@ function () {
 
   var list = note.invitation.replace(/_/g,' ').split('/')
   list.splice(list.indexOf('-',1));
-  var conference = list.join(' ')
+  var conference = list.join(' ');
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
@@ -494,18 +738,36 @@ function () {
     'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/areachairs']
   };
 
-  or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token).catch(error=>console.log(error))
-  .then(result=>or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.grpUrl, reviewNonreadersGroup, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.inviteUrl, reviewerQuestionInvite, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.inviteUrl, officialCommentInvite, 'POST', token).catch(error=>console.log(error)))
-  .then(result=>or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token).catch(error=>console.log(error)))
+
+
+  or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
+  .then(result=>{
+    group_promises = [
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),  
+      or3client.or3request(or3client.grpUrl, reviewNonreadersGroup, 'POST', token),  
+      or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token),
+    ];
+
+    return Promise.all(group_promises);    
+  })
+  .then(result=>{
+    invitation_promises = [
+      or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, reviewerQuestionInvite, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, officialCommentInvite, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token)
+    ];
+
+    return Promise.all(invitation_promises);
+  })
+  .then(result=>{
+    done();
+  })
+  .catch(error=>done(error));
 
   return true;
 };
