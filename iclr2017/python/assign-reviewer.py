@@ -59,6 +59,16 @@ openreview.post_group(new_reviewer)
 openreview.post_group(reviewers.add_member(new_reviewer.id))
 openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
 
+conference_reviewers = openreview.get_group('ICLR.cc/2017/conference/reviewers')
+conference_reviewers_invited = openreview.get_group('ICLR.cc/2017/conference/reviewers-invited')
+
+if not (reviewer in conference_reviewers.members):
+    openreview.post_group(conference_reviewers.add_member(reviewer))
+
+if not (reviewer in conference_reviewers_invited.members):
+    openreview.post_group(conference_reviewers_invited.add_member(reviewer))
+
+
 openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(new_reviewer_id))
 openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(new_reviewer_id))
 
