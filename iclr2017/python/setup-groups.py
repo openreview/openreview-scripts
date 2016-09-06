@@ -33,7 +33,7 @@ else:
 
 groups = [];
 
-if openrevew.user['id'].lower()=='openreview.net':
+if openreview.user['id'].lower()=='openreview.net':
     if type(openreview.get_group('ICLR.cc')) != Group:
         iclr            = Group('ICLR.cc',      
             readers     = ['OpenReview.net'], 
