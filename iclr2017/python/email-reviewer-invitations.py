@@ -31,7 +31,7 @@ print "reviewers invited:"+str(reviewers_invited)
 for count, reviewer in enumerate(reviewers_invited):
     print "Sending message to "+reviewer
     hashkey = openreview.get_hash(reviewer, "4813408173804203984")
-    url = baseurl+"/invitation?id=" + reviewer_invitation.id+ "&email=" + reviewer + "&key=" + hashkey + "&response="
+    url = baseurl+"/invitation?id=ICLR.cc/2017/conference/-/reviewer_invitation&email=" + reviewer + "&key=" + hashkey + "&response="
     message = "You have been invited to serve as a reviewer for the International Conference on Learning Representations (ICLR) 2017 Conference.\n\n"
     message = message+ "To ACCEPT the invitation, please click on the following link: \n\n"
     message = message+ url + "Yes\n\n"
