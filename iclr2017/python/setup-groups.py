@@ -33,7 +33,7 @@ else:
 
 groups = [];
 
-if type(openreview.get_group('ICLR.cc')) != Group and openreview.user['id'].lower()=='openreview.net':
+if openreview.user['id'].lower()=='openreview.net' and type(openreview.get_group('ICLR.cc')) != Group:
     iclr            = Group('ICLR.cc',      
         readers     = ['OpenReview.net'], 
         writers     = ['OpenReview.net','ICLR.cc/2017/pcs'], 
@@ -42,7 +42,7 @@ if type(openreview.get_group('ICLR.cc')) != Group and openreview.user['id'].lowe
         members     = [] )
     groups.append(iclr)
 
-if type(openreview.get_group('ICLR.cc/2017')) != Group and openreview.user['id'].lower()=='openreview.net':
+if openreview.user['id'].lower()=='openreview.net' and type(openreview.get_group('ICLR.cc/2017')) != Group:
     iclr2017        = Group('ICLR.cc/2017', 
         readers     = ['everyone'],       
         writers     = ['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'],  
@@ -52,7 +52,7 @@ if type(openreview.get_group('ICLR.cc/2017')) != Group and openreview.user['id']
         web         = '../webfield/iclr2017_webfield.html')
     groups.append(iclr2017)
 
-if type(openreview.get_group('ICLR.cc/2017/conference')) != Group and openreview.user['id'].lower()=='openreview.net':
+if openreview.user['id'].lower()=='openreview.net' and type(openreview.get_group('ICLR.cc/2017/conference')) != Group:
     iclr2017conference = Group('ICLR.cc/2017/conference', 
         readers     = ['everyone'], 
         writers     = ['ICLR.cc/2017','ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
@@ -62,7 +62,7 @@ if type(openreview.get_group('ICLR.cc/2017/conference')) != Group and openreview
         web         = '../webfield/iclr2017conference_webfield.html')
     groups.append(iclr2017conference)
 
-if type(openreview.get_group('ICLR.cc/2017/conference/organizers')) != Group and openreview.user['id'].lower()=='openreview.net':    
+if openreview.user['id'].lower()=='openreview.net' and type(openreview.get_group('ICLR.cc/2017/conference/organizers')) != Group:    
     iclr2017conferenceorganizers = Group('ICLR.cc/2017/conference/organizers',
         readers     = ['everyone'], 
         writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/organizers','ICLR.cc/2017/pcs'], 
@@ -71,7 +71,7 @@ if type(openreview.get_group('ICLR.cc/2017/conference/organizers')) != Group and
         members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/conference'])
     groups.append(iclr2017conference)
 
-if type(openreview.get_group('ICLR.cc/2017/conference/ACs_and_organizers')) != Group and openreview.user['id'].lower()=='openreview.net':
+if openreview.user['id'].lower()=='openreview.net' and type(openreview.get_group('ICLR.cc/2017/conference/ACs_and_organizers')) != Group:
     iclr2017conferenceACsOrganizers = Group('ICLR.cc/2017/conference/ACs_and_organizers',
         readers     = ['everyone'],
         writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/ACs_and_organizers','ICLR.cc/2017/pcs'],
@@ -81,7 +81,7 @@ if type(openreview.get_group('ICLR.cc/2017/conference/ACs_and_organizers')) != G
         )
     groups.append(iclr2017conferenceACsOrganizers)
 
-if type(openreview.get_group('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers')) != Group and openreview.user['id'].lower()=='openreview.net':
+if  openreview.user['id'].lower()=='openreview.net' and type(openreview.get_group('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers')) != Group:
     iclr2017reviewersACsOrganizers = Group('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers',
         readers     = ['everyone'],
         writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers','ICLR.cc/2017/pcs'],
@@ -91,7 +91,7 @@ if type(openreview.get_group('ICLR.cc/2017/conference/reviewers_and_ACS_and_orga
         )
     groups.append(iclr2017reviewersACsOrganizers)
 
-if type(openreview.get_group('ICLR.cc/2017/workshop')) != Group and openreview.user['id'].lower()=='openreview.net':
+if openreview.user['id'].lower()=='openreview.net' and type(openreview.get_group('ICLR.cc/2017/workshop')) != Group :
     iclr2017workshop = Group('ICLR.cc/2017/workshop', 
         readers     = ['everyone'],
         writers     = ['ICLR.cc/2017','ICLR.cc/2017/pcs'],
