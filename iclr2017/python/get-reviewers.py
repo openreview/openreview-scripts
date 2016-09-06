@@ -63,3 +63,26 @@ if args.user!=None:
         paperNumber = g.id.split('paper')[1].split('/reviewer')[0]
         reviewerNumber = g.id.split('paper')[1].split('/reviewer')[1]
         print "["+str(notesMap[str(paperNumber)])+"] reviewer"+str(reviewerNumber)+" ("+g.id+")"
+
+if args.user==None and args.paper_id==None:
+    notes = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
+    rows = []
+    for note in notes:
+        try:
+            reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
+            message = '{:15s}'.format("["+str(note.forum)+"] ")
+            for rev in reviewers.members:
+                reviewer_wrapper = openreview.get_group(rev)
+                reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
+                
+                reviewer_members_pad = '{:40s}'.format(str(reviewer_wrapper.members[0]))
+                message+=(reviewer_members_pad)
+            rows.append(message)
+
+        except IndexError:
+            continue
+    rows.sort()
+    for m in rows:
+        print m
+
+
