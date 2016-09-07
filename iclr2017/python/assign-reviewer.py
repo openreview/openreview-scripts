@@ -37,14 +37,22 @@ existing_reviewers = reviewers.members
 reviewer_number = len(existing_reviewers)+1
 
 for r in existing_reviewers:
+    
     existing_reviewer = openreview.get_group(r)
-    print existing_reviewer
-    if reviewer in existing_reviewer.members:
-        print "reviewer found in existing_reviewers.members"
-        reviewer_number = existing_reviewers.index(r)+1
-        break
+    if hasattr(existing_reviewer,'members'):
+        if reviewer in existing_reviewer.members:
+            print "reviewer found in existing_reviewers.members"
+            reviewer_number = existing_reviewers.index(r)+1
+            break
+    else:
+        print "could not read "
 
-print reviewer_number
+print 'Reviewer Number:',reviewer_number
+
+conflicts = [note.to_json()['content']['conflicts'] for note in openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission') if str(note.to_json()['number'])==str(paper_number)]
+conflict_list = []
+for c in conflicts[0].split(';'):
+    conflict_list.append(c.strip())
 
 new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/reviewer'+str(reviewer_number)
 new_reviewer = Group(
@@ -52,26 +60,36 @@ new_reviewer = Group(
     signatures=['ICLR.cc/2017/conference'],
     writers=['ICLR.cc/2017/conference'],
     members=[reviewer],
-    readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs',reviewer],
+    readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs','ICLR.cc/2017/conference/paper'+str(paper_number)+'/reviewers',reviewer],
+    nonreaders=conflict_list,
     signatories=['ICLR.cc/2017/conference',reviewer]
 )
-openreview.post_group(new_reviewer)
-openreview.post_group(reviewers.add_member(new_reviewer.id))
-openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
 
-conference_reviewers = openreview.get_group('ICLR.cc/2017/conference/reviewers')
-conference_reviewers_invited = openreview.get_group('ICLR.cc/2017/conference/reviewers-invited')
+user_conflict = None
+for c in conflict_list:
+    members = openreview.get_group(c).members  
+    if openreview.user['id'] in members:
+        user_conflict = c
 
-if not (reviewer in conference_reviewers.members):
-    openreview.post_group(conference_reviewers.add_member(reviewer))
+if user_conflict==None:
+    openreview.post_group(new_reviewer)
+    openreview.post_group(reviewers.add_member(new_reviewer.id))
+    openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
 
-if not (reviewer in conference_reviewers_invited.members):
-    openreview.post_group(conference_reviewers_invited.add_member(reviewer))
+    conference_reviewers = openreview.get_group('ICLR.cc/2017/conference/reviewers')
+    conference_reviewers_invited = openreview.get_group('ICLR.cc/2017/conference/reviewers-invited')
+
+    if not (reviewer in conference_reviewers.members):
+        openreview.post_group(conference_reviewers.add_member(reviewer))
+
+    if not (reviewer in conference_reviewers_invited.members):
+        openreview.post_group(conference_reviewers_invited.add_member(reviewer))
 
 
-openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(new_reviewer_id))
-openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(new_reviewer_id))
-
+    openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(new_reviewer_id))
+    openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(new_reviewer_id))
+else:
+    print "Aborted. User "+ openreview.user['id']+" has conflict of interest on this paper for the domain ["+user_conflict+"]."
 
 
 

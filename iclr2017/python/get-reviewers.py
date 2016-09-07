@@ -70,16 +70,19 @@ if args.user==None and args.paper_id==None:
     for note in notes:
         try:
             reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
-            message = '{:15s}'.format("["+str(note.forum)+"] ")
-            for rev in reviewers.members:
-                reviewer_wrapper = openreview.get_group(rev)
-                reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
-                
-                reviewer_members_pad = '{:40s}'.format(str(reviewer_wrapper.members[0]))
-                message+=(reviewer_members_pad)
-            rows.append(message)
+            if hasattr(reviewers,'members'):
+                message = '{:15s}'.format("Paper "+str(note.number)+" ["+str(note.forum)+"] ")
+                for rev in reviewers.members:
+                    reviewer_wrapper = openreview.get_group(rev)
+                    reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
+                    if hasattr(reviewer_wrapper,'members'):
+                        reviewer_members_pad = '{:40s}'.format(str(reviewer_wrapper.members[0]))
+                    else:
+                        reviewer_members_pad = '{:40s}'.format("[CONFLICT]")
+                    message+=(reviewer_members_pad)
+                rows.append(message)
 
-        except IndexError:
+        except IndexError or AttributeError:
             continue
     rows.sort()
     for m in rows:
