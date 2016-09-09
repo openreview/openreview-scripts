@@ -66,6 +66,7 @@ if args.user!=None:
 
 if args.user==None and args.paper_id==None:
     notes = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
+
     rows = []
     for note in notes:
         try:
@@ -76,13 +77,18 @@ if args.user==None and args.paper_id==None:
                     reviewer_wrapper = openreview.get_group(rev)
                     reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
                     if hasattr(reviewer_wrapper,'members'):
-                        reviewer_members_pad = '{:40s}'.format(str(reviewer_wrapper.members[0]))
+                        members = reviewer_wrapper.members[0] if len(reviewer_wrapper.members)>0 else ''
+                        reviewer_members_pad = '{:40s}'.format(str(members))
                     else:
                         reviewer_members_pad = '{:40s}'.format("[CONFLICT]")
                     message+=(reviewer_members_pad)
                 rows.append(message)
 
-        except IndexError or AttributeError:
+        except IndexError as e:
+            print "Error on Paper ",note.number,e
+            continue
+        except AttributeError as e:
+            print "Error on Paper ",note.number,e
             continue
     rows.sort()
     for m in rows:
