@@ -230,9 +230,9 @@ function () {
         areachairMailP
       ])
     })
-    .then(or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token))
+    .then(result => or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token))
     .then(result => done())
-    .catch(error => console.log("ERROR:",error));
+    .catch(error => done(error));
     return true;
   };
 
@@ -362,6 +362,7 @@ function () {
 
   var reviewerQuestionInvite = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/pre-review/question',
+    'duedate': 1481932799000,
     'signatures':['ICLR.cc/2017/conference'],
     'writers':['ICLR.cc/2017/conference'],
     'invitees': ['ICLR.cc/2017/conference/paper'+note.number+'/reviewers'],

@@ -86,9 +86,9 @@ for c in conflict_list:
 if user_conflict==None:
     reviewer_group = get_reviewer_group(openreview, reviewer, paper_number, conflict_list)
     reviewer_group_id = str(reviewer_group.id)
-    official_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/official/review'
-    print "Assigned reviewer", reviewer_group_id, "to invitation ", official_invitation
-    openreview.post_invitation(openreview.get_invitation(official_invitation).add_invitee(reviewer_group_id))
+    preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
+    print "Assigned reviewer", reviewer_group_id, "to invitation ", preview_question_invitation
+    openreview.post_invitation(openreview.get_invitation(preview_question_invitation).add_invitee(reviewer_group_id))
     openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(reviewer_group_id))
     openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(reviewer_group_id))
 else:
