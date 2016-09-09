@@ -74,7 +74,8 @@ paper_number = args.paper_number
 conflicts = [note.content['conflicts'] for note in openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission') if str(note.number)==str(paper_number)]
 conflict_list = []
 for c in conflicts[0].split(';'):
-    conflict_list.append(c.strip())
+    if str(c.strip()):
+        conflict_list.append(str(c.strip()))
 user_conflict = None
 for c in conflict_list:
     group = openreview.get_group(c)
