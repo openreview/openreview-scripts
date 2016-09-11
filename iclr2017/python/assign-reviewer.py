@@ -77,30 +77,17 @@ if conflicts:
     for c in conflicts[0].split(';'):
         if str(c.strip()):
             conflict_list.append(str(c.strip()))
-user_conflict = None
-conflicted_users = []
 
-for c in conflict_list:
-    group = openreview.get_group(c)
-    if group.members and openreview.user['id'] in group.members:
-        user_conflict = c    
-        conflicted_users.append(openreview.user['id'])
-    if group.members and reviewer in group.members:
-        user_conflict = c
-        conflicted_users.append(reviewer)
 
-if user_conflict==None:
-    reviewer_group = get_reviewer_group(openreview, reviewer, paper_number, conflict_list)
-    reviewer_group_id = str(reviewer_group.id)
-    preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
-    print "Assigned reviewer", reviewer_group_id, "to invitation ", preview_question_invitation
-    openreview.post_invitation(openreview.get_invitation(preview_question_invitation).add_invitee(reviewer_group_id))
-    openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(reviewer_group_id))
-    openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(reviewer_group_id))
-else:
-    print "Aborted."+ str(conflicted_users)+" has conflict of interest on this paper for the domain ["+user_conflict+"]."
-    print "This paper has the following conflicts: "+str(conflict_list)
-            
+
+reviewer_group = get_reviewer_group(openreview, reviewer, paper_number, conflict_list)
+reviewer_group_id = str(reviewer_group.id)
+preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
+print "Assigned reviewer", reviewer_group_id, "to invitation ", preview_question_invitation
+openreview.post_invitation(openreview.get_invitation(preview_question_invitation).add_invitee(reviewer_group_id))
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(reviewer_group_id))
+openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(reviewer_group_id))
+        
 
 
 
