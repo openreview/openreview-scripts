@@ -71,19 +71,17 @@ baseurl = openreview.baseurl
 reviewer = args.reviewer
 paper_number = args.paper_number
 
-conflicts = [note.content['conflicts'] for note in openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission') if str(note.number)==str(paper_number)]
-conflict_list = []
-if conflicts:
-    for c in conflicts[0].split(';'):
-        if str(c.strip()):
-            conflict_list.append(str(c.strip()))
-user_conflict = None
-for c in conflict_list:
-    group = openreview.get_group(c)
-    if group.members and openreview.user['id'] in group.members:
-        user_conflict = c    
+notes = [note for note in openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission') if str(note.number)==str(paper_number)]
+if notes:
+    conflicts = [note.content['conflicts'] for note in notes]
+    conflict_list = []
+    if conflicts:
+        for c in conflicts[0].split(';'):
+            if str(c.strip()):
+                conflict_list.append(str(c.strip()))
 
-if user_conflict==None:
+
+
     reviewer_group = get_reviewer_group(openreview, reviewer, paper_number, conflict_list)
     reviewer_group_id = str(reviewer_group.id)
     preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
@@ -92,9 +90,7 @@ if user_conflict==None:
     openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(reviewer_group_id))
     openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(reviewer_group_id))
 else:
-    print "Aborted. User "+ openreview.user['id']+" has conflict of interest on this paper for the domain ["+user_conflict+"]."
-
-            
+    print "Paper number " + paper_number + " does not exist"        
 
 
 
