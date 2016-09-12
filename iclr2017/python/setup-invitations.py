@@ -40,16 +40,10 @@ reply = {
         'values-regex': '~.*'
     },
     'content': {
-        'abstract': {
-            'description': 'Abstract of paper.',
-            'order': 4,
-            'value-regex': '[\\S\\s]{1,5000}',
-            'required':True
-        },
-        'author_emails': {
-            'description': 'Comma separated list of author email addresses, in the same order as above.',
-            'order': 3,
-            'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+        'title': {
+            'description': 'Title of paper.',
+            'order': 1,
+            'value-regex': '.{1,100}',
             'required':True
         },
         'authors': {
@@ -58,10 +52,28 @@ reply = {
             'value-regex': '[^,\\n]+(,[^,\\n]+)*',
             'required':True
         },
-        'conflicts': {
-            'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
-            'order': 100,
-            'value-regex': '^$|([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
+        'author_emails': {
+            'description': 'Comma separated list of author email addresses, in the same order as above.',
+            'order': 3,
+            'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+            'required':True
+        },
+        'TL;DR': {
+            'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
+            'order': 3,
+            'value-regex': '[^\\n]{1,250}',
+            'required':False
+        },
+        'abstract': {
+            'description': 'Abstract of paper.',
+            'order': 4,
+            'value-regex': '[\\S\\s]{1,5000}',
+            'required':True
+        },
+        'pdf': {
+            'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv (link must begin with http(s) and end with .pdf)',
+            'order': 5,
+            'value-regex': 'upload|(http|https):\/\/.+\.pdf',
             'required':True
         },
         'keywords': {
@@ -86,16 +98,10 @@ reply = {
             ]
 
         },
-        'pdf': {
-            'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv (link must begin with http(s) and end with .pdf)',
-            'order': 5,
-            'value-regex': 'upload|(http|https):\/\/.+\.pdf',
-            'required':True
-        },
-        'title': {
-            'description': 'Title of paper.',
-            'order': 1,
-            'value-regex': '.{1,100}',
+        'conflicts': {
+            'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
+            'order': 100,
+            'value-regex': '^$|([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
             'required':True
         }
     }
