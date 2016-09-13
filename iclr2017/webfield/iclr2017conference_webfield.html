@@ -34,9 +34,12 @@
         return df.promise();
       };
 
-      var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
-        console.log('result',result)
+      var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission', minduedate: Date.now()}).then(function(result) {
+        console.log(result)
+        
+        console.log('result',result);
         return result.invitations[0];
+
       },
       function(error){
         return error
@@ -51,16 +54,19 @@
 
 
       $.when(invitationP, notesP).done(function(invitation, notes) {
-        sm.update('invitationTrip', {
-          invitation: invitation
-        });
+        console.log('invitation',invitation)
+        if(invitation){
+          sm.update('invitationTrip', {
+            invitation: invitation
+          });
+        }
         sm.update('notes', notes);
         
         sm.addHandler('conference', {
           invitationTrip: function(invitationTrip) { if (invitationTrip) {
             var invitation = invitationTrip.invitation;
             $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-              if (user) {
+              if (user && invitation) {
                 view.mkNewNoteEditor(invitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
