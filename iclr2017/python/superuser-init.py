@@ -268,7 +268,7 @@ if openreview.user['id'].lower()=='openreview.net':
             'TL;DR': {
                 'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
                 'order': 3,
-                'value-regex': '[^\\n]{1,250}',
+                'value-regex': '[^\\n]{0,250}',
                 'required':False
             },
             'abstract': {
@@ -308,7 +308,7 @@ if openreview.user['id'].lower()=='openreview.net':
             'conflicts': {
                 'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
                 'order': 100,
-                'value-regex': '^$|([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
+                'value-regex': '([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
                 'required':True
             }
         }
@@ -324,7 +324,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['ICLR.cc/2017/pcs'], 
         reply=submission_reply,
-        duedate=1473772215,
+        #duedate=1873772215,
         process='../process/submissionProcess_iclr2017.js')
 
     reference_reply=reply.copy()
