@@ -31,6 +31,20 @@ def get_reviewer_group(openreview, reviewer, paper_number, conflict_list):
     reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/reviewers')
     existing_reviewers = reviewers.members
 
+    conference_reviewers = openreview.get_group('ICLR.cc/2017/conference/reviewers')
+    conference_reviewers_invited = openreview.get_group('ICLR.cc/2017/conference/reviewers-invited')
+
+    if not (reviewer in conference_reviewers_invited.members):
+        print "WARNING: You have not sent an email invitation to user ",reviewer," asking whether or not they would like to participate."
+        cont = raw_input("Would you like to continue? (y/n) [default: NO]")
+        if cont.lower()!='y' and cont.lower()!='yes':
+            print "Aborting"
+            sys.exit()
+        openreview.post_group(conference_reviewers_invited.add_member(reviewer))
+
+    if not (reviewer in conference_reviewers.members):
+        openreview.post_group(conference_reviewers.add_member(reviewer))
+    
     for r in existing_reviewers:
         existing_reviewer = openreview.get_group(r)
         if hasattr(existing_reviewer,'members'):
@@ -41,14 +55,6 @@ def get_reviewer_group(openreview, reviewer, paper_number, conflict_list):
     new_reviewer = create_reviewer_group(openreview, new_reviewer_id, reviewer, paper_number, conflict_list)
     openreview.post_group(reviewers.add_member(new_reviewer.id))
     openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
-    conference_reviewers = openreview.get_group('ICLR.cc/2017/conference/reviewers')
-    conference_reviewers_invited = openreview.get_group('ICLR.cc/2017/conference/reviewers-invited')
-
-    if not (reviewer in conference_reviewers.members):
-        openreview.post_group(conference_reviewers.add_member(reviewer))
-
-    if not (reviewer in conference_reviewers_invited.members):
-        openreview.post_group(conference_reviewers_invited.add_member(reviewer))
     return new_reviewer
 
 
