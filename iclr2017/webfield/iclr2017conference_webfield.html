@@ -45,7 +45,7 @@
         return error
       });
 
-      var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
+      var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
       },      
       function(error){
