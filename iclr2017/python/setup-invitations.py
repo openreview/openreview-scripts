@@ -40,40 +40,69 @@ reply = {
         'values-regex': '~.*'
     },
     'content': {
-        'abstract': {
-            'description': 'Abstract of paper.',
-            'order': 4,
-            'value-regex': '[\\S\\s]{1,5000}'
-        },
-        'author_emails': {
-            'description': 'Comma separated list of author email addresses, in the same order as above.',
-            'order': 3,
-            'value-regex': '[^,\\n]+(,[^,\\n]+)*'
+        'title': {
+            'description': 'Title of paper.',
+            'order': 1,
+            'value-regex': '.{1,100}',
+            'required':True
         },
         'authors': {
             'description': 'Comma separated list of author names, as they appear in the paper.',
             'order': 2,
-            'value-regex': '[^,\\n]+(,[^,\\n]+)*'
+            'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+            'required':True
         },
-        'conflicts': {
-            'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
-            'order': 100,
-            'value-regex': '^$|([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*'
+        'author_emails': {
+            'description': 'Comma separated list of author email addresses, in the same order as above.',
+            'order': 3,
+            'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+            'required':True
         },
-        'keywords': {
-            'description': 'Comma separated list of keywords.',
-            'order': 6,
-            'values-regex': '.*'
+        'TL;DR': {
+            'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
+            'order': 3,
+            'value-regex': '[^\\n]{1,250}',
+            'required':False
+        },
+        'abstract': {
+            'description': 'Abstract of paper.',
+            'order': 4,
+            'value-regex': '[\\S\\s]{1,5000}',
+            'required':True
         },
         'pdf': {
             'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv (link must begin with http(s) and end with .pdf)',
             'order': 5,
-            'value-regex': 'upload|(http|https):\/\/.+\.pdf'
+            'value-regex': 'upload|(http|https):\/\/.+\.pdf',
+            'required':True
         },
-        'title': {
-            'description': 'Title of paper.',
-            'order': 1,
-            'value-regex': '.{1,100}'
+        'keywords': {
+            'description': 'Comma separated list of keywords.',
+            'order': 6,
+            'values-dropdown': [
+                'Theory',
+                'Computer vision',
+                'Speech',
+                'Natural language processing',
+                'Deep learning',
+                'Unsupervised Learning',
+                'Supervised Learning',
+                'Semi-Supervised Learning',
+                'Reinforcement Learning',
+                'Transfer Learning',
+                'Multi-modal learning',
+                'Applications',
+                'Optimization',
+                'Structured prediction',
+                'Games'
+            ]
+
+        },
+        'conflicts': {
+            'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
+            'order': 100,
+            'value-regex': '^$|([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
+            'required':True
         }
     }
 }
