@@ -29,7 +29,7 @@ baseurl = openreview.baseurl
 
 submissions = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 
-def SingleAssignmentValid(s):
+def single_assignment_valid(s):
     try:    
         areachair = s.split(',')[0]
         paper_number = s.split(',')[1]
@@ -46,7 +46,7 @@ def SingleAssignmentValid(s):
     except IndexError:
         return False
 
-def AssignReviewer(reviewer,paper_number):
+def assign_reviewer(reviewer,paper_number):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
     if notes:
         conflicts = [note.content['conflicts'] for note in notes]
@@ -56,7 +56,7 @@ def AssignReviewer(reviewer,paper_number):
                 if str(c.strip()):
                     conflict_list.append(str(c.strip()))
 
-        reviewer_group = GetReviewerGroup(reviewer, paper_number, conflict_list)
+        reviewer_group = get_reviewer_group(reviewer, paper_number, conflict_list)
         reviewer_group_id = str(reviewer_group.id)
         preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
         print "Assigned reviewer", reviewer_group_id, "to invitation ", preview_question_invitation
@@ -67,7 +67,7 @@ def AssignReviewer(reviewer,paper_number):
         print "Paper number " + paper_number + " does not exist" 
 
 
-def CreateReviewerGroup(new_reviewer_id, reviewer, paper_number, conflict_list):
+def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list):
     print 'Creating reviewer: ', new_reviewer_id
     new_reviewer = Group(
         new_reviewer_id,
@@ -81,7 +81,7 @@ def CreateReviewerGroup(new_reviewer_id, reviewer, paper_number, conflict_list):
     return new_reviewer
     
 
-def GetReviewerGroup(reviewer, paper_number, conflict_list):
+def get_reviewer_group(reviewer, paper_number, conflict_list):
     
     reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/reviewers')
     existing_reviewers = reviewers.members
@@ -107,7 +107,7 @@ def GetReviewerGroup(reviewer, paper_number, conflict_list):
                 print "Reviewer " + reviewer + " found in " + existing_reviewer.id
                 return existing_reviewer
     new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/reviewer'+str(len(existing_reviewers)+1)
-    new_reviewer = CreateReviewerGroup(new_reviewer_id, reviewer, paper_number, conflict_list)
+    new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
     openreview.post_group(reviewers.add_member(new_reviewer.id))
     openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
     return new_reviewer
@@ -122,11 +122,11 @@ if args.assignments.endswith('.csv'):
         for row in reader:
             reviewer = row[0]
             paper_number = row[1]
-            AssignReviewer(reviewer,paper_number)
-elif SingleAssignmentValid(args.assignments):
+            assign_reviewer(reviewer,paper_number)
+elif single_assignment_valid(args.assignments):
     reviewer = args.assignments.split(',')[0]
     paper_number = args.assignments.split(',')[1]
-    AssignReviewer(reviewer,paper_number)
+    assign_reviewer(reviewer,paper_number)
 else:
     print "Invalid input"
     sys.exit()

@@ -29,7 +29,7 @@ baseurl = openreview.baseurl
 
 submissions = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 
-def SingleAssignmentValid(s):
+def single_assignment_valid(s):
     try:    
         areachair = s.split(',')[0]
         paper_number = s.split(',')[1]
@@ -46,7 +46,7 @@ def SingleAssignmentValid(s):
     except IndexError:
         return False
 
-def AssignAreachair(areachair,paper_number):
+def assign_areachair(areachair,paper_number):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
     if notes:
         conflicts = [note.content['conflicts'] for note in notes]
@@ -56,7 +56,7 @@ def AssignAreachair(areachair,paper_number):
                 if str(c.strip()):
                     conflict_list.append(str(c.strip()))
 
-        areachair_group = GetAreachairGroup(areachair, paper_number, conflict_list)
+        areachair_group = get_areachair_group(areachair, paper_number, conflict_list)
         areachair_group_id = str(areachair_group.id)
 
         openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(areachair_group_id))
@@ -66,7 +66,7 @@ def AssignAreachair(areachair,paper_number):
 
 
 
-def GetAreachairGroup(areachair, paper_number, conflict_list):
+def get_areachair_group(areachair, paper_number, conflict_list):
     
     areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/areachairs')
     existing_areachairs = areachairs.members
@@ -83,12 +83,12 @@ def GetAreachairGroup(areachair, paper_number, conflict_list):
                 return existing_areachair
 
     new_areachair_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachair'+str(len(existing_areachairs)+1)
-    new_areachair = CreateAreachairGroup(new_areachair_id, areachair, paper_number, conflict_list)
+    new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
     openreview.post_group(areachairs.add_member(new_areachair.id))
     return new_areachair
 
 
-def CreateAreachairGroup(new_areachair_id, areachair, paper_number, conflict_list):
+def create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list):
     print 'Creating areachair: ', new_areachair_id
     new_areachair = Group(
         new_areachair_id,
@@ -111,11 +111,11 @@ if args.assignments.endswith('.csv'):
         for row in reader:
             areachair = row[0]
             paper_number = row[1]
-            AssignAreachair(areachair,paper_number)
-elif SingleAssignmentValid(args.assignments):
+            assign_areachair(areachair,paper_number)
+elif single_assignment_valid(args.assignments):
     areachair = args.assignments.split(',')[0]
     paper_number = args.assignments.split(',')[1]
-    AssignAreachair(areachair,paper_number)
+    assign_areachair(areachair,paper_number)
 else:
     print "Invalid input"
     sys.exit()
