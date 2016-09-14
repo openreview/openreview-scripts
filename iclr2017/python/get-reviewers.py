@@ -14,7 +14,7 @@ from openreview import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--paper_id', help="the id of the paper to assign this areachair to")
+parser.add_argument('-n', '--paper_number', help="the number of the paper to assign this reviewer to")
 parser.add_argument('-u', '--user',help="the user whose reviewing assignments you would like to see")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
@@ -28,12 +28,13 @@ else:
     openreview = Client(baseurl=args.baseurl)
 baseurl = openreview.baseurl
 
+submissions = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
+notes = [note for note in submissions if str(note.number)==str(args.paper_number)]
 
-if args.paper_id!=None:
-    paper_id = args.paper_id
+if args.paper_number!=None:
     
     try:
-        note = openreview.get_note(paper_id)
+        note = notes[0]
         message = []
         reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
         for rev in reviewers.members:
@@ -44,7 +45,7 @@ if args.paper_id!=None:
             message.append(pad+"reviewer"+reviewerNumber+" ("+rev+")")
 
         message.sort()
-        print 'Reviewers assigned to paper '+paper_id+':'
+        print 'Reviewers assigned to paper '+args.paper_number+':'
         for m in message:
             print m
     except IndexError:
@@ -64,7 +65,7 @@ if args.user!=None:
         reviewerNumber = g.id.split('paper')[1].split('/reviewer')[1]
         print "["+str(notesMap[str(paperNumber)])+"] reviewer"+str(reviewerNumber)+" ("+g.id+")"
 
-if args.user==None and args.paper_id==None:
+if args.user==None and args.paper_number==None:
     notes = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 
     rows = []
