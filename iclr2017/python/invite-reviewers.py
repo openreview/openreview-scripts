@@ -44,3 +44,5 @@ reviewers_invited = openreview.get_group("ICLR.cc/2017/conference/reviewers-invi
 
 if type(reviewers_invited)==Group:
     sendMail(reviewers_invited.members)
+else:
+    print "Error while retrieving ICLR.cc/2017/conference/reviewers-invited; group may not exist"
