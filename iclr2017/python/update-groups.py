@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-p','--programchairs', help="csv file containing the email addresses of the program chair(s)")
 parser.add_argument('-a','--areachairs', help="csv file containing the email addresses of the area chairs")
 parser.add_argument('-r','--reviewers', help="csv file containing the email addresses of candidate reviewers. Will send invitation email to the addresses on this list.")
-parser.add_argument('-u','--baseurl', help="base URL for the server to connect to")
+parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
 
@@ -31,6 +31,11 @@ else:
 
 groups = [];
 
+def SingleAssignmentValid(s):
+    if not '@' in s:
+        return False
+
+    return True
 
 def sendMail(reviewers_invited):
     ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
@@ -47,22 +52,32 @@ def sendMail(reviewers_invited):
         openreview.send_mail("OpenReview invitation response", [reviewer], message)
 
 
-def update_group_members(groupid,csvfile):
+def update_group_members(groupid,assignment):
     new_members = []
     group = openreview.get_group(groupid)
+    
+
     if type(group)==Group:
-        with open(csvfile, 'rb') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-            for row in reader:
-                for email in row:
-                    new_members.append(email)
+
+        if assignment.endswith('.csv'):
+            with open(assignment, 'rb') as assignment:
+                reader = csv.reader(assignment, delimiter=',', quotechar='|')
+                for row in reader:
+                    for email in row:
+                        new_members.append(email)
+        elif SingleAssignmentValid(assignment):
+            new_members.append(assignment)
+        else:
+            print "Invalid input: ",assignment
+            sys.exit()
+
         print "updating group ",g
         group.members += new_members
     else:
         print "could not find group ",g
     
-    if groupid=='ICLR.cc/2017/conference/reviewers-invited':
-        sendMail(new_members)
+    # if groupid=='ICLR.cc/2017/conference/reviewers-invited':
+    #     sendMail(new_members)
 
     return group
 
