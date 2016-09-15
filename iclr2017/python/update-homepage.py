@@ -32,7 +32,7 @@ else:
 
 
 group = openreview.get_group(args.group)
-print group.id
+print "Updated homepage of group ",group
 
 with open(args.webfield) as f: 
     group.web = f.read()
