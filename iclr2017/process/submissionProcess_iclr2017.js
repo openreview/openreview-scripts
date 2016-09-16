@@ -56,19 +56,21 @@ function () {
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
       'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
       'readers': { 
-        'values': ['everyone'], 
+        'values': ['ICLR.cc/2017/conference/ACs_and_organizers'], 
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
         'title': {
           'order': 1,
           'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.'
+          'description': 'Brief summary of your review.',
+          'required': true
         },
         'metareview': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+          'required': true
         },
         'recommendation': {
           'order': 3,
@@ -77,7 +79,8 @@ function () {
             'Poster', 
             'Workshop', 
             'Reject'
-          ]
+          ],
+          'required': true
         }
       } 
     }

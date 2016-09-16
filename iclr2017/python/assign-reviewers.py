@@ -55,6 +55,8 @@ def assign_reviewer(reviewer,paper_number):
             for c in conflicts[0].split(';'):
                 if str(c.strip()):
                     conflict_list.append(str(c.strip()))
+        if 'author_emails' in note.content:
+            conflict_list.append(note.content['author_emails'])
 
         reviewer_group = get_reviewer_group(reviewer, paper_number, conflict_list)
         reviewer_group_id = str(reviewer_group.id)
