@@ -55,7 +55,9 @@ def assign_areachair(areachair,paper_number):
             for c in conflicts[0].split(';'):
                 if str(c.strip()):
                     conflict_list.append(str(c.strip()))
-
+        if 'author_emails' in note.content:
+            conflict_list.append(note.content['author_emails'])
+            
         areachair_group = get_areachair_group(areachair, paper_number, conflict_list)
         areachair_group_id = str(areachair_group.id)
 
