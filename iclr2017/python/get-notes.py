@@ -45,7 +45,7 @@ if args.output!=None:
     if ext.lower()=='csv':
         with open(args.output, 'wb') as outfile:
             csvwriter = csv.writer(outfile, delimiter=',')
-            fieldnames = ['title','abstract','keywords','authors','author_emails','conflicts','forum','invitation','parent','pdfTransfer','readers','signatures','writers']
+            fieldnames = ['title','abstract','keywords','authors','author_emails','conflicts','forum','invitation','replyto','pdfTransfer','readers','signatures','writers']
             csvwriter.writerow(fieldnames)
 
             for count, note in enumerate(notes):

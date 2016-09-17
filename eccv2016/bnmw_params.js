@@ -49,7 +49,7 @@ var noteBody = {
   },
   'forum': null,
   'invitation': workshop.id+'/-/submission',
-  'parent': null,
+  'replyto': null,
   'pdfTransfer':"url",
   'readers':["everyone"],
   'signatures':["~super_user1"],

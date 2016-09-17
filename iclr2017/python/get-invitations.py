@@ -16,7 +16,7 @@ from openreview import *
 parser = argparse.ArgumentParser()
 parser.add_argument('-i','--id', help="return invitations with the given id")
 parser.add_argument('-v','--invitee', help="return invitations that have this group as an invitee")
-parser.add_argument('-p','--parentNote', help="return invitations that have this note as the invitation's parent")
+parser.add_argument('-p','--replytoNote', help="return invitations that have this note as the invitation's parent")
 parser.add_argument('-r','--replyForum', help="return invitations whose reply corresponds to the given forum id")
 parser.add_argument('-s','--signature', help="return invitations signed by the given user")
 parser.add_argument('-n','--note', help = "return invitations that the given note responds to")
@@ -34,12 +34,12 @@ else:
 
 id        = args.id if args.id != None else None
 invitee   = args.invitee if args.invitee != None else None
-parentNote= args.parentNote if args.parentNote != None else None
+replytoNote= args.replytoNote if args.replytoNote != None else None
 replyForum= args.replyForum if args.replyForum != None else None
 signature = args.signature if args.signature != None else None
 note      = args.note if args.note != None else None
 
-invitations = openreview.get_invitations(id=id, invitee=invitee, parentNote=parentNote, replyForum=replyForum, signature=signature, note=note)
+invitations = openreview.get_invitations(id=id, invitee=invitee, replytoNote=replytoNote, replyForum=replyForum, signature=signature, note=note)
 
 if args.output!=None:
     ext = args.output.split('.')[-1]
