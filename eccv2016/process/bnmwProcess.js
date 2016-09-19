@@ -49,7 +49,7 @@ function () {
     'readers': ['everyone'],
     'process': commentProcess+'',
     'reply': {
-      'forum': note.forum,      // 'parent' not specified so we can allow comments on comments
+      'forum': note.forum,      // 'replyto' not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'~.*',
         'description': 'Your displayed identity associated with the above content.' 
@@ -85,7 +85,7 @@ function () {
     'process': reviewProcess+'',
     'reply': {
       'forum': note.id, 
-      'parent': note.id,
+      'replyto': note.id,
       'signatures': {
         'values-regex':'~.*|ECCV2016.org/BNMW/paper'+note.number+'/reviewer[0-9]+',
         'description': 'Your displayed identity associated with the above content.' 

@@ -40,6 +40,7 @@ function () {
     return true;
   };
 
+
   var metaReviewInvitation = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/meta/review',
     'signatures': ['ICLR.cc/2017/conference'],
@@ -51,7 +52,7 @@ function () {
     'duedate': 1481932799000,
     'reply': {
       'forum': note.id, 
-      'parent': note.id,
+      'replyto': note.id,
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
       'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
       'readers': { 
@@ -136,7 +137,7 @@ function () {
     'process': openReviewProcess+'',
     'reply': {
       'forum': note.id, 
-      'parent': note.id,
+      'replyto': note.id,
       'writers': {'values-regex':'~.*|\\(anonymous\\)'},
       'signatures': {'values-regex':'~.*|\\(anonymous\\)'},
       'readers': { 
@@ -234,7 +235,7 @@ function () {
     'duedate': 1481932799000,
     'reply': {
       'forum': note.id, 
-      'parent': note.id,
+      'replyto': note.id,
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},
       'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},
       'readers': { 
@@ -299,7 +300,7 @@ function () {
         if(signatureIdx>=-1){
           reviewers.splice(signatureIdx,1);
         };
-        if(note.readers.indexOf('everyone') == -1 && note.readers.indexOf('iclr.cc/2017/conference/reviewers_and_acs_and_organizers') == -1){
+        if(note.readers.indexOf('everyone') == -1 && note.readers.indexOf('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers') == -1){
           reviewers = [];
         };
         var reviewer_mail = {
@@ -324,7 +325,7 @@ function () {
         "message": "Your submission to "+ conference +" has received a pre-review question from a reviewer.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.question+"\n\nTo view the pre-review question, click here: "+baseUrl+"/forum?id=" + note.forum
       };
       
-      if(note.readers.indexOf('everyone') == -1 && note.readers.indexOf('iclr.cc/2017/conference/acs_and_organizers') == -1 && note.readers.indexOf('iclr.cc/2017/conference/reviewers_and_acs_and_organizers') == -1){
+      if(note.readers.indexOf('everyone') == -1 && note.readers.indexOf('ICLR.cc/2017/conference/ACs_and_organizers') == -1 && note.readers.indexOf('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers') == -1){
         areachairs = []
       };
       var areachair_mail = {
@@ -358,7 +359,7 @@ function () {
     'process':questionProcess+'',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      'parent': note.id,    // not specified so we can allow comments on comments
+      'replyto': note.id,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+',
         'description': 'How your identity will be displayed with the above content.' 
@@ -465,15 +466,15 @@ function () {
       })
     };
 
-    var getCommentEmails = function(parentNoteSignatures){
-      console.log('parentNoteSignatures before filter:',parentNoteSignatures);
+    var getCommentEmails = function(replytoNoteSignatures){
+      console.log('replytoNoteSignatures before filter:',replytoNoteSignatures);
 
       if(note.readers.indexOf('everyone') == -1){
-        parentNoteSignatures=[];
+        replytoNoteSignatures=[];
       };
-      console.log('parentNoteSignatures after filter:',parentNoteSignatures);
+      console.log('replytoNoteSignatures after filter:',replytoNoteSignatures);
       var comment_mail = {
-        "groups": parentNoteSignatures,
+        "groups": replytoNoteSignatures,
         "subject":"Your post has received a comment",
         "message": "One of your posts has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
       };
@@ -482,31 +483,31 @@ function () {
 
     console.log('functions defined')
     var origNoteP = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
-    var parentNoteP = note.parent ? or3client.or3request(or3client.notesUrl+'?id='+note.parent,{},'GET',token) : null;
+    var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl+'?id='+note.replyto,{},'GET',token) : null;
     console.log('promises created')
     Promise.all([
       origNoteP,
-      parentNoteP
+      replytoNoteP
     ]).then(result => {
       console.log('promises resolving')
       var origNote = result[0].notes[0];
       var origNoteNumber = origNote.number;
 
-      var parentNote = note.parent ? result[1].notes[0] : null;
-      var parentNoteReaders = parentNote ? parentNote.readers : null;
-      var parentNoteSignatures = parentNote ? parentNote.signatures : null;
+      var replytoNote = note.replyto ? result[1].notes[0] : null;
+      var replytoNoteReaders = replytoNote ? replytoNote.readers : null;
+      var replytoNoteSignatures = replytoNote ? replytoNote.signatures : null;
 
-      console.log('parentNote',parentNote);
-      console.log('parentNoteReaders',parentNoteReaders);
-      console.log('parentNoteSignatures',parentNoteSignatures);
+      console.log('replytoNote',replytoNote);
+      console.log('replytoNoteReaders',replytoNoteReaders);
+      console.log('replytoNoteSignatures',replytoNoteSignatures);
       var promises = [];
       console.log('note',note)
       console.log('note.readers',note.readers)
       var visibleToEveryone = note.readers.indexOf('everyone')>-1 ? true : false;
       console.log('visibleToEveryone',visibleToEveryone);
-      var visibleToReviewers = note.readers.indexOf('iclr.cc/2017/conference/reviewers_and_acs_and_organizers')>-1 ? true : false;
-      var visibleToAreachairs = note.readers.indexOf('iclr.cc/2017/conference/acs_and_organizers')>-1 ? true : false;
-      var visibleToPCs = note.readers.indexOf('iclr.cc/2017/conference/organizers')>-1 ? true : false;
+      var visibleToReviewers = note.readers.indexOf('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers')>-1 ? true : false;
+      var visibleToAreachairs = note.readers.indexOf('ICLR.cc/2017/conference/ACs_and_organizers')>-1 ? true : false;
+      var visibleToPCs = note.readers.indexOf('ICLR.cc/2017/conference/organizers')>-1 ? true : false;
 
       if(visibleToEveryone){
         var authorMailP = getAuthorEmails(origNote);
@@ -528,12 +529,12 @@ function () {
         promises.push(pcMailP);
       }
 
-      var rootComment = note.forum == note.parent;
-      var anonComment = parentNoteSignatures.indexOf('(anonymous)')>-1 ? true : false;
-      var selfComment = parentNoteSignatures.indexOf(note.signatures[0])>-1 ? true : false;
+      var rootComment = note.forum == note.replyto;
+      var anonComment = replytoNoteSignatures.indexOf('(anonymous)')>-1 ? true : false;
+      var selfComment = replytoNoteSignatures.indexOf(note.signatures[0])>-1 ? true : false;
 
       if(!rootComment && !anonComment && !selfComment) { 
-        var commentMailP = getCommentEmails(parentNoteSignatures);
+        var commentMailP = getCommentEmails(replytoNoteSignatures);
         promises.push(commentMailP);
       };
 
@@ -555,7 +556,7 @@ function () {
     'process':commentProcess+'',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'parent': noteID,    // not specified so we can allow comments on comments
+      //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'~.*|\\(anonymous\\)',
         'description': 'How your identity will be displayed with the above content.' 
@@ -595,7 +596,7 @@ function () {
     'process':commentProcess+'',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'parent': noteID,    // not specified so we can allow comments on comments
+      //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/(reviewer|areachair)[0-9]+',
         'description': 'How your identity will be displayed with the above content.' 
@@ -644,7 +645,7 @@ function () {
     'process': acceptanceProcess+'',
     'reply': {
       'forum': note.id,
-      'parent': note.id,
+      'replyto': note.id,
       'signatures': {
         'values-regex':'ICLR.cc/2017/pcs',
         'description':'Your displayed identity associated with the above content.'

@@ -184,7 +184,7 @@ if openreview.user['id'].lower()=='openreview.net':
     ## Create the submission invitation
     reply = {
         'forum': None,
-        'parent': None,
+        'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
             'values': ['everyone']

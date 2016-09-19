@@ -18,7 +18,7 @@ function () {
     'process': commentProcess+'',
     'reply': {
       'forum': note.forum,     // links this note (comment) to the previously posted note (paper)
-      //'parent': note.id,    // not specified so we can allow comments on comments
+      //'replyto': note.id,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'~.*|\\(anonymous\\)',
         'description': 'Your displayed identity associated with the above content.' 

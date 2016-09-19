@@ -39,7 +39,7 @@ or3client.getUserTokenP(bnmw.rootUser).then(function(token){
           'process':or3client.reviewProcess,
           'reply':{
             'forum': note.id, 
-            'parent': note.id,
+            'replyto': note.id,
             'writers': {'values-regex':'~.*|reviewer-.+'},
             'signatures': {'values-regex':'~.*|reviewer-.+'},
           } 

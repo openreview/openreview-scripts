@@ -26,7 +26,7 @@ baseurl = openreview.baseurl
 
 submission_reply = {
   'forum': None,
-  'parent': None,
+  'replyto': None,
   'signatures': {
     'values-regex': '~.*',
     'description':'Your displayed identity associated with the above content.'
