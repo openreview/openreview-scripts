@@ -352,6 +352,9 @@ function () {
     'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/reviewers']
   };
 
+  openReviewInvitation.noninvitees.push(reviewerGroup.id);
+  publicCommentInvite.noninvitees.push(reviewerGroup.id);
+
   var reviewNonreadersGroup = {
     'id': paperGroup.id+'/review-nonreaders',
     'signatures':['ICLR.cc/2017/conference'],
