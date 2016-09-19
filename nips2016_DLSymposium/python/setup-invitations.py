@@ -29,7 +29,7 @@ baseurl = openreview.baseurl
 ## Create the recommendation invitation
 recommendation_reply = {
     'forum': None,
-    'parent': None,
+    'replyto': None,
     'readers': {
         'description': 'The users who will be allowed to read the above content.',
         'values': ['everyone']
