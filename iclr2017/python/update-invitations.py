@@ -28,7 +28,6 @@ invitation = openreview.get_invitation(args.invitation)
 if type(invitation) == Invitation: 
     with open(args.process) as f: 
         invitation.process = f.read()
-        invitation.reply['replyto'] = invitation.reply.get('parent')
         updated_invitation = openreview.post_invitation(invitation)
         print "Updated invitation",updated_invitation.to_json().get('id')
 else:
