@@ -62,7 +62,6 @@ def assign_reviewer(reviewer,paper_number):
         reviewer_group_id = str(reviewer_group.id)
         preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
         print "Assigned reviewer", reviewer_group_id, "to invitation ", preview_question_invitation
-        openreview.post_invitation(openreview.get_invitation(preview_question_invitation).add_invitee(reviewer_group_id))
         openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(reviewer_group_id))
         openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(reviewer_group_id))
     else:
@@ -76,7 +75,7 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
         signatures=['ICLR.cc/2017/conference'],
         writers=['ICLR.cc/2017/conference'],
         members=[reviewer],
-        readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs','ICLR.cc/2017/conference/paper'+str(paper_number)+'/reviewers',reviewer],
+        readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs',new_reviewer_id],
         nonreaders=conflict_list,
         signatories=[new_reviewer_id])
     openreview.post_group(new_reviewer)
