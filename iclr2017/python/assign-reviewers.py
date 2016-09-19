@@ -62,8 +62,6 @@ def assign_reviewer(reviewer,paper_number):
         reviewer_group_id = str(reviewer_group.id)
         preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
         print "Assigned reviewer", reviewer_group_id, "to invitation ", preview_question_invitation
-        openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(reviewer_group_id))
-        openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(reviewer_group_id))
     else:
         print "Paper number " + paper_number + " does not exist" 
 
