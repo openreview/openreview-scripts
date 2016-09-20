@@ -64,7 +64,8 @@ def update_group_members(groupid,assignment):
                 reader = csv.reader(assignment, delimiter=',', quotechar='|')
                 for row in reader:
                     for email in row:
-                        new_members.append(email)
+                        if '@' in email:
+                            new_members.append(email)
         elif SingleAssignmentValid(assignment):
             new_members.append(assignment)
         else:
