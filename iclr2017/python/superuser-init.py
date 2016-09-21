@@ -274,7 +274,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['ICLR.cc/2017/pcs'], 
         reply=submission_reply,
-        #duedate=1473772215, #this duedate is in the PAST
+        duedate=0, #duedate of 0 means that the invitation has not been released
         process='../process/submissionProcess_iclr2017.js')
 
     reference_reply=reply.copy()
