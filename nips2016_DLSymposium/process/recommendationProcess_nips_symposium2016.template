@@ -1,11 +1,7 @@
 function () {
   var or3client = lib.or3client;
 
-  var commentProcess = function(){
-    var or3client = lib.or3client;
-
-    return true;
-  }
+  var commentProcess = <<commentProcess.js>>
 
   var ratingInvite = 
   {
@@ -52,7 +48,6 @@ function () {
       }
     }
   };
-  or3client.or3request(or3client.inviteUrl, ratingInvite, 'POST', token).catch(error=>console.log(error));
 
   //Send an email to the author of the submitted note, confirming its receipt
 
@@ -70,7 +65,10 @@ function () {
     "message": message
   };
 
-  var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
+  or3client.or3request(or3client.inviteUrl, ratingInvite, 'POST', token).catch(error=>console.log(error))
+  .then(result => or3client.or3request( or3client.mailUrl, mail, 'POST', token ))
+  .then(result => done())
+  .catch(error => done(error));
 
   return true;
 };
