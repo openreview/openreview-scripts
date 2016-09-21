@@ -1,7 +1,5 @@
 <html>
   <head>
-    <!--<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>-->
-    <script src="https://cdn.jsdelivr.net/lodash/3.5.0/lodash.compat.min.js"></script>
   </head>
   <body>
     <div id='main'>
@@ -34,11 +32,13 @@
         return df.promise();
       };
 
-      var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission', minduedate: Date.now()}).then(function(result) {
-        console.log(result)
-        
+      var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {        
         console.log('result',result);
-        return result.invitations[0];
+        var valid_invitations = _.filter(result.invitations, function(inv){
+          return inv.duedate > Date.now();
+        })
+
+        return valid_invitations[0];
 
       },
       function(error){
