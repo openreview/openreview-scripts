@@ -53,9 +53,7 @@ recipients = args.group if args.group!=None else ""
 groupToMail = openreview.get_group(recipients)
 
 if type(groupToMail)==Group:
-    for member in groupToMail.members:
-        print "Sending message to "+member
-        openreview.send_mail(subjectline, [member], message)
+    openreview.send_mail(subjectline, [groupToMail], message)
 else:
     print "Error while retrieving group '"+recipients+"'; group may not exist"
 
