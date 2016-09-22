@@ -27,9 +27,9 @@ else:
     openreview = Client(baseurl=args.baseurl)
 
 #################################################
-#												#
-#	EDIT YOUR MESSAGE AND SUBJECT LINE BELOW	#
-#												#
+#                                               #
+#   EDIT YOUR MESSAGE AND SUBJECT LINE BELOW    #
+#                                               #
 #################################################
 
 
@@ -43,9 +43,9 @@ message = """
 
 
 #################################################
-#												#
-#				END OF MESSAGE 					#
-#												#
+#                                               #
+#               END OF MESSAGE                  #
+#                                               #
 #################################################
 
 recipients = args.group if args.group!=None else ""
