@@ -29,11 +29,15 @@ else:
 
 
 group = openreview.get_group(args.group)
-members = group.members
-if args.sort!=None and args.sort.lower()=='true':
-	members = sorted(members, key=lambda s: s.lower())
-with open(args.output, 'wb') as outfile:
-    csvwriter = csv.writer(outfile, delimiter=',')
 
-    for m in members:
-    	csvwriter.writerow([m])
+if type(group)==Group:
+	members = group.members
+	if args.sort!=None and args.sort.lower()=='true':
+		members = sorted(members, key=lambda s: s.lower())
+	with open(args.output, 'wb') as outfile:
+	    csvwriter = csv.writer(outfile, delimiter=',')
+
+	    for m in members:
+	    	csvwriter.writerow([m])
+else:
+	print "Error: Group does not exist"
