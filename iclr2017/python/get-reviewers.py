@@ -41,7 +41,7 @@ if args.paper_number!=None:
             reviewer_wrapper=openreview.get_group(rev)
             reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
             
-            pad = '{:50s}'.format("["+str(reviewer_wrapper.members[0])+"] ")
+            pad = '{:32s}'.format("["+str(reviewer_wrapper.members[0])+"] ")
             message.append(pad+"reviewer"+reviewerNumber+" ("+rev+")")
 
         message.sort()
@@ -73,17 +73,17 @@ if args.user==None and args.paper_number==None:
         try:
             reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
             if hasattr(reviewers,'members'):
-                message = '{:15s}'.format("Paper "+str(note.number)+" ["+str(note.forum)+"] ")
+                message = '{:15s}'.format("Paper "+'{:3s}'.format(str(note.number))+" ["+str(note.forum)+"] ")
                 for rev in reviewers.members:
                     reviewer_wrapper = openreview.get_group(rev)
                     reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
                     if hasattr(reviewer_wrapper,'members'):
                         members = reviewer_wrapper.members[0] if len(reviewer_wrapper.members)>0 else ''
-                        reviewer_members_pad = '{:40s}'.format(str(members))
+                        reviewer_members_pad = '{:32s}'.format(str(members))
                     else:
-                        reviewer_members_pad = '{:40s}'.format("[CONFLICT]")
+                        reviewer_members_pad = '{:32s}'.format("[CONFLICT]")
                     message+=(reviewer_members_pad)
-                rows.append(message)
+                rows.append((message,int(note.number)))
 
         except IndexError as e:
             print "Error on Paper ",note.number,e
@@ -91,8 +91,8 @@ if args.user==None and args.paper_number==None:
         except AttributeError as e:
             print "Error on Paper ",note.number,e
             continue
-    rows.sort()
-    for m in rows:
-        print m
+    # rows.sort(sortByPaperNumber)
+    for m in sorted(rows, key=lambda row: row[1]) :
+        print m[0]
 
 

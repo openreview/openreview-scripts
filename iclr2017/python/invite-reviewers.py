@@ -81,9 +81,13 @@ def sendMail(reviewers_invited):
         openreview.send_mail("Reviewer Invitation for ICLR 2017", [reviewer], message %(url + "Yes", url + "No"))
 
 reviewers_invited = openreview.get_group("ICLR.cc/2017/conference/reviewers-invited")
+reviewers_emailed = openreview.get_group("ICLR.cc/2017/conference/reviewers-emailed")
 
-if type(reviewers_invited)==Group:
-    sendMail(reviewers_invited.members)
+if type(reviewers_invited)==Group and type(reviewers_emailed)==Group:
+    recipients = [reviewer for reviewer in reviewers_invited.members if reviewer not in reviewers_emailed.members]
+    sendMail(recipients)
+    reviewers_emailed.members = reviewers_emailed.members+recipients
+    openreview.post_group(reviewers_emailed)
 else:
     print "Error while retrieving ICLR.cc/2017/conference/reviewers-invited; group may not exist"
 

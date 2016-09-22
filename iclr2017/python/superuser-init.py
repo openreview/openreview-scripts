@@ -145,6 +145,15 @@ if openreview.user['id'].lower()=='openreview.net':
             members=[])
         groups.append(iclr2017reviewersinvited)
 
+    if overwrite_allowed('ICLR.cc/2017/conference/reviewers-emailed'):
+        iclr2017reviewersemailed = Group('ICLR.cc/2017/conference/reviewers-emailed', 
+            readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'], 
+            writers=['ICLR.cc/2017/pcs'],
+            signatures=['ICLR.cc/2017/pcs'],
+            signatories=['ICLR.cc/2017/conference/reviewers-emailed'],
+            members=[])
+        groups.append(iclr2017reviewersemailed)
+
 
     if overwrite_allowed('ICLR.cc/2017/conference/reviewers'):
         iclr2017reviewers = Group('ICLR.cc/2017/conference/reviewers', 
