@@ -14,6 +14,7 @@ from openreview import *
 ## Handle the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--group', help="group whose members will receive the email")
+parser.add_argument('--email', metavar='N', type=str, nargs='+', help="emails separated by space")
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -47,15 +48,21 @@ message = """
 #               END OF MESSAGE                  #
 #                                               #
 #################################################
+groups = []
 
-recipients = args.group if args.group!=None else ""
+if args.group:
+	groupToMail = openreview.get_group(args.group)
+	if type(groupToMail)==Group:
+		for m in groupToMail.members:
+			if '@' in m:
+				groups.append(m)
+	else:
+	    print "Error while retrieving group '"+args.group+"'; group may not exist"
 
-groupToMail = openreview.get_group(recipients)
+if args.email:
+	groups.extend(args.email)
 
-if type(groupToMail)==Group:
-    response = openreview.send_mail(subjectline, [groupToMail.id], message)
-    print "Emailed the following users: ",response.json()['groups']
-else:
-    print "Error while retrieving group '"+recipients+"'; group may not exist"
+response = openreview.send_mail(subjectline, groups, message)
+print "Emailed the following users: ",response.json()['groups']
 
 
