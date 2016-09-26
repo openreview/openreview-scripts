@@ -44,10 +44,10 @@ optional arguments:
 
 <h4>Examples</h4>
 ```
-python get-groups.py -g ICLR.cc/2017/conference                             # returns a single group, if available, with id = ICLR.cc/2017/conference
-python get-groups.py -p ICLR.cc/2017/conference                             # returns all the groups with ICLR.cc/2017/conference as a prefix
+python get-groups.py -g NIPS.cc/2016/workshop/NAMPI                             # returns a single group, if available, with id = NIPS.cc/2016/workshop/NAMPI
+python get-groups.py -p NIPS.cc/2016/workshop/NAMPI                             # returns all the groups with NIPS.cc/2016/workshop/NAMPI as a prefix
 
-python get-groups.py -p ICLR.cc/2017/conference -o conference.csv           # output groups to the file 'conference.csv'
+python get-groups.py -p NIPS.cc/2016/workshop/NAMPI -o conference.csv           # output groups to the file 'conference.csv'
 
 python get-groups.py -g ICLR.cc/2017/areachairs -a newAC@openreview.net     # add the email address newAC@openreview.net as a member to the areachairs group
 ```
@@ -79,7 +79,7 @@ optional arguments:
 <h4>Examples</h4>
 ```
 python get-notes.py -f ABCxyz                                   # returns a list of notes that belong to the forum ABCxyz
-python get-notes.py -i ICLR.cc/2017/conference/-/submission     # returns a list of all notes that respond to this invitation (i.e. all paper submissions)
+python get-notes.py -i NIPS.cc/2016/workshop/NAMPI/-/submission     # returns a list of all notes that respond to this invitation (i.e. all paper submissions)
 ```
 
 
@@ -120,7 +120,7 @@ python get-reviewers.py
 
 
 <h2>assign-reviewers.py</h2>
-Assigns an email address to serve as a reviewer for a particular paper by paper number. The reviewer will be given membership to an anonymous reviewer group (e.g. ICLR.cc/2017/conference/paper123/reviewer1) which allows them to post reviews without revealing their identity.
+Assigns an email address to serve as a reviewer for a particular paper by paper number. The reviewer will be given membership to an anonymous reviewer group (e.g. NIPS.cc/2016/workshop/NAMPI/paper123/reviewer1) which allows them to post reviews without revealing their identity.
 
 You may also pass in a CSV file with reviewer/paper_number pairs in the following format:
 
@@ -168,7 +168,7 @@ python assign-reviewer.py reviewer-assignments.csv
 
 
 <h2>invite-reviewers.py</h2>
-Deploys an email to all members of ICLR.cc/2017/conference/reviewers-invited asking whether or not they accept the invitation to serve as a reviewer.
+Deploys an email to all members of NIPS.cc/2016/workshop/NAMPI/reviewers-invited asking whether or not they accept the invitation to serve as a reviewer.
 
 Pass in a csv file to the --reviewers argument to invite reviewers to the workshop. Reviewers that have already been invited will not be emailed twice, so this script may be run multiple times.
 
