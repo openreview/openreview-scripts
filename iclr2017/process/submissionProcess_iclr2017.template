@@ -321,7 +321,7 @@ function () {
   };
 
   var referenceInvite = {
-    id: 'ICLR.cc/2017/conference/-/reference',
+    id: 'ICLR.cc/2017/conference/-/add/revision',
     signatures: ['ICLR.cc/2017/conference'],
     writers: ['ICLR.cc/2017/conference'],
     invitees: note.signatures,
