@@ -274,7 +274,6 @@ if openreview.user['id'].lower()=='openreview.net':
     }
 
     submission_reply=reply.copy()
-    submission_reply['referenti']=['ICLR.cc/2017/conference/-/reference']
 
     submission_invitation = Invitation( 'ICLR.cc/2017/conference',
         'submission', 
@@ -285,17 +284,6 @@ if openreview.user['id'].lower()=='openreview.net':
         reply=submission_reply,
         duedate=0, #duedate of 0 means that the invitation has not been released
         process='../process/submissionProcess_iclr2017.js')
-
-    reference_reply=reply.copy()
-
-    reference_invitation = Invitation('ICLR.cc/2017/conference',
-        'reference',
-        readers=['everyone'], 
-        writers=['ICLR.cc/2017/conference'],
-        invitees=['~'], 
-        signatures=['ICLR.cc/2017/pcs'], 
-        reply=reference_reply)
-
 
     ## Create 'request for availability to review' invitation
     reviewer_invitation_reply = {
@@ -337,7 +325,7 @@ if openreview.user['id'].lower()=='openreview.net':
         process='../process/responseInvitationProcess_iclr2017.js', 
         web='../webfield/web-field-invitation.html')
 
-    invitations = [submission_invitation, reference_invitation, reviewer_invitation]
+    invitations = [submission_invitation, reviewer_invitation]
 
     ## Post the invitations
     for i in invitations:
