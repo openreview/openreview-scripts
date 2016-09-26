@@ -320,6 +320,24 @@ function () {
     }
   };
 
+  var referenceInvite = {
+    id: 'ICLR.cc/2017/conference/-/reference',
+    signatures: ['ICLR.cc/2017/conference'],
+    writers: ['ICLR.cc/2017/conference'],
+    invitees: note.signatures,
+    noninvitees: [],
+    readers: ['everyone'],
+    process: 'function() { done() return true; }',
+    reply: {
+      forum: note.id,
+      referent: note.id,
+      signatures: invitation.reply.signatures,
+      writers: invitation.reply.writers, 
+      readers: invitation.reply.readers,
+      content: invitation.reply.content
+    }    
+  }  
+
 
   var list = note.invitation.replace(/_/g,' ').split('/')
   list.splice(list.indexOf('-',1));
@@ -403,7 +421,8 @@ function () {
       or3client.or3request(or3client.inviteUrl, reviewerQuestionInvite, 'POST', token),
       or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token),
       or3client.or3request(or3client.inviteUrl, officialCommentInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token)
+      or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, referenceInvite, 'POST', token)
     ];
 
     return Promise.all(invitation_promises);
