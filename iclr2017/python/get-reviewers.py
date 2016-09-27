@@ -39,7 +39,7 @@ if args.paper_number!=None:
         reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
         for rev in reviewers.members:
             reviewer_wrapper=openreview.get_group(rev)
-            reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
+            reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
             
             pad = '{:32s}'.format("["+str(reviewer_wrapper.members[0])+"] ")
             message.append(pad+"reviewer"+reviewerNumber+" ("+rev+")")
@@ -53,7 +53,7 @@ if args.paper_number!=None:
 
 if args.user!=None:
     user = args.user
-    groups = openreview.get_groups(member=user,regex='ICLR.cc/2017/conference/paper[0-9]+/reviewer[0-9]+')
+    groups = openreview.get_groups(member=user,regex='ICLR.cc/2017/conference/paper[0-9]+/AnonReviewer[0-9]+')
     notes = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
     notesMap = {}
     for n in notes:
@@ -61,8 +61,8 @@ if args.user!=None:
 
     print 'Papers assigned to reviewer '+user+":"
     for g in groups:
-        paperNumber = g.id.split('paper')[1].split('/reviewer')[0]
-        reviewerNumber = g.id.split('paper')[1].split('/reviewer')[1]
+        paperNumber = g.id.split('paper')[1].split('/AnonReviewer')[0]
+        reviewerNumber = g.id.split('paper')[1].split('/AnonReviewer')[1]
         print "["+str(notesMap[str(paperNumber)])+"] reviewer"+str(reviewerNumber)+" ("+g.id+")"
 
 if args.user==None and args.paper_number==None:
@@ -76,7 +76,7 @@ if args.user==None and args.paper_number==None:
                 message = '{:15s}'.format("Paper "+'{:3s}'.format(str(note.number))+" ["+str(note.forum)+"] ")
                 for rev in reviewers.members:
                     reviewer_wrapper = openreview.get_group(rev)
-                    reviewerNumber = rev.split('paper')[1].split('/reviewer')[1]
+                    reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
                     if hasattr(reviewer_wrapper,'members'):
                         members = reviewer_wrapper.members[0] if len(reviewer_wrapper.members)>0 else ''
                         reviewer_members_pad = '{:32s}'.format(str(members))
