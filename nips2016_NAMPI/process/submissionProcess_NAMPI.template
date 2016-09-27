@@ -131,17 +131,17 @@ function () {
     'readers': ['everyone'],
     'process':commentProcess+'',
     'reply': {
-      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'replyto': noteID,    // not specified so we can allow comments on comments
+      'forum': note.id,
+      //'replyto': left unspecified to allow comments on comments
       'signatures': {
         'values-regex':'~.*|\\(anonymous\\)',
         'description': 'How your identity will be displayed with the above content.' 
-        },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
+        },
+      'writers': {'values-regex':'~.*|\\(anonymous\\)'},
       'readers': { 
         'value-dropdown': ['everyone','NIPS.cc/2016/workshop/NAMPI/pcs'],
         'description': 'The users who will be allowed to read the above content.'
-        },   // the reply must allow ANYONE to read this note (comment)
+        },
       'content': {
         'title': {
           'order': 1,
@@ -166,13 +166,13 @@ function () {
     'readers': ['everyone'],
     'process':commentProcess+'',
     'reply': {
-      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'replyto': noteID,    // not specified so we can allow comments on comments
+      'forum': note.id,
+      //'replyto': left unspecified to allow comments on comments
       'signatures': {
         'values-regex':'NIPS.cc/2016/workshop/NAMPI/paper'+note.number+'/reviewer[0-9]+',
         'description': 'How your identity will be displayed with the above content.' 
-        },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'NIPS.cc/2016/workshop/NAMPI/paper'+note.number+'/reviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
+        },
+      'writers': {'values-regex':'NIPS.cc/2016/workshop/NAMPI/paper'+note.number+'/reviewer[0-9]+'},
       'readers': { 
         'values-regex': 'everyone|NIPS.cc/2016/workshop/NAMPI/pcs|NIPS.cc/2016/workshop/NAMPI/reviewers',
         'description': 'The users who will be allowed to read the above content.'

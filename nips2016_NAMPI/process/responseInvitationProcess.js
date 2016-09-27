@@ -10,7 +10,6 @@ function() {
       or3client.addGroupMember(invitation.signatures[0]+'/reviewers', note.content.email, token)
       .then(function(result) {
         var message = "The user " + note.content.email + " has accepted the invitation to serve as a reviewer."
-        //return or3client.or3request(or3client.mailUrl, { groups: [invitation.signatures[0]], subject: "OpenReview invitation accepted" , message: message}, 'POST', token);
       })
       .then(result => done())
       .catch(error => console.log(error));
@@ -21,7 +20,6 @@ function() {
       or3client.addGroupMember(invitation.signatures[0] + '/reviewers-declined', note.content.email, token)
       .then(function(result) {
         var message = "The user " + note.content.email + " has rejected the invitation to serve as a reviewer."
-        //return or3client.or3request(or3client.mailUrl, { groups: [invitation.signatures[0]], subject: "OpenReview invitation rejected" , message: message}, 'POST', token);
       })  
       .then(result => done())
       .catch(error => console.log(error));
