@@ -25,20 +25,13 @@
       };
 
       $attach('#header', 'mkHostHeader', [
-        "ECCV 2016 - Workshop Track",
-        "European Conference on Computer Vision",
-        "Held in Amsterdam, the Netherlands",
-        "http://www.eccv2016.org/",
-        "October 8-10 and 15-16, 2016"
+        "NIPS 2016 NAMPI",
+        "Neural Abstract Machines & Program Induction",
+        "Workshop at NIPS 2016, Barcelona, Spain",
+        "https://uclmr.github.io/nampi/"
       ], true);
 
       console.log('args', args);
-
-      if (args && args.invitation) {
-        httpGetP('notes', { id: args.invitation.reply.content.noteId.value }).then(function(result) {
-          $attach('#note', 'mkNotePanel', [result.notes[0]], true);
-        });
-      }
 
       if (args && args.noteId) {
         httpGetP('notes', { id: args.noteId }).then(function(result) {
@@ -50,6 +43,7 @@
           );
         });
       }
+      
     });
     </script>
  </body>

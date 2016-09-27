@@ -1,7 +1,5 @@
 <html>
   <head>
-    <!--<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>-->
-    <script src="https://cdn.jsdelivr.net/lodash/3.5.0/lodash.compat.min.js"></script>
   </head>
   <body>
     <div id='main'>
@@ -17,7 +15,7 @@
         "Neural Abstract Machines & Program Induction",
         "NIPS 2016, Barcelona, Spain",
         "https://uclmr.github.io/nampi/",
-        "Deadline: TBD"
+        "Deadline: October 14th, 2016"
       ], true);
 
       var sm = mkStateManager();
@@ -34,7 +32,7 @@
         return df.promise();
       };
 
-      var invitationP = httpGetP('invitations', {id: 'NIPS.cc/2016/workshop/NAMPI/-/recommendation'}).then(function(result) {
+      var invitationP = httpGetP('invitations', {id: 'NIPS.cc/2016/workshop/NAMPI/-/submission'}).then(function(result) {
         console.log('result',result)
         return result.invitations[0];
       },
@@ -50,6 +48,7 @@
       });
 
       $.when(invitationP, notesP).done(function(invitation, notes) {
+        console.log('invitation',invitation)
         sm.update('invitationTrip_nips', {
           invitation: invitation
         });
