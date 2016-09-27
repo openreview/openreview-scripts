@@ -1,11 +1,11 @@
-function(){
+var commentProcess = function(){
+    "use strict";
     var or3client = lib.or3client;
     
-    var conference = or3client.getConference(note)
+    var conference = or3client.getConference(note);
 
     var getAuthorEmails = function(origNote){
       var origNoteAuthors = origNote.content.author_emails.trim().split(",");
-      var origNoteSignature = origNote.signatures[0];
 
       var author_mail = {
         "groups": origNoteAuthors,
@@ -22,7 +22,7 @@ function(){
         var signatureIdx = reviewers.indexOf(note.signatures[0]);
         if(signatureIdx>-1){
           reviewers.splice(signatureIdx,1);
-        };
+        }
 
         var reviewer_mail = {
           "groups": reviewers,
@@ -30,7 +30,7 @@ function(){
           "message": "A submission to "+ conference+", for which you are an official reviewer, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
         };
         return or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
-      })
+      });
     };
 
     var getPCEmails = function(){
@@ -40,21 +40,21 @@ function(){
         var signatureIdx = pcs.indexOf(note.signatures[0]);
         if(signatureIdx>-1){
           pcs.splice(signatureIdx,1);
-        };
+        }
         var pc_mail = {
           "groups": pcs,
           "subject": "Private comment posted to a paper: \"" + note.content.title + "\"",
           "message": "A submission to "+ conference+" has received a comment for the Program Chairs. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
         };
         return or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token );
-      })
+      });
     };
 
     var getCommentEmails = function(replytoNoteSignatures){
 
       if(!note.readers.includes('everyone')){
         replytoNoteSignatures=[];
-      };
+      }
       var comment_mail = {
         "groups": replytoNoteSignatures,
         "subject":"Your post has received a comment",
@@ -76,19 +76,19 @@ function(){
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : null;
 
       var promises = [];
-      var visibleToEveryone = note.readers.includes('everyone'); ? true : false;
-      var visibleToReviewers = note.readers.includes('NIPS.cc/2016/workshop/NAMPI/reviewers') ? true : false;
-      var visibleToPCs = note.readers.includes('NIPS.cc/2016/workshop/NAMPI/pcs') ? true : false;
+      var visibleToEveryone = note.readers.includes('everyone');
+      var visibleToReviewers = note.readers.includes('NIPS.cc/2016/workshop/NAMPI/reviewers');
+      var visibleToPCs = note.readers.includes('NIPS.cc/2016/workshop/NAMPI/pcs');
 
       if(visibleToEveryone){
         var authorMailP = getAuthorEmails(origNote);
         promises.push(authorMailP);
-      };
+      }
 
       if(visibleToReviewers){
         var reviewerMailP = getReviewerEmails(origNoteNumber);
         promises.push(reviewerMailP);
-      };
+      }
 
       if(visibleToPCs){
         var pcMailP = getPCEmails();
@@ -96,13 +96,13 @@ function(){
       }
 
       var rootComment = note.forum == note.replyto;
-      var anonComment = replytoNoteSignatures ? ( replytoNoteSignatures.includes('(anonymous)') ? true : false ) : null;
-      var selfComment = replytoNoteSignatures ? ( replytoNoteSignatures.includes(note.signatures[0]) ? true : false ) : null;
+      var anonComment = replytoNoteSignatures ? replytoNoteSignatures.includes('(anonymous)') : null;
+      var selfComment = replytoNoteSignatures ? replytoNoteSignatures.includes(note.signatures[0]) : null;
 
       if(!rootComment && !anonComment && !selfComment) { 
         var commentMailP = getCommentEmails(replytoNoteSignatures);
         promises.push(commentMailP);
-      };
+      }
 
       return Promise.all(promises);
     })
@@ -110,4 +110,4 @@ function(){
     .catch(error => done(error));
 
     return true;
-  };
+  };  
