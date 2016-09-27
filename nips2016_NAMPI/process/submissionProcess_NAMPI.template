@@ -229,9 +229,7 @@ function () {
   };
 
 
-  var list = note.invitation.replace(/_/g,' ').split('/')
-  list.splice(list.indexOf('-',1));
-  var conference = list.join(' ');
+  var conference = or3client.getConference(note)
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {

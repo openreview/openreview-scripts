@@ -1,13 +1,9 @@
 function(){
-    console.log('comment process initiated')
     var or3client = lib.or3client;
     
-    var list = note.invitation.replace(/_/g,' ').split('/');
-    list.splice(list.indexOf('-',1));
-    var conference = list.join(' ')
+    var conference = or3client.getConference(note)
 
     var getAuthorEmails = function(origNote){
-      console.log('get author emails initiated')
       var origNoteAuthors = origNote.content.author_emails.trim().split(",");
       var origNoteSignature = origNote.signatures[0];
 
@@ -20,17 +16,14 @@ function(){
     };
 
     var getReviewerEmails = function(origNoteNumber){
-      console.log('get reviewer emails initiated')
       return or3client.or3request(or3client.grpUrl+'?id=NIPS.cc/2016/workshop/NAMPI/paper'+origNoteNumber+'/reviewers',{},'GET',token)
       .then(result=>{
         var reviewers = result.groups[0].members;
-        console.log('reviewers before filter',reviewers);
         var signatureIdx = reviewers.indexOf(note.signatures[0]);
         if(signatureIdx>-1){
           reviewers.splice(signatureIdx,1);
         };
 
-        console.log('reviewers after filter',reviewers);
         var reviewer_mail = {
           "groups": reviewers,
           "subject": "Comment posted to your assigned paper: \"" + note.content.title + "\"",
@@ -41,16 +34,13 @@ function(){
     };
 
     var getPCEmails = function(){
-      console.log('get PC emails initiated')
       return or3client.or3request(or3client.grpUrl+'?id=NIPS.cc/2016/workshop/NAMPI/pcs',{},'GET',token)
       .then(result=>{      
         var pcs = result.groups[0].members;
         var signatureIdx = pcs.indexOf(note.signatures[0]);
-        console.log('pcs before filter:',pcs);
         if(signatureIdx>-1){
           pcs.splice(signatureIdx,1);
         };
-        console.log('pcs after filter:',pcs);
         var pc_mail = {
           "groups": pcs,
           "subject": "Private comment posted to a paper: \"" + note.content.title + "\"",
@@ -61,12 +51,10 @@ function(){
     };
 
     var getCommentEmails = function(replytoNoteSignatures){
-      console.log('replytoNoteSignatures before filter:',replytoNoteSignatures);
 
-      if(note.readers.indexOf('everyone') == -1){
+      if(!note.readers.includes('everyone')){
         replytoNoteSignatures=[];
       };
-      console.log('replytoNoteSignatures after filter:',replytoNoteSignatures);
       var comment_mail = {
         "groups": replytoNoteSignatures,
         "subject":"Your post has received a comment",
@@ -75,30 +63,22 @@ function(){
       return or3client.or3request( or3client.mailUrl, comment_mail, 'POST', token );
     };
 
-    console.log('functions defined')
     var origNoteP = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl+'?id='+note.replyto,{},'GET',token) : null;
-    console.log('promises created')
     Promise.all([
       origNoteP,
       replytoNoteP
     ]).then(result => {
-      console.log('promises resolving')
       var origNote = result[0].notes[0];
       var origNoteNumber = origNote.number;
 
       var replytoNote = note.replyto ? result[1].notes[0] : null;
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : null;
 
-      console.log('replytoNote',replytoNote);
-      console.log('replytoNoteSignatures',replytoNoteSignatures);
-
       var promises = [];
-      console.log('note',note)
-      console.log('note.readers',note.readers)
-      var visibleToEveryone = note.readers.indexOf('everyone')>-1 ? true : false;
-      var visibleToReviewers = note.readers.indexOf('NIPS.cc/2016/workshop/NAMPI/reviewers')>-1 ? true : false;
-      var visibleToPCs = note.readers.indexOf('NIPS.cc/2016/workshop/NAMPI/pcs')>-1 ? true : false;
+      var visibleToEveryone = note.readers.includes('everyone'); ? true : false;
+      var visibleToReviewers = note.readers.includes('NIPS.cc/2016/workshop/NAMPI/reviewers') ? true : false;
+      var visibleToPCs = note.readers.includes('NIPS.cc/2016/workshop/NAMPI/pcs') ? true : false;
 
       if(visibleToEveryone){
         var authorMailP = getAuthorEmails(origNote);
@@ -116,8 +96,8 @@ function(){
       }
 
       var rootComment = note.forum == note.replyto;
-      var anonComment = replytoNoteSignatures.indexOf('(anonymous)')>-1 ? true : false;
-      var selfComment = replytoNoteSignatures.indexOf(note.signatures[0])>-1 ? true : false;
+      var anonComment = replytoNoteSignatures ? ( replytoNoteSignatures.includes('(anonymous)') ? true : false ) : null;
+      var selfComment = replytoNoteSignatures ? ( replytoNoteSignatures.includes(note.signatures[0]) ? true : false ) : null;
 
       if(!rootComment && !anonComment && !selfComment) { 
         var commentMailP = getCommentEmails(replytoNoteSignatures);
