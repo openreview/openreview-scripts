@@ -72,7 +72,7 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
         signatures=['NIPS.cc/2016/workshop/NAMPI'],
         writers=['NIPS.cc/2016/workshop/NAMPI'],
         members=[reviewer],
-        readers=['NIPS.cc/2016/workshop/NAMPI','ICLR.cc/2017/pcs',new_reviewer_id],
+        readers=['NIPS.cc/2016/workshop/NAMPI','NIPS.cc/2016/workshop/NAMPI/pcs',new_reviewer_id],
         nonreaders=conflict_list,
         signatories=[new_reviewer_id])
     openreview.post_group(new_reviewer)
