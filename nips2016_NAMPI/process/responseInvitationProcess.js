@@ -27,6 +27,7 @@ function() {
     return true;
   } else {
     console.log('Invalid key', note.content.key);
+    done()
     return false;
   }
 }
