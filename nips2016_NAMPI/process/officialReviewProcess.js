@@ -1,4 +1,5 @@
 function(){
+    "use strict";
     var or3client = lib.or3client;
     
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
@@ -6,8 +7,6 @@ function(){
     var conference = or3client.getConference(note);
 
     origNote.then(function(result){
-      var note_number = result.notes[0].number;
-
       var authors = result.notes[0].content.author_emails.trim().split(",");
 
       var author_mail = {
@@ -17,7 +16,7 @@ function(){
       };
 
       var promises = [
-        or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
+        or3client.or3request(or3client.mailUrl, author_mail, 'POST', token)
       ];
       return Promise.all(promises);
     })
@@ -26,4 +25,4 @@ function(){
     .catch(error=>done(error));
 
     return true;
-  };
+  }
