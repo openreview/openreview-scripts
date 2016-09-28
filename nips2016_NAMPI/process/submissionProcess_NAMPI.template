@@ -1,7 +1,8 @@
 function () {
+  "use strict";
   var or3client = lib.or3client;
 
-  var openReviewProcess = <<openReviewProcess.js>>
+  var openReviewProcess = <<openReviewProcess.js>>;
 
   var openReviewInvitation = {
     'id': 'NIPS.cc/2016/workshop/NAMPI/-/paper'+note.number+'/public/review',
@@ -60,7 +61,7 @@ function () {
     }
   };  
 
-  var officialReviewProcess = <<officialReviewProcess.js>>
+  var officialReviewProcess = <<officialReviewProcess.js>>;
 
   var officialReviewInvitation = {
     'id': 'NIPS.cc/2016/workshop/NAMPI/-/paper'+note.number+'/official/review',
@@ -120,7 +121,7 @@ function () {
     }
   };
 
-  var commentProcess = <<commentProcess.js>>
+  var commentProcess = <<commentProcess.js>>;
   
   var publicCommentInvite = {
     'id': 'NIPS.cc/2016/workshop/NAMPI/-/paper'+note.number+'/public/comment',
@@ -193,7 +194,7 @@ function () {
   };
 
 
-  var acceptanceProcess = <<acceptanceProcess.js>>
+  var acceptanceProcess = <<acceptanceProcess.js>>;
 
   var acceptanceInvite = {
     'id': 'NIPS.cc/2016/workshop/NAMPI/-/paper'+note.number+'/acceptance',
@@ -229,7 +230,7 @@ function () {
   };
 
 
-  var conference = or3client.getConference(note)
+  var conference = or3client.getConference(note);
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
@@ -237,7 +238,6 @@ function () {
     "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
     "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
-  var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
   
   // Create an empty group for this paper, e.g. "NIPS.cc/2016/workshop/NAMPI/paper444"
   var paperGroup = {
@@ -275,6 +275,7 @@ function () {
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result=>{
     group_promises = [
+      or3client.or3request(or3client.mailUrl, mail, 'POST', token),
       or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),  
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
     ];
