@@ -118,8 +118,8 @@ function () {
     'reply': {
       'forum': note.id, 
       'replyto': note.id,
-      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},
-      'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},
+      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},
+      'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},
       'readers': { 
         'values': ['everyone'], 
         'description': 'The users who will be allowed to read the above content.'
@@ -179,10 +179,10 @@ function () {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       'replyto': note.id,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+',
+        'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+',
         'description': 'How your identity will be displayed with the above content.' 
         },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/reviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
+      'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
       'readers': { 
         'values': ['everyone'], 
         'description': 'The users who will be allowed to read the above content.'

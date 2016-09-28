@@ -105,7 +105,7 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
             if reviewer in existing_reviewer.members:
                 print "Reviewer " + reviewer + " found in " + existing_reviewer.id
                 return existing_reviewer
-    new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/reviewer'+str(len(existing_reviewers)+1)
+    new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/AnonReviewer'+str(len(existing_reviewers)+1)
     new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
     openreview.post_group(reviewers.add_member(new_reviewer.id))
     openreview.post_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders').add_member(new_reviewer_id))
