@@ -1,4 +1,4 @@
-var commentProcess = function(){
+function(){
     "use strict";
     var or3client = lib.or3client;
     
@@ -110,4 +110,4 @@ var commentProcess = function(){
     .catch(error => done(error));
 
     return true;
-  };  
+  }
