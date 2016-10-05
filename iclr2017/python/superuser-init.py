@@ -180,7 +180,7 @@ if openreview.user['id'].lower()=='openreview.net':
         print "Posting group: ",g.id
         openreview.post_group(g)
 
-    openreview.post_group(openreview.get_group('host').add_member('ICLR.cc/2017'))
+    openreview.add_member_to_group(openreview.get_group('host'),'ICLR.cc/2017')
 
 
 
