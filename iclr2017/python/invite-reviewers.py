@@ -80,10 +80,10 @@ def sendMail(reviewers_invited):
 
         openreview.send_mail("Reviewer Invitation for ICLR 2017", [reviewer], message %(url + "Yes", url + "No"))
 
-reviewers_invited = openreview.get_group("ICLR.cc/2017/conference/reviewers-invited")
-reviewers_emailed = openreview.get_group("ICLR.cc/2017/conference/reviewers-emailed")
 
-if type(reviewers_invited)==Group and type(reviewers_emailed)==Group:
+if openreview.exists("ICLR.cc/2017/conference/reviewers-invited") and openreview.exists("ICLR.cc/2017/conference/reviewers-emailed"):
+    reviewers_invited = openreview.get_group("ICLR.cc/2017/conference/reviewers-invited")
+    reviewers_emailed = openreview.get_group("ICLR.cc/2017/conference/reviewers-emailed")
     recipients = [reviewer for reviewer in reviewers_invited.members if reviewer not in reviewers_emailed.members]
     sendMail(recipients)
     reviewers_emailed.members = reviewers_emailed.members+recipients
