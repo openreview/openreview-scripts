@@ -31,7 +31,7 @@ else:
 groups = []
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 def overwrite_allowed(groupid):
-    if type(openreview.get_group(groupid))!=Group or overwrite==True:
+    if not openreview.exists(groupid) or overwrite==True:
         return True
     else:
         return False

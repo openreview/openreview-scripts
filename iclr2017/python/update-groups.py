@@ -41,7 +41,7 @@ def update_group_members(groupid,assignment):
     group = openreview.get_group(groupid)
     
 
-    if type(group)==Group:
+    if openreview.exists(groupid):
 
         if assignment.endswith('.csv'):
             with open(assignment, 'rb') as assignment:
@@ -67,7 +67,7 @@ def update_group_members(groupid,assignment):
 for g,c in [('ICLR.cc/2017/pcs',args.programchairs),('ICLR.cc/2017/areachairs',args.areachairs),('ICLR.cc/2017/conference/reviewers-invited',args.reviewers)]:
     if c!=None:
         group = update_group_members(g,c)
-        if type(group)==Group:
+        if openreview.exists(group.id):
             openreview.post_group(group)
 
     
