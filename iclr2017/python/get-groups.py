@@ -42,7 +42,7 @@ if args.add!=None:
         openreview.add_member_to_group(g,args.add)
 if args.remove!=None:
     for g in groups:
-        openreview.remove_member_from_group(g,args.remove)
+        openreview.remove_members_from_group(g,args.remove)
 
 if args.output!=None:
     ext = args.output.split('.')[-1]
