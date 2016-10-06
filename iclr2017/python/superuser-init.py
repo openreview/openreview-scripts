@@ -180,7 +180,7 @@ if openreview.user['id'].lower()=='openreview.net':
         print "Posting group: ",g.id
         openreview.post_group(g)
 
-    openreview.add_member_to_group(openreview.get_group('host'),'ICLR.cc/2017')
+    openreview.add_members_to_group(openreview.get_group('host'),'ICLR.cc/2017')
 
 
 
@@ -282,7 +282,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['ICLR.cc/2017/pcs'], 
         reply=submission_reply,
-        duedate=0, #duedate of 0 means that the invitation has not been released
+        duedate=1507294484000, #duedate of 0 means that the invitation has not been released
         process='../process/submissionProcess_iclr2017.js')
 
     ## Create 'request for availability to review' invitation

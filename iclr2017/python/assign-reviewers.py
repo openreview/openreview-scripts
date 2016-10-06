@@ -94,10 +94,10 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
         if cont.lower()!='y' and cont.lower()!='yes':
             print "Aborting"
             sys.exit()
-        openreview.add_member_to_group(conference_reviewers_invited,reviewer)
+        openreview.add_members_to_group(conference_reviewers_invited,reviewer)
 
     if not (reviewer in conference_reviewers.members):
-        openreview.add_member_to_group(conference_reviewers,reviewer)
+        openreview.add_members_to_group(conference_reviewers,reviewer)
     
     for r in existing_reviewers:
         existing_reviewer = openreview.get_group(r)
@@ -107,8 +107,8 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
                 return existing_reviewer
     new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/AnonReviewer'+str(len(existing_reviewers)+1)
     new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
-    openreview.add_member_to_group(reviewers,new_reviewer.id)
-    openreview.add_member_to_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)
+    openreview.add_members_to_group(reviewers,new_reviewer.id)
+    openreview.add_members_to_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)
     return new_reviewer
 
 
