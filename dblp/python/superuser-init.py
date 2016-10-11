@@ -43,15 +43,24 @@ if openreview.user['id'].lower()=='openreview.net':
     ######################### 
 
     if overwrite_allowed('dblp.org'):
-        iclr            = Group('dblp.org',      
+        dblp            = Group('dblp.org',      
             readers     = ['OpenReview.net'], 
             writers     = ['OpenReview.net','dblp.org'], 
             signatures  = ['OpenReview.net'], 
             signatories = ['dblp.org'], 
-            members     = ['spector@cs.umass.edu'] )
-        groups.append(iclr)
-        ## Post the groups
+            members     = [] )
+        groups.append(dblp)
+
+    if overwrite_allowed('dblp.org/upload'):
+        dblp_upload     = Group('dblp.org/upload',
+            readers     = ['dblp.org/upload'],
+            writers     = ['dblp.org','dblp.org/upload'],
+            signatures  = ['dblp.org'],
+            signatories = ['dblp.org/upload'],
+            members     = ['spector@cs.umass.edu','mbok@cs.umass.edu'] )
+        groups.append(dblp_upload)
     
+    ## Post the groups
     for g in groups:
         print "Posting group: ",g.id
         openreview.post_group(g)
@@ -70,10 +79,10 @@ if openreview.user['id'].lower()=='openreview.net':
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': '~.*'
+            'values': ['dblp.org/upload']
         },
         'writers': {
-            'values-regex': '~.*'
+            'values': ['dblp.org/upload']
         },
         'content': {
             'title': {
@@ -94,7 +103,7 @@ if openreview.user['id'].lower()=='openreview.net':
                 'value-regex': '[^,\\n]*(,[^,\\n]+)*',
                 'required':False
             },
-            'author_emails': {
+            'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 4,
                 'value-regex': '[^,\\n]*(,[^,\\n]+)*',
@@ -110,10 +119,10 @@ if openreview.user['id'].lower()=='openreview.net':
     }
 
     submission_invitation = Invitation( 'dblp.org',
-        'submission', 
+        'paper', 
         readers=['dblp.org'], 
         writers=['dblp.org'],
-        invitees=['dblp.org'], 
+        invitees=['dblp.org/upload'], 
         signatures=['dblp.org'], 
         reply=reply,
         duedate=0, #duedate of 0 means that the invitation has not been released
