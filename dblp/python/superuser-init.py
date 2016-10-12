@@ -1,7 +1,11 @@
 #!/usr/bin/python
 
 """
+<<<<<<< e05208d8bebfb3e22cbe0ad88cf2306b18a48e74
 This is the initialization script for dblp.org
+=======
+This is the initialization script for DBLP.org
+>>>>>>> added dblp directory and tutorial section
 
 It should only be run ONCE to kick off the conference. It can only be run by the Super User.
 
@@ -41,24 +45,23 @@ if openreview.user['id'].lower()=='openreview.net':
     #########################
     ##    SETUP GROUPS     ##
     ######################### 
-
-    if overwrite_allowed('dblp.org'):
-        dblp            = Group('dblp.org',      
+    if overwrite_allowed('DBLP.org'):
+        DBLP            = Group('DBLP.org',      
             readers     = ['OpenReview.net'], 
-            writers     = ['OpenReview.net','dblp.org'], 
+            writers     = ['OpenReview.net','DBLP.org'], 
             signatures  = ['OpenReview.net'], 
-            signatories = ['dblp.org'], 
+            signatories = ['DBLP.org'], 
             members     = [] )
-        groups.append(dblp)
+        groups.append(DBLP)
 
-    if overwrite_allowed('dblp.org/upload'):
-        dblp_upload     = Group('dblp.org/upload',
-            readers     = ['dblp.org/upload'],
-            writers     = ['dblp.org','dblp.org/upload'],
-            signatures  = ['dblp.org'],
-            signatories = ['dblp.org/upload'],
-            members     = ['spector@cs.umass.edu','mbok@cs.umass.edu'] )
-        groups.append(dblp_upload)
+    if overwrite_allowed('DBLP.org/upload'):
+        DBLP_upload     = Group('DBLP.org/upload',
+            readers     = ['DBLP.org/upload'],
+            writers     = ['DBLP.org','DBLP.org/upload'],
+            signatures  = ['DBLP.org'],
+            signatories = ['DBLP.org/upload'],
+            members     = ['spector@cs.umass.edu','mbok@cs.umass.edu','rbhat@umass.edu','asrinivasan@cs.umass.edu'] )
+        groups.append(DBLP_upload)
     
     ## Post the groups
     for g in groups:
@@ -79,10 +82,10 @@ if openreview.user['id'].lower()=='openreview.net':
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values': ['dblp.org/upload']
+            'values': ['DBLP.org/upload']
         },
         'writers': {
-            'values': ['dblp.org/upload']
+            'values': ['DBLP.org/upload']
         },
         'content': {
             'title': {
@@ -109,21 +112,20 @@ if openreview.user['id'].lower()=='openreview.net':
                 'value-regex': '[^,\\n]*(,[^,\\n]+)*',
                 'required':False
             },
-            'dblp_url': {
-                'description': 'dblp.org url associated with this paper',
+            'DBLP_url': {
+                'description': 'DBLP.org url associated with this paper',
                 'order': 3,
                 'value-regex': '[^\\n]{0,250}',
                 'required':False
             }
         }
     }
-
-    submission_invitation = Invitation( 'dblp.org',
+    submission_invitation = Invitation( 'DBLP.org',
         'paper', 
-        readers=['dblp.org'], 
-        writers=['dblp.org'],
-        invitees=['dblp.org/upload'], 
-        signatures=['dblp.org'], 
+        readers=['everyone'], 
+        writers=['DBLP.org/upload'],
+        invitees=['DBLP.org/upload'], 
+        signatures=['DBLP.org'], 
         reply=reply,
         duedate=0, #duedate of 0 means that the invitation has not been released
         process='../process/dblp_process.js')
