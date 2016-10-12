@@ -11,7 +11,7 @@ function(){
 
       var reviewers = ['ICLR.cc/2017/conference/paper'+note_number+'/reviewers'];
       var areachairs = ['ICLR.cc/2017/conference/paper'+note_number+'/areachairs'];
-      var authors = result.notes[0].content.author_emails.trim().split(",");
+      var authors = result.notes[0].content.authorids.trim().split(",");
 
       var author_mail = {
         "groups": authors,
