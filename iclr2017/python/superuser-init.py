@@ -215,13 +215,13 @@ if openreview.user['id'].lower()=='openreview.net':
             'authors': {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 2,
-                'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+                'values-regex': '.*',
                 'required':True
             },
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+                'values-regex': '.*',
                 'required':True
             },
             'TL;DR': {
@@ -267,7 +267,7 @@ if openreview.user['id'].lower()=='openreview.net':
             'conflicts': {
                 'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
                 'order': 100,
-                'value-regex': '([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
+                'values-regex': '.*',
                 'required':True
             }
         }
@@ -282,7 +282,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['ICLR.cc/2017/pcs'], 
         reply=submission_reply,
-        duedate=0, #duedate of 0 means that the invitation has not been released
+        duedate=100000000000000000000, #duedate of 0 means that the invitation has not been released
         process='../process/submissionProcess_iclr2017.js')
 
     ## Create 'request for availability to review' invitation
