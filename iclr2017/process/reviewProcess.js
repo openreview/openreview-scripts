@@ -6,7 +6,7 @@ function(){
 
   origNote.then(function(result){
     var mail = {
-      "groups": result.notes[0].content.author_emails.trim().split(","),
+      "groups": result.notes[0].content.authorids.trim().split(","),
       "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\".",
       "message": "Your submission to "+ conference +" has received a review.\n\nTitle: "+note.content.title+"\n\nReview: "+note.content.review+"\n\nTo view the review, click here: http://dev.openreview.net/forum?id=" + note.forum
     };
