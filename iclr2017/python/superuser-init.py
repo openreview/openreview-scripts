@@ -282,7 +282,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['ICLR.cc/2017/pcs'], 
         reply=submission_reply,
-        duedate=100000000000000000000, #duedate of 0 means that the invitation has not been released
+        duedate=1492214399000, #duedate is April 14, 2017, 23:59:59 
         process='../process/submissionProcess_iclr2017.js')
 
     ## Create 'request for availability to review' invitation
