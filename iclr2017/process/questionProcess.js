@@ -29,7 +29,7 @@ function(){
     };
 
     origNote.then(function(result){
-      var origNoteAuthors = result.notes[0].content.authorids.trim().split(",");
+      var origNoteAuthors = result.notes[0].content.authorids;
       var note_number = result.notes[0].number
 
       var areachairs = ['ICLR.cc/2017/conference/paper'+note_number+'/areachairs'];
