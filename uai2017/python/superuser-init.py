@@ -192,7 +192,6 @@ if openreview.user['id'].lower()=='openreview.net':
 
     ## Create the submission invitation
     reply = {
-        'duedate' :  1509470301000,
         'forum': None,
         'replyto': None,
         'readers': {
@@ -283,7 +282,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['UAI.org/2017/pcs'],
         reply=submission_reply,
-        duedate=0, #duedate of 0 means that the invitation has not been released
+        duedate=1509470301000, #duedate of 0 means that the invitation has not been released
         process='../process/submissionProcess_uai2017.js')
 
     ## Create 'request for availability to review' invitation
