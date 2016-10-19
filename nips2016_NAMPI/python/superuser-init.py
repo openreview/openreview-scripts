@@ -83,7 +83,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
     if overwrite_allowed('NIPS.cc/2016/workshop/NAMPI/reviewers-invited'):
         NAMPIreviewersinvited = Group('NIPS.cc/2016/workshop/NAMPI/reviewers-invited', 
-            readers=['NIPS.cc/2016/workshop/NAMPI/pcs','NIPS.cc/2016/workshop/NAMPI'], 
+            readers=['NIPS.cc/2016/workshop/NAMPI/pcs','NIPS.cc/2016/workshop/NAMPI','OpenReview.net'], 
             writers=['NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatories=['NIPS.cc/2016/workshop/NAMPI/reviewers-invited'],
@@ -263,7 +263,7 @@ if openreview.user['id'].lower()=='openreview.net':
             }
         },
         'readers': {
-            'values': ['everyone']
+            'values': ['OpenReview.net']
         },
         'signatures': {
             'values-regex': '\\(anonymous\\)'

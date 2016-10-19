@@ -305,7 +305,7 @@ if openreview.user['id'].lower()=='openreview.net':
             }
         },
         'readers': {
-            'values': ['everyone']
+            'values': ['OpenReview.net']
         },
         'signatures': {
             'values-regex': '\\(anonymous\\)'
