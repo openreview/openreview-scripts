@@ -229,7 +229,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'], 
         reply=submission_reply,
-        duedate=1477055785000, #duedate of 0 means that the invitation has not been released
+        duedate=1477699199000, #Duedate set to OCT 28 23:59:59 GMT
         process='../process/submissionProcess_NAMPI.js')
 
     reference_reply=reply.copy()
