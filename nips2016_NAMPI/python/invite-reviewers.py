@@ -70,7 +70,7 @@ def update_group_members(groupid,assignment):
     group = openreview.get_group(groupid)
     reviewers = []
 
-    if openreview.exists(group):
+    if openreview.exists(group.id):
 
         if assignment.endswith('.csv'):
             with open(assignment, 'rb') as assignment:
@@ -112,12 +112,12 @@ def sendMail(reviewers):
 
 if args.reviewers!=None:
     reviewers_invited,reviewers = update_group_members('NIPS.cc/2016/workshop/NAMPI/reviewers-invited',args.reviewers)
-    if openreview.exists(reviewers_invited):
+    if openreview.exists(reviewers_invited.id):
         openreview.post_group(reviewers_invited)
 
     reviewers_emailed = openreview.get_group("NIPS.cc/2016/workshop/NAMPI/reviewers-emailed")
 
-    if openreview.exists(reviewers_emailed):
+    if openreview.exists("NIPS.cc/2016/workshop/NAMPI/reviewers-emailed"):
         recipients = [reviewer for reviewer in reviewers if reviewer['email'] not in reviewers_emailed.members]
         recipient_emails = [reviewer['email'] for reviewer in reviewers if reviewer['email'] not in reviewers_emailed.members]
         sendMail(recipients)
