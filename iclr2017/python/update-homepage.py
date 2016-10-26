@@ -36,5 +36,4 @@ print "Updated homepage of group ",group
 
 with open(args.webfield) as f: 
     group.web = f.read()
-    #group.signatures=[openreview.user['id']]
     updated_group = openreview.post_group(group)

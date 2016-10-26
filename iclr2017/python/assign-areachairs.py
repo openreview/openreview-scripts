@@ -55,8 +55,8 @@ def assign_areachair(areachair,paper_number):
             for c in conflicts[0].split(';'):
                 if str(c.strip()):
                     conflict_list.append(str(c.strip()))
-        if 'author_emails' in note.content:
-            conflict_list.append(note.content['author_emails'])
+        if 'authorids' in note.content:
+            conflict_list.append(note.content['authorids'])
             
         areachair_group = get_areachair_group(areachair, paper_number, conflict_list)
         areachair_group_id = str(areachair_group.id)
@@ -75,7 +75,7 @@ def get_areachair_group(areachair, paper_number, conflict_list):
     conference_areachairs = openreview.get_group('ICLR.cc/2017/areachairs')
 
     if not (areachair in conference_areachairs.members):
-        openreview.post_group(conference_areachairs.add_member(areachair))
+        openreview.add_members_to_group(conference_areachairs,areachair)
     
     for a in existing_areachairs:
         existing_areachair = openreview.get_group(a)
@@ -86,7 +86,7 @@ def get_areachair_group(areachair, paper_number, conflict_list):
 
     new_areachair_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachair'+str(len(existing_areachairs)+1)
     new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
-    openreview.post_group(areachairs.add_member(new_areachair.id))
+    openreview.add_members_to_group(areachairs,new_areachair.id)
     return new_areachair
 
 

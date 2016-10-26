@@ -31,7 +31,7 @@ else:
 groups = []
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 def overwrite_allowed(groupid):
-    if type(openreview.get_group(groupid))!=Group or overwrite==True:
+    if not openreview.exists(groupid) or overwrite==True:
         return True
     else:
         return False
@@ -180,7 +180,7 @@ if openreview.user['id'].lower()=='openreview.net':
         print "Posting group: ",g.id
         openreview.post_group(g)
 
-    openreview.post_group(openreview.get_group('host').add_member('ICLR.cc/2017'))
+    openreview.add_members_to_group(openreview.get_group('host'),'ICLR.cc/2017')
 
 
 
@@ -215,13 +215,13 @@ if openreview.user['id'].lower()=='openreview.net':
             'authors': {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 2,
-                'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+                'values-regex': '.*',
                 'required':True
             },
-            'author_emails': {
+            'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+                'values-regex': '.*',
                 'required':True
             },
             'TL;DR': {
@@ -267,7 +267,7 @@ if openreview.user['id'].lower()=='openreview.net':
             'conflicts': {
                 'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
                 'order': 100,
-                'value-regex': '([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
+                'values-regex': '.*',
                 'required':True
             }
         }
@@ -282,7 +282,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['ICLR.cc/2017/pcs'], 
         reply=submission_reply,
-        duedate=0, #duedate of 0 means that the invitation has not been released
+        duedate=1492214399000, #duedate is April 14, 2017, 23:59:59 
         process='../process/submissionProcess_iclr2017.js')
 
     ## Create 'request for availability to review' invitation
@@ -305,7 +305,7 @@ if openreview.user['id'].lower()=='openreview.net':
             }
         },
         'readers': {
-            'values': ['everyone']
+            'values': ['OpenReview.net']
         },
         'signatures': {
             'values-regex': '\\(anonymous\\)'

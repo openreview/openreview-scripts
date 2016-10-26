@@ -14,7 +14,7 @@ from openreview import *
 ## Import statements and argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('group', help="The group whose members will be exported")
-parser.add_argument('output', help="The directory to save the output file")
+parser.add_argument('output', help="The the name of the output file")
 parser.add_argument('--sort', help="if set to True, sort the list of members alphabetically")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--password')
@@ -27,10 +27,8 @@ if args.username!=None and args.password!=None:
 else:
     openreview = Client(baseurl=args.baseurl)
 
-
-group = openreview.get_group(args.group)
-
-if type(group)==Group:
+if openreview.exists(args.group):
+    group = openreview.get_group(args.group)
     members = group.members
     if args.sort!=None and args.sort.lower()=='true':
         members = sorted(members, key=lambda s: s.lower())

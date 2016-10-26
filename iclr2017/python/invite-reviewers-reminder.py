@@ -78,17 +78,20 @@ def sendMail(reviewers_invited):
         hashkey = openreview.get_hash(reviewer, "4813408173804203984")
         url = openreview.baseurl+"/invitation?id=ICLR.cc/2017/conference/-/reviewer_invitation&email=" + reviewer + "&key=" + hashkey + "&response="
 
-        openreview.send_mail("Reviewer Invitation for ICLR 2017", [reviewer], message %(url + "Yes", url + "No"))
+        openreview.send_mail("Reminder: Reviewer Invitation for ICLR 2017", [reviewer], message %(url + "Yes", url + "No"))
 
+reviewers_invited = openreview.get_group("ICLR.cc/2017/conference/reviewers-invited").members
+reviewers_accepted = openreview.get_group("ICLR.cc/2017/conference/reviewers").members
+reviewers_declined = openreview.get_group("ICLR.cc/2017/conference/reviewers-declined").members
 
-if openreview.exists("ICLR.cc/2017/conference/reviewers-invited") and openreview.exists("ICLR.cc/2017/conference/reviewers-emailed"):
-    reviewers_invited = openreview.get_group("ICLR.cc/2017/conference/reviewers-invited")
-    reviewers_emailed = openreview.get_group("ICLR.cc/2017/conference/reviewers-emailed")
-    recipients = [reviewer for reviewer in reviewers_invited.members if reviewer not in reviewers_emailed.members]
-    sendMail(recipients)
-    reviewers_emailed.members = reviewers_emailed.members+recipients
-    openreview.post_group(reviewers_emailed)
-else:
-    print "Error while retrieving ICLR.cc/2017/conference/reviewers-invited; group may not exist"
+recipients = []
+for r in reviewers_invited:
+    if(r not in reviewers_accepted and r not in reviewers_declined):
+        print "Send reminder to: ", r
+        recipients.append(r)
+
+print "send mails to", len(recipients), " reviewers"
+#sendMail(recipients)
+
 
 

@@ -51,8 +51,8 @@ message = """
 groups = []
 
 if args.group:
-	groupToMail = openreview.get_group(args.group)
-	if type(groupToMail)==Group:
+	if openreview.exists(args.group):
+		groupToMail = openreview.get_group(args.group)
 		for m in groupToMail.members:
 			if '@' in m:
 				groups.append(m)

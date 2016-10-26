@@ -45,14 +45,14 @@ if args.output!=None:
     if ext.lower()=='csv':
         with open(args.output, 'wb') as outfile:
             csvwriter = csv.writer(outfile, delimiter=',')
-            fieldnames = ['title','abstract','keywords','authors','author_emails','conflicts','forum','invitation','replyto','pdfTransfer','readers','signatures','writers']
+            fieldnames = ['title','abstract','keywords','authors','authorids','conflicts','forum','invitation','replyto','pdfTransfer','readers','signatures','writers']
             csvwriter.writerow(fieldnames)
 
             for count, note in enumerate(notes):
                 row = []
                 for key in fieldnames:
                     try:
-                        if key in ['title','abstract','keywords','authors','author_emails','conflicts']:
+                        if key in ['title','abstract','keywords','authors','authorids','conflicts']:
                             row.append(note.to_json()['content'][key])
                         else: 
                             row.append(note.to_json()[key])

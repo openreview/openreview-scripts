@@ -34,7 +34,7 @@ groups = []
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 def overwrite_allowed(groupid):
     g = openreview.get_group(groupid)
-    if type(g)!=Group or overwrite==True:
+    if openreview.exists(g) or overwrite==True:
         return True
     else:
         return False
@@ -83,7 +83,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
     if overwrite_allowed('NIPS.cc/2016/workshop/NAMPI/reviewers-invited'):
         NAMPIreviewersinvited = Group('NIPS.cc/2016/workshop/NAMPI/reviewers-invited', 
-            readers=['NIPS.cc/2016/workshop/NAMPI/pcs','NIPS.cc/2016/workshop/NAMPI'], 
+            readers=['NIPS.cc/2016/workshop/NAMPI/pcs','NIPS.cc/2016/workshop/NAMPI','OpenReview.net'], 
             writers=['NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatories=['NIPS.cc/2016/workshop/NAMPI/reviewers-invited'],
@@ -229,7 +229,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'], 
         reply=submission_reply,
-        duedate=1477055785000, #duedate of 0 means that the invitation has not been released
+        duedate=1477699199000, #Duedate set to OCT 28 23:59:59 GMT
         process='../process/submissionProcess_NAMPI.js')
 
     reference_reply=reply.copy()
@@ -263,7 +263,7 @@ if openreview.user['id'].lower()=='openreview.net':
             }
         },
         'readers': {
-            'values': ['everyone']
+            'values': ['OpenReview.net']
         },
         'signatures': {
             'values-regex': '\\(anonymous\\)'
