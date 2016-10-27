@@ -10,7 +10,7 @@ function(){
     var programchairs = ['UAI.org/2017/pcs'];
 
     origNote.then(function(result){
-      var authors = result.notes[0].content.author_emails.trim().split(",");
+      var authors = result.notes[0].content.authorids;
       var author_mail = {
         "groups": authors,
         "subject": "Meta-review of your submission to " + conference + ": \"" + note.content.title + "\".",

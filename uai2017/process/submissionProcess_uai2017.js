@@ -13,7 +13,7 @@ function () {
     var programchairs = ['UAI.org/2017/pcs'];
 
     origNote.then(function(result){
-      var authors = result.notes[0].content.author_emails.trim().split(",");
+      var authors = result.notes[0].content.authorids;
       var author_mail = {
         "groups": authors,
         "subject": "Meta-review of your submission to " + conference + ": \"" + note.content.title + "\".",
@@ -98,7 +98,7 @@ function () {
       var reviewers = ['UAI.org/2017/conference/paper'+note_number+'/reviewers'];
       var areachairs = ['UAI.org/2017/conference/paper'+note_number+'/areachairs'];
 
-      var authors = result.notes[0].content.author_emails.trim().split(",");
+      var authors = result.notes[0].content.authorids;
       var author_mail = {
         "groups": authors,
         "subject": "Review of your submission to " + conference + ": \"" + note.content.title + "\"",
@@ -129,7 +129,7 @@ function () {
     'signatures': ['UAI.org/2017/conference'],
     'writers': ['UAI.org/2017/conference'],
     'invitees': ['~'],
-    'noninvitees':note.content.author_emails.trim().split(","),
+    'noninvitees':note.content.authorids,
     'readers': ['everyone'],
     'process': openReviewProcess+'',
     'reply': {
@@ -194,7 +194,7 @@ function () {
 
       var reviewers = ['UAI.org/2017/conference/paper'+note_number+'/reviewers'];
       var areachairs = ['UAI.org/2017/conference/paper'+note_number+'/areachairs'];
-      var authors = result.notes[0].content.author_emails.trim().split(",");
+      var authors = result.notes[0].content.authorids;
 
       var author_mail = {
         "groups": authors,
@@ -310,7 +310,7 @@ function () {
     };
 
     origNote.then(function(result){
-      var origNoteAuthors = result.notes[0].content.author_emails.trim().split(",");
+      var origNoteAuthors = result.notes[0].content.authorids;
       var note_number = result.notes[0].number
 
       var areachairs = ['UAI.org/2017/conference/paper'+note_number+'/areachairs'];
@@ -391,7 +391,7 @@ function () {
 
     var getAuthorEmails = function(origNote){
       console.log('get author emails initiated')
-      var origNoteAuthors = origNote.content.author_emails.trim().split(",");
+      var origNoteAuthors = origNote.content.authorids;
       var origNoteSignature = origNote.signatures[0];
 
       var author_mail = {
@@ -690,7 +690,7 @@ function () {
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
-    "groups": note.content.author_emails.trim().split(","),
+    "groups": note.content.authorids,
     "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
     "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
@@ -731,7 +731,7 @@ function () {
     'id':paperGroup.id+'/authors',
     'signatures':['UAI.org/2017/conference'],
     'writers':['UAI.org/2017/conference','UAI.org/2017/pcs'],
-    'members': note.content.author_emails.trim().split(","),
+    'members': note.content.authorids,
     'readers':['everyone'],
     'signatories':['UAI.org/2017/conference',paperGroup.id+'/authors']
   };

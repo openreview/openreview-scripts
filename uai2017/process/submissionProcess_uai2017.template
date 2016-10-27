@@ -52,7 +52,7 @@ function () {
     'signatures': ['UAI.org/2017/conference'],
     'writers': ['UAI.org/2017/conference'],
     'invitees': ['~'],
-    'noninvitees':note.content.author_emails.trim().split(","),
+    'noninvitees':note.content.authorids,
     'readers': ['everyone'],
     'process': openReviewProcess+'',
     'reply': {
@@ -345,7 +345,7 @@ function () {
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
-    "groups": note.content.author_emails.trim().split(","),
+    "groups": note.content.authorids,
     "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
     "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
@@ -386,7 +386,7 @@ function () {
     'id':paperGroup.id+'/authors',
     'signatures':['UAI.org/2017/conference'],
     'writers':['UAI.org/2017/conference','UAI.org/2017/pcs'],
-    'members': note.content.author_emails.trim().split(","),
+    'members': note.content.authorids,
     'readers':['everyone'],
     'signatories':['UAI.org/2017/conference',paperGroup.id+'/authors']
   };

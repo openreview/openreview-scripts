@@ -8,7 +8,7 @@ function(){
 
     var getAuthorEmails = function(origNote){
       console.log('get author emails initiated')
-      var origNoteAuthors = origNote.content.author_emails.trim().split(",");
+      var origNoteAuthors = origNote.content.authorids;
       var origNoteSignature = origNote.signatures[0];
 
       var author_mail = {
