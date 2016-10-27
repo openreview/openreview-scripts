@@ -218,10 +218,10 @@ if openreview.user['id'].lower()=='openreview.net':
                 'value-regex': '[^,\\n]+(,[^,\\n]+)*',
                 'required':True
             },
-            'author_emails': {
+            'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+                'values-regex': '.*',
                 'required':True
             },
             'TL;DR': {
