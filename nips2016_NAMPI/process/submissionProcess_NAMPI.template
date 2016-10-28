@@ -9,7 +9,7 @@ function () {
     'signatures': ['NIPS.cc/2016/workshop/NAMPI'],
     'writers': ['NIPS.cc/2016/workshop/NAMPI'],
     'invitees': ['~'],
-    'noninvitees':note.content.author_emails.trim().split(","),
+    'noninvitees':note.content.authorids,
     'readers': ['everyone'],
     'process': openReviewProcess+'',
     'reply': {
@@ -234,7 +234,7 @@ function () {
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
-    "groups": note.content.author_emails.trim().split(","),
+    "groups": note.content.authorids,
     "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
     "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
@@ -265,7 +265,7 @@ function () {
     'id':paperGroup.id+'/authors',
     'signatures':['NIPS.cc/2016/workshop/NAMPI'],
     'writers':['NIPS.cc/2016/workshop/NAMPI','NIPS.cc/2016/workshop/NAMPI/pcs'],
-    'members': note.content.author_emails.trim().split(","),
+    'members': note.content.authorids,
     'readers':['everyone'],
     'signatories':['NIPS.cc/2016/workshop/NAMPI',paperGroup.id+'/authors']
   };
@@ -274,7 +274,7 @@ function () {
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result=>{
-    group_promises = [
+    var group_promises = [
       or3client.or3request(or3client.mailUrl, mail, 'POST', token),
       or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),  
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
@@ -283,7 +283,7 @@ function () {
     return Promise.all(group_promises);    
   })
   .then(result=>{
-    invitation_promises = [
+    var invitation_promises = [
       or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token),

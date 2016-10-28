@@ -45,27 +45,31 @@ recommendation_reply = {
         'title': {
             'description': 'Title of paper.',
             'order': 2,
-            'value-regex': '.{1,300}'
+            'value-regex': '.{1,300}',
+            'required':True
         },
         'authors': {
             'description': 'Comma separated list of author names, as they appear in the paper.',
             'order': 3,
-            'value-regex': '[^,\\n]+(,[^,\\n]+)*'
+            'values-regex': '[^,\\n]+(,[^,\\n]+)*',
+            'required':True
         },
-        'author_emails': {
+        'authorids': {
             'description': 'Optionally provide the e-mail address of the authors, or leave blank.',
             'order': 4,
-            'value-regex': '.*'
+            'values-regex': '.*'
         },
         'abstract': {
             'description': 'Abstract of paper.',
             'order': 5,
-            'value-regex': '[\\S\\s]{0,5000}'
+            'value-regex': '[\\S\\s]{0,5000}',
+            'required':True
         },
         'pdf': {
             'description': 'Provide a direct link to your PDF (link must begin with http(s):// and end with .pdf extension)',
             'order': 1,
-            'value-regex': '(http|https):\/\/.+\.pdf'
+            'value-regex': '(http|https):\/\/.+\.pdf',
+            'required':True
         },
         'recommender':{
             'description': 'The user that recommended this paper',

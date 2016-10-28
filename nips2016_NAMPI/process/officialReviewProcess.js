@@ -7,7 +7,7 @@ function(){
     var conference = or3client.getConference(note);
 
     origNote.then(function(result){
-      var authors = result.notes[0].content.author_emails.trim().split(",");
+      var authors = result.notes[0].content.authorids;
 
       var author_mail = {
         "groups": authors,

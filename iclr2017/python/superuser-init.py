@@ -215,13 +215,13 @@ if openreview.user['id'].lower()=='openreview.net':
             'authors': {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 2,
-                'values-regex': '.*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                'values-regex': '.*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'TL;DR': {
@@ -265,9 +265,9 @@ if openreview.user['id'].lower()=='openreview.net':
 
             },
             'conflicts': {
-                'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
+                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
                 'order': 100,
-                'values-regex': '.*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             }
         }

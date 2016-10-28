@@ -161,13 +161,13 @@ if openreview.user['id'].lower()=='openreview.net':
             'authors': {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 2,
-                'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
-            'author_emails': {
+            'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'TL;DR': {
@@ -211,9 +211,9 @@ if openreview.user['id'].lower()=='openreview.net':
 
             },
             'conflicts': {
-                'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
+                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
                 'order': 100,
-                'value-regex': '([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             }
         }
@@ -229,7 +229,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'], 
         reply=submission_reply,
-        duedate=1477699199000, #Duedate set to OCT 28 23:59:59 GMT
+        duedate=1477871999000, #Duedate set to OCT 30 23:59:59 GMT
         process='../process/submissionProcess_NAMPI.js')
 
     reference_reply=reply.copy()
