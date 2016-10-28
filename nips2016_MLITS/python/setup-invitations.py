@@ -60,7 +60,7 @@ submission_reply = {
     'conflicts': {
       'order': 100,
       'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-      'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).'
+      'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).'
     },
     'pdf': {
       'order': 1,
