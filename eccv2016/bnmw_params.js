@@ -41,7 +41,7 @@ var noteBody = {
   'content': {
     'CMT_id':'',
     'abstract':'We aim to detect all instances of a category in an image and, for each instance, mark the pixels that belong to it. We call this task Simultaneous Detection and Segmentation (SDS). Unlike classical bounding box detection, SDS requires a segmentation and not just a box. Unlike classical semantic segmentation, we require individual object instances. We build on recent work that uses convolutional neural networks to classify category-independent region proposals (R-CNN [16]), introducing a novel architecture tailored for SDS. We then use category-specific, top- down figure-ground predictions to refine our bottom-up proposals. We show a 7 point boost (16% relative) over our baselines on SDS, a 5 point boost (10% relative) over state-of-the-art on semantic segmentation, and state-of-the-art performance in object detection. Finally, we provide diagnostic tools that unpack performance and provide directions for future work.',
-    'authorids':"author@gmail.com",
+    'authorids':["author@gmail.com"],
     'authors':'Bharath Hariharan, Pablo Arbeláez, Ross Girshick, Jitendra Malik',
     'conflicts':'cs.berkeley.edu',
     'pdf':'http://arxiv.org/pdf/1407.1808v1.pdf',
