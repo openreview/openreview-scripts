@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 """
+
 This is the initialization script for dblp.org
 added dblp directory and tutorial section
 
@@ -65,7 +66,7 @@ if openreview.user['id'].lower() == 'openreview.net':
                             signatories=['DBLP.org/upload'],
                             members=['spector@cs.umass.edu',
                                      'mbok@cs.umass.edu', 'rbhat@cs.umass.edu',
-                                     'ngovindaraja@cs.umass.edu', 'rbhat@umass.edu',
+                                     'ngovindraja@cs.umass.edu', 'rbhat@umass.edu',
                                      'asrinivasan@cs.umass.edu'])
         groups.append(DBLP_upload)
 
@@ -126,7 +127,7 @@ if openreview.user['id'].lower() == 'openreview.net':
                 'required': False
 
             },
-            'electronic_edition': {
+            'ee': {
                 'description': 'electronic edition of the paper',
                 'order': 6,
                 'value-regex': '[^\\n]{0,250}',
