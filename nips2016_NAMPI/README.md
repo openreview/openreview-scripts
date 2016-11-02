@@ -1,4 +1,4 @@
-<h1>ICLR 2017 Scripts</h1>
+<h1>NIPS 2016 Workshop: NAMPI Scripts</h1>
 
 This directory contains scripts for the NAMPI 2016 Workshop use the [OpenReviewPy](https://github.com/iesl/OpenReviewPy) client library. To run these scripts, you must install this library using pip:
 ```
