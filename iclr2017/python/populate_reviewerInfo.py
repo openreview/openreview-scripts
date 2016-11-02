@@ -1,5 +1,7 @@
 from time import sleep
+import time
 
+import datetime
 import openreview
 import dblp
 import inspect
@@ -40,11 +42,10 @@ for eachLine in fp.readlines():
         try:
             authors = dblp.search(name)
         except Exception as e:
-            sleep(2)
+            sleep(3)
             authors = dblp.search(name)
         if authors:
             if len(authors) > 1:
-                print "More than one authors found! "
                 more_than_one += 1
                 author_disambiguation[name] = []
                 author = None
@@ -69,7 +70,7 @@ for eachLine in fp.readlines():
                         try:
                             pub_title = publication.title
                         except Exception as e:
-                            sleep(2)
+                            sleep(3)
                             pub_title = publication.title
                         if pub_title in publications_set:
                             continue
@@ -109,7 +110,15 @@ for eachLine in fp.readlines():
                         note.signatures = ['DBLP.org/upload']
                         note.writers = note.signatures
                         note.readers = ['everyone']
-                        note.cdate = 1234
+                        # creating a timestamp for cdate
+                        if publication.year:
+                            dt_obj = datetime.datetime(month=01, day=01,
+                                                       year=publication.year)
+                            timestamp_obj = int(time.mktime(dt_obj.timetuple()))
+                        else:
+                            # if the year is not mentioned then cdate = None
+                            timestamp_obj = None
+                        note.cdate = timestamp_obj
                         note.to_json()
                         try:
                             openreview_client.post_note(note)
@@ -130,7 +139,7 @@ for eachLine in fp.readlines():
                         try:
                             pub_title = publication.title
                         except Exception as e:
-                            sleep(2)
+                            sleep(3)
                             pub_title = publication.title
                         if pub_title in publications_set:
                             continue
@@ -171,7 +180,14 @@ for eachLine in fp.readlines():
                         note.signatures = ['DBLP.org/upload']
                         note.writers = note.signatures
                         note.readers = ['everyone']
-                        note.cdate = 1234
+                        # creating a timestamp for cdate
+                        if publication.year:
+                            dt_obj = datetime.datetime(month=01,day=01,year=publication.year)
+                            timestamp_obj = int(time.mktime(dt_obj.timetuple()))
+                        else:
+                            # if the year is not mentioned then cdate = None
+                            timestamp_obj = None
+                        note.cdate = timestamp_obj
                         note.to_json()
                         try:
                             openreview_client.post_note(note)
