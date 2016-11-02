@@ -1,5 +1,6 @@
 from time import sleep
-
+import time
+import datetime
 import openreview
 import dblp
 import inspect
@@ -109,7 +110,15 @@ for eachLine in fp.readlines():
                         note.signatures = ['DBLP.org/upload']
                         note.writers = note.signatures
                         note.readers = ['everyone']
-                        note.cdate = 1234
+                        # creating a timestamp for cdate
+                        if publication.year:
+                            dt_obj = datetime.datetime(month=01, day=01,
+                                                       year=publication.year)
+                            timestamp_obj = int(time.mktime(dt_obj.timetuple()))
+                        else:
+                            # if the year is not mentioned then cdate = None
+                            timestamp_obj = None
+                        note.cdate = timestamp_obj
                         note.to_json()
                         try:
                             openreview_client.post_note(note)
@@ -171,7 +180,15 @@ for eachLine in fp.readlines():
                         note.signatures = ['DBLP.org/upload']
                         note.writers = note.signatures
                         note.readers = ['everyone']
-                        note.cdate = 1234
+                        # creating a timestamp for cdate
+                        if publication.year:
+                            dt_obj = datetime.datetime(month=01, day=01,
+                                                       year=publication.year)
+                            timestamp_obj = int(time.mktime(dt_obj.timetuple()))
+                        else:
+                            # if the year is not mentioned then cdate = None
+                            timestamp_obj = None
+                        note.cdate = timestamp_obj
                         note.to_json()
                         try:
                             openreview_client.post_note(note)
