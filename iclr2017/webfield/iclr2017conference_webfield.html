@@ -81,6 +81,17 @@
                   },
                   onCompleted: function(editor) {
                     $('#notes').prepend(editor);
+                  },
+                  onError: function(error) {
+                    if (error) {
+                      var errors = error.responseJSON ? error.responseJSON.errors : null;
+                      var message = errors ? errors[0] : 'Something went wrong';
+                      if(message == "Invitation has expired") {
+                        promptError("The submission is closed");
+                      } else {
+                        promptError(message);
+                     }
+                    }
                   }
                 });
               } else {
