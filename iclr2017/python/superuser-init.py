@@ -209,7 +209,7 @@ if openreview.user['id'].lower()=='openreview.net':
             'title': {
                 'description': 'Title of paper.',
                 'order': 1,
-                'value-regex': '.{1,100}',
+                'value-regex': '.{1,250}',
                 'required':True
             },
             'authors': {
