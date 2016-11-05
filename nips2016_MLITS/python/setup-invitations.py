@@ -49,18 +49,18 @@ submission_reply = {
     },
     'authors': {
       'order': 1,
-      'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+      'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
       'description': 'Comma separated list of author names, as they appear in the paper.'
     },
-    'author_emails': {
+    'authorids': {
       'order': 2,
-      'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+      'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
       'description': 'Comma separated list of author email addresses, in the same order as above.'
     },
     'conflicts': {
       'order': 100,
-      'value-regex': "^([a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))+(;[a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]{0,1}\\.([a-zA-Z]{1,6}|[a-zA-Z0-9-]{1,30}\\.[a-zA-Z]{2,3}))*$",
-      'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).'
+      'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+      'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).'
     },
     'pdf': {
       'order': 1,

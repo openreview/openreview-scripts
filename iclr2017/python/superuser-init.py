@@ -209,19 +209,19 @@ if openreview.user['id'].lower()=='openreview.net':
             'title': {
                 'description': 'Title of paper.',
                 'order': 1,
-                'value-regex': '.{1,100}',
+                'value-regex': '.{1,250}',
                 'required':True
             },
             'authors': {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 2,
-                'values-regex': '.*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                'values-regex': '.*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'TL;DR': {
@@ -265,9 +265,9 @@ if openreview.user['id'].lower()=='openreview.net':
 
             },
             'conflicts': {
-                'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
+                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
                 'order': 100,
-                'values-regex': '.*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             }
         }
@@ -282,7 +282,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['ICLR.cc/2017/pcs'], 
         reply=submission_reply,
-        duedate=1492214399000, #duedate is April 14, 2017, 23:59:59 
+        duedate=1478294100000, #duedate is Nov 4, 2017, 17:15:00 (5:15pm) Eastern Time 
         process='../process/submissionProcess_iclr2017.js')
 
     ## Create 'request for availability to review' invitation

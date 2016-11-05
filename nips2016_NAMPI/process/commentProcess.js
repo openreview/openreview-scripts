@@ -5,7 +5,7 @@ function(){
     var conference = or3client.getConference(note);
 
     var getAuthorEmails = function(origNote){
-      var origNoteAuthors = origNote.content.author_emails.trim().split(",");
+      var origNoteAuthors = origNote.content.authorids;
 
       var author_mail = {
         "groups": origNoteAuthors,
