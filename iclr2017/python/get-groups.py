@@ -39,7 +39,7 @@ if args.prefix!=None:
     groups = openreview.get_groups(prefix=args.prefix)
 if args.add!=None:
     for g in groups:
-        openreview.add_member_to_group(g,args.add)
+        openreview.add_members_to_group(g,args.add)
 if args.remove!=None:
     for g in groups:
         openreview.remove_members_from_group(g,args.remove)
