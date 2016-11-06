@@ -7,7 +7,7 @@ sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
 print sys.path
 from note_content import *
 from constants import *
-
+import random
 """
 Parse the arguments for user authentication
 """
@@ -85,6 +85,27 @@ def create_paper_metadata_note(notes):
         openreview.post_note(note)
 
 
+def create_paper_reviewer_group(notes):
+    """
+    Creating a reviewer group for each paper name
+    :param notes:
+    :return:
+    """
+    paper_names = get_paper_names(notes)
+    meta_data_notes = get_paper_metadata_notes(paper_names)
+    for paper_index in range(len(paper_names)):
+        group_id = CONFERENCE_REVIEWERS + "/" + paper_names[paper_index]
+        reviewers = [x["reviewer"] for x in meta_data_notes[paper_index].content["reviewers"]]
+        g = Group(group_id, readers=['everyone'],
+                  writers=[CONFERENCE_REVIEWERS, CONFERENCE_PCS],
+                  signatures=[CONFERENCE],
+                  signatories=[CONFERENCE_REVIEWERS])
+        random.shuffle(reviewers)
+        g.members = reviewers[0:random.randrange(len(reviewers))]
+        print "Posting group: ", g.id
+        openreview.post_group(g)
+
+
 def get_paper_metadata_notes(paper_names):
     """
     Get all submitted paper meta data notes
@@ -103,6 +124,8 @@ if __name__ == '__main__':
         create_paper_groups(notes)
         # Creating invitations and notes for all submitted papers
         create_paper_metadata_note(notes)
+        #Creating a reviewer group for each paper
+        create_paper_reviewer_group(notes)
         # Printing all the paper meta data notes
         notes_meta = get_paper_metadata_notes(paper_names)
         for note in notes_meta:
