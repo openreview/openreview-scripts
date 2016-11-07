@@ -52,11 +52,11 @@ def assign_reviewer(reviewer,paper_number):
         conflicts = [note.content['conflicts'] for note in notes]
         conflict_list = []
         if conflicts:
-            for c in conflicts[0].split(';'):
-                if str(c.strip()):
-                    conflict_list.append(str(c.strip()))
+            for c in conflicts:
+                conflict_list+=c
+        
         if 'authorids' in note.content:
-            conflict_list.append(note.content['authorids'])
+            conflict_list+=note.content['authorids']
 
         reviewer_group = get_reviewer_group(reviewer, paper_number, conflict_list)
         reviewer_group_id = str(reviewer_group.id)
@@ -107,7 +107,7 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
                 return existing_reviewer
     new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/AnonReviewer'+str(len(existing_reviewers)+1)
     new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
-    openreview.add_members_to_group(reviewers,new_reviewer.id)
+    openreview.add_members_to_group(reviewers,new_reviewer_id)
     openreview.add_members_to_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)
     return new_reviewer
 
