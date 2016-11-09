@@ -1,0 +1,164 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id='main'>
+      <div id='header'></div>
+      <div id='tablepanel' class='panel'></div>
+    </div>
+    <script type="text/javascript">
+    $(function() {
+
+      $attach('#header', 'mkHostHeader', [
+        "AREACHAIR WEBFIELD"
+      ], true);
+ 
+      var sm = mkStateManager();
+
+      var httpGetP = function(url, queryOrBody) {
+        var df = $.Deferred();
+        httpGet(url, queryOrBody, 
+        function(result) {
+          df.resolve(result);
+        },
+        function(result) {
+          df.reject(result);
+        });
+        return df.promise();
+      };
+
+      var getClass = function(colIndex){
+        if(colIndex==0){
+          return 'paper_summary';
+        } else if(colIndex==1){
+          return 'review_progress';
+        } else if(colIndex==2){
+          return 'status';
+        } else {
+          return null;
+        }
+      }
+
+      var mkReviewProgress = function(numReviewers,numPaperReviews){
+        var numReviewers = reviewerGroup.members.length;
+        var ratio = numReviewers > 0 ? "<b>Progress:</b> "+numPaperReviews+" out of "+numReviewers+" official reviews submitted.": "No reviewers have been assigned.";
+
+        var reviewers = "<b>Reviewers:</b>\n";
+        _.forEach(reviewerGroup.members, function(member){
+          reviewers += "<a href=/groups?id="+member+">"+member+"</a>\n"
+        })
+        return ratio+'\n\n'+reviewers;
+      };
+
+      var mkPaperStatus = function(metaReview,paper){
+        console.log("metareview:",metaReview);
+        var recommendation = metaReview ? metaReview.content.recommendation : "Incomplete. Please <a href=/forum?id="+paper.forum+">Write Meta Review</a>";
+        var paperStatus = "<b>Recommendation:</b> "+recommendation
+        return paperStatus;
+      };
+
+      var addRowToTable = function(table,paper,reviewerGroup,paperReviews,metaReview){
+        var numReviewers = reviewerGroup.members.length;
+        var numPaperReviews = paperReviews ? paperReviews.length : 0;
+
+        var paperSummary = "<a href=/forum?id="+paper.forum+">"+paper.content.title+'</a>\n<b>Authors:</b> '+paper.content.authors+'\n<b>Paper:</b> '+paper.number+'\n<b>TL;DR:</b> '+paper.content['TL;DR']
+
+        var reviewProgress = mkReviewProgress(reviewerGroup,numPaperReviews);
+        var paperStatus = mkPaperStatus(metaReview,paper);
+
+        rowData = [paperSummary, reviewProgress, paperStatus]
+        //rowData = [paper.id,paper.content.title,paper.content.authors[0],paper.content.authorids[0]];
+        appendRowData(table,rowData);
+      };
+
+      var appendRowData = function(table,rowData){
+        var lastRow = $('<tr/>').appendTo(table.find('tbody:last'));
+        _.forEach(rowData, function(c,colIndex) { 
+          var tdClass = getClass(colIndex);
+
+          lastRow.append($('<td/>',{html:c,class:tdClass}));
+        });
+         
+        return lastRow;
+      };
+
+      var makeTable = function(container, data) {
+        var table = $("<table/>").addClass('areachair_table');
+        $.each(data, function(rowIndex, r) {
+            var row = $("<tr/>");
+            $.each(r, function(colIndex, c) { 
+                var tdClass = getClass(colIndex);
+                row.append($("<th/>",{text:c,class:tdClass}));
+            });
+            table.append(row);
+        });
+        return container.append(table);
+      }
+
+      var onTokenChange = function(token) {
+        var $table = makeTable($('#tablepanel'),[['Paper Summary','Review Progress','Status']]);
+
+        var pl = model.tokenPayload(token);
+        var user = pl.user;
+        var userAreachairGroupsP = httpGetP('groups', {member: user.id}).then(
+          function(result){
+            var groups = result.groups;
+            var filtered_matches = _.filter(groups, function(g){
+              return _.has(g,'id') && g.id.match(/ICLR\.cc\/2017\/conference\/paper[0-9]+\/areachair[0-9]+/gi);
+            });
+            return filtered_matches;
+          },
+          function(error){
+            console.log('error');
+            return error
+          }
+        );
+
+        userAreachairGroupsP.then(function(userAreachairGroups){
+          var assignments = _.map(userAreachairGroups, function(acgroup){
+            var suffix = acgroup.id.split('paper')[1];
+            var paperNum = suffix.split('/')[0];
+            var acId = suffix.split('/')[1];
+            return [paperNum,acId];
+          });
+
+          _.forEach(assignments, function(a){
+            var paperNum = a[0];
+            var notesP = httpGetP('notes',{invitation: 'ICLR.cc/2017/conference/-/submission', number: paperNum});
+            var reviewersP = httpGetP('groups',{id: 'ICLR.cc/2017/conference/paper'+paperNum+'/reviewers'});
+            var reviewsP = httpGetP('notes',{invitation:'ICLR.cc/2017/conference/-/paper'+paperNum+'/official/review'});
+            var metaReviewP = httpGetP('notes',{invitation:'ICLR.cc/2017/conference/-/paper'+paperNum+'/meta/review'});
+            $.when(notesP,reviewersP,reviewsP,metaReviewP).done(function(notes,reviewers,reviews,metareviews){
+                paper = _.has(notes,'notes') ? notes.notes[0] : null;
+                reviewerGroup = _.has(reviewers,'groups') ? reviewers.groups[0] : null;
+                paperReviews = _.has(reviews,'notes') ? reviews.notes[0] : null;
+                metaReview = _.has(metareviews,'notes') ? metareviews.notes[0] : null;
+
+                console.log('metareview',metareviews);
+                
+                addRowToTable($table, paper, reviewerGroup, paperReviews, metaReview);
+
+              }).fail(function(){
+                console.log("Notes and/or reviewers not found")
+              });
+
+          })
+        })
+
+      }; //end of onTokenChange
+
+
+
+
+
+
+      controller.addHandler('areachairs', {
+        token: onTokenChange,
+      });      
+
+
+
+    });
+    </script>
+ </body>
+</html>
