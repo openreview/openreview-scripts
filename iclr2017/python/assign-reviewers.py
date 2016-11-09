@@ -73,7 +73,7 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
         signatures=['ICLR.cc/2017/conference'],
         writers=['ICLR.cc/2017/conference'],
         members=[reviewer],
-        readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs',new_reviewer_id],
+        readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs',new_reviewer_id,'ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachairs'],
         nonreaders=conflict_list,
         signatories=[new_reviewer_id])
     openreview.post_group(new_reviewer)

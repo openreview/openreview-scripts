@@ -97,7 +97,7 @@ def create_areachair_group(new_areachair_id, areachair, paper_number, conflict_l
         signatures=['ICLR.cc/2017/conference'],
         writers=['ICLR.cc/2017/conference'],
         members=[areachair],
-        readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs','ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachairs',areachair],
+        readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs','ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachairs'],
         nonreaders=conflict_list,
         signatories=[new_areachair_id])
     openreview.post_group(new_areachair)

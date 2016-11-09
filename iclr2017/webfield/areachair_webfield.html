@@ -3,15 +3,12 @@
   </head>
   <body>
     <div id='main'>
-      <div id='header'></div>
+      <div></div>
+        <h1>Areachair Console</h1>
       <div id='tablepanel' class='panel'></div>
     </div>
     <script type="text/javascript">
     $(function() {
-
-      $attach('#header', 'mkHostHeader', [
-        "AREACHAIR WEBFIELD"
-      ], true);
  
       var sm = mkStateManager();
 
@@ -39,36 +36,74 @@
         }
       }
 
-      var mkReviewProgress = function(numReviewers,numPaperReviews){
+      var mkReviewProgress = function(reviewerGroup,paperReviews,paperQuestions){
         var numReviewers = reviewerGroup.members.length;
-        var ratio = numReviewers > 0 ? "<b>Progress:</b> "+numPaperReviews+" out of "+numReviewers+" official reviews submitted.": "No reviewers have been assigned.";
+        var numPaperReviews = paperReviews ? paperReviews.length : 0;
+        var numPaperQuestions = paperQuestions ? paperQuestions.length : 0;
 
-        var reviewers = "<b>Reviewers:</b>\n";
-        _.forEach(reviewerGroup.members, function(member){
-          reviewers += "<a href=/groups?id="+member+">"+member+"</a>\n"
-        })
-        return ratio+'\n\n'+reviewers;
+        if(numReviewers > 0){
+          var ratio = "<b>Progress:</b> "+numPaperReviews+" out of "+numReviewers+" official reviews submitted.";
+          paperNum = reviewerGroup.id.split('paper')[1].split('/')[0];
+          //var reviewers = "<b>Reviewers:</b>\n";
+          var $reviewers = $('<div>',{id:paperNum,html:'<b>Reviewers:</b>\n'});
+
+          _.forEach(reviewerGroup.members, function(reviewer){
+            httpGetP('groups',{id:reviewer}).then(function(reviewerResult){
+              $('#'+paperNum).append(view.prettyId(reviewer).split(' ')[4])
+              console.log('reviewer',reviewerResult)
+
+              $('#'+paperNum).append(" ("+reviewerResult.groups[0].members[0]+")")
+              $('#'+paperNum).append('\n');
+            });
+          });
+
+          var cumulativeRating = 0;
+          _.forEach(paperReviews,function(review){
+            var rating = _.has(review,'content') ? review.content.rating.split(':')[0] : 0;
+            cumulativeRating += parseFloat(rating);
+          })
+          
+          var avgRating = "<b>Average Rating:</b> "
+
+          avgRating+= paperReviews.length > 0 ? cumulativeRating/parseFloat(paperReviews.length)+" out of 10" : "No reviews submitted"
+
+          return ratio+'\n\n'+$reviewers.prop('outerHTML')+'\n'+avgRating;
+        } else {
+          return "No reviewers have been assigned."
+        }
       };
 
-      var mkPaperStatus = function(metaReview,paper){
-        console.log("metareview:",metaReview);
-        var recommendation = metaReview ? metaReview.content.recommendation : "Incomplete. Please <a href=/forum?id="+paper.forum+">Write Meta Review</a>";
-        var paperStatus = "<b>Recommendation:</b> "+recommendation
-        return paperStatus;
+      var mkPaperStatus = function(metaReview,paperNum){
+
+        return httpGetP('invitations',{id:'ICLR.cc/2017/conference/-/paper'+paperNum+'/meta/review'}).then(function(invResult){
+          if(metaReview){
+            var paperStatus = "<b>Your recommendation:</b> "+metaReview.content.recommendation;
+            return paperStatus;
+          } else {
+            var inv = invResult.invitations[0];
+            var $link = $('<div>', {class: 'link', id:'metareview_link', text: view.prettyInvitationId(inv.id)})
+            $('#metareview_link').click(function() {
+              pushForum(inv.reply.forum, inv.reply.replyto, inv.id);
+              return false;
+            })
+            return $.Deferred().resolve("Incomplete. Please Write "+$link.prop('outerHTML'));
+          }
+        });
       };
 
-      var addRowToTable = function(table,paper,reviewerGroup,paperReviews,metaReview){
+      var addRowToTable = function(table, paper, reviewerGroup, paperQuestions, paperReviews, metaReview){
         var numReviewers = reviewerGroup.members.length;
         var numPaperReviews = paperReviews ? paperReviews.length : 0;
 
         var paperSummary = "<a href=/forum?id="+paper.forum+">"+paper.content.title+'</a>\n<b>Authors:</b> '+paper.content.authors+'\n<b>Paper:</b> '+paper.number+'\n<b>TL;DR:</b> '+paper.content['TL;DR']
+     
+        var reviewProgress = mkReviewProgress(reviewerGroup,paperReviews,paperQuestions);
+        var paperStatusP = mkPaperStatus(metaReview,paper.number);
 
-        var reviewProgress = mkReviewProgress(reviewerGroup,numPaperReviews);
-        var paperStatus = mkPaperStatus(metaReview,paper);
-
-        rowData = [paperSummary, reviewProgress, paperStatus]
-        //rowData = [paper.id,paper.content.title,paper.content.authors[0],paper.content.authorids[0]];
-        appendRowData(table,rowData);
+        paperStatusP.then(function(paperStatus){
+          rowData = [paperSummary, reviewProgress, paperStatus]
+          appendRowData(table,rowData);
+        });
       };
 
       var appendRowData = function(table,rowData){
@@ -76,7 +111,7 @@
         _.forEach(rowData, function(c,colIndex) { 
           var tdClass = getClass(colIndex);
 
-          lastRow.append($('<td/>',{html:c,class:tdClass}));
+          lastRow.append($('<td/>',{html: c, class: tdClass, valign: 'top'}).addClass('areachair_td'));
         });
          
         return lastRow;
@@ -85,10 +120,10 @@
       var makeTable = function(container, data) {
         var table = $("<table/>").addClass('areachair_table');
         $.each(data, function(rowIndex, r) {
-            var row = $("<tr/>");
+            var row = $("<tr/>").addClass('areachair_tr');
             $.each(r, function(colIndex, c) { 
                 var tdClass = getClass(colIndex);
-                row.append($("<th/>",{text:c,class:tdClass}));
+                row.append($("<th/>",{text:c,class:tdClass}).addClass('areachair_th'));
             });
             table.append(row);
         });
@@ -115,31 +150,47 @@
         );
 
         userAreachairGroupsP.then(function(userAreachairGroups){
-          var assignments = _.map(userAreachairGroups, function(acgroup){
+          var forums = _.map(userAreachairGroups, function(acgroup){
             var suffix = acgroup.id.split('paper')[1];
             var paperNum = suffix.split('/')[0];
             var acId = suffix.split('/')[1];
-            return [paperNum,acId];
+            var forumP = httpGetP('notes',{invitation:"ICLR.cc/2017/conference/-/submission",number:paperNum}).then(function(result){
+              return httpGetP('notes',{forum: result.notes[0].forum});
+            });
+            var reviewerGroupP = httpGetP('groups',{id:'ICLR.cc/2017/conference/paper'+paperNum+'/reviewers'});
+            return [forumP,reviewerGroupP];
           });
 
-          _.forEach(assignments, function(a){
-            var paperNum = a[0];
-            var notesP = httpGetP('notes',{invitation: 'ICLR.cc/2017/conference/-/submission', number: paperNum});
-            var reviewersP = httpGetP('groups',{id: 'ICLR.cc/2017/conference/paper'+paperNum+'/reviewers'});
-            var reviewsP = httpGetP('notes',{invitation:'ICLR.cc/2017/conference/-/paper'+paperNum+'/official/review'});
-            var metaReviewP = httpGetP('notes',{invitation:'ICLR.cc/2017/conference/-/paper'+paperNum+'/meta/review'});
-            $.when(notesP,reviewersP,reviewsP,metaReviewP).done(function(notes,reviewers,reviews,metareviews){
-                paper = _.has(notes,'notes') ? notes.notes[0] : null;
-                reviewerGroup = _.has(reviewers,'groups') ? reviewers.groups[0] : null;
-                paperReviews = _.has(reviews,'notes') ? reviews.notes[0] : null;
-                metaReview = _.has(metareviews,'notes') ? metareviews.notes[0] : null;
+          _.forEach(forums, function(f){
+              forumP = f[0];
+              reviewerGroupP = f[1];
+              
+              $.when(forumP,reviewerGroupP).done(function(forumResults, reviewerGroupResults){
+                var forumNotes = forumResults.notes;
 
-                console.log('metareview',metareviews);
+                var paper = _.filter(forumNotes,function(n){
+                  return n.invitation == "ICLR.cc/2017/conference/-/submission";
+                })[0];
+
+                var reviewerGroup = _.has(reviewerGroupResults,'groups') ? reviewerGroupResults.groups[0] : null;
                 
-                addRowToTable($table, paper, reviewerGroup, paperReviews, metaReview);
+                var paperQuestions = _.filter(forumNotes,function(n){
+                  return n.invitation === "ICLR.cc/2017/conference/-/paper"+paper.number+"/pre-review/question";
+                });
+
+                var paperReviews = _.filter(forumNotes, function(n){
+                  var comparator = "ICLR.cc/2017/conference/-/paper"+paper.number+"/official/review"
+                  return n.invitation === comparator;
+                });
+
+                var metaReview = _.filter(forumNotes, function(n){
+                  return n.invitation === "ICLR.cc/2017/conference/-/paper"+paper.number+"/meta/review";
+                })[0];
+
+                addRowToTable($table, paper, reviewerGroup, paperQuestions, paperReviews, metaReview);
 
               }).fail(function(){
-                console.log("Notes and/or reviewers not found")
+                console.log("Forum and/or reviewer group not found")
               });
 
           })
