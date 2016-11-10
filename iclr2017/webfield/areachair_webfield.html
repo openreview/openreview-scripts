@@ -53,7 +53,7 @@
           _.forEach(reviewerGroup.members, function(reviewer){
             httpGetP('groups',{id:reviewer}).then(function(reviewerResult){
               $('#'+paperNum).append(
-                $('<span>',{html:view.prettyId(reviewer).split(' ')[4]}),
+                $('<span>',{html:reviewer.split('/')[4]}),
                 $('<span>',{html: " ("+reviewerResult.groups[0].members[0]+")\n"})
               );
             });
