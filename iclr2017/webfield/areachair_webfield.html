@@ -42,18 +42,20 @@
         var numPaperQuestions = paperQuestions ? paperQuestions.length : 0;
 
         if(numReviewers > 0){
-          var ratio = "<b>Progress:</b> "+numPaperReviews+" out of "+numReviewers+" official reviews submitted.";
-          paperNum = reviewerGroup.id.split('paper')[1].split('/')[0];
-          //var reviewers = "<b>Reviewers:</b>\n";
+          var $ratio = $('<div>',{html:"<b>Progress:</b> "}).append(
+              $('<span>',{html:numPaperReviews+" out of "+numReviewers+" official reviews submitted."})
+            );
+          
+          var paperNum = reviewerGroup.id.split('paper')[1].split('/')[0];
+
           var $reviewers = $('<div>',{id:paperNum,html:'<b>Reviewers:</b>\n'});
 
           _.forEach(reviewerGroup.members, function(reviewer){
             httpGetP('groups',{id:reviewer}).then(function(reviewerResult){
-              $('#'+paperNum).append(view.prettyId(reviewer).split(' ')[4])
-              console.log('reviewer',reviewerResult)
-
-              $('#'+paperNum).append(" ("+reviewerResult.groups[0].members[0]+")")
-              $('#'+paperNum).append('\n');
+              $('#'+paperNum).append(
+                $('<span>',{html:view.prettyId(reviewer).split(' ')[4]}),
+                $('<span>',{html: " ("+reviewerResult.groups[0].members[0]+")\n"})
+              );
             });
           });
 
@@ -63,11 +65,11 @@
             cumulativeRating += parseFloat(rating);
           })
           
-          var avgRating = "<b>Average Rating:</b> "
+          var $avgRating = $("<span>",{html:"<b>Average Rating:</b> "});
 
-          avgRating+= paperReviews.length > 0 ? cumulativeRating/parseFloat(paperReviews.length)+" out of 10" : "No reviews submitted"
+          $avgRating.append(paperReviews.length > 0 ? $('<span>',{html:cumulativeRating/parseFloat(paperReviews.length)+" out of 10"}) : $('<span>',{html:"No reviews submitted"}));
 
-          return ratio+'\n\n'+$reviewers.prop('outerHTML')+'\n'+avgRating;
+          return $('<div>').append($ratio,'\n',$reviewers,'\n',$avgRating);
         } else {
           return "No reviewers have been assigned."
         }
@@ -77,8 +79,8 @@
 
         return httpGetP('invitations',{id:'ICLR.cc/2017/conference/-/paper'+paperNum+'/meta/review'}).then(function(invResult){
           if(metaReview){
-            var paperStatus = "<b>Your recommendation:</b> "+metaReview.content.recommendation;
-            return paperStatus;
+            var $paperStatus = $('<span>',{html:"<b>Your recommendation:</b> "}).append('<span>',{html:metaReview.content.recommendation});
+            return $paperStatus;
           } else {
             var inv = invResult.invitations[0];
             var $link = $('<div>', {class: 'link', id:'metareview_link', text: view.prettyInvitationId(inv.id)})
@@ -94,9 +96,14 @@
       var addRowToTable = function(table, paper, reviewerGroup, paperQuestions, paperReviews, metaReview){
         var numReviewers = reviewerGroup.members.length;
         var numPaperReviews = paperReviews ? paperReviews.length : 0;
+        
+        var paperTitle = $('<a>',{href: "/forum?id="+paper.forum, html: paper.content.title});
+        var paperAuthors = $('<span>',{html:'<b>Authors:</b> '}).append($('<span>',{text: paper.content.authors}))
+        var paperNumber = $('<span>',{html: '<b>Paper: </b>'}).append($('<span>',{text: paper.number}));
+        var paperContent = $('<span>',{html: '<b>TL;DR: </b>'}).append($('<span>',{text:paper.content['TL;DR']}));
 
-        var paperSummary = "<a href=/forum?id="+paper.forum+">"+paper.content.title+'</a>\n<b>Authors:</b> '+paper.content.authors+'\n<b>Paper:</b> '+paper.number+'\n<b>TL;DR:</b> '+paper.content['TL;DR']
-     
+        var paperSummary = $('<div>').append(paperTitle,'\n',paperAuthors,'\n',paperNumber,'\n\n',paperContent);
+
         var reviewProgress = mkReviewProgress(reviewerGroup,paperReviews,paperQuestions);
         var paperStatusP = mkPaperStatus(metaReview,paper.number);
 
