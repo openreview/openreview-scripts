@@ -52,9 +52,8 @@ def assign_reviewer(reviewer,paper_number):
         conflicts = [note.content['conflicts'] for note in notes]
         conflict_list = []
         if conflicts:
-            for c in conflicts[0].split(';'):
-                if str(c.strip()):
-                    conflict_list.append(str(c.strip()))
+            for c in conflicts:
+                conflict_list += c;
         if 'authorids' in note.content:
             conflict_list.append(note.content['authorids'])
 
