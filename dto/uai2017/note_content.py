@@ -77,7 +77,8 @@ class ReviewerData():
         sample_topics = ["topic" + str(random.randint(1, num_samples * 10)) for i in range(num_samples * 5)]
         sample_papers = Paper.create_samples(papers,num_samples=num_samples * 5)
         for i  in range(len(reviewers)):
-            samples.append(ReviewerData(reviewers[i],sample_min_papers[i], sample_max_papers[i], sample_topics[5 * i:5 * i + 5],
+            sample_min_papers
+            samples.append(ReviewerData(reviewers[i],random.sample(sample_min_papers,1), random.sample(sample_max_papers,1), random.sample(sample_topics,num_samples),
                              sample_papers,Reviewer.create_samples(reviewers[0:i]+reviewers[i+1:],5,unique=True)))
         return samples
 
