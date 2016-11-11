@@ -52,9 +52,9 @@ def assign_areachair(areachair,paper_number):
         conflicts = [note.content['conflicts'] for note in notes]
         conflict_list = []
         if conflicts:
-            for c in conflicts[0].split(';'):
-                if str(c.strip()):
-                    conflict_list.append(str(c.strip()))
+            for c in conflicts:
+                conflict_list+=c
+
         if 'authorids' in note.content:
             conflict_list.append(note.content['authorids'])
             
@@ -86,7 +86,7 @@ def get_areachair_group(areachair, paper_number, conflict_list):
 
     new_areachair_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachair'+str(len(existing_areachairs)+1)
     new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
-    openreview.add_members_to_group(areachairs,new_areachair.id)
+    openreview.add_members_to_group(areachairs,new_areachair_id)
     return new_areachair
 
 
@@ -97,7 +97,7 @@ def create_areachair_group(new_areachair_id, areachair, paper_number, conflict_l
         signatures=['ICLR.cc/2017/conference'],
         writers=['ICLR.cc/2017/conference'],
         members=[areachair],
-        readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs','ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachairs',areachair],
+        readers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs','ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachairs'],
         nonreaders=conflict_list,
         signatories=[new_areachair_id])
     openreview.post_group(new_areachair)
