@@ -88,6 +88,22 @@ def create_reviewer_metadata_note(reviewer_sample_meta):
         openreview.post_note(note)
 
 
+def create_reviewer_data_notes(samples_reviewer_data):
+    """
+    Create a new invitation and supporting note for the reviewer data
+    :param samples_reviewer_data:
+    :return:
+    """
+    reviewer_invitation = Invitation(CONFERENCE,
+                                          'Reviewer', signatures=[CONFERENCE], readers=['everyone'],
+                                          writers=['everyone'], reply=INVITATION_REPLY)
+    openreview.post_invitation(reviewer_invitation)
+    for reviewer_data in samples_reviewer_data:
+        note = Note(invitation=reviewer_invitation.id, cdate=int(time.time()) * 1000, readers=['everyone',reviewer_data.name],
+                    writers=['everyone',reviewer_data.name], content=reviewer_data.to_dict(), signatures=reviewer_invitation.signatures)
+        openreview.post_note(note)
+
+
 def get_reviewer_metadata_notes():
     """
     Get all the reviewer meta data notes
@@ -98,16 +114,32 @@ def get_reviewer_metadata_notes():
 
 
 
+def get_reviewer_data_notes():
+    """
+    Get all the reviewer meta data notes
+    :return:
+    """
+    notes = openreview.get_notes(invitation=CONFERENCE + "/-/Reviewer")
+    return notes
+
+
 if __name__ == '__main__':
     if openreview.user['id'].lower() == 'openreview.net':
         members=get_all_member_ids()
         update_reviewers(members)
         papers = get_paper_numbers(get_notes_submitted_papers())
         samples_reviewer_meta_data= ReviewerMeta.create_samples(papers,members,3)
+        samples_reviewer_data = ReviewerData.create_samples(papers,members,3)
         for reviewer_meta_data in samples_reviewer_meta_data:
             create_reviewer_metadata_note(reviewer_sample_meta=reviewer_meta_data.to_dict())
+        #Creating reviewer note for each reviewer
+        create_reviewer_data_notes(samples_reviewer_data)
         notes = get_reviewer_metadata_notes()
         for note in notes:
             print json.dumps(note.content)
+        notes = get_reviewer_data_notes()
+        for note in notes:
+            print json.dumps(note.content)
+
     else:
         print "Aborted. User must be Super User."

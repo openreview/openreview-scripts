@@ -40,6 +40,45 @@ class ReviewerMeta():
         return samples
 
 
+class ReviewerData():
+    """
+    Class defining the structure for the content for the note for reviewer data
+    """
+
+    def __init__(self, name=None,minpapers=0, maxpapers=0, topics=[], papers=[],reviewers=[]):
+        self.name = name
+        self.minpapers = minpapers
+        self.maxpapers = maxpapers
+        self.topics = topics
+        self.papers = papers
+        self.reviewers=reviewers
+        if minpapers > maxpapers:
+            self.minpapers = maxpapers
+            self.maxpapers = minpapers
+
+    def to_dict(self):
+        body = {
+            'name' : self.name ,
+            'minpapers': self.minpapers,
+            'maxpapers': self.maxpapers,
+            'topics': self.topics,
+            'papers': [x.to_dict() for x in self.papers],
+            'reviewers' : [x.to_dict() for x in self.reviewers]
+        }
+        return body
+
+    @staticmethod
+    def create_samples(papers,reviewers,num_samples=10):
+        samples = []
+        sample_min_papers = [random.randint(1, num_samples * 10) for i in range(num_samples)]
+        sample_max_papers = [random.randint(1, num_samples * 10) for i in range(num_samples)]
+        sample_topics = ["topic" + str(random.randint(1, num_samples * 10)) for i in range(num_samples * 5)]
+        sample_papers = Paper.create_samples(papers,num_samples=num_samples * 5)
+        for i  in range(len(reviewers)):
+            samples.append(ReviewerData(reviewers[i],sample_min_papers[i], sample_max_papers[i], sample_topics[5 * i:5 * i + 5],
+                             sample_papers[5 * i:5 * i + 5],Reviewer.create_samples(reviewers[0:i]+reviewers[i+1:],5,unique=True)))
+        return samples
+
 class Paper():
     """
      Class defining the structure for the paper JSON
