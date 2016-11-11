@@ -6,11 +6,12 @@ class ReviewerMeta():
     Class defining the structure for the content for the note for reviewer meta data
     """
 
-    def __init__(self, minreviewers=0, maxreviewers=0, topics=[], papers=[]):
+    def __init__(self, minreviewers=0, maxreviewers=0, topics=[], papers=[],reviewers=[]):
         self.minreviewers = minreviewers
         self.maxreviewers = maxreviewers
         self.topics = topics
         self.papers = papers
+        self.reviewers=reviewers
         if minreviewers > maxreviewers:
             self.minreviewers = maxreviewers
             self.maxreviewers = minreviewers
@@ -20,21 +21,22 @@ class ReviewerMeta():
             'minreviewers': self.minreviewers,
             'maxreviewers': self.maxreviewers,
             'topics': self.topics,
-            'papers': [x.to_dict() for x in self.papers]
+            'papers': [x.to_dict() for x in self.papers],
+            'reviewers' : [x.to_dict() for x in self.reviewers]
         }
         return body
 
     @staticmethod
-    def create_samples(num_samples=10):
+    def create_samples(papers,reviewers,num_samples=10):
         samples = []
         sample_min_reviewers = [random.randint(1, num_samples * 10) for i in range(num_samples)]
         sample_max_reviewers = [random.randint(1, num_samples * 10) for i in range(num_samples)]
         sample_topics = ["topic" + str(random.randint(1, num_samples * 10)) for i in range(num_samples * 5)]
-        sample_papers = Paper.create_samples(num_samples=num_samples * 5)
+        sample_papers = Paper.create_samples(papers,num_samples=num_samples * 5)
+        sample_reviewers = Reviewer.create_samples(reviewers,num_samples=num_samples*5,unique=True)
         for i in range(num_samples):
-            samples.append(
-                ReviewerMeta(sample_min_reviewers[i], sample_max_reviewers[i], sample_topics[5 * i:5 * i + 5],
-                             sample_papers[5 * i:5 * i + 5]))
+            samples.append(ReviewerMeta(sample_min_reviewers[i], sample_max_reviewers[i], sample_topics[5 * i:5 * i + 5],
+                             sample_papers[5 * i:5 * i + 5],sample_reviewers[5 * i:5 * i + 5]))
         return samples
 
 
@@ -52,9 +54,11 @@ class Paper():
         return self.__dict__
 
     @staticmethod
-    def create_samples(num_samples=10):
+    def create_samples(paper_numbers,num_samples=10):
         samples = []
-        samples_paper = [random.randint(1, num_samples * 10) for i in range(num_samples)]
+        if len(paper_numbers) < num_samples:
+            num_samples = len(paper_numbers)
+        samples_paper = random.sample(paper_numbers,num_samples)
         samples_score = [random.random() * num_samples for i in range(num_samples)]
         samples_source = ["source" + str(random.randint(1, num_samples * 10)) for i in range(num_samples)]
         for i in range(num_samples):
@@ -78,9 +82,14 @@ class Reviewer():
         return self.__dict__
 
     @staticmethod
-    def create_samples(num_samples=10):
+    def create_samples(reviewers,num_samples=10,unique=False):
         samples = []
-        samples_reviewer = ["reviewer" + str(random.randint(1, num_samples * 10)) for i in range(num_samples)]
+        if len(reviewers)< num_samples:
+            num_samples = len(reviewers)
+        if unique:
+            samples_reviewer = random.sample(reviewers,num_samples)
+        else:
+            samples_reviewer = random.sample(reviewers *random.randint(1,10), num_samples)
         samples_score = [random.random() * num_samples for i in range(num_samples)]
         samples_source = ["source" + str(random.randint(1, num_samples * 10)) for i in range(num_samples)]
         for i in range(num_samples):
@@ -116,13 +125,13 @@ class PaperMetaData():
         return body
 
     @staticmethod
-    def create_samples(num_samples=10):
+    def create_samples(papers,reviewers,num_samples=10):
         samples = []
         sample_min_reviewers = [random.randint(1, num_samples * 10) for i in range(num_samples)]
         sample_max_reviewers = [random.randint(1, num_samples * 10) for i in range(num_samples)]
         sample_topics = ["topic" + str(random.randint(1, num_samples * 10)) for i in range(num_samples * 5)]
-        sample_papers = Paper.create_samples(num_samples * 5)
-        sample_reviewers = Reviewer.create_samples(num_samples * 5)
+        sample_papers = Paper.create_samples(papers,num_samples * 5)
+        sample_reviewers = Reviewer.create_samples(reviewers,num_samples * 5)
         for i in range(num_samples):
             samples.append(
                 PaperMetaData(sample_min_reviewers[i], sample_max_reviewers[i], sample_topics[5 * i:5 * i + 5],

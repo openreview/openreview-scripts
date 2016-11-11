@@ -1,9 +1,9 @@
 """
 UAI Conference constants
 """
-CONFERENCE_REVIEWERS = "UAI.org/2017/conference/reviewers"
+CONFERENCE_REVIEWERS = "UAI.org/2017/Reviewers"
 CONFERENCE_SUBMISSION = "UAI.org/2017/conference/-/submission"
-CONFERENCE ="UAI.org/2017/conference"
+CONFERENCE ="UAI.org/2017"
 CONFERENCE_PCS="UAI.org/2017/pcs"
 CONFERENCE_ACS="UAI.org/2017/acs"
 

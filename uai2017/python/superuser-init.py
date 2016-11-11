@@ -31,7 +31,7 @@ else:
 groups = []
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 def overwrite_allowed(groupid):
-    if type(openreview.get_group(groupid))!=Group or overwrite==True:
+    if not openreview.exists(groupid) or overwrite==True:
         return True
     else:
         return False
@@ -104,15 +104,7 @@ if openreview.user['id'].lower()=='openreview.net':
         groups.append(uai2017reviewersACsOrganizers)
 
 
-    # if overwrite_allowed('UAI.org/2017/workshop'):
-    #     uai2017workshop = Group('UAI.org/2017/workshop',
-    #         readers     = ['everyone'],
-    #         writers     = ['UAI.org/2017','UAI.org/2017/pcs'],
-    #         signatures  = ['UAI.org/2017'],
-    #         signatories = ['UAI.org/2017/workshop'],
-    #         members     = ['UAI.org/2017/pcs','UAI.org/2017/areachairs'],
-    #         web         = '../webfield/uai2017workshop_webfield.html')
-    #     groups.append(uai2017workshop)
+    #
 
 
     if overwrite_allowed('UAI.org/2017/pcs'):
@@ -155,12 +147,12 @@ if openreview.user['id'].lower()=='openreview.net':
         groups.append(uai2017reviewersemailed)
 
 
-    if overwrite_allowed('UAI.org/2017/conference/reviewers'):
-        uai2017reviewers = Group('UAI.org/2017/conference/reviewers',
+    if overwrite_allowed('UAI.org/2017/Reviewers'):
+        uai2017reviewers = Group('UAI.org/2017/Reviewers',
             readers=['everyone'],
-            writers=['UAI.org/2017/conference','UAI.org/2017/pcs'],
-            signatures=['UAI.org/2017/conference'],
-            signatories=['UAI.org/2017/conference/reviewers'],
+            writers=['UAI.org/2017/Reviewers','UAI.org/2017/pcs'],
+            signatures=['UAI.org/2017'],
+            signatories=['UAI.org/2017/Reviewers'],
             members=[])
         groups.append(uai2017reviewers)
 
@@ -170,7 +162,7 @@ if openreview.user['id'].lower()=='openreview.net':
             readers=['everyone'],
             writers=['UAI.org/2017/conference','UAI.org/2017/pcs'],
             signatures=['UAI.org/2017/conference'],
-            signatories=['UAI.org/2017/conference/reviewers'],
+            signatories=['UAI.org/2017/Reviewers'],
             members=[])
         groups.append(uai2017reviewersdeclined)
 
@@ -191,6 +183,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
 
     ## Create the submission invitation
+
     reply = {
         'forum': None,
         'replyto': None,
@@ -221,7 +214,7 @@ if openreview.user['id'].lower()=='openreview.net':
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                'values-regex': '.*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'TL;DR': {
@@ -265,14 +258,13 @@ if openreview.user['id'].lower()=='openreview.net':
 
             },
             'conflicts': {
-                'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
+                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
                 'order': 100,
-                'value-regex': '([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             }
         }
     }
-
     submission_reply=reply.copy()
 
     submission_invitation = Invitation( 'UAI.org/2017/conference',

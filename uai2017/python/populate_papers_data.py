@@ -27,14 +27,14 @@ else:
 
 def get_paper_names(notes):
     """
-    Getting paper name using the following logic: If note.number is NONE then use 0 as default else 'Paper' followed by its number
+    Getting paper name using the following logic: If note.number is NONE then throw an error else 'Paper' followed by its number
     :param notes:
     :return:
     """
     list_paper_name = []
     for note in notes:
         if (note.number is None):
-            list_paper_name.append("Paper0")
+            raise ValueError("No note number for note id : %s" %(note.id))
         else:
             list_paper_name.append("Paper" + str(note.number))
     return list_paper_name
@@ -72,10 +72,10 @@ def get_submitted_paper_details(submitted_paper_notes):
         paper_id = note.id
         paper_title = note.content["title"]
         paper_abstract = note.content["abstract"]
-        author_names= note.content["authors"]
-        author_emails = note.content["author_emails"]
+        author_names= ";".join(note.content["authors"])
+        author_emails = ";".join(note.content["authorids"])
         subject_areas = note.content["TL;DR"]
-        conflict_reasons = note.content["conflicts"]
+        conflict_reasons = ";".join(note.content["conflicts"])
         files = note.content["pdf"]
         supplementary_files=""
         related_submission=""
@@ -100,28 +100,39 @@ def get_paper_reviewer_score_tree(submitted_paper_notes,dict_reviewers_email):
         paper_id = submitted_paper_notes[index].id
         paper_element = etree.Element("submission",submissionId=str(paper_id))
         reviewers_score = {x["reviewer"]:x["score"] for x in meta_data_notes[index].content["reviewers"]}
-        for reviewer,email in dict_reviewers_email.iteritems():
+        for reviewer,data in dict_reviewers_email.iteritems():
             score = 0
             if reviewer in reviewers_score:
                 score=reviewers_score[reviewer]
-            paper_element.append(etree.Element("metareviewer",email = email,score=str(score)))
+            paper_element.append(etree.Element("metareviewer",email = data[3],score=str(score)))
         root.append(paper_element)
     return etree.ElementTree(root)
 
-def get_all_paper_reviewers(submitted_paper_notes):
+
+def get_all_member_ids():
+    members = filter(lambda id: id != "~Super_User1" and id != "~",
+                     map(lambda x: x.id, openreview.get_groups(regex="~.*")))
+    return  members
+
+
+
+def get_all_members_data():
     """
-    Get a dictionary of each reviewer with its email
-    :param submitted_paper_notes:
+    Get a dictionary of each member with its details
+    :param members:
     :return:
     """
-    meta_data_notes = get_paper_metadata_notes(get_paper_names(submitted_paper_notes))
-    reviewer_set=set()
-    for meta_data_note in meta_data_notes:
-        reviewer_set = reviewer_set.union(set([x["reviewer"] for x in meta_data_note.content["reviewers"]]))
-    dict_reviewers_email ={}
-    for reviewer in reviewer_set:
-        dict_reviewers_email[reviewer] = reviewer +"@gmail.com"
-    return dict_reviewers_email
+    members = get_all_member_ids()
+    dict_reviewer_data = {}
+    for member in members:
+        member_note = openreview.get_note(id=member)
+        member_first_name= member_note.content["first"]
+        member_last_name = member_note.content["last"]
+        member_email=member_note.content["institutions"][0]["email"]
+        member_organization = member_note.content["institutions"][0]["institution"]
+        member_url = openreview.baseurl +"/notes?id=" + member
+        dict_reviewer_data[member] = [member_first_name,member_last_name,member_organization,member_email,member,member_email]
+    return dict_reviewer_data
 
 
 if __name__ == '__main__':
@@ -135,9 +146,9 @@ if __name__ == '__main__':
         paper_details_file.write(",".join(paper_details) + "\n")
     paper_details_file.close()
     #Get all the reviewers data
-    dict_reviewers_email = get_all_paper_reviewers(submitted_paper_notes)
+    dict_reviewers_data = get_all_members_data()
     #Get paper score tree
-    paper_score_tree = get_paper_reviewer_score_tree(submitted_paper_notes,dict_reviewers_email)
+    paper_score_tree = get_paper_reviewer_score_tree(submitted_paper_notes,dict_reviewers_data)
     #Write paper score data to an xml file
     paper_score_file = open("1-tpms_score.xml","w+")
     paper_score_file.write(etree.tostring(paper_score_tree,pretty_print=True))
@@ -145,8 +156,8 @@ if __name__ == '__main__':
     #Write reviewers data to a file
     reviewer_data_file = open("2-reviewers.csv","w+")
     reviewer_data_file.write(",".join(["First Name","Last Name","Organization","Email","Reviewer","URL"])+ "\n")
-    for reviewer, email in dict_reviewers_email.iteritems():
-        reviewer_data=",".join(["First Name","Last Name","ORG",email,reviewer,"URL"]) + "\n"
+    for reviewer, data in dict_reviewers_data.iteritems():
+        reviewer_data=",".join(data) + "\n"
         reviewer_data_file.write(reviewer_data)
     reviewer_data_file.close()
 

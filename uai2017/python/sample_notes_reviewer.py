@@ -25,10 +25,44 @@ else:
     openreview = Client(baseurl=args.baseurl)
 
 
+def get_all_member_ids():
+    """
+    Get all the members ids registered
+    :return:
+    """
+    members = filter(lambda id: id != "~Super_User1" and id != "~",
+                     map(lambda x: x.id, openreview.get_groups(regex="~.*")))
+    return  members
+
+
+def get_notes_submitted_papers():
+    """
+    Get all the submitted papers
+    :return:
+    """
+    notes = openreview.get_notes(invitation=CONFERENCE_SUBMISSION)
+    return notes
+
+
+def get_paper_numbers(notes):
+    """
+    Getting paper number using the following logic: If note.number is NONE then throw an Error
+    :param notes:
+    :return:
+    """
+    list_paper_number = []
+    for note in notes:
+        if note.number is None:
+            raise ValueError("Incorrect note number")
+        else:
+            list_paper_number.append(note.number)
+    return list_paper_number
+
+
 def update_reviewers(members):
     """
     Update the members of the group
-    :param members:
+    :param: members
     :return:
     """
     reviewers = openreview.get_group(CONFERENCE_REVIEWERS)
@@ -45,7 +79,7 @@ def create_reviewer_metadata_note(reviewer_sample_meta):
     reviewers = openreview.get_group(CONFERENCE_REVIEWERS)
     members = reviewers.members
     reviewer_meta_invitation = Invitation(CONFERENCE_REVIEWERS,
-                                          'metadata', signatures=[CONFERENCE_REVIEWERS], readers=['everyone'],
+                                          'Metadata', signatures=[CONFERENCE_REVIEWERS], readers=['everyone'],
                                           writers=['everyone'], reply=INVITATION_REPLY)
     openreview.post_invitation(reviewer_meta_invitation)
     for member in members:
@@ -59,13 +93,17 @@ def get_reviewer_metadata_notes():
     Get all the reviewer meta data notes
     :return:
     """
-    notes = openreview.get_notes(invitation=CONFERENCE_REVIEWERS + "/-/metadata")
+    notes = openreview.get_notes(invitation=CONFERENCE_REVIEWERS + "/-/Metadata")
     return notes
+
 
 
 if __name__ == '__main__':
     if openreview.user['id'].lower() == 'openreview.net':
-        samples_reviewer_meta_data= ReviewerMeta.create_samples(3)
+        members=get_all_member_ids()
+        update_reviewers(members)
+        papers = get_paper_numbers(get_notes_submitted_papers())
+        samples_reviewer_meta_data= ReviewerMeta.create_samples(papers,members,3)
         for reviewer_meta_data in samples_reviewer_meta_data:
             create_reviewer_metadata_note(reviewer_sample_meta=reviewer_meta_data.to_dict())
         notes = get_reviewer_metadata_notes()

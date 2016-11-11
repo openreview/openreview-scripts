@@ -24,6 +24,13 @@ else:
     openreview = Client(baseurl=args.baseurl)
 
 
+def get_all_member_ids():
+    members = filter(lambda id: id != "~Super_User1" and id != "~",
+                     map(lambda x: x.id, openreview.get_groups(regex="~.*")))
+    return  members
+
+
+
 def get_notes_submitted_papers():
     """
     Get all the submitted papers
@@ -35,17 +42,32 @@ def get_notes_submitted_papers():
 
 def get_paper_names(notes):
     """
-    Getting paper name using the following logic: If note.number is NONE then use 0 as default else 'Paper' followed by its number
+    Getting paper name using the following logic: If note.number is NONE then throw an Error
     :param notes:
     :return:
     """
     list_paper_name = []
     for note in notes:
-        if (note.number is None):
-            list_paper_name.append("Paper0")
+        if note.number is None:
+            raise ValueError("Incorrect note number")
         else:
             list_paper_name.append("Paper" + str(note.number))
     return list_paper_name
+
+
+def get_paper_numbers(notes):
+    """
+    Getting paper number using the following logic: If note.number is NONE then throw an Error
+    :param notes:
+    :return:
+    """
+    list_paper_number = []
+    for note in notes:
+        if note.number is None:
+            raise ValueError("Incorrect note number")
+        else:
+            list_paper_number.append(note.number)
+    return list_paper_number
 
 
 def create_paper_groups(notes):
@@ -72,15 +94,17 @@ def create_paper_metadata_note(notes):
     :return:
     """
     paper_names = get_paper_names(notes)
+    papers = get_paper_numbers(notes)
+    reviewers = get_all_member_ids()
     for i in range(len(notes)):
         inviter = CONFERENCE + "/" + paper_names[i]
-        paper_meta_invitation = Invitation(inviter, 'matching', signatures=[CONFERENCE_PCS],
+        paper_meta_invitation = Invitation(inviter, 'Matching', signatures=[CONFERENCE_PCS],
                                            readers=['everyone'],
                                            writers=['everyone'], reply=INVITATION_REPLY)
         openreview.post_invitation(paper_meta_invitation)
         note = Note(invitation=paper_meta_invitation.id, cdate=int(time.time()) * 1000,
                     readers=[CONFERENCE_PCS, CONFERENCE_ACS],
-                    writers=['everyone'], content=PaperMetaData.create_samples(1)[0].to_dict(),
+                    writers=['everyone'], content=PaperMetaData.create_samples(papers,reviewers,1)[0].to_dict(),
                     signatures=[CONFERENCE])
         openreview.post_note(note)
 
@@ -111,7 +135,7 @@ def get_paper_metadata_notes(paper_names):
     Get all submitted paper meta data notes
     :return:
     """
-    notes = [openreview.get_notes(invitation=CONFERENCE + "/" + paper_name + "/-/matching")[0] for paper_name in
+    notes = [openreview.get_notes(invitation=CONFERENCE + "/" + paper_name + "/-/Matching")[0] for paper_name in
              paper_names]
     return notes
 
