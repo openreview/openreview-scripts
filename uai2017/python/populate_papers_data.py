@@ -131,7 +131,7 @@ def get_all_members_data():
         member_email=member_note.content["institutions"][0]["email"]
         member_organization = member_note.content["institutions"][0]["institution"]
         member_url = openreview.baseurl +"/notes?id=" + member
-        dict_reviewer_data[member] = [member_first_name,member_last_name,member_organization,member_email,member,member_email]
+        dict_reviewer_data[member] = [member_first_name,member_last_name,member_organization,member_email,member,member_url]
     return dict_reviewer_data
 
 
