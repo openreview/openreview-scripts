@@ -28,6 +28,7 @@ else:
 baseurl = client.baseurl
 
 submissions = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
+conference_areachairs = client.get_group('ICLR.cc/2017/areachairs')
 
 def single_assignment_valid(s):
     try:    
@@ -72,7 +73,6 @@ def get_areachair_group(areachair, paper_number, conflict_list):
     
     areachairs = client.get_group('ICLR.cc/2017/conference/paper'+paper_number+'/areachairs')
     existing_areachairs = areachairs.members
-    conference_areachairs = client.get_group('ICLR.cc/2017/areachairs')
 
     try:
         areachairgroup = client.get_group(areachair)
