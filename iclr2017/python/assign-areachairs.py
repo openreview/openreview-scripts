@@ -77,14 +77,20 @@ def get_areachair_group(areachair, paper_number, conflict_list):
     if not (areachair in conference_areachairs.members):
         openreview.add_members_to_group(conference_areachairs,areachair)
     
+    N=0
     for a in existing_areachairs:
+        
+        reviewer_number = int(r.split('AnonReviewer')[1])
+        if reviewer_number > N:
+            N = reviewer_number
+
         existing_areachair = openreview.get_group(a)
         if hasattr(existing_areachair,'members'):
             if areachair in existing_areachair.members:
                 print "areachair " + areachair + " found in " + existing_areachair.id
                 return existing_areachair
 
-    new_areachair_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachair'+str(len(existing_areachairs)+1)
+    new_areachair_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/areachair'+str(N+1)
     new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
     openreview.add_members_to_group(areachairs,new_areachair_id)
     return new_areachair
