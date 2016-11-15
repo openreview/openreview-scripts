@@ -40,8 +40,8 @@ if args.paper_number!=None:
         for rev in reviewers.members:
             reviewer_wrapper=openreview.get_group(rev)
             reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
-            pad = '{:32s}'.format("["+str(reviewer_wrapper.members[0])+"] ")
-            message.append(pad+"reviewer"+reviewerNumber+" ("+rev+")")
+            pad = '{:32s}'.format(reviewer_wrapper.members[0].encode('utf-8'))
+            message.append(pad+("reviewer"+reviewerNumber+" ("+str(rev)+")").encode('utf-8'))
         message.sort()
         print 'Reviewers assigned to paper '+args.paper_number+':'
         for m in message:
