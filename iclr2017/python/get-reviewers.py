@@ -63,35 +63,5 @@ if args.user!=None:
         reviewerNumber = g.id.split('paper')[1].split('/AnonReviewer')[1]
         print "["+str(notesMap[str(paperNumber)])+"] reviewer"+str(reviewerNumber)+" ("+g.id+")"
 
-if args.user==None and args.paper_number==None:
-    notes = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
-
-    rows = []
-    for note in notes:
-        try:
-            reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
-            print "finding reviewers for paper "+str(note.number)
-            if hasattr(reviewers,'members'):
-                message = '{:15s}'.format("Paper "+'{:3s}'.format(str(note.number))+" ["+str(note.forum)+"] ")
-                for rev in reviewers.members:
-                    reviewer_wrapper = openreview.get_group(rev)
-                    reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
-                    if hasattr(reviewer_wrapper,'members'):
-                        members = reviewer_wrapper.members[0] if len(reviewer_wrapper.members)>0 else ''
-                        reviewer_members_pad = '{:32s}'.format(members.encode('utf-8').strip())
-                    else:
-                        reviewer_members_pad = '{:32s}'.format("[CONFLICT]")
-                    message+=(reviewer_members_pad)
-                rows.append((message,int(note.number)))
-
-        except IndexError as e:
-            print "Error on Paper ",note.number,e
-            continue
-        except AttributeError as e:
-            print "Error on Paper ",note.number,e
-            continue
-    # rows.sort(sortByPaperNumber)
-    for m in sorted(rows, key=lambda row: row[1]) :
-        print m[0]
 
 
