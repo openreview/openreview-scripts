@@ -28,40 +28,48 @@ else:
     openreview = Client(baseurl=args.baseurl)
 baseurl = openreview.baseurl
 
-submissions = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
-notes = [note for note in submissions if str(note.number)==str(args.paper_number)]
 
-if args.paper_number!=None:
+if args.paper_number != None:
+
+    paper_number = args.paper_number
+    notes = openreview.get_notes(invitation = 'ICLR.cc/2017/conference/-/submission', number = paper_number)
     
-    try:
+    if len(notes) > 0: 
         note = notes[0]
         message = []
-        reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
+        reviewers = openreview.get_group('ICLR.cc/2017/conference/paper' + str(note.number) + '/reviewers');
         for rev in reviewers.members:
             reviewer_wrapper=openreview.get_group(rev)
-            reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
-            pad = '{:32s}'.format(reviewer_wrapper.members[0].encode('utf-8'))
-            message.append(pad+("reviewer"+reviewerNumber+" ("+str(rev)+")").encode('utf-8'))
+
+            if len(reviewer_wrapper.members) > 0:
+                reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
+                pad = '{:32s}'.format(reviewer_wrapper.members[0].encode('utf-8'))
+                message.append(pad+("reviewer"+reviewerNumber+" ("+str(rev)+")").encode('utf-8'))
+            else:
+                print "Reviewer group has no members", reviewer_wrapper.id
         message.sort()
-        print 'Reviewers assigned to paper '+args.paper_number+':'
+        
+        print 'Reviewers assigned to paper '+paper_number+':'
         for m in message:
             print m
-    except IndexError:
-        print "Reviewer assignments not found. This submission may not yet have reviewers assigned to it."
+    else:
+        print "Paper number not found", paper_number
 
-if args.user!=None:
+if args.user != None:
+
     user = args.user
-    groups = openreview.get_groups(member=user,regex='ICLR.cc/2017/conference/paper[0-9]+/AnonReviewer[0-9]+')
-    notes = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
-    notesMap = {}
-    for n in notes:
-        notesMap[str(n.number)]=n.forum
-
-    print 'Papers assigned to reviewer '+user+":"
-    for g in groups:
-        paperNumber = g.id.split('paper')[1].split('/AnonReviewer')[0]
-        reviewerNumber = g.id.split('paper')[1].split('/AnonReviewer')[1]
-        print "["+str(notesMap[str(paperNumber)])+"] reviewer"+str(reviewerNumber)+" ("+g.id+")"
+    try:
+        reviewers = openreview.get_groups(member = user, regex = 'ICLR.cc/2017/conference/paper[0-9]+/reviewers')
+    
+        if len(reviewers):
+            print 'Papers assigned to reviewer ' + user + ":"
+            for reviewer in reviewers:
+                paperNumber = reviewer.id.split('paper')[1].split('/reviewers')[0]
+                print "[" + str(paperNumber) + "] reviewer " + str(user) + " (" + reviewer.id + ")"
+        else:
+            print "No paper assigned to reviewer", user
+    except Exception as ex:
+        print "Can not the groups for", user
 
 
 
