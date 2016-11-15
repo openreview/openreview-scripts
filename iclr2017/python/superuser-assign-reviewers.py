@@ -119,14 +119,20 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
         member=reviewer
         tilde_found = False
 
+    N=0
     for r in existing_reviewers:
         existing_reviewer = client.get_group(r)
+
+        reviewer_number = int(r.split('AnonReviewer')[1])
+        if reviewer_number > N:
+            N = reviewer_number
+
         if hasattr(existing_reviewer,'members'):
             if member in existing_reviewer.members:
                 print "Reviewer " + member + " found in " + existing_reviewer.id
                 return existing_reviewer,invited,tilde_found
     
-    new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/AnonReviewer'+str(len(existing_reviewers)+1)
+    new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/AnonReviewer'+str(N+1)
     new_reviewer = create_reviewer_group(new_reviewer_id, member, paper_number, conflict_list)
     client.add_members_to_group(reviewers,new_reviewer_id)
     client.add_members_to_group(client.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)

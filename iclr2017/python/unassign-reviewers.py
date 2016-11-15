@@ -21,18 +21,18 @@ baseurl = openreview.baseurl
 
 def unassign_reviewer(member, paper_number):
 
-	reviewers_id = 'ICLR.cc/2017/conference/paper' + str(paper_number)+ '/reviewers'
-	reviewers = openreview.get_group(reviewers_id)
-	if reviewers:
-		result = openreview.get_groups(member= member, regex = 'ICLR.cc/2017/conference/paper' + str(paper_number) + '/AnonReviewer[1-9]*')
-		if result and len(result) > 0:
-			reviewer = result[0]
-			res = openreview.remove_members_from_group(reviewers, [reviewer.id])
-			print "Member", member, "removed from", reviewers.id
-		else:
-			print "Member not found in the assingment", member
-	else:
-		print "Reviewers group not found", reviewers_id
+    reviewers_id = 'ICLR.cc/2017/conference/paper' + str(paper_number)+ '/reviewers'
+    reviewers = openreview.get_group(reviewers_id)
+    if reviewers:
+        result = openreview.get_groups(member= member, regex = 'ICLR.cc/2017/conference/paper' + str(paper_number) + '/AnonReviewer[1-9]*')
+        if result and len(result) > 0:
+            reviewer = result[0]
+            res = openreview.remove_members_from_group(reviewers, [reviewer.id])
+            print "Member", member, "removed from", reviewers.id
+        else:
+            print "Member not found in the assignment", member
+    else:
+        print "Reviewers group not found", reviewers_id
 
 if args.assignments.endswith('.csv'):   
     with open(args.assignments, 'rb') as csvfile:
