@@ -16,6 +16,7 @@ from openreview import *
 parser = argparse.ArgumentParser()
 parser.add_argument('-n', '--paper_number', help="the number of the paper to assign this reviewer to")
 parser.add_argument('-u', '--user',help="the user whose reviewing assignments you would like to see")
+parser.add_argument('-a', '--all',help="specify an output file to save all the reviewer assignments")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -71,5 +72,31 @@ if args.user != None:
     except Exception as ex:
         print "Can not the groups for", user
 
+
+if args.all != None:
+
+    with open(args.all, 'wb') as outfile:
+
+        csvwriter = csv.writer(outfile, delimiter=',')
+        
+        reviewers = openreview.get_group('ICLR.cc/2017/conference/reviewers');
+
+        for reviewer in reviewers.members:
+
+            assignments = openreview.get_groups(member = reviewer, regex = 'ICLR.cc/2017/conference/paper[0-9]+/reviewers')
+
+            if len(assignments) > 0 :
+
+                for a in assignments:
+                    row = []
+                    paper_number = a.id.split('paper')[1].split('/reviewers')[0]
+                    row.append(reviewer)
+                    row.append(paper_number)
+                    csvwriter.writerow(row)
+            else:
+                row = []
+                row.append(reviewer)
+                row.append('')
+                csvwriter.writerow(row)                
 
 
