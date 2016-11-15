@@ -40,10 +40,8 @@ if args.paper_number!=None:
         for rev in reviewers.members:
             reviewer_wrapper=openreview.get_group(rev)
             reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
-            
             pad = '{:32s}'.format("["+str(reviewer_wrapper.members[0])+"] ")
             message.append(pad+"reviewer"+reviewerNumber+" ("+rev+")")
-
         message.sort()
         print 'Reviewers assigned to paper '+args.paper_number+':'
         for m in message:
@@ -72,6 +70,7 @@ if args.user==None and args.paper_number==None:
     for note in notes:
         try:
             reviewers = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/reviewers');
+            print "finding reviewers for paper "+str(note.number)
             if hasattr(reviewers,'members'):
                 message = '{:15s}'.format("Paper "+'{:3s}'.format(str(note.number))+" ["+str(note.forum)+"] ")
                 for rev in reviewers.members:
@@ -79,7 +78,7 @@ if args.user==None and args.paper_number==None:
                     reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
                     if hasattr(reviewer_wrapper,'members'):
                         members = reviewer_wrapper.members[0] if len(reviewer_wrapper.members)>0 else ''
-                        reviewer_members_pad = '{:32s}'.format(str(members))
+                        reviewer_members_pad = '{:32s}'.format(members.encode('utf-8').strip())
                     else:
                         reviewer_members_pad = '{:32s}'.format("[CONFLICT]")
                     message+=(reviewer_members_pad)
