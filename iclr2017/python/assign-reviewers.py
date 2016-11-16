@@ -48,7 +48,14 @@ def single_assignment_valid(s):
 
 def assign_reviewer(reviewer,paper_number):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
-    if notes:
+    
+    valid_email = re.compile('^[^@\s,]+@[^@\s,]+\.[^@\s,]+$')
+
+    if not notes:
+        print "Paper number " + paper_number + " does not exist" 
+    elif not valid_email.match(reviewer):
+        print "Reviewer \""+reviewer+"\" invalid. Please check for typos and whitespace."
+    else:
         conflicts = [note.content['conflicts'] for note in notes]
         conflict_list = []
         if conflicts:
@@ -62,8 +69,6 @@ def assign_reviewer(reviewer,paper_number):
         reviewer_group_id = str(reviewer_group.id)
         preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
         print "Assigned reviewer", reviewer_group_id, "to invitation ", preview_question_invitation
-    else:
-        print "Paper number " + paper_number + " does not exist" 
 
 
 def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list):
@@ -99,13 +104,22 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
     if not (reviewer in conference_reviewers.members):
         openreview.add_members_to_group(conference_reviewers,reviewer)
     
+    N = 0;
     for r in existing_reviewers:
         existing_reviewer = openreview.get_group(r)
+
+        reviewer_number = int(r.split('AnonReviewer')[1])
+        if reviewer_number > N:
+            N = reviewer_number
+
         if hasattr(existing_reviewer,'members'):
             if reviewer in existing_reviewer.members:
                 print "Reviewer " + reviewer + " found in " + existing_reviewer.id
                 return existing_reviewer
-    new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/AnonReviewer'+str(len(existing_reviewers)+1)
+
+    new_reviewer_id = 'ICLR.cc/2017/conference/paper'+str(paper_number)+'/AnonReviewer'+str(N+1)
+
+
     new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
     openreview.add_members_to_group(reviewers,new_reviewer_id)
     openreview.add_members_to_group(openreview.get_group('ICLR.cc/2017/conference/paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)
