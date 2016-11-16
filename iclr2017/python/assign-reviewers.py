@@ -48,7 +48,14 @@ def single_assignment_valid(s):
 
 def assign_reviewer(reviewer,paper_number):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
-    if notes:
+    
+    valid_email = re.compile('^[^@\s,]+@[^@\s,]+\.[^@\s,]+$')
+
+    if not notes:
+        print "Paper number " + paper_number + " does not exist" 
+    elif not valid_email.match(reviewer):
+        print "Reviewer \""+reviewer+"\" invalid. Please check for typos and whitespace."
+    else:
         conflicts = [note.content['conflicts'] for note in notes]
         conflict_list = []
         if conflicts:
@@ -62,8 +69,6 @@ def assign_reviewer(reviewer,paper_number):
         reviewer_group_id = str(reviewer_group.id)
         preview_question_invitation = 'ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/pre-review/question'
         print "Assigned reviewer", reviewer_group_id, "to invitation ", preview_question_invitation
-    else:
-        print "Paper number " + paper_number + " does not exist" 
 
 
 def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list):

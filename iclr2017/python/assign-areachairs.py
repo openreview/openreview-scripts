@@ -48,7 +48,13 @@ def single_assignment_valid(s):
 
 def assign_areachair(areachair,paper_number):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
-    if notes:
+    valid_email = re.compile('^[^@\s,]+@[^@\s,]+\.[^@\s,]+$')
+
+    if not notes:
+        print "Paper number " + paper_number + " does not exist" 
+    elif not valid_email.match(areachair):
+        print "Area chair \""+areachair+"\" invalid. Please check for typos and whitespace."
+    else:
         conflicts = [note.content['conflicts'] for note in notes]
         conflict_list = []
         if conflicts:
@@ -63,8 +69,6 @@ def assign_areachair(areachair,paper_number):
 
         openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(areachair_group_id))
         openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(areachair_group_id))
-    else:
-        print "Paper number " + paper_number + " does not exist" 
 
 
 
