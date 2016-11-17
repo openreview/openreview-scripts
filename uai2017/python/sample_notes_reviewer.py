@@ -2,6 +2,7 @@ import argparse
 from openreview import *
 import sys, os
 import time
+import utils
 
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
 print sys.path
@@ -25,69 +26,6 @@ else:
     openreview = Client(baseurl=args.baseurl)
 
 
-def get_all_member_ids():
-    """
-    Get all the members ids registered
-    :return:
-    """
-    members = filter(lambda id: id != "~Super_User1" and id != "~",
-                     map(lambda x: x.id, openreview.get_groups(regex="~.*")))
-    return  members
-
-
-def get_notes_submitted_papers():
-    """
-    Get all the submitted papers
-    :return:
-    """
-    notes = openreview.get_notes(invitation=CONFERENCE_SUBMISSION)
-    return notes
-
-
-def get_paper_numbers(notes):
-    """
-    Getting paper number using the following logic: If note.number is NONE then throw an Error
-    :param notes:
-    :return:
-    """
-    list_paper_number = []
-    for note in notes:
-        if note.number is None:
-            raise ValueError("Incorrect note number")
-        else:
-            list_paper_number.append(note.number)
-    return list_paper_number
-
-
-def update_reviewers(members):
-    """
-    Update the members of the group
-    :param: members
-    :return:
-    """
-    reviewers = openreview.get_group(CONFERENCE_REVIEWERS)
-    reviewers.members = members
-    openreview.post_group(reviewers)
-
-
-def create_reviewer_metadata_note(reviewer_sample_meta):
-    """
-    Create a new invitation and supporting note for the reviewer meta data
-    :param reviewer_sample_meta:
-    :return:
-    """
-    reviewers = openreview.get_group(CONFERENCE_REVIEWERS)
-    members = reviewers.members
-    reviewer_meta_invitation = Invitation(CONFERENCE_REVIEWERS,
-                                          'Metadata', signatures=[CONFERENCE_REVIEWERS], readers=['everyone'],
-                                          writers=['everyone'], reply=INVITATION_REPLY)
-    openreview.post_invitation(reviewer_meta_invitation)
-    for member in members:
-        note = Note(invitation=reviewer_meta_invitation.id, cdate=int(time.time()) * 1000, readers=['everyone'],
-                    writers=['everyone'], content=reviewer_sample_meta, signatures=reviewer_meta_invitation.signatures)
-        openreview.post_note(note)
-
-
 def create_reviewer_data_notes(samples_reviewer_data):
     """
     Create a new invitation and supporting note for the reviewer data
@@ -95,7 +33,7 @@ def create_reviewer_data_notes(samples_reviewer_data):
     :return:
     """
     reviewer_invitation = Invitation(CONFERENCE,
-                                          'Reviewer', signatures=[CONFERENCE], readers=['everyone'],
+                                          'reviewer', signatures=[CONFERENCE], readers=['everyone'],
                                           writers=['everyone'], reply=INVITATION_REPLY)
     openreview.post_invitation(reviewer_invitation)
     for reviewer_data in samples_reviewer_data:
@@ -104,42 +42,19 @@ def create_reviewer_data_notes(samples_reviewer_data):
         openreview.post_note(note)
 
 
-def get_reviewer_metadata_notes():
-    """
-    Get all the reviewer meta data notes
-    :return:
-    """
-    notes = openreview.get_notes(invitation=CONFERENCE_REVIEWERS + "/-/Metadata")
-    return notes
-
-
-
-def get_reviewer_data_notes():
-    """
-    Get all the reviewer meta data notes
-    :return:
-    """
-    notes = openreview.get_notes(invitation=CONFERENCE + "/-/Reviewer")
-    return notes
-
 
 if __name__ == '__main__':
     if openreview.user['id'].lower() == 'openreview.net':
-        members=get_all_member_ids()
-        update_reviewers(members)
-        papers = get_paper_numbers(get_notes_submitted_papers())
-        samples_reviewer_meta_data= ReviewerMeta.create_samples(papers,members,3)
+        #Manually updating the reviewers data
+        members=utils.get_all_member_ids(openreview)
+        utils.update_reviewers(openreview,CONFERENCE_REVIEWERS,members)
+        papers = utils.get_paper_numbers(utils.get_notes_submitted_papers(openreview,CONFERENCE_SUBMISSION))
         samples_reviewer_data = ReviewerData.create_samples(papers,members,3)
-        for reviewer_meta_data in samples_reviewer_meta_data:
-            create_reviewer_metadata_note(reviewer_sample_meta=reviewer_meta_data.to_dict())
         #Creating reviewer note for each reviewer
-        create_reviewer_data_notes(samples_reviewer_data)
-        notes = get_reviewer_metadata_notes()
+        #create_reviewer_data_notes(samples_reviewer_data)
+        notes = utils.get_reviewer_data_notes(openreview,CONFERENCE)
         for note in notes:
             print json.dumps(note.content)
-        notes = get_reviewer_data_notes()
-        for note in notes:
-            print json.dumps(note.content)
-
+        utils.get_paper_reviewer_weights(openreview,CONFERENCE,CONFERENCE_REVIEWERS,CONFERENCE_SUBMISSION)
     else:
         print "Aborted. User must be Super User."
