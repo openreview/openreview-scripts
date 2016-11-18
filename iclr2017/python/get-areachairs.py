@@ -34,7 +34,7 @@ notes = [note for note in submissions if str(note.number)==str(args.paper_number
 
 if args.paper_number!=None:
     
-    try:
+    if notes:
         note = notes[0]
         message = []
         areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/areachairs');
@@ -42,15 +42,18 @@ if args.paper_number!=None:
             areachair_wrapper=openreview.get_group(ac)
             areachairNumber = ac.split('paper')[1].split('/areachair')[1]
             
-            pad = '{:40s}'.format("["+str(areachair_wrapper.members[0])+"] ")
-            message.append(pad+"areachair"+areachairNumber+" ("+ac+")")
+            if areachair_wrapper.members:
+                pad = '{:40s}'.format("["+str(areachair_wrapper.members[0])+"] ")
+                message.append(pad+"areachair"+areachairNumber+" ("+ac+")")
+            else:
+                print "Warning: Empty area chair group found. ID",areachair_wrapper.id
 
         message.sort()
         print 'Areachairs assigned to paper '+args.paper_number+':'
         for m in message:
             print m
-    except IndexError:
-        print "Areachair assignments not found. This submission may not yet have areachairs assigned to it."
+    else:
+        print "Note number ",args.paper_number,"not found."
 
 if args.user!=None:
     user = args.user
@@ -71,9 +74,11 @@ if args.user==None and args.paper_number==None:
 
     rows = []
     for note in notes:
-        try:
-            areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/areachairs');
-            if hasattr(areachairs,'members'):
+
+        areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/areachairs');
+
+        if areachairs:
+            if areachairs.members:
                 message = '{:15s}'.format("Paper "+str(note.number)+" ["+str(note.forum)+"] ")
                 for ac in areachairs.members:
                     areachair_wrapper = openreview.get_group(ac)
@@ -86,12 +91,6 @@ if args.user==None and args.paper_number==None:
                     message+=(reviewer_members_pad)
                 rows.append(message)
 
-        except IndexError as e:
-            print "Error on Paper ",note.number,e
-            continue
-        except AttributeError as e:
-            print "Error on Paper ",note.number,e
-            continue
     rows.sort()
     for m in rows:
         print m
