@@ -83,8 +83,8 @@ def get_areachair_group(areachair, paper_number, conflict_list):
     
     N=0
     for a in existing_areachairs:
-        
-        reviewer_number = int(r.split('AnonReviewer')[1])
+
+        reviewer_number = int(a.split('areachair')[1])
         if reviewer_number > N:
             N = reviewer_number
 
