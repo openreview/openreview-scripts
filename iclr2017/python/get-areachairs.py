@@ -16,6 +16,7 @@ from openreview import *
 parser = argparse.ArgumentParser()
 parser.add_argument('-n', '--paper_number', help="the id of the paper to assign this areachair to")
 parser.add_argument('-u', '--user',help="the user whose areachair assignments you would like to see")
+parser.add_argument('-a','--all')
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -69,30 +70,31 @@ if args.user!=None:
         areachairNumber = g.id.split('paper')[1].split('/areachair')[1]
         print "["+str(notesMap[str(paperNumber)])+"] areachair"+str(areachairNumber)+" ("+g.id+")"
 
-if args.user==None and args.paper_number==None:
-    notes = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 
-    rows = []
-    for note in notes:
+if args.all != None:
 
-        areachairs = openreview.get_group('ICLR.cc/2017/conference/paper'+str(note.number)+'/areachairs');
+    with open(args.all, 'wb') as outfile:
 
-        if areachairs:
-            if areachairs.members:
-                message = '{:15s}'.format("Paper "+str(note.number)+" ["+str(note.forum)+"] ")
-                for ac in areachairs.members:
-                    areachair_wrapper = openreview.get_group(ac)
-                    areachairNumber = ac.split('paper')[1].split('/areachair')[1]
-                    if hasattr(areachair_wrapper,'members'):
-                        members = areachair_wrapper.members[0] if len(areachair_wrapper.members)>0 else ''
-                        reviewer_members_pad = '{:40s}'.format(str(members))
-                    else:
-                        reviewer_members_pad = '{:40s}'.format("[CONFLICT]")
-                    message+=(reviewer_members_pad)
-                rows.append(message)
+        csvwriter = csv.writer(outfile, delimiter=',')
+        
+        areachairs = openreview.get_group('ICLR.cc/2017/areachairs');
 
-    rows.sort()
-    for m in rows:
-        print m
+        for areachair in areachairs.members:
+
+            assignments = openreview.get_groups(member = areachair, regex = 'ICLR.cc/2017/conference/paper[0-9]+/areachairs')
+
+            if len(assignments) > 0 :
+
+                for a in assignments:
+                    row = []
+                    paper_number = a.id.split('paper')[1].split('/areachairs')[0]
+                    row.append(areachair)
+                    row.append(paper_number)
+                    csvwriter.writerow(row)
+            else:
+                row = []
+                row.append(areachair)
+                row.append('')
+                csvwriter.writerow(row)                
 
 
