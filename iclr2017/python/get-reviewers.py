@@ -40,7 +40,14 @@ if args.paper_number != None:
         message = []
         reviewers = openreview.get_group('ICLR.cc/2017/conference/paper' + str(note.number) + '/reviewers');
         for rev in reviewers.members:
-            reviewer_wrapper=openreview.get_group(rev)
+            try:
+                reviewer_wrapper=openreview.get_group(rev)
+            except OpenReviewException as e:
+                if "u'type': u'forbidden'" in e[0]:
+                    print "Error: Forbidden. Conflict of interest with user "+openreview.user['id']
+                    break
+                else:
+                    raise e 
 
             if len(reviewer_wrapper.members) > 0:
                 reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
@@ -50,20 +57,20 @@ if args.paper_number != None:
                 print "Reviewer group has no members", reviewer_wrapper.id
         message.sort()
         
-        print 'Reviewers assigned to paper '+paper_number+':'
         for m in message:
             print m
     else:
         print "Paper number not found", paper_number
 
 if args.user != None:
+    print "\n**WARNING: conflicts of interest of " + openreview.user['id']+ " are not shown.**\n"
 
     user = args.user
     try:
         reviewers = openreview.get_groups(member = user, regex = 'ICLR.cc/2017/conference/paper[0-9]+/reviewers')
     
         if len(reviewers):
-            print 'Papers assigned to reviewer ' + user + ":"
+            print 'Papers assigned to reviewer ' + user + " (excluding conflicts of interest):"
             for reviewer in reviewers:
                 paperNumber = reviewer.id.split('paper')[1].split('/reviewers')[0]
                 print "[" + str(paperNumber) + "] reviewer " + str(user) + " (" + reviewer.id + ")"
