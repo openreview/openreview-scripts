@@ -148,7 +148,7 @@
             })[0];
             
             var paperTitle = $('<a>',{href: "/forum?id="+paper.forum, html: paper.content.title});
-            var paperAuthors = $('<span>',{html:'<b>Authors:</b> '}).append($('<span>',{text: paper.content.authors}));
+            var paperAuthors = $('<span>',{html:'<b>Authors:</b> '}).append($('<span>',{text: paper.content.authors.join(', ')}));
             var paperNumber = $('<span>',{html: '<b>Paper: </b>'}).append($('<span>',{text: paper.number}));
             var paperContent = $('<span>',{html: '<b>TL;DR: </b>'}).append($('<span>',{text:paper.content['TL;DR']}));
 
