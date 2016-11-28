@@ -49,9 +49,10 @@
           var $reviewers = $('<div>',{html:'<b>Reviewers:</b>\n'});
           
           _.forEach(reviewerGroup.members, function(reviewer){
+            var reviewerId_components = reviewer.split('/')
             var reviewerId = reviewer.split('/')[3]+reviewer.split('/')[4]
 
-            $reviewers.append($('<span>',{id: reviewerId, html:reviewer.split('/')[4]}))
+            $reviewers.append($('<span>',{id: reviewerId_components[3]+reviewerId_components[4], html:"(R"+reviewerId_components[4].split('AnonReviewer')[1]+") "}))
             $reviewers.append('\n')
 
           });
@@ -147,7 +148,7 @@
             })[0];
             
             var paperTitle = $('<a>',{href: "/forum?id="+paper.forum, html: paper.content.title});
-            var paperAuthors = $('<span>',{html:'<b>Authors:</b> '}).append($('<span>',{text: paper.content.authors}));
+            var paperAuthors = $('<span>',{html:'<b>Authors:</b> '}).append($('<span>',{text: paper.content.authors.join(', ')}));
             var paperNumber = $('<span>',{html: '<b>Paper: </b>'}).append($('<span>',{text: paper.number}));
             var paperContent = $('<span>',{html: '<b>TL;DR: </b>'}).append($('<span>',{text:paper.content['TL;DR']}));
 
@@ -158,7 +159,17 @@
 
             var promises = []
             _.forEach(reviewerGroup.members, function(reviewer){            
-              var reviewersP = httpGetP('groups',{id:reviewer});
+              var reviewersP = httpGetP('groups',{id:reviewer}).then(function(result){
+
+                var groups = result.groups[0]
+                if(groups.members.length > 0 && groups.members[0].match(/~.*/)){
+                  return httpGetP('user/profile',{id:groups.members[0]}).then(function(emails){
+                    return [groups,emails];
+                  })
+                } else {
+                  return [groups, null];
+                }
+              });
               promises.push(reviewersP);
             })
 
@@ -168,12 +179,22 @@
                 var rowData = [paperSummary, reviewProgress, paperStatus];
                 appendRowData($table,rowData);
                 _.forEach(promise_arguments,function(arg){
-                  var result = arg.groups[0]
-                  var reviewerId = result.id.split('/')[3]+result.id.split('/')[4]
+                  
+                  var groupsResult = arg[0];
+                  var preferred_email = arg[1] ? arg[1].profile.content.preferred_email : null;
+
+                  var groupsResult_components = groupsResult.id.split('/')
+                  var reviewerId = groupsResult_components[3]+groupsResult_components[4];
 
                   $('#'+reviewerId).append(
-                    $('<span>',{html: " ("+view.prettyId(result.members[0])+")"})
+                    $('<span>',{html: view.prettyId(groupsResult.members[0])})
                   );
+
+                  if(preferred_email){
+                    $('#'+reviewerId).append(
+                      $('<span>',{html: " ("+preferred_email+")"})
+                    );
+                  }
                   
                 })
               });
@@ -193,7 +214,7 @@
         var user = pl.user;
         var userAreachairGroupsP = httpGetP('groups', {member: user.id, regex:'ICLR.cc/2017/conference/paper.*/areachair.*'}).then(
           function(result){
-            console.log('result of areachair group get',result);
+
             var groups = result.groups;
             var filtered_matches = _.filter(groups, function(g){
               return _.has(g,'id') && g.id.match(/ICLR\.cc\/2017\/conference\/paper[0-9]+\/areachair[0-9]+/gi);
