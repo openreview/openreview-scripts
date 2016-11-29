@@ -269,7 +269,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['UAI.org/2017/pcs'],
         reply=submission_reply,
-        duedate=1478380500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        duedate=1578380500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         process='../process/submissionProcess_uai2017.js')
 
     ## Create 'request for availability to review' invitation
