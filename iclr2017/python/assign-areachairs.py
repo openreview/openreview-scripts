@@ -67,8 +67,6 @@ def assign_areachair(areachair,paper_number):
         areachair_group = get_areachair_group(areachair, paper_number, conflict_list)
         areachair_group_id = str(areachair_group.id)
 
-        openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/review').add_noninvitee(areachair_group_id))
-        openreview.post_invitation(openreview.get_invitation('ICLR.cc/2017/conference/-/paper'+str(paper_number)+'/public/comment').add_noninvitee(areachair_group_id))
 
 
 
@@ -83,8 +81,8 @@ def get_areachair_group(areachair, paper_number, conflict_list):
     
     N=0
     for a in existing_areachairs:
-        
-        reviewer_number = int(r.split('AnonReviewer')[1])
+
+        reviewer_number = int(a.split('areachair')[1])
         if reviewer_number > N:
             N = reviewer_number
 
