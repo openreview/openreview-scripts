@@ -51,10 +51,9 @@ if __name__ == '__main__':
         papers = utils.get_paper_numbers(utils.get_notes_submitted_papers(openreview,CONFERENCE_SUBMISSION))
         samples_reviewer_data = ReviewerData.create_samples(papers,members,3)
         #Creating reviewer note for each reviewer
-        #create_reviewer_data_notes(samples_reviewer_data)
+        create_reviewer_data_notes(samples_reviewer_data)
         notes = utils.get_reviewer_data_notes(openreview,CONFERENCE)
         for note in notes:
             print json.dumps(note.content)
-        utils.get_paper_reviewer_weights(openreview,CONFERENCE,CONFERENCE_REVIEWERS,CONFERENCE_SUBMISSION)
     else:
         print "Aborted. User must be Super User."

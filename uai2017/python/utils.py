@@ -1,11 +1,9 @@
-from openreview import *
-import numpy as np
 import sys
+
+from openreview import *
+
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
-from note_content import *
-from constants import *
 sys.path.append(os.path.join(os.getcwd(), "../../matching"))
-from TotAffMatcher import *
 
 
 def get_all_member_ids(openreview_client):
@@ -18,7 +16,7 @@ def get_all_member_ids(openreview_client):
     return members
 
 
-def get_notes_submitted_papers(openreview_client,invitation_id):
+def get_notes_submitted_papers(openreview_client, invitation_id):
     """
     Get all the submitted papers
     :return:
@@ -27,7 +25,7 @@ def get_notes_submitted_papers(openreview_client,invitation_id):
     return notes
 
 
-def update_reviewers(openreview_client,conference_reviewer_group,members):
+def update_reviewers(openreview_client, conference_reviewer_group, members):
     """
     Update the members of the group
     :param: members
@@ -38,7 +36,7 @@ def update_reviewers(openreview_client,conference_reviewer_group,members):
     openreview_client.post_group(reviewers)
 
 
-def get_all_reviewers(openreview_client,conference_reviewer_group):
+def get_all_reviewers(openreview_client, conference_reviewer_group):
     """
 
     :param openreview_client:
@@ -47,6 +45,7 @@ def get_all_reviewers(openreview_client,conference_reviewer_group):
     """
     reviewers = openreview_client.get_group(conference_reviewer_group)
     return reviewers.members
+
 
 def get_paper_names(notes):
     """
@@ -78,7 +77,7 @@ def get_paper_numbers(notes):
     return list_paper_number
 
 
-def get_paper_metadata_notes(openreview_client,conference):
+def get_paper_metadata_notes(openreview_client, conference):
     """
     Get all submitted paper meta data notes
     :return:
@@ -87,42 +86,49 @@ def get_paper_metadata_notes(openreview_client,conference):
     return notes
 
 
-def get_paper_reviewers_dict(openreview_client,conference):
+def get_paper_reviewers_dict(openreview_client, conference):
     """
     Get the set of reviewers for each paper
     :param openreview_client:
     :param conference:
     :return:
     """
-    notes = openreview_client.get_notes(invitation=conference+ "/-/matching")
-    output_dict={}
+    notes = openreview_client.get_notes(invitation=conference + "/-/matching")
+    output_dict = {}
     for note in notes:
         for reviewer_info in note.content["reviewers"]:
             if note.forum not in output_dict:
-                output_dict[note.forum] =set()
+                output_dict[note.forum] = set()
             output_dict[note.forum].add(reviewer_info["reviewer"])
     return output_dict
 
 
-def get_paper_reviewers_score(openreview_client,conference):
+def get_paper_reviewers_score(openreview_client, conference, paper_number_id_dict):
     """
-    Get an dictionary of paper reviewer score
+    Get an dictionary of paper reviewer score. For each paper and reviewer it returns an array of scores which might contan '+Inf' or '-
     :param openreview_client:
     :param conference:
     :return:
     """
-    notes = openreview_client.get_notes(invitation=conference+ "/-/matching")
-    output_dict={}
+    notes = openreview_client.get_notes(invitation=conference + "/-/matching")
+    output_dict = {}
     for note in notes:
         for reviewer_info in note.content['reviewers']:
-            if (note.forum,reviewer_info['reviewer']) not in output_dict:
-                output_dict[(note.forum,reviewer_info['reviewer'])] = []
+            if (note.forum, reviewer_info['reviewer']) not in output_dict:
+                output_dict[(note.forum, reviewer_info['reviewer'])] = []
             output_dict[(note.forum, reviewer_info['reviewer'])].append(reviewer_info['score'])
+    notes = openreview_client.get_notes(invitation=conference + "/-/reviewer")
+    for note in notes:
+        content = note.content
+        for paper in content['papers']:
+            key = (paper_number_id_dict[int(paper['paper'])], content['name'])
+            if key not in output_dict:
+                output_dict[key] = []
+            output_dict[key].append(paper['score'])
     return output_dict
 
 
-
-def get_reviewer_data_notes(openreview_client,conference):
+def get_reviewer_data_notes(openreview_client, conference):
     """
     Get all the reviewer meta data notes
     :return:
@@ -131,15 +137,13 @@ def get_reviewer_data_notes(openreview_client,conference):
     return notes
 
 
-def get_paper_reviewer_weights(openreview_client,conference,conference_reviewer,submission_invitation_id):
-    reviewers = get_all_reviewers(openreview_client,conference_reviewer)
-    submitted_papers_notes = get_notes_submitted_papers(openreview_client,submission_invitation_id)
-    paper_ids = [paper_note.id for paper_note in submitted_papers_notes]
-    weights = np.zeros((len(reviewers),len(paper_ids)))
-    paper_index_dict = {paper_ids[i]:i for i in range(len(paper_ids))}
-    reviewer_index_dict = {reviewers[i]:i for i in range(len(reviewers))}
-    paper_reviewer_score_dict = get_paper_reviewers_score(openreview_client,conference)
-    for (note_id,reviewer),score_array in paper_reviewer_score_dict.iteritems():
-        weights[reviewer_index_dict[reviewer],paper_index_dict[note_id]] = np.mean(np.array(score_array))
-    totAffMatcher = TotAffMatcher(200.0,100.0,weights)
-    totAffMatcher.solve()
+def get_number_id_dict(submitted_paper_notes):
+    """
+    Get a dictionary mapping of paper number to paper id
+    :param submitted_paper_notes:
+    :return:
+    """
+    number_id_dict = {}
+    for note in submitted_paper_notes:
+        number_id_dict[note.number] = note.id
+    return number_id_dict

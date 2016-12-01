@@ -48,27 +48,35 @@ class TotAffMatcher(object):
 
         # reviewer constraints
         for r in range(self.n_rev):
-            self.m.addConstr(sum(self.lp_vars[r]) <= alpha, "r" + str(r))
+            self.m.addConstr(sum(self.lp_vars[r]) <= alpha[r], "r" + str(r))
 
         # paper constraints
         for p in range(self.n_pap):
-            self.m.addConstr(sum([ self.lp_vars[i][p] for i in range(self.n_rev) ]) == self.beta, "p" + str(p))
+            self.m.addConstr(sum([ self.lp_vars[i][p] for i in range(self.n_rev) ]) == self.beta[p], "p" + str(p))
 
     def var_name(self,i,j):
         return "x_" + str(i) + "," + str(j)
 
+    def inverse_var_name(self,var_name):
+        variables = var_name.split("_")[1]
+        str_i,str_j = variables.split(",")
+        return int(str_i),int(str_j)
+
     def sol_dict(self):
         _sol = {}
         for v in self.m.getVars():
-            _sol[v.varName] = v.x
+            if v.x == 1:
+                _sol[v.varName] = v.x
         return _sol
 
-    def add_hard_const(self, i, j, log_file=None):
+    def add_hard_const(self, i, j,v,log_file=None):
         solution = self.sol_dict()
         prevVal = solution[self.var_name(i,j)]
         if log_file:
             logging.info("\t(REVIEWER, PAPER) " + str((i,j)) + " CHANGED FROM: " + str(prevVal) + " -> " + str(abs(prevVal - 1)))
-        self.m.addConstr(self.lp_vars[i][j] == abs(prevVal - 1), "h" + str(i) + ", " + str(j))
+        self.m.addConstr(self.lp_vars[i][j] == v, "h" + str(i) + ", " + str(j))
+
+
 
     def num_diffs(self, sol1, sol2):
         count = 0
@@ -102,7 +110,8 @@ class TotAffMatcher(object):
         sol = self.sol_dict()
         for i in range(self.n_rev):
             for j in range(self.n_pap):
-                per_rev_aff[i] += sol[self.var_name(i,j)] * self.weights[i][j]
+                if self.var_name(i,j) in sol:
+                    per_rev_aff[i] += sol[self.var_name(i,j)] * self.weights[i][j]
         self.prev_rev_affs.append(per_rev_aff)
 
     def save_paper_affinity(self):
@@ -110,7 +119,8 @@ class TotAffMatcher(object):
         sol = self.sol_dict()
         for i in range(self.n_pap):
             for j in range(self.n_rev):
-                per_pap_aff[i] += sol[self.var_name(j,i)] * self.weights[j][i]
+                if self.var_name(i, j) in sol:
+                    per_pap_aff[i] += sol[self.var_name(j,i)] * self.weights[j][i]
         self.prev_pap_affs.append(per_pap_aff)
 
     def objective_val(self):
