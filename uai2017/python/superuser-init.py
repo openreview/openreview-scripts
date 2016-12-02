@@ -31,7 +31,7 @@ else:
 groups = []
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 def overwrite_allowed(groupid):
-    if type(openreview.get_group(groupid))!=Group or overwrite==True:
+    if not openreview.exists(groupid) or overwrite==True:
         return True
     else:
         return False
@@ -104,15 +104,7 @@ if openreview.user['id'].lower()=='openreview.net':
         groups.append(uai2017reviewersACsOrganizers)
 
 
-    # if overwrite_allowed('UAI.org/2017/workshop'):
-    #     uai2017workshop = Group('UAI.org/2017/workshop',
-    #         readers     = ['everyone'],
-    #         writers     = ['UAI.org/2017','UAI.org/2017/pcs'],
-    #         signatures  = ['UAI.org/2017'],
-    #         signatories = ['UAI.org/2017/workshop'],
-    #         members     = ['UAI.org/2017/pcs','UAI.org/2017/areachairs'],
-    #         web         = '../webfield/uai2017workshop_webfield.html')
-    #     groups.append(uai2017workshop)
+    #
 
 
     if overwrite_allowed('UAI.org/2017/pcs'):
@@ -158,7 +150,7 @@ if openreview.user['id'].lower()=='openreview.net':
     if overwrite_allowed('UAI.org/2017/conference/reviewers'):
         uai2017reviewers = Group('UAI.org/2017/conference/reviewers',
             readers=['everyone'],
-            writers=['UAI.org/2017/conference','UAI.org/2017/pcs'],
+            writers=['UAI.org/2017/conference/reviewers','UAI.org/2017/pcs'],
             signatures=['UAI.org/2017/conference'],
             signatories=['UAI.org/2017/conference/reviewers'],
             members=[])
@@ -170,7 +162,7 @@ if openreview.user['id'].lower()=='openreview.net':
             readers=['everyone'],
             writers=['UAI.org/2017/conference','UAI.org/2017/pcs'],
             signatures=['UAI.org/2017/conference'],
-            signatories=['UAI.org/2017/conference/reviewers'],
+            signatories=['UAI.org/2017/Reviewers'],
             members=[])
         groups.append(uai2017reviewersdeclined)
 
@@ -179,11 +171,7 @@ if openreview.user['id'].lower()=='openreview.net':
     for g in groups:
         print "Posting group: ",g.id
         openreview.post_group(g)
-
     openreview.post_group(openreview.get_group('host').add_member('UAI.org/2017'))
-
-
-
 
     #########################
     ##  SETUP INVITATIONS  ##
@@ -209,19 +197,19 @@ if openreview.user['id'].lower()=='openreview.net':
             'title': {
                 'description': 'Title of paper.',
                 'order': 1,
-                'value-regex': '.{1,100}',
+                'value-regex': '.{1,250}',
                 'required':True
             },
             'authors': {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 2,
-                'value-regex': '[^,\\n]+(,[^,\\n]+)*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                'values-regex': '.*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'TL;DR': {
@@ -265,14 +253,13 @@ if openreview.user['id'].lower()=='openreview.net':
 
             },
             'conflicts': {
-                'description': 'Semi-colon separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
+                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
                 'order': 100,
-                'value-regex': '([a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)(\;[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)*',
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             }
         }
     }
-
     submission_reply=reply.copy()
 
     submission_invitation = Invitation( 'UAI.org/2017/conference',
@@ -282,11 +269,14 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'], 
         signatures=['UAI.org/2017/pcs'],
         reply=submission_reply,
-        duedate=1509470301000, #duedate of 0 means that the invitation has not been released
+        duedate=1578380500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         process='../process/submissionProcess_uai2017.js')
 
     ## Create 'request for availability to review' invitation
     reviewer_invitation_reply = {
+        'forum': {
+            'value-regex': 'UAI.org/2017/conference/reviewers/~.*'
+        },
         'content': {
             'email': {
                 'description': 'Email address.',
@@ -305,7 +295,7 @@ if openreview.user['id'].lower()=='openreview.net':
             }
         },
         'readers': {
-            'values': ['everyone']
+            'values': ['OpenReview.net']
         },
         'signatures': {
             'values-regex': '\\(anonymous\\)'
@@ -316,7 +306,7 @@ if openreview.user['id'].lower()=='openreview.net':
     }
 
     reviewer_invitation = Invitation('UAI.org/2017/conference',
-        'reviewer_invitation', 
+        'reviewer_invitation',
         readers=['everyone'],
         writers=['UAI.org/2017/conference'],
         invitees=['everyone'],
@@ -325,7 +315,17 @@ if openreview.user['id'].lower()=='openreview.net':
             process='../process/responseInvitationProcess_uai2017.js',
         web='../webfield/web-field-invitation.html')
 
-    invitations = [submission_invitation, reviewer_invitation]
+    paper_invitation_reply = {
+        'content': {}
+    }
+
+    paper_meta_invitation = Invitation('UAI.org/2017/conference',
+                                       'matching',
+                                       signatures=['UAI.org/2017/pcs'],
+                                       readers=['everyone'],
+                                       writers=['everyone'], reply=paper_invitation_reply)
+
+    invitations = [submission_invitation,reviewer_invitation,paper_meta_invitation]
 
     ## Post the invitations
     for i in invitations:

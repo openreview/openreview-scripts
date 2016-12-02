@@ -2,6 +2,7 @@ import argparse
 from openreview import *
 import sys, os
 import time
+import utils
 
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
 print sys.path
@@ -25,50 +26,33 @@ else:
     openreview = Client(baseurl=args.baseurl)
 
 
-def update_reviewers(members):
+def create_reviewer_data_notes(samples_reviewer_data):
     """
-    Update the members of the group
-    :param members:
+    Create a new invitation and supporting note for the reviewer data
+    :param samples_reviewer_data:
     :return:
     """
-    reviewers = openreview.get_group(CONFERENCE_REVIEWERS)
-    reviewers.members = members
-    openreview.post_group(reviewers)
-
-
-def create_reviewer_metadata_note(reviewer_sample_meta):
-    """
-    Create a new invitation and supporting note for the reviewer meta data
-    :param reviewer_sample_meta:
-    :return:
-    """
-    reviewers = openreview.get_group(CONFERENCE_REVIEWERS)
-    members = reviewers.members
-    reviewer_meta_invitation = Invitation(CONFERENCE_REVIEWERS,
-                                          'metadata', signatures=[CONFERENCE_REVIEWERS], readers=['everyone'],
+    reviewer_invitation = Invitation(CONFERENCE,
+                                          'reviewer', signatures=[CONFERENCE], readers=['everyone'],
                                           writers=['everyone'], reply=INVITATION_REPLY)
-    openreview.post_invitation(reviewer_meta_invitation)
-    for member in members:
-        note = Note(invitation=reviewer_meta_invitation.id, cdate=int(time.time()) * 1000, readers=['everyone'],
-                    writers=['everyone'], content=reviewer_sample_meta, signatures=reviewer_meta_invitation.signatures)
+    openreview.post_invitation(reviewer_invitation)
+    for reviewer_data in samples_reviewer_data:
+        note = Note(invitation=reviewer_invitation.id, cdate=int(time.time()) * 1000, readers=['everyone',reviewer_data.name],
+                    writers=['everyone',reviewer_data.name], content=reviewer_data.to_dict(), signatures=reviewer_invitation.signatures)
         openreview.post_note(note)
 
-
-def get_reviewer_metadata_notes():
-    """
-    Get all the reviewer meta data notes
-    :return:
-    """
-    notes = openreview.get_notes(invitation=CONFERENCE_REVIEWERS + "/-/metadata")
-    return notes
 
 
 if __name__ == '__main__':
     if openreview.user['id'].lower() == 'openreview.net':
-        samples_reviewer_meta_data= ReviewerMeta.create_samples(3)
-        for reviewer_meta_data in samples_reviewer_meta_data:
-            create_reviewer_metadata_note(reviewer_sample_meta=reviewer_meta_data.to_dict())
-        notes = get_reviewer_metadata_notes()
+        #Manually updating the reviewers data
+        members=utils.get_all_member_ids(openreview)
+        utils.update_reviewers(openreview,CONFERENCE_REVIEWERS,members)
+        papers = utils.get_paper_numbers(utils.get_notes_submitted_papers(openreview,CONFERENCE_SUBMISSION))
+        samples_reviewer_data = ReviewerData.create_samples(papers,members,3)
+        #Creating reviewer note for each reviewer
+        create_reviewer_data_notes(samples_reviewer_data)
+        notes = utils.get_reviewer_data_notes(openreview,CONFERENCE)
         for note in notes:
             print json.dumps(note.content)
     else:
