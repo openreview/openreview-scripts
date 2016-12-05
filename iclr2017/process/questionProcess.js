@@ -50,8 +50,7 @@ function(){
         "message": "A submission to "+ conference+", for which you are an official area chair, has received a pre-review question. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.question+"\n\nTo view the pre-review question, click here: "+baseUrl+"/forum?id=" + note.forum
       };
     
-      return or3client.addInvitationInvitee('ICLR.cc/2017/conference/-/paper'+note_number+'/official/review', note.signatures[0],token)
-      .then(or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token))
+      return or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token)
       .then(Promise.all([ 
         getReviewerEmails(note_number), 
         or3client.or3request( or3client.mailUrl, author_mail, 'POST', token ),
