@@ -50,7 +50,7 @@ message = """
 #################################################
 
 iclrsubs = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
-iclrsubs = iclrsubs[0:5]
+
 invitation = None
 
 if args.invitation == 'question':
