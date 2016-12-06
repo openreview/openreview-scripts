@@ -58,7 +58,7 @@ if args.invitation == 'question':
 elif args.invitation == 'review':
     invitation = 'official/review'
 
-verbose = args.verbose if args.verbose.lower()=='true' else False
+verbose = True if args.verbose.lower()=='true' else False
 
 
 total_missing = 0;
