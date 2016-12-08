@@ -26,35 +26,52 @@
 
       $attach('#header', 'mkHostHeader', [
         "UAI 2017 Conference",
-        "International Conference on Learning Representations",
-        "Toulon France, April 24 - 26, 2017",
-        "http://www.uai.org/"
+        "Uncertainty in Artificial Intelligence",
+        "Sydney, Australia, August 11th - 15th, 2017",
+        "http://www.auai.org/uai2017/"
       ], true);
 
       var $header = $('#header');
-      $header.append(
-        $('<div>', {class: 'panel'})
-        .append($('<div>', {class: 'row'}).append(
-        $('<span>').text('Please, update your profile in the Toronto Paper Matching System at '),
-        $('<a>', {
-          href: 'http://papermatching.cs.toronto.edu', 
-          text: 'http://papermatching.cs.toronto.edu'
-        })
-      )));
+      // $header.append(
+      //   $('<div>', {class: 'panel'})
+      //   .append($('<div>', {class: 'row'}).append(
+      //   $('<span>').text('Please, update your profile in the Toronto Paper Matching System at '),
+      //   $('<a>', {
+      //     href: 'http://papermatching.cs.toronto.edu',
+      //     text: 'http://papermatching.cs.toronto.edu'
+      //   })
+      // )));
 
       console.log('args', args);
 
       if (args && args.noteId) {
+
+
         httpGetP('notes', { id: args.noteId }).then(function(result) {
-          var message = (result.notes[0].content.response == 'Yes') ? 'Thank you for accepting the invitation!' : 'You have declined the invitation.';
+          accepted = (result.notes[0].content.response == 'Yes')
+          var message = accepted ? `Thank you for accepting the invitation!` : 'You have declined the invitation.';
           var $response = $('#response');
           $response.append(
             $('<div>', {class: 'panel'})
             .append($('<div>', {class: 'row'}).text(message))
           );
+
+          if(accepted){
+            $response.append(
+              $('<div>',{class:'panel'}).append(
+                $('<span>').text("If you do not already have an OpenReview account, please sign up "),
+                $('<a>',{
+                  href: '/signup',
+                  text: 'here'
+                }),
+                $('<span>').text(".")
+              )
+            )
+          }
+
         });
       }
-      
+
     });
     </script>
  </body>
