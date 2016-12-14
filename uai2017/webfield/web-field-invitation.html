@@ -59,12 +59,22 @@
           if(accepted){
             $response.append(
               $('<div>',{class:'panel'}).append(
-                $('<span>').text("If you do not already have an OpenReview account, please sign up "),
-                $('<a>',{
-                  href: '/signup',
-                  text: 'here'
-                }),
-                $('<span>').text(".")
+                $('<div>',{class:'row'}).append(
+                  $('<span>').text("If you do not already have an OpenReview account, please sign up "),
+                  $('<a>',{
+                    href: '/signup',
+                    text: 'here'
+                  }),
+                  $('<span>').text(".")
+                ),
+                $('<div>',{class:'row'}).append(
+                  $('<span>').text("Once you are signed up, we also ask that you provide your areas of expertise. To do this, please visit your "),
+                  $('<a>',{
+                    href:'/tasks',
+                    text:'Tasks'
+                  }),
+                  $('<span>').text(" page and click on the Senior Program Commmittee Expertise Registration task to view the form.")
+                )
               )
             )
           }
