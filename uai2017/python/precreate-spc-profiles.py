@@ -19,7 +19,6 @@ if args.username!=None and args.password!=None:
 else:
     client = openreview.Client(baseurl=args.baseurl)
 
-
 spc_member_info = []
 with open(args.file) as f:
     reader = csv.reader(f)
@@ -43,8 +42,10 @@ for u in spc_member_info:
 
     matching_tilde_groups = [i.id for i in member_groups if tildematch.match(i.id)]
 
-    if len(matching_tilde_groups)==0: #if the email address doesn't belong to any tilde group
-        tilde = ("~%s %s%s" % (first,last,'1')).replace(' ','_')
+    if not matching_tilde_groups: #if the email address doesn't belong to any tilde group
+        tilderesponse = requests.get(client.baseurl+'/tildeusername?first=%s&last=%s' %(first,last) )
+        tilde = tilderesponse.json()['username']
+
         tilde_group = openreview.Group.from_json({
             "id": tilde,
             "tauthor": "OpenReview.net",
@@ -72,14 +73,11 @@ for u in spc_member_info:
             print "Generating new tilde group %s" % tilde
             client.post_group(tilde_group)
             profile_exists = True
-            try:
-                client.get_note(tilde)
-            except openreview.OpenReviewException as e:
-                if "Not Found" in repr(e):
-                    profile_exists = False
-                else:
-                    raise e
 
+            profileresponse = requests.get(client.baseurl+'/user/profile?email=%s' % email)
+
+            if 'errors' in profileresponse.json():
+                profile_exists = False
 
             if not profile_exists:
                 profile = openreview.Note.from_json({
@@ -106,7 +104,6 @@ for u in spc_member_info:
 
     if not client.exists(email):
         print "Email on file does not match existing tilde group %s" % tilde
-
 
 
 
