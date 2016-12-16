@@ -10,6 +10,7 @@ import argparse
 import csv
 import sys
 import openreview
+import requests
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -64,32 +65,71 @@ verbose = True if args.verbose.lower()=='true' else False
 total_missing = 0;
 total_complete = 0;
 
+def get_data(invitation):
+
+    headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + client.token}
+    anon_reviewers = requests.get(client.baseurl+'/groups?id=ICLR.cc/2017/conference/paper.*/AnonReviewer.*', headers = headers)
+    current_reviewers = requests.get(client.baseurl+'/groups?id=ICLR.cc/2017/conference/paper.*/reviewers', headers = headers)
+    notes = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/' + invitation)
+
+    reviews = {}
+    reviewers = {}
+    reviewers_by_paper = {}
+
+    for n in notes:
+        signature = n.signatures[0]
+        reviews[signature] = n.id
+
+    for r in current_reviewers.json():
+        members = r['members']
+        if members:
+            for m in members:
+                reviewers[m] = True
+
+    for r in anon_reviewers.json():
+        reviewer_id = r['id']
+
+        if reviewer_id in reviewers:
+            members = r['members']
+            if members:
+                reviewer_name = members[0]
+                paper_number = int(reviewer_id.split('paper')[1].split('/AnonReviewer')[0])
+
+                if paper_number not in reviewers_by_paper:
+                    reviewers_by_paper[paper_number] = {}
+
+                reviewers_by_paper[paper_number][reviewer_name] = reviews.get(reviewer_id, None)
+            else:
+                print 'Reviewer ', reviewer_id, ' has no members'
+
+    return reviewers_by_paper
+
 if invitation:
+
+    reviewers_by_paper = get_data(invitation)
 
     late_users = set()
     print "Collecting users that did not submit their %s" % invitation
 
-    for n in iclrsubs:
-        revs = client.get_group('ICLR.cc/2017/conference/paper%s/reviewers' % n.number)
+    total_complete = 0
+    total_missing = 0
+    for paper_number in sorted(reviewers_by_paper):
 
-        notes = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper%s/%s' % (n.number,invitation))
+        reviewers = reviewers_by_paper[paper_number]
 
-        ontime_reviewers = [r.signatures[0] for r in notes]
-        late_AnonReviewers = [r for r in revs.members if r not in ontime_reviewers]
+        for reviewer, note_id in reviewers.iteritems():
 
-        for l in late_AnonReviewers:
-            late_anonRev = client.get_group(l)
-            late_user = late_anonRev.members
-            if verbose:
-                print "late users on paper %s: %s" % (n.number,late_user)
-            late_users.update(late_user)
+            if note_id:
+                total_complete += 1
+            else:
+                total_missing += 1
+                if verbose:
+                    print "late users on paper %s: %s" % (paper_number, reviewer)
+                late_users.add(reviewer)
 
-        total_missing += len(late_AnonReviewers)
-        total_complete += len(ontime_reviewers)
-
-    response = client.send_mail(subjectline, list(late_users), message)
-    print "Emailing the following users:"
-    print response.json()['groups']
+    # response = client.send_mail(subjectline, list(late_users), message)
+    # print "Emailing the following users:"
+    # print response.json()['groups']
 
     print "%s: %s %ss missing" % (invitation,total_missing,args.invitation)
     print "%s: %s %ss complete" % (invitation,total_complete,args.invitation)
