@@ -34,12 +34,9 @@ for u in spc_member_info:
 
     member_groups = []
 
-    if client.exists(email):
-        member_groups = client.get_group(email).members
+    profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
 
-    matching_tilde_groups = [i for i in member_groups if tildematch.match(i)]
-
-    if not matching_tilde_groups: #if the email address doesn't belong to any tilde group
+    if 'error' in profile_by_email_response.json() or 'errors' in profile_by_email_response.json(): #if the email address doesn't belong to any tilde group
         tilderesponse = requests.get(client.baseurl+'/tildeusername?first=%s&last=%s' %(first,last) )
         tilde = tilderesponse.json()['username']
 
@@ -79,6 +76,8 @@ for u in spc_member_info:
 
             if 'errors' in profileresponse.json():
                 profile_exists = False
+            else:
+                tilde = profileresponse.json()['profile']['id']
 
             if not profile_exists:
                 profile = openreview.Note.from_json({
@@ -99,7 +98,7 @@ for u in spc_member_info:
                 response = requests.put(client.baseurl+"/user/profile", json=profile.to_json(), headers=client.headers)
 
                 profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
-                assert 'errors' not in profile_by_email_response.json()
+                assert tilde in profile_by_email_response.json()['profile']['id']
 
                 profilenote = client.get_note(tilde)
                 assert email in profilenote.content['emails']
@@ -111,9 +110,7 @@ for u in spc_member_info:
 
     else:
         print "tilde groups exist for email %s" % email
-        print matching_tilde_groups
+        print profile_by_email_response.json()['profile']['id']
 
     if not client.exists(email):
         print "Email on file does not match existing tilde group %s" % tilde
-
-
