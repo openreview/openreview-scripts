@@ -80,27 +80,25 @@ def get_data(invitation):
         signature = n.signatures[0]
         reviews[signature] = n.id
 
-    for r in current_reviewers.json():
-        members = r['members']
-        if members:
-            for m in members:
-                reviewers[m] = True
-
     for r in anon_reviewers.json():
         reviewer_id = r['id']
+        members = r['members']
+        if members:
+            reviewers[reviewer_id] = members[0]
+        else:
+            print 'Reviewer ', reviewer_id, ' has no members'
 
-        if reviewer_id in reviewers:
-            members = r['members']
-            if members:
-                reviewer_name = members[0]
-                paper_number = int(reviewer_id.split('paper')[1].split('/AnonReviewer')[0])
+    for r in current_reviewers.json():
+        reviewer_id = r['id']
+        members = r['members']
+        if members:
+            paper_number = int(reviewer_id.split('paper')[1].split('/reviewers')[0])
+            if paper_number not in reviewers_by_paper:
+                reviewers_by_paper[paper_number] = {}
 
-                if paper_number not in reviewers_by_paper:
-                    reviewers_by_paper[paper_number] = {}
-
-                reviewers_by_paper[paper_number][reviewer_name] = reviews.get(reviewer_id, None)
-            else:
-                print 'Reviewer ', reviewer_id, ' has no members'
+            for m in members:
+                reviewer_name = reviewers.get(m, m)
+                reviewers_by_paper[paper_number][reviewer_name] = reviews.get(m, None)
 
     return reviewers_by_paper
 
