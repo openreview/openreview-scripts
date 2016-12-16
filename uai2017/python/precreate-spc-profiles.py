@@ -32,15 +32,12 @@ for u in spc_member_info:
     first = u[1].strip()
     last = u[2].strip()
 
-    try:
-        member_groups = client.get_groups(member=email)
-    except openreview.OpenReviewException as e:
-        if "Not Found" in repr(e):
-            member_groups = []
-        else:
-            raise e
+    member_groups = []
 
-    matching_tilde_groups = [i.id for i in member_groups if tildematch.match(i.id)]
+    if client.exists(email):
+        member_groups = client.get_group(email).members
+
+    matching_tilde_groups = [i for i in member_groups if tildematch.match(i)]
 
     if not matching_tilde_groups: #if the email address doesn't belong to any tilde group
         tilderesponse = requests.get(client.baseurl+'/tildeusername?first=%s&last=%s' %(first,last) )
@@ -74,7 +71,7 @@ for u in spc_member_info:
             client.post_group(tilde_group)
 
             email_group = client.get_group(email)
-            client.add_members_to_group(email_group, tilde)
+            client.add_members_to_group(email_group, [tilde])
 
             profile_exists = True
 
@@ -101,9 +98,8 @@ for u in spc_member_info:
                 })
                 response = requests.put(client.baseurl+"/user/profile", json=profile.to_json(), headers=client.headers)
 
-                #Doesn't seem to work, but not sure why. Manually checked the profile and the email was there.
-                #profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
-                #assert 'errors' not in profile_by_email_response.json()
+                profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
+                assert 'errors' not in profile_by_email_response.json()
 
                 profilenote = client.get_note(tilde)
                 assert email in profilenote.content['emails']
@@ -119,6 +115,5 @@ for u in spc_member_info:
 
     if not client.exists(email):
         print "Email on file does not match existing tilde group %s" % tilde
-
 
 
