@@ -72,6 +72,10 @@ for u in spc_member_info:
         else:
             print "Generating new tilde group %s" % tilde
             client.post_group(tilde_group)
+
+            email_group = client.get_group(email)
+            client.add_members_to_group(email_group, tilde)
+
             profile_exists = True
 
             profileresponse = requests.get(client.baseurl+'/user/profile?email=%s' % email)
@@ -96,15 +100,25 @@ for u in spc_member_info:
                     }
                 })
                 response = requests.put(client.baseurl+"/user/profile", json=profile.to_json(), headers=client.headers)
+
+                #Doesn't seem to work, but not sure why. Manually checked the profile and the email was there.
+                #profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
+                #assert 'errors' not in profile_by_email_response.json()
+
+                profilenote = client.get_note(tilde)
+                assert email in profilenote.content['emails']
+
             else:
                 print "Profile %s already exists" % tilde
+
+
+
     else:
         print "tilde groups exist for email %s" % email
         print matching_tilde_groups
 
     if not client.exists(email):
         print "Email on file does not match existing tilde group %s" % tilde
-
 
 
 
