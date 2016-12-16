@@ -1,24 +1,24 @@
 function () {
   var or3client = lib.or3client;
-  
+
   var metaReviewProcess = <<metaReviewProcess.js>>
 
   var metaReviewInvitation = {
     'id': 'UAI.org/2017/conference/-/paper'+note.number+'/meta/review',
     'signatures': ['UAI.org/2017/conference'],
     'writers': ['UAI.org/2017/conference'],
-    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/areachairs'],
+    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/SPC'],
     'noninvitees':[],
-    'readers': ['UAI.org/2017/conference/ACs_and_organizers'],
+    'readers': ['UAI.org/2017/conference/SPC','UAI.org/2017/conference/PC'],
     'process': metaReviewProcess+'',
     'duedate': 1481932799000,
     'reply': {
-      'forum': note.id, 
+      'forum': note.id,
       'replyto': note.id,
       'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/areachair[0-9]+'},
       'signatures': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/areachair[0-9]+'},
-      'readers': { 
-        'values': ['everyone'], 
+      'readers': {
+        'values': ['everyone'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -35,74 +35,15 @@ function () {
         'recommendation': {
           'order': 3,
           'value-dropdown': [
-            'Oral', 
-            'Poster', 
-            'Workshop', 
+            'Oral',
+            'Poster',
+            'Workshop',
             'Reject'
           ]
         }
-      } 
+      }
     }
-  };  
-
-  var openReviewProcess = <<openReviewProcess.js>>
-
-  var openReviewInvitation = {
-    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/public/review',
-    'signatures': ['UAI.org/2017/conference'],
-    'writers': ['UAI.org/2017/conference'],
-    'invitees': ['~'],
-    'noninvitees':note.content.authorids,
-    'readers': ['everyone'],
-    'process': openReviewProcess+'',
-    'reply': {
-      'forum': note.id, 
-      'replyto': note.id,
-      'writers': {'values-regex':'~.*|\\(anonymous\\)'},
-      'signatures': {'values-regex':'~.*|\\(anonymous\\)'},
-      'readers': { 
-        'values': ['everyone'], 
-        'description': 'The users who will be allowed to read the above content.'
-      },
-      'content': {
-        'title': {
-          'order': 1,
-          'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.'
-        },
-        'review': {
-          'order': 2,
-          'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
-        },
-        'rating': {
-          'order': 3,
-          'value-dropdown': [
-            '10: Top 5% of accepted papers, seminal paper', 
-            '9: Top 15% of accepted papers, strong accept', 
-            '8: Top 50% of accepted papers, clear accept', 
-            '7: Good paper, accept',
-            '6: Marginally above acceptance threshold',
-            '5: Marginally below acceptance threshold',
-            '4: Ok but not good enough - rejection',
-            '3: Clear rejection',
-            '2: Strong rejection',
-            '1: Trivial or wrong'
-          ]
-        },
-        'confidence': {
-          'order': 4,
-          'value-radio': [
-            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature', 
-            '4: The reviewer is confident but not absolutely certain that the evaluation is correct', 
-            '3: The reviewer is fairly confident that the evaluation is correct',
-            '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
-            '1: The reviewer\'s evaluation is an educated guess'
-          ]
-        }
-      } 
-    }
-  };  
+  };
 
   var officialReviewProcess = <<officialReviewProcess.js>>
 
@@ -112,16 +53,16 @@ function () {
     'writers': ['UAI.org/2017/conference'],
     'invitees': [],
     'noninvitees':[],
-    'readers': ['everyone'],
+    'readers': ['UAI.org/2017/conference/SPC'], //only SPC initially; when a reviewer submits his/her review, they are added to the readers
     'process': officialReviewProcess+'',
     'duedate': 1481932799000,
     'reply': {
-      'forum': note.id, 
+      'forum': note.id,
       'replyto': note.id,
       'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},
       'signatures': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},
-      'readers': { 
-        'values': ['everyone'], 
+      'readers': {
+        'values': ['everyone'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -138,9 +79,9 @@ function () {
         'rating': {
           'order': 3,
           'value-dropdown': [
-            '10: Top 5% of accepted papers, seminal paper', 
-            '9: Top 15% of accepted papers, strong accept', 
-            '8: Top 50% of accepted papers, clear accept', 
+            '10: Top 5% of accepted papers, seminal paper',
+            '9: Top 15% of accepted papers, strong accept',
+            '8: Top 50% of accepted papers, clear accept',
             '7: Good paper, accept',
             '6: Marginally above acceptance threshold',
             '5: Marginally below acceptance threshold',
@@ -153,102 +94,24 @@ function () {
         'confidence': {
           'order': 4,
           'value-radio': [
-            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature', 
-            '4: The reviewer is confident but not absolutely certain that the evaluation is correct', 
+            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '4: The reviewer is confident but not absolutely certain that the evaluation is correct',
             '3: The reviewer is fairly confident that the evaluation is correct',
             '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
             '1: The reviewer\'s evaluation is an educated guess'
           ]
-        }
-      } 
-    }
-  };
-
-  var questionProcess = <<questionProcess.js>>
-
-  var reviewerQuestionInvite = {
-    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/pre-review/question',
-    'duedate': 1481932799000,
-    'signatures':['UAI.org/2017/conference'],
-    'writers':['UAI.org/2017/conference'],
-    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/reviewers'],
-    'noninvitees':[],
-    'readers': ['everyone'],
-    'process':questionProcess+'',
-    'reply': {
-      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      'replyto': note.id,    // not specified so we can allow comments on comments
-      'signatures': {
-        'values-regex':'UAI.org/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+',
-        'description': 'How your identity will be displayed with the above content.' 
-        },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
-      'readers': { 
-        'values': ['everyone'], 
-        'description': 'The users who will be allowed to read the above content.'
-        },   // the reply must allow ANYONE to read this note (comment)
-      'content': {
-        'title': {
-          'order': 1,
-          'value-regex': '.{1,500}',
-          'description': 'Brief summary of your question.'
-        },
-        'question': {
-          'order': 2,
-          'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Your question'
         }
       }
     }
   };
 
   var commentProcess = <<commentProcess.js>>
-  
-  var publicCommentInvite = {
-    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/public/comment',
-    'signatures':['UAI.org/2017/conference'],
-    'writers':['UAI.org/2017/conference'],
-    'invitees': ['~'],
-    'noninvitees':[],
-    'readers': ['everyone'],
-    'process':commentProcess+'',
-    'reply': {
-      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'replyto': noteID,    // not specified so we can allow comments on comments
-      'signatures': {
-        'values-regex':'~.*|\\(anonymous\\)',
-        'description': 'How your identity will be displayed with the above content.' 
-        },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
-      'readers': { 
-        'value-dropdown': [
-          'everyone',
-          'UAI.org/2017/conference/organizers',
-          'UAI.org/2017/conference/ACs_and_organizers',
-          'UAI.org/2017/conference/reviewers_and_ACS_and_organizers'
-        ], 
-        'description': 'The users who will be allowed to read the above content.'
-        },   // the reply must allow ANYONE to read this note (comment)
-      'content': {
-        'title': {
-          'order': 1,
-          'value-regex': '.{1,500}',
-          'description': 'Brief summary of your comment.'
-        },
-        'comment': {
-          'order': 2,
-          'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Your comment or reply.'
-        }
-      }
-    }
-  };
 
   var officialCommentInvite = {
     'id': 'UAI.org/2017/conference/-/paper'+note.number+'/official/comment',
     'signatures':['UAI.org/2017/conference'],
     'writers':['UAI.org/2017/conference'],
-    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/reviewers','UAI.org/2017/conference/paper'+note.number+'/areachairs'],
+    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/SPC','UAI.org/2017/conference/paper'+note.number+'/PC'],
     'noninvitees':[],
     'readers': ['everyone'],
     'process':commentProcess+'',
@@ -256,17 +119,16 @@ function () {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'UAI.org/2017/conference/paper'+note.number+'/(reviewer|areachair)[0-9]+',
-        'description': 'How your identity will be displayed with the above content.' 
+        'values-regex':'UAI.org/2017/conference/paper'+note.number+'/(AnonReviewer|areachair)[0-9]+',
+        'description': 'How your identity will be displayed with the above content.'
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/(reviewer|areachair)[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
-      'readers': { 
+      'readers': {
         'value-dropdown': [
-          'everyone',
-          'UAI.org/2017/conference/organizers',
-          'UAI.org/2017/conference/ACs_and_organizers',
-          'UAI.org/2017/conference/reviewers_and_ACS_and_organizers'
-        ], 
+          'UAI.org/2017/conference/',
+          'UAI.org/2017/conference/PC',
+          'UAI.org/2017/conference/SPC'
+        ],
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -281,42 +143,6 @@ function () {
           'description': 'Your comment or reply.'
         }
       }
-    }
-  };
-
-
-  var acceptanceProcess = <<acceptanceProcess.js>>
-
-  var acceptanceInvite = {
-    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/acceptance',
-    'signatures': ['UAI.org/2017/conference'],
-    'writers': ['UAI.org/2017/conference'],
-    'invitees': ['UAI.org/2017/pcs'],
-    'noninvitees': [],
-    'readers': ['everyone'],
-    'process': acceptanceProcess+'',
-    'reply': {
-      'forum': note.id,
-      'replyto': note.id,
-      'signatures': {
-        'values-regex':'UAI.org/2017/pcs',
-        'description':'Your displayed identity associated with the above content.'
-        },
-      'writers': {'values-regex':'UAI.org/2017/pcs'},
-      'readers': { 
-        'values': ['UAI.org/2017/pcs','UAI.org/2017/areachairs','UAI.org/2017/conference'],
-        'description': 'The users who will be allowed to read the above content.'
-        },
-      'content': {
-        'UAI2017': {
-          'order': 1,
-          'value-radio': [
-            'Accepted',
-            'Rejected',
-            'Pending'
-          ]
-        }
-      } 
     }
   };
 
@@ -332,25 +158,20 @@ function () {
       forum: note.id,
       referent: note.id,
       signatures: invitation.reply.signatures,
-      writers: invitation.reply.writers, 
+      writers: invitation.reply.writers,
       readers: invitation.reply.readers,
       content: invitation.reply.content
-    }    
-  }  
+    }
+  }
 
-
-  var list = note.invitation.replace(/_/g,' ').split('/')
-  list.splice(list.indexOf('-',1));
-  var conference = list.join(' ');
   //Send an email to the author of the submitted note, confirming its receipt
-
   var mail = {
     "groups": note.content.authorids,
-    "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
-    "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
+    "subject": "Confirmation of your submission to UAI 2017": \"" + note.content.title + "\".",
+    "message": `Your submission to UAI 2017 has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
-  
+
   // Create an empty group for this paper, e.g. "UAI.org/2017/conference/paper444"
   var paperGroup = {
     'id': 'UAI.org/2017/conference/paper'+note.number,
@@ -364,9 +185,9 @@ function () {
   var reviewerGroup = {
     'id': paperGroup.id+'/reviewers',
     'signatures':['UAI.org/2017/conference'],
-    'writers':['UAI.org/2017/conference','UAI.org/2017/pcs'],
+    'writers':['UAI.org/2017/conference'],
     'members':[],
-    'readers':['everyone'],
+    'readers':['UAI.org/2017/conference/PC','UAI.org/2017/conference/SPC'],
     'signatories':['UAI.org/2017/conference',paperGroup.id+'/reviewers']
   };
 
@@ -405,23 +226,19 @@ function () {
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result=>{
     group_promises = [
-      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),  
-      or3client.or3request(or3client.grpUrl, reviewNonreadersGroup, 'POST', token),  
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, reviewNonreadersGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token),
     ];
 
-    return Promise.all(group_promises);    
+    return Promise.all(group_promises);
   })
   .then(result=>{
     invitation_promises = [
       or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, openReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, reviewerQuestionInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token),
       or3client.or3request(or3client.inviteUrl, officialCommentInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, acceptanceInvite, 'POST', token),
       or3client.or3request(or3client.inviteUrl, referenceInvite, 'POST', token)
     ];
 
