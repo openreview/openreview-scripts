@@ -84,6 +84,15 @@ def get_reviewer_email(id):
 
     return email_reviewers.get(id, None)
 
+def get_paper(paper_number):
+
+    notes = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission', number = paper_number)
+
+    if notes and not notes[0].ddate:
+        return notes[0]
+
+    return None
+
 
 def get_data(invitation):
 
@@ -146,9 +155,14 @@ if invitation:
 
     ##print results
     for paper_number in sorted(late_reviewers):
-        reviewers = late_reviewers[paper_number]
-        for reviewer, email in reviewers.iteritems():
-            print str(paper_number) + "," + reviewer + ',' + email
+
+        paper = get_paper(paper_number)
+        if paper:
+            reviewers = late_reviewers[paper_number]
+            for reviewer, email in reviewers.iteritems():
+                print str(paper_number) + "," + reviewer + ',' + email
+        else:
+            print 'Submission not found', paper_number
 
 
 
