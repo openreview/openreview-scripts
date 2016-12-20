@@ -14,8 +14,8 @@ function () {
     'reply': {
       'forum': note.id,
       'replyto': note.id,
-      'writers': {'values-regex':'.*'},
-      'signatures': {'values-regex':'.*'},
+      'writers': {'values-regex':'~.*'},
+      'signatures': {'values-regex':'~.*'},
       'readers': {
         'values': ['UAI.org/2017/conference/Program_Chairs'],
         'description': 'The users who will be allowed to read the above content.'
