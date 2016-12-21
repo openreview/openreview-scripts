@@ -89,7 +89,7 @@ UAI 2017 Program Chairs
 def sendMail(spc_invited):
     ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
     for count, spc_member in enumerate(spc_invited):
-        hashkey = openreview.get_hash(spc_member, "2810398440804348173")
+        hashkey = openreview.get_hash(spc_member.encode('utf-8'), "2810398440804348173")
         url = openreview.baseurl+"/invitation?id=UAI.org/2017/conference/-/spc_invitation&username=" + spc_member + "&key=" + hashkey + "&response="
         fullname = re.sub('[0-9]','',spc_member.replace('~','').replace('_',' '))
         print "Sending message to %s (%s)" % (fullname,spc_member)
