@@ -2,6 +2,14 @@ function () {
   console.log('spc_registrationProcess function run');
   var or3client = lib.or3client;
 
+  var process = function(){
+    var or3client = lib.or3client;
+    or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token)
+    .then(result => done())
+    .catch(error => done(error));
+    return true;
+  };
+
   var spc_expertise = {
     'id': 'UAI.org/2017/conference/-/SPC_Expertise',
     'signatures': ['UAI.org/2017/conference'],
@@ -9,7 +17,7 @@ function () {
     'invitees': ['UAI.org/2017/conference/Sr_Program_Committee'],
     'noninvitees':[],
     'readers': ['UAI.org/2017/conference','UAI.org/2017/conference/Sr_Program_Committee'],
-    'process': "function(){done();return true;};",
+    'process': process + "",
     'duedate': 1485813353000,
     'reply': {
       'forum': note.id,
