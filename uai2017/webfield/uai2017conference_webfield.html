@@ -14,14 +14,14 @@
         "UAI 2017 - Conference Track",
         "International Conference on Learning Representations",
         "Toulon, France, April 24 - 26, 2017",
-        "http://www.uai.org"
+        "http://www.auai.org/uai2017/"
       ], true);
- 
+
       var sm = mkStateManager();
 
       var httpGetP = function(url, queryOrBody) {
         var df = $.Deferred();
-        httpGet(url, queryOrBody, 
+        httpGet(url, queryOrBody,
         function(result) {
           df.resolve(result);
         },
@@ -46,7 +46,7 @@
 
       var notesP = httpGetP('notes', {invitation: 'UAI.org/2017/conference/-/submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
-      },      
+      },
       function(error){
         return error
       });
@@ -60,7 +60,7 @@
           });
         }
         sm.update('notes', notes);
-        
+
         sm.addHandler('conference', {
           invitationTrip: function(invitationTrip) { if (invitationTrip) {
             var invitation = invitationTrip.invitation;
@@ -107,7 +107,7 @@
         console.log("Invitation and/or notes not found")
       });
 
-      
+
 
 
 
