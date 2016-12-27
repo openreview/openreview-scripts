@@ -120,10 +120,11 @@ for u in spc_member_info:
     first = u[1].strip()
     last = u[2].strip()
 
-    profileId = get_or_create_profile(email, first, last)
+    if email:
+        profileId = get_or_create_profile(email.lower(), first, last)
 
-    if profileId not in spcs_invited.members:
-        profiles.append(profileId)
+        if profileId not in spcs_invited.members:
+            profiles.append(profileId)
 
 client.add_members_to_group(spcs_invited, profiles)
 
