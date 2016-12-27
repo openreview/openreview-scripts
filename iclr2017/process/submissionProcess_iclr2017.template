@@ -11,14 +11,14 @@ function () {
     'noninvitees':[],
     'readers': ['ICLR.cc/2017/conference/ACs_and_organizers'],
     'process': metaReviewProcess+'',
-    'duedate': 1481932799000,
+    'duedate': null,
     'reply': {
       'forum': note.id,
       'replyto': note.id,
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
       'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
       'readers': {
-        'values': ['everyone'],
+        'values': ['ICLR.cc/2017/pcs'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -37,8 +37,18 @@ function () {
           'value-dropdown': [
             'Oral',
             'Poster',
-            'Workshop',
-            'Reject'
+            'Reject',
+            'Workshop'
+          ]
+        },
+        'confidence': {
+          'order': 4,
+          'value-radio': [
+            '5: The area chair is absolutely certain',
+            '4: The area chair is confident but not absolutely certain',
+            '3: The area chair is somewhat confident',
+            '2: The area chair is not sure',
+            '1: The area chair\'s evaluation is an educated guess'
           ]
         }
       }
