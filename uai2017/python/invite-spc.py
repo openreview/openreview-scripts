@@ -97,9 +97,9 @@ def sendMail(spc_invited):
         openreview.send_mail("Senior Program Committee Invitation for UAI 2017", [spc_member], message %(fullname,url + "Yes", url + "No"))
 
 
-if openreview.exists("UAI.org/2017/conference/Sr_Program_Committee/invited") and openreview.exists("UAI.org/2017/conference/Sr_Program_Committee/emailed"):
-    reviewers_invited = openreview.get_group("UAI.org/2017/conference/Sr_Program_Committee/invited")
-    reviewers_emailed = openreview.get_group("UAI.org/2017/conference/Sr_Program_Committee/emailed")
+if openreview.exists("UAI.org/2017/conference/Senior_Program_Committee/invited") and openreview.exists("UAI.org/2017/conference/Senior_Program_Committee/emailed"):
+    reviewers_invited = openreview.get_group("UAI.org/2017/conference/Senior_Program_Committee/invited")
+    reviewers_emailed = openreview.get_group("UAI.org/2017/conference/Senior_Program_Committee/emailed")
     print reviewers_invited.members
     recipients = [reviewer for reviewer in reviewers_invited.members if reviewer not in reviewers_emailed.members]
     print recipients

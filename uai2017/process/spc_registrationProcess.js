@@ -14,9 +14,9 @@ function () {
     'id': 'UAI.org/2017/conference/-/SPC_Expertise',
     'signatures': ['UAI.org/2017/conference'],
     'writers': ['UAI.org/2017/conference'],
-    'invitees': ['UAI.org/2017/conference/Sr_Program_Committee'],
+    'invitees': ['UAI.org/2017/conference/Senior_Program_Committee'],
     'noninvitees':[],
-    'readers': ['UAI.org/2017/conference','UAI.org/2017/conference/Sr_Program_Committee'],
+    'readers': ['UAI.org/2017/conference','UAI.org/2017/conference/Senior_Program_Committee'],
     'process': process + "",
     'duedate': 1485813353000,
     'reply': {
@@ -25,7 +25,7 @@ function () {
       'writers': {'values-regex':'~.*'},
       'signatures': {'values-regex':'~.*'},
       'readers': {
-        'values': ['UAI.org/2017/conference/Program_Chairs'],
+        'values': ['UAI.org/2017/conference/Program_Co-Chairs'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
