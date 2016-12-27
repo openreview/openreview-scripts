@@ -52,11 +52,11 @@ Before making a decision (we really hope you will accept!), you may want to read
 
 1. By January 15th, 2017: Please respond by clicking above indicating whether you accept the SPC invitation or not.
 
-2. If you accept, please log into OpenReview at https://openreview.net and visit your “Tasks” page to provide your areas of subject matter expertise. If you have not yet done so, we also ask that you visit your user profile to provide the domain names of institutions which represent your conflicts of interest. OpenReview is the web-based system we will be using for online submission and reviewing of papers. If you have not used OpenReview before you will need to register: Please use the email address that received this message (you may change your preferred email address after signing up). Even if you have used OpenReview before, please login and check your subject areas.
+2. If you accept, please log into OpenReview at https://openreview.net and visit your "Tasks" page to provide your areas of subject matter expertise. If you have not yet done so, we also ask that you visit your user profile to provide the domain names of institutions which represent your conflicts of interest. OpenReview is the web-based system we will be using for online submission and reviewing of papers. If you have not used OpenReview before you will need to register: Please use the email address that received this message (you may change your preferred email address after signing up). Even if you have used OpenReview before, please login and check your subject areas.
 
 3. Also by January 15th, 2017: We would very much appreciate if you could send suggestions for potential members for the Program Committee to uai2017chairs@gmail.com. For each candidate, please provide their full name, affiliation, email address, and area of expertise (separated by commas; one candidate per line). If the candidate is a PhD student, please state the year of study. We are particularly interested in finding good reviewers that we may not know about and that were not on the UAI 2016 reviewer list (e.g., junior researchers that are postdocs or above). For reference, the UAI 2016 reviewer list is at http://www.auai.org/uai2016/PC.php. When picking PC members, dependability is as important as qualification.
 
-4. April 1-5, 2017: Enter "bids" into the OpenReview system for submitted papers. Note that "bids" are really just a way for you to indicate which papers you feel you are qualified to review and which ones match your expertise particularly well. It’s important that you do this so that you are assigned papers that are a good match to you.
+4. April 1-5, 2017: Enter "bids" into the OpenReview system for submitted papers. Note that "bids" are really just a way for you to indicate which papers you feel you are qualified to review and which ones match your expertise particularly well. It's important that you do this so that you are assigned papers that are a good match to you.
 
 5. April 8-11: Suggest 3 to 5 reviewers for each paper assigned to you and rank them for suitability. Your suggestion will be combined with other information to generate the paper assignment for PC members. We believe that, by utilizing your knowledge of the field, this scheme would improve the match between papers and reviewers.
 
@@ -64,7 +64,7 @@ Before making a decision (we really hope you will accept!), you may want to read
 
 New for 2017:
 Reviews will be available for authors as soon as they are submitted, and the authors will be allowed to respond to a review even before the formal rebuttal period.
-Reviewers can optionally choose to respond to author’s comments or revise their reviews.
+Reviewers can optionally choose to respond to author's comments or revise their reviews.
 Once a review is submitted, it is visible to other reviewers and SPCs who can comment on the review
 (this will not be visible to the authors)
 
@@ -74,7 +74,7 @@ Once a review is submitted, it is visible to other reviewers and SPCs who can co
 
 8. May 15th to May 31st:
 - Initiate and proactively lead discussions among reviewers, especially if there is significant disagreement.
-- Request an additional review for a paper if you think it’s needed. We will help get the paper to the appropriate reviewer once you let us know about them.
+- Request an additional review for a paper if you think it's needed. We will help get the paper to the appropriate reviewer once you let us know about them.
 
 9. By June 1st, write an informative meta-review for each paper. This is especially important for papers that are borderline. Make recommendations as to whether the paper should be rejected, accepted for poster presentation, accepted for oral presentation, or be considered for best paper or best student paper.
 
@@ -98,7 +98,6 @@ def sendMail(spc_invited):
         url = openreview.baseurl+"/invitation?id=UAI.org/2017/conference/-/spc_invitation&username=" + spc_member + "&key=" + hashkey + "&response="
         fullname = re.sub('[0-9]','',spc_member.replace('~','').replace('_',' '))
         print "Sending message to %s (%s)" % (fullname,spc_member)
-
         openreview.send_mail("Senior Program Committee Invitation for UAI 2017", [spc_member], message %(fullname,url + "Yes", url + "No"))
 
 
