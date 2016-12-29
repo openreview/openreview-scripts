@@ -34,8 +34,8 @@ if args.paper_number != None:
 
     paper_number = args.paper_number
     notes = openreview.get_notes(invitation = 'ICLR.cc/2017/conference/-/submission', number = paper_number)
-    
-    if len(notes) > 0: 
+
+    if len(notes) > 0:
         note = notes[0]
         message = []
         reviewers = openreview.get_group('ICLR.cc/2017/conference/paper' + str(note.number) + '/reviewers');
@@ -47,7 +47,7 @@ if args.paper_number != None:
                     print "Error: Forbidden. Conflict of interest with user "+openreview.user['id']
                     break
                 else:
-                    raise e 
+                    raise e
 
             if len(reviewer_wrapper.members) > 0:
                 reviewerNumber = rev.split('paper')[1].split('/AnonReviewer')[1]
@@ -56,19 +56,19 @@ if args.paper_number != None:
             else:
                 print "Reviewer group has no members", reviewer_wrapper.id
         message.sort()
-        
+
         for m in message:
             print m
     else:
         print "Paper number not found", paper_number
 
 if args.user != None:
-    print "\n**WARNING: conflicts of interest of " + openreview.user['id']+ " are not shown.**\n"
+    print "\n**NOTE: conflicts of interest of " + openreview.user['id']+ " are included in this list**\n"
 
     user = args.user
     try:
         reviewers = openreview.get_groups(member = user, regex = 'ICLR.cc/2017/conference/paper[0-9]+/reviewers')
-    
+
         if len(reviewers):
             print 'Papers assigned to reviewer ' + user + " (excluding conflicts of interest):"
             for reviewer in reviewers:
@@ -85,7 +85,7 @@ if args.all != None:
     with open(args.all, 'wb') as outfile:
 
         csvwriter = csv.writer(outfile, delimiter=',')
-        
+
         reviewers = openreview.get_group('ICLR.cc/2017/conference/reviewers');
 
         for reviewer in reviewers.members:
@@ -104,6 +104,6 @@ if args.all != None:
                 row = []
                 row.append(reviewer)
                 row.append('')
-                csvwriter.writerow(row)                
+                csvwriter.writerow(row)
 
 

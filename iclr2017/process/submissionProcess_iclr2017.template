@@ -1,6 +1,6 @@
 function () {
   var or3client = lib.or3client;
-  
+
   var metaReviewProcess = <<metaReviewProcess.js>>
 
   var metaReviewInvitation = {
@@ -11,39 +11,53 @@ function () {
     'noninvitees':[],
     'readers': ['ICLR.cc/2017/conference/ACs_and_organizers'],
     'process': metaReviewProcess+'',
-    'duedate': 1481932799000,
+    'duedate': null,
     'reply': {
-      'forum': note.id, 
+      'forum': note.id,
       'replyto': note.id,
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
       'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/areachair[0-9]+'},
-      'readers': { 
-        'values': ['everyone'], 
+      'readers': {
+        'values': ['ICLR.cc/2017/pcs'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
         'title': {
           'order': 1,
-          'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.'
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your review.',
+          'required': true
         },
         'metareview': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+          'required': true
         },
         'recommendation': {
           'order': 3,
           'value-dropdown': [
-            'Oral', 
-            'Poster', 
-            'Workshop', 
-            'Reject'
-          ]
+            'Oral',
+            'Poster',
+            'Reject',
+            'Workshop'
+          ],
+          'required': true
+        },
+        'confidence': {
+          'order': 4,
+          'value-radio': [
+            '5: The area chair is absolutely certain',
+            '4: The area chair is confident but not absolutely certain',
+            '3: The area chair is somewhat confident',
+            '2: The area chair is not sure',
+            '1: The area chair\'s evaluation is an educated guess'
+          ],
+          'required': true
         }
-      } 
+      }
     }
-  };  
+  };
 
   var openReviewProcess = <<openReviewProcess.js>>
 
@@ -56,12 +70,12 @@ function () {
     'readers': ['everyone'],
     'process': openReviewProcess+'',
     'reply': {
-      'forum': note.id, 
+      'forum': note.id,
       'replyto': note.id,
       'writers': {'values-regex':'~.*|\\(anonymous\\)'},
       'signatures': {'values-regex':'~.*|\\(anonymous\\)'},
-      'readers': { 
-        'values': ['everyone'], 
+      'readers': {
+        'values': ['everyone'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -78,9 +92,9 @@ function () {
         'rating': {
           'order': 3,
           'value-dropdown': [
-            '10: Top 5% of accepted papers, seminal paper', 
-            '9: Top 15% of accepted papers, strong accept', 
-            '8: Top 50% of accepted papers, clear accept', 
+            '10: Top 5% of accepted papers, seminal paper',
+            '9: Top 15% of accepted papers, strong accept',
+            '8: Top 50% of accepted papers, clear accept',
             '7: Good paper, accept',
             '6: Marginally above acceptance threshold',
             '5: Marginally below acceptance threshold',
@@ -93,16 +107,16 @@ function () {
         'confidence': {
           'order': 4,
           'value-radio': [
-            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature', 
-            '4: The reviewer is confident but not absolutely certain that the evaluation is correct', 
+            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '4: The reviewer is confident but not absolutely certain that the evaluation is correct',
             '3: The reviewer is fairly confident that the evaluation is correct',
             '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
             '1: The reviewer\'s evaluation is an educated guess'
           ]
         }
-      } 
+      }
     }
-  };  
+  };
 
   var officialReviewProcess = <<officialReviewProcess.js>>
 
@@ -110,18 +124,18 @@ function () {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/official/review',
     'signatures': ['ICLR.cc/2017/conference'],
     'writers': ['ICLR.cc/2017/conference'],
-    'invitees': [],
+    'invitees': ['ICLR.cc/2017/conference/-/paper'+note.number+'/reviewers'],
     'noninvitees':[],
     'readers': ['everyone'],
     'process': officialReviewProcess+'',
     'duedate': 1481932799000,
     'reply': {
-      'forum': note.id, 
+      'forum': note.id,
       'replyto': note.id,
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},
       'signatures': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},
-      'readers': { 
-        'values': ['everyone'], 
+      'readers': {
+        'values': ['everyone'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -138,9 +152,9 @@ function () {
         'rating': {
           'order': 3,
           'value-dropdown': [
-            '10: Top 5% of accepted papers, seminal paper', 
-            '9: Top 15% of accepted papers, strong accept', 
-            '8: Top 50% of accepted papers, clear accept', 
+            '10: Top 5% of accepted papers, seminal paper',
+            '9: Top 15% of accepted papers, strong accept',
+            '8: Top 50% of accepted papers, clear accept',
             '7: Good paper, accept',
             '6: Marginally above acceptance threshold',
             '5: Marginally below acceptance threshold',
@@ -153,14 +167,14 @@ function () {
         'confidence': {
           'order': 4,
           'value-radio': [
-            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature', 
-            '4: The reviewer is confident but not absolutely certain that the evaluation is correct', 
+            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '4: The reviewer is confident but not absolutely certain that the evaluation is correct',
             '3: The reviewer is fairly confident that the evaluation is correct',
             '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
             '1: The reviewer\'s evaluation is an educated guess'
           ]
         }
-      } 
+      }
     }
   };
 
@@ -180,11 +194,11 @@ function () {
       'replyto': note.id,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+',
-        'description': 'How your identity will be displayed with the above content.' 
+        'description': 'How your identity will be displayed with the above content.'
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
-      'readers': { 
-        'values': ['everyone'], 
+      'readers': {
+        'values': ['everyone'],
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -203,7 +217,7 @@ function () {
   };
 
   var commentProcess = <<commentProcess.js>>
-  
+
   var publicCommentInvite = {
     'id': 'ICLR.cc/2017/conference/-/paper'+note.number+'/public/comment',
     'signatures':['ICLR.cc/2017/conference'],
@@ -217,16 +231,16 @@ function () {
       //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'~.*|\\(anonymous\\)',
-        'description': 'How your identity will be displayed with the above content.' 
+        'description': 'How your identity will be displayed with the above content.'
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
-      'readers': { 
+      'readers': {
         'value-dropdown': [
           'everyone',
           'ICLR.cc/2017/conference/organizers',
           'ICLR.cc/2017/conference/ACs_and_organizers',
           'ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'
-        ], 
+        ],
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -257,16 +271,16 @@ function () {
       //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
         'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/(reviewer|areachair)[0-9]+',
-        'description': 'How your identity will be displayed with the above content.' 
+        'description': 'How your identity will be displayed with the above content.'
         },    // this regex demands that the author reveal his/her ~ handle
       'writers': {'values-regex':'ICLR.cc/2017/conference/paper'+note.number+'/(reviewer|areachair)[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
-      'readers': { 
+      'readers': {
         'value-dropdown': [
           'everyone',
           'ICLR.cc/2017/conference/organizers',
           'ICLR.cc/2017/conference/ACs_and_organizers',
           'ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers'
-        ], 
+        ],
         'description': 'The users who will be allowed to read the above content.'
         },   // the reply must allow ANYONE to read this note (comment)
       'content': {
@@ -302,9 +316,9 @@ function () {
         'values-regex':'ICLR.cc/2017/pcs',
         'description':'Your displayed identity associated with the above content.'
         },
-      'writers': {'values-regex':'ICLR.cc/2017/pcs'}, 
-      'readers': { 
-        'values': ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs','ICLR.cc/2017/conference'], 
+      'writers': {'values-regex':'ICLR.cc/2017/pcs'},
+      'readers': {
+        'values': ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs','ICLR.cc/2017/conference'],
         'description': 'The users who will be allowed to read the above content.'
         },
       'content': {
@@ -316,7 +330,7 @@ function () {
             'Pending'
           ]
         }
-      } 
+      }
     }
   };
 
@@ -332,11 +346,11 @@ function () {
       forum: note.id,
       referent: note.id,
       signatures: invitation.reply.signatures,
-      writers: invitation.reply.writers, 
+      writers: invitation.reply.writers,
       readers: invitation.reply.readers,
       content: invitation.reply.content
-    }    
-  }  
+    }
+  }
 
 
   var list = note.invitation.replace(/_/g,' ').split('/')
@@ -350,7 +364,7 @@ function () {
     "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
-  
+
   // Create an empty group for this paper, e.g. "ICLR.cc/2017/conference/paper444"
   var paperGroup = {
     'id': 'ICLR.cc/2017/conference/paper'+note.number,
@@ -405,13 +419,13 @@ function () {
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result=>{
     group_promises = [
-      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),  
-      or3client.or3request(or3client.grpUrl, reviewNonreadersGroup, 'POST', token),  
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, reviewNonreadersGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token),
     ];
 
-    return Promise.all(group_promises);    
+    return Promise.all(group_promises);
   })
   .then(result=>{
     invitation_promises = [
