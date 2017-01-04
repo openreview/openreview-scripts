@@ -2,21 +2,21 @@ function () {
   var or3client = lib.or3client;
 
   var metaReviewProcess = <<metaReviewProcess.js>>
-
+  //var metaReviewProcess = "function() { done() return true; }";
   var metaReviewInvitation = {
     'id': 'UAI.org/2017/conference/-/paper'+note.number+'/meta/review',
     'signatures': ['UAI.org/2017/conference'],
     'writers': ['UAI.org/2017/conference'],
-    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/SPC'],
+    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/Senior_Program_Committee'],
     'noninvitees':[],
-    'readers': ['UAI.org/2017/conference/SPC','UAI.org/2017/conference/PC'],
+    'readers': ['UAI.org/2017/conference','UAI.org/2017/conference/Senior_Program_Committee','UAI.org/2017/conference/Program_Co-Chairs'],
     'process': metaReviewProcess+'',
     'duedate': 1481932799000,
     'reply': {
       'forum': note.id,
       'replyto': note.id,
-      'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/areachair[0-9]+'},
-      'signatures': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/areachair[0-9]+'},
+      'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/Senior_Program_Committee_Member[0-9]+'},
+      'signatures': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/Senior_Program_Committee_Member[0-9]+'},
       'readers': {
         'values': ['everyone'],
         'description': 'The users who will be allowed to read the above content.'
@@ -45,16 +45,16 @@ function () {
     }
   };
 
-  var officialReviewProcess = <<officialReviewProcess.js>>
-
-  var officialReviewInvitation = {
-    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/official/review',
+  var reviewProcess = <<reviewProcess.js>>
+  //var reviewProcess = "function() { done() return true; }";
+  var reviewInvitation = {
+    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/review',
     'signatures': ['UAI.org/2017/conference'],
     'writers': ['UAI.org/2017/conference'],
     'invitees': [],
     'noninvitees':[],
-    'readers': ['UAI.org/2017/conference/SPC'], //only SPC initially; when a reviewer submits his/her review, they are added to the readers
-    'process': officialReviewProcess+'',
+    'readers': ['UAI.org/2017/conference/Senior_Program_Committee'], //only Senior_Program_Committee initially; when a reviewer submits his/her review, they are added to the readers
+    'process': reviewProcess+'',
     'duedate': 1481932799000,
     'reply': {
       'forum': note.id,
@@ -105,13 +105,14 @@ function () {
     }
   };
 
-  var commentProcess = <<commentProcess.js>>
+  //var commentProcess = </<commentProcess.js>>
+  var commentProcess = "function() { done() return true; }";
 
-  var officialCommentInvite = {
-    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/official/comment',
+  var confidentialCommentInvite = {
+    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/confidential_comment',
     'signatures':['UAI.org/2017/conference'],
     'writers':['UAI.org/2017/conference'],
-    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/SPC','UAI.org/2017/conference/paper'+note.number+'/PC'],
+    'invitees': ['UAI.org/2017/conference/Program_Committee','UAI.org/2017/conference/Senior_Program_Committee'],
     'noninvitees':[],
     'readers': ['everyone'],
     'process':commentProcess+'',
@@ -119,85 +120,110 @@ function () {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'UAI.org/2017/conference/paper'+note.number+'/(AnonReviewer|areachair)[0-9]+',
+        'values-regex':'~.+',
         'description': 'How your identity will be displayed with the above content.'
-        },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/(reviewer|areachair)[0-9]+'},    // this regex demands that the author reveal his/her ~ handle
+        },
+      'writers': {'values-regex':'~.+'},
       'readers': {
-        'value-dropdown': [
-          'UAI.org/2017/conference/',
-          'UAI.org/2017/conference/PC',
-          'UAI.org/2017/conference/SPC'
+        'values-dropdown': [
+          'UAI.org/2017/conference/Program_Co-Chairs',
+          'UAI.org/2017/conference/Senior_Program_Committee',
+          'UAI.org/2017/conference/Program_Committee'
         ],
         'description': 'The users who will be allowed to read the above content.'
-        },   // the reply must allow ANYONE to read this note (comment)
+        },
       'content': {
         'title': {
           'order': 1,
           'value-regex': '.{1,500}',
-          'description': 'Brief summary of your comment.'
+          'description': 'Brief summary of your comment.',
+          'required':true
         },
         'comment': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Your comment or reply.'
+          'description': 'Your comment or reply.',
+          'required':true
         }
       }
     }
   };
 
-  var referenceInvite = {
-    id: 'UAI.org/2017/conference/-/Add/Revision',
-    signatures: ['UAI.org/2017/conference'],
-    writers: ['UAI.org/2017/conference'],
-    invitees: note.signatures,
-    noninvitees: [],
-    readers: ['everyone'],
-    process: 'function() { done() return true; }',
-    reply: {
-      forum: note.id,
-      referent: note.id,
-      signatures: invitation.reply.signatures,
-      writers: invitation.reply.writers,
-      readers: invitation.reply.readers,
-      content: invitation.reply.content
+  var openCommentInvite = {
+    'id': 'UAI.org/2017/conference/-/paper'+note.number+'/open_comment',
+    'signatures':['UAI.org/2017/conference'],
+    'writers':['UAI.org/2017/conference'],
+    'invitees': ['UAI.org/2017/conference/Program_Committee','UAI.org/2017/conference/Senior_Program_Committee'],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process':commentProcess+'',
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      //'replyto': noteID,    // not specified so we can allow comments on comments
+      'signatures': {
+        'values-regex':'~.+',
+        'description': 'How your identity will be displayed with the above content.'
+        },
+      'writers': {'values-regex':'~.+'},
+      'readers': {
+        'values-dropdown': [
+          'everyone',
+          'UAI.org/2017/conference/Program_Co-Chairs',
+          'UAI.org/2017/conference/Senior_Program_Committee',
+          'UAI.org/2017/conference/Program_Committee'
+        ],
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your comment.',
+          'required':true
+        },
+        'comment': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your comment or reply.',
+          'required':true
+        }
+      }
     }
-  }
+  };
+
+
 
   //Send an email to the author of the submitted note, confirming its receipt
   var mail = {
     "groups": note.content.authorids,
-    "subject": "Confirmation of your submission to UAI 2017": \"" + note.content.title + "\".",
+    "subject": "Confirmation of your submission to UAI 2017: \"" + note.content.title + "\".",
     "message": `Your submission to UAI 2017 has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
-  var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
+  var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token );
 
   // Create an empty group for this paper, e.g. "UAI.org/2017/conference/paper444"
   var paperGroup = {
     'id': 'UAI.org/2017/conference/paper'+note.number,
     'signatures': ['UAI.org/2017/conference'],
-    'writers': ['UAI.org/2017/conference','UAI.org/2017/pcs'],
+    'writers': ['UAI.org/2017/conference'],
     'members': [],
     'readers': ['everyone'],
     'signatories': ['UAI.org/2017/conference', 'UAI.org/2017/conference/paper'+note.number]
   };
 
   var reviewerGroup = {
-    'id': paperGroup.id+'/reviewers',
+    'id': paperGroup.id+'/Program_Committee',
     'signatures':['UAI.org/2017/conference'],
     'writers':['UAI.org/2017/conference'],
     'members':[],
-    'readers':['UAI.org/2017/conference/PC','UAI.org/2017/conference/SPC'],
-    'signatories':['UAI.org/2017/conference',paperGroup.id+'/reviewers']
+    'readers':['UAI.org/2017/conference/Program_Co-Chairs','UAI.org/2017/conference/Senior_Program_Committee'],
+    'signatories':['UAI.org/2017/conference',paperGroup.id+'/Program_Committee']
   };
-
-  openReviewInvitation.noninvitees.push(reviewerGroup.id);
-  publicCommentInvite.noninvitees.push(reviewerGroup.id);
 
   var reviewNonreadersGroup = {
     'id': paperGroup.id+'/review-nonreaders',
     'signatures':['UAI.org/2017/conference'],
-    'writers':['UAI.org/2017/conference','UAI.org/2017/pcs'],
+    'writers':['UAI.org/2017/conference'],
     'members':[],
     'readers':['everyone'],
     'signatories':['UAI.org/2017/conference',paperGroup.id+'/review-nonreaders']
@@ -206,19 +232,19 @@ function () {
   var authorGroup = {
     'id':paperGroup.id+'/authors',
     'signatures':['UAI.org/2017/conference'],
-    'writers':['UAI.org/2017/conference','UAI.org/2017/pcs'],
+    'writers':['UAI.org/2017/conference'],
     'members': note.content.authorids,
     'readers':['everyone'],
     'signatories':['UAI.org/2017/conference',paperGroup.id+'/authors']
   };
 
   var areachairGroup = {
-    'id':paperGroup.id+'/areachairs',
+    'id':paperGroup.id+'/Senior_Program_Committee',
     'signatures':['UAI.org/2017/conference'],
-    'writers':['UAI.org/2017/conference','UAI.org/2017/pcs'],
+    'writers':['UAI.org/2017/conference'],
     'members':[],
     'readers':['everyone'],
-    'signatories':['UAI.org/2017/conference',paperGroup.id+'/areachairs']
+    'signatories':['UAI.org/2017/conference',paperGroup.id+'/Senior_Program_Committee']
   };
 
 
@@ -237,9 +263,9 @@ function () {
   .then(result=>{
     invitation_promises = [
       or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, officialCommentInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, referenceInvite, 'POST', token)
+      or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, confidentialCommentInvite, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token)
     ];
 
     return Promise.all(invitation_promises);

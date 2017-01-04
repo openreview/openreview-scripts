@@ -65,7 +65,7 @@ if openreview.user['id'].lower()=='openreview.net':
     if overwrite_allowed('UAI.org/2017/conference'):
         conference = Group('UAI.org/2017/conference',
             readers     = ['everyone'],
-            writers     = ['OpenReview.net'],
+            writers     = ['UAI.org/2017/conference'],
             signatures  = ['OpenReview.net'],
             signatories = ['UAI.org/2017/conference'],
             members     = [],
@@ -165,11 +165,11 @@ if openreview.user['id'].lower()=='openreview.net':
         writers=['UAI.org/2017/conference'],
         invitees=['~'],
         signatures=['UAI.org/2017/conference'],
-        duedate=1482863820000)# disable invitation, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        #process='../process/submissionProcess_uai2017.js')
+        duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        process='../process/submissionProcess_uai2017.js')
 
     #submission process function doesn't do anything yet
-    submission_invitation.process = "function(){done();return true;};"
+    #submission_invitation.process = "function(){done();return true;};"
 
     submission_invitation.reply = {
         'forum': None,
