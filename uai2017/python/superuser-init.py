@@ -260,7 +260,7 @@ if openreview.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [UAIData.get_program_co_chairs(), UAIData.get_senior_program_comittee(), UAIData.get_program_comittee()] #who should be allowed to read UAI submissions and when?
+            'values': [UAIData.get_program_co_chairs(), UAIData.get_senior_program_committee(), UAIData.get_program_committee()] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
