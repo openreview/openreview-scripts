@@ -6,6 +6,14 @@ class UAIData():
 
 
 	@staticmethod
+	def get_program_committee():
+		return "UAI.org/2017/conference/Program_Committee"
+
+	@staticmethod
+	def get_senior_program_committee():
+		return "UAI.org/2017/conference/Senior_Program_Committee"
+
+	@staticmethod
 	def get_subject_areas():
 
 		return ["Algorithms: Approximate Inference",
