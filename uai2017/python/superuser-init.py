@@ -177,7 +177,7 @@ if openreview.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['UAI.org/2017/conference',UAIData.get_program_co_chairs(),UAIData.get_program_committee(),UAIData.get_senior_program_committee()] #who should be allowed to read UAI submissions and when?
+            'values': ['UAI.org/2017/conference',UAIData.get_program_co_chairs()] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',

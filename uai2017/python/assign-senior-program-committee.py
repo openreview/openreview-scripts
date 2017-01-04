@@ -27,7 +27,7 @@ else:
     client = openreview.Client(baseurl=args.baseurl)
 baseurl = client.baseurl
 
-submissions = client.get_notes(invitation='UAI.org/2017/conference/-/submission')
+submissions = client.get_notes(invitation='UAI.org/2017/conference/-/blind-submission')
 
 def single_assignment_valid(s):
     try:
@@ -83,7 +83,7 @@ def get_areachair_group(areachair, paper_number, conflict_list):
                 print "areachair " + areachair + " found in " + existing_areachair.id
                 return existing_areachair
 
-    new_areachair_id = 'UAI.org/2017/conference/paper'+str(paper_number)+'/Senior_Program_Committee_Member1'+str(N+1)
+    new_areachair_id = 'UAI.org/2017/conference/paper'+str(paper_number)+'/Senior_Program_Committee_Member'+str(N+1)
     new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
     client.add_members_to_group(areachairs,new_areachair_id)
     return new_areachair

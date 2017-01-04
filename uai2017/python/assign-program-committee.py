@@ -27,7 +27,7 @@ else:
     client = openreview.Client(baseurl=args.baseurl)
 baseurl = client.baseurl
 
-submissions = client.get_notes(invitation='UAI.org/2017/conference/-/submission')
+submissions = client.get_notes(invitation='UAI.org/2017/conference/-/blind-submission')
 
 def single_assignment_valid(s):
     try:
