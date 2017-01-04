@@ -55,19 +55,8 @@ def assign_areachair(areachair,paper_number):
     elif not valid_email.match(areachair) and not valid_tilde.match(areachair):
         print "Senior Program Committee Member \""+areachair+"\" invalid. Please check for typos and whitespace."
     else:
-        conflicts = [note.content['conflicts'] for note in notes]
-        print "conflicts",conflicts
-        conflict_list = []
-        if conflicts:
-            for c in conflicts:
-                conflict_list+=c
-
-        if 'authorids' in note.content:
-            conflict_list += note.content['authorids']
-
-        print "conflict_list",conflict_list
-
-        areachair_group = get_areachair_group(areachair, paper_number, conflict_list)
+        #need to incorporate conflicts
+        areachair_group = get_areachair_group(areachair, paper_number, [])
 
 
 
