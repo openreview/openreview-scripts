@@ -51,18 +51,18 @@ function () {
     'id': 'UAI.org/2017/conference/-/paper'+note.number+'/review',
     'signatures': ['UAI.org/2017/conference'],
     'writers': ['UAI.org/2017/conference'],
-    'invitees': [],
+    'invitees': ['UAI.org/2017/conference/paper'+note.number+'/Program_Committee'],
     'noninvitees':[],
-    'readers': ['UAI.org/2017/conference/Senior_Program_Committee'], //only Senior_Program_Committee initially; when a reviewer submits his/her review, they are added to the readers
+    'readers': ['everyone'],
     'process': reviewProcess+'',
     'duedate': 1481932799000,
     'reply': {
       'forum': note.id,
       'replyto': note.id,
-      'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},
-      'signatures': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/AnonReviewer[0-9]+'},
+      'writers': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/Program_Committee_Member[0-9]+'},
+      'signatures': {'values-regex':'UAI.org/2017/conference/paper'+note.number+'/Program_Committee_Member[0-9]+'},
       'readers': {
-        'values': ['everyone'],
+        'values': ['UAI.org/2017/conference/Senior_Program_Committee'], //only Senior_Program_Committee initially; when a reviewer submits his/her review, they are added to the readers
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
