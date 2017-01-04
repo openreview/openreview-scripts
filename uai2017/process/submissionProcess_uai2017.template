@@ -11,7 +11,7 @@ function () {
     'noninvitees':[],
     'readers': ['UAI.org/2017/conference','UAI.org/2017/conference/Senior_Program_Committee','UAI.org/2017/conference/Program_Co-Chairs'],
     'process': metaReviewProcess+'',
-    'duedate': 1481932799000,
+    'duedate': 1507180500000, //duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
     'reply': {
       'forum': note.id,
       'replyto': note.id,
@@ -55,7 +55,7 @@ function () {
     'noninvitees':[],
     'readers': ['everyone'],
     'process': reviewProcess+'',
-    'duedate': 1481932799000,
+    'duedate': 1507180500000, //duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
     'reply': {
       'forum': note.id,
       'replyto': note.id,
