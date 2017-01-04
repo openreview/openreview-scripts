@@ -80,7 +80,7 @@ if openreview.user['id'].lower()=='openreview.net':
             writers     = ['OpenReview.net','UAI.org/2017/conference/Program_Co-Chairs'],
             signatures  = ['OpenReview.net'],
             signatories = ['UAI.org/2017/conference/Program_Co-Chairs'],
-            members     = []) #should include Gal and Kristian
+            members     = ['~Melisa_TestBok1']) #should include Gal and Kristian
         groups.append(Program_Chairs)
 
 
@@ -167,7 +167,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['~'],
         signatures=['UAI.org/2017/conference'],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        process='../process/submissionProcess_uai2017.js')
+        process='../process/process.js')
 
     #submission process function doesn't do anything yet
     #submission_invitation.process = "function(){done();return true;};"
@@ -245,6 +245,47 @@ if openreview.user['id'].lower()=='openreview.net':
     }
 
     invitations.append(submission_invitation)
+
+    blind_submission_invitation = Invitation('UAI.org/2017/conference',
+        'blind-submission',
+        readers=['everyone'],
+        writers=['UAI.org/2017/conference'],
+        invitees=['~'],
+        signatures=['UAI.org/2017/conference'],
+        duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        process='../process/submissionProcess_uai2017.js')
+
+    blind_submission_invitation.reply = {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': [UAIData.get_program_co_chairs(), UAIData.get_senior_program_comittee(), UAIData.get_program_comittee()] #who should be allowed to read UAI submissions and when?
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values': ['UAI.org/2017/conference']
+        },
+        'writers': {
+            'values': ['UAI.org/2017/conference']
+        },
+        'content': {
+            'authors': {
+                'description': 'Comma separated list of author names, as they appear in the paper.',
+                'order': 1,
+                'values': [],
+                'required':True
+            },
+            'authorids': {
+                'description': 'Comma separated list of author email addresses, in the same order as above.',
+                'order': 2,
+                'values': [],
+                'required':True
+            }
+        }
+    }
+
+    invitations.append(blind_submission_invitation)
 
     ## Create SPC recruitment invitation/form, and add it to the list of invitations to post
     spc_invitation = Invitation('UAI.org/2017/conference', 'spc_invitation',

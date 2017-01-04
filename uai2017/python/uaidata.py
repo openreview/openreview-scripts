@@ -4,6 +4,13 @@ class UAIData():
 	def get_program_co_chairs():
 		return "UAI.org/2017/conference/Program_Co-Chairs"
 
+	@staticmethod
+	def get_senior_program_comittee():
+		return "UAI.org/2017/conference/Senior_Program_Committee"
+
+	@staticmethod
+	def get_program_comittee():
+		return "UAI.org/2017/conference/Program_Committee"
 
 	@staticmethod
 	def get_subject_areas():

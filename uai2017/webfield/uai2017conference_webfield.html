@@ -44,7 +44,7 @@
         return error
       });
 
-      var notesP = httpGetP('notes', {invitation: 'UAI.org/2017/conference/-/submission', maxtcdate: Date.now()}).then(function(result) {
+      var notesP = httpGetP('notes', {invitation: 'UAI.org/2017/conference/-/blind-submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
       },
       function(error){
@@ -69,7 +69,7 @@
                 view.mkNewNoteEditor(invitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      invitation: 'UAI.org/2017/conference/-/submission',
+                      invitation: 'UAI.org/2017/conference/-/blind-submission',
                       maxtcdate: Date.now()
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);
