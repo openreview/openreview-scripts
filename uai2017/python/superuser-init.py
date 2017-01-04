@@ -12,6 +12,7 @@ import argparse
 import csv
 import sys
 from openreview import *
+from uaidata import *
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -176,7 +177,7 @@ if openreview.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone'] #who should be allowed to read UAI submissions and when?
+            'values': [UAIData.get_program_co_chairs()] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -204,51 +205,41 @@ if openreview.user['id'].lower()=='openreview.net':
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
+            'subject areas': {
+                'description': 'List of areas of expertise.',
+                'order': 4,
+                'values-dropdown': UAIData.get_subject_areas()
+            },
+            'keywords': {
+                'description': 'Comma separated list of keywords.',
+                'order': 6,
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*"
+            },
             'TL;DR': {
                 'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
-                'order': 3,
+                'order': 7,
                 'value-regex': '[^\\n]{0,250}',
                 'required':False
             },
             'abstract': {
                 'description': 'Abstract of paper.',
-                'order': 4,
+                'order': 8,
                 'value-regex': '[\\S\\s]{1,5000}',
                 'required':True
             },
             'pdf': {
-                'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv (link must begin with http(s) and end with .pdf)',
-                'order': 5,
-                'value-regex': 'upload|(http|https):\/\/.+\.pdf',
+                'description': 'Upload a PDF file that ends with .pdf)',
+                'order': 9,
+                'value-regex': 'upload',
                 'required':True
             },
-            'keywords': {
-                'description': 'Comma separated list of keywords.',
-                'order': 6,
-                'values-dropdown': [
-                    'Theory',
-                    'Computer vision',
-                    'Speech',
-                    'Natural language processing',
-                    'Deep learning',
-                    'Unsupervised Learning',
-                    'Supervised Learning',
-                    'Semi-Supervised Learning',
-                    'Reinforcement Learning',
-                    'Transfer Learning',
-                    'Multi-modal learning',
-                    'Applications',
-                    'Optimization',
-                    'Structured prediction',
-                    'Games'
+            'student paper': {
+                'description': 'Is it a student paper?',
+                'order': 10,
+                'value-radio': [
+                    'Yes',
+                    'No'
                 ]
-
-            },
-            'conflicts': {
-                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
-                'order': 100,
-                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required':True
             }
         }
     }
