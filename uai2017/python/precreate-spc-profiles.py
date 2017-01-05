@@ -112,7 +112,7 @@ with open(args.file) as f:
     for row in reader:
         spc_member_info.append((row[0],row[1],row[2]))
 
-spcs_invited = client.get_group(id='UAI.org/2017/conference/Senior_Program_Committee/invited')
+spcs_invited = client.get_group(id='auai.org/UAI/2017/SPC/invited')
 profiles = []
 
 for u in spc_member_info:

@@ -3,7 +3,7 @@ function(){
 
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
 
-    var programchairs = ['UAI.org/2017/conference/Program_Co-Chairs'];
+    var programchairs = ['auai.org/UAI/2017/Chairs'];
 
     origNote.then(function(result){
       var forum = result.notes[0]

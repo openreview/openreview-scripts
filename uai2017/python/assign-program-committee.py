@@ -27,7 +27,7 @@ else:
     client = openreview.Client(baseurl=args.baseurl)
 baseurl = client.baseurl
 
-submissions = client.get_notes(invitation='UAI.org/2017/conference/-/blind-submission')
+submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
 
 def single_assignment_valid(s):
     try:
@@ -63,9 +63,9 @@ def assign_areachair(areachair,paper_number):
 
 def get_areachair_group(areachair, paper_number, conflict_list):
 
-    areachairs = client.get_group('UAI.org/2017/conference/paper'+paper_number+'/Program_Committee')
+    areachairs = client.get_group('auai.org/UAI/2017/paper'+paper_number+'/PC')
     existing_areachairs = areachairs.members
-    conference_areachairs = client.get_group('UAI.org/2017/conference/Program_Committee')
+    conference_areachairs = client.get_group('auai.org/UAI/2017/PC')
 
     if not (areachair in conference_areachairs.members):
         client.add_members_to_group(conference_areachairs,areachair)
@@ -73,7 +73,7 @@ def get_areachair_group(areachair, paper_number, conflict_list):
     N=0
     for a in existing_areachairs:
 
-        reviewer_number = int(a.split('Program_Committee_Member')[1])
+        reviewer_number = int(a.split('PC_Member')[1])
         if reviewer_number > N:
             N = reviewer_number
 
@@ -83,20 +83,20 @@ def get_areachair_group(areachair, paper_number, conflict_list):
                 print "reviewer " + areachair + " found in " + existing_areachair.id
                 return existing_areachair
 
-    new_areachair_id = 'UAI.org/2017/conference/paper'+str(paper_number)+'/Program_Committee_Member'+str(N+1)
+    new_areachair_id = 'auai.org/UAI/2017/paper'+str(paper_number)+'/PC_Member'+str(N+1)
     new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
     client.add_members_to_group(areachairs,new_areachair_id)
     return new_areachair
 
 
 def create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list):
-    print 'Creating areachair: ', new_areachair_id
+    print 'Creating reviewer: ', new_areachair_id
     new_areachair = openreview.Group(
         new_areachair_id,
-        signatures=['UAI.org/2017/conference'],
-        writers=['UAI.org/2017/conference'],
+        signatures=['auai.org/UAI/2017'],
+        writers=['auai.org/UAI/2017'],
         members=[areachair],
-        readers=['UAI.org/2017/conference',new_areachair_id,'UAI.org/2017/conference/Program_Co-Chairs'],
+        readers=['auai.org/UAI/2017',new_areachair_id,'auai.org/UAI/2017/Chairs'],
         nonreaders=conflict_list,
         signatories=[new_areachair_id])
     client.post_group(new_areachair)

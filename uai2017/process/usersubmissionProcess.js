@@ -4,12 +4,12 @@ function() {
 
 	var overwritingNote = {
 		original: note.id,
-    invitation: 'UAI.org/2017/conference/-/blind-submission',
+    invitation: 'auai.org/UAI/2017/-/blind-submission',
     forum: null,
     parent: null,
-    signatures: ['UAI.org/2017/conference'],
-    writers: ['UAI.org/2017/conference'],
-    readers: ["UAI.org/2017/conference/Program_Co-Chairs", "UAI.org/2017/conference/Senior_Program_Committee", "UAI.org/2017/conference/Program_Committee"],
+    signatures: ['auai.org/UAI/2017'],
+    writers: ['auai.org/UAI/2017'],
+    readers: ["auai.org/UAI/2017/Chairs", "auai.org/UAI/2017/SPC", "auai.org/UAI/2017/PC"],
     content: {
  			authors: [],
  			authorids: []
