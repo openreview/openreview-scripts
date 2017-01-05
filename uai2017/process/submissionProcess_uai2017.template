@@ -125,7 +125,7 @@ function () {
         },
       'writers': {'values-regex':'~.+'},
       'readers': {
-        'values-dropdown': [
+        'values': [
           'UAI.org/2017/conference/Program_Co-Chairs',
           'UAI.org/2017/conference/Senior_Program_Committee'
         ],
@@ -165,7 +165,7 @@ function () {
         },
       'writers': {'values-regex':'~.+'},
       'readers': {
-        'values-dropdown': [
+        'values': [
           'UAI.org/2017/conference/Program_Co-Chairs',
           'UAI.org/2017/conference/Senior_Program_Committee',
           'UAI.org/2017/conference/Program_Committee'
