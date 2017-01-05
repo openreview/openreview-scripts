@@ -9,8 +9,8 @@ function(){
     origNote.then(function(result){
       var note_number = result.notes[0].number;
       var origNoteTitle = result.notes[0].content.title;
-      var reviewers = ['UAI.org/2017/conference/paper'+note_number+'/Program_Committee'];
-      var areachairs = ['UAI.org/2017/conference/paper'+note_number+'/Senior_Program_Committee'];
+      var reviewers = ['auai.org/UAI/2017/paper'+note_number+'/PC'];
+      var areachairs = ['auai.org/UAI/2017/paper'+note_number+'/SPC'];
       var authors = result.notes[0].content.authorids;
 
       var author_mail = {

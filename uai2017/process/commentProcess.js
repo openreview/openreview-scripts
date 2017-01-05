@@ -1,7 +1,7 @@
 function(){
     console.log('comment process initiated')
     var or3client = lib.or3client;
-    
+
     var list = note.invitation.replace(/_/g,' ').split('/');
     list.splice(list.indexOf('-',1));
     var conference = list.join(' ')
@@ -21,7 +21,7 @@ function(){
 
     var getReviewerEmails = function(origNoteNumber){
       console.log('get reviewer emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=UAI.org/2017/conference/paper'+origNoteNumber+'/reviewers',{},'GET',token)
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/paper'+origNoteNumber+'/reviewers',{},'GET',token)
       .then(result=>{
         var reviewers = result.groups[0].members;
         console.log('reviewers before filter',reviewers);
@@ -42,8 +42,8 @@ function(){
 
     var getAreachairEmails = function(origNoteNumber){
       console.log('get AC emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=UAI.org/2017/conference/paper'+origNoteNumber+'/areachairs',{},'GET',token)
-      .then(result=>{      
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/paper'+origNoteNumber+'/areachairs',{},'GET',token)
+      .then(result=>{
         var areachairs = result.groups[0].members;
         var signatureIdx = areachairs.indexOf(note.signatures[0]);
         console.log('areachairs before filter:',areachairs);
@@ -62,8 +62,8 @@ function(){
 
     var getPCEmails = function(){
       console.log('get PC emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=UAI.org/2017/pcs',{},'GET',token)
-      .then(result=>{      
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/pcs',{},'GET',token)
+      .then(result=>{
         var pcs = result.groups[0].members;
         var signatureIdx = pcs.indexOf(note.signatures[0]);
         console.log('pcs before filter:',pcs);
@@ -119,9 +119,9 @@ function(){
       console.log('note.readers',note.readers)
       var visibleToEveryone = note.readers.indexOf('everyone')>-1 ? true : false;
       console.log('visibleToEveryone',visibleToEveryone);
-      var visibleToReviewers = note.readers.indexOf('UAI.org/2017/conference/reviewers_and_ACS_and_organizers')>-1 ? true : false;
-      var visibleToAreachairs = note.readers.indexOf('UAI.org/2017/conference/ACs_and_organizers')>-1 ? true : false;
-      var visibleToPCs = note.readers.indexOf('UAI.org/2017/conference/organizers')>-1 ? true : false;
+      var visibleToReviewers = note.readers.indexOf('auai.org/UAI/2017/reviewers_and_ACS_and_organizers')>-1 ? true : false;
+      var visibleToAreachairs = note.readers.indexOf('auai.org/UAI/2017/ACs_and_organizers')>-1 ? true : false;
+      var visibleToPCs = note.readers.indexOf('auai.org/UAI/2017/organizers')>-1 ? true : false;
 
       if(visibleToEveryone){
         var authorMailP = getAuthorEmails(origNote);
@@ -147,7 +147,7 @@ function(){
       var anonComment = replytoNoteSignatures.indexOf('(anonymous)')>-1 ? true : false;
       var selfComment = replytoNoteSignatures.indexOf(note.signatures[0])>-1 ? true : false;
 
-      if(!rootComment && !anonComment && !selfComment) { 
+      if(!rootComment && !anonComment && !selfComment) {
         var commentMailP = getCommentEmails(replytoNoteSignatures);
         promises.push(commentMailP);
       };

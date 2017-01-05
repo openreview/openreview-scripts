@@ -1,6 +1,6 @@
 function(){
     var or3client = lib.or3client;
-    
+
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
     var list = note.invitation.replace(/_/g,' ').split('/');
     list.splice(list.indexOf('-',1));
@@ -9,8 +9,8 @@ function(){
     origNote.then(function(result){
       var note_number = result.notes[0].number
 
-      var reviewers = ['UAI.org/2017/conference/paper'+note_number+'/reviewers'];
-      var areachairs = ['UAI.org/2017/conference/paper'+note_number+'/areachairs'];
+      var reviewers = ['auai.org/UAI/2017/paper'+note_number+'/reviewers'];
+      var areachairs = ['auai.org/UAI/2017/paper'+note_number+'/areachairs'];
       var authors = result.notes[0].content.authorids;
 
       var author_mail = {
