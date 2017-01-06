@@ -16,6 +16,22 @@ def get_all_member_ids(openreview_client):
     return members
 
 
+def get_email_to_id_mapping(openreview_client):
+    """
+    Get a mapping from email id's to member ids
+    :param openreview_client:
+    :return:
+    """
+    email_id_map = {}
+    member_groups = openreview_client.get_groups(regex="~.*")
+    for member_group in member_groups:
+        if member_group.id == '~':
+            continue
+        for email_id in member_group.members:
+            email_id_map[email_id] = member_group.id
+    return email_id_map
+
+
 def get_notes_submitted_papers(openreview_client, invitation_id):
     """
     Get all the submitted papers
@@ -128,6 +144,24 @@ def get_paper_reviewers_score(openreview_client, conference, paper_number_id_dic
     return output_dict
 
 
+def get_alphas_betas_dict(openreview_client, conference):
+    """
+    Get alpha and beta from Reviewer Metadata and Paper Metadata respectively
+    :param openreview_client:
+    :param conference:
+    :return:
+    """
+    notes = openreview_client.get_notes(invitation=conference + "/-/matching")
+    beta_dict = {}
+    alpha_dict = {}
+    for note in notes:
+        beta_dict[note.forum] = (note.content['minreviewers'], note.content['maxreviewers'])
+    notes = openreview_client.get_notes(invitation=conference + "/-/reviewer")
+    for note in notes:
+        alpha_dict[note.content['name']] = (note.content['minpapers'], note.content['maxpapers'])
+    return alpha_dict, beta_dict
+
+
 def get_reviewer_data_notes(openreview_client, conference):
     """
     Get all the reviewer meta data notes
@@ -137,7 +171,7 @@ def get_reviewer_data_notes(openreview_client, conference):
     return notes
 
 
-def get_number_id_dict(submitted_paper_notes):
+def get_paper_number_id_dict(submitted_paper_notes):
     """
     Get a dictionary mapping of paper number to paper id
     :param submitted_paper_notes:

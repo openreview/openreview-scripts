@@ -34,11 +34,11 @@ def get_hard_constraint_value(score_array):
     :return:
     """
     for element in score_array:
-        if element == '+Inf':
+        if element.strip().lower() == '+inf':
             return 1
-        if element == '-Inf':
-            return -1
-    return 0
+        if element.strip().lower() == '-inf':
+            return 0
+    return -1
 
 
 def add_hard_constraint_matcher(matcher, hard_constraint_dict):
@@ -48,9 +48,10 @@ def add_hard_constraint_matcher(matcher, hard_constraint_dict):
     :param hard_constraint_dict:
     :return:
     """
+    constraints =[]
     for (reviewer_index, paper_index), value in hard_constraint_dict:
-        matcher.add_hard_const(reviewer_index, paper_index, value)
-    return None
+        constraints.append(reviewer_index, paper_index, value)
+    matcher.add_hard_consts(constrs=constraints)
 
 
 def create_paper_assignment_group(paper_id_number_dict, paper_id_reviewers_dict):
@@ -70,6 +71,21 @@ def create_paper_assignment_group(paper_id_number_dict, paper_id_reviewers_dict)
         openreview.post_group(g)
 
 
+def get_alphas_betas(alpha_dict,beta_dict,reviewers,paper_ids):
+    alphas=[]
+    for reviewer in reviewers:
+        if reviewer in alpha_dict:
+            alphas.append(alpha_dict[reviewer])
+        else:
+            alphas.append(0,0)
+    betas=[]
+    for paper_id in paper_ids:
+        if paper_id in beta_dict:
+            betas.append(beta_dict[paper_id])
+        else:
+            betas.append(0,0)
+    return alphas,betas
+
 
 def update_paper_reviewer_weights(openreview_client, conference, conference_reviewer, submission_invitation_id):
     """
@@ -87,7 +103,7 @@ def update_paper_reviewer_weights(openreview_client, conference, conference_revi
     # Getting Paper details
     submitted_papers_notes = utils.get_notes_submitted_papers(openreview_client, submission_invitation_id)
     paper_ids = [paper_note.id for paper_note in submitted_papers_notes]
-    paper_number_id_dict = utils.get_number_id_dict(submitted_papers_notes)
+    paper_number_id_dict = utils.get_paper_number_id_dict(submitted_papers_notes)
     paper_id_number_dict = {paper_number_id_dict[paper_number]: paper_number for paper_number in paper_number_id_dict}
     paper_index_dict = {paper_ids[i]: i for i in range(len(paper_ids))}
 
@@ -100,13 +116,15 @@ def update_paper_reviewer_weights(openreview_client, conference, conference_revi
     for (note_id, reviewer), score_array in paper_reviewer_score_dict.iteritems():
         # Separating the infinite ones with the normal scores and get the mean of the normal ones
         hard_constraint_value = get_hard_constraint_value(score_array)
-        if hard_constraint_value == 0:
+        if hard_constraint_value == -1:
             weights[reviewer_index_dict[reviewer], paper_index_dict[note_id]] = np.mean(np.array(score_array))
         else:
             hard_constraint_dict[reviewer_index_dict[reviewer], paper_index_dict[note_id]] = hard_constraint_value
 
     # Defining the matcher
-    totAffMatcher = TotAffMatcher([2, 3], [1, 1, 1], weights)
+    alpha_dict,beta_dict = utils.get_alphas_betas_dict(openreview_client,conference)
+    alphas,betas = get_alphas_betas(alpha_dict,beta_dict,reviewers,paper_ids)
+    totAffMatcher = TotAffMatcher(alphas,betas, weights)
     add_hard_constraint_matcher(totAffMatcher, hard_constraint_dict)
     totAffMatcher.solve()
     solution = totAffMatcher.sol_dict()
