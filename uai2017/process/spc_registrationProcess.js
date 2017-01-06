@@ -105,9 +105,9 @@ function () {
     'id': 'auai.org/UAI/2017/-/SPC_Expertise',
     'signatures': ['auai.org/UAI/2017'],
     'writers': ['auai.org/UAI/2017'],
-    'invitees': ['auai.org/UAI/2017/SPC'],
+    'invitees': ['auai.org/UAI/2017/Senior_Program_Committee'],
     'noninvitees':[],
-    'readers': ['auai.org/UAI/2017','auai.org/UAI/2017/SPC'],
+    'readers': ['auai.org/UAI/2017','auai.org/UAI/2017/Senior_Program_Committee'],
     'process': process + "",
     'duedate': 1485813353000,
     'reply': {

@@ -66,7 +66,7 @@ A document describing how to use the OpenReview system and the ideas of comments
 New for 2017:
 Reviews will be available for authors as soon as they are submitted, and the authors will be allowed to respond to a review even before the formal rebuttal period.
 Reviewers can optionally choose to respond to author's comments or revise their reviews.
-Once a review is submitted, it is visible to other reviewers and SPCs who can comment on the review
+Once a review is submitted, it is visible to other reviewers and SPC who can comment on the review
 (this will not be visible to the authors)
 
 7. May 7th to May 14th:
@@ -102,9 +102,9 @@ def sendMail(spc_invited):
         openreview.send_mail("Senior Program Committee Invitation for UAI 2017", [spc_member], message %(fullname,url + "Yes", url + "No"))
 
 
-if openreview.exists("auai.org/UAI/2017/SPC/invited") and openreview.exists("auai.org/UAI/2017/SPC/emailed"):
-    reviewers_invited = openreview.get_group("auai.org/UAI/2017/SPC/invited")
-    reviewers_emailed = openreview.get_group("auai.org/UAI/2017/SPC/emailed")
+if openreview.exists("auai.org/UAI/2017/Senior_Program_Committee/invited") and openreview.exists("auai.org/UAI/2017/Senior_Program_Committee/emailed"):
+    reviewers_invited = openreview.get_group("auai.org/UAI/2017/Senior_Program_Committee/invited")
+    reviewers_emailed = openreview.get_group("auai.org/UAI/2017/Senior_Program_Committee/emailed")
     print reviewers_invited.members
     recipients = [reviewer for reviewer in reviewers_invited.members if reviewer not in reviewers_emailed.members]
     print recipients

@@ -6,7 +6,7 @@ import re
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('file',help="the csv file containing the SPC names and email addresses")
+parser.add_argument('file',help="the csv file containing the Senior_Program_Committee names and email addresses")
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -112,7 +112,7 @@ with open(args.file) as f:
     for row in reader:
         spc_member_info.append((row[0],row[1],row[2]))
 
-spcs_invited = client.get_group(id='auai.org/UAI/2017/SPC/invited')
+spcs_invited = client.get_group(id='auai.org/UAI/2017/Senior_Program_Committee/invited')
 profiles = []
 
 for u in spc_member_info:

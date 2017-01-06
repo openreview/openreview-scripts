@@ -14,7 +14,7 @@ import openreview
 
 ## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('assignments', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<email_address>,<paper#>' e.g. 'reviewer@cs.umass.edu,23'")
+parser.add_argument('assignments', help="either (1) a csv file containing reviewer assignments or (2) a string of the format '<email_address>,<paper#>' e.g. 'reviewer@cs.umass.edu,23'")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -31,7 +31,7 @@ submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission'
 
 def single_assignment_valid(s):
     try:
-        areachair = s.split(',')[0]
+        reviewer = s.split(',')[0]
         paper_number = s.split(',')[1]
 
         try:
@@ -39,68 +39,68 @@ def single_assignment_valid(s):
         except ValueError:
             return False
 
-        if not '~' in areachair:
+        if not '~' in reviewer:
             return False
 
         return True
     except IndexError:
         return False
 
-def assign_areachair(areachair,paper_number):
+def assign_reviewer(reviewer,paper_number):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
     valid_email = re.compile('^[^@\s,]+@[^@\s,]+\.[^@\s,]+$')
     valid_tilde = re.compile('~.+')
     if not notes:
         print "Paper number " + paper_number + " does not exist"
-    elif not valid_email.match(areachair) and not valid_tilde.match(areachair):
-        print "Program Committee Member \""+areachair+"\" invalid. Please check for typos and whitespace."
+    elif not valid_email.match(reviewer) and not valid_tilde.match(reviewer):
+        print "Program Committee Member \""+reviewer+"\" invalid. Please check for typos and whitespace."
     else:
         #need to incorporate conflicts. get them from public profile? confirm this with UAI documentation
-        areachair_group = get_areachair_group(areachair, paper_number, [])
+        reviewer_group = get_reviewer_group(reviewer, paper_number, [])
 
 
 
 
-def get_areachair_group(areachair, paper_number, conflict_list):
+def get_reviewer_group(reviewer, paper_number, conflict_list):
 
-    areachairs = client.get_group('auai.org/UAI/2017/paper'+paper_number+'/PC')
-    existing_areachairs = areachairs.members
-    conference_areachairs = client.get_group('auai.org/UAI/2017/PC')
+    reviewers = client.get_group('auai.org/UAI/2017/paper'+paper_number+'/Reviewers')
+    existing_reviewers = reviewers.members
+    conference_reviewers = client.get_group('auai.org/UAI/2017/Program_Committee')
 
-    if not (areachair in conference_areachairs.members):
-        client.add_members_to_group(conference_areachairs,areachair)
+    if not (reviewer in conference_reviewers.members):
+        client.add_members_to_group(conference_reviewers,reviewer)
 
     N=0
-    for a in existing_areachairs:
+    for a in existing_reviewers:
 
-        reviewer_number = int(a.split('PC_Member')[1])
+        reviewer_number = int(a.split('AnonReviewer')[1])
         if reviewer_number > N:
             N = reviewer_number
 
-        existing_areachair = client.get_group(a)
-        if hasattr(existing_areachair,'members'):
-            if areachair in existing_areachair.members:
-                print "reviewer " + areachair + " found in " + existing_areachair.id
-                return existing_areachair
+        existing_reviewer = client.get_group(a)
+        if hasattr(existing_reviewer,'members'):
+            if reviewer in existing_reviewer.members:
+                print "reviewer " + reviewer + " found in " + existing_reviewer.id
+                return existing_reviewer
 
-    new_areachair_id = 'auai.org/UAI/2017/paper'+str(paper_number)+'/PC_Member'+str(N+1)
-    new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
-    client.add_members_to_group(areachairs,new_areachair_id)
-    return new_areachair
+    new_reviewer_id = 'auai.org/UAI/2017/paper'+str(paper_number)+'/AnonReviewer'+str(N+1)
+    new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
+    client.add_members_to_group(reviewers,reviewer)
+    return new_reviewer
 
 
-def create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list):
-    print 'Creating reviewer: ', new_areachair_id
-    new_areachair = openreview.Group(
-        new_areachair_id,
+def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list):
+    print 'Creating reviewer: ', new_reviewer_id
+    new_reviewer = openreview.Group(
+        new_reviewer_id,
         signatures=['auai.org/UAI/2017'],
         writers=['auai.org/UAI/2017'],
-        members=[areachair],
-        readers=['auai.org/UAI/2017',new_areachair_id,'auai.org/UAI/2017/Chairs'],
+        members=[reviewer],
+        readers=['auai.org/UAI/2017',new_reviewer_id,'auai.org/UAI/2017/Chairs'],
         nonreaders=conflict_list,
-        signatories=[new_areachair_id])
-    client.post_group(new_areachair)
-    return new_areachair
+        signatories=[new_reviewer_id])
+    client.post_group(new_reviewer)
+    return new_reviewer
 
 
 ##################################################################
@@ -110,13 +110,13 @@ if args.assignments.endswith('.csv'):
     with open(args.assignments, 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
-            areachair = row[0]
+            reviewer = row[0]
             paper_number = row[1]
-            assign_areachair(areachair,paper_number)
+            assign_reviewer(reviewer,paper_number)
 elif single_assignment_valid(args.assignments):
-    areachair = args.assignments.split(',')[0]
+    reviewer = args.assignments.split(',')[0]
     paper_number = args.assignments.split(',')[1]
-    assign_areachair(areachair,paper_number)
+    assign_reviewer(reviewer,paper_number)
 else:
     print "Invalid input"
     sys.exit()

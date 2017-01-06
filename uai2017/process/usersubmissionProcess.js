@@ -9,7 +9,7 @@ function() {
     parent: null,
     signatures: ['auai.org/UAI/2017'],
     writers: ['auai.org/UAI/2017'],
-    readers: ["auai.org/UAI/2017/Chairs", "auai.org/UAI/2017/SPC", "auai.org/UAI/2017/PC"],
+    readers: ["auai.org/UAI/2017/Chairs", "auai.org/UAI/2017/Senior_Program_Committee", "auai.org/UAI/2017/Program_Committee"],
     content: {
  			authors: [],
  			authorids: []

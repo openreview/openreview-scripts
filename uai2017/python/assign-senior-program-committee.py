@@ -56,51 +56,59 @@ def assign_areachair(areachair,paper_number):
         print "Senior Program Committee Member \""+areachair+"\" invalid. Please check for typos and whitespace."
     else:
         #need to incorporate conflicts
-        areachair_group = get_areachair_group(areachair, paper_number, [])
+        #areachair_group = get_areachair_group(areachair, paper_number, [])
+
+        spc = client.get_group('auai.org/UAI/2017/Senior_Program_Committee')
+        if areachair not in spc.members:
+            print "%s not yet a member of the Senior Program Committee; adding them now" % areachair
+            client.add_members_to_group(spc,areachair)
+
+        acgroup = client.get_group('auai.org/UAI/2017/paper%s/Area_Chair' % (paper_number) )
+        acgroup.members = [areachair]
+        client.post_group(acgroup);
+        print "Area chair %s assigned to paper%s" %(areachair,paper_number)
 
 
+# def get_areachair_group(areachair, paper_number, conflict_list):
+
+#     areachairs = client.get_group('auai.org/UAI/2017/paper'+paper_number+'/Senior_Program_Committee')
+#     existing_areachairs = areachairs.members
+#     conference_areachairs = client.get_group('auai.org/UAI/2017/Senior_Program_Committee')
+
+#     if not (areachair in conference_areachairs.members):
+#         client.add_members_to_group(conference_areachairs,areachair)
+
+#     N=0
+#     for a in existing_areachairs:
+
+#         reviewer_number = int(a.split('Senior_Program_Committee_Member')[1])
+#         if reviewer_number > N:
+#             N = reviewer_number
+
+#         existing_areachair = client.get_group(a)
+#         if hasattr(existing_areachair,'members'):
+#             if areachair in existing_areachair.members:
+#                 print "areachair " + areachair + " found in " + existing_areachair.id
+#                 return existing_areachair
+
+#     new_areachair_id = 'auai.org/UAI/2017/paper'+str(paper_number)+'/Senior_Program_Committee_Member'+str(N+1)
+#     new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
+#     client.add_members_to_group(areachairs,new_areachair_id)
+#     return new_areachair
 
 
-def get_areachair_group(areachair, paper_number, conflict_list):
-
-    areachairs = client.get_group('auai.org/UAI/2017/paper'+paper_number+'/SPC')
-    existing_areachairs = areachairs.members
-    conference_areachairs = client.get_group('auai.org/UAI/2017/SPC')
-
-    if not (areachair in conference_areachairs.members):
-        client.add_members_to_group(conference_areachairs,areachair)
-
-    N=0
-    for a in existing_areachairs:
-
-        reviewer_number = int(a.split('SPC_Member')[1])
-        if reviewer_number > N:
-            N = reviewer_number
-
-        existing_areachair = client.get_group(a)
-        if hasattr(existing_areachair,'members'):
-            if areachair in existing_areachair.members:
-                print "areachair " + areachair + " found in " + existing_areachair.id
-                return existing_areachair
-
-    new_areachair_id = 'auai.org/UAI/2017/paper'+str(paper_number)+'/SPC_Member'+str(N+1)
-    new_areachair = create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list)
-    client.add_members_to_group(areachairs,new_areachair_id)
-    return new_areachair
-
-
-def create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list):
-    print 'Creating areachair: ', new_areachair_id
-    new_areachair = openreview.Group(
-        new_areachair_id,
-        signatures=['auai.org/UAI/2017'],
-        writers=['auai.org/UAI/2017'],
-        members=[areachair],
-        readers=['auai.org/UAI/2017',new_areachair_id,'auai.org/UAI/2017/Chairs'],
-        nonreaders=conflict_list,
-        signatories=[new_areachair_id])
-    client.post_group(new_areachair)
-    return new_areachair
+# def create_areachair_group(new_areachair_id, areachair, paper_number, conflict_list):
+#     print 'Creating areachair: ', new_areachair_id
+#     new_areachair = openreview.Group(
+#         new_areachair_id,
+#         signatures=['auai.org/UAI/2017'],
+#         writers=['auai.org/UAI/2017'],
+#         members=[areachair],
+#         readers=['auai.org/UAI/2017',new_areachair_id,'auai.org/UAI/2017/Chairs'],
+#         nonreaders=conflict_list,
+#         signatories=[new_areachair_id])
+#     client.post_group(new_areachair)
+#     return new_areachair
 
 
 ##################################################################

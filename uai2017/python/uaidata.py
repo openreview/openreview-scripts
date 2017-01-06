@@ -6,11 +6,11 @@ class UAIData():
 
 	@staticmethod
 	def get_senior_program_committee():
-		return "auai.org/UAI/2017/SPC"
+		return "auai.org/UAI/2017/Senior_Program_Committee"
 
 	@staticmethod
 	def get_program_committee():
-		return "auai.org/UAI/2017/PC"
+		return "auai.org/UAI/2017/Program_Committee"
 
 	@staticmethod
 	def get_subject_areas():
