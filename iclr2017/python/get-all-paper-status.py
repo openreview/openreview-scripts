@@ -1,10 +1,41 @@
+import argparse
 import openreview
 import requests
 import sys, getopt
 
+## Argument handling
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--username')
+parser.add_argument('--password')
+parser.add_argument('--ofile', help="output file name")
+parser.add_argument('--otype', help="file format: 1 = text, 2 = csv")
+args = parser.parse_args()
+
+## Initialize the client library with username and password
+if args.username!=None and args.password!=None:
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    client = openreview.Client(baseurl=args.baseurl)
+## Initialize output file name
+file_name = "output.txt"
+if args.ofile!=None:
+    file_name = args.ofile
+## Initialize output file type - check for valid values
+output_type = 2
+if args.otype!=None:
+    try:
+        output_type = int(args.otype)
+    except ValueError:
+        print 'otype must be 1 for text or 2 for csv.'
+        sys.exit()
+if output_type != 1 and output_type != 2:
+    print 'otype must be 1 for text or 2 for csv.'
+    sys.exit()
+
+
 class PaperStatus:
     Unassigned, Assigned, Commented, Reviewed, FullyReviewed = range(5)
-
 
 PaperStatusString = ["Unassigned", "Assigned", "Commented", "Reviewed", "FullyReviewed"]
 
@@ -15,38 +46,7 @@ def get_score(content_type):
     string_var = string_var.split(':')[0]
     return string_var
 
-
-# output_type: 1 text
-#               2 cvs
-#               3 html
-output_type = 2
-file_name = "output.txt"
-# parse optional arguments
-try:
-  opts, args = getopt.getopt(sys.argv[1:],"ho:t:",["ofile=","type="])
-except getopt.GetoptError:
-  print 'temp.py -o <outputfile> -t <type> 1: text, 2: csv'
-  sys.exit(2)
-
-for opt, arg in opts:
-  if opt == '-h':
-    print 'temp.py -o <outputfile> -t <type>'
-    sys.exit()
-  elif opt in ("-t", "--type"):
-    try:
-        output_type = int(arg)
-    except ValueError:
-        print 'Type must be 1 (for text) or 2 (for csv).'
-        sys.exit()
-    if (output_type is not 1) and (output_type is not 2):
-        print 'Type must be 1 (for text) or 2 (for csv).'
-        sys.exit()
-  elif opt in ("-o", "--ofile"):
-    file_name = arg
-my_file = open(file_name, "w")
-
-
-client = openreview.Client(username='OpenReview.net', password='OpenReview_beta', baseurl='https://openreview.net')
+#client = openreview.Client(username='OpenReview.net', password='OpenReview_beta', baseurl='https://openreview.net')
 # client = openreview.Client(username='OpenReview.net', password='OpenReview_beta', baseurl='http://localhost:3000')
 submissions = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 
@@ -58,6 +58,8 @@ anon_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/conferen
 current_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/conference/paper.*/reviewers',
                                  headers=headers)
 notes = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/' + invitation)
+
+my_file = open(file_name, "w")
 
 # The following are dictionaries to connect the papers, reviewers and reviews
 # 	the signature is the whole directory struct leading up to the Anonymized name
