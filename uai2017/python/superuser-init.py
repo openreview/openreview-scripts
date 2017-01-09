@@ -234,7 +234,7 @@ if client.user['id'].lower()=='openreview.net':
                 'required':True
             },
             'student paper': {
-                'description': 'Is it a student paper?',
+                'description': 'Is this a student paper?',
                 'order': 10,
                 'value-radio': [
                     'Yes',

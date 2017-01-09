@@ -222,15 +222,6 @@ function () {
     }
   };
 
-
-  //Send an email to the author of the submitted note, confirming its receipt
-  var mail = {
-    "groups": note.content.authorids,
-    "subject": "Confirmation of your submission to UAI 2017: \"" + note.content.title + "\".",
-    "message": `Your submission to UAI 2017 has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
-  };
-  var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token );
-
   // Create an empty group for this paper, e.g. "auai.org/UAI/2017/paper444"
   var paperGroup = {
     'id': 'auai.org/UAI/2017/paper'+note.number,
@@ -275,7 +266,7 @@ function () {
     group_promises = [
       or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
-      or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token)
     ];
 
     return Promise.all(group_promises);
