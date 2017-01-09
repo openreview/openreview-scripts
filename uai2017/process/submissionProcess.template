@@ -128,7 +128,6 @@ function () {
       'readers': {
         'values': [
           UAIData.COCHAIRS,
-          UAIData.SPC,
           UAIData.SPC
         ],
         'description': 'The users who will be allowed to read the above content.'
@@ -167,7 +166,11 @@ function () {
         },
       'writers': {'values-regex':'~.+'},
       'readers': {
-        'values': ['everyone'],
+        'values': [
+          UAIData.COCHAIRS,
+          UAIData.SPC,
+          UAIData.PC
+        ],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
