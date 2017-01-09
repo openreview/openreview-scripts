@@ -11,6 +11,7 @@ import getpass
 import sys
 import re
 import openreview
+from uaidata import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -58,7 +59,7 @@ def assign_areachair(areachair,paper_number):
         #need to incorporate conflicts
         #areachair_group = get_areachair_group(areachair, paper_number, [])
 
-        spc = client.get_group('auai.org/UAI/2017/Senior_Program_Committee')
+        spc = client.get_group(UAIData.get_senior_program_committee())
         if areachair not in spc.members:
             print "%s not yet a member of the Senior Program Committee; adding them now" % areachair
             client.add_members_to_group(spc,areachair)

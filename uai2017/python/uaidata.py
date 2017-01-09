@@ -2,7 +2,7 @@ class UAIData():
 
 	@staticmethod
 	def get_program_co_chairs():
-		return "auai.org/UAI/2017/Chairs"
+		return "auai.org/UAI/2017/Program_Co-Chairs"
 
 	@staticmethod
 	def get_senior_program_committee():

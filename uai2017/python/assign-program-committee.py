@@ -11,6 +11,7 @@ import getpass
 import sys
 import re
 import openreview
+from uaidata import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -65,7 +66,7 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
 
     reviewers = client.get_group('auai.org/UAI/2017/Paper'+paper_number+'/Reviewers')
     existing_reviewers = reviewers.members
-    conference_reviewers = client.get_group('auai.org/UAI/2017/Program_Committee')
+    conference_reviewers = client.get_group(UAIData.get_program_committee())
 
     if not (reviewer in conference_reviewers.members):
         client.add_members_to_group(conference_reviewers,reviewer)
@@ -96,7 +97,7 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
         signatures=['auai.org/UAI/2017'],
         writers=['auai.org/UAI/2017'],
         members=[reviewer],
-        readers=['auai.org/UAI/2017',new_reviewer_id,'auai.org/UAI/2017/Chairs'],
+        readers=['auai.org/UAI/2017',new_reviewer_id,UAIData.get_program_co_chairs()],
         nonreaders=conflict_list,
         signatories=[new_reviewer_id])
     client.post_group(new_reviewer)

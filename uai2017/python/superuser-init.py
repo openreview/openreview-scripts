@@ -14,6 +14,10 @@ import sys
 import openreview
 from uaidata import *
 
+COCHAIRS = UAIData.get_program_co_chairs()
+PC = UAIData.get_program_committee()
+SPC = UAIData.get_senior_program_committee()
+
 ## Handle the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
@@ -74,75 +78,75 @@ if client.user['id'].lower()=='openreview.net':
         groups.append(uai2017)
 
 
-    if overwrite_allowed('auai.org/UAI/2017/Chairs'):
-        Program_Chairs = openreview.Group('auai.org/UAI/2017/Chairs',
+    if overwrite_allowed(COCHAIRS):
+        Program_Chairs = openreview.Group(COCHAIRS,
             readers     = ['everyone'],
-            writers     = ['OpenReview.net','auai.org/UAI/2017/Chairs'],
+            writers     = ['OpenReview.net',COCHAIRS],
             signatures  = ['OpenReview.net'],
-            signatories = ['auai.org/UAI/2017/Chairs'],
+            signatories = [COCHAIRS],
             members     = ["~Alejandro_Molina1","~Kristian_Kersting1","~Gal_Elidan1"]) #should include Gal and Kristian
         groups.append(Program_Chairs)
 
 
-    if overwrite_allowed('auai.org/UAI/2017/Senior_Program_Committee'):
-        spc = openreview.Group('auai.org/UAI/2017/Senior_Program_Committee',
+    if overwrite_allowed(SPC):
+        spc = openreview.Group(SPC,
             readers     = ['everyone'], #it should be broadly known who is a member of the Senior Program Committee
-            writers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'], #the conference needs to be a writer whenever the process functions need to modify the group
-            signatures  = ['auai.org/UAI/2017/Chairs'],
-            signatories = ['auai.org/UAI/2017/Chairs'], #it seems like only Gal and Kristian should be able to write notes representing the whole Senior_Program_Committee
-            members     = ['auai.org/UAI/2017/Chairs']) #more to be added later, from the list of Senior_Program_Committee members
+            writers     = [COCHAIRS,'auai.org/UAI/2017'], #the conference needs to be a writer whenever the process functions need to modify the group
+            signatures  = [COCHAIRS],
+            signatories = [COCHAIRS], #it seems like only Gal and Kristian should be able to write notes representing the whole Senior_Program_Committee
+            members     = [COCHAIRS]) #more to be added later, from the list of Senior_Program_Committee members
         groups.append(spc)
 
-    if overwrite_allowed('auai.org/UAI/2017/Senior_Program_Committee/invited'):
-        spc_invited = openreview.Group('auai.org/UAI/2017/Senior_Program_Committee/invited',
-            readers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'], #it should *NOT* be broadly known who was invited
-            writers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'],
-            signatures  = ['auai.org/UAI/2017/Chairs'],
+    if overwrite_allowed(SPC+'/invited'):
+        spc_invited = openreview.Group(SPC+'/invited',
+            readers     = [COCHAIRS,'auai.org/UAI/2017'], #it should *NOT* be broadly known who was invited
+            writers     = [COCHAIRS,'auai.org/UAI/2017'],
+            signatures  = [COCHAIRS],
             signatories = [],
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_invited)
 
-    if overwrite_allowed('auai.org/UAI/2017/Senior_Program_Committee/declined'):
-        spc_declined = openreview.Group('auai.org/UAI/2017/Senior_Program_Committee/declined',
-            readers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'], #it should *NOT* be broadly known who declined
-            writers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'],
-            signatures  = ['auai.org/UAI/2017/Chairs'],
+    if overwrite_allowed(SPC+'/declined'):
+        spc_declined = openreview.Group(SPC+'/declined',
+            readers     = [COCHAIRS,'auai.org/UAI/2017'], #it should *NOT* be broadly known who declined
+            writers     = [COCHAIRS,'auai.org/UAI/2017'],
+            signatures  = [COCHAIRS],
             signatories = [],
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_declined)
 
-    if overwrite_allowed('auai.org/UAI/2017/Senior_Program_Committee/emailed'):
-        spc_emailed = openreview.Group('auai.org/UAI/2017/Senior_Program_Committee/emailed',
-            readers     = ['auai.org/UAI/2017/Chairs'],
-            writers     = ['auai.org/UAI/2017/Chairs'],
-            signatures  = ['auai.org/UAI/2017/Chairs'],
+    if overwrite_allowed(SPC+'/emailed'):
+        spc_emailed = openreview.Group(SPC+'/emailed',
+            readers     = [COCHAIRS],
+            writers     = [COCHAIRS],
+            signatures  = [COCHAIRS],
             signatories = [],
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_emailed)
 
-    if overwrite_allowed('auai.org/UAI/2017/Program_Committee'):
-        pc = openreview.Group('auai.org/UAI/2017/Program_Committee',
+    if overwrite_allowed(PC):
+        pc = openreview.Group(PC,
             readers     = ['everyone'], #the members of the program committee should be broadly known
-            writers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'], #the conference needs to be a writer whenever the process functions need to modify the group
-            signatures  = ['auai.org/UAI/2017/Chairs'],
+            writers     = [COCHAIRS,'auai.org/UAI/2017'], #the conference needs to be a writer whenever the process functions need to modify the group
+            signatures  = [COCHAIRS],
             signatories = [], #I think the Program Committee shouldn't have a reason to sign a note representing the entire Program_Committee, so leaving blank
-            members     = ['auai.org/UAI/2017/Senior_Program_Committee']) #more to be added later, from the list of Program_Committee members
+            members     = [SPC]) #more to be added later, from the list of Program_Committee members
         groups.append(pc)
 
-    if overwrite_allowed('auai.org/UAI/2017/Program_Committee/invited'):
-        pc_invited      = openreview.Group('auai.org/UAI/2017/Program_Committee/invited', #decided to make this a subgroup of /Program_Committee
-            readers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'],
-            writers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'],
-            signatures  = ['auai.org/UAI/2017/Chairs'],
+    if overwrite_allowed(PC+'/invited'):
+        pc_invited      = openreview.Group(PC+'/invited', #decided to make this a subgroup of /Program_Committee
+            readers     = [COCHAIRS,'auai.org/UAI/2017'],
+            writers     = [COCHAIRS,'auai.org/UAI/2017'],
+            signatures  = [COCHAIRS],
             signatories = [], #nobody should be able to sign as this group
             members     = []) #members to be added by process function
         groups.append(pc_invited)
 
-    if overwrite_allowed('auai.org/UAI/2017/Program_Committee/declined'):
-        pc_declined     = openreview.Group('auai.org/UAI/2017/Program_Committee/declined', #decided to make this a subgroup of /Program_Committee
-            readers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'],
-            writers     = ['auai.org/UAI/2017/Chairs','auai.org/UAI/2017'],
-            signatures  = ['auai.org/UAI/2017/Chairs'],
+    if overwrite_allowed(PC+'/declined'):
+        pc_declined     = openreview.Group(PC+'/declined', #decided to make this a subgroup of /Program_Committee
+            readers     = [COCHAIRS,'auai.org/UAI/2017'],
+            writers     = [COCHAIRS,'auai.org/UAI/2017'],
+            signatures  = [COCHAIRS],
             signatories = [],
             members     = [])
         groups.append(pc_declined)
@@ -177,7 +181,7 @@ if client.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [UAIData.get_program_co_chairs()] #who should be allowed to read UAI submissions and when?
+            'values': [COCHAIRS] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -260,7 +264,7 @@ if client.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [UAIData.get_program_co_chairs(), UAIData.get_senior_program_committee(), UAIData.get_program_committee()] #who should be allowed to read UAI submissions and when?
+            'values': [COCHAIRS, UAIData.get_senior_program_committee(), UAIData.get_program_committee()] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -291,7 +295,7 @@ if client.user['id'].lower()=='openreview.net':
     spc_invitation = openreview.Invitation('auai.org/UAI/2017', 'spc_invitation',
         readers=['everyone'],
         writers=['auai.org/UAI/2017'],
-        invitees=['auai.org/UAI/2017/Senior_Program_Committee/invited'],
+        invitees=[SPC+'/invited'],
         signatures=['auai.org/UAI/2017'],
         process='../process/responseInvitationProcess_uai2017.js',
         web='../webfield/web-field-invitation.html')
@@ -329,7 +333,7 @@ if client.user['id'].lower()=='openreview.net':
 
     ## Create Senior_Program_Committee registration invitation, and add it to the list of invitations to post
     spc_registration = openreview.Invitation('auai.org/UAI/2017', 'spc_registration',
-        readers = ['auai.org/UAI/2017','auai.org/UAI/2017/Chairs'],
+        readers = ['auai.org/UAI/2017',COCHAIRS],
         writers = ['auai.org/UAI/2017'],
         invitees = ['OpenReview.net'],
         signatures = ['auai.org/UAI/2017'],
@@ -351,7 +355,7 @@ if client.user['id'].lower()=='openreview.net':
             },
         },
         "readers":{
-            'values': ['auai.org/UAI/2017/Senior_Program_Committee']
+            'values': [SPC]
         },
         "signatures":{
             'values': ['auai.org/UAI/2017']
@@ -371,7 +375,7 @@ if client.user['id'].lower()=='openreview.net':
 
     ## Create a root note for the spc_registration invitation
     spc_registration_rootnote = openreview.Note(invitation='auai.org/UAI/2017/-/spc_registration',
-        readers = ['auai.org/UAI/2017/Senior_Program_Committee'],
+        readers = [SPC],
         writers = ['auai.org/UAI/2017'],
         signatures = ['auai.org/UAI/2017'])
     spc_registration_rootnote.content = {

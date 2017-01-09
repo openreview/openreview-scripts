@@ -10,6 +10,11 @@ import csv
 import sys
 from openreview import *
 import re
+from UAIData import *
+
+COCHAIRS = UAIData.get_program_co_chairs()
+PC = UAIData.get_program_committee()
+SPC = UAIData.get_senior_program_committee()
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -102,9 +107,9 @@ def sendMail(spc_invited):
         openreview.send_mail("Senior Program Committee Invitation for UAI 2017", [spc_member], message %(fullname,url + "Yes", url + "No"))
 
 
-if openreview.exists("auai.org/UAI/2017/Senior_Program_Committee/invited") and openreview.exists("auai.org/UAI/2017/Senior_Program_Committee/emailed"):
-    reviewers_invited = openreview.get_group("auai.org/UAI/2017/Senior_Program_Committee/invited")
-    reviewers_emailed = openreview.get_group("auai.org/UAI/2017/Senior_Program_Committee/emailed")
+if openreview.exists(SPC+"/invited") and openreview.exists(SPC+"/emailed"):
+    reviewers_invited = openreview.get_group(SPC+"/invited")
+    reviewers_emailed = openreview.get_group(SPC+"/emailed")
     print reviewers_invited.members
     recipients = [reviewer for reviewer in reviewers_invited.members if reviewer not in reviewers_emailed.members]
     print recipients

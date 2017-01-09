@@ -3,6 +3,11 @@ import requests
 import csv
 import argparse
 import re
+from uaidata import *
+
+COCHAIRS = UAIData.get_program_co_chairs()
+PC = UAIData.get_program_committee()
+SPC = UAIData.get_senior_program_committee()
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -112,7 +117,7 @@ with open(args.file) as f:
     for row in reader:
         spc_member_info.append((row[0],row[1],row[2]))
 
-spcs_invited = client.get_group(id='auai.org/UAI/2017/Senior_Program_Committee/invited')
+spcs_invited = client.get_group(id=SPC+'/invited')
 profiles = []
 
 for u in spc_member_info:
