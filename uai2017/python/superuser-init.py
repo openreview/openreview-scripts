@@ -386,51 +386,6 @@ if client.user['id'].lower()=='openreview.net':
 
 
 
-    ### BIDDING
-
-    ## Create reviewer_bid_tracking invitation
-    reviewer_bid_tracking = openreview.Invitation('auai.org/UAI/2017','reviewer_bid_tracking',
-        readers = ['auai.org/UAI/2017'],
-        writers = ['auai.org/UAI/2017'],
-        invitees = ['OpenReview.net'],
-        signatures = ['auai.org/UAI/2017'],
-        process = '../process/bid_trackingProcess.js'
-        )
-
-    reviewer_bid_tracking.reply = {
-        'readers':{'values':['auai.org/UAI/2017']},
-        'writers':{'values':['auai.org/UAI/2017']},
-        'signatures':{'values':['auai.org/UAI/2017']},
-        "content": {
-            'title': {
-                'description': 'Title of paper.',
-                'order': 1,
-                'value-regex': '.{1,250}',
-                'required':True
-            },
-            'description': {
-                'order': 2,
-                'value-regex': '[\\S\\s]{1,5000}',
-                'required':True
-            },
-        },
-    }
-    client.post_invitation(reviewer_bid_tracking)
-
-    reviewer_bid_tracking_rootnote = openreview.Note(invitation='auai.org/UAI/2017/-/reviewer_bid_tracking',
-        readers = ['auai.org/UAI/2017'],
-        writers = ['auai.org/UAI/2017'],
-        signatures = ['auai.org/UAI/2017'])
-    reviewer_bid_tracking_rootnote.content = {
-        'title': 'Reviewer Bid Tracking Forum',
-        'description': "This is the central forum where the counts of all reviewer bids are stored."
-    }
-    client.post_note(reviewer_bid_tracking_rootnote)
-
-
-    rootnote = client.get_notes(invitation='auai.org/UAI/2017/-/reviewer_bid_tracking')[0]
-
-
 
 
 
