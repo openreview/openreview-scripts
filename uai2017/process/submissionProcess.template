@@ -1,6 +1,8 @@
 function () {
   var or3client = lib.or3client;
 
+  var UAIData = <<uaidata.js>>
+
   var metaReviewProcess = <<metaReviewProcess.js>>
 
   var metaReviewInvitation = {
@@ -9,7 +11,7 @@ function () {
     'writers': ['auai.org/UAI/2017'],
     'invitees': ['auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'],
     'noninvitees':[],
-    'readers': ['auai.org/UAI/2017','auai.org/UAI/2017/Senior_Program_Committee','auai.org/UAI/2017/Program_Co-Chairs'],
+    'readers': ['auai.org/UAI/2017',UAIData.SPC,UAIData.COCHAIRS],
     'process': metaReviewProcess+'',
     'duedate': 1507180500000, //duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
     'reply': {
@@ -18,7 +20,7 @@ function () {
       'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
       'readers': {
-        'values': ['auai.org/UAI/2017/Program_Co-Chairs'],
+        'values': [UAIData.COCHAIRS],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -62,7 +64,7 @@ function () {
       'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
       'readers': {
-        'values': ['auai.org/UAI/2017/Senior_Program_Committee'], //only Senior_Program_Committee initially; when a reviewer submits his/her review, they are added to the readers
+        'values': [UAIData.SPC], //only Senior_Program_Committee initially; when a reviewer submits his/her review, they are added to the readers
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -111,7 +113,7 @@ function () {
     'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Confidential/Comment',
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
-    'invitees': ['auai.org/UAI/2017/Program_Committee','auai.org/UAI/2017/Senior_Program_Committee'],
+    'invitees': [UAIData.PC,UAIData.SPC],
     'noninvitees':[],
     'readers': ['everyone'],
     'process':commentProcess+'',
@@ -125,9 +127,9 @@ function () {
       'writers': {'values-regex':'~.+'},
       'readers': {
         'values': [
-          'auai.org/UAI/2017/Program_Co-Chairs',
-          'auai.org/UAI/2017/Senior_Program_Committee',
-          'auai.org/UAI/2017/Program_Committee'
+          UAIData.COCHAIRS,
+          UAIData.SPC,
+          UAIData.SPC
         ],
         'description': 'The users who will be allowed to read the above content.'
         },
@@ -152,7 +154,7 @@ function () {
     'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Open/Comment',
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
-    'invitees': ['auai.org/UAI/2017/Program_Committee','auai.org/UAI/2017/Senior_Program_Committee'],
+    'invitees': [UAIData.PC,UAIData.SPC],
     'noninvitees':[],
     'readers': ['everyone'],
     'process':commentProcess+'',
@@ -191,8 +193,8 @@ function () {
     'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Reviewer_Bid',
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
-    'invitees': ['auai.org/UAI/2017/Program_Committee'],
-    'noninvitees':['auai.org/UAI/2017/Senior_Program_Committee','auai.org/UAI/2017/Program_Co-Chairs'],
+    'invitees': [UAIData.PC],
+    'noninvitees':[UAIData.SPC,UAIData.COCHAIRS],
     'readers': ['everyone'],
     'process':bidProcess+'',
     'reply': {
@@ -237,7 +239,7 @@ function () {
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
     'members':[],
-    'readers':['auai.org/UAI/2017/Program_Co-Chairs','auai.org/UAI/2017/Senior_Program_Committee',paperGroup.id+'/Reviewers'],
+    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers'],
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
   };
 
@@ -246,7 +248,7 @@ function () {
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
     'members': note.content.authorids,
-    'readers':['auai.org/UAI/2017/Program_Co-Chairs'],
+    'readers':[UAIData.COCHAIRS],
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/authors']
   };
 
@@ -255,7 +257,7 @@ function () {
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
     'members':[], //member to be added later by assignment script
-    'readers':['auai.org/UAI/2017/Program_Co-Chairs','auai.org/UAI/2017/Senior_Program_Committee'],
+    'readers':[UAIData.COCHAIRS,UAIData.SPC],
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/Area_Chair']
   };
 
