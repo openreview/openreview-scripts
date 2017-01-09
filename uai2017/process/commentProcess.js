@@ -16,7 +16,7 @@ function(){
 
     var getReviewerEmails = function(forumNoteNumber){
       console.log('get reviewer emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/paper'+forumNoteNumber+'/Reviewers',{},'GET',token)
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/Paper'+forumNoteNumber+'/Reviewers',{},'GET',token)
       .then(result=>{
         var reviewers = result.groups[0].members;
 
@@ -37,7 +37,7 @@ function(){
 
     var getAreachairEmails = function(forumNoteNumber){
       console.log('get AC emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/paper'+forumNoteNumber+'/Area_Chair',{},'GET',token)
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/Paper'+forumNoteNumber+'/Area_Chair',{},'GET',token)
       .then(result=>{
         var areachairs = result.groups[0].members;
         var signatureIdx = areachairs.indexOf(note.signatures[0]);

@@ -63,7 +63,7 @@ def assign_reviewer(reviewer,paper_number):
 
 def get_reviewer_group(reviewer, paper_number, conflict_list):
 
-    reviewers = client.get_group('auai.org/UAI/2017/paper'+paper_number+'/Reviewers')
+    reviewers = client.get_group('auai.org/UAI/2017/Paper'+paper_number+'/Reviewers')
     existing_reviewers = reviewers.members
     conference_reviewers = client.get_group('auai.org/UAI/2017/Program_Committee')
 
@@ -83,7 +83,7 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
                 print "reviewer " + reviewer + " found in " + existing_reviewer.id
                 return existing_reviewer
 
-    new_reviewer_id = 'auai.org/UAI/2017/paper'+str(paper_number)+'/AnonReviewer'+str(N+1)
+    new_reviewer_id = 'auai.org/UAI/2017/Paper'+str(paper_number)+'/AnonReviewer'+str(N+1)
     new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
     client.add_members_to_group(reviewers,reviewer)
     return new_reviewer
