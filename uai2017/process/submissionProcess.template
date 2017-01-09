@@ -126,8 +126,7 @@ function () {
       'readers': {
         'values': [
           'auai.org/UAI/2017/Program_Co-Chairs',
-          'auai.org/UAI/2017/Senior_Program_Committee',
-          'auai.org/UAI/2017/Program_Committee'
+          'auai.org/UAI/2017/Senior_Program_Committee'
         ],
         'description': 'The users who will be allowed to read the above content.'
         },
@@ -165,7 +164,11 @@ function () {
         },
       'writers': {'values-regex':'~.+'},
       'readers': {
-        'values': ['everyone'],
+        'values': [
+          'auai.org/UAI/2017/Program_Co-Chairs',
+          'auai.org/UAI/2017/Senior_Program_Committee',
+          'auai.org/UAI/2017/Program_Committee'
+        ],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
