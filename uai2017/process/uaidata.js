@@ -1,9 +1,9 @@
 {
-	COCHAIRS = 'auai.org/UAI/2017/Program_Co-Chairs',
-	PC = 'auai.org/UAI/2017/Program_Committee',
-	SPC = 'auai.org/UAI/2017/Senior_Program_Committee',
+	'COCHAIRS':'auai.org/UAI/2017/Program_Co-Chairs',
+	'PC':'auai.org/UAI/2017/Program_Committee',
+	'SPC':'auai.org/UAI/2017/Senior_Program_Committee',
 
-	EXPERTISES = ["Algorithms: Approximate Inference",
+	'EXPERTISES':["Algorithms: Approximate Inference",
 			    'Algorithms: Belief Propagation',
 			    'Algorithms: Distributed and Parallel',
 			    'Algorithms: Exact Inference',
@@ -92,4 +92,4 @@
 			    'Representation: Non-Probabilistic Frameworks',
 			    'Representation: Probabilistic'
 			  ]
-}
+};
