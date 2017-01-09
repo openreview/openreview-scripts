@@ -116,7 +116,7 @@ function () {
       'writers': {'values-regex':'~.*'},
       'signatures': {'values-regex':'~.*'},
       'readers': {
-        'values': ['auai.org/UAI/2017/Chairs'],
+        'values': ['auai.org/UAI/2017/Program_Co-Chairs'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {

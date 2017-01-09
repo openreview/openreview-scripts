@@ -9,7 +9,7 @@ function () {
     'writers': ['auai.org/UAI/2017'],
     'invitees': ['auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'],
     'noninvitees':[],
-    'readers': ['auai.org/UAI/2017','auai.org/UAI/2017/Senior_Program_Committee','auai.org/UAI/2017/Chairs'],
+    'readers': ['auai.org/UAI/2017','auai.org/UAI/2017/Senior_Program_Committee','auai.org/UAI/2017/Program_Co-Chairs'],
     'process': metaReviewProcess+'',
     'duedate': 1507180500000, //duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
     'reply': {
@@ -18,7 +18,7 @@ function () {
       'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
       'readers': {
-        'values': ['auai.org/UAI/2017/Chairs'],
+        'values': ['auai.org/UAI/2017/Program_Co-Chairs'],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -125,7 +125,7 @@ function () {
       'writers': {'values-regex':'~.+'},
       'readers': {
         'values': [
-          'auai.org/UAI/2017/Chairs',
+          'auai.org/UAI/2017/Program_Co-Chairs',
           'auai.org/UAI/2017/Senior_Program_Committee',
           'auai.org/UAI/2017/Program_Committee'
         ],
@@ -192,7 +192,7 @@ function () {
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
     'invitees': ['auai.org/UAI/2017/Program_Committee'],
-    'noninvitees':['auai.org/UAI/2017/Senior_Program_Committee','auai.org/UAI/2017/Chairs'],
+    'noninvitees':['auai.org/UAI/2017/Senior_Program_Committee','auai.org/UAI/2017/Program_Co-Chairs'],
     'readers': ['everyone'],
     'process':bidProcess+'',
     'reply': {
@@ -237,7 +237,7 @@ function () {
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
     'members':[],
-    'readers':['auai.org/UAI/2017/Chairs','auai.org/UAI/2017/Senior_Program_Committee',paperGroup.id+'/Reviewers'],
+    'readers':['auai.org/UAI/2017/Program_Co-Chairs','auai.org/UAI/2017/Senior_Program_Committee',paperGroup.id+'/Reviewers'],
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
   };
 
@@ -246,7 +246,7 @@ function () {
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
     'members': note.content.authorids,
-    'readers':['auai.org/UAI/2017/Chairs'],
+    'readers':['auai.org/UAI/2017/Program_Co-Chairs'],
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/authors']
   };
 
@@ -255,7 +255,7 @@ function () {
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
     'members':[], //member to be added later by assignment script
-    'readers':['auai.org/UAI/2017/Chairs','auai.org/UAI/2017/Senior_Program_Committee'],
+    'readers':['auai.org/UAI/2017/Program_Co-Chairs','auai.org/UAI/2017/Senior_Program_Committee'],
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/Area_Chair']
   };
 

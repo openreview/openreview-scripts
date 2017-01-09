@@ -57,7 +57,7 @@ function(){
 
     var getPCEmails = function(){
       console.log('get Program_Committee emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/Chairs',{},'GET',token)
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/Program_Co-Chairs',{},'GET',token)
       .then(result=>{
         var pcs = result.groups[0].members;
         var signatureIdx = pcs.indexOf(note.signatures[0]);
@@ -107,7 +107,7 @@ function(){
       var visibleToEveryone = note.readers.indexOf('everyone')>-1 ? true : false;
       var visibleToReviewers = note.readers.indexOf('auai.org/UAI/2017/Program_Committee')>-1 ? true : false;
       var visibleToAreachairs = note.readers.indexOf('auai.org/UAI/2017/Senior_Program_Committee')>-1 ? true : false;
-      var visibleToPCs = note.readers.indexOf('auai.org/UAI/2017/Chairs')>-1 ? true : false;
+      var visibleToPCs = note.readers.indexOf('auai.org/UAI/2017/Program_Co-Chairs')>-1 ? true : false;
 
       if(visibleToEveryone){
         var authorMailP = getAuthorEmails(forumNote);
