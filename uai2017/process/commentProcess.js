@@ -1,49 +1,44 @@
 function(){
-    console.log('comment process initiated')
     var or3client = lib.or3client;
-    
-    var list = note.invitation.replace(/_/g,' ').split('/');
-    list.splice(list.indexOf('-',1));
-    var conference = list.join(' ')
 
-    var getAuthorEmails = function(origNote){
+    var getAuthorEmails = function(forumNote){
       console.log('get author emails initiated')
-      var origNoteAuthors = origNote.content.authorids;
-      var origNoteSignature = origNote.signatures[0];
+      var forumNoteAuthors = forumNote.content.authorids;
+      var forumNoteSignature = forumNote.signatures[0];
 
       var author_mail = {
-        "groups": origNoteAuthors,
-        "subject": "Comment on your submission to " + conference + ": \"" + note.content.title + "\".",
-        "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+        "groups": forumNoteAuthors,
+        "subject": "Comment on your submission to UAI 2017: \"" + note.content.title + "\".",
+        "message": "Your submission to UAI 2017 has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
       };
       return or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
     };
 
-    var getReviewerEmails = function(origNoteNumber){
+    var getReviewerEmails = function(forumNoteNumber){
       console.log('get reviewer emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=UAI.org/2017/conference/paper'+origNoteNumber+'/reviewers',{},'GET',token)
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/Paper'+forumNoteNumber+'/Reviewers',{},'GET',token)
       .then(result=>{
         var reviewers = result.groups[0].members;
-        console.log('reviewers before filter',reviewers);
+
+        //if the comment writer is a reviewer, don't send an email to him/herself
         var signatureIdx = reviewers.indexOf(note.signatures[0]);
         if(signatureIdx>-1){
           reviewers.splice(signatureIdx,1);
         };
 
-        console.log('reviewers after filter',reviewers);
         var reviewer_mail = {
           "groups": reviewers,
           "subject": "Comment posted to your assigned paper: \"" + note.content.title + "\"",
-          "message": "A submission to "+ conference+", for which you are an official reviewer, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to UAI 2017, for which you are an official reviewer, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
         };
         return or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
       })
     };
 
-    var getAreachairEmails = function(origNoteNumber){
+    var getAreachairEmails = function(forumNoteNumber){
       console.log('get AC emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=UAI.org/2017/conference/paper'+origNoteNumber+'/areachairs',{},'GET',token)
-      .then(result=>{      
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/Paper'+forumNoteNumber+'/Area_Chair',{},'GET',token)
+      .then(result=>{
         var areachairs = result.groups[0].members;
         var signatureIdx = areachairs.indexOf(note.signatures[0]);
         console.log('areachairs before filter:',areachairs);
@@ -54,16 +49,16 @@ function(){
         var areachair_mail = {
           "groups": areachairs,
           "subject": "Comment posted to your assigned paper: \"" + note.content.title + "\"",
-          "message": "A submission to "+ conference+", for which you are an official area chair, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to UAI 2017, for which you are an official area chair, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
         };
         return or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
       })
     };
 
     var getPCEmails = function(){
-      console.log('get PC emails initiated')
-      return or3client.or3request(or3client.grpUrl+'?id=UAI.org/2017/pcs',{},'GET',token)
-      .then(result=>{      
+      console.log('get Program_Committee emails initiated')
+      return or3client.or3request(or3client.grpUrl+'?id=auai.org/UAI/2017/Chairs',{},'GET',token)
+      .then(result=>{
         var pcs = result.groups[0].members;
         var signatureIdx = pcs.indexOf(note.signatures[0]);
         console.log('pcs before filter:',pcs);
@@ -74,7 +69,7 @@ function(){
         var pc_mail = {
           "groups": pcs,
           "subject": "Private comment posted to a paper: \"" + note.content.title + "\"",
-          "message": "A submission to "+ conference+" has received a private comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to UAI 2017 has received a private comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
         };
         return or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token );
       })
@@ -95,46 +90,37 @@ function(){
       return or3client.or3request( or3client.mailUrl, comment_mail, 'POST', token );
     };
 
-    console.log('functions defined')
-    var origNoteP = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var forumNoteP = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl+'?id='+note.replyto,{},'GET',token) : null;
-    console.log('promises created')
+
     Promise.all([
-      origNoteP,
+      forumNoteP,
       replytoNoteP
     ]).then(result => {
-      console.log('promises resolving')
-      var origNote = result[0].notes[0];
-      var origNoteNumber = origNote.number;
-
+      var forumNote = result[0].notes[0];
       var replytoNote = note.replyto ? result[1].notes[0] : null;
       var replytoNoteReaders = replytoNote ? replytoNote.readers : null;
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : null;
 
-      console.log('replytoNote',replytoNote);
-      console.log('replytoNoteReaders',replytoNoteReaders);
-      console.log('replytoNoteSignatures',replytoNoteSignatures);
       var promises = [];
-      console.log('note',note)
-      console.log('note.readers',note.readers)
+
       var visibleToEveryone = note.readers.indexOf('everyone')>-1 ? true : false;
-      console.log('visibleToEveryone',visibleToEveryone);
-      var visibleToReviewers = note.readers.indexOf('UAI.org/2017/conference/reviewers_and_ACS_and_organizers')>-1 ? true : false;
-      var visibleToAreachairs = note.readers.indexOf('UAI.org/2017/conference/ACs_and_organizers')>-1 ? true : false;
-      var visibleToPCs = note.readers.indexOf('UAI.org/2017/conference/organizers')>-1 ? true : false;
+      var visibleToReviewers = note.readers.indexOf('auai.org/UAI/2017/Program_Committee')>-1 ? true : false;
+      var visibleToAreachairs = note.readers.indexOf('auai.org/UAI/2017/Senior_Program_Committee')>-1 ? true : false;
+      var visibleToPCs = note.readers.indexOf('auai.org/UAI/2017/Chairs')>-1 ? true : false;
 
       if(visibleToEveryone){
-        var authorMailP = getAuthorEmails(origNote);
+        var authorMailP = getAuthorEmails(forumNote);
         promises.push(authorMailP);
       };
 
       if(visibleToEveryone || visibleToReviewers){
-        var reviewerMailP = getReviewerEmails(origNoteNumber);
+        var reviewerMailP = getReviewerEmails(forumNote.number);
         promises.push(reviewerMailP);
       };
 
       if(visibleToEveryone || visibleToReviewers || visibleToAreachairs){
-        var areachairMailP = getAreachairEmails(origNoteNumber);
+        var areachairMailP = getAreachairEmails(forumNote.number);
         promises.push(areachairMailP);
       };
 
@@ -147,7 +133,7 @@ function(){
       var anonComment = replytoNoteSignatures.indexOf('(anonymous)')>-1 ? true : false;
       var selfComment = replytoNoteSignatures.indexOf(note.signatures[0])>-1 ? true : false;
 
-      if(!rootComment && !anonComment && !selfComment) { 
+      if(!rootComment && !anonComment && !selfComment) {
         var commentMailP = getCommentEmails(replytoNoteSignatures);
         promises.push(commentMailP);
       };

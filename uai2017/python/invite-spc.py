@@ -66,7 +66,7 @@ A document describing how to use the OpenReview system and the ideas of comments
 New for 2017:
 Reviews will be available for authors as soon as they are submitted, and the authors will be allowed to respond to a review even before the formal rebuttal period.
 Reviewers can optionally choose to respond to author's comments or revise their reviews.
-Once a review is submitted, it is visible to other reviewers and SPCs who can comment on the review
+Once a review is submitted, it is visible to other reviewers and SPC who can comment on the review
 (this will not be visible to the authors)
 
 7. May 7th to May 14th:
@@ -96,15 +96,15 @@ def sendMail(spc_invited):
     ## For each candidate reviewer, send an email asking them to confirm or reject the request to review
     for count, spc_member in enumerate(spc_invited):
         hashkey = openreview.get_hash(spc_member.encode('utf-8'), "2810398440804348173")
-        url = openreview.baseurl+"/invitation?id=UAI.org/2017/conference/-/spc_invitation&username=" + spc_member + "&key=" + hashkey + "&response="
+        url = openreview.baseurl+"/invitation?id=auai.org/UAI/2017/-/spc_invitation&username=" + spc_member + "&key=" + hashkey + "&response="
         fullname = re.sub('[0-9]','',spc_member.replace('~','').replace('_',' '))
         print "Sending message to %s (%s)" % (fullname,spc_member)
         openreview.send_mail("Senior Program Committee Invitation for UAI 2017", [spc_member], message %(fullname,url + "Yes", url + "No"))
 
 
-if openreview.exists("UAI.org/2017/conference/Senior_Program_Committee/invited") and openreview.exists("UAI.org/2017/conference/Senior_Program_Committee/emailed"):
-    reviewers_invited = openreview.get_group("UAI.org/2017/conference/Senior_Program_Committee/invited")
-    reviewers_emailed = openreview.get_group("UAI.org/2017/conference/Senior_Program_Committee/emailed")
+if openreview.exists("auai.org/UAI/2017/Senior_Program_Committee/invited") and openreview.exists("auai.org/UAI/2017/Senior_Program_Committee/emailed"):
+    reviewers_invited = openreview.get_group("auai.org/UAI/2017/Senior_Program_Committee/invited")
+    reviewers_emailed = openreview.get_group("auai.org/UAI/2017/Senior_Program_Committee/emailed")
     print reviewers_invited.members
     recipients = [reviewer for reviewer in reviewers_invited.members if reviewer not in reviewers_emailed.members]
     print recipients
@@ -112,6 +112,6 @@ if openreview.exists("UAI.org/2017/conference/Senior_Program_Committee/invited")
     reviewers_emailed.members = reviewers_emailed.members+recipients
     openreview.post_group(reviewers_emailed)
 else:
-    print "Error while retrieving UAI.org/2017/conference/reviewers-invited; group may not exist"
+    print "Error while retrieving auai.org/UAI/2017/reviewers-invited; group may not exist"
 
 

@@ -1,0 +1,291 @@
+function () {
+  var or3client = lib.or3client;
+
+  var metaReviewProcess = <<metaReviewProcess.js>>
+
+  var metaReviewInvitation = {
+    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Meta/Review',
+    'signatures': ['auai.org/UAI/2017'],
+    'writers': ['auai.org/UAI/2017'],
+    'invitees': ['auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'],
+    'noninvitees':[],
+    'readers': ['auai.org/UAI/2017','auai.org/UAI/2017/Senior_Program_Committee','auai.org/UAI/2017/Chairs'],
+    'process': metaReviewProcess+'',
+    'duedate': 1507180500000, //duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+    'reply': {
+      'forum': note.id,
+      'replyto': note.id,
+      'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
+      'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
+      'readers': {
+        'values': ['auai.org/UAI/2017/Chairs'],
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{0,500}',
+          'description': 'Brief summary of your review.'
+        },
+        'metareview': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+        },
+        'recommendation': {
+          'order': 3,
+          'value-dropdown': [
+            'Oral',
+            'Poster',
+            'Workshop',
+            'Reject'
+          ]
+        }
+      }
+    }
+  };
+
+  var reviewProcess = <<reviewProcess.js>>
+
+  var reviewInvitation = {
+    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Review',
+    'signatures': ['auai.org/UAI/2017'],
+    'writers': ['auai.org/UAI/2017'],
+    'invitees': ['auai.org/UAI/2017/Paper'+note.number+'/Reviewers'],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process': reviewProcess+'',
+    'duedate': 1507180500000, //duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+    'reply': {
+      'forum': note.id,
+      'replyto': note.id,
+      'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
+      'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
+      'readers': {
+        'values': ['auai.org/UAI/2017/Senior_Program_Committee'], //only Senior_Program_Committee initially; when a reviewer submits his/her review, they are added to the readers
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{0,500}',
+          'description': 'Brief summary of your review.'
+        },
+        'review': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+        },
+        'rating': {
+          'order': 3,
+          'value-dropdown': [
+            '10: Top 5% of accepted papers, seminal paper',
+            '9: Top 15% of accepted papers, strong accept',
+            '8: Top 50% of accepted papers, clear accept',
+            '7: Good paper, accept',
+            '6: Marginally above acceptance threshold',
+            '5: Marginally below acceptance threshold',
+            '4: Ok but not good enough - rejection',
+            '3: Clear rejection',
+            '2: Strong rejection',
+            '1: Trivial or wrong'
+          ]
+        },
+        'confidence': {
+          'order': 4,
+          'value-radio': [
+            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '4: The reviewer is confident but not absolutely certain that the evaluation is correct',
+            '3: The reviewer is fairly confident that the evaluation is correct',
+            '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
+            '1: The reviewer\'s evaluation is an educated guess'
+          ]
+        }
+      }
+    }
+  };
+
+  var commentProcess = <<commentProcess.js>>
+
+  var confidentialCommentInvite = {
+    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Confidential/Comment',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'invitees': ['auai.org/UAI/2017/Program_Committee','auai.org/UAI/2017/Senior_Program_Committee'],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process':commentProcess+'',
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      //'replyto': noteID,    // not specified so we can allow comments on comments
+      'signatures': {
+        'values-regex':'~.+',
+        'description': 'How your identity will be displayed with the above content.'
+        },
+      'writers': {'values-regex':'~.+'},
+      'readers': {
+        'values': [
+          'auai.org/UAI/2017/Chairs',
+          'auai.org/UAI/2017/Senior_Program_Committee',
+          'auai.org/UAI/2017/Program_Committee'
+        ],
+        'description': 'The users who will be allowed to read the above content.'
+        },
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your comment.',
+          'required':true
+        },
+        'comment': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your comment or reply.',
+          'required':true
+        }
+      }
+    }
+  };
+
+  var openCommentInvite = {
+    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Open/Comment',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'invitees': ['auai.org/UAI/2017/Program_Committee','auai.org/UAI/2017/Senior_Program_Committee'],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process':commentProcess+'',
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      //'replyto': noteID,    // not specified so we can allow comments on comments
+      'signatures': {
+        'values-regex':'~.+',
+        'description': 'How your identity will be displayed with the above content.'
+        },
+      'writers': {'values-regex':'~.+'},
+      'readers': {
+        'values': ['everyone'],
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your comment.',
+          'required':true
+        },
+        'comment': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your comment or reply.',
+          'required':true
+        }
+      }
+    }
+  };
+
+
+  var bidProcess = <<bidProcess.js>>
+  var bidInvite = {
+    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Reviewer_Bid',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'invitees': ['auai.org/UAI/2017/Program_Committee'],
+    'noninvitees':['auai.org/UAI/2017/Senior_Program_Committee','auai.org/UAI/2017/Chairs'],
+    'readers': ['everyone'],
+    'process':bidProcess+'',
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      'replyto': note.id,    // not specified so we can allow comments on comments
+      'signatures': {
+        'values-regex':'~.+',
+        'description': 'How your identity will be displayed with the above content.'
+        },
+      'writers': {'values-regex':'~.+'},
+      'readers': {
+        'values': ['auai.org/UAI/2017'],
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'Preferences': {
+            'order': 1,
+            'value-radio': [
+              'I want to review',
+              'I can review',
+              'I can probably review but am not an expert',
+              'I cannot review'
+            ],
+            'required':true
+        }
+      }
+    }
+  };
+
+  // Create an empty group for this paper, e.g. "auai.org/UAI/2017/paper444"
+  var paperGroup = {
+    'id': 'auai.org/UAI/2017/Paper'+note.number,
+    'signatures': ['auai.org/UAI/2017'],
+    'writers': ['auai.org/UAI/2017'],
+    'members': [],
+    'readers': ['everyone'],
+    'signatories': ['auai.org/UAI/2017', 'auai.org/UAI/2017/Paper'+note.number]
+  };
+
+  var reviewerGroup = {
+    'id': paperGroup.id+'/Reviewers',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members':[],
+    'readers':['auai.org/UAI/2017/Chairs','auai.org/UAI/2017/Senior_Program_Committee',paperGroup.id+'/Reviewers'],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
+  };
+
+  var authorGroup = {
+    'id':paperGroup.id+'/Authors',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members': note.content.authorids,
+    'readers':['auai.org/UAI/2017/Chairs'],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/authors']
+  };
+
+  var areachairGroup = {
+    'id':paperGroup.id+'/Area_Chair',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members':[], //member to be added later by assignment script
+    'readers':['auai.org/UAI/2017/Chairs','auai.org/UAI/2017/Senior_Program_Committee'],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Area_Chair']
+  };
+
+
+
+  or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
+  .then(result=>{
+    group_promises = [
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token)
+    ];
+
+    return Promise.all(group_promises);
+  })
+  .then(result=>{
+    invitation_promises = [
+      or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, confidentialCommentInvite, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, bidInvite, 'POST', token)
+    ];
+
+    return Promise.all(invitation_promises);
+  })
+  .then(result=>{
+    done();
+  })
+  .catch(error=>done(error));
+
+  return true;
+};
