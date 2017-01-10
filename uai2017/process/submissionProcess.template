@@ -37,10 +37,24 @@ function () {
         'recommendation': {
           'order': 3,
           'value-dropdown': [
-            'Oral',
-            'Poster',
-            'Workshop',
+            'Strong accept',
+            'Weak accept',
             'Reject'
+          ]
+        },
+        'format': {
+          'order':4,
+          'value-radio': [
+            'Poster',
+            'Oral'
+          ]
+        },
+        'best paper':{
+          'order':5,
+          'description': 'Nominate as best paper (if student paper, nominate for best student paper)'
+          'value-radio': [
+            'Yes',
+            'No'
           ]
         }
       }
