@@ -26,13 +26,15 @@ function () {
       'content': {
         'title': {
           'order': 1,
-          'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.'
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your review.',
+          'required':true
         },
         'metareview': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+          'required':true
         },
         'recommendation': {
           'order': 3,
@@ -40,14 +42,16 @@ function () {
             'Strong accept',
             'Weak accept',
             'Reject'
-          ]
+          ],
+          'required':true
         },
         'format': {
           'order':4,
           'value-radio': [
             'Poster',
             'Oral'
-          ]
+          ],
+          'required':true
         },
         'best paper':{
           'order':5,
@@ -55,7 +59,8 @@ function () {
           'value-radio': [
             'Yes',
             'No'
-          ]
+          ],
+          'required':true
         }
       }
     }
@@ -84,13 +89,15 @@ function () {
       'content': {
         'title': {
           'order': 1,
-          'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.'
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your review.',
+          'required':true
         },
         'review': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+          'required':true
         },
         'rating': {
           'order': 3,
@@ -105,7 +112,8 @@ function () {
             '3: Clear rejection',
             '2: Strong rejection',
             '1: Trivial or wrong'
-          ]
+          ],
+          'required':true
         },
         'confidence': {
           'order': 4,
@@ -115,7 +123,8 @@ function () {
             '3: The reviewer is fairly confident that the evaluation is correct',
             '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
             '1: The reviewer\'s evaluation is an educated guess'
-          ]
+          ],
+          'required':true
         }
       }
     }
@@ -229,7 +238,7 @@ function () {
       'content': {
         'title': {
           'order': 1,
-          'value': 'UAI Reviewer bid'
+          'value': 'UAI Reviewer bid: '+note.content.title
         },
         'preferences': {
             'order': 2,
