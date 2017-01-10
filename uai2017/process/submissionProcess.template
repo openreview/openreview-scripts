@@ -51,7 +51,7 @@ function () {
         },
         'best paper':{
           'order':5,
-          'description': 'Nominate as best paper (if student paper, nominate for best student paper)'
+          'description': 'Nominate as best paper (if student paper, nominate for best student paper)',
           'value-radio': [
             'Yes',
             'No'
