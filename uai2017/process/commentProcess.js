@@ -49,7 +49,7 @@ function(){
         var areachair_mail = {
           "groups": areachairs,
           "subject": "Comment posted to your assigned paper: \"" + forumNote.content.title + "\"",
-          "message": "A submission to UAI 2017, for which you are a Senior Program Committee member, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to UAI 2017, for which you are the area chair, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
         };
         return or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
       })

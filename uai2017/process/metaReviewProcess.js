@@ -10,8 +10,8 @@ function(){
 
       var pc_mail = {
         "groups": programchairs,
-        "subject": "[UAI 2017] Meta-review by Senior Program Committee member posted: "+ "\"" + forum.content.title + "\".",
-        "message": "A paper submission to UAI 2017 has received a meta-review by a member of the Senior Program Committee.\n\nTitle: "+note.content.title+"\n\nMeta-review: "+note.content.metareview+"\n\nTo view the meta-review, click here: "+baseUrl+"/forum?id=" + note.forum
+        "subject": "[UAI 2017] Meta-review by an area chair has been posted: "+ "\"" + forum.content.title + "\".",
+        "message": "A paper submission to UAI 2017 has received a meta-review by an area chair.\n\nTitle: "+note.content.title+"\n\nMeta-review: "+note.content.metareview+"\n\nTo view the meta-review, click here: "+baseUrl+"/forum?id=" + note.forum
       };
 
       var promises = [
