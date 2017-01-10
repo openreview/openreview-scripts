@@ -15,7 +15,7 @@ function(){
       var areachair_mail = {
         "groups": areachairs,
         "subject": "Review posted to your assigned paper: \"" + origNoteTitle + "\"",
-        "message": "A submission to UAI 2017, for which you are a Senior Program Committee member, has received an official review. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
+        "message": "A submission to UAI 2017, for which you are a Senior Program Committee member, has received a review. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.review+"\n\nTo view the review, click here: "+baseUrl+"/forum?id=" + note.forum
       };
       var areachairMailP = or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
 
