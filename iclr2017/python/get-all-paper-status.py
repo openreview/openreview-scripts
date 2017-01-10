@@ -46,10 +46,8 @@ def get_score(content_type):
     string_var = string_var.split(':')[0]
     return string_var
 
-#client = openreview.Client(username='OpenReview.net', password='OpenReview_beta', baseurl='https://openreview.net')
-# client = openreview.Client(username='OpenReview.net', password='OpenReview_beta', baseurl='http://localhost:3000')
+# pull all needed info from the database
 submissions = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
-
 invitation = "official/review"
 headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json',
            'Authorization': 'Bearer ' + client.token}
@@ -59,6 +57,7 @@ current_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/confe
                                  headers=headers)
 notes = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/' + invitation)
 
+# open output file
 my_file = open(file_name, "w")
 
 # The following are dictionaries to connect the papers, reviewers and reviews
