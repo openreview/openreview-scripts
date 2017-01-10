@@ -84,7 +84,7 @@ if client.user['id'].lower()=='openreview.net':
             writers     = ['OpenReview.net',COCHAIRS],
             signatures  = ['OpenReview.net'],
             signatories = [COCHAIRS],
-            members     = ["~Alejandro_Molina1","~Kristian_Kersting1","~Gal_Elidan1"]) #should include Gal and Kristian
+            members     = ["auai.org/UAI/2017","~Alejandro_Molina1","~Kristian_Kersting1","~Gal_Elidan1"]) #should include Gal and Kristian
         groups.append(Program_Chairs)
 
 
