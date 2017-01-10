@@ -20,9 +20,27 @@ parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
 parser.add_argument('--username')
 parser.add_argument('--password')
+parser.add_argument('--file1', help="The xml from which tpms scores are to be read")
+parser.add_argument('--file2', help="The xml from which paper similarity scores are to be read")
 
 args = parser.parse_args()
-if args.username != None and args.password != None:
+if args.file1 is None:
+    raise Exception("No tpms file is provided")
+elif not os.path.isfile(args.file1):
+    raise Exception("Incorrect file path : %s specified" % args.file1)
+else:
+    if not args.file1.endswith(".xml"):
+        raise Exception("Incorrect File format")
+
+if args.file2 is None:
+    raise Exception("No Paper Similarity score file is provided")
+elif not os.path.isfile(args.file2):
+    raise Exception("Incorrect file path : %s specified" % args.file2)
+else:
+    if not args.file2.endswith(".xml"):
+        raise Exception("Incorrect File format")
+
+if args.username is not None and args.password is not None:
     openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
     openreview = Client(baseurl=args.baseurl)
@@ -198,6 +216,13 @@ def parse_paper_paper_similarity_details(file_path):
 
 
 def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarity_dict):
+    """
+    Using the data from the parsed tpms scores file and paper_similarity_score file populating the paper meta data
+    :param affinity_scores_dict:
+    :param betas_dict:
+    :param paper_similarity_dict:
+    :return:
+    """
     notes = utils.get_notes_submitted_papers(openreview, CONFERENCE_SUBMISSION)
     papers_number_list = utils.get_paper_numbers(notes)
     for i in range(len(notes)):
@@ -217,35 +242,7 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
         openreview.post_note(note)
 
 
-def write_reviewer_details(output_xml_file_path):
-    dict_reviewers_data = get_all_members_data()
-    reviewer_data_file = open(output_xml_file_path, "w")
-    reviewer_data_file.write(",".join(["First Name", "Last Name", "Organization", "Email", "Reviewer", "URL"]) + "\n")
-    for reviewer, data in dict_reviewers_data.iteritems():
-        reviewer_data = ",".join(data) + "\n"
-        reviewer_data_file.write(reviewer_data)
-    reviewer_data_file.close()
-
-
-def write_paper_details(output_csv_file_path):
-    submitted_paper_notes = get_notes_submitted_papers()
-    list_paper_details = get_submitted_paper_details(submitted_paper_notes)
-    paper_details_file = open(output_csv_file_path, 'w')
-    for paper_details in list_paper_details:
-        paper_details_file.write(",".join(paper_details) + "\n")
-    paper_details_file.close()
-
-
-def write_paper_review_score_details(output_xml_file_path):
-    dict_reviewers_data = get_all_members_data()
-    submitted_paper_notes = get_notes_submitted_papers()
-    # Get paper score tree
-    paper_score_tree = get_paper_reviewer_score_tree(submitted_paper_notes, dict_reviewers_data)
-    # Write paper score data to an xml file
-    paper_score_file = open(output_xml_file_path, "w")
-    paper_score_file.write(etree.tostring(paper_score_tree, pretty_print=True))
-    paper_score_file.close()
-
-
 if __name__ == '__main__':
-    pass
+    affinity_scores_dict, betas_dict = parse_paper_reviewer_affinity_details(args.file1)
+    paper_similarity_scores_dict = parse_paper_paper_similarity_details(args.file2)
+    create_paper_metadata_note(affinity_scores_dict, betas_dict,paper_similarity_scores_dict)
