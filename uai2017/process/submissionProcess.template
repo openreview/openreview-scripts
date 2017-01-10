@@ -213,8 +213,12 @@ function () {
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
-        'Preferences': {
-            'order': 1,
+        'title': {
+          'order': 1,
+          'value': 'UAI Reviewer bid'
+        },
+        'preferences': {
+            'order': 2,
             'value-radio': [
               'I want to review',
               'I can review',
