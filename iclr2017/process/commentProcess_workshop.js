@@ -99,7 +99,7 @@ function(){
         promises.push(reviewerMailP);
       };
 
-      if(visibleToReviewers || visibleToPCs){
+      if(visibleToPCs){
         var pcMailP = getPCEmails(origNote);
         promises.push(pcMailP);
       }

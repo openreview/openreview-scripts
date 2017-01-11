@@ -322,7 +322,7 @@ if openreview.user['id'].lower()=='openreview.net':
         invitees=['everyone'],
         signatures=['ICLR.cc/2017/conference'],
         reply=reviewer_invitation_reply,
-        process='../process/responseInvitationProcess_iclr2017.js',
+        process='../process/responseInvitationProcess_conference.js',
         web='../webfield/web-field-invitation.html')
 
     invitations = [submission_invitation, reviewer_invitation]
