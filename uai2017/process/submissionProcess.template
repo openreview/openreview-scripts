@@ -3,6 +3,43 @@ function () {
 
   var UAIData = <<uaidata.js>>
 
+  // Create an empty group for this paper, e.g. "auai.org/UAI/2017/paper444"
+  var paperGroup = {
+    'id': 'auai.org/UAI/2017/Paper'+note.number,
+    'signatures': ['auai.org/UAI/2017'],
+    'writers': ['auai.org/UAI/2017'],
+    'members': [],
+    'readers': ['everyone'],
+    'signatories': ['auai.org/UAI/2017', 'auai.org/UAI/2017/Paper'+note.number]
+  };
+
+  var reviewerGroup = {
+    'id': paperGroup.id+'/Reviewers',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members':[],
+    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers'],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
+  };
+
+  var authorGroup = {
+    'id':paperGroup.id+'/Authors',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members': note.content.authorids,
+    'readers':[UAIData.COCHAIRS],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Authors']
+  };
+
+  var areachairGroup = {
+    'id':paperGroup.id+'/Area_Chair',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members':[], //member to be added later by assignment script
+    'readers':[UAIData.COCHAIRS,UAIData.SPC],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Area_Chair']
+  };
+
   var metaReviewProcess = <<metaReviewProcess.js>>
 
   var metaReviewInvitation = {
@@ -136,7 +173,7 @@ function () {
     'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Confidential/Comment',
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
-    'invitees': [UAIData.PC,UAIData.SPC],
+    'invitees': [UAIData.COCHAIRS, UAIData.SPC, UAIData.PC],
     'noninvitees':[],
     'readers': ['everyone'],
     'process':commentProcess+'',
@@ -151,7 +188,8 @@ function () {
       'readers': {
         'values': [
           UAIData.COCHAIRS,
-          UAIData.SPC
+          UAIData.SPC,
+          UAIData.PC
         ],
         'description': 'The users who will be allowed to read the above content.'
         },
@@ -172,28 +210,24 @@ function () {
     }
   };
 
+  var allGroups = [UAIData.COCHAIRS, UAIData.PC, UAIData.SPC, authorGroup.id];
   var openCommentInvite = {
     'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Open/Comment',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'invitees': [UAIData.PC,UAIData.SPC],
+    'signatures': ['auai.org/UAI/2017'],
+    'writers': ['auai.org/UAI/2017'],
+    'invitees': allGroups,
     'noninvitees':[],
     'readers': ['everyone'],
-    'process':commentProcess+'',
+    'process': commentProcess+'',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'~.+',
+        'values-regex': allGroups.join('|'),
         'description': 'How your identity will be displayed with the above content.'
         },
-      'writers': {'values-regex':'~.+'},
+      'writers': { 'values-regex': allGroups.join('|') },
       'readers': {
-        'values': [
-          UAIData.COCHAIRS,
-          UAIData.SPC,
-          UAIData.PC
-        ],
+        'values': allGroups,
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -253,44 +287,6 @@ function () {
       }
     }
   };
-
-  // Create an empty group for this paper, e.g. "auai.org/UAI/2017/paper444"
-  var paperGroup = {
-    'id': 'auai.org/UAI/2017/Paper'+note.number,
-    'signatures': ['auai.org/UAI/2017'],
-    'writers': ['auai.org/UAI/2017'],
-    'members': [],
-    'readers': ['everyone'],
-    'signatories': ['auai.org/UAI/2017', 'auai.org/UAI/2017/Paper'+note.number]
-  };
-
-  var reviewerGroup = {
-    'id': paperGroup.id+'/Reviewers',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'members':[],
-    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers'],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
-  };
-
-  var authorGroup = {
-    'id':paperGroup.id+'/Authors',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'members': note.content.authorids,
-    'readers':[UAIData.COCHAIRS],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Authors']
-  };
-
-  var areachairGroup = {
-    'id':paperGroup.id+'/Area_Chair',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'members':[], //member to be added later by assignment script
-    'readers':[UAIData.COCHAIRS,UAIData.SPC],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Area_Chair']
-  };
-
 
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
