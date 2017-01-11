@@ -8,3 +8,7 @@ npm-debug.log
 */.ipynb_checkpoints
 .csv
 *.log
+iclr2017/data
+uai2017/data
+uai2017/process/submissionProcess.js
+uai2017/process/spc_registrationProcess.js
