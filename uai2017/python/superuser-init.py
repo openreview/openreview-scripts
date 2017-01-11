@@ -73,7 +73,7 @@ if client.user['id'].lower()=='openreview.net':
             writers     = ['auai.org/UAI/2017'],
             signatures  = ['OpenReview.net'],
             signatories = ['auai.org/UAI/2017'],
-            members     = [],
+            members     = [COCHAIRS],
             web         = '../webfield/uai2017_webfield.html')
         groups.append(uai2017)
 
