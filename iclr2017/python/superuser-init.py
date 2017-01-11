@@ -37,49 +37,49 @@ def overwrite_allowed(groupid):
         return False
 
 if openreview.user['id'].lower()=='openreview.net':
-    
+
     #########################
     ##    SETUP GROUPS     ##
-    ######################### 
+    #########################
 
     if overwrite_allowed('ICLR.cc'):
-        iclr            = Group('ICLR.cc',      
-            readers     = ['OpenReview.net'], 
-            writers     = ['OpenReview.net','ICLR.cc/2017/pcs'], 
-            signatures  = ['OpenReview.net'], 
-            signatories = ['ICLR.cc','ICLR.cc/2017/pcs'], 
+        iclr            = Group('ICLR.cc',
+            readers     = ['OpenReview.net'],
+            writers     = ['OpenReview.net','ICLR.cc/2017/pcs'],
+            signatures  = ['OpenReview.net'],
+            signatories = ['ICLR.cc','ICLR.cc/2017/pcs'],
             members     = [] )
         groups.append(iclr)
 
 
     if overwrite_allowed('ICLR.cc/2017'):
-        iclr2017        = Group('ICLR.cc/2017', 
-            readers     = ['everyone'],       
-            writers     = ['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'],  
-            signatures  = ['ICLR.cc'], 
-            signatories = ['ICLR.cc/2017','ICLR.cc/2017/pcs'], 
-            members     = ['ICLR.cc/2017/pcs'], 
+        iclr2017        = Group('ICLR.cc/2017',
+            readers     = ['everyone'],
+            writers     = ['ICLR.cc','ICLR.cc/2017','ICLR.cc/2017/pcs'],
+            signatures  = ['ICLR.cc'],
+            signatories = ['ICLR.cc/2017','ICLR.cc/2017/pcs'],
+            members     = ['ICLR.cc/2017/pcs'],
             web         = '../webfield/iclr2017_webfield.html')
         groups.append(iclr2017)
 
 
     if overwrite_allowed('ICLR.cc/2017/conference'):
-        iclr2017conference = Group('ICLR.cc/2017/conference', 
-            readers     = ['everyone'], 
-            writers     = ['ICLR.cc/2017','ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
+        iclr2017conference = Group('ICLR.cc/2017/conference',
+            readers     = ['everyone'],
+            writers     = ['ICLR.cc/2017','ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
             signatures  = ['ICLR.cc/2017'],
-            signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'], 
-            members     = ['ICLR.cc/2017/pcs'],  
+            signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
+            members     = ['ICLR.cc/2017/pcs'],
             web         = '../webfield/iclr2017conference_webfield.html')
         groups.append(iclr2017conference)
 
 
     if overwrite_allowed('ICLR.cc/2017/conference/organizers'):
         iclr2017conferenceorganizers = Group('ICLR.cc/2017/conference/organizers',
-            readers     = ['everyone'], 
-            writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/organizers','ICLR.cc/2017/pcs'], 
+            readers     = ['everyone'],
+            writers     = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/organizers','ICLR.cc/2017/pcs'],
             signatures  = ['ICLR.cc/2017/conference'],
-            signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs', 'ICLR.cc/2017/conference/organizers'], 
+            signatories = ['ICLR.cc/2017/conference','ICLR.cc/2017/pcs', 'ICLR.cc/2017/conference/organizers'],
             members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/conference'])
         groups.append(iclr2017conferenceorganizers)
 
@@ -105,19 +105,19 @@ if openreview.user['id'].lower()=='openreview.net':
 
 
     if overwrite_allowed('ICLR.cc/2017/workshop'):
-        iclr2017workshop = Group('ICLR.cc/2017/workshop', 
+        iclr2017workshop = Group('ICLR.cc/2017/workshop',
             readers     = ['everyone'],
-            writers     = ['ICLR.cc/2017','ICLR.cc/2017/pcs'],
-            signatures  = ['ICLR.cc/2017'], 
+            writers     = ['ICLR.cc/2017','ICLR.cc/2017/pcs','ICLR.cc/2017/workshop'],
+            signatures  = ['ICLR.cc/2017'],
             signatories = ['ICLR.cc/2017/workshop'],
-            members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'], 
+            members     = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs'],
             web         = '../webfield/iclr2017workshop_webfield.html')
         groups.append(iclr2017workshop)
 
 
     if overwrite_allowed('ICLR.cc/2017/pcs'):
-        iclr2017programchairs = Group('ICLR.cc/2017/pcs', 
-            readers=['everyone'], 
+        iclr2017programchairs = Group('ICLR.cc/2017/pcs',
+            readers=['everyone'],
             writers=['ICLR.cc/2017','ICLR.cc/2017/pcs'],
             signatures=['ICLR.cc/2017'],
             signatories=['ICLR.cc/2017/pcs'],
@@ -126,7 +126,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
 
     if overwrite_allowed('ICLR.cc/2017/areachairs'):
-        iclr2017areachairs = Group('ICLR.cc/2017/areachairs', 
+        iclr2017areachairs = Group('ICLR.cc/2017/areachairs',
             readers=['everyone'],
             writers=['ICLR.cc/2017','ICLR.cc/2017/pcs'],
             signatures=['ICLR.cc/2017'],
@@ -137,8 +137,8 @@ if openreview.user['id'].lower()=='openreview.net':
 
 
     if overwrite_allowed('ICLR.cc/2017/conference/reviewers-invited'):
-        iclr2017reviewersinvited = Group('ICLR.cc/2017/conference/reviewers-invited', 
-            readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'], 
+        iclr2017reviewersinvited = Group('ICLR.cc/2017/conference/reviewers-invited',
+            readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'],
             writers=['ICLR.cc/2017/pcs'],
             signatures=['ICLR.cc/2017/pcs'],
             signatories=['ICLR.cc/2017/conference/reviewers-invited'],
@@ -146,8 +146,8 @@ if openreview.user['id'].lower()=='openreview.net':
         groups.append(iclr2017reviewersinvited)
 
     if overwrite_allowed('ICLR.cc/2017/conference/reviewers-emailed'):
-        iclr2017reviewersemailed = Group('ICLR.cc/2017/conference/reviewers-emailed', 
-            readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'], 
+        iclr2017reviewersemailed = Group('ICLR.cc/2017/conference/reviewers-emailed',
+            readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'],
             writers=['ICLR.cc/2017/pcs'],
             signatures=['ICLR.cc/2017/pcs'],
             signatories=['ICLR.cc/2017/conference/reviewers-emailed'],
@@ -156,7 +156,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
 
     if overwrite_allowed('ICLR.cc/2017/conference/reviewers'):
-        iclr2017reviewers = Group('ICLR.cc/2017/conference/reviewers', 
+        iclr2017reviewers = Group('ICLR.cc/2017/conference/reviewers',
             readers=['everyone'],
             writers=['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
             signatures=['ICLR.cc/2017/conference'],
@@ -187,7 +187,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
     #########################
     ##  SETUP INVITATIONS  ##
-    ######################### 
+    #########################
 
 
     ## Create the submission invitation
@@ -276,14 +276,14 @@ if openreview.user['id'].lower()=='openreview.net':
     submission_reply=reply.copy()
 
     submission_invitation = Invitation( 'ICLR.cc/2017/conference',
-        'submission', 
-        readers=['everyone'], 
+        'submission',
+        readers=['everyone'],
         writers=['ICLR.cc/2017/conference'],
-        invitees=['~'], 
-        signatures=['ICLR.cc/2017/pcs'], 
+        invitees=['~'],
+        signatures=['ICLR.cc/2017/pcs'],
         reply=submission_reply,
         duedate=1478380500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        process='../process/submissionProcess_iclr2017.js')
+        process='../process/submissionProcess_conference.js')
 
     ## Create 'request for availability to review' invitation
     reviewer_invitation_reply = {
@@ -316,13 +316,13 @@ if openreview.user['id'].lower()=='openreview.net':
     }
 
     reviewer_invitation = Invitation('ICLR.cc/2017/conference',
-        'reviewer_invitation', 
+        'reviewer_invitation',
         readers=['everyone'],
-        writers=['ICLR.cc/2017/conference'], 
+        writers=['ICLR.cc/2017/conference'],
         invitees=['everyone'],
-        signatures=['ICLR.cc/2017/conference'], 
-        reply=reviewer_invitation_reply, 
-        process='../process/responseInvitationProcess_iclr2017.js', 
+        signatures=['ICLR.cc/2017/conference'],
+        reply=reviewer_invitation_reply,
+        process='../process/responseInvitationProcess_iclr2017.js',
         web='../webfield/web-field-invitation.html')
 
     invitations = [submission_invitation, reviewer_invitation]

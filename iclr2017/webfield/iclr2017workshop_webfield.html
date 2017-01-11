@@ -6,7 +6,6 @@
   <body>
     <div id='main'>
       <div id='header'></div>
-      <div class='panel'>Workshop track currently not open for submissions.</div>
       <div id='invitation'></div>
       <div id='notes'></div>
     </div>
@@ -57,7 +56,7 @@
               view.mkNewNoteEditor(invitation, null, user, {
                 onNoteCreated: function(idRecord) {
                   httpGetP('notes', {
-                    invitation: 'ICLR.cc/2017/workshop/-/submission', 
+                    invitation: 'ICLR.cc/2017/workshop/-/submission',
                     maxtcdate: Date.now()
                   }).then(function(result) {
                     console.log("time to update notes: " + result.notes.length);
@@ -89,7 +88,7 @@
           }
         }
       });
-      
+
 
 
 
