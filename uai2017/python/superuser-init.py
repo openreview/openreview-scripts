@@ -13,6 +13,7 @@ import csv
 import sys
 import openreview
 from uaidata import *
+from subprocess import call
 
 COCHAIRS = UAIData.get_program_co_chairs()
 PC = UAIData.get_program_committee()
@@ -40,6 +41,9 @@ def overwrite_allowed(groupid):
         return True
     else:
         return False
+
+call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process"])
+call(["node", "../../scripts/processToFile.js", "../process/spc_registrationProcess.template", "../process"])
 
 if client.user['id'].lower()=='openreview.net':
 
@@ -264,7 +268,7 @@ if client.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [COCHAIRS, UAIData.get_senior_program_committee(), UAIData.get_program_committee()] #who should be allowed to read UAI submissions and when?
+            'values-regex': 'auai.org/UAI/2017.*' #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -277,13 +281,13 @@ if client.user['id'].lower()=='openreview.net':
             'authors': {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 1,
-                'values': [],
+                'values-regex': '.*',
                 'required':True
             },
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 2,
-                'values': [],
+                'values-regex': '.*',
                 'required':True
             }
         }

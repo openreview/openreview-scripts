@@ -279,7 +279,7 @@ function () {
     'writers':['auai.org/UAI/2017'],
     'members': note.content.authorids,
     'readers':[UAIData.COCHAIRS],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/authors']
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Authors']
   };
 
   var areachairGroup = {
@@ -294,7 +294,7 @@ function () {
 
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
-  .then(result=>{
+  .then(result => {
     group_promises = [
       or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
@@ -303,7 +303,7 @@ function () {
 
     return Promise.all(group_promises);
   })
-  .then(result=>{
+  .then(result => {
     invitation_promises = [
       or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token),
@@ -314,10 +314,8 @@ function () {
 
     return Promise.all(invitation_promises);
   })
-  .then(result=>{
-    done();
-  })
-  .catch(error=>done(error));
+  .then(result => done())
+  .catch(error => done(error));
 
   return true;
 };
