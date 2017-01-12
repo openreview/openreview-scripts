@@ -37,7 +37,7 @@ function() {
         writers: [uaiGroup],
         members: note.content.authorids,
         readers: [coChairsGroup, spcGroup, groupId],
-        signatories: [uaiGroup, groupId]
+        signatories: [groupId]
       };
       console.log(authorGroup);
       return or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token)

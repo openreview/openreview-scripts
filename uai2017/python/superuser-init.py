@@ -74,9 +74,9 @@ if client.user['id'].lower()=='openreview.net':
     if overwrite_allowed('auai.org/UAI/2017'):
         uai2017 = openreview.Group('auai.org/UAI/2017',
             readers     = ['everyone'],
-            writers     = ['auai.org/UAI/2017'],
+            writers     = ['auai.org/UAI/2017', COCHAIRS],
             signatures  = ['OpenReview.net'],
-            signatories = ['auai.org/UAI/2017'],
+            signatories = ['auai.org/UAI/2017', COCHAIRS],
             members     = [COCHAIRS],
             web         = '../webfield/uai2017_webfield.html')
         groups.append(uai2017)
@@ -84,7 +84,7 @@ if client.user['id'].lower()=='openreview.net':
 
     if overwrite_allowed(COCHAIRS):
         Program_Chairs = openreview.Group(COCHAIRS,
-            readers     = ['everyone'],
+            readers     = [COCHAIRS, SPC, PC],
             writers     = ['OpenReview.net',COCHAIRS],
             signatures  = ['OpenReview.net'],
             signatories = [COCHAIRS],
@@ -94,11 +94,11 @@ if client.user['id'].lower()=='openreview.net':
 
     if overwrite_allowed(SPC):
         spc = openreview.Group(SPC,
-            readers     = ['everyone'], #it should be broadly known who is a member of the Senior Program Committee
+            readers     = [COCHAIRS, SPC, PC],
             writers     = [COCHAIRS,'auai.org/UAI/2017'], #the conference needs to be a writer whenever the process functions need to modify the group
             signatures  = [COCHAIRS],
-            signatories = [COCHAIRS], #it seems like only Gal and Kristian should be able to write notes representing the whole Senior_Program_Committee
-            members     = [COCHAIRS]) #more to be added later, from the list of Senior_Program_Committee members
+            signatories = [SPC], #it seems like only Gal and Kristian should be able to write notes representing the whole Senior_Program_Committee
+            members     = []) #more to be added later, from the list of Senior_Program_Committee members
         groups.append(spc)
 
     if overwrite_allowed(SPC+'/invited'):
@@ -130,11 +130,11 @@ if client.user['id'].lower()=='openreview.net':
 
     if overwrite_allowed(PC):
         pc = openreview.Group(PC,
-            readers     = ['everyone'], #the members of the program committee should be broadly known
+            readers     = [COCHAIRS, SPC, PC], #the members of the program committee should be broadly known
             writers     = [COCHAIRS,'auai.org/UAI/2017'], #the conference needs to be a writer whenever the process functions need to modify the group
             signatures  = [COCHAIRS],
-            signatories = [], #I think the Program Committee shouldn't have a reason to sign a note representing the entire Program_Committee, so leaving blank
-            members     = [SPC]) #more to be added later, from the list of Program_Committee members
+            signatories = [PC],
+            members     = []) #more to be added later, from the list of Program_Committee members
         groups.append(pc)
 
     if overwrite_allowed(PC+'/invited'):
