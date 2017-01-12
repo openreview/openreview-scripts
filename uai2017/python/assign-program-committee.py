@@ -11,6 +11,7 @@ import getpass
 import sys
 import re
 import openreview
+import requests
 from uaidata import *
 
 ## Argument handling
@@ -60,6 +61,30 @@ def assign_reviewer(reviewer,paper_number):
         reviewer_group = get_reviewer_group(reviewer, paper_number, [])
 
 
+def get_next_reviewer_id(reviewer, paper_number):
+
+    headers = {
+    'User-Agent': 'test-create-script',
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + client.token
+    }
+
+    response = requests.get(client.baseurl + '/groups?id=auai.org/UAI/2017/Paper' + paper_number + '/AnonReviewer.*', headers=headers)
+    reviewers = response.json()
+
+    if reviewers:
+        numbers = []
+        for existing_reviewer in reviewers:
+
+            if reviewer in existing_reviewer['members']:
+                print "reviewer " + reviewer + " found in " + existing_reviewer['id']
+                return None
+            numbers.append(int(existing_reviewer['id'].split('AnonReviewer')[1]))
+
+        return "AnonReviewer" + str(max(numbers) + 1)
+
+    else:
+        return "AnonReviewer1"
 
 
 def get_reviewer_group(reviewer, paper_number, conflict_list):
@@ -71,23 +96,13 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
     if not (reviewer in conference_reviewers.members):
         client.add_members_to_group(conference_reviewers,reviewer)
 
-    N=0
-    for a in existing_reviewers:
+    next_reviewer = get_next_reviewer_id(reviewer, paper_number)
 
-        reviewer_number = int(a.split('AnonReviewer')[1])
-        if reviewer_number > N:
-            N = reviewer_number
-
-        existing_reviewer = client.get_group(a)
-        if hasattr(existing_reviewer,'members'):
-            if reviewer in existing_reviewer.members:
-                print "reviewer " + reviewer + " found in " + existing_reviewer.id
-                return existing_reviewer
-
-    new_reviewer_id = 'auai.org/UAI/2017/Paper'+str(paper_number)+'/AnonReviewer'+str(N+1)
-    new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
-    client.add_members_to_group(reviewers,reviewer)
-    return new_reviewer
+    if next_reviewer:
+        new_reviewer_id = 'auai.org/UAI/2017/Paper' + str(paper_number) + '/' + next_reviewer
+        new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
+        client.add_members_to_group(reviewers,reviewer)
+        return new_reviewer
 
 
 def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list):
