@@ -103,8 +103,6 @@ function(){
         commentType = match[1];
       }
 
-      console.log('Comment type ' + commentType);
-
       var promises = [];
 
       var visibleToAuthors = note.readers.includes(authorsGroup);
@@ -138,7 +136,36 @@ function(){
 
       return Promise.all(promises);
     })
-    .then(result => done())
+    .then(result => {
+
+      if (note.forum != note.replyto) {
+        var emails = [];
+        for (var i = 0; i < result.length; i ++) {
+          var groups = result[i].groups;
+          for (var j = 0; j < groups.length; j++) {
+            emails.push(groups[j]);
+          }
+        }
+
+        or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token)
+        .then(result => {
+          var replytoNote = result.notes[0];
+          console.log('replytoNote author');
+          console.log(replytoNote.tauthor);
+          console.log('emails');
+          console.log(emails);
+          if(!emails.includes(replytoNote.tauthor)) {
+            getCommentEmails(replytoNote.signatures, forumNote)
+            .then(result => done());
+          } else {
+            done();
+          }
+        })
+
+      } else {
+        done();
+      }
+    })
     .catch(error => done(error));
 
     return true;
