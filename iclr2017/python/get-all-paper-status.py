@@ -120,11 +120,11 @@ paper_status_sorted = sorted(paper_status, key=lambda x: (paper_status[x]['perce
 
 # print results
 # csv
-my_file.write("Paper Number, %Review Complete, Reviewer Name, Review Rating, Review Confidence\n")
+my_file.write("Paper Number, Title, %Review Complete, Reviewer Name, Review Rating, Review Confidence\n")
 for paper_num in paper_status_sorted:
     reviewers = reviewers_by_paper[paper_num]
     for reviewer, note in reviewers.iteritems():
-        my_file.write("%s, %s%%, " % (paper_num, paper_status[paper_num]['percent']))
+        my_file.write('%s, %s, %s%%, ' % (paper_num, paper_status[paper_num]['title'], paper_status[paper_num]['percent']))
         my_file.write(reviewer.encode('utf-8'))
         if note:
             my_file.write(", %s, %s\n" % (get_score('rating'), get_score('confidence')))
