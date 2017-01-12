@@ -9,7 +9,6 @@ parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--ofile', help="output file name")
-parser.add_argument('--otype', help="file format: 1 = text, 2 = csv")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
@@ -18,21 +17,11 @@ if args.username!=None and args.password!=None:
 else:
     client = openreview.Client(baseurl=args.baseurl)
 ## Initialize output file name
-file_name = "output.txt"
+file_name = "output.csv"
 if args.ofile!=None:
     file_name = args.ofile
 ## Initialize output file type - check for valid values
 output_type = 2
-if args.otype!=None:
-    try:
-        output_type = int(args.otype)
-    except ValueError:
-        print 'otype must be 1 for text or 2 for csv.'
-        sys.exit()
-if output_type != 1 and output_type != 2:
-    print 'otype must be 1 for text or 2 for csv.'
-    sys.exit()
-
 
 class PaperStatus:
     Unassigned, Assigned, Commented, Reviewed, FullyReviewed = range(5)
@@ -130,31 +119,17 @@ paper_status_sorted = sorted(paper_status, key=lambda x: (paper_status[x]['perce
 
 
 # print results
-if output_type == 1:
-    # text
-    for paper_num in paper_status_sorted:
-            my_file.write("%s: %s%% %s\n" % (
-                paper_num, paper_status[paper_num]['percent'], paper_status[paper_num]['title']))
-            reviewers = reviewers_by_paper[paper_num]
-            for reviewer, note in reviewers.iteritems():
-                if note:
-                    my_file.write("   reviewer: %s  " % (reviewer.encode('utf-8')))
-                    my_file.write("  rating: %s  confidence: %s\n" % (get_score('rating'), get_score('confidence')))
-                else:
-                    my_file.write("   reviewer: %s  UNREVIEWED\n" % reviewer)
-
-elif output_type == 2:
-    # csv
-    my_file.write("Paper Number, %Review Complete, Reviewer Name, Review Rating, Review Confidence\n")
-    for paper_num in paper_status_sorted:
-        reviewers = reviewers_by_paper[paper_num]
-        for reviewer, note in reviewers.iteritems():
-            my_file.write("%s, %s%%, " % (paper_num, paper_status[paper_num]['percent']))
-            my_file.write(reviewer.encode('utf-8'))
-            if note:
-                my_file.write(", %s, %s\n" % (get_score('rating'), get_score('confidence')))
-            else:
-                my_file.write(", 0, 0\n")
+# csv
+my_file.write("Paper Number, %Review Complete, Reviewer Name, Review Rating, Review Confidence\n")
+for paper_num in paper_status_sorted:
+    reviewers = reviewers_by_paper[paper_num]
+    for reviewer, note in reviewers.iteritems():
+        my_file.write("%s, %s%%, " % (paper_num, paper_status[paper_num]['percent']))
+        my_file.write(reviewer.encode('utf-8'))
+        if note:
+            my_file.write(", %s, %s\n" % (get_score('rating'), get_score('confidence')))
+        else:
+            my_file.write(", 0, 0\n")
 
 
 my_file.close()
