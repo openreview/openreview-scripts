@@ -1,6 +1,7 @@
 import argparse
 import openreview
 import requests
+import csv
 import sys, getopt
 
 ## Argument handling
@@ -45,9 +46,6 @@ anon_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/conferen
 current_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/conference/paper.*/reviewers',
                                  headers=headers)
 notes = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/' + invitation)
-
-# open output file
-my_file = open(file_name, "w")
 
 # The following are dictionaries to connect the papers, reviewers and reviews
 # 	the signature is the whole directory struct leading up to the Anonymized name
@@ -120,16 +118,28 @@ paper_status_sorted = sorted(paper_status, key=lambda x: (paper_status[x]['perce
 
 # print results
 # csv
-my_file.write("Paper Number, %Review Complete, Reviewer Name, Review Rating, Review Confidence\n")
-for paper_num in paper_status_sorted:
-    reviewers = reviewers_by_paper[paper_num]
-    for reviewer, note in reviewers.iteritems():
-        my_file.write("%s, %s%%, " % (paper_num, paper_status[paper_num]['percent']))
-        my_file.write(reviewer.encode('utf-8'))
-        if note:
-            my_file.write(", %s, %s\n" % (get_score('rating'), get_score('confidence')))
-        else:
-            my_file.write(", 0, 0\n")
-
-
-my_file.close()
+with open(file_name, 'wb') as outfile:
+    csvwriter = csv.writer(outfile, delimiter=',')
+    row = []
+    row.append("Paper Number")
+    row.append("Title")
+    row.append("%Review Complete")
+    row.append("Reviewer Name")
+    row.append("Review Rating")
+    row.append("Review Confidence")
+    csvwriter.writerow(row)
+    for paper_num in paper_status_sorted:
+        reviewers = reviewers_by_paper[paper_num]
+        for reviewer, note in reviewers.iteritems():
+            row = []
+            row.append(paper_num)
+            row.append(paper_status[paper_num]['title'])
+            row.append(paper_status[paper_num]['percent'])
+            row.append(reviewer.encode('utf-8'))
+            if note:
+                row.append(get_score('rating'))
+                row.append(get_score('confidence'))
+            else:
+                row.append(0)
+                row.append(0)
+            csvwriter.writerow(row)
