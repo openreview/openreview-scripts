@@ -45,6 +45,9 @@ if client.user['id'].lower()=='openreview.net':
     # We're going to populate the list of workshop/reviewers from the list of conference/reviewers-invited,
     # so we only need to create groups for the reviewers themselves ('ICLR.cc/2017/workshop/reviewers') and
     # for the list of reviewers that have been emailed about serving as a workshop reviewer.
+    pcs = client.get_group('ICLR.cc/2017/pcs')
+
+    client.add_members_to_group(pcs,['ICLR.cc/2017/workshop','ICLR.cc/2017/conference'])
 
     if overwrite_allowed('ICLR.cc/2017/workshop'):
         iclr2017workshop = openreview.Group('ICLR.cc/2017/workshop',
@@ -65,13 +68,25 @@ if client.user['id'].lower()=='openreview.net':
             members=[])
         groups.append(iclr2017reviewersemailed)
 
+    if overwrite_allowed('ICLR.cc/2017/workshop/reviewers-declined'):
+        iclr2017reviewersemailed = openreview.Group('ICLR.cc/2017/workshop/reviewers-declined',
+            readers=['ICLR.cc/2017/pcs','ICLR.cc/2017'],
+            writers=['ICLR.cc/2017/pcs'],
+            signatures=['ICLR.cc/2017/pcs'],
+            signatories=['ICLR.cc/2017/workshop/reviewers-declined'],
+            members=[])
+        groups.append(iclr2017reviewersemailed)
+
+    #Get the conference reviewers and set them to be the reviewers by default. Reviewers can opt-out as necessary.
+    conference_reviewers = client.get_group('ICLR.cc/2017/conference/reviewers')
+
     if overwrite_allowed('ICLR.cc/2017/workshop/reviewers'):
         iclr2017reviewers = openreview.Group('ICLR.cc/2017/workshop/reviewers',
             readers=['everyone'],
             writers=['ICLR.cc/2017/workshop','ICLR.cc/2017/pcs'],
             signatures=['ICLR.cc/2017/workshop'],
             signatories=['ICLR.cc/2017/workshop/reviewers'],
-            members=['ICLR.cc/2017/pcs'])
+            members=['ICLR.cc/2017/pcs','ICLR.cc/2017/workshop']+conference_reviewers.members)
         groups.append(iclr2017reviewers)
 
 
@@ -215,7 +230,7 @@ if client.user['id'].lower()=='openreview.net':
         signatures=['ICLR.cc/2017/workshop'],
         reply=reviewer_invitation_reply,
         process='../process/responseInvitationProcess_workshop.js',
-        web='../webfield/web-field-invitation.html')
+        web='../webfield/web-field-invitation_workshop.html')
 
     invitations = [submission_invitation, reviewer_invitation]
 

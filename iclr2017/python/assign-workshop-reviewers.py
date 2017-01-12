@@ -100,7 +100,7 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
         if cont.lower()!='y' and cont.lower()!='yes':
             print "Aborting"
             sys.exit()
-        openreview.add_members_to_group(conference_reviewers_emailed,reviewer)
+        openreview.add_members_to_group(workshop_reviewers_emailed,reviewer)
 
     if not (reviewer in workshop_reviewers.members):
         openreview.add_members_to_group(workshop_reviewers,reviewer)
