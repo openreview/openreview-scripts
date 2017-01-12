@@ -1,10 +1,5 @@
 function(){
-    console.log('comment process initiated')
     var or3client = lib.or3client;
-
-    var list = note.invitation.replace(/_/g,' ').split('/');
-    list.splice(list.indexOf('-',1));
-    var conference = list.join(' ')
 
     var getAuthorEmails = function(origNote){
       console.log('get author emails initiated');
@@ -14,15 +9,14 @@ function(){
       var author_mail = {
         "groups": origNoteAuthors,
         "subject": "Comment on your submission to ICLR 2017: \"" + origNote.content.title + "\".",
-        "message": "Your submission to "+ conference +" has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+        "message": "Your submission to ICLR 2017 Workshop has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
       };
       return or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
     };
 
     var getReviewerEmails = function(origNote){
       console.log('get reviewer emails initiated');
-      var origNoteNumber = origNote.number;
-      return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/conference/paper'+origNoteNumber+'/reviewers',{},'GET',token)
+      return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/workshop/paper'+origNote.number+'/reviewers',{},'GET',token)
       .then(result=>{
         var reviewers = result.groups[0].members;
         console.log('reviewers before filter',reviewers);
@@ -35,30 +29,9 @@ function(){
         var reviewer_mail = {
           "groups": reviewers,
           "subject": "Comment posted to your assigned paper: \"" + origNote.content.title + "\"",
-          "message": "A submission to "+ conference+", for which you are an official reviewer, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to ICLR 2017 Workshop, for which you are an official reviewer, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
         };
         return or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
-      })
-    };
-
-    var getAreachairEmails = function(origNote){
-      console.log('get AC emails initiated');
-      var origNoteNumber = origNote.number;
-      return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/conference/paper'+origNoteNumber+'/areachairs',{},'GET',token)
-      .then(result=>{
-        var areachairs = result.groups[0].members;
-        var signatureIdx = areachairs.indexOf(note.signatures[0]);
-        console.log('areachairs before filter:',areachairs);
-        if(signatureIdx>-1){
-          areachairs.splice(signatureIdx,1);
-        };
-        console.log('areachairs after filter:',areachairs);
-        var areachair_mail = {
-          "groups": areachairs,
-          "subject": "Comment posted to your assigned paper: \"" + origNote.content.title + "\"",
-          "message": "A submission to "+ conference+", for which you are an official area chair, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
-        };
-        return or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
       })
     };
 
@@ -76,7 +49,7 @@ function(){
         var pc_mail = {
           "groups": pcs,
           "subject": "Private comment posted to a paper: \"" + origNote.content.title + "\"",
-          "message": "A submission to "+ conference+" has received a private comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to ICLR 2017 Workshop has received a private comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
         };
         return or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token );
       })
@@ -97,33 +70,24 @@ function(){
       return or3client.or3request( or3client.mailUrl, comment_mail, 'POST', token );
     };
 
-    console.log('functions defined')
     var origNoteP = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl+'?id='+note.replyto,{},'GET',token) : null;
-    console.log('promises created')
+
     Promise.all([
       origNoteP,
       replytoNoteP
     ]).then(result => {
-      console.log('promises resolving')
       var origNote = result[0].notes[0];
-      var origNoteNumber = origNote.number;
 
       var replytoNote = note.replyto ? result[1].notes[0] : null;
       var replytoNoteReaders = replytoNote ? replytoNote.readers : null;
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : null;
 
-      console.log('replytoNote',replytoNote);
-      console.log('replytoNoteReaders',replytoNoteReaders);
-      console.log('replytoNoteSignatures',replytoNoteSignatures);
       var promises = [];
-      console.log('note',note)
-      console.log('note.readers',note.readers)
+
       var visibleToEveryone = note.readers.indexOf('everyone')>-1 ? true : false;
-      console.log('visibleToEveryone',visibleToEveryone);
-      var visibleToReviewers = note.readers.indexOf('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers')>-1 ? true : false;
-      var visibleToAreachairs = note.readers.indexOf('ICLR.cc/2017/conference/ACs_and_organizers')>-1 ? true : false;
-      var visibleToPCs = note.readers.indexOf('ICLR.cc/2017/conference/organizers')>-1 ? true : false;
+      var visibleToReviewers = note.readers.indexOf('ICLR.cc/2017/workshop/reviewers')>-1 ? true : false;
+      var visibleToPCs = note.readers.indexOf('ICLR.cc/2017/pcs')>-1 ? true : false;
 
       if(visibleToEveryone){
         var authorMailP = getAuthorEmails(origNote);
@@ -135,12 +99,7 @@ function(){
         promises.push(reviewerMailP);
       };
 
-      if(visibleToEveryone || visibleToReviewers || visibleToAreachairs){
-        var areachairMailP = getAreachairEmails(origNote);
-        promises.push(areachairMailP);
-      };
-
-      if(visibleToReviewers || visibleToAreachairs || visibleToPCs){
+      if(visibleToPCs){
         var pcMailP = getPCEmails(origNote);
         promises.push(pcMailP);
       }

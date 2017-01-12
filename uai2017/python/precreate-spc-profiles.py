@@ -3,10 +3,15 @@ import requests
 import csv
 import argparse
 import re
+from uaidata import *
+
+COCHAIRS = UAIData.get_program_co_chairs()
+PC = UAIData.get_program_committee()
+SPC = UAIData.get_senior_program_committee()
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('file',help="the csv file containing the SPC names and email addresses")
+parser.add_argument('file',help="the csv file containing the Senior_Program_Committee names and email addresses")
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -19,20 +24,7 @@ if args.username!=None and args.password!=None:
 else:
     client = openreview.Client(baseurl=args.baseurl)
 
-spc_member_info = []
-with open(args.file) as f:
-    reader = csv.reader(f)
-
-    for row in reader:
-        spc_member_info.append((row[0],row[1],row[2]))
-
-tildematch = re.compile('~.+')
-for u in spc_member_info:
-    email = u[0].strip()
-    first = u[1].strip()
-    last = u[2].strip()
-
-    member_groups = []
+def get_or_create_profile(email, first, last):
 
     profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
 
@@ -61,56 +53,86 @@ for u in spc_member_info:
             ]
         })
 
-        if client.exists(tilde_group.id):
-            print "tilde group %s already exists, but %s is not a member" % (tilde,email)
-        else:
-            print "Generating new tilde group %s" % tilde
-            client.post_group(tilde_group)
+        print "Generating new tilde group %s" % tilde
+        client.post_group(tilde_group)
 
-            email_group = client.get_group(email)
-            client.add_members_to_group(email_group, [tilde])
+        email_group = openreview.Group.from_json({
+            "id": email,
+            "tauthor": "OpenReview.net",
+            "signatures": [
+                "OpenReview.net"
+            ],
+            "signatories": [
+                email
+            ],
+            "readers": [
+                email
+            ],
+            "writers": [
+                email
+            ],
+            "nonreaders": [],
+            "members": [
+                tilde
+            ]
+        })
 
-            profile_exists = True
+        client.post_group(email_group)
 
-            profileresponse = requests.get(client.baseurl+'/user/profile?email=%s' % email)
 
-            if 'errors' in profileresponse.json():
-                profile_exists = False
-            else:
-                tilde = profileresponse.json()['profile']['id']
-
-            if not profile_exists:
-                profile = openreview.Note.from_json({
-                    'id': tilde,
-                    'content': {
-                        'emails': [email],
-                        'preferred_email': email,
-                        'names': [
-                            {
-                                'first': first,
-                                'middle': '',
-                                'last': last,
-                                'username': tilde
-                            }
-                        ]
+        profile = openreview.Note.from_json({
+            'id': tilde,
+            'content': {
+                'emails': [email],
+                'preferred_email': email,
+                'names': [
+                    {
+                        'first': first,
+                        'middle': '',
+                        'last': last,
+                        'username': tilde
                     }
-                })
-                response = requests.put(client.baseurl+"/user/profile", json=profile.to_json(), headers=client.headers)
+                ]
+            }
+        })
+        response = requests.put(client.baseurl+"/user/profile", json=profile.to_json(), headers=client.headers)
 
-                profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
-                assert tilde in profile_by_email_response.json()['profile']['id']
+        profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
+        assert tilde in profile_by_email_response.json()['profile']['id']
 
-                profilenote = client.get_note(tilde)
-                assert email in profilenote.content['emails']
+        profilenote = client.get_note(tilde)
+        assert email in profilenote.content['emails']
 
-            else:
-                print "Profile %s already exists" % tilde
-
-
+        return tilde
 
     else:
         print "tilde groups exist for email %s" % email
-        print profile_by_email_response.json()['profile']['id']
+        return profile_by_email_response.json()['profile']['id']
 
-    if not client.exists(email):
-        print "Email on file does not match existing tilde group %s" % tilde
+
+spc_member_info = []
+with open(args.file) as f:
+    reader = csv.reader(f)
+
+    for row in reader:
+        spc_member_info.append((row[0],row[1],row[2]))
+
+spcs_invited = client.get_group(id=SPC+'/invited')
+profiles = []
+
+for u in spc_member_info:
+    email = u[0].strip()
+    first = u[1].strip()
+    last = u[2].strip()
+
+    if email:
+        profileId = get_or_create_profile(email.lower(), first, last)
+
+        if profileId not in spcs_invited.members:
+            profiles.append(profileId)
+
+client.add_members_to_group(spcs_invited, profiles)
+
+print "Profiles added: ", profiles
+
+
