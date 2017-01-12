@@ -74,10 +74,10 @@ if client.user['id'].lower()=='openreview.net':
     if overwrite_allowed('auai.org/UAI/2017'):
         uai2017 = openreview.Group('auai.org/UAI/2017',
             readers     = ['everyone'],
-            writers     = ['auai.org/UAI/2017'],
+            writers     = ['auai.org/UAI/2017', COCHAIRS],
             signatures  = ['OpenReview.net'],
-            signatories = ['auai.org/UAI/2017'],
-            members     = [],
+            signatories = ['auai.org/UAI/2017', COCHAIRS],
+            members     = [COCHAIRS],
             web         = '../webfield/uai2017_webfield.html')
         groups.append(uai2017)
 
