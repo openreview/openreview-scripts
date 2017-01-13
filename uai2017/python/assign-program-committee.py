@@ -90,6 +90,7 @@ def get_next_reviewer_id(reviewer, paper_number):
 def get_reviewer_group(reviewer, paper_number, conflict_list):
 
     reviewers = client.get_group('auai.org/UAI/2017/Paper'+paper_number+'/Reviewers')
+    nonreaders_reviewers = client.get_group('auai.org/UAI/2017/Paper'+paper_number+'/Reviewers/NonReaders')
     existing_reviewers = reviewers.members
     conference_reviewers = client.get_group(UAIData.get_program_committee())
 
@@ -102,6 +103,7 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
         new_reviewer_id = 'auai.org/UAI/2017/Paper' + str(paper_number) + '/' + next_reviewer
         new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
         client.add_members_to_group(reviewers,reviewer)
+        client.add_members_to_group(nonreaders_reviewers,new_reviewer.id)
         return new_reviewer
 
 
