@@ -114,7 +114,7 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
         signatures=['auai.org/UAI/2017'],
         writers=['auai.org/UAI/2017'],
         members=[reviewer],
-        readers=['auai.org/UAI/2017',new_reviewer_id,UAIData.get_program_co_chairs()],
+        readers=['auai.org/UAI/2017', UAIData.get_program_co_chairs(), UAIData.get_senior_program_committee(), UAIData.get_program_committee()],
         nonreaders=conflict_list,
         signatories=[new_reviewer_id])
     client.post_group(new_reviewer)
