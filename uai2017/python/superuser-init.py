@@ -128,6 +128,15 @@ if client.user['id'].lower()=='openreview.net':
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_emailed)
 
+    if overwrite_allowed(SPC+'/reminded'):
+        spc_emailed = openreview.Group(SPC+'/reminded',
+            readers     = [COCHAIRS],
+            writers     = [COCHAIRS],
+            signatures  = [COCHAIRS],
+            signatories = [],
+            members     = []) #more to be added later from the Senior_Program_Committee invitation process
+        groups.append(spc_emailed)
+
     if overwrite_allowed(PC):
         pc = openreview.Group(PC,
             readers     = [COCHAIRS, SPC, PC], #the members of the program committee should be broadly known
@@ -386,12 +395,12 @@ if client.user['id'].lower()=='openreview.net':
         'title': 'Senior Program Commmittee Expertise Registration',
         'description': "Thank you for agreeing to serve as a Senior Program Committee member. Please submit your areas of expertise on this page by clicking on the \"Add Senior_Program_Committee Expertise\" button below. You may edit your submission at any time by returning to this page and selecting the \"Edit\" button next to your submission. You can find this page again by going to your Tasks page, scrolling down to your list of submitted posts, and selecting your Senior Program Committee Form Response."
     }
-    client.post_note(spc_registration_rootnote)
 
-
-
-
-
+    #Create a note if not present
+    notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/spc_registration')
+    if not notes:
+        print 'Posting root note'
+        client.post_note(spc_registration_rootnote)
 
 
 else:
