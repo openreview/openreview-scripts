@@ -3,10 +3,27 @@ import re
 import unicodecsv as csv
 import os
 import requests
+import argparse
 
-client = openreview.Client(username="OpenReview.net",password="OpenReview_beta",baseurl="http://openreview.net")
+## Handle the arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('outdir', help='output file path')
+parser.add_argument('outfilename',help='the csv filename to write the dump to. will appear in /outdir')
+parser.add_argument('group',help='the group to dump')
+parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
+parser.add_argument('--username')
+parser.add_argument('--password')
 
-outputdir = './tpms-dump'
+args = parser.parse_args()
+
+## Initialize the client library with username and password
+if args.username!=None and args.password!=None:
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    client = openreview.Client(baseurl=args.baseurl)
+
+outputdir = args.outdir
 
 def get_profiles(groupname):
     members = client.get_group(groupname).members
@@ -17,7 +34,7 @@ def get_profiles(groupname):
     missing_users = []
     for m in members:
         m = m.strip()
-        try: 
+        try:
             client.get_group(m)
             g = client.get_group(m)
             groupmembers = [member for member in g.members if p.match(member)]
@@ -40,7 +57,7 @@ def get_profiles(groupname):
 
     for id in canonical_ids:
         profiles.append(client.get_note(id).to_json())
-    
+
     return profiles,missing_users
 
 
@@ -80,7 +97,7 @@ def get_conflicts(profile):
         domain = e.split('@')[1]
         conflicts.add(domain)
     return conflicts
-            
+
 def dump_conflicts(profiles, missing, papers, outfilename):
     with open(outputdir+'/'+outfilename,'wb') as outfile:
         csvwriter=csv.writer(outfile,delimiter=',')
@@ -95,7 +112,7 @@ def dump_conflicts(profiles, missing, papers, outfilename):
                 if not profile_conflicts.isdisjoint(paper['content']['conflicts']):
                     print "conflict detected:",email,profile_conflicts,paper['content']['conflicts']
                     csvwriter.writerow([paper_id,email])
-        
+
         for email in missing:
             domain = email.split('@')[1]
             for paper in papers:
@@ -112,14 +129,12 @@ def dump_missing(list):
             last = all_reviewers[email][1]
             csvwriter.writerow([])
 
-reviewer_profiles,missing_reviewers = get_profiles("ICLR.cc/2017/conference/reviewers")
-areachair_profiles,missing_areachairs = get_profiles("ICLR.cc/2017/areachairs")
-papers = [s.to_json() for s in client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')]
+profiles, missing = get_profiles(args.group)
+papers = [s.to_json() for s in client.get_notes(invitation='ICLR.cc/2017/workshop/-/submission')]
 
-dump_names(reviewer_profiles,"reviewer-dump.csv")
-dump_names(areachair_profiles,"areachair-dump.csv")
+dump_names(profiles,args.outfilename)
 write_pdfs(papers)
-dump_conflicts(reviewer_profiles,missing_reviewers+missing_areachairs,papers,"conflicts-dump.csv")
+dump_conflicts(profiles,missing,papers,"conflicts-dump.csv")
 
 
 

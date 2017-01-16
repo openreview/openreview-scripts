@@ -91,8 +91,8 @@
           }},
 
           notes: function(notes) {
-            if (notes) {
-              $('#notes').empty();
+            if (notes.length > 0) {
+              $('#notes').empty().append('<h3>Submitted Papers</h3><hr>');
               _.forEach(notes, function(note) {
                 $attach('#notes', 'mkNotePanel', [note, {
                   titleLink: 'HREF',

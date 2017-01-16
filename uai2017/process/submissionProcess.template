@@ -3,6 +3,43 @@ function () {
 
   var UAIData = <<uaidata.js>>
 
+  // Create an empty group for this paper, e.g. "auai.org/UAI/2017/paper444"
+  var paperGroup = {
+    'id': 'auai.org/UAI/2017/Paper'+note.number,
+    'signatures': ['auai.org/UAI/2017'],
+    'writers': ['auai.org/UAI/2017'],
+    'members': [],
+    'readers': ['everyone'],
+    'signatories': ['auai.org/UAI/2017', 'auai.org/UAI/2017/Paper'+note.number]
+  };
+
+  var reviewerGroup = {
+    'id': paperGroup.id+'/Reviewers',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members':[],
+    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers'],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
+  };
+
+  var authorGroup = {
+    'id':paperGroup.id+'/Authors',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members': note.content.authorids,
+    'readers':[UAIData.COCHAIRS],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Authors']
+  };
+
+  var areachairGroup = {
+    'id':paperGroup.id+'/Area_Chair',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members':[], //member to be added later by assignment script
+    'readers':[UAIData.COCHAIRS,UAIData.SPC],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Area_Chair']
+  };
+
   var metaReviewProcess = <<metaReviewProcess.js>>
 
   var metaReviewInvitation = {
@@ -26,22 +63,41 @@ function () {
       'content': {
         'title': {
           'order': 1,
-          'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.'
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your review.',
+          'required':true
         },
         'metareview': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+          'required':true
         },
         'recommendation': {
           'order': 3,
           'value-dropdown': [
-            'Oral',
-            'Poster',
-            'Workshop',
+            'Strong accept',
+            'Weak accept',
             'Reject'
-          ]
+          ],
+          'required':true
+        },
+        'format': {
+          'order':4,
+          'value-radio': [
+            'Poster',
+            'Oral'
+          ],
+          'required':true
+        },
+        'best paper':{
+          'order':5,
+          'description': 'Nominate as best paper (if student paper, nominate for best student paper)',
+          'value-radio': [
+            'Yes',
+            'No'
+          ],
+          'required':true
         }
       }
     }
@@ -70,13 +126,15 @@ function () {
       'content': {
         'title': {
           'order': 1,
-          'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.'
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your review.',
+          'required':true
         },
         'review': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+          'required':true
         },
         'rating': {
           'order': 3,
@@ -91,7 +149,8 @@ function () {
             '3: Clear rejection',
             '2: Strong rejection',
             '1: Trivial or wrong'
-          ]
+          ],
+          'required':true
         },
         'confidence': {
           'order': 4,
@@ -101,7 +160,8 @@ function () {
             '3: The reviewer is fairly confident that the evaluation is correct',
             '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
             '1: The reviewer\'s evaluation is an educated guess'
-          ]
+          ],
+          'required':true
         }
       }
     }
@@ -109,27 +169,24 @@ function () {
 
   var commentProcess = <<commentProcess.js>>
 
+  var confidentialGroups = [UAIData.COCHAIRS, UAIData.PC, UAIData.SPC];
   var confidentialCommentInvite = {
     'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Confidential/Comment',
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
-    'invitees': [UAIData.PC,UAIData.SPC],
+    'invitees': confidentialGroups,
     'noninvitees':[],
     'readers': ['everyone'],
     'process':commentProcess+'',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'~.+',
+        'values-regex': confidentialGroups.join('|'),
         'description': 'How your identity will be displayed with the above content.'
         },
-      'writers': {'values-regex':'~.+'},
+      'writers': {'values-regex': confidentialGroups.join('|')},
       'readers': {
-        'values': [
-          UAIData.COCHAIRS,
-          UAIData.SPC
-        ],
+        'values': confidentialGroups,
         'description': 'The users who will be allowed to read the above content.'
         },
       'content': {
@@ -149,28 +206,24 @@ function () {
     }
   };
 
+  var allGroups = [UAIData.COCHAIRS, UAIData.PC, UAIData.SPC, authorGroup.id];
   var openCommentInvite = {
     'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Open/Comment',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'invitees': [UAIData.PC,UAIData.SPC],
+    'signatures': ['auai.org/UAI/2017'],
+    'writers': ['auai.org/UAI/2017'],
+    'invitees': allGroups,
     'noninvitees':[],
     'readers': ['everyone'],
-    'process':commentProcess+'',
+    'process': commentProcess+'',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'replyto': noteID,    // not specified so we can allow comments on comments
       'signatures': {
-        'values-regex':'~.+',
+        'values-regex': allGroups.join('|'),
         'description': 'How your identity will be displayed with the above content.'
         },
-      'writers': {'values-regex':'~.+'},
+      'writers': { 'values-regex': allGroups.join('|') },
       'readers': {
-        'values': [
-          UAIData.COCHAIRS,
-          UAIData.SPC,
-          UAIData.PC
-        ],
+        'values': allGroups,
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -213,8 +266,12 @@ function () {
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
-        'Preferences': {
-            'order': 1,
+        'title': {
+          'order': 1,
+          'value': 'UAI Reviewer bid: '+note.content.title
+        },
+        'preferences': {
+            'order': 2,
             'value-radio': [
               'I want to review',
               'I can review',
@@ -227,47 +284,9 @@ function () {
     }
   };
 
-  // Create an empty group for this paper, e.g. "auai.org/UAI/2017/paper444"
-  var paperGroup = {
-    'id': 'auai.org/UAI/2017/Paper'+note.number,
-    'signatures': ['auai.org/UAI/2017'],
-    'writers': ['auai.org/UAI/2017'],
-    'members': [],
-    'readers': ['everyone'],
-    'signatories': ['auai.org/UAI/2017', 'auai.org/UAI/2017/Paper'+note.number]
-  };
-
-  var reviewerGroup = {
-    'id': paperGroup.id+'/Reviewers',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'members':[],
-    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers'],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
-  };
-
-  var authorGroup = {
-    'id':paperGroup.id+'/Authors',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'members': note.content.authorids,
-    'readers':[UAIData.COCHAIRS],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/authors']
-  };
-
-  var areachairGroup = {
-    'id':paperGroup.id+'/Area_Chair',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'members':[], //member to be added later by assignment script
-    'readers':[UAIData.COCHAIRS,UAIData.SPC],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Area_Chair']
-  };
-
-
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
-  .then(result=>{
+  .then(result => {
     group_promises = [
       or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
@@ -276,7 +295,7 @@ function () {
 
     return Promise.all(group_promises);
   })
-  .then(result=>{
+  .then(result => {
     invitation_promises = [
       or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token),
@@ -287,10 +306,8 @@ function () {
 
     return Promise.all(invitation_promises);
   })
-  .then(result=>{
-    done();
-  })
-  .catch(error=>done(error));
+  .then(result => done())
+  .catch(error => done(error));
 
   return true;
 };

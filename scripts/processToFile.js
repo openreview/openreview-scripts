@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 var mainProcessFile = process.argv[2];
+var outputPath = process.argv[3];
 
 console.log('Main process', mainProcessFile);
 
@@ -13,11 +14,11 @@ if(matches) {
 	matches.forEach(function(m) {
 
 		var fileName = m.replace('<<', '').replace('>>', '');
-		var fileContent = fs.readFileSync(fileName, 'utf8');
+		var fileContent = fs.readFileSync(outputPath + '/' + fileName, 'utf8');
 		mainProcess = mainProcess.replace(m, fileContent);
 		console.log('Processing file', fileName);
 
-	})	
+	})
 }
 
 var newFileName = mainProcessFile.replace('.template', '.js');
