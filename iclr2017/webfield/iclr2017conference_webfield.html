@@ -17,12 +17,12 @@
         "http://www.iclr.cc",
         "Submission Deadline Extended: Saturday, November 5th, 2016, at 5:00pm Eastern Daylight Time (EDT)"
       ], true);
- 
+
       var sm = mkStateManager();
 
       var httpGetP = function(url, queryOrBody) {
         var df = $.Deferred();
-        httpGet(url, queryOrBody, 
+        httpGet(url, queryOrBody,
         function(result) {
           df.resolve(result);
         },
@@ -32,7 +32,7 @@
         return df.promise();
       };
 
-      var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {        
+      var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
         console.log('result',result);
         var valid_invitations = _.filter(result.invitations, function(inv){
           return inv.duedate > Date.now();
@@ -47,7 +47,7 @@
 
       var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
-      },      
+      },
       function(error){
         return error
       });
@@ -61,16 +61,16 @@
           });
         }
         sm.update('notes', notes);
-        
+
         sm.addHandler('conference', {
           invitationTrip: function(invitationTrip) { if (invitationTrip) {
             var invitation = invitationTrip.invitation;
             $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-              if (user && invitation) {
+              if (user && !user.id.startsWith('guest_') && invitation) {
                 view.mkNewNoteEditor(invitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      invitation: 'ICLR.cc/2017/conference/-/submission', 
+                      invitation: 'ICLR.cc/2017/conference/-/submission',
                       maxtcdate: Date.now()
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);
@@ -119,7 +119,7 @@
         console.log("Invitation and/or notes not found")
       });
 
-      
+
 
 
 
