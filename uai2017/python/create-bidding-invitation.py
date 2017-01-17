@@ -16,6 +16,7 @@ from uaidata import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
+parser.add_argument('type', help="the type of the bidding Reviewer or AreaChair")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -31,8 +32,9 @@ baseurl = client.baseurl
 COCHAIRS = UAIData.get_program_co_chairs()
 PC = UAIData.get_program_committee()
 SPC = UAIData.get_senior_program_committee()
+entity_type = args.type
 
-bidding_main_invitation = openreview.Invitation('auai.org/UAI/2017', 'main_bidding',
+bidding_main_invitation = openreview.Invitation('auai.org/UAI/2017', 'Main_' + entity_type + '_Bidding',
     readers = ['auai.org/UAI/2017'],
     writers = ['auai.org/UAI/2017'],
     invitees = ['OpenReview.net'],
@@ -64,19 +66,20 @@ bidding_main_invitation.reply = {
     }
 }
 
+print 'POST invitation: ', bidding_main_invitation.id
 client.post_invitation(bidding_main_invitation)
 
-bidding_rootnote = openreview.Note(invitation='auai.org/UAI/2017/-/main_bidding',
+bidding_rootnote = openreview.Note(invitation='auai.org/UAI/2017/-/Main_' + entity_type + '_Bidding',
     readers = [COCHAIRS, SPC, PC],
     writers = ['auai.org/UAI/2017'],
     signatures = ['auai.org/UAI/2017'])
 bidding_rootnote.content = {
-    'title': 'Paper Bidding',
-    'description': "Please submit 50 paper biddings."
+    'title': entity_type + ' Paper Bidding',
+    'description': "Please submit 50 paper bids."
 }
 
 #Create a note if not present
-notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/main_bidding')
+notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Main_' + entity_type + '_Bidding')
 root_note = None
 if not notes:
     print 'Posting root note'
@@ -84,11 +87,17 @@ if not notes:
 else:
     root_note = notes[0]
 
-bidding_invitation = openreview.Invitation('auai.org/UAI/2017', 'paper_bidding',
+invitees = []
+if entity_type == 'Reviewer':
+    invitees = [PC]
+else:
+    invitees = [SPC]
+
+bidding_invitation = openreview.Invitation('auai.org/UAI/2017', entity_type + '_Paper_Bidding',
     duedate = 1507226400000,
     readers = ['everyone'],
     writers = ['auai.org/UAI/2017'],
-    invitees = [PC],
+    invitees = invitees,
     signatures = ['auai.org/UAI/2017'],
     process = '../process/bidProcess.js')
 
@@ -98,12 +107,12 @@ submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission'
 content = {
     'title': {
         'order': 1,
-        'value': 'Paper Bids'
+        'value': entity_type + ' Paper Bids'
     }
 }
 order = 2
 for submission in submissions:
-    content['Paper ' + str(submission.number)] = {
+    content['Paper_' + str(submission.number)] = {
         'order': order,
         'value-radio': [
             'I want to review',
@@ -111,7 +120,10 @@ for submission in submissions:
             'I can probably review but am not an expert',
             'I cannot review'
         ],
-        'description': submission.content['title']
+        'description': {
+            'text': submission.content['title'],
+            'href': '/forum?id=' + submission.id
+        }
     }
 
     order += 1
@@ -132,5 +144,6 @@ bidding_invitation.reply = {
     'content': content
 }
 
+print 'POST invitation: ', bidding_invitation.id
 client.post_invitation(bidding_invitation)
 
