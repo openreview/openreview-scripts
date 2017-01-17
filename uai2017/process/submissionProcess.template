@@ -313,8 +313,7 @@ function () {
       or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, confidentialCommentInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, bidInvite, 'POST', token)
+      or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token)
     ];
 
     return Promise.all(invitation_promises);
