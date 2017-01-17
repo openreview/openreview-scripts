@@ -10,11 +10,7 @@ import csv
 import sys
 from openreview import *
 import re
-from UAIData import *
-
-COCHAIRS = UAIData.get_program_co_chairs()
-PC = UAIData.get_program_committee()
-SPC = UAIData.get_senior_program_committee()
+from uaidata import *
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
