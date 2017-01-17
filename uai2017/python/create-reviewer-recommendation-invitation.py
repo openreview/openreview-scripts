@@ -110,10 +110,7 @@ for submission in submissions:
     content['Paper_' + str(submission.number)] = {
         'order': order,
         'values-dropdown': pc_group.members,
-        'description': {
-            'text': submission.content['title'],
-            'href': '/forum?id=' + submission.id
-        }
+        'description': submission.content['title']
     }
 
     order += 1

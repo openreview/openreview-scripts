@@ -120,10 +120,7 @@ for submission in submissions:
             'I can probably review but am not an expert',
             'I cannot review'
         ],
-        'description': {
-            'text': submission.content['title'],
-            'href': '/forum?id=' + submission.id
-        }
+        'description': submission.content['title']
     }
 
     order += 1
