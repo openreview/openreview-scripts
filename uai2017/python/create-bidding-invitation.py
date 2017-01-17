@@ -29,9 +29,6 @@ else:
     client = openreview.Client(baseurl=args.baseurl)
 baseurl = client.baseurl
 
-COCHAIRS = UAIData.get_program_co_chairs()
-PC = UAIData.get_program_committee()
-SPC = UAIData.get_senior_program_committee()
 entity_type = args.type
 
 bidding_main_invitation = openreview.Invitation('auai.org/UAI/2017', 'Main_' + entity_type + '_Bidding',
