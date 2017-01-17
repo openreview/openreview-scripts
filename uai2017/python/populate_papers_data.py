@@ -4,9 +4,8 @@ import sys
 from openreview import *
 
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
-print sys.path
 from note_content import *
-from constants import *
+from uaidata import *
 from lxml import etree
 import xml.etree.ElementTree
 import utils
@@ -66,7 +65,7 @@ def get_notes_submitted_papers():
     Get all the submitted papers
     :return:
     """
-    notes = openreview.get_notes(invitation=CONFERENCE_SUBMISSION)
+    notes = openreview.get_notes(invitation=CONFERENCE+'/-/submission')
     return notes
 
 
@@ -225,7 +224,7 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
     :param paper_similarity_dict:
     :return:
     """
-    notes = utils.get_notes_submitted_papers(openreview, CONFERENCE_SUBMISSION)
+    notes = utils.get_notes_submitted_papers(openreview, CONFERENCE+"/-/submission")
     papers_number_list = utils.get_paper_numbers(notes)
     for i in range(len(notes)):
         inviter = CONFERENCE + "/-/matching"
@@ -236,7 +235,7 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
         content = PaperMetaData(minreviewers=min_reviewers, maxreviewers=max_reviewers, reviewers=reviewers,
                                 papers=papers)
         note = Note(invitation=inviter, cdate=int(time.time()) * 1000,
-                    readers=[CONFERENCE_PCS, CONFERENCE_ACS],
+                    readers=[PC, SPC],
                     forum=notes[i].id,
                     writers=['everyone'],
                     content=content.to_dict(),
