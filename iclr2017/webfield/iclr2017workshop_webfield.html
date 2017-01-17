@@ -52,7 +52,7 @@
         invitationTrip: function(invitationTrip) { if (invitationTrip) {
           var invitation = invitationTrip.invitation;
           $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-            if (user && user.id.indexOf('guest')==-1) {
+            if (user && user.id.startsWith('guest_')) {
               view.mkNewNoteEditor(invitation, null, user, {
                 onNoteCreated: function(idRecord) {
                   httpGetP('notes', {
