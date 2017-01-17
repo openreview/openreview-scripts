@@ -180,6 +180,7 @@ def parse_paper_reviewer_affinity_details(file_path):
         if paper_id not in affinity_scores_dict:
             affinity_scores_dict[paper_id] = []
         for score_details in submission._children:
+            #instead of using the email_id_map, get ids from public profiles using /user/profile?email=email
             affinity_scores_dict[paper_id].append(
                 (email_id_map[score_details.attrib['email']], float(score_details.attrib['score']),
                  score_details.attrib['source']))
