@@ -22,6 +22,15 @@ function () {
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
   };
 
+  var reviewerNonReadersGroup = {
+    'id': paperGroup.id+'/Reviewers/NonReaders',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members':[],
+    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers/NonReaders'],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers/NonReaders']
+  };
+
   var authorGroup = {
     'id':paperGroup.id+'/Authors',
     'signatures':['auai.org/UAI/2017'],
@@ -120,8 +129,11 @@ function () {
       'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
       'readers': {
-        'values': [UAIData.SPC], //only Senior_Program_Committee initially; when a reviewer submits his/her review, they are added to the readers
+        'values': [UAIData.COCHAIRS, UAIData.SPC, reviewerGroup.id, authorGroup.id],
         'description': 'The users who will be allowed to read the above content.'
+      },
+      'nonreaders': {
+        'values': [reviewerNonReadersGroup.id]
       },
       'content': {
         'title': {
@@ -288,7 +300,8 @@ function () {
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result => {
     group_promises = [
-      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token)
+      .then(result => or3client.or3request(or3client.grpUrl, reviewerNonReadersGroup, 'POST', token)),
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token)
     ];
