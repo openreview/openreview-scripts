@@ -70,13 +70,13 @@ def sendMail(reviewers_invited):
         client.send_mail("Reviewer Invitation for ICLR 2017: Workshop Track", [reviewer], message % (url+"No"))
 
 
-if client.exists("ICLR.cc/2017/conference/reviewers") and client.exists("ICLR.cc/2017/workshop/reviewers-emailed"):
-    conference_reviewers = client.get_group("ICLR.cc/2017/conference/reviewers")
+if client.exists("ICLR.cc/2017/workshop/reviewers") and client.exists("ICLR.cc/2017/workshop/reviewers-emailed"):
+    workshop_reviewers = client.get_group("ICLR.cc/2017/workshop/reviewers")
     workshop_reviewers_emailed = client.get_group("ICLR.cc/2017/workshop/reviewers-emailed")
-    recipients = [reviewer for reviewer in conference_reviewers.members if reviewer not in workshop_reviewers_emailed.members]
+    recipients = [reviewer for reviewer in workshop_reviewers.members if reviewer not in workshop_reviewers_emailed.members]
     sendMail(recipients)
     client.add_members_to_group(workshop_reviewers_emailed,recipients)
 else:
-    print "Error while retrieving the groups. \nICLR.cc/2017/conference/reviewers exists? %s\nICLR.cc/2017/workshop/reviewers-emailed exists? %s" % (client.exists("ICLR.cc/2017/conference/reviewers"), client.exists("ICLR.cc/2017/workshop/reviewers-emailed"))
+    print "Error while retrieving the groups. \nICLR.cc/2017/workshop/reviewers exists? %s\nICLR.cc/2017/workshop/reviewers-emailed exists? %s" % (client.exists("ICLR.cc/2017/workshop/reviewers"), client.exists("ICLR.cc/2017/workshop/reviewers-emailed"))
 
 

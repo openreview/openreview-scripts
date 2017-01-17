@@ -5,10 +5,6 @@ import argparse
 import re
 from uaidata import *
 
-COCHAIRS = UAIData.get_program_co_chairs()
-PC = UAIData.get_program_committee()
-SPC = UAIData.get_senior_program_committee()
-
 ## Handle the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('file',help="the csv file containing the Senior_Program_Committee names and email addresses")

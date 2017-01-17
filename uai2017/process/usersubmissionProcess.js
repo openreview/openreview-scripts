@@ -36,7 +36,7 @@ function() {
         signatures: [uaiGroup],
         writers: [uaiGroup],
         members: note.content.authorids,
-        readers: [coChairsGroup, spcGroup, groupId],
+        readers: [coChairsGroup, groupId],
         signatories: [groupId]
       };
       console.log(authorGroup);
