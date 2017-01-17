@@ -1,21 +1,12 @@
-class UAIData():
+"""
+UAI Conference constants
+"""
 
-	@staticmethod
-	def get_program_co_chairs():
-		return "auai.org/UAI/2017/Program_Co-Chairs"
-
-	@staticmethod
-	def get_senior_program_committee():
-		return "auai.org/UAI/2017/Senior_Program_Committee"
-
-	@staticmethod
-	def get_program_committee():
-		return "auai.org/UAI/2017/Program_Committee"
-
-	@staticmethod
-	def get_subject_areas():
-
-		return ["Algorithms: Approximate Inference",
+COCHAIRS = "auai.org/UAI/2017/Program_Co-Chairs"
+SPC = "auai.org/UAI/2017/Senior_Program_Committee"
+PC = "auai.org/UAI/2017/Program_Committee"
+CONFERENCE = "auai.org/UAI/2017"
+SUBJECT_AREAS = ["Algorithms: Approximate Inference",
 			    'Algorithms: Belief Propagation',
 			    'Algorithms: Distributed and Parallel',
 			    'Algorithms: Exact Inference',

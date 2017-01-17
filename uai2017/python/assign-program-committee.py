@@ -92,7 +92,7 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
     reviewers = client.get_group('auai.org/UAI/2017/Paper'+paper_number+'/Reviewers')
     nonreaders_reviewers = client.get_group('auai.org/UAI/2017/Paper'+paper_number+'/Reviewers/NonReaders')
     existing_reviewers = reviewers.members
-    conference_reviewers = client.get_group(UAIData.get_program_committee())
+    conference_reviewers = client.get_group(PC)
 
     if not (reviewer in conference_reviewers.members):
         client.add_members_to_group(conference_reviewers,reviewer)
@@ -114,7 +114,7 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
         signatures=['auai.org/UAI/2017'],
         writers=['auai.org/UAI/2017'],
         members=[reviewer],
-        readers=['auai.org/UAI/2017', UAIData.get_program_co_chairs(), UAIData.get_senior_program_committee(), UAIData.get_program_committee()],
+        readers=['auai.org/UAI/2017', COCHAIRS, SPC, PC],
         nonreaders=conflict_list,
         signatories=[new_reviewer_id])
     client.post_group(new_reviewer)
