@@ -171,7 +171,7 @@ def parse_paper_reviewer_affinity_details(file_path):
     submissions = root._children
     affinity_scores_dict = {}
     betas_dict = {}
-    email_id_map = utils.get_email_to_id_mapping(openreview)
+    #email_id_map = utils.get_email_to_id_mapping(openreview)
     for submission in submissions:
         paper_id = int(submission.attrib['submissionId'])
         max_reviewers = int(submission.attrib['maxReviewers'])
@@ -181,8 +181,9 @@ def parse_paper_reviewer_affinity_details(file_path):
             affinity_scores_dict[paper_id] = []
         for score_details in submission._children:
             #instead of using the email_id_map, get ids from public profiles using /user/profile?email=email
+            profile = openreview.get_profile(score_details.attrib['email'])
             affinity_scores_dict[paper_id].append(
-                (email_id_map[score_details.attrib['email']], float(score_details.attrib['score']),
+                (profile.id, float(score_details.attrib['score']),
                  score_details.attrib['source']))
     return affinity_scores_dict, betas_dict
 
