@@ -126,7 +126,7 @@ function () {
     'reply': {
       'forum': note.id,
       'replyto': note.id,
-      'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
+      'writers': {'values': ['auai.org/UAI/2017']},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
       'readers': {
         'values': [UAIData.COCHAIRS, UAIData.SPC, reviewerGroup.id, authorGroup.id],
