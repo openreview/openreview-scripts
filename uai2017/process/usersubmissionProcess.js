@@ -39,13 +39,12 @@ function() {
         readers: [coChairsGroup, groupId],
         signatories: [groupId]
       };
-      console.log(authorGroup);
       return or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token)
       .then(savedGroup => {
-        savedNote.content.authorids = [savedGroup.id];
-        savedNote.content.authors = ['Blinded names'];
-        savedNote.readers.push(savedGroup.id);
-        return or3client.or3request(or3client.notesUrl, savedNote, 'POST', token);
+        overwritingNote.content.authorids = [savedGroup.id];
+        overwritingNote.content.authors = ['Blinded names'];
+        overwritingNote.readers.push(savedGroup.id);
+        return or3client.or3request(or3client.notesUrl, overwritingNote, 'POST', token);
       });
     })
     .then(result => or3client.or3request(or3client.mailUrl, mail, 'POST', token))
