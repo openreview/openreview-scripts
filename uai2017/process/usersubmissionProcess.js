@@ -15,8 +15,8 @@ function() {
         writers: [uaiGroup],
         readers: [coChairsGroup, spcGroup, pcGroup],
         content: {
-            authors: [],
-            authorids: []
+          authors: [],
+          authorids: []
         }
     }
 
@@ -41,10 +41,12 @@ function() {
       };
       return or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token)
       .then(savedGroup => {
-        overwritingNote.content.authorids = [savedGroup.id];
-        overwritingNote.content.authors = ['Blinded names'];
-        overwritingNote.readers.push(savedGroup.id);
-        return or3client.or3request(or3client.notesUrl, overwritingNote, 'POST', token);
+        savedNote.content = {
+          authorids: [savedGroup.id],
+          authors: ['Blinded names']
+        };
+        savedNote.readers.push(savedGroup.id);
+        return or3client.or3request(or3client.notesUrl, savedNote, 'POST', token);
       });
     })
     .then(result => or3client.or3request(or3client.mailUrl, mail, 'POST', token))
