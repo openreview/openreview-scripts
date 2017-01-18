@@ -105,7 +105,7 @@
             var htmlstring = "<b>Your reviewer ratings:</b> ";
 
             for (var key in reviewerRating.content) {
-              if (reviewerRating.content.hasOwnProperty(key)) {
+              if (reviewerRating.content.hasOwnProperty(key) && key!='title') {
                 htmlstring = htmlstring+ '\n(R' + key.split('AnonReviewer')[1] + "): " + reviewerRating.content[key][0]+' / 5';
               }
             }
