@@ -9,7 +9,7 @@
     </div>
     <script type="text/javascript">
     $(function() {
-      "use strict"; 
+      "use strict";
       var sm = mkStateManager();
 
       var httpGetP = function(url, queryOrBody) {
@@ -47,7 +47,7 @@
             );
 
           var $reviewers = $('<div>',{html:'<b>Reviewers:</b>\n'});
-          
+
           _.forEach(reviewerGroup.members, function(reviewer){
             var reviewerId_components = reviewer.split('/')
             var reviewerId = reviewer.split('/')[3]+reviewer.split('/')[4]
@@ -62,7 +62,7 @@
             var rating = _.has(review,'content') ? review.content.rating.split(':')[0] : 0;
             cumulativeRating += parseFloat(rating);
           });
-          
+
           var $avgRating = $("<span>",{html:"<b>Average Rating:</b> "});
 
           $avgRating.append(paperReviews.length > 0 ? $('<span>',{html:cumulativeRating/parseFloat(paperReviews.length)+" out of 10"}) : $('<span>',{html:"No reviews submitted"}));
@@ -73,32 +73,66 @@
         }
       };
 
-      var mkPaperStatus = function(metaReview,paperNum){
+      var mkPaperStatus = function(metaReview,reviewerRating,paperNum){
 
-        return httpGetP('invitations',{id:'ICLR.cc/2017/conference/-/paper'+paperNum+'/meta/review'}).then(function(invResult){
+        var promises = [
+          httpGetP('invitations',{id:'ICLR.cc/2017/conference/-/paper'+paperNum+'/meta/review'}),
+          httpGetP('invitations', {id:'ICLR.cc/2017/conference/-/paper'+paperNum+'/AC/Reviewer/Rating'})
+        ];
+
+        return $.when.apply($, promises).then(function(){
+          var promise_arguments = arguments;
+          var metaReviewInv = promise_arguments[0].invitations[0];
+          var ratingInv = promise_arguments[1].invitations[0];
+
+          var $paperStatus = $('<div>');
+
           if(metaReview){
-            var $paperStatus = $('<span>',{html:"<b>Your recommendation:</b> "}).append('<span>',{html:metaReview.content.recommendation});
-            return $paperStatus;
+            $paperStatus.append($('<span>',{html:"<b>Your recommendation:</b> "+ metaReview.content.recommendation}), '\n');
           } else {
-            var inv = invResult.invitations[0];
-            var $link = $('<div>', {class: 'link', id:'metareview_link', text: view.prettyInvitationId(inv.id)});
-            $('#metareview_link').click(function() {
-              pushForum(inv.reply.forum, inv.reply.replyto, inv.id);
+            var $metareviewLink = $('<div>', {class: 'link', id:'metareview_link', text: "Enter "+view.prettyInvitationId(metaReviewInv.id)});
+            $(document).on('click', '#metareview_link', function(){
+              pushForum(metaReviewInv.reply.forum, metaReviewInv.reply.replyto, metaReviewInv.id);
               return false;
             });
-            return $.Deferred().resolve("Incomplete. Please Write "+$link.prop('outerHTML'));
+            //return $.Deferred().resolve("Incomplete. Please Write "+$link.prop('outerHTML'));
+            $paperStatus.append($('<span>',{html:"Meta review incomplete: "+$metareviewLink.prop('outerHTML')}));
           }
+
+          $paperStatus.append('\n');
+
+          if(reviewerRating){
+            var htmlstring = "<b>Your reviewer ratings:</b> ";
+
+            for (var key in reviewerRating.content) {
+              if (reviewerRating.content.hasOwnProperty(key)) {
+                htmlstring = htmlstring+ '\n(R' + key.split('AnonReviewer')[1] + "): " + reviewerRating.content[key][0]+' / 5';
+              }
+            }
+
+            $paperStatus.append($('<span>',{html:htmlstring}));
+          } else {
+            var $ratingLink = $('<div>', {class: 'link', id:'rating_link', text: "Enter "+view.prettyInvitationId(ratingInv.id)});
+
+            $(document).on('click', '#rating_link', function(){
+              pushForum(ratingInv.reply.forum, ratingInv.reply.replyto, ratingInv.id);
+              return false;
+            });
+            $paperStatus.append($('<span>',{html:"Reviewer ratings incomplete: "+$ratingLink.prop('outerHTML')}));
+          }
+
+          return $paperStatus
         });
       };
 
       var appendRowData = function(table,rowData){
         var lastRow = $('<tr/>').appendTo(table.find('tbody:last'));
-        _.forEach(rowData, function(c,colIndex) { 
+        _.forEach(rowData, function(c,colIndex) {
           var tdClass = getClass(colIndex);
 
           lastRow.append($('<td/>',{html: c, class: tdClass, valign: 'top'}).addClass('areachair_td'));
         });
-         
+
         return lastRow;
       };
 
@@ -106,7 +140,7 @@
         var table = $("<table>").addClass('areachair_table');
         $.each(data, function(rowIndex, r) {
             var row = $("<tr>").addClass('areachair_tr');
-            $.each(r, function(colIndex, c) { 
+            $.each(r, function(colIndex, c) {
                 var tdClass = getClass(colIndex);
                 row.append($("<th/>",{text:c,class:tdClass}).addClass('areachair_th'));
             });
@@ -121,9 +155,9 @@
         var forumP = httpGetP('notes',{invitation:"ICLR.cc/2017/conference/-/submission",number:paperNum}).then(function(result){
           return httpGetP('notes',{forum: result.notes[0].forum});
         });
-        
+
         var reviewerGroupP = httpGetP('groups',{id:'ICLR.cc/2017/conference/paper'+paperNum+'/reviewers'});
-        
+
         $.when(forumP,reviewerGroupP).done(function(forumResults, reviewerGroupResults){
           var forumNotes = _.has(forumResults,'notes') ? forumResults.notes : null;
 
@@ -133,7 +167,7 @@
             })[0];
 
             var reviewerGroup = _.has(reviewerGroupResults,'groups') ? reviewerGroupResults.groups[0] : null;
-            
+
             var paperQuestions = _.filter(forumNotes,function(n){
               return n.invitation === "ICLR.cc/2017/conference/-/paper"+paper.number+"/pre-review/question";
             });
@@ -146,7 +180,11 @@
             var metaReview = _.filter(forumNotes, function(n){
               return n.invitation === "ICLR.cc/2017/conference/-/paper"+paper.number+"/meta/review";
             })[0];
-            
+
+            var reviewerRating = _.filter(forumNotes,function(n){
+              return n.invitation === "ICLR.cc/2017/conference/-/paper"+paper.number+"/AC/Reviewer/Rating";
+            })[0];
+
             var paperTitle = $('<a>',{href: "/forum?id="+paper.forum, html: paper.content.title});
             var paperAuthors = $('<span>',{html:'<b>Authors:</b> '}).append($('<span>',{text: paper.content.authors.join(', ')}));
             var paperNumber = $('<span>',{html: '<b>Paper: </b>'}).append($('<span>',{text: paper.number}));
@@ -155,10 +193,12 @@
             var paperSummary = $('<div>').append(paperTitle,'\n',paperAuthors,'\n',paperNumber,'\n\n',paperContent);
 
             var reviewProgress = mkReviewProgress(reviewerGroup,paperReviews);
-            var paperStatusP = mkPaperStatus(metaReview,paper.number);
+            var paperStatusP = mkPaperStatus(metaReview,reviewerRating,paper.number);
+
+            //var ratingStatusP = mkRatingStatus(reviewerRating,paper.number);
 
             var promises = []
-            _.forEach(reviewerGroup.members, function(reviewer){            
+            _.forEach(reviewerGroup.members, function(reviewer){
               var reviewersP = httpGetP('groups',{id:reviewer}).then(function(result){
 
                 var groups = result.groups[0]
@@ -175,11 +215,12 @@
 
             $.when.apply($, promises).then(function(){
               var promise_arguments = arguments;
+
               paperStatusP.then(function(paperStatus){
                 var rowData = [paperSummary, reviewProgress, paperStatus];
                 appendRowData($table,rowData);
                 _.forEach(promise_arguments,function(arg){
-                  
+
                   var groupsResult = arg[0];
                   var preferred_email = arg[1] ? arg[1].profile.content.preferred_email : null;
 
@@ -195,7 +236,7 @@
                       $('<span>',{html: " ("+preferred_email+")"})
                     );
                   }
-                  
+
                 })
               });
 
@@ -214,7 +255,6 @@
         var user = pl.user;
         var userAreachairGroupsP = httpGetP('groups', {member: user.id, regex:'ICLR.cc/2017/conference/paper.*/areachair.*'}).then(
           function(result){
-
             var groups = result.groups;
             var filtered_matches = _.filter(groups, function(g){
               return _.has(g,'id') && g.id.match(/ICLR\.cc\/2017\/conference\/paper[0-9]+\/areachair[0-9]+/gi);
@@ -238,7 +278,7 @@
 
       controller.addHandler('areachairs', {
         token: onTokenChange,
-      });      
+      });
     });
     </script>
  </body>
