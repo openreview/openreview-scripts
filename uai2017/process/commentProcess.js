@@ -128,12 +128,6 @@ function(){
         promises.push(areachairMailP);
       };
 
-      if (visibleToPCs) {
-        console.log('Send notification to program co chairs...');
-        var pcMailP = getPCEmails(forumNote, commentType, coChairsGroup);
-        promises.push(pcMailP);
-      }
-
       return Promise.all(promises);
     })
     .then(result => done())
