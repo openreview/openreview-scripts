@@ -39,12 +39,19 @@ for paper in submissions:
 
 # add area chair recommendations
 for note in metareviews:
-    paper_status[paper.number]['comment'] = note.content['metareview']
-    paper_status[paper.number]['recommendation'] = note.content['recommendation']
+    paper_num = int(note.invitation.split('paper')[1].split('/meta/review')[0])
+    paper_status[paper_num]['comment'] = note.content['metareview']
+    paper_status[paper_num]['recommendation'] = note.content['recommendation']
 
 # add PI acceptances
 for note in acceptances:
-    paper_status[paper.number]['acceptance'] = note.content[acceptance_name]
+    paper_num = int(note.invitation.split('paper')[1].split('/acceptance')[0])
+    paper_status[paper_num]['acceptance'] = note.content[acceptance_name]
+    # if acceptance, but no area chair recommendation, fill in with blanks so it prints properly
+    # PAM better way to handle this at the append stage?
+    if not paper_status[paper_num]['recommendation']:
+        paper_status[paper_num]['recommendation'] =""
+        paper_status[paper_num]['comment'] = ""
 
 # print results
 # csv

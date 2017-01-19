@@ -51,18 +51,28 @@ for paper in submissions:
         accept_new[paper.number]['forum'] = paper.forum
 
 # Remove existing acceptance notes from the accept_new list.
-# Could check if acceptance notes agree w/ spreadsheet values, throw error if problem
+# When appropriate, update "Pending" acceptance notes.
 for note in acceptances:
     paper_num = paper_numbers[note.forum]
     if paper_num in accept_new.keys():
+        # Adjust existing Pending acceptances if changed
+        if note.content['ICLR2017'] == 'Pending':
+            if accept_new[paper_num]['acceptance'] != 'Pending':
+                print ("Paper %s: update pending acceptance to %s" % (paper_num, accept_new[paper_num]['acceptance']))
+                note.content = {'ICLR2017': accept_new[paper_num]['acceptance']}
+                client.post_note(note)
+        # Notify user if spreadsheet tried to change an already accepted paper
+        elif note.content['ICLR2017'] != accept_new[paper_num]['acceptance']:
+            print("Paper %s: Cannot change previously accepted paper " % paper_num)
+        # Remove from the new acceptance list
         del accept_new[paper_num]
+
 
 # fill in generic acceptance note info
 note = openreview.Note()
 note.signatures = ['ICLR.cc/2017/pcs']
 note.writers = ['ICLR.cc/2017/pcs']
 note.readers = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs','ICLR.cc/2017/conference']
-
 # for all new acceptances, set paper specific info and post acceptance note
 for paper_num in accept_new:
     invitation ='ICLR.cc/2017/conference/-/paper' +str(paper_num)+'/acceptance'
@@ -71,4 +81,4 @@ for paper_num in accept_new:
     note.replyto = accept_new[paper_num]['forum']
     note.content = {'ICLR2017':accept_new[paper_num]['acceptance']}
     client.post_note(note)
-
+    print ("Paper %s: new acceptance" % paper_num)
