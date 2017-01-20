@@ -46,12 +46,12 @@ for i in iclrsubs:
     content['title'] = {
         'description': 'the title of the paper of the reviewers being rated',
         'order':0,
-        'value':'Reviewer Rating: '+i.content['title']
+        'value':'Review Rating: '+i.content['title']
     }
 
     ac_rating_invitation = openreview.Invitation(
         'ICLR.cc/2017/conference',
-        'paper%s/AC/Reviewer/Rating' % i.number,
+        'paper%s/AC/Review/Rating' % i.number,
         readers = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/paper%s/areachairs' % i.number],
         writers = ['ICLR.cc/2017/conference'],
         signatures = ['ICLR.cc/2017/conference'],
@@ -77,13 +77,13 @@ for i in iclrsubs:
 
     author_rating_invitation = openreview.Invitation(
         'ICLR.cc/2017/conference',
-        'paper%s/Author/Reviewer/Rating' % i.number,
+        'paper%s/Author/Review/Rating' % i.number,
         readers = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/paper%s/authors' % i.number],
         writers = ['ICLR.cc/2017/conference'],
         signatures = ['ICLR.cc/2017/conference'],
         invitees = ['ICLR.cc/2017/conference/paper%s/authors' % i.number],
         process = '../process/ratingProcess.js',
-        duedate = 1481932799000,
+        duedate = 1485554400000,
         reply = {
             'content': content,
             'readers': {

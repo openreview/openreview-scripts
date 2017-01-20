@@ -77,7 +77,7 @@
 
         var promises = [
           httpGetP('invitations',{id:'ICLR.cc/2017/conference/-/paper'+paperNum+'/meta/review'}),
-          httpGetP('invitations', {id:'ICLR.cc/2017/conference/-/paper'+paperNum+'/AC/Reviewer/Rating'})
+          httpGetP('invitations', {id:'ICLR.cc/2017/conference/-/paper'+paperNum+'/AC/Review/Rating'})
         ];
 
         return $.when.apply($, promises).then(function(){
@@ -90,12 +90,10 @@
           if(metaReview){
             $paperStatus.append($('<span>',{html:"<b>Your recommendation:</b> "+ metaReview.content.recommendation}), '\n');
           } else {
-            var $metareviewLink = $('<div>', {class: 'link', id:'metareview_link', text: "Enter "+view.prettyInvitationId(metaReviewInv.id)});
-            $(document).on('click', '#metareview_link', function(){
+            var $metareviewLink = $('<div>', {class: 'link', id:'metareview_link'+paperNum, text: "Enter "+view.prettyInvitationId(metaReviewInv.id)});
+            $(document).on('click', '#metareview_link'+paperNum, function(){
               pushForum(metaReviewInv.reply.forum, metaReviewInv.reply.replyto, metaReviewInv.id);
-              return false;
             });
-            //return $.Deferred().resolve("Incomplete. Please Write "+$link.prop('outerHTML'));
             $paperStatus.append($('<span>',{html:"Meta review incomplete: "+$metareviewLink.prop('outerHTML')}));
           }
 
@@ -112,11 +110,10 @@
 
             $paperStatus.append($('<span>',{html:htmlstring}));
           } else {
-            var $ratingLink = $('<div>', {class: 'link', id:'rating_link', text: "Enter "+view.prettyInvitationId(ratingInv.id)});
+            var $ratingLink = $('<div>', {class: 'link', id:'rating_link'+paperNum, text: "Enter "+view.prettyInvitationId(ratingInv.id)});
 
-            $(document).on('click', '#rating_link', function(){
+            $(document).on('click', '#rating_link'+paperNum, function(){
               pushForum(ratingInv.reply.forum, ratingInv.reply.replyto, ratingInv.id);
-              return false;
             });
             $paperStatus.append($('<span>',{html:"Reviewer ratings incomplete: "+$ratingLink.prop('outerHTML')}));
           }
@@ -182,7 +179,7 @@
             })[0];
 
             var reviewerRating = _.filter(forumNotes,function(n){
-              return n.invitation === "ICLR.cc/2017/conference/-/paper"+paper.number+"/AC/Reviewer/Rating";
+              return n.invitation === "ICLR.cc/2017/conference/-/paper"+paper.number+"/AC/Review/Rating";
             })[0];
 
             var paperTitle = $('<a>',{href: "/forum?id="+paper.forum, html: paper.content.title});
@@ -194,8 +191,6 @@
 
             var reviewProgress = mkReviewProgress(reviewerGroup,paperReviews);
             var paperStatusP = mkPaperStatus(metaReview,reviewerRating,paper.number);
-
-            //var ratingStatusP = mkRatingStatus(reviewerRating,paper.number);
 
             var promises = []
             _.forEach(reviewerGroup.members, function(reviewer){
@@ -249,11 +244,12 @@
       };
 
       var onTokenChange = function(token) {
+
         var $table = makeTable($('#tablepanel'),[['Paper Summary','Review Progress','Status']]);
 
         var pl = model.tokenPayload(token);
         var user = pl.user;
-        var userAreachairGroupsP = httpGetP('groups', {member: user.id, regex:'ICLR.cc/2017/conference/paper.*/areachair.*'}).then(
+        var userAreachairGroupsP = httpGetP('groups', {member: user.id, regex:'ICLR.cc/2017/conference/paper.*/areachair[0-9]+'}).then(
           function(result){
             var groups = result.groups;
             var filtered_matches = _.filter(groups, function(g){
@@ -273,7 +269,7 @@
           });
         });
 
-      }; //end of onTokenChange
+      };
 
 
       controller.addHandler('areachairs', {
