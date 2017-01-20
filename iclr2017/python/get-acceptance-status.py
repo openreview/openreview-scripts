@@ -16,7 +16,7 @@ if args.username!=None and args.password!=None:
 else:
     client = openreview.Client(baseurl=args.baseurl)
 ## Initialize output file name
-file_name = "status.csv"
+file_name = "acceptances.csv"
 if args.ofile!=None:
     file_name = args.ofile
 
