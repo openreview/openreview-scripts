@@ -12,6 +12,7 @@ import argparse
 import csv
 import sys
 from openreview import *
+from subprocess import call
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -35,6 +36,9 @@ def overwrite_allowed(groupid):
         return True
     else:
         return False
+
+call(["node", "../../scripts/processToFile.js", "../process/submissionProcess_conference.template", "../process"])
+call(["node", "../../scripts/processToFile.js", "../process/submissionProcess_workshop.template", "../process"])
 
 if openreview.user['id'].lower()=='openreview.net':
 
