@@ -15,10 +15,6 @@ import openreview
 from uaidata import *
 from subprocess import call
 
-COCHAIRS = UAIData.get_program_co_chairs()
-PC = UAIData.get_program_committee()
-SPC = UAIData.get_senior_program_committee()
-
 ## Handle the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
@@ -225,7 +221,7 @@ if client.user['id'].lower()=='openreview.net':
             'subject areas': {
                 'description': 'List of areas of expertise.',
                 'order': 4,
-                'values-dropdown': UAIData.get_subject_areas()
+                'values-dropdown': SUBJECT_AREAS
             },
             'keywords': {
                 'description': 'Comma separated list of keywords.',

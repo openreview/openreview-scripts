@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ###############################################################################
-# Group dump python script will simply print the contents of any given group.  
+# Group dump python script will simply print the contents of any given group.
 # PCs can run this as they wish to inspect the system.
 ###############################################################################
 
@@ -10,7 +10,7 @@ import argparse
 import csv
 import json
 import sys
-from openreview import *
+import openreview
 
 ## Import statements and argument handling
 parser = argparse.ArgumentParser()
@@ -26,23 +26,23 @@ args = parser.parse_args()
 
 ## Initialize the client library with username and password
 if args.username!=None and args.password!=None:
-    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    openreview = Client(baseurl=args.baseurl)
+    client = openreview.Client(baseurl=args.baseurl)
 
 if args.group and args.prefix:
     print "Please specify either a group or a prefix, not both"
 
 if args.group!=None:
-    groups = [openreview.get_group(args.group)]
-if args.prefix!=None:    
-    groups = openreview.get_groups(prefix=args.prefix)
+    groups = [client.get_group(args.group)]
+if args.prefix!=None:
+    groups = client.get_groups(prefix=args.prefix)
 if args.add!=None:
     for g in groups:
-        openreview.add_members_to_group(g,args.add)
+        client.add_members_to_group(g,args.add)
 if args.remove!=None:
     for g in groups:
-        openreview.remove_members_from_group(g,args.remove)
+        client.remove_members_from_group(g,args.remove)
 
 if args.output!=None:
     ext = args.output.split('.')[-1]
@@ -68,4 +68,13 @@ if args.output!=None:
                 csvwriter.writerow(row)
 elif groups!=[None]:
     for g in groups:
-        print json.dumps(g.to_json(), indent=4, sort_keys=True)
+        g_refresh = client.get_group(g.id)
+        print json.dumps(g_refresh.to_json(), indent=4, sort_keys=True)
+
+
+
+
+
+
+
+

@@ -22,6 +22,15 @@ function () {
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
   };
 
+  var reviewerNonReadersGroup = {
+    'id': paperGroup.id+'/Reviewers/NonReaders',
+    'signatures':['auai.org/UAI/2017'],
+    'writers':['auai.org/UAI/2017'],
+    'members':[],
+    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers/NonReaders'],
+    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers/NonReaders']
+  };
+
   var authorGroup = {
     'id':paperGroup.id+'/Authors',
     'signatures':['auai.org/UAI/2017'],
@@ -57,7 +66,7 @@ function () {
       'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
       'readers': {
-        'values': [UAIData.COCHAIRS],
+        'values': [UAIData.COCHAIRS, authorGroup.id],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -76,14 +85,13 @@ function () {
         'recommendation': {
           'order': 3,
           'value-dropdown': [
-            'Strong accept',
-            'Weak accept',
+            'Accept',
             'Reject'
           ],
           'required':true
         },
         'format': {
-          'order':4,
+          'order': 4,
           'value-radio': [
             'Poster',
             'Oral'
@@ -91,7 +99,7 @@ function () {
           'required':true
         },
         'best paper':{
-          'order':5,
+          'order': 5,
           'description': 'Nominate as best paper (if student paper, nominate for best student paper)',
           'value-radio': [
             'Yes',
@@ -117,11 +125,14 @@ function () {
     'reply': {
       'forum': note.id,
       'replyto': note.id,
-      'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
+      'writers': {'values': ['auai.org/UAI/2017']},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
       'readers': {
-        'values': [UAIData.SPC], //only Senior_Program_Committee initially; when a reviewer submits his/her review, they are added to the readers
+        'values': [UAIData.COCHAIRS, UAIData.SPC, UAIData.PC, authorGroup.id],
         'description': 'The users who will be allowed to read the above content.'
+      },
+      'nonreaders': {
+        'values': [reviewerNonReadersGroup.id]
       },
       'content': {
         'title': {
@@ -288,7 +299,8 @@ function () {
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result => {
     group_promises = [
-      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token)
+      .then(result => or3client.or3request(or3client.grpUrl, reviewerNonReadersGroup, 'POST', token)),
       or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token)
     ];
@@ -300,8 +312,7 @@ function () {
       or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, confidentialCommentInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, bidInvite, 'POST', token)
+      or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token)
     ];
 
     return Promise.all(invitation_promises);

@@ -384,8 +384,17 @@ function () {
     'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/reviewers']
   };
 
+  var areachairGroup = {
+    'id':paperGroup.id+'/areachairs',
+    'signatures':['ICLR.cc/2017/conference'],
+    'writers':['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
+    'members':[],
+    'readers':['everyone'],
+    'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/areachairs']
+  };
+
   openReviewInvitation.noninvitees = openReviewInvitation.noninvitees.concat([reviewerGroup.id]);
-  publicCommentInvite.noninvitees = publicCommentInvite.noninvitees.concat([reviewerGroup.id]);
+  publicCommentInvite.noninvitees = publicCommentInvite.noninvitees.concat([reviewerGroup.id,areachairGroup.id]);
 
   var reviewNonreadersGroup = {
     'id': paperGroup.id+'/review-nonreaders',
@@ -404,16 +413,6 @@ function () {
     'readers':['everyone'],
     'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/authors']
   };
-
-  var areachairGroup = {
-    'id':paperGroup.id+'/areachairs',
-    'signatures':['ICLR.cc/2017/conference'],
-    'writers':['ICLR.cc/2017/conference','ICLR.cc/2017/pcs'],
-    'members':[],
-    'readers':['everyone'],
-    'signatories':['ICLR.cc/2017/conference',paperGroup.id+'/areachairs']
-  };
-
 
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)

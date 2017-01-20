@@ -15,8 +15,8 @@ function() {
         writers: [uaiGroup],
         readers: [coChairsGroup, spcGroup, pcGroup],
         content: {
-            authors: [],
-            authorids: []
+          authors: [],
+          authorids: []
         }
     }
 
@@ -36,14 +36,15 @@ function() {
         signatures: [uaiGroup],
         writers: [uaiGroup],
         members: note.content.authorids,
-        readers: [coChairsGroup, spcGroup, groupId],
+        readers: [coChairsGroup, groupId],
         signatories: [groupId]
       };
-      console.log(authorGroup);
       return or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token)
       .then(savedGroup => {
-        savedNote.content.authorids = [savedGroup.id];
-        savedNote.content.authors = ['Blinded names'];
+        savedNote.content = {
+          authorids: [savedGroup.id],
+          authors: ['Blinded names']
+        };
         savedNote.readers.push(savedGroup.id);
         return or3client.or3request(or3client.notesUrl, savedNote, 'POST', token);
       });
