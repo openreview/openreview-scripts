@@ -1,12 +1,13 @@
 import argparse
 import sys
+import os
+import openreview
+from uaidata import *
 
-from openreview import *
-
-from constants import *
-from note_content import *
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
-print sys.path
+
+from note_content import *
+
 import xml.etree.ElementTree
 import utils
 import time
@@ -39,9 +40,9 @@ else:
         raise Exception("Incorrect File format")
 
 if args.username != None and args.password != None:
-    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    openreview = Client(baseurl=args.baseurl)
+    client = openreview.Client(baseurl=args.baseurl)
 
 
 def parse_reviewer_bid_details(file_path):
@@ -63,9 +64,10 @@ def parse_reviewer_bid_details(file_path):
     reviewers = root._children
     bid_scores_dict = {}
     alphas_dict = {}
-    email_id_map = utils.get_email_to_id_mapping(openreview)
+    #email_id_map = utils.get_email_to_id_mapping(client)
     for reviewer in reviewers:
-        reviewer_id = email_id_map[reviewer.attrib['email']]
+        profile = client.get_profile(reviewer.attrib['email'])
+        reviewer_id = profile.id
         max_papers = int(reviewer.attrib['maxPapers'])
         min_papers = int(reviewer.attrib['minPapers'])
         alphas_dict[reviewer_id] = (min_papers, max_papers)
@@ -97,16 +99,16 @@ def parse_reviewer_reviewer_similarity_details(file_path):
         raise Exception("Incorrect File format")
     e = xml.etree.ElementTree.parse(file_path)
     root = e._root
-    email_id_map = utils.get_email_to_id_mapping(openreview)
+    #email_id_map = utils.get_email_to_id_mapping(client)
     reviewers = root._children
     similarity_scores_dict = {}
     for reviewer in reviewers:
-        reviewer_id = email_id_map[reviewer.attrib['email']]
+        reviewer_id = client.get_profile(reviewer.attrib['email']).id
         if reviewer_id not in similarity_scores_dict:
             similarity_scores_dict[reviewer_id] = []
         for score_details in reviewer._children:
             similarity_scores_dict[reviewer_id].append(
-                (email_id_map[score_details.attrib['email']], float(score_details.attrib['score']),
+                (client.get_profile(score_details.attrib['email']).id, float(score_details.attrib['score']),
                  score_details.attrib['source']))
     return similarity_scores_dict
 
@@ -119,7 +121,13 @@ def create_paper_metadata_note(bids_scores_dict, alphas_dict, reviewer_similarit
     :param reviewer_similarity_dict
     :return None
     """
-    reviewers = utils.get_all_member_ids(openreview)
+    print 'alphas_dict',alphas_dict
+    print "\n"
+    print 'reviewer_similarity_dict',reviewer_similarity_dict
+    print "\n"
+    print 'bid_scores_dict',bid_scores_dict
+
+    reviewers = utils.get_all_member_ids(client)
     for reviewer_id in reviewers:
         inviter = CONFERENCE + "/-/reviewer"
         (min_paper, max_papers) = alphas_dict[reviewer_id]
@@ -131,7 +139,7 @@ def create_paper_metadata_note(bids_scores_dict, alphas_dict, reviewer_similarit
                     writers=['everyone',reviewer_id],
                     content=content.to_dict(),
                     signatures=[CONFERENCE])
-        openreview.post_note(note)
+        client.post_note(note)
 
 if __name__ == '__main__':
     bid_scores_dict, alphas_dict = parse_reviewer_bid_details(args.file1)

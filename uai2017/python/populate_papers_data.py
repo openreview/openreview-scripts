@@ -1,10 +1,11 @@
 import argparse
 import sys
 
-from openreview import *
+import openreview
+import os
 
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
-from note_content import *
+import note_content
 from uaidata import *
 from lxml import etree
 import xml.etree.ElementTree
@@ -40,9 +41,9 @@ else:
         raise Exception("Incorrect File format")
 
 if args.username is not None and args.password is not None:
-    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    openreview = Client(baseurl=args.baseurl)
+    client = openreview.Client(baseurl=args.baseurl)
 
 
 def get_paper_names(notes):
@@ -65,7 +66,7 @@ def get_notes_submitted_papers():
     Get all the submitted papers
     :return:
     """
-    notes = openreview.get_notes(invitation=CONFERENCE+'/-/submission')
+    notes = client.get_notes(invitation=CONFERENCE+'/-/submission')
     return notes
 
 
@@ -74,7 +75,7 @@ def get_paper_metadata_notes(paper_names):
     Get all submitted paper meta data notes
     :return:
     """
-    notes = [openreview.get_notes(invitation=CONFERENCE + "/" + paper_name + "/-/matching")[0] for paper_name in
+    notes = [client.get_notes(invitation=CONFERENCE + "/" + paper_name + "/-/matching")[0] for paper_name in
              paper_names]
     return notes
 
@@ -140,15 +141,18 @@ def get_all_members_data():
     members = utils.get_all_member_ids()
     dict_reviewer_data = {}
     for member in members:
-        member_note = openreview.get_note(id=member)
+        member_note = client.get_note(id=member)
         member_first_name = member_note.content["names"][0]["first"]
         member_last_name = member_note.content["names"][0]["last"]
         member_email = member_note.content["preferred_email"]
         member_organization = member_note.content["history"][0]["institution"]["name"]
-        member_url = openreview.baseurl + "/notes?id=" + member
+        member_url = client.baseurl + "/notes?id=" + member
         dict_reviewer_data[member] = [member_first_name, member_last_name, member_organization, member_email, member,
                                       member_url]
     return dict_reviewer_data
+
+
+## Above functions are unused as far as I know. Not deleting them yet because I'm not sure.
 
 
 def parse_paper_reviewer_affinity_details(file_path):
@@ -180,7 +184,7 @@ def parse_paper_reviewer_affinity_details(file_path):
             affinity_scores_dict[paper_id] = []
         for score_details in submission._children:
             #instead of using the email_id_map, get ids from public profiles using /user/profile?email=email
-            profile = openreview.get_profile(score_details.attrib['email'])
+            profile = client.get_profile(score_details.attrib['email'])
             affinity_scores_dict[paper_id].append(
                 (profile.id, float(score_details.attrib['score']),
                  score_details.attrib['source']))
@@ -224,23 +228,34 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
     :param paper_similarity_dict:
     :return:
     """
-    notes = utils.get_notes_submitted_papers(openreview, CONFERENCE+"/-/submission")
-    papers_number_list = utils.get_paper_numbers(notes)
-    for i in range(len(notes)):
-        inviter = CONFERENCE + "/-/matching"
-        paper_number = papers_number_list[i]
-        (min_reviewers, max_reviewers) = betas_dict[paper_number]
-        reviewers = map(lambda x: Reviewer(reviewer=x[0], score=x[1], source=x[2]), affinity_scores_dict[paper_number])
-        papers = map(lambda x: Paper(paper=x[0], score=x[1], source=x[2]), paper_similarity_dict[paper_number])
-        content = PaperMetaData(minreviewers=min_reviewers, maxreviewers=max_reviewers, reviewers=reviewers,
-                                papers=papers)
-        note = Note(invitation=inviter, cdate=int(time.time()) * 1000,
-                    readers=[PC, SPC],
-                    forum=notes[i].id,
-                    writers=['everyone'],
-                    content=content.to_dict(),
-                    signatures=[CONFERENCE])
-        openreview.post_note(note)
+    notes = client.get_notes(invitation=CONFERENCE+"/-/submission")
+
+    print "creating metadata note"
+    for n in notes:
+        print "generating note %s" % n.id
+
+        (min_reviewers, max_reviewers) = betas_dict[n.number]
+
+        reviewers = map(lambda p: note_content.Reviewer(reviewer=p[0], score=p[1], source=p[2]), affinity_scores_dict[n.number])
+        papers = map(lambda p: note_content.Paper(paper=p[0], score=p[1], source=p[2]), paper_similarity_dict[n.number])
+
+        content = note_content.PaperMetaData(
+            minreviewers = min_reviewers,
+            maxreviewers = max_reviewers,
+            reviewers = reviewers,
+            papers = papers
+        )
+
+        note = openreview.Note(
+            invitation = CONFERENCE + "/-/matching",
+            cdate = int(time.time()) * 1000,
+            readers=['OpenReview.net'],
+            forum=n.id,
+            writers=['OpenReview.net'],
+            content=content.to_dict(),
+            signatures=['OpenReview.net']
+        )
+        #client.post_note(note)
 
 
 if __name__ == '__main__':

@@ -32,15 +32,6 @@ def get_email_to_id_mapping(openreview_client):
     return email_id_map
 
 
-def get_notes_submitted_papers(openreview_client, invitation_id):
-    """
-    Get all the submitted papers
-    :return:
-    """
-    notes = openreview_client.get_notes(invitation=invitation_id)
-    return notes
-
-
 def update_reviewers(openreview_client, conference_reviewer_group, members):
     """
     Update the members of the group
@@ -76,21 +67,6 @@ def get_paper_names(notes):
         else:
             list_paper_name.append("Paper" + str(note.number))
     return list_paper_name
-
-
-def get_paper_numbers(notes):
-    """
-    Getting paper number using the following logic: If note.number is NONE then throw an Error
-    :param notes:
-    :return:
-    """
-    list_paper_number = []
-    for note in notes:
-        if note.number is None:
-            raise ValueError("Incorrect note number")
-        else:
-            list_paper_number.append(note.number)
-    return list_paper_number
 
 
 def get_paper_metadata_notes(openreview_client, conference):
