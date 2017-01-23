@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Sends an email to the members of the group of your choice.
+Get the amount of replies per paper for reviewers/areachairs. It doesn't count the reviews/meta-reviews
 
 """
 
