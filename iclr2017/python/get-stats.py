@@ -30,10 +30,12 @@ else:
 
 replies_by_author = {}
 submissions = {}
+submissions_by_number = {}
 
 iclrsubs = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 for s in iclrsubs:
     submissions[s.id] = s
+    submissions_by_number[s.number] = s
 
 headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + client.token}
 
@@ -77,12 +79,14 @@ def get_stats(anonGroup, currentGroup):
         members = r['members']
         if members:
             paper_number = int(reviewer_id.split('paper')[1].split('/' + currentGroup)[0])
-            if paper_number not in reviewers_by_paper:
-                reviewers_by_paper[paper_number] = {}
 
-            for m in members:
-                reviewer_name = reviewers.get(m, m)
-                reviewers_by_paper[paper_number][reviewer_name] = get_replies_by_author(paper_number, reviewer_name)
+            if paper_number in submissions_by_number:
+                if paper_number not in reviewers_by_paper:
+                    reviewers_by_paper[paper_number] = {}
+
+                for m in members:
+                    reviewer_name = reviewers.get(m, m)
+                    reviewers_by_paper[paper_number][reviewer_name] = get_replies_by_author(paper_number, reviewer_name)
 
     return reviewers_by_paper
 
@@ -100,6 +104,8 @@ for paper_number, author_data in data.iteritems():
     for author, replies in author_data.iteritems():
 
         print str(paper_number) + ', ' + author.encode('utf-8') + ', ' + str(len(replies))
+
+
 
 
 
