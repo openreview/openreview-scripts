@@ -75,7 +75,7 @@ def get_paper_metadata_notes(paper_names):
     Get all submitted paper meta data notes
     :return:
     """
-    notes = [client.get_notes(invitation=CONFERENCE + "/" + paper_name + "/-/matching")[0] for paper_name in
+    notes = [client.get_notes(invitation=CONFERENCE + "/" + paper_name + "/-/Paper/Metadata")[0] for paper_name in
              paper_names]
     return notes
 
@@ -228,16 +228,16 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
     :param paper_similarity_dict:
     :return:
     """
-    notes = client.get_notes(invitation=CONFERENCE+"/-/submission")
+    notes = client.get_notes(invitation=CONFERENCE+"/-/blind-submission")
 
-    print "creating metadata note"
+    print "creating paper metadata note"
     for n in notes:
         print "generating note %s" % n.id
 
         (min_reviewers, max_reviewers) = betas_dict[n.number]
 
         reviewers = map(lambda p: note_content.Reviewer(reviewer=p[0], score=p[1], source=p[2]), affinity_scores_dict[n.number])
-        papers = map(lambda p: note_content.Paper(paper=p[0], score=p[1], source=p[2]), paper_similarity_dict[n.number])
+        papers = map(lambda p: note_content.Paper(paper_number=p[0], score=p[1], source=p[2]), paper_similarity_dict[n.number])
 
         content = note_content.PaperMetaData(
             minreviewers = min_reviewers,
@@ -247,7 +247,7 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
         )
 
         note = openreview.Note(
-            invitation = CONFERENCE + "/-/matching",
+            invitation = CONFERENCE + "/-/Paper/Metadata",
             cdate = int(time.time()) * 1000,
             readers=['OpenReview.net'],
             forum=n.id,
@@ -255,7 +255,7 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
             content=content.to_dict(),
             signatures=['OpenReview.net']
         )
-        #client.post_note(note)
+        client.post_note(note)
 
 
 if __name__ == '__main__':

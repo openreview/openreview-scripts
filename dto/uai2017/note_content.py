@@ -86,8 +86,9 @@ class Paper():
      Class defining the structure for the paper JSON
      """
 
-    def __init__(self, paper=None, score=0.0, source=None):
-        self.paper = paper
+    def __init__(self, paper_number=None, forum=None, score=0.0, source=None):
+        self.paper_number = paper_number
+        self.forum = forum
         self.score = score
         self.source = source
 

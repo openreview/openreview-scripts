@@ -1,13 +1,14 @@
 import argparse
 import sys
-
-from openreview import *
+import os
+import openreview
+from collections import defaultdict
+from uaidata import *
 
 import utils
 
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
-print sys.path
-from constants import *
+
 from TotAffMatcher import *
 
 """
@@ -22,10 +23,16 @@ parser.add_argument('--password')
 
 args = parser.parse_args()
 if args.username != None and args.password != None:
-    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    openreview = Client(baseurl=args.baseurl)
+    client = openreview.Client(baseurl=args.baseurl)
 
+
+paper_metadata_notes = client.get_notes(invitation=CONFERENCE+"/-/Paper/Metadata")
+reviewer_metadata_notes = client.get_notes(invitation=CONFERENCE+"/-/Reviewer/Metadata")
+reviewers = client.get_group(PC).members
+uai_submissions = client.get_notes(invitation=CONFERENCE+"/-/submission")
+uai_blind_submissions = client.get_notes(invitation=CONFERENCE+"/-/blind-submission")
 
 def get_hard_constraint_value(score_array):
     """
@@ -34,9 +41,9 @@ def get_hard_constraint_value(score_array):
     :return:
     """
     for element in score_array:
-        if element.strip().lower() == '+inf':
+        if str(element).strip().lower() == '+inf':
             return 1
-        if element.strip().lower() == '-inf':
+        if str(element).strip().lower() == '-inf':
             return 0
     return -1
 
@@ -54,65 +61,50 @@ def add_hard_constraint_matcher(matcher, hard_constraint_dict):
     matcher.add_hard_consts(constrs=constraints)
 
 
-def create_paper_assignment_group(paper_id_number_dict, paper_id_reviewers_dict):
-    """
-    Creating a group for each paper id
-    :param notes:
-    :return:
-    """
-    for paper_id in paper_id_number_dict:
-        group_id = CONFERENCE_REVIEWERS + "/" + "Paper" + str(paper_id_number_dict[paper_id])
-        g = Group(group_id, readers=['everyone'],
-                  writers=[CONFERENCE, CONFERENCE_PCS],
-                  signatures=[CONFERENCE],
-                  signatories=[CONFERENCE_REVIEWERS])
-        g.members = paper_id_reviewers_dict[paper_id]
-        print "Posting group: ", g.id
-        openreview.post_group(g)
 
-
-def get_alphas_betas(alpha_dict,beta_dict,reviewers,paper_ids):
-    alphas=[]
-    for reviewer in reviewers:
-        if reviewer in alpha_dict:
-            alphas.append(alpha_dict[reviewer])
-        else:
-            alphas.append(0,0)
-    betas=[]
-    for paper_id in paper_ids:
-        if paper_id in beta_dict:
-            betas.append(beta_dict[paper_id])
-        else:
-            betas.append(0,0)
-    return alphas,betas
-
-
-def update_paper_reviewer_weights(openreview_client, conference, conference_reviewer, submission_invitation_id):
+def update_paper_reviewer_weights(client, conference, conference_reviewer):
     """
     Using Total Affinity Matcher get the paper reviewer assignment
-    :param openreview_client:
+    :param client:
     :param conference:
     :param conference_reviewer:
-    :param submission_invitation_id:
     :return:
     """
-    # Getting reviewers details
-    reviewers = utils.get_all_reviewers(openreview_client, conference_reviewer)
-    reviewer_index_dict = {reviewers[i]: i for i in range(len(reviewers))}
 
-    # Getting Paper details
-    submitted_papers_notes = utils.get_notes_submitted_papers(openreview_client, submission_invitation_id)
-    paper_ids = [paper_note.id for paper_note in submitted_papers_notes]
-    paper_number_id_dict = utils.get_paper_number_id_dict(submitted_papers_notes)
-    paper_id_number_dict = {paper_number_id_dict[paper_number]: paper_number for paper_number in paper_number_id_dict}
-    paper_index_dict = {paper_ids[i]: i for i in range(len(paper_ids))}
+    # Getting Paper and Reviewer details
+    paper_number_forum_dict = {note.number:note.forum for note in uai_blind_submissions}
+    paper_forum_number_dict = {note.forum:note.number for note in uai_blind_submissions}
+
+    reviewer_index_dict = {reviewers[i]: i for i in range(len(reviewers))}
+    paper_index_dict = {i: paper_forum_number_dict[i]-1 for i in paper_forum_number_dict.keys()}
+
+    print "paper_index_dict",paper_index_dict
+    print "paper_forum_number_dict",paper_forum_number_dict
+    print "paper_number_forum_dict",paper_number_forum_dict
 
     # Getting paper reviewer score array
-    paper_reviewer_score_dict = utils.get_paper_reviewers_score(openreview_client, conference, paper_number_id_dict)
+
+    #paper_reviewer_score_dict = utils.get_paper_reviewers_score(client, conference, paper_number_forum_dict)
+    paper_reviewer_score_dict = defaultdict(list)
+
+    for note in paper_metadata_notes:
+        for reviewer_info in note.content['reviewers']:
+            key = (note.forum, reviewer_info['reviewer'])
+            paper_reviewer_score_dict[key].append(reviewer_info['score'])
+
+    for note in reviewer_metadata_notes:
+        for paper in note.content['papers']:
+            key = (paper_number_forum_dict[int(paper['paper_number'])], note.content['name'])
+            paper_reviewer_score_dict[key].append(paper['score'])
+
+    #return output_dict
+    print 'paper_reviewer_score_dict',paper_reviewer_score_dict
+
 
     # Defining and Updating the weight matrix
-    weights = np.zeros((len(reviewers), len(paper_ids)))
+    weights = np.zeros((len(reviewers), len(uai_blind_submissions)))
     hard_constraint_dict = {}
+
     for (note_id, reviewer), score_array in paper_reviewer_score_dict.iteritems():
         # Separating the infinite ones with the normal scores and get the mean of the normal ones
         hard_constraint_value = get_hard_constraint_value(score_array)
@@ -122,25 +114,31 @@ def update_paper_reviewer_weights(openreview_client, conference, conference_revi
             hard_constraint_dict[reviewer_index_dict[reviewer], paper_index_dict[note_id]] = hard_constraint_value
 
     # Defining the matcher
-    alpha_dict,beta_dict = utils.get_alphas_betas_dict(openreview_client,conference)
-    alphas,betas = get_alphas_betas(alpha_dict,beta_dict,reviewers,paper_ids)
-    totAffMatcher = TotAffMatcher(alphas,betas, weights)
+
+    beta_dict = {note.forum: (note.content['minreviewers'], note.content['maxreviewers']) for note in paper_metadata_notes}
+    alpha_dict = {note.content['name']: (note.content['minpapers'], note.content['maxpapers']) for note in reviewer_metadata_notes}
+
+    totAffMatcher = TotAffMatcher(alpha_dict.values(),beta_dict.values(), weights)
     add_hard_constraint_matcher(totAffMatcher, hard_constraint_dict)
+
     totAffMatcher.solve()
     solution = totAffMatcher.sol_dict()
 
     # Extracting the paper-reviewer assignment
-    paper_id_reviewers_dict = {}
+    paper_forum_reviewers_dict = defaultdict(list)
     for var_name in solution:
-        reviewer_index, paper_index = totAffMatcher.inverse_var_name(var_name)
-        if paper_ids[paper_index] not in paper_id_reviewers_dict:
-            paper_id_reviewers_dict[paper_ids[paper_index]] = []
-        paper_id_reviewers_dict[paper_ids[paper_index]].append(reviewers[reviewer_index])
+        var_val = var_name.split('x_')[1].split(',')
+        (reviewer_index, paper_index) = (int(var_val[0]), int(var_val[1]))
 
-    # Creating the paper- reviewer assignment group
-    create_paper_assignment_group(paper_id_number_dict, paper_id_reviewers_dict)
+        paper_forum_reviewers_dict[paper_number_forum_dict[paper_index+1]].append(reviewers[reviewer_index])
+
+
+    print 'paper_forum_reviewers_dict',paper_forum_reviewers_dict
+
+    ## Instead of calling create_paper_assignment_group, send the relevant info to the "assign program committee" script
+    #create_paper_assignment_group([paper_forum_number_dict], paper_forum_reviewers_dict)
 
 
 if __name__ == '__main__':
-    if openreview.user['id'].lower() == 'openreview.net':
-        update_paper_reviewer_weights(openreview, CONFERENCE, CONFERENCE_REVIEWERS, CONFERENCE_SUBMISSION)
+    if client.user['id'].lower() == 'openreview.net':
+        update_paper_reviewer_weights(client, CONFERENCE, PC)

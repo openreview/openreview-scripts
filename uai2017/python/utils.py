@@ -43,17 +43,6 @@ def update_reviewers(openreview_client, conference_reviewer_group, members):
     openreview_client.post_group(reviewers)
 
 
-def get_all_reviewers(openreview_client, conference_reviewer_group):
-    """
-
-    :param openreview_client:
-    :param conference_reviewer_group:
-    :return:
-    """
-    reviewers = openreview_client.get_group(conference_reviewer_group)
-    return reviewers.members
-
-
 def get_paper_names(notes):
     """
     Getting paper name using the following logic: If note.number is NONE then throw an Error
@@ -109,6 +98,7 @@ def get_paper_reviewers_score(openreview_client, conference, paper_number_id_dic
             if (note.forum, reviewer_info['reviewer']) not in output_dict:
                 output_dict[(note.forum, reviewer_info['reviewer'])] = []
             output_dict[(note.forum, reviewer_info['reviewer'])].append(reviewer_info['score'])
+
     notes = openreview_client.get_notes(invitation=conference + "/-/reviewer")
     for note in notes:
         content = note.content
@@ -132,6 +122,8 @@ def get_alphas_betas_dict(openreview_client, conference):
     alpha_dict = {}
     for note in notes:
         beta_dict[note.forum] = (note.content['minreviewers'], note.content['maxreviewers'])
+
+
     notes = openreview_client.get_notes(invitation=conference + "/-/reviewer")
     for note in notes:
         alpha_dict[note.content['name']] = (note.content['minpapers'], note.content['maxpapers'])

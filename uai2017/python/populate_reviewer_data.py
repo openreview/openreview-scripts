@@ -2,6 +2,7 @@ import argparse
 import sys
 import os
 import openreview
+from collections import defaultdict
 from uaidata import *
 
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
@@ -62,7 +63,7 @@ def parse_reviewer_bid_details(file_path):
     e = xml.etree.ElementTree.parse(file_path)
     root = e._root
     reviewers = root._children
-    bid_scores_dict = {}
+    bid_scores_dict = defaultdict(list)
     alphas_dict = {}
     #email_id_map = utils.get_email_to_id_mapping(client)
     for reviewer in reviewers:
@@ -71,12 +72,10 @@ def parse_reviewer_bid_details(file_path):
         max_papers = int(reviewer.attrib['maxPapers'])
         min_papers = int(reviewer.attrib['minPapers'])
         alphas_dict[reviewer_id] = (min_papers, max_papers)
-        if reviewer_id not in bid_scores_dict:
-            bid_scores_dict[reviewer_id] = []
+
         for score_details in reviewer._children:
             bid_scores_dict[reviewer_id].append(
-                (int(score_details.attrib['submissionId']), float(score_details.attrib['score']),
-                 score_details.attrib['source']))
+                (int(score_details.attrib['submissionId']), float(score_details.attrib['score']), score_details.attrib['source']))
     return bid_scores_dict, alphas_dict
 
 
@@ -113,7 +112,7 @@ def parse_reviewer_reviewer_similarity_details(file_path):
     return similarity_scores_dict
 
 
-def create_paper_metadata_note(bids_scores_dict, alphas_dict, reviewer_similarity_dict):
+def create_reviewer_metadata_note(bids_scores_dict, alphas_dict, reviewer_similarity_dict):
     """
     Using the openreview data data from the parsed reviewer bid score and reviewer_similarity_score file populating the reviewer meta data
     :param bids_scores_dict
@@ -121,27 +120,37 @@ def create_paper_metadata_note(bids_scores_dict, alphas_dict, reviewer_similarit
     :param reviewer_similarity_dict
     :return None
     """
-    print 'alphas_dict',alphas_dict
-    print "\n"
-    print 'reviewer_similarity_dict',reviewer_similarity_dict
-    print "\n"
-    print 'bid_scores_dict',bid_scores_dict
 
-    reviewers = utils.get_all_member_ids(client)
+    reviewers = alphas_dict.keys()
+    print "creating reviewer metadata note"
     for reviewer_id in reviewers:
-        inviter = CONFERENCE + "/-/reviewer"
+        print "generating note for %s" % reviewer_id
+
         (min_paper, max_papers) = alphas_dict[reviewer_id]
+
         reviewers = map(lambda x: Reviewer(reviewer=x[0], score=x[1], source=x[2]), reviewer_similarity_dict[reviewer_id])
-        papers = map(lambda x: Paper(paper=x[0], score=x[1], source=x[2]), bids_scores_dict[reviewer_id])
-        content = ReviewerData(name=reviewer_id,minpapers=min_paper,maxpapers=max_papers,papers=papers,reviewers=reviewers)
-        note = Note(invitation=inviter, cdate=int(time.time()) * 1000,
-                    readers=['everyone', reviewer_id],
-                    writers=['everyone',reviewer_id],
-                    content=content.to_dict(),
-                    signatures=[CONFERENCE])
+        papers = map(lambda x: Paper(paper_number=x[0], score=x[1], source=x[2]), bids_scores_dict[reviewer_id])
+
+        content = ReviewerData(
+            name=reviewer_id,
+            minpapers=min_paper,
+            maxpapers=max_papers,
+            papers=papers,
+            reviewers=reviewers
+        )
+
+        note = openreview.Note(
+            invitation=CONFERENCE + "/-/Reviewer/Metadata",
+            cdate=int(time.time()) * 1000,
+            readers=['OpenReview.net'],
+            writers=['OpenReview.net'],
+            content=content.to_dict(),
+            signatures=['OpenReview.net']
+        )
+
         client.post_note(note)
 
 if __name__ == '__main__':
     bid_scores_dict, alphas_dict = parse_reviewer_bid_details(args.file1)
     similarity_scores_dict = parse_reviewer_reviewer_similarity_details(args.file2)
-    create_paper_metadata_note(bid_scores_dict,alphas_dict,similarity_scores_dict)
+    create_reviewer_metadata_note(bid_scores_dict,alphas_dict,similarity_scores_dict)
