@@ -25,7 +25,7 @@ function(){
       return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/conference/paper'+origNoteNumber+'/reviewers',{},'GET',token)
       .then(result=>{
         var reviewers = result.groups[0].members;
-        console.log('reviewers before filter',reviewers);
+        console.log('reviewers before filter: '+reviewers);
         var signatureIdx = reviewers.indexOf(note.signatures[0]);
         if(signatureIdx>-1){
           reviewers.splice(signatureIdx,1);
@@ -48,11 +48,11 @@ function(){
       .then(result=>{
         var areachairs = result.groups[0].members;
         var signatureIdx = areachairs.indexOf(note.signatures[0]);
-        console.log('areachairs before filter:',areachairs);
+        console.log('areachairs before filter: '+areachairs);
         if(signatureIdx>-1){
           areachairs.splice(signatureIdx,1);
         };
-        console.log('areachairs after filter:',areachairs);
+        console.log('areachairs after filter: '+areachairs);
         var areachair_mail = {
           "groups": areachairs,
           "subject": "Comment posted to your assigned paper: \"" + origNote.content.title + "\"",
@@ -67,12 +67,36 @@ function(){
       return or3client.or3request(or3client.grpUrl+'?id=ICLR.cc/2017/pcs',{},'GET',token)
       .then(result=>{
         var pcs = result.groups[0].members;
+
+        console.log('pcs before filter: '+pcs);
+
+        var workshopIdx = pcs.indexOf('ICLR.cc/2017/workshop');
+        if(workshopIdx>-1){
+          pcs.splice(workshopIdx,1);
+        }
+        var conferenceIdx = pcs.indexOf('ICLR.cc/2017/conference');
+        if(conferenceIdx>-1){
+          pcs.splice(conferenceIdx,1);
+        }
+
         var signatureIdx = pcs.indexOf(note.signatures[0]);
-        console.log('pcs before filter:',pcs);
         if(signatureIdx>-1){
           pcs.splice(signatureIdx,1);
-        };
-        console.log('pcs after filter:',pcs);
+        }
+
+        //if any member of the PCs is an author, remove that PC from email recipients
+        for(var i=0; i<origNote.content.authorids.length; i++){
+          var currentAuth = origNote.content.authorids[i];
+          var pcIdx = pcs.indexOf(currentAuth);
+          if(pcIdx>-1){
+            pcs.splice(pcIdx,1);
+            console.log('Program chair '+currentAuth+' found in authorids. Removing them from email recipients list');
+          }
+        }
+        console.log('pcs after filter: '+pcs);
+
+
+
         var pc_mail = {
           "groups": pcs,
           "subject": "Private comment posted to a paper: \"" + origNote.content.title + "\"",
@@ -83,12 +107,12 @@ function(){
     };
 
     var getCommentEmails = function(replytoNoteSignatures, origNote){
-      console.log('replytoNoteSignatures before filter:',replytoNoteSignatures);
+      console.log('replytoNoteSignatures before filter: '+replytoNoteSignatures);
 
       if(note.readers.indexOf('everyone') == -1){
         replytoNoteSignatures=[];
       };
-      console.log('replytoNoteSignatures after filter:',replytoNoteSignatures);
+      console.log('replytoNoteSignatures after filter: '+replytoNoteSignatures);
       var comment_mail = {
         "groups": replytoNoteSignatures,
         "subject":"Your post has received a comment, paper: \"" + origNote.content.title + "\"",
@@ -113,14 +137,9 @@ function(){
       var replytoNoteReaders = replytoNote ? replytoNote.readers : null;
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : null;
 
-      console.log('replytoNote',replytoNote);
-      console.log('replytoNoteReaders',replytoNoteReaders);
-      console.log('replytoNoteSignatures',replytoNoteSignatures);
       var promises = [];
-      console.log('note',note)
-      console.log('note.readers',note.readers)
       var visibleToEveryone = note.readers.indexOf('everyone')>-1 ? true : false;
-      console.log('visibleToEveryone',visibleToEveryone);
+
       var visibleToReviewers = note.readers.indexOf('ICLR.cc/2017/conference/reviewers_and_ACS_and_organizers')>-1 ? true : false;
       var visibleToAreachairs = note.readers.indexOf('ICLR.cc/2017/conference/ACs_and_organizers')>-1 ? true : false;
       var visibleToPCs = note.readers.indexOf('ICLR.cc/2017/conference/organizers')>-1 ? true : false;
