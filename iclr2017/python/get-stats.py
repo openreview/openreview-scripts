@@ -31,6 +31,7 @@ else:
 replies_by_author = {}
 submissions = {}
 submissions_by_number = {}
+profile_by_email = {}
 
 iclrsubs = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 for s in iclrsubs:
@@ -61,6 +62,25 @@ def get_replies_by_author(paper_number, author):
                 replies_by_author[author][submission.number].add(n.id)
         return replies_by_author[author].get(paper_number, [])
 
+def check_profile(member):
+
+    if member.startswith('~'):
+        return member
+
+    if '@' in member:
+        if member in profile_by_email:
+            return profile_by_email[member]
+
+        response = requests.get(client.baseurl+'/user/profile?email=' + member, headers = headers)
+        if 'profile' not in response.json():
+            profile_by_email[member] = member
+            return member
+        profile = response.json()['profile']
+        profile_by_email[member] = profile['id']
+        return profile_by_email[member]
+
+    return member
+
 
 def get_stats(anonGroup, currentGroup):
 
@@ -74,7 +94,7 @@ def get_stats(anonGroup, currentGroup):
         reviewer_id = r['id']
         members = r['members']
         if members:
-            reviewers[reviewer_id] = members[0]
+            reviewers[reviewer_id] = check_profile(members[0])
 
     for r in current_reviewers.json():
         reviewer_id = r['id']
