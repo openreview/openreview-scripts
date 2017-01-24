@@ -53,7 +53,9 @@ def get_replies_by_author(paper_number, author):
         for n in notes:
             submission = submissions.get(n.forum, None)
             invitation = str(n.invitation)
-            if submission and not invitation.endswith('official/review') and not invitation.endswith('meta/review'):
+            if submission and not invitation.endswith('official/review') \
+            and not invitation.endswith('meta/review') \
+            and not invitation.endswith('pre-review/question'):
                 if submission.number not in replies_by_author[author]:
                     replies_by_author[author][submission.number] = set()
                 replies_by_author[author][submission.number].add(n.id)
