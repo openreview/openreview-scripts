@@ -90,11 +90,12 @@
           if(metaReview){
             $paperStatus.append($('<span>',{html:"<b>Your recommendation:</b> "+ metaReview.content.recommendation}), '\n');
           } else {
-            var $metareviewLink = $('<div>', {class: 'link', id:'metareview_link'+paperNum, text: "Enter "+view.prettyInvitationId(metaReviewInv.id)});
-            $(document).on('click', '#metareview_link'+paperNum, function(){
+            var $metareviewLink = $('<div>', { class: 'link', id: 'metareview_link' + paperNum, text: "Enter " + view.prettyInvitationId(metaReviewInv.id) });
+            $metareviewLink.on('click', function(){
               pushForum(metaReviewInv.reply.forum, metaReviewInv.reply.replyto, metaReviewInv.id);
             });
-            $paperStatus.append($('<span>',{html:"Meta review incomplete: "+$metareviewLink.prop('outerHTML')}));
+
+            $paperStatus.append($('<span>', { text: "Meta review incomplete: " }).append($metareviewLink));
           }
 
           $paperStatus.append('\n');
@@ -110,12 +111,12 @@
 
             $paperStatus.append($('<span>',{html:htmlstring}));
           } else {
-            var $ratingLink = $('<div>', {class: 'link', id:'rating_link'+paperNum, text: "Enter "+view.prettyInvitationId(ratingInv.id)});
+            var $ratingLink = $('<div>', {class: 'link', id:'rating_link' + paperNum, text: "Enter " + view.prettyInvitationId(ratingInv.id)});
 
-            $(document).on('click', '#rating_link'+paperNum, function(){
+            $ratingLink.on('click', function(){
               pushForum(ratingInv.reply.forum, ratingInv.reply.replyto, ratingInv.id);
             });
-            $paperStatus.append($('<span>',{html:"Reviewer ratings incomplete: "+$ratingLink.prop('outerHTML')}));
+            $paperStatus.append($('<span>', { text: "Reviewer ratings incomplete: " }).append($ratingLink));
           }
 
           return $paperStatus
