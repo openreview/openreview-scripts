@@ -110,7 +110,7 @@ function(){
       console.log('replytoNoteSignatures before filter: ' + replytoNoteSignatures);
 
       if (note.readers.indexOf('everyone') == -1){
-        replytoNoteSignatures=[];
+        replytoNoteSignatures = [];
       };
       console.log('replytoNoteSignatures after filter: '+replytoNoteSignatures);
       var comment_mail = {
