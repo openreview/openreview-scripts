@@ -27,7 +27,7 @@ function(){
         var reviewers = result.groups[0].members;
         console.log('reviewers before filter: '+reviewers);
         var signatureIdx = reviewers.indexOf(note.signatures[0]);
-        if(signatureIdx>-1){
+        if (signatureIdx>-1){
           reviewers.splice(signatureIdx,1);
         };
 
@@ -49,7 +49,7 @@ function(){
         var areachairs = result.groups[0].members;
         var signatureIdx = areachairs.indexOf(note.signatures[0]);
         console.log('areachairs before filter: '+areachairs);
-        if(signatureIdx>-1){
+        if (signatureIdx>-1){
           areachairs.splice(signatureIdx,1);
         };
         console.log('areachairs after filter: '+areachairs);
@@ -71,24 +71,24 @@ function(){
         console.log('pcs before filter: '+pcs);
 
         var workshopIdx = pcs.indexOf('ICLR.cc/2017/workshop');
-        if(workshopIdx>-1){
+        if (workshopIdx>-1){
           pcs.splice(workshopIdx,1);
         }
         var conferenceIdx = pcs.indexOf('ICLR.cc/2017/conference');
-        if(conferenceIdx>-1){
+        if (conferenceIdx>-1){
           pcs.splice(conferenceIdx,1);
         }
 
         var signatureIdx = pcs.indexOf(note.signatures[0]);
-        if(signatureIdx>-1){
+        if (signatureIdx>-1){
           pcs.splice(signatureIdx,1);
         }
 
         //if any member of the PCs is an author, remove that PC from email recipients
-        for(var i=0; i<origNote.content.authorids.length; i++){
+        for (var i=0; i<origNote.content.authorids.length; i++){
           var currentAuth = origNote.content.authorids[i];
           var pcIdx = pcs.indexOf(currentAuth);
-          if(pcIdx>-1){
+          if (pcIdx>-1){
             pcs.splice(pcIdx,1);
             console.log('Program chair '+currentAuth+' found in authorids. Removing them from email recipients list');
           }
@@ -109,7 +109,7 @@ function(){
     var getCommentEmails = function(replytoNoteSignatures, origNote){
       console.log('replytoNoteSignatures before filter: '+replytoNoteSignatures);
 
-      if(note.readers.indexOf('everyone') == -1){
+      if (note.readers.indexOf('everyone') == -1){
         replytoNoteSignatures=[];
       };
       console.log('replytoNoteSignatures after filter: '+replytoNoteSignatures);
@@ -144,22 +144,22 @@ function(){
       var visibleToAreachairs = note.readers.indexOf('ICLR.cc/2017/conference/ACs_and_organizers')>-1 ? true : false;
       var visibleToPCs = note.readers.indexOf('ICLR.cc/2017/conference/organizers')>-1 ? true : false;
 
-      if(visibleToEveryone){
+      if (visibleToEveryone){
         var authorMailP = getAuthorEmails(origNote);
         promises.push(authorMailP);
       };
 
-      if(visibleToEveryone || visibleToReviewers){
+      if (visibleToEveryone || visibleToReviewers){
         var reviewerMailP = getReviewerEmails(origNote);
         promises.push(reviewerMailP);
       };
 
-      if(visibleToEveryone || visibleToReviewers || visibleToAreachairs){
+      if (visibleToEveryone || visibleToReviewers || visibleToAreachairs){
         var areachairMailP = getAreachairEmails(origNote);
         promises.push(areachairMailP);
       };
 
-      if(visibleToReviewers || visibleToAreachairs || visibleToPCs){
+      if (visibleToReviewers || visibleToAreachairs || visibleToPCs){
         var pcMailP = getPCEmails(origNote);
         promises.push(pcMailP);
       }
@@ -168,7 +168,7 @@ function(){
       var anonComment = replytoNoteSignatures.indexOf('(anonymous)')>-1 ? true : false;
       var selfComment = replytoNoteSignatures.indexOf(note.signatures[0])>-1 ? true : false;
 
-      if(!rootComment && !anonComment && !selfComment) {
+      if (!rootComment && !anonComment && !selfComment) {
         var commentMailP = getCommentEmails(replytoNoteSignatures, origNote);
         promises.push(commentMailP);
       };
