@@ -30,10 +30,13 @@ else:
 
 replies_by_author = {}
 submissions = {}
+submissions_by_number = {}
+profile_by_email = {}
 
 iclrsubs = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 for s in iclrsubs:
     submissions[s.id] = s
+    submissions_by_number[s.number] = s
 
 headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + client.token}
 
@@ -51,11 +54,32 @@ def get_replies_by_author(paper_number, author):
         for n in notes:
             submission = submissions.get(n.forum, None)
             invitation = str(n.invitation)
-            if submission and not invitation.endswith('official/review') and not invitation.endswith('meta/review'):
+            if submission and not invitation.endswith('official/review') \
+            and not invitation.endswith('meta/review') \
+            and not invitation.endswith('pre-review/question'):
                 if submission.number not in replies_by_author[author]:
                     replies_by_author[author][submission.number] = set()
                 replies_by_author[author][submission.number].add(n.id)
         return replies_by_author[author].get(paper_number, [])
+
+def check_profile(member):
+
+    if member.startswith('~'):
+        return member
+
+    if '@' in member:
+        if member in profile_by_email:
+            return profile_by_email[member]
+
+        response = requests.get(client.baseurl+'/user/profile?email=' + member, headers = headers)
+        if 'profile' not in response.json():
+            profile_by_email[member] = member
+            return member
+        profile = response.json()['profile']
+        profile_by_email[member] = profile['id']
+        return profile_by_email[member]
+
+    return member
 
 
 def get_stats(anonGroup, currentGroup):
@@ -70,19 +94,21 @@ def get_stats(anonGroup, currentGroup):
         reviewer_id = r['id']
         members = r['members']
         if members:
-            reviewers[reviewer_id] = members[0]
+            reviewers[reviewer_id] = check_profile(members[0])
 
     for r in current_reviewers.json():
         reviewer_id = r['id']
         members = r['members']
         if members:
             paper_number = int(reviewer_id.split('paper')[1].split('/' + currentGroup)[0])
-            if paper_number not in reviewers_by_paper:
-                reviewers_by_paper[paper_number] = {}
 
-            for m in members:
-                reviewer_name = reviewers.get(m, m)
-                reviewers_by_paper[paper_number][reviewer_name] = get_replies_by_author(paper_number, reviewer_name)
+            if paper_number in submissions_by_number:
+                if paper_number not in reviewers_by_paper:
+                    reviewers_by_paper[paper_number] = {}
+
+                for m in members:
+                    reviewer_name = reviewers.get(m, m)
+                    reviewers_by_paper[paper_number][reviewer_name] = get_replies_by_author(paper_number, reviewer_name)
 
     return reviewers_by_paper
 
@@ -100,6 +126,8 @@ for paper_number, author_data in data.iteritems():
     for author, replies in author_data.iteritems():
 
         print str(paper_number) + ', ' + author.encode('utf-8') + ', ' + str(len(replies))
+
+
 
 
 
