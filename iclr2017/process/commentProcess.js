@@ -87,15 +87,20 @@ function(){
         //if any member of the PCs is an author, remove that PC from email recipients
         for (var i = 0; i < origNote.content.authorids.length; i++){
           var currentAuth = origNote.content.authorids[i];
+
           var pcIdx = pcs.indexOf(currentAuth);
+
+          //workaround for hugo
+          if (currentAuth == 'hugo.larochelle@usherbrooke.ca'){
+            pcIdx = pcs.indexOf('hugo@twitter.com');
+          }
+
           if (pcIdx > -1){
             pcs.splice(pcIdx, 1);
             console.log('Program chair ' + currentAuth + ' found in authorids. Removing them from email recipients list');
           }
         }
         console.log('pcs after filter: ' + pcs);
-
-
 
         var pc_mail = {
           "groups": pcs,
