@@ -23,7 +23,7 @@ function(){
       console.log('get reviewer emails initiated');
       var origNoteNumber = origNote.number;
       return or3client.or3request(or3client.grpUrl + '?id=ICLR.cc/2017/conference/paper' + origNoteNumber + '/reviewers', {}, 'GET', token)
-      .then(result=>{
+      .then(result => {
         var reviewers = result.groups[0].members;
         console.log('reviewers before filter: ' + reviewers);
         var signatureIdx = reviewers.indexOf(note.signatures[0]);
@@ -45,7 +45,7 @@ function(){
       console.log('get AC emails initiated');
       var origNoteNumber = origNote.number;
       return or3client.or3request(or3client.grpUrl + '?id=ICLR.cc/2017/conference/paper' + origNoteNumber + '/areachairs', {}, 'GET', token)
-      .then(result=>{
+      .then(result => {
         var areachairs = result.groups[0].members;
         var signatureIdx = areachairs.indexOf(note.signatures[0]);
         console.log('areachairs before filter: ' + areachairs);
@@ -65,7 +65,7 @@ function(){
     var getPCEmails = function(origNote){
       console.log('get PC emails initiated');
       return or3client.or3request(or3client.grpUrl + '?id=ICLR.cc/2017/pcs', {}, 'GET', token)
-      .then(result=>{
+      .then(result => {
         var pcs = result.groups[0].members;
 
         console.log('pcs before filter: ' + pcs);
