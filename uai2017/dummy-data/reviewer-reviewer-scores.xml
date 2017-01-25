@@ -1,0 +1,65 @@
+<reviewersimilarity>
+    <reviewer email="redreviewer@gmail.com">
+    	<reviewer email="redreviewer@gmail.com" 	score="1.0"  source="ReviewerSimilarity"/>
+        <reviewer email="orangereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="yellowreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="greenreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="bluereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="indigoreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="violetreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    </reviewer>
+    <reviewer email="orangereviewer@gmail.com">
+    	<reviewer email="redreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="orangereviewer@gmail.com" 	score="1.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="yellowreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="greenreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="bluereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="indigoreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="violetreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    </reviewer>
+	<reviewer email="yellowreviewer@gmail.com">
+    	<reviewer email="redreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="orangereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="yellowreviewer@gmail.com" 	score="1.0"  source="ReviewerSimilarity"/>
+        <reviewer email="greenreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="bluereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="indigoreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="violetreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    </reviewer>
+	<reviewer email="greenreviewer@gmail.com">
+    	<reviewer email="redreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="orangereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="yellowreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="greenreviewer@gmail.com" 	score="1.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="bluereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="indigoreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="violetreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    </reviewer>
+    <reviewer email="bluereviewer@gmail.com">
+    	<reviewer email="redreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="orangereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="yellowreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="greenreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="bluereviewer@gmail.com" 	score="1.0"  source="ReviewerSimilarity"/>
+        <reviewer email="indigoreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="violetreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    </reviewer>
+    <reviewer email="indigoreviewer@gmail.com">
+    	<reviewer email="redreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="orangereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="yellowreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="greenreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="bluereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="indigoreviewer@gmail.com" 	score="1.0"  source="ReviewerSimilarity"/>
+        <reviewer email="violetreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    </reviewer>
+   	<reviewer email="violetreviewer@gmail.com">
+    	<reviewer email="redreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="orangereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="yellowreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="greenreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+    	<reviewer email="bluereviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="indigoreviewer@gmail.com" 	score="0.0"  source="ReviewerSimilarity"/>
+        <reviewer email="violetreviewer@gmail.com" 	score="1.0"  source="ReviewerSimilarity"/>
+    </reviewer>
+</reviewersimilarity>

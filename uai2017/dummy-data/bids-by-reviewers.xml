@@ -1,0 +1,65 @@
+<reviewers>
+    <reviewer email="redreviewer@gmail.com">
+        <submission submissionId="1"     score="1.0" source="ReviewerBids"/>
+        <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="4"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="5"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
+    </reviewer>
+    <reviewer email="orangereviewer@gmail.com">
+        <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="2"     score="1.0" source="ReviewerBids"/>
+        <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="4"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="5"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
+    </reviewer>
+    <reviewer email="yellowreviewer@gmail.com">
+        <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="3"     score="1.0" source="ReviewerBids"/>
+        <submission submissionId="4"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="5"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
+    </reviewer>
+    <reviewer email="greenreviewer@gmail.com">
+        <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="4"     score="1.0" source="ReviewerBids"/>
+        <submission submissionId="5"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
+    </reviewer>
+    <reviewer email="bluereviewer@gmail.com">
+        <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="4"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="5"     score="1.0" source="ReviewerBids"/>
+        <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
+    </reviewer>
+    <reviewer email="indigoreviewer@gmail.com">
+        <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="4"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="5"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="6"     score="1.0" source="ReviewerBids"/>
+        <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
+    </reviewer>
+    <reviewer email="violetreviewer@gmail.com">
+        <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="4"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="5"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
+        <submission submissionId="7"     score="1.0" source="ReviewerBids"/>
+    </reviewer>
+</reviewers>
