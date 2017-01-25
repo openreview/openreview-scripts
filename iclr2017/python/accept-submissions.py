@@ -20,7 +20,6 @@ file_name = "acceptances.csv"
 if args.ifile!=None:
     file_name = args.ifile
 
-
 submissions = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 acceptances = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/acceptance')
 # valid acceptance values
@@ -51,6 +50,7 @@ try:
                 else:
                     any_errors = True
                     print("Paper%s invalid acceptance value '%s'" %(paper_num,row[4]))
+
 except (OSError, IOError) as e:
     print(e)
     file_data =[]
