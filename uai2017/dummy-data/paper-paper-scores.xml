@@ -1,0 +1,65 @@
+<papersimilarity>
+    <submission submissionId="1">
+		<submission submissionId="1"  score="1.0" source="TopicMatcher"/>
+        <submission submissionId="2"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="3"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="4"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="5"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="6"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="7"  score="0.0" source="TopicMatcher"/>
+    </submission>
+    <submission submissionId="2">
+		<submission submissionId="1"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="2"  score="1.0" source="TopicMatcher"/>
+		<submission submissionId="3"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="4"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="5"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="6"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="7"  score="0.0" source="TopicMatcher"/>
+    </submission>
+    <submission submissionId="3">
+		<submission submissionId="1"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="2"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="3"  score="1.0" source="TopicMatcher"/>
+        <submission submissionId="4"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="5"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="6"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="7"  score="0.0" source="TopicMatcher"/>
+    </submission>
+    <submission submissionId="4">
+		<submission submissionId="1"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="2"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="3"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="4"  score="1.0" source="TopicMatcher"/>
+		<submission submissionId="5"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="6"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="7"  score="0.0" source="TopicMatcher"/>
+    </submission>
+    <submission submissionId="5">
+		<submission submissionId="1"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="2"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="3"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="4"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="5"  score="1.0" source="TopicMatcher"/>
+        <submission submissionId="6"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="7"  score="0.0" source="TopicMatcher"/>
+    </submission>
+    <submission submissionId="6">
+		<submission submissionId="1"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="2"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="3"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="4"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="5"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="6"  score="1.0" source="TopicMatcher"/>
+		<submission submissionId="7"  score="0.0" source="TopicMatcher"/>
+    </submission>
+    <submission submissionId="7">
+		<submission submissionId="1"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="2"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="3"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="4"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="5"  score="0.0" source="TopicMatcher"/>
+        <submission submissionId="6"  score="0.0" source="TopicMatcher"/>
+		<submission submissionId="7"  score="1.0" source="TopicMatcher"/>
+    </submission>
+</papersimilarity>

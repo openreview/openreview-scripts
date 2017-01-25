@@ -1,0 +1,9 @@
+<alphas>
+	<reviewer email="redreviewer@gmail.com" 	maxPapers="1"  minPapers="1"/>
+    <reviewer email="orangereviewer@gmail.com" 	maxPapers="1"  minPapers="1"/>
+	<reviewer email="yellowreviewer@gmail.com" 	maxPapers="1"  minPapers="1"/>
+	<reviewer email="greenreviewer@gmail.com" 	maxPapers="1"  minPapers="1"/>
+	<reviewer email="bluereviewer@gmail.com" 	maxPapers="1"  minPapers="1"/>
+	<reviewer email="indigoreviewer@gmail.com" 	maxPapers="1"  minPapers="1"/>
+	<reviewer email="violetreviewer@gmail.com" 	maxPapers="1"  minPapers="1"/>
+</alphas>
