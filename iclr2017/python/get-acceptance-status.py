@@ -68,8 +68,8 @@ with open(file_name, 'wb') as outfile:
     for paper_num in paper_status:
         row = []
         row.append(paper_num)
-        row.append(paper_status[paper_num]['title'])
-        row.append(paper_status[paper_num]['comment'])
-        row.append(paper_status[paper_num]['recommendation'])
-        row.append(paper_status[paper_num]['acceptance'])
+        row.append(paper_status[paper_num]['title'].encode('utf-8'))
+        row.append(paper_status[paper_num]['comment'].encode('utf-8'))
+        row.append(paper_status[paper_num]['recommendation'].encode('utf-8'))
+        row.append(paper_status[paper_num]['acceptance'].encode('utf-8'))
         csvwriter.writerow(row)
