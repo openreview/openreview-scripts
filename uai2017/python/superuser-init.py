@@ -167,6 +167,7 @@ if client.user['id'].lower()=='openreview.net':
         client.post_group(g)
     client.post_group(client.get_group('host').add_member('auai.org/UAI/2017'))
 
+
     #########################
     ##  SETUP INVITATIONS  ##
     #########################
@@ -375,6 +376,59 @@ if client.user['id'].lower()=='openreview.net':
     }
 
     invitations.append(spc_registration)
+
+
+    #Create the paper metadata invitation
+    paper_metadata_reply = {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['OpenReview.net'] #who should be allowed to read UAI submissions and when?
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': 'OpenReview.net'
+        },
+        'writers': {
+            'values-regex': 'OpenReview.net'
+        },
+        'content': {} #content is blank; this allows for ANYTHING to be placed in the content field.
+        #we'll want to change this later one we know what the format will be.
+    }
+    paper_metadata_invitation = openreview.Invitation('auai.org/UAI/2017','Paper/Metadata',
+                                               writers=['OpenReview.net'],
+                                               readers=['OpenReview.net'],
+                                               invitees=['OpenReview.net'],
+                                               signatures=['OpenReview.net'],
+                                               reply=paper_metadata_reply)
+    invitations.append(paper_metadata_invitation)
+
+
+    #Create the reviewer metadata invitation
+    reviewer_metadata_reply = {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['OpenReview.net'] #who should be allowed to read UAI submissions and when?
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': 'OpenReview.net'
+        },
+        'writers': {
+            'values-regex': 'OpenReview.net'
+        },
+        'content': {} #Content is blank. See above.
+    }
+    reviewer_metadata_invitation = openreview.Invitation('auai.org/UAI/2017','Reviewer/Metadata',
+                                               writers=['OpenReview.net'],
+                                               readers=['OpenReview.net'],
+                                               invitees=['OpenReview.net'],
+                                               signatures=['OpenReview.net'],
+                                               reply=reviewer_metadata_reply)
+    invitations.append(reviewer_metadata_invitation)
 
 
     ## Post the invitations
