@@ -80,11 +80,13 @@ paper_index_dict = {i: paper_forum_number_dict[i]-1 for i in paper_forum_number_
 
 # Getting paper reviewer score array
 
-#paper_reviewer_score_dict = utils.get_paper_reviewers_score(client, conference, paper_number_forum_dict)
 paper_reviewer_score_dict = defaultdict(list)
 
+print "looping over paper_metadata_notes"
 for note in paper_metadata_notes:
+    print "Note: ",note
     for reviewer_info in note.content['reviewers']:
+        print "Reviewer_info: ", reviewer_info
         key = (note.forum, reviewer_info['reviewer'])
         paper_reviewer_score_dict[key].append(reviewer_info['score'])
 

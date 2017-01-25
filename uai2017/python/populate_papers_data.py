@@ -180,7 +180,7 @@ def parse_paper_paper_scores(file_path):
     return similarity_scores_dict
 
 
-def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarity_dict):
+def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarity_dict, bid_scores_dict=None):
     """
     Using the data from the parsed tpms scores file and paper_similarity_score file populating the paper meta data
     :param affinity_scores_dict:
@@ -197,7 +197,13 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
         (min_reviewers, max_reviewers) = betas_dict[n.number]
 
         reviewers = map(lambda p: note_content.Reviewer(reviewer=p[0], score=p[1], source=p[2]), affinity_scores_dict[n.number])
+
+        if bid_scores_dict:
+            bid_scores = map(lambda p: note_content.Reviewer(reviewer=p[0], score=p[1], source=p[2]), bid_scores_dict[n.number])
+            reviewers += bid_scores
+
         papers = map(lambda p: note_content.Paper(paper_number=p[0], score=p[1], source=p[2]), paper_similarity_dict[n.number])
+
 
         content = note_content.PaperMetaData(
             minreviewers = min_reviewers,
@@ -220,12 +226,12 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
 
 if __name__ == '__main__':
     validate_input(args)
-
     betas_dict = parse_betas(args.betas)
     affinity_scores_dict = parse_paper_reviewer_scores(args.reviewerscores)
     paper_similarity_scores_dict = parse_paper_paper_scores(args.paperscores)
 
+    bid_scores_dict = None
     if args.bidscores != None:
-        parse_bid_scores = parse_bid_scores(args.bidscores)
+        bid_scores_dict = parse_bid_scores(args.bidscores)
 
-    create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarity_scores_dict)
+    create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarity_scores_dict, bid_scores_dict)

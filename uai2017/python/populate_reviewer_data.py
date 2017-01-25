@@ -7,8 +7,6 @@ from uaidata import *
 
 sys.path.append(os.path.join(os.getcwd(), "../../dto/uai2017"))
 
-from note_content import *
-
 import xml.etree.ElementTree
 import utils
 import time
@@ -23,6 +21,7 @@ parser.add_argument('--password')
 parser.add_argument('--alphas', help="The xml from which reviewer bid scores are to be read")
 parser.add_argument('--bidscores', help="The xml from which reviewer similarity scores are to be read")
 parser.add_argument('--reviewerscores', help="The xml from which reviewer similarity scores are to be read")
+parser.add_argument('--titles', help="The xml from which reviewer paper titles")
 
 args = parser.parse_args()
 if args.alphas is None:
@@ -33,13 +32,13 @@ else:
     if not args.alphas.endswith(".xml"):
         raise Exception("Incorrect File format")
 
-if args.bidscores is None:
-    raise Exception("No reviewer similarity scores file is provided")
-elif not os.path.isfile(args.bidscores):
-    raise Exception("Incorrect file path : %s specified" % args.bidscores)
-else:
-    if not args.bidscores.endswith(".xml"):
-        raise Exception("Incorrect File format")
+# if args.bidscores is None:
+#     raise Exception("No reviewer similarity scores file is provided")
+# elif not os.path.isfile(args.bidscores):
+#     raise Exception("Incorrect file path : %s specified" % args.bidscores)
+# else:
+#     if not args.bidscores.endswith(".xml"):
+#         raise Exception("Incorrect File format")
 
 if args.reviewerscores is None:
     raise Exception("No reviewer similarity scores file is provided")
@@ -73,7 +72,7 @@ def parse_alphas(file_path):
 
     return alphas_dict
 
-def parse_reviewer_scores(file_path):
+def parse_bid_scores(file_path):
     """
     Parse an xml file of the affinity scores and return a dictionary of the elements
     The xml file has the following format
@@ -101,6 +100,33 @@ def parse_reviewer_scores(file_path):
                 (int(score_details.attrib['submissionId']), float(score_details.attrib['score']), score_details.attrib['source']))
     return bid_scores_dict
 
+def parse_titles(file_path):
+    """
+    Parse an xml file of the affinity scores and return a dictionary of the elements
+    The xml file has the following format
+    <reviewerbid>
+        <reviewer email="jamiesho@microsoft.com" maxPapers="10"  minPapers="2">
+            <submission submissionId="6"  score="0.551721716"  source="ReviewerBids" />
+        </reviewer>
+    </reviwerbid>
+    :param file_path:
+    :return: a dictionary with key as paper number and values as a list of tuple of reviewer email,affinity score and source
+    """
+    if not file_path.endswith(".xml"):
+        raise Exception("Incorrect File format")
+    e = xml.etree.ElementTree.parse(file_path)
+    root = e._root
+    reviewers = root._children
+    titles_dict = defaultdict(list)
+
+    #email_id_map = utils.get_email_to_id_mapping(client)
+    for reviewer in reviewers:
+        profile = client.get_profile(reviewer.attrib['email'])
+        reviewer_id = profile.id
+        for paper in reviewer._children:
+            titles_dict[reviewer_id].append(
+                (paper.attrib['title'], float(paper.attrib['score']), paper.attrib['source']))
+    return titles_dict
 
 def parse_reviewer_reviewer_similarity_details(file_path):
     """
@@ -135,7 +161,7 @@ def parse_reviewer_reviewer_similarity_details(file_path):
     return similarity_scores_dict
 
 
-def create_reviewer_metadata_note(bids_scores_dict, alphas_dict, reviewer_similarity_dict):
+def create_reviewer_metadata_note(alphas_dict, reviewer_similarity_dict, bids_scores_dict=None, titles_dict=None):
     """
     Using the openreview data data from the parsed reviewer bid score and reviewer_similarity_score file populating the reviewer meta data
     :param bids_scores_dict
@@ -151,23 +177,31 @@ def create_reviewer_metadata_note(bids_scores_dict, alphas_dict, reviewer_simila
 
         (min_paper, max_papers) = alphas_dict[reviewer_id]
 
-        reviewers = map(lambda x: Reviewer(reviewer=x[0], score=x[1], source=x[2]), reviewer_similarity_dict[reviewer_id])
-        papers = map(lambda x: Paper(paper_number=x[0], score=x[1], source=x[2]), bids_scores_dict[reviewer_id])
+        reviewers = [{'reviewer':x[0], 'score':x[1], 'source':x[2]} for x in reviewer_similarity_dict[reviewer_id]]
 
-        content = ReviewerData(
-            name=reviewer_id,
-            minpapers=min_paper,
-            maxpapers=max_papers,
-            papers=papers,
-            reviewers=reviewers
-        )
+        papers = []
+        if bid_scores_dict != None:
+            papers = [{'paper_number': x[0], 'score': x[1], 'source': x[2]} for x in bids_scores_dict[reviewer_id]]
+
+        authored_papers = []
+        if titles_dict != None:
+            authored_papers = [{'title': x[0], 'score': x[1], 'source': x[2]} for x in titles_dict[reviewer_id]]
+
+        content = {
+            'name': reviewer_id,
+            'minpapers': min_paper,
+            'maxpapers': max_papers,
+            'papers': papers,
+            'authored_papers': authored_papers,
+            'reviewers': reviewers
+        }
 
         note = openreview.Note(
             invitation=CONFERENCE + "/-/Reviewer/Metadata",
             cdate=int(time.time()) * 1000,
             readers=['OpenReview.net'],
             writers=['OpenReview.net'],
-            content=content.to_dict(),
+            content=content,
             signatures=['OpenReview.net']
         )
 
@@ -175,6 +209,14 @@ def create_reviewer_metadata_note(bids_scores_dict, alphas_dict, reviewer_simila
 
 if __name__ == '__main__':
     alphas_dict = parse_alphas(args.alphas)
-    bid_scores_dict = parse_reviewer_scores(args.bidscores)
+
+    bid_scores_dict = None
+    if args.bidscores != None:
+        bid_scores_dict = parse_bid_scores(args.bidscores)
+
+    titles_dict = None
+    if args.titles != None:
+        titles_dict = parse_titles(args.titles)
+
     similarity_scores_dict = parse_reviewer_reviewer_similarity_details(args.reviewerscores)
-    create_reviewer_metadata_note(bid_scores_dict,alphas_dict,similarity_scores_dict)
+    create_reviewer_metadata_note(alphas_dict, similarity_scores_dict, bid_scores_dict, titles_dict)
