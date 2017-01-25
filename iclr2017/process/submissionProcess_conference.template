@@ -325,9 +325,10 @@ function () {
         'ICLR2017': {
           'order': 1,
           'value-radio': [
-            'Accepted',
-            'Rejected',
-            'Pending'
+            'Accept (Oral)',
+            'Accept (Poster)',
+            'Reject',
+            'Invite to Workshop Track'
           ]
         }
       }
