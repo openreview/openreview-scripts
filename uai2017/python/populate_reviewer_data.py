@@ -20,24 +20,33 @@ parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
 parser.add_argument('--username')
 parser.add_argument('--password')
-parser.add_argument('--file1', help="The xml from which reviewer bid scores are to be read")
-parser.add_argument('--file2', help="The xml from which reviewer similarity scores are to be read")
+parser.add_argument('--alphas', help="The xml from which reviewer bid scores are to be read")
+parser.add_argument('--bidscores', help="The xml from which reviewer similarity scores are to be read")
+parser.add_argument('--reviewerscores', help="The xml from which reviewer similarity scores are to be read")
 
 args = parser.parse_args()
-if args.file1 is None:
+if args.alphas is None:
     raise Exception("No reviewer bid scores file is provided")
-elif not os.path.isfile(args.file1):
-    raise Exception("Incorrect file path : %s specified" % args.file1)
+elif not os.path.isfile(args.alphas):
+    raise Exception("Incorrect file path : %s specified" % args.alphas)
 else:
-    if not args.file1.endswith(".xml"):
+    if not args.alphas.endswith(".xml"):
         raise Exception("Incorrect File format")
 
-if args.file2 is None:
+if args.bidscores is None:
     raise Exception("No reviewer similarity scores file is provided")
-elif not os.path.isfile(args.file2):
-    raise Exception("Incorrect file path : %s specified" % args.file2)
+elif not os.path.isfile(args.bidscores):
+    raise Exception("Incorrect file path : %s specified" % args.bidscores)
 else:
-    if not args.file2.endswith(".xml"):
+    if not args.bidscores.endswith(".xml"):
+        raise Exception("Incorrect File format")
+
+if args.reviewerscores is None:
+    raise Exception("No reviewer similarity scores file is provided")
+elif not os.path.isfile(args.reviewerscores):
+    raise Exception("Incorrect file path : %s specified" % args.reviewerscores)
+else:
+    if not args.reviewerscores.endswith(".xml"):
         raise Exception("Incorrect File format")
 
 if args.username != None and args.password != None:
@@ -46,7 +55,25 @@ else:
     client = openreview.Client(baseurl=args.baseurl)
 
 
-def parse_reviewer_bid_details(file_path):
+def parse_alphas(file_path):
+    if not file_path.endswith(".xml"):
+        raise Exception("Incorrect File format")
+    e = xml.etree.ElementTree.parse(file_path)
+    root = e._root
+    reviewers = root._children
+    bid_scores_dict = defaultdict(list)
+    alphas_dict = {}
+
+    for reviewer in reviewers:
+        profile = client.get_profile(reviewer.attrib['email'])
+        reviewer_id = profile.id
+        max_papers = int(reviewer.attrib['maxPapers'])
+        min_papers = int(reviewer.attrib['minPapers'])
+        alphas_dict[reviewer_id] = (min_papers, max_papers)
+
+    return alphas_dict
+
+def parse_reviewer_scores(file_path):
     """
     Parse an xml file of the affinity scores and return a dictionary of the elements
     The xml file has the following format
@@ -64,19 +91,15 @@ def parse_reviewer_bid_details(file_path):
     root = e._root
     reviewers = root._children
     bid_scores_dict = defaultdict(list)
-    alphas_dict = {}
+
     #email_id_map = utils.get_email_to_id_mapping(client)
     for reviewer in reviewers:
         profile = client.get_profile(reviewer.attrib['email'])
         reviewer_id = profile.id
-        max_papers = int(reviewer.attrib['maxPapers'])
-        min_papers = int(reviewer.attrib['minPapers'])
-        alphas_dict[reviewer_id] = (min_papers, max_papers)
-
         for score_details in reviewer._children:
             bid_scores_dict[reviewer_id].append(
                 (int(score_details.attrib['submissionId']), float(score_details.attrib['score']), score_details.attrib['source']))
-    return bid_scores_dict, alphas_dict
+    return bid_scores_dict
 
 
 def parse_reviewer_reviewer_similarity_details(file_path):
@@ -151,6 +174,7 @@ def create_reviewer_metadata_note(bids_scores_dict, alphas_dict, reviewer_simila
         client.post_note(note)
 
 if __name__ == '__main__':
-    bid_scores_dict, alphas_dict = parse_reviewer_bid_details(args.file1)
-    similarity_scores_dict = parse_reviewer_reviewer_similarity_details(args.file2)
+    alphas_dict = parse_alphas(args.alphas)
+    bid_scores_dict = parse_reviewer_scores(args.bidscores)
+    similarity_scores_dict = parse_reviewer_reviewer_similarity_details(args.reviewerscores)
     create_reviewer_metadata_note(bid_scores_dict,alphas_dict,similarity_scores_dict)
