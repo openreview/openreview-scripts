@@ -1,5 +1,6 @@
 import argparse
 import openreview
+import requests
 import csv
 
 ## Argument handling
@@ -26,6 +27,12 @@ metareviews = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/met
 acceptances = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/acceptance')
 reviews = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/official/review')
 
+headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json',
+           'Authorization': 'Bearer ' + client.token}
+anon_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/conference/paper.*/AnonReviewer.*',
+                              headers=headers)
+area_chairs = requests.get(client.baseurl+'/groups?id=ICLR.cc/2017/conference/paper.*/areachair1.*', headers = headers)
+
 acceptance_name = 'ICLR2017'
 
 # initialize all values for each paper/reviewer pair
@@ -43,6 +50,26 @@ def get_score(note, content_type):
     string_var = string_var.split(':')[0]
     return string_var
 
+# profile_by_email[email_id] = ~name
+profile_by_email = {}
+def check_profile(member):
+
+    if member.startswith('~'):
+        return member
+
+    if '@' in member:
+        if member in profile_by_email:
+            return profile_by_email[member]
+
+        response = requests.get(client.baseurl+'/user/profile?email=' + member, headers = headers)
+        if 'profile' not in response.json():
+            profile_by_email[member] = member
+            return member
+        profile = response.json()['profile']
+        profile_by_email[member] = profile['id']
+        return profile_by_email[member]
+
+    return member
 
 # paper_status[paper_num][reviewer] dictionary
 paper_status = {}
@@ -52,26 +79,43 @@ def get_paper_status_entry(note, note_type):
     paper_num = int(note.invitation.split('paper')[1].split(note_type)[0])
     reviewer = note.writers[0]
     if paper_num not in paper_status:
-        # PAM this paper not in submissions - should I ignore it??
-        paper_status[paper_num] = {}
-        print("NEW PAPER %s"%paper_num)
-    if reviewer not in paper_status[paper_num]:
-        paper_status[paper_num][reviewer] = {}
-        paper_status_initialize(paper_status[paper_num][reviewer])
+        # if paper not in submissions it was probably deleted
+        return None
     else:
-        print("overwriting %s %s" % (paper_num,reviewer))
-    return paper_status[paper_num][reviewer]
+        if reviewer not in paper_status[paper_num]:
+            # create new entry
+            paper_status[paper_num][reviewer] = {}
+            paper_status_initialize(paper_status[paper_num][reviewer])
+        else:
+            print("overwriting %s %s" % (paper_num,reviewer))
+        return paper_status[paper_num][reviewer]
 
-# initialize paper_status for each submission
+# attach real name to the anonymized name for reviewers
+reviewers = {}
+for r in anon_reviewers.json():
+    reviewer_id = r['id']
+    members = r['members']
+    if members:
+        reviewers[reviewer_id] = check_profile(members[0])
+
+# attach real name to the anonymized name for area chairs
+# and convert email ids to names
+for r in area_chairs.json():
+    reviewer_id = r['id']
+    members = r['members']
+    if members:
+        reviewers[reviewer_id] = check_profile(members[0])
+
 for paper in submissions:
     paper_status[paper.number] = {}
 
 # official reviews
 for note in reviews:
     paper_entry = get_paper_status_entry(note, '/official/review')
-    paper_entry['type'] = "review"
-    paper_entry['score'] = get_score(note, 'rating')
-    paper_entry['confidence'] = get_score(note, 'confidence')
+    if paper_entry is not None:
+        paper_entry['type'] = "review"
+        paper_entry['score'] = get_score(note, 'rating')
+        paper_entry['confidence'] = get_score(note, 'confidence')
 
 # add area chair recommendations
 for note in metareviews:
@@ -102,14 +146,14 @@ with open(file_name, 'wb') as outfile:
 #    row.append("#OfficalInteractions")
     csvwriter.writerow(row)
     for paper_num in paper_status:
-        for reviewer in paper_status[paper_num]:
+        for rev_id in paper_status[paper_num]:
             row = []
             row.append(paper_num)
-            row.append(paper_status[paper_num][reviewer]['type'].encode('utf-8'))
-            row.append(reviewer)
-            row.append(paper_status[paper_num][reviewer]['score'].encode('utf-8'))
-            row.append(paper_status[paper_num][reviewer]['recommendation'].encode('utf-8'))
-            row.append(paper_status[paper_num][reviewer]['confidence'].encode('utf-8'))
-            row.append(paper_status[paper_num][reviewer]['comment'].encode('utf-8'))
-#            row.append(paper_status[paper_num][reviewer]['num_interactions'])
+            row.append(paper_status[paper_num][rev_id]['type'].encode('utf-8'))
+            row.append(reviewers[rev_id].encode('utf-8'))
+            row.append(paper_status[paper_num][rev_id]['score'].encode('utf-8'))
+            row.append(paper_status[paper_num][rev_id]['recommendation'].encode('utf-8'))
+            row.append(paper_status[paper_num][rev_id]['confidence'].encode('utf-8'))
+            row.append(paper_status[paper_num][rev_id]['comment'].encode('utf-8'))
+#            row.append(paper_status[paper_num][rev_id]['num_interactions'])
             csvwriter.writerow(row)
