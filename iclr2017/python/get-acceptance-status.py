@@ -24,34 +24,67 @@ if args.ofile!=None:
 submissions = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
 metareviews = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/meta/review')
 acceptances = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/acceptance')
+reviews = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/official/review')
+
 acceptance_name = 'ICLR2017'
 
-# paper_status[paper_num] dictionary w/ 'title','comment','recommendation','acceptance'
+# initialize all values for each paper/reviewer pair
+def paper_status_initialize(paper_dict):
+    paper_dict['type'] = ""
+    paper_dict['score'] = ""
+    paper_dict['recommendation'] = ""
+    paper_dict['comment'] = ""
+    paper_dict['confidence'] = ""
+    paper_dict['num_interactions'] = 0
+
+# get the info from the review, return NA if not there
+def get_score(note, content_type):
+    string_var = note.content.get(content_type, "NA")
+    string_var = string_var.split(':')[0]
+    return string_var
+
+
+# paper_status[paper_num][reviewer] dictionary
 paper_status = {}
+
+# get the entry in the paper_status dict - initialize new entry if needed
+def get_paper_status_entry(note, note_type):
+    paper_num = int(note.invitation.split('paper')[1].split(note_type)[0])
+    reviewer = note.writers[0]
+    if paper_num not in paper_status:
+        # PAM this paper not in submissions - should I ignore it??
+        paper_status[paper_num] = {}
+        print("NEW PAPER %s"%paper_num)
+    if reviewer not in paper_status[paper_num]:
+        paper_status[paper_num][reviewer] = {}
+        paper_status_initialize(paper_status[paper_num][reviewer])
+    else:
+        print("overwriting %s %s" % (paper_num,reviewer))
+    return paper_status[paper_num][reviewer]
 
 # initialize paper_status for each submission
 for paper in submissions:
     paper_status[paper.number] = {}
-    paper_status[paper.number]['title'] = paper.content['title']
-    paper_status[paper.number]['comment'] = ""
-    paper_status[paper.number]['recommendation'] = ""
-    paper_status[paper.number]['acceptance'] = ""
+
+# official reviews
+for note in reviews:
+    paper_entry = get_paper_status_entry(note, '/official/review')
+    paper_entry['type'] = "review"
+    paper_entry['score'] = get_score(note, 'rating')
+    paper_entry['confidence'] = get_score(note, 'confidence')
 
 # add area chair recommendations
 for note in metareviews:
-    paper_num = int(note.invitation.split('paper')[1].split('/meta/review')[0])
-    paper_status[paper_num]['comment'] = note.content['metareview']
-    paper_status[paper_num]['recommendation'] = note.content['recommendation']
+    paper_entry = get_paper_status_entry(note, '/meta/review')
+    paper_entry['type'] = "meta-review"
+    paper_entry['recommendation'] = note.content['recommendation']
+    paper_entry['comment'] = note.content['metareview']
 
 # add PI acceptances
 for note in acceptances:
-    paper_num = int(note.invitation.split('paper')[1].split('/acceptance')[0])
-    paper_status[paper_num]['acceptance'] = note.content[acceptance_name]
-    # if acceptance, but no area chair recommendation, fill in with blanks so it prints properly
-    # PAM better way to handle this at the append stage?
-    if not paper_status[paper_num]['recommendation']:
-        paper_status[paper_num]['recommendation'] =""
-        paper_status[paper_num]['comment'] = ""
+    paper_entry = get_paper_status_entry(note, '/acceptance')
+    paper_entry['type'] = "acceptance"
+    paper_entry['recommendation'] = note.content[acceptance_name]
 
 # print results
 # csv
@@ -59,17 +92,24 @@ with open(file_name, 'wb') as outfile:
     csvwriter = csv.writer(outfile, delimiter=',')
     row = []
     # paper ids, title, comment, recommendation, acceptance
-    row.append("Paper Number")
-    row.append("Title")
-    row.append("Comment")
+    row.append("PaperID")
+    row.append("Type")
+    row.append("Name")
+    row.append("Score")
     row.append("Recommendation")
-    row.append("Acceptance")
+    row.append("Confidence")
+    row.append("Comment")
+#    row.append("#OfficalInteractions")
     csvwriter.writerow(row)
     for paper_num in paper_status:
-        row = []
-        row.append(paper_num)
-        row.append(paper_status[paper_num]['title'].encode('utf-8'))
-        row.append(paper_status[paper_num]['comment'].encode('utf-8'))
-        row.append(paper_status[paper_num]['recommendation'].encode('utf-8'))
-        row.append(paper_status[paper_num]['acceptance'].encode('utf-8'))
-        csvwriter.writerow(row)
+        for reviewer in paper_status[paper_num]:
+            row = []
+            row.append(paper_num)
+            row.append(paper_status[paper_num][reviewer]['type'].encode('utf-8'))
+            row.append(reviewer)
+            row.append(paper_status[paper_num][reviewer]['score'].encode('utf-8'))
+            row.append(paper_status[paper_num][reviewer]['recommendation'].encode('utf-8'))
+            row.append(paper_status[paper_num][reviewer]['confidence'].encode('utf-8'))
+            row.append(paper_status[paper_num][reviewer]['comment'].encode('utf-8'))
+#            row.append(paper_status[paper_num][reviewer]['num_interactions'])
+            csvwriter.writerow(row)
