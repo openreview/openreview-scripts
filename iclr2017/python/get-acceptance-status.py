@@ -31,7 +31,7 @@ headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json
            'Authorization': 'Bearer ' + client.token}
 anon_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/conference/paper.*/AnonReviewer.*',
                               headers=headers)
-area_chairs = requests.get(client.baseurl+'/groups?id=ICLR.cc/2017/conference/paper.*/areachair1.*', headers = headers)
+area_chairs = requests.get(client.baseurl+'/groups?id=ICLR.cc/2017/conference/paper.*/areachair.*', headers = headers)
 
 acceptance_name = 'ICLR2017'
 
@@ -105,22 +105,25 @@ for r in anon_reviewers.json():
 # and convert email ids to names
 for r in area_chairs.json():
     reviewer_id = r['id']
-    members = r['members']
-    if members:
-        reviewers[reviewer_id] = check_profile(members[0])
-        paper_num = int(reviewer_id.split('paper')[1].split('/')[0])
-        if paper_num in paper_status:
-            if reviewer_id not in paper_status[paper_num]:
-                # create new entry
-                paper_status[paper_num][reviewer_id] = {}
-                paper_status_initialize(paper_status[paper_num][reviewer_id])
-            paper_status[paper_num][reviewer_id]['type'] = "meta-review"
-            paper_status[paper_num][reviewer_id]['recommendation'] = "TBD"
+    # only look at areachair1,2... not "areachairs"
+    if not reviewer_id.endswith('areachairs'):
+        members = r['members']
+        if members:
+            reviewers[reviewer_id] = check_profile(members[0])
+            paper_num = int(reviewer_id.split('paper')[1].split('/')[0])
+            if paper_num in paper_status:
+                if reviewer_id not in paper_status[paper_num]:
+                    # create new entry
+                    paper_status[paper_num][reviewer_id] = {}
+                    paper_status_initialize(paper_status[paper_num][reviewer_id])
+                paper_status[paper_num][reviewer_id]['type'] = "meta-review"
+                paper_status[paper_num][reviewer_id]['recommendation'] = "TBD"
 
 # official reviews
 for note in reviews:
     paper_entry = get_paper_status_entry(note, '/official/review')
-    if paper_entry is not None:
+#    if paper_entry is not None:
+    if paper_entry:
         paper_entry['type'] = "review"
         paper_entry['score'] = get_score(note, 'rating')
         paper_entry['confidence'] = get_score(note, 'confidence')
