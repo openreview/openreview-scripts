@@ -73,6 +73,8 @@ def check_profile(member):
 
 # paper_status[paper_num][reviewer] dictionary
 paper_status = {}
+for paper in submissions:
+    paper_status[paper.number] = {}
 
 # get the entry in the paper_status dict - initialize new entry if needed
 def get_paper_status_entry(note, note_type):
@@ -86,9 +88,10 @@ def get_paper_status_entry(note, note_type):
             # create new entry
             paper_status[paper_num][reviewer] = {}
             paper_status_initialize(paper_status[paper_num][reviewer])
-        else:
+        elif note_type != '/meta/review':
             print("overwriting %s %s" % (paper_num,reviewer))
         return paper_status[paper_num][reviewer]
+
 
 # attach real name to the anonymized name for reviewers
 reviewers = {}
@@ -105,9 +108,14 @@ for r in area_chairs.json():
     members = r['members']
     if members:
         reviewers[reviewer_id] = check_profile(members[0])
-
-for paper in submissions:
-    paper_status[paper.number] = {}
+        paper_num = int(reviewer_id.split('paper')[1].split('/')[0])
+        if paper_num in paper_status:
+            if reviewer_id not in paper_status[paper_num]:
+                # create new entry
+                paper_status[paper_num][reviewer_id] = {}
+                paper_status_initialize(paper_status[paper_num][reviewer_id])
+            paper_status[paper_num][reviewer_id]['type'] = "meta-review"
+            paper_status[paper_num][reviewer_id]['recommendation'] = "TBD"
 
 # official reviews
 for note in reviews:

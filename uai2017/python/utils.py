@@ -16,13 +16,20 @@ def get_all_member_ids(openreview_client):
     return members
 
 
-def get_notes_submitted_papers(openreview_client, invitation_id):
+def get_email_to_id_mapping(openreview_client):
     """
-    Get all the submitted papers
+    Get a mapping from email id's to member ids
+    :param openreview_client:
     :return:
     """
-    notes = openreview_client.get_notes(invitation=invitation_id)
-    return notes
+    email_id_map = {}
+    member_groups = openreview_client.get_groups(regex="~.*")
+    for member_group in member_groups:
+        if member_group.id == '~':
+            continue
+        for email_id in member_group.members:
+            email_id_map[email_id] = member_group.id
+    return email_id_map
 
 
 def update_reviewers(openreview_client, conference_reviewer_group, members):
@@ -34,17 +41,6 @@ def update_reviewers(openreview_client, conference_reviewer_group, members):
     reviewers = openreview_client.get_group(conference_reviewer_group)
     reviewers.members = members
     openreview_client.post_group(reviewers)
-
-
-def get_all_reviewers(openreview_client, conference_reviewer_group):
-    """
-
-    :param openreview_client:
-    :param conference_reviewer_group:
-    :return:
-    """
-    reviewers = openreview_client.get_group(conference_reviewer_group)
-    return reviewers.members
 
 
 def get_paper_names(notes):
@@ -60,21 +56,6 @@ def get_paper_names(notes):
         else:
             list_paper_name.append("Paper" + str(note.number))
     return list_paper_name
-
-
-def get_paper_numbers(notes):
-    """
-    Getting paper number using the following logic: If note.number is NONE then throw an Error
-    :param notes:
-    :return:
-    """
-    list_paper_number = []
-    for note in notes:
-        if note.number is None:
-            raise ValueError("Incorrect note number")
-        else:
-            list_paper_number.append(note.number)
-    return list_paper_number
 
 
 def get_paper_metadata_notes(openreview_client, conference):
@@ -117,6 +98,7 @@ def get_paper_reviewers_score(openreview_client, conference, paper_number_id_dic
             if (note.forum, reviewer_info['reviewer']) not in output_dict:
                 output_dict[(note.forum, reviewer_info['reviewer'])] = []
             output_dict[(note.forum, reviewer_info['reviewer'])].append(reviewer_info['score'])
+
     notes = openreview_client.get_notes(invitation=conference + "/-/reviewer")
     for note in notes:
         content = note.content
@@ -128,6 +110,26 @@ def get_paper_reviewers_score(openreview_client, conference, paper_number_id_dic
     return output_dict
 
 
+def get_alphas_betas_dict(openreview_client, conference):
+    """
+    Get alpha and beta from Reviewer Metadata and Paper Metadata respectively
+    :param openreview_client:
+    :param conference:
+    :return:
+    """
+    notes = openreview_client.get_notes(invitation=conference + "/-/matching")
+    beta_dict = {}
+    alpha_dict = {}
+    for note in notes:
+        beta_dict[note.forum] = (note.content['minreviewers'], note.content['maxreviewers'])
+
+
+    notes = openreview_client.get_notes(invitation=conference + "/-/reviewer")
+    for note in notes:
+        alpha_dict[note.content['name']] = (note.content['minpapers'], note.content['maxpapers'])
+    return alpha_dict, beta_dict
+
+
 def get_reviewer_data_notes(openreview_client, conference):
     """
     Get all the reviewer meta data notes
@@ -137,7 +139,7 @@ def get_reviewer_data_notes(openreview_client, conference):
     return notes
 
 
-def get_number_id_dict(submitted_paper_notes):
+def get_paper_number_id_dict(submitted_paper_notes):
     """
     Get a dictionary mapping of paper number to paper id
     :param submitted_paper_notes:
