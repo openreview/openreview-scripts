@@ -134,6 +134,7 @@ for note in metareviews:
     paper_entry['type'] = "meta-review"
     paper_entry['recommendation'] = note.content['recommendation']
     paper_entry['comment'] = note.content['metareview']
+    paper_entry['confidence'] = get_score(note, 'confidence')
 
 # add PI acceptances
 for note in acceptances:
