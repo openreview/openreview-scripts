@@ -36,12 +36,12 @@ function () {
         },
         'recommendation': {
           'order': 3,
-          'value-dropdown': [
-            'Oral',
-            'Poster',
-            'Reject',
-            'Workshop'
-          ],
+          "value-dropdown": [
+            "Accept (Oral)",
+            "Accept (Poster)",
+            "Reject",
+            "Invite to Workshop Track"
+          ]
           'required': true
         },
         'confidence': {
