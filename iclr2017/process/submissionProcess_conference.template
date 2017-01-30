@@ -41,7 +41,7 @@ function () {
             'Accept (Poster)',
             'Reject',
             'Invite to Workshop Track'
-          ]
+          ],
           'required': true
         },
         'confidence': {
