@@ -37,10 +37,10 @@ function () {
         'recommendation': {
           'order': 3,
           'value-dropdown': [
-            'Oral',
-            'Poster',
+            'Accept (Oral)',
+            'Accept (Poster)',
             'Reject',
-            'Workshop'
+            'Invite to Workshop Track'
           ],
           'required': true
         },
