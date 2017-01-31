@@ -1,0 +1,100 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id='main'>
+      <div id='header'></div>
+      <div id='invitation'></div>
+      <div id='notes'></div>
+    </div>
+    <script type="text/javascript">
+    $(function() {
+
+      $attach('#header', 'mkHostHeader', [
+        "ICLR 2017 - Conference Track",
+        "International Conference on Learning Representations",
+        "Toulon, France, April 24 - 26, 2017",
+        "http://www.iclr.cc",
+        ""
+      ], true);
+
+      var sm = mkStateManager();
+
+      var httpGetP = function(url, queryOrBody) {
+        var df = $.Deferred();
+        httpGet(url, queryOrBody,
+        function(result) {
+          df.resolve(result);
+        },
+        function(result) {
+          df.reject(result);
+        });
+        return df.promise();
+      };
+
+      var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission', maxtcdate: Date.now()}).then(function(result) {
+        return result.notes;
+      },
+      function(error){
+        return error
+      });
+
+      var decisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/paper.*/acceptance'}).then(function(result) {
+        return result.notes;
+      },
+      function(error){
+        return error
+      });
+
+
+      $.when(notesP, decisionsP).done(function(notes, decisions) {
+
+        sm.update('notes', {
+          notes: notes,
+          decisions: decisions
+        });
+
+        sm.addHandler('conference', {
+          notes: function(data) {
+            var notes = data.notes;
+            var decisions = data.decisions;
+
+            if (notes) {
+              var $panel = $('#notes');
+              $panel.empty();
+              displayNotes(notes, _.filter(decisions, function(d) { console.log(d.content.decision == 'Accept (Oral)'); return d.content.decision == 'Accept (Oral)'; }), $panel, 'Paper decision: Accept (Oral)');
+              displayNotes(notes, _.filter(decisions, function(d) { return d.content.decision == 'Accept (Poster)'; }), $panel, 'Paper decision: Accept (Poster)');
+              displayNotes(notes, _.filter(decisions, function(d) { return d.content.decision == 'Reject'; }), $panel, 'Paper decision: Reject');
+              displayNotes(notes, _.filter(decisions, function(d) { return d.content.decision == 'Invite to Workshop Track'; }), $panel, 'Paper decision: Invite to Workshop Track');
+
+            }
+          }
+        });
+
+        function displayNotes(notes, decisions, $panel, text) {
+          console.log('decisions', decisions);
+          $panel.append($('<div>', { class: 'panel'}).append($('<h2>').text(text)));
+
+           _.forEach(decisions, function(decision) {
+
+            var forum = _.find(notes, 'id', decision.forum);
+            $attach('#notes', 'mkNotePanel', [forum, {
+              titleLink: 'HREF',
+              withReplyCount: true
+            }], true);
+          });
+        }
+
+      })
+      .fail(function(){
+        console.log("Invitation and/or notes not found")
+      });
+
+
+
+
+
+    });
+    </script>
+ </body>
+</html>
