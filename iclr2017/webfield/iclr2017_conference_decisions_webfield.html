@@ -86,16 +86,16 @@
                 }
               });
 
-              displayNotes(notesDict, oralDecisions, $panel, 'Paper decision: Accept (Oral)');
-              displayNotes(notesDict, posterDecisions, $panel, 'Paper decision: Accept (Poster)');
-              displayNotes(notesDict, rejectDecisions, $panel, 'Paper decision: Reject');
-              displayNotes(notesDict, workshopDecisions, $panel, 'Paper decision: Invite to Workshop Track');
+              displayNotes(notesDict, oralDecisions, $panel, 'Paper decision: Accept (Oral)', 'ICLR 2017 Conference Oral');
+              displayNotes(notesDict, posterDecisions, $panel, 'Paper decision: Accept (Poster)', 'ICLR 2017 Conference Poster');
+              displayNotes(notesDict, workshopDecisions, $panel, 'Paper decision: Invite to Workshop Track', 'ICLR 2017 Conference Invite to Workshop');
+              displayNotes(notesDict, rejectDecisions, $panel, 'Paper decision: Reject', 'ICLR 2017 Conference Reject');
 
             }
           }
         });
 
-        function displayNotes(notes, decisions, $panel, text) {
+        function displayNotes(notes, decisions, $panel, text, summary) {
           console.log('decisions', decisions);
           $panel.append($('<div>', { class: 'panel'}).append($('<h3>', { style: 'text-decoration: underline; '}).text(text)));
 
@@ -104,7 +104,8 @@
             var forum = notes[decision.forum];
             $attach('#notes', 'mkNotePanel', [forum, {
               titleLink: 'HREF',
-              withReplyCount: true
+              withReplyCount: true,
+              withSummary: summary
             }], true);
           });
         }
