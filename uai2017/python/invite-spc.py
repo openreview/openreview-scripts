@@ -51,12 +51,12 @@ To DECLINE the invitation, please click on the following link:
 
 Before making a decision (we really hope you will accept!), you may want to read through the detailed instructions and timeline below to make sure you are aware of what we expect you to do and the dates when we will need your help. Please verify that you can commit to the deadlines.
 
-1. By January 15th, 2017: Please respond by clicking above indicating whether you accept the SPC invitation or not.
+1. By February 15th, 2017: Please respond by clicking above indicating whether you accept the SPC invitation or not.
 
 2. If you accept, please log into OpenReview at https://openreview.net and visit your "Tasks" page to provide your areas of subject matter expertise. If you have not yet done so, we also ask that you visit your user profile to provide the domain names of institutions which represent your conflicts of interest. OpenReview is the web-based system we will be using for online submission and reviewing of papers. If you have not used OpenReview before you will need to register: Please use the email address that received this message (you may change your preferred email address after signing up). Even if you have used OpenReview before, please login and enter your subject areas going to the "Tasks" page. Note that UAI has a separate form to enter the subject areas that is in the "Tasks" page and is not the expertise of the user profile page.
 A document describing how to use the OpenReview system and the ideas of comments/reviews will be posted by well before the UAI submission and review process start.
 
-3. Also by January 15th, 2017: We would very much appreciate if you could send suggestions for potential members for the Program Committee to uai2017chairs@gmail.com. For each candidate, please provide their full name, affiliation, email address, and area of expertise (separated by commas; one candidate per line). If the candidate is a PhD student, please state the year of study. We are particularly interested in finding good reviewers that we may not know about and that were not on the UAI 2016 reviewer list (e.g., junior researchers that are postdocs or above). For reference, the UAI 2016 reviewer list is at http://www.auai.org/uai2016/PC.php. When picking PC members, dependability is as important as qualification.
+3. Also by February 15th, 2017: We would very much appreciate if you could send suggestions for potential members for the Program Committee to uai2017chairs@gmail.com. For each candidate, please provide their full name, affiliation, email address, and area of expertise (separated by commas; one candidate per line). If the candidate is a PhD student, please state the year of study. We are particularly interested in finding good reviewers that we may not know about and that were not on the UAI 2016 reviewer list (e.g., junior researchers that are postdocs or above). For reference, the UAI 2016 reviewer list is at http://www.auai.org/uai2016/PC.php. When picking PC members, dependability is as important as qualification.
 
 4. April 1-5, 2017: Enter "bids" into the OpenReview system for submitted papers. Note that "bids" are really just a way for you to indicate which papers you feel you are qualified to review and which ones match your expertise particularly well. It's important that you do this so that you are assigned papers that are a good match to you.
 
@@ -100,8 +100,8 @@ def sendMail(spc_invited):
         url = openreview.baseurl+"/invitation?id=auai.org/UAI/2017/-/spc_invitation&username=" + spc_member + "&key=" + hashkey + "&response="
         fullname = re.sub('[0-9]','',spc_member.replace('~','').replace('_',' '))
         print "Sending message to %s (%s)" % (fullname,spc_member)
-        openreview.send_mail("Senior Program Committee Invitation for UAI 2017", [spc_member], message %(fullname,url + "Yes", url + "No"))
-
+        response = openreview.send_mail("Senior Program Committee Invitation for UAI 2017", [spc_member], message %(fullname,url + "Yes", url + "No"))
+        print "Mail response: ", response.json()
 
 if openreview.exists(SPC+"/invited") and openreview.exists(SPC+"/emailed"):
     reviewers_invited = openreview.get_group(SPC+"/invited")
