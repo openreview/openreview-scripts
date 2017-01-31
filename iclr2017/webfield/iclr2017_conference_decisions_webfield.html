@@ -97,7 +97,7 @@
 
         function displayNotes(notes, decisions, $panel, text) {
           console.log('decisions', decisions);
-          $panel.append($('<div>', { class: 'panel'}).append($('<h2>').text(text)));
+          $panel.append($('<div>', { class: 'panel'}).append($('<h3>', { style: 'text-decoration: underline; '}).text(text)));
 
            _.forEach(decisions, function(decision) {
 
