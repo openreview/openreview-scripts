@@ -30,6 +30,10 @@ valid_values = [
     "Invite to Workshop Track"
 ]
 
+# these
+ACCEPT_INDX = 7
+COMMENT_INDX = 8
+
 any_errors = False
 # accept_new[paper_num] dictionary w/ 'forum', 'acceptance'
 accept_new = {}
@@ -40,16 +44,20 @@ try:
         # skip top line
         file_reader.next()
         for row in file_reader:
-            # first column is the paper number, last column is the needed acceptance status
-            paper_num = int(row[0])
-            if row[4] != "":
-                print("add %s" %paper_num)
-                if row[4] in valid_values:
-                    accept_new[paper_num] = {}
-                    accept_new[paper_num]['acceptance']=row[4]
+            if (row[1] == "meta-review") and row[ACCEPT_INDX]:
+                # first column is the paper number, last column is the needed acceptance status
+                paper_num = int(row[0])
+                # print("add %s" %paper_num)
+                if row[ACCEPT_INDX] in valid_values:
+                    if row[COMMENT_INDX]:
+                        accept_new[paper_num] = {}
+                        accept_new[paper_num]['acceptance'] = row[ACCEPT_INDX]
+                        accept_new[paper_num]['comment'] = row[COMMENT_INDX]
+                    else:
+                        print("Paper%s comments are required" % paper_num)
                 else:
                     any_errors = True
-                    print("Paper%s invalid acceptance value '%s'" %(paper_num,row[4]))
+                    print("Paper%s invalid acceptance value '%s'" %(paper_num,row[ACCEPT_INDX]))
 
 except (OSError, IOError) as e:
     print(e)
@@ -73,7 +81,7 @@ for note in acceptances:
     paper_num = paper_numbers[note.forum]
     if paper_num in accept_new.keys():
         # Check if acceptance notes agree w/ spreadsheet values, throw error if problem
-        if note.content['ICLR2017'] != accept_new[paper_num]['acceptance']:
+        if note.content['decision'] != accept_new[paper_num]['acceptance']:
             print("Cannot change previously accepted paper %s" % paper_num)
         # remove from the new acceptance list
         del accept_new[paper_num]
@@ -83,13 +91,15 @@ for note in acceptances:
 note = openreview.Note()
 note.signatures = ['ICLR.cc/2017/pcs']
 note.writers = ['ICLR.cc/2017/pcs']
-note.readers = ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs','ICLR.cc/2017/conference']
+note.readers = ['everyone']
 # for all new acceptances, set paper specific info and post acceptance note
 for paper_num in accept_new:
     invitation ='ICLR.cc/2017/conference/-/paper' +str(paper_num)+'/acceptance'
     note.invitation = invitation
     note.forum = accept_new[paper_num]['forum']
     note.replyto = accept_new[paper_num]['forum']
-    note.content = {'ICLR2017':accept_new[paper_num]['acceptance']}
+    note.content = {'decision':accept_new[paper_num]['acceptance'],
+                    'title':'ICLR committee final decision',
+                    'comment':accept_new[paper_num]['comment']}
     client.post_note(note)
     print ("Paper %s: new acceptance" % paper_num)
