@@ -95,6 +95,8 @@ def get_paper_status_entry(note, note_type):
 
 # attach real name to the anonymized name for reviewers
 reviewers = {}
+# since the writers for acceptances is "pcs" not an actual person, add to the reviewers list
+reviewers['ICLR.cc/2017/pcs'] = 'ICLR.cc/2017/pcs'
 for r in anon_reviewers.json():
     reviewer_id = r['id']
     members = r['members']
@@ -140,7 +142,8 @@ for note in metareviews:
 for note in acceptances:
     paper_entry = get_paper_status_entry(note, '/acceptance')
     paper_entry['type'] = "acceptance"
-    paper_entry['recommendation'] = note.content[acceptance_name]
+    paper_entry['recommendation'] = note.content['decision']
+    paper_entry['comment'] = note.content['comment']
 
 # print results
 # csv
