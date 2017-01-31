@@ -62,10 +62,34 @@
             if (notes) {
               var $panel = $('#notes');
               $panel.empty();
-              displayNotes(notes, _.filter(decisions, function(d) { console.log(d.content.decision == 'Accept (Oral)'); return d.content.decision == 'Accept (Oral)'; }), $panel, 'Paper decision: Accept (Oral)');
-              displayNotes(notes, _.filter(decisions, function(d) { return d.content.decision == 'Accept (Poster)'; }), $panel, 'Paper decision: Accept (Poster)');
-              displayNotes(notes, _.filter(decisions, function(d) { return d.content.decision == 'Reject'; }), $panel, 'Paper decision: Reject');
-              displayNotes(notes, _.filter(decisions, function(d) { return d.content.decision == 'Invite to Workshop Track'; }), $panel, 'Paper decision: Invite to Workshop Track');
+
+              var notesDict = {};
+              _.forEach(notes, function(n) {
+                notesDict[n.id] = n;
+              });
+
+              var oralDecisions = [];
+              var posterDecisions = [];
+              var rejectDecisions = [];
+              var workshopDecisions = [];
+
+              _.forEach(decisions, function(d) {
+
+                if (d.content.decision == 'Accept (Oral)') {
+                  oralDecisions.push(d);
+                } else if (d.content.decision == 'Accept (Poster)') {
+                  posterDecisions.push(d);
+                } else if (d.content.decision == 'Reject') {
+                  rejectDecisions.push(d);
+                } else if (d.content.decision == 'Invite to Workshop Track') {
+                  workshopDecisions.push(d);
+                }
+              });
+
+              displayNotes(notesDict, oralDecisions, $panel, 'Paper decision: Accept (Oral)');
+              displayNotes(notesDict, posterDecisions, $panel, 'Paper decision: Accept (Poster)');
+              displayNotes(notesDict, rejectDecisions, $panel, 'Paper decision: Reject');
+              displayNotes(notesDict, workshopDecisions, $panel, 'Paper decision: Invite to Workshop Track');
 
             }
           }
@@ -77,7 +101,7 @@
 
            _.forEach(decisions, function(decision) {
 
-            var forum = _.find(notes, 'id', decision.forum);
+            var forum = notes[decision.forum];
             $attach('#notes', 'mkNotePanel', [forum, {
               titleLink: 'HREF',
               withReplyCount: true
