@@ -384,7 +384,7 @@ if client.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['OpenReview.net'] #who should be allowed to read UAI submissions and when?
+            'values': ['OpenReview.net',COCHAIRS] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -398,7 +398,7 @@ if client.user['id'].lower()=='openreview.net':
     }
     paper_metadata_invitation = openreview.Invitation('auai.org/UAI/2017','Paper/Metadata',
                                                writers=['OpenReview.net'],
-                                               readers=['OpenReview.net'],
+                                               readers=['OpenReview.net',COCHAIRS],
                                                invitees=['OpenReview.net'],
                                                signatures=['OpenReview.net'],
                                                reply=paper_metadata_reply)
@@ -411,7 +411,7 @@ if client.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['OpenReview.net'] #who should be allowed to read UAI submissions and when?
+            'values': ['OpenReview.net',COCHAIRS] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -424,7 +424,7 @@ if client.user['id'].lower()=='openreview.net':
     }
     reviewer_metadata_invitation = openreview.Invitation('auai.org/UAI/2017','Reviewer/Metadata',
                                                writers=['OpenReview.net'],
-                                               readers=['OpenReview.net'],
+                                               readers=['OpenReview.net',COCHAIRS],
                                                invitees=['OpenReview.net'],
                                                signatures=['OpenReview.net'],
                                                reply=reviewer_metadata_reply)
