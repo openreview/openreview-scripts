@@ -318,12 +318,23 @@ function () {
         },
       'writers': {'values-regex':'ICLR.cc/2017/pcs'},
       'readers': {
-        'values': ['ICLR.cc/2017/pcs','ICLR.cc/2017/areachairs','ICLR.cc/2017/conference'],
+        'values': ['everyone'],
         'description': 'The users who will be allowed to read the above content.'
         },
       'content': {
-        'ICLR2017': {
+        'title': {
           'order': 1,
+          'value': 'ICLR committee final decision',
+          'description': 'Brief summary of your decision.'
+        },
+        'comment': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Decision comments.',
+          'required': true
+        },
+        'decision': {
+          'order': 3,
           'value-radio': [
             'Accept (Oral)',
             'Accept (Poster)',
