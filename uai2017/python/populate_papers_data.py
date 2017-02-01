@@ -215,7 +215,7 @@ def create_paper_metadata_note(affinity_scores_dict, betas_dict, paper_similarit
         note = openreview.Note(
             invitation = CONFERENCE + "/-/Paper/Metadata",
             cdate = int(time.time()) * 1000,
-            readers=['OpenReview.net'],
+            readers=['OpenReview.net',COCHAIRS],
             forum=n.id,
             writers=['OpenReview.net'],
             content=content.to_dict(),
