@@ -119,6 +119,6 @@ with open(file_name, 'wb') as outfile:
                     row.append(paper_num)
                     row.append(reviewer.encode('utf-8'))
                     row.append(reviewer_type)
-                    row.append(author_id.encode('utf-8'))
+                    row.append(reviewers[author_id].encode('utf-8'))
                     row.append(reviewer_rating[paper_num][reviewer][reviewer_type][name])
                     csvwriter.writerow(row)
