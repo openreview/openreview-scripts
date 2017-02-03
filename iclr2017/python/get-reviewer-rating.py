@@ -105,9 +105,9 @@ with open(file_name, 'wb') as outfile:
     row = []
     # paper ids, title, comment, recommendation, acceptance
     row.append("Paper ID")
-    row.append("Reviewer Name")
-    row.append("Rating Type")
     row.append("Author/AC Name")
+    row.append("Rating Type")
+    row.append("Reviewer Name")
     row.append("Rating")
     csvwriter.writerow(row)
     for paper_num in reviewer_rating:
