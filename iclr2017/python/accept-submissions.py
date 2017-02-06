@@ -31,8 +31,8 @@ valid_values = [
 ]
 
 # these
-ACCEPT_INDX = 7
-COMMENT_INDX = 8
+ACCEPT_INDX = 1
+COMMENT_INDX = 2
 
 any_errors = False
 # accept_new[paper_num] dictionary w/ 'forum', 'acceptance'
@@ -41,23 +41,20 @@ accept_new = {}
 try:
     with open(file_name, "rb") as in_file:
         file_reader = csv.reader(in_file, delimiter=',')
-        # skip top line
-        file_reader.next()
         for row in file_reader:
-            if (row[1] == "meta-review") and row[ACCEPT_INDX]:
-                # first column is the paper number, last column is the needed acceptance status
-                paper_num = int(row[0])
-                # print("add %s" %paper_num)
-                if row[ACCEPT_INDX] in valid_values:
-                    if row[COMMENT_INDX]:
-                        accept_new[paper_num] = {}
-                        accept_new[paper_num]['acceptance'] = row[ACCEPT_INDX]
-                        accept_new[paper_num]['comment'] = row[COMMENT_INDX]
-                    else:
-                        print("Paper%s comments are required" % paper_num)
+            # first column is the paper number, last column is the needed acceptance status
+            paper_num = int(row[0])
+            # print("add %s" %paper_num)
+            if row[ACCEPT_INDX] in valid_values:
+                if row[COMMENT_INDX]:
+                    accept_new[paper_num] = {}
+                    accept_new[paper_num]['acceptance'] = row[ACCEPT_INDX]
+                    accept_new[paper_num]['comment'] = row[COMMENT_INDX]
                 else:
-                    any_errors = True
-                    print("Paper%s invalid acceptance value '%s'" %(paper_num,row[ACCEPT_INDX]))
+                    print("Paper%s comments are required" % paper_num)
+            else:
+                any_errors = True
+                print("Paper%s invalid acceptance value '%s'" %(paper_num,row[ACCEPT_INDX]))
 
 except (OSError, IOError) as e:
     print(e)
