@@ -33,7 +33,6 @@
       };
 
       var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
-        console.log('result',result);
         var valid_invitations = _.filter(result.invitations, function(inv){
           return inv.duedate > Date.now();
         })
@@ -45,7 +44,7 @@
         return error
       });
 
-      var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission', maxtcdate: Date.now()}).then(function(result) {
+      var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
         return result.notes;
       },
       function(error){
@@ -70,8 +69,7 @@
                 view.mkNewNoteEditor(invitation, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      invitation: 'ICLR.cc/2017/conference/-/submission',
-                      maxtcdate: Date.now()
+                      invitation: 'ICLR.cc/2017/conference/-/submission'
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);
                       sm.update('notes', result.notes);
