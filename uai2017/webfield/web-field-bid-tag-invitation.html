@@ -1,0 +1,31 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id='main'>
+      <div id='header'></div>
+    </div>
+    <script type="text/javascript">
+    $(function() {
+
+      var httpGetP = function(url, queryOrBody) {
+        var df = $.Deferred();
+        httpGet(url, queryOrBody, function(result) {
+          df.resolve(result);
+        }, function(err) {
+          df.reject(result);
+        });
+        return df.promise();
+      };
+
+      $attach('#header', 'mkHostHeader', [
+        "UAI 2017 Conference",
+        "Uncertainty in Artificial Intelligence",
+        "Sydney, Australia, August 11th - 15th, 2017",
+        "http://auai.org/uai2017/"
+      ], true);
+
+    });
+    </script>
+ </body>
+</html>
