@@ -104,11 +104,16 @@
            _.forEach(decisions, function(decision) {
 
             var forum = notes[decision.forum];
-            $attach('#notes', 'mkNotePanel', [forum, {
-              titleLink: 'HREF',
-              withReplyCount: true,
-              withSummary: summary
-            }], true);
+            if (forum) {
+              $attach('#notes', 'mkNotePanel', [forum, {
+                titleLink: 'HREF',
+                withReplyCount: true,
+                withSummary: summary
+              }], true);
+            } else {
+              console.log('Forum not found', decision.forum);
+            }
+
           });
         }
 
