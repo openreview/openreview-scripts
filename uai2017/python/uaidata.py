@@ -2,6 +2,7 @@
 UAI Conference constants
 """
 
+ADMIN = "uai2017admin"
 COCHAIRS = "auai.org/UAI/2017/Program_Co-Chairs"
 SPC = "auai.org/UAI/2017/Senior_Program_Committee"
 PC = "auai.org/UAI/2017/Program_Committee"

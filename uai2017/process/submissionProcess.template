@@ -18,7 +18,7 @@ function () {
     'signatures':['auai.org/UAI/2017'],
     'writers':['auai.org/UAI/2017'],
     'members':[],
-    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers'],
+    'readers':[UAIData.CONFERENCE, UAIData.COCHAIRS, UAIData.SPC, paperGroup.id+'/Reviewers'],
     'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
   };
 
