@@ -4,26 +4,117 @@
   <body>
     <div id='main'>
       <div id='header'></div>
+      <div id='notes'></div>
     </div>
     <script type="text/javascript">
     $(function() {
 
+      var sm = mkStateManager();
+      var allNotes = [];
+
       var httpGetP = function(url, queryOrBody) {
         var df = $.Deferred();
-        httpGet(url, queryOrBody, function(result) {
+        httpGet(url, queryOrBody,
+        function(result) {
           df.resolve(result);
-        }, function(err) {
+        },
+        function(result) {
           df.reject(result);
         });
         return df.promise();
       };
 
-      $attach('#header', 'mkHostHeader', [
-        "UAI 2017 Conference",
-        "Uncertainty in Artificial Intelligence",
-        "Sydney, Australia, August 11th - 15th, 2017",
-        "http://auai.org/uai2017/"
-      ], true);
+      var notesP = httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/blind-submission'}).then(function(result) {
+        return result.notes;
+      },
+      function(error){
+        return error
+      });
+
+      $.when(notesP).done(function(notes) {
+
+        sm.update('notes', {
+          notes: notes
+        });
+
+        sm.addHandler('conference', {
+          notes: function(data) {
+            allNotes = data.notes;
+
+            if (allNotes) {
+              updateNotes(allNotes);
+            }
+          }
+        });
+
+        function displayNotes(notes, $panel, text, summary) {
+          $panel.append($('<div>', { class: 'panel'}).append($('<h3>', { style: 'text-decoration: underline; '}).text(text)));
+
+           _.forEach(notes, function(note) {
+
+            var onTagChanged = function(tag) {
+              allNotes = _.map(allNotes, function(n) {
+                if (n.id == note.id) {
+                  n.tags = [tag];
+                }
+                return n;
+              });
+              updateNotes(allNotes);
+            }
+
+            $attach('#notes', 'mkNotePanel', [note, {
+              titleLink: 'HREF',
+              withReplyCount: true,
+              withSummary: summary,
+              onTagChanged: onTagChanged
+            }], true);
+          });
+        }
+
+        function updateNotes(notes) {
+          var $panel = $('#notes');
+          $panel.empty();
+
+          var wantToReview = [];
+          var canReview = [];
+          var probablyReview = [];
+          var canNotReview = [];
+          var noBid = [];
+
+          _.forEach(notes, function(n) {
+
+            if (n.tags[0] == 'I want to review') {
+              wantToReview.push(n);
+            } else if (n.tags[0] == 'I can review') {
+              canReview.push(n);
+            } else if (n.tags[0] == 'I can probably review but am not an expert') {
+              probablyReview.push(n);
+            } else if (n.tags[0] == 'I cannot review') {
+              canNotReview.push(n);
+            } else {
+              noBid.push(n);
+            }
+          });
+
+          var bidCount = wantToReview.length + canReview.length + probablyReview.length + canNotReview.length;
+
+          $panel.append($('<div>', { class: 'panel'}).append($('<h2>').text("UAI Reviewer status: You have " + bidCount + "/50 bids completed")));
+          $panel.append($('<div>', { style: 'height: 20px;'}));
+          displayNotes(wantToReview, $panel, 'Bid: I want to review (' + wantToReview.length + ')');
+          $panel.append($('<div>', { style: 'height: 50px;'}));
+          displayNotes(canReview, $panel, 'Bid: I can review (' + canReview.length + ')');
+          $panel.append($('<div>', { style: 'height: 50px;'}));
+          displayNotes(probablyReview, $panel, 'Bid: I can probably review but am not an expert (' + probablyReview.length + ')');
+          $panel.append($('<div>', { style: 'height: 50px;'}));
+          displayNotes(canNotReview, $panel, 'Bid: I cannot review (' + canNotReview.length + ')');
+          $panel.append($('<div>', { style: 'height: 50px;'}));
+          displayNotes(noBid, $panel, 'No bid');
+        }
+
+      })
+      .fail(function(){
+        console.log("Decisions and/or notes not found")
+      });
 
     });
     </script>
