@@ -1,65 +1,65 @@
 <reviewermatching>
     <submission submissionId="1">
-        <reviewer email="redreviewer@gmail.com" 	score="1.0" source="TPMS" />
-        <reviewer email="orangereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="yellowreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="greenreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="bluereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="indigoreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="violetreviewer@gmail.com" 	score="0.0" source="TPMS" />
+        <reviewer email="redreviewer@openreview.net" 	score="1.0" source="TPMS" />
+        <reviewer email="orangereviewer@openreview.net" 	score="0.5" source="TPMS" />
+		<reviewer email="yellowreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="greenreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="bluereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="indigoreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="violetreviewer@openreview.net" 	score="0.0" source="TPMS" />
     </submission>
     <submission submissionId="2">
-        <reviewer email="redreviewer@gmail.com" 	score="0.0" source="TPMS" />
-        <reviewer email="orangereviewer@gmail.com" 	score="1.0" source="TPMS" />
-		<reviewer email="yellowreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="greenreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="bluereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="indigoreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="violetreviewer@gmail.com" 	score="0.0" source="TPMS" />
+        <reviewer email="redreviewer@openreview.net" 	score="0.5" source="TPMS" />
+        <reviewer email="orangereviewer@openreview.net" 	score="1.0" source="TPMS" />
+		<reviewer email="yellowreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="greenreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="bluereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="indigoreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="violetreviewer@openreview.net" 	score="0.0" source="TPMS" />
     </submission>
     <submission submissionId="3">
-        <reviewer email="redreviewer@gmail.com" 	score="0.0" source="TPMS" />
-        <reviewer email="orangereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="yellowreviewer@gmail.com" 	score="1.0" source="TPMS" />
-		<reviewer email="greenreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="bluereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="indigoreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="violetreviewer@gmail.com" 	score="0.0" source="TPMS" />
+        <reviewer email="redreviewer@openreview.net" 	score="0.0" source="TPMS" />
+        <reviewer email="orangereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="yellowreviewer@openreview.net" 	score="1.0" source="TPMS" />
+		<reviewer email="greenreviewer@openreview.net" 	score="0.5" source="TPMS" />
+		<reviewer email="bluereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="indigoreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="violetreviewer@openreview.net" 	score="0.0" source="TPMS" />
     </submission>
     <submission submissionId="4">
-        <reviewer email="redreviewer@gmail.com" 	score="0.0" source="TPMS" />
-        <reviewer email="orangereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="yellowreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="greenreviewer@gmail.com" 	score="1.0" source="TPMS" />
-		<reviewer email="bluereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="indigoreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="violetreviewer@gmail.com" 	score="0.0" source="TPMS" />
+        <reviewer email="redreviewer@openreview.net" 	score="0.0" source="TPMS" />
+        <reviewer email="orangereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="yellowreviewer@openreview.net" 	score="0.5" source="TPMS" />
+		<reviewer email="greenreviewer@openreview.net" 	score="1.0" source="TPMS" />
+		<reviewer email="bluereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="indigoreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="violetreviewer@openreview.net" 	score="0.0" source="TPMS" />
     </submission>
     <submission submissionId="5">
-        <reviewer email="redreviewer@gmail.com" 	score="0.0" source="TPMS" />
-        <reviewer email="orangereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="yellowreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="greenreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="bluereviewer@gmail.com" 	score="1.0" source="TPMS" />
-		<reviewer email="indigoreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="violetreviewer@gmail.com" 	score="0.0" source="TPMS" />
+        <reviewer email="redreviewer@openreview.net" 	score="0.0" source="TPMS" />
+        <reviewer email="orangereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="yellowreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="greenreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="bluereviewer@openreview.net" 	score="1.0" source="TPMS" />
+		<reviewer email="indigoreviewer@openreview.net" 	score="0.5" source="TPMS" />
+		<reviewer email="violetreviewer@openreview.net" 	score="0.5" source="TPMS" />
     </submission>
     <submission submissionId="6">
-        <reviewer email="redreviewer@gmail.com" 	score="0.0" source="TPMS" />
-        <reviewer email="orangereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="yellowreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="greenreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="bluereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="indigoreviewer@gmail.com" 	score="1.0" source="TPMS" />
-		<reviewer email="violetreviewer@gmail.com" 	score="0.0" source="TPMS" />
+        <reviewer email="redreviewer@openreview.net" 	score="0.0" source="TPMS" />
+        <reviewer email="orangereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="yellowreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="greenreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="bluereviewer@openreview.net" 	score="0.5" source="TPMS" />
+		<reviewer email="indigoreviewer@openreview.net" 	score="1.0" source="TPMS" />
+		<reviewer email="violetreviewer@openreview.net" 	score="0.5" source="TPMS" />
     </submission>
     <submission submissionId="7">
-        <reviewer email="redreviewer@gmail.com" 	score="0.0" source="TPMS" />
-        <reviewer email="orangereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="yellowreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="greenreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="bluereviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="indigoreviewer@gmail.com" 	score="0.0" source="TPMS" />
-		<reviewer email="violetreviewer@gmail.com" 	score="1.0" source="TPMS" />
+        <reviewer email="redreviewer@openreview.net" 	score="0.0" source="TPMS" />
+        <reviewer email="orangereviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="yellowreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="greenreviewer@openreview.net" 	score="0.0" source="TPMS" />
+		<reviewer email="bluereviewer@openreview.net" 	score="0.5" source="TPMS" />
+		<reviewer email="indigoreviewer@openreview.net" 	score="0.5" source="TPMS" />
+		<reviewer email="violetreviewer@openreview.net" 	score="1.0" source="TPMS" />
     </submission>
 </reviewermatching>
