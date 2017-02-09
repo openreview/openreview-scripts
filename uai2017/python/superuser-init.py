@@ -361,10 +361,10 @@ if client.user['id'].lower()=='openreview.net':
 
     pc_invitation.reply = {
         'content': {
-            'email': {
-                'description': 'reviewer email address (e.g. alanturing@princeton.edu)',
+            'username': {
+                'description': 'OpenReview username (e.g. ~Alan_Turing1)',
                 'order': 1,
-                'value-regex': '.*@.*'
+                'value-regex': '~.*'
             },
             'key': {
                 'description': 'Email key hash',
