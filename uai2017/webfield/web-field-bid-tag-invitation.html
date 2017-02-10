@@ -48,7 +48,7 @@
         });
 
         function displayNotes(notes, $panel, text, summary) {
-          $panel.append($('<div>', { class: 'panel'}).append($('<h3>', { style: 'text-decoration: underline; '}).text(text)));
+          $panel.append($('<div>', { class: 'panel'}).append($('<h4>', { style: 'text-decoration: underline; '}).text(text)));
 
            _.forEach(notes, function(note) {
 
@@ -66,7 +66,8 @@
               titleLink: 'HREF',
               withReplyCount: true,
               withSummary: summary,
-              onTagChanged: onTagChanged
+              onTagChanged: onTagChanged,
+              user: user
             }], true);
           });
         }
@@ -83,13 +84,13 @@
 
           _.forEach(notes, function(n) {
 
-            if (n.tags[0] == 'I want to review') {
+            if (n.tags[0].value == 'I want to review') {
               wantToReview.push(n);
-            } else if (n.tags[0] == 'I can review') {
+            } else if (n.tags[0].value == 'I can review') {
               canReview.push(n);
-            } else if (n.tags[0] == 'I can probably review but am not an expert') {
+            } else if (n.tags[0].value == 'I can probably review but am not an expert') {
               probablyReview.push(n);
-            } else if (n.tags[0] == 'I cannot review') {
+            } else if (n.tags[0].value == 'I cannot review') {
               canNotReview.push(n);
             } else {
               noBid.push(n);

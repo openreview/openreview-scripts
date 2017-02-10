@@ -95,7 +95,8 @@
               _.forEach(notes, function(note) {
                 $attach('#notes', 'mkNotePanel', [note, {
                   titleLink: 'HREF',
-                  withReplyCount: true
+                  withReplyCount: true,
+                  user: user
                 }], true);
               });
             }
