@@ -84,7 +84,7 @@ Once a review is submitted, it is visible to other reviewers and SPC who can com
 
 Finally, please note that the conference is slightly later than usual (August 11 - 15), and as a consequence the entire schedule is shifted relative to previous years.
 
-We really hope you will be able to accept our invitation and help us select a high quality program for UAI 2017.  Please reply to this invitation by following the link at the beginning of this message, no later than January 15th, 2017.
+We really hope you will be able to accept our invitation and help us select a high quality program for UAI 2017.  Please reply to this invitation by following the link at the beginning of this message, no later than February 15th, 2017.
 
 Thanks in advance for your help!
 

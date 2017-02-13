@@ -1,5 +1,5 @@
 <reviewers>
-    <reviewer email="redreviewer@gmail.com">
+    <reviewer email="redreviewer@openreview.net">
         <submission submissionId="1"     score="1.0" source="ReviewerBids"/>
         <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
@@ -8,7 +8,7 @@
         <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
     </reviewer>
-    <reviewer email="orangereviewer@gmail.com">
+    <reviewer email="orangereviewer@openreview.net">
         <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="2"     score="1.0" source="ReviewerBids"/>
         <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
@@ -17,7 +17,7 @@
         <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
     </reviewer>
-    <reviewer email="yellowreviewer@gmail.com">
+    <reviewer email="yellowreviewer@openreview.net">
         <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="3"     score="1.0" source="ReviewerBids"/>
@@ -26,7 +26,7 @@
         <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
     </reviewer>
-    <reviewer email="greenreviewer@gmail.com">
+    <reviewer email="greenreviewer@openreview.net">
         <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
@@ -35,7 +35,7 @@
         <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
     </reviewer>
-    <reviewer email="bluereviewer@gmail.com">
+    <reviewer email="bluereviewer@openreview.net">
         <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
@@ -44,7 +44,7 @@
         <submission submissionId="6"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
     </reviewer>
-    <reviewer email="indigoreviewer@gmail.com">
+    <reviewer email="indigoreviewer@openreview.net">
         <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="3"     score="0.0" source="ReviewerBids"/>
@@ -53,7 +53,7 @@
         <submission submissionId="6"     score="1.0" source="ReviewerBids"/>
         <submission submissionId="7"     score="0.0" source="ReviewerBids"/>
     </reviewer>
-    <reviewer email="violetreviewer@gmail.com">
+    <reviewer email="violetreviewer@openreview.net">
         <submission submissionId="1"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="2"     score="0.0" source="ReviewerBids"/>
         <submission submissionId="3"     score="0.0" source="ReviewerBids"/>

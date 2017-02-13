@@ -161,6 +161,15 @@ if client.user['id'].lower()=='openreview.net':
             members     = [])
         groups.append(pc_declined)
 
+    if overwrite_allowed(PC+'/emailed'):
+        pc_emailed     = openreview.Group(PC+'/emailed', #decided to make this a subgroup of /Program_Committee
+            readers     = [COCHAIRS,'auai.org/UAI/2017'],
+            writers     = [COCHAIRS,'auai.org/UAI/2017'],
+            signatures  = [COCHAIRS],
+            signatories = [],
+            members     = [])
+        groups.append(pc_emailed)
+
 
     ## Post the groups
     for g in groups:
@@ -309,7 +318,7 @@ if client.user['id'].lower()=='openreview.net':
         writers=[CONFERENCE],
         invitees=[SPC+'/invited'],
         signatures=[CONFERENCE],
-        process='../process/responseInvitationProcess_uai2017.js',
+        process='../process/spc_responseInvitationProcess_uai2017.js',
         web='../webfield/web-field-invitation.html')
 
     spc_invitation.reply = {
@@ -342,6 +351,47 @@ if client.user['id'].lower()=='openreview.net':
     }
 
     invitations.append(spc_invitation)
+
+    ## Create Program_Committee recruitment invitation/form, and add it to the list of invitations to post
+    pc_invitation = openreview.Invitation('auai.org/UAI/2017', 'pc_invitation',
+        readers=['everyone'],
+        writers=['auai.org/UAI/2017'],
+        invitees=[PC+'/invited'],
+        signatures=['auai.org/UAI/2017'],
+        process='../process/pc_responseInvitationProcess_uai2017.js',
+        web='../webfield/pc_invitation_webfield.html')
+
+    pc_invitation.reply = {
+        'content': {
+            'username': {
+                'description': 'OpenReview username (e.g. ~Alan_Turing1)',
+                'order': 1,
+                'value-regex': '~.*'
+            },
+            'key': {
+                'description': 'Email key hash',
+                'order': 2,
+                'value-regex': '.{0,100}'
+            },
+            'response': {
+                'description': 'Invitation response',
+                'order': 3,
+                'value-radio': ['Yes', 'No']
+            }
+        },
+        'readers': {
+            'values': ['OpenReview.net']
+        },
+        'signatures': {
+            'values-regex': '\\(anonymous\\)'
+        },
+        'writers': {
+            'values-regex': '\\(anonymous\\)'
+        }
+    }
+
+    invitations.append(pc_invitation)
+
 
     ## Create Senior_Program_Committee registration invitation, and add it to the list of invitations to post
     spc_registration = openreview.Invitation(CONFERENCE, 'spc_registration',
