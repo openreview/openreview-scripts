@@ -80,92 +80,91 @@ if client.user['id'].lower()=='openreview.net':
 
     if overwrite_allowed(COCHAIRS):
         Program_Chairs = openreview.Group(COCHAIRS,
-            readers     = [COCHAIRS, SPC, PC, CONFERENCE],
-            writers     = ['OpenReview.net', CONFERENCE],
-            signatures  = ['OpenReview.net'],
+            readers     = [CONFERENCE, COCHAIRS, SPC, PC],
+            writers     = [CONFERENCE],
+            signatures  = [CONFERENCE],
             signatories = [COCHAIRS],
-            members     = ["~Alejandro_Molina1","~Kristian_Kersting1","~Gal_Elidan1"])
-            #members used to include the CONFERENCE group, but I removed it. Look out for bugs.
+            members     = ["~Alejandro_Molina1", "~Kristian_Kersting1", "~Gal_Elidan1"])
         groups.append(Program_Chairs)
 
 
     if overwrite_allowed(SPC):
         spc = openreview.Group(SPC,
-            readers     = [COCHAIRS, SPC, PC, CONFERENCE],
+            readers     = [CONFERENCE, COCHAIRS, SPC, PC],
             writers     = [CONFERENCE], #the conference needs to be a writer whenever the process functions need to modify the group
-            signatures  = [COCHAIRS],
-            signatories = [SPC], #it seems like only Gal and Kristian should be able to write notes representing the whole Senior_Program_Committee
+            signatures  = [CONFERENCE],
+            signatories = [],
             members     = []) #more to be added later, from the list of Senior_Program_Committee members
         groups.append(spc)
 
-    if overwrite_allowed(SPC+'/invited'):
-        spc_invited = openreview.Group(SPC+'/invited',
-            readers     = [COCHAIRS, CONFERENCE], #Should cochairs be a reader of this group?
-            writers     = [COCHAIRS, CONFERENCE],
-            signatures  = [COCHAIRS],
+    if overwrite_allowed(SPC + '/invited'):
+        spc_invited = openreview.Group(SPC + '/invited',
+            readers     = [CONFERENCE, COCHAIRS],
+            writers     = [CONFERENCE, COCHAIRS],
+            signatures  = [CONFERENCE],
             signatories = [],
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_invited)
 
-    if overwrite_allowed(SPC+'/declined'):
+    if overwrite_allowed(SPC + '/declined'):
         spc_declined = openreview.Group(SPC+'/declined',
-            readers     = [COCHAIRS, CONFERENCE], #Should cochairs be reader of this group?
-            writers     = [COCHAIRS, CONFERENCE],
-            signatures  = [COCHAIRS],
+            readers     = [CONFERENCE, COCHAIRS], #Should cochairs be reader of this group?
+            writers     = [CONFERENCE],
+            signatures  = [CONFERENCE],
             signatories = [],
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_declined)
 
-    if overwrite_allowed(SPC+'/emailed'):
-        spc_emailed = openreview.Group(SPC+'/emailed',
-            readers     = [COCHAIRS, CONFERENCE],
-            writers     = [COCHAIRS, CONFERENCE],
-            signatures  = [COCHAIRS],
+    if overwrite_allowed(SPC + '/emailed'):
+        spc_emailed = openreview.Group(SPC + '/emailed',
+            readers     = [CONFERENCE, COCHAIRS],
+            writers     = [CONFERENCE],
+            signatures  = [CONFERENCE],
             signatories = [],
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_emailed)
 
-    if overwrite_allowed(SPC+'/reminded'):
-        spc_emailed = openreview.Group(SPC+'/reminded',
-            readers     = [COCHAIRS, CONFERENCE],
-            writers     = [COCHAIRS, CONFERENCE],
-            signatures  = [COCHAIRS, CONFERENCE],
+    if overwrite_allowed(SPC + '/reminded'):
+        spc_emailed = openreview.Group(SPC + '/reminded',
+            readers     = [CONFERENCE, COCHAIRS],
+            writers     = [CONFERENCE],
+            signatures  = [CONFERENCE],
             signatories = [],
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_emailed)
 
     if overwrite_allowed(PC):
         pc = openreview.Group(PC,
-            readers     = [COCHAIRS, SPC, PC, CONFERENCE], #the members of the program committee should be broadly known
-            writers     = [COCHAIRS, CONFERENCE], #the conference needs to be a writer whenever the process functions need to modify the group
-            signatures  = [COCHAIRS],
-            signatories = [PC],
+            readers     = [CONFERENCE, COCHAIRS, SPC, PC],
+            writers     = [CONFERENCE],
+            signatures  = [CONFERENCE],
+            signatories = [],
             members     = []) #more to be added later, from the list of Program_Committee members
         groups.append(pc)
 
     if overwrite_allowed(PC+'/invited'):
-        pc_invited      = openreview.Group(PC+'/invited', #decided to make this a subgroup of /Program_Committee
-            readers     = [COCHAIRS, CONFERENCE],
-            writers     = [COCHAIRS, CONFERENCE],
-            signatures  = [COCHAIRS],
-            signatories = [], #nobody should be able to sign as this group
+        pc_invited      = openreview.Group(PC+'/invited',
+            readers     = [CONFERENCE, COCHAIRS],
+            writers     = [CONFERENCE],
+            signatures  = [CONFERENCE],
+            signatories = [],
             members     = []) #members to be added by process function
         groups.append(pc_invited)
 
     if overwrite_allowed(PC+'/declined'):
-        pc_declined     = openreview.Group(PC+'/declined', #decided to make this a subgroup of /Program_Committee
-            readers     = [COCHAIRS, CONFERENCE],
-            writers     = [COCHAIRS, CONFERENCE],
-            signatures  = [COCHAIRS],
+        pc_declined     = openreview.Group(PC+'/declined',
+            readers     = [CONFERENCE, COCHAIRS],
+            writers     = [CONFERENCE, COCHAIRS],
+            signatures  = [CONFERENCE],
             signatories = [],
             members     = [])
         groups.append(pc_declined)
 
     if overwrite_allowed(PC+'/emailed'):
-        pc_emailed     = openreview.Group(PC+'/emailed', #decided to make this a subgroup of /Program_Committee
-            readers     = [COCHAIRS,'auai.org/UAI/2017'],
-            writers     = [COCHAIRS,'auai.org/UAI/2017'],
-            signatures  = [COCHAIRS],
+        pc_emailed     = openreview.Group(PC+'/emailed',
+            readers     = [CONFERENCE, COCHAIRS],
+            writers     = [CONFERENCE],
+            signatures  = [CONFERENCE],
             signatories = [],
             members     = [])
         groups.append(pc_emailed)
@@ -186,15 +185,12 @@ if client.user['id'].lower()=='openreview.net':
     ## Create the submission invitation, form, and add it to the list of invitations to post
     submission_invitation = openreview.Invitation(CONFERENCE,
         'submission',
-        readers=['everyone'],
-        writers=[CONFERENCE],
-        invitees=['~'],
-        signatures=[CONFERENCE],
-        duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        process='../process/usersubmissionProcess.js')
-
-    #submission process function doesn't do anything yet
-    #submission_invitation.process = "function(){done();return true;};"
+        readers = ['everyone'],
+        writers = [CONFERENCE],
+        invitees = ['~'],
+        signatures = [CONFERENCE],
+        duedate = 1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        process = '../process/usersubmissionProcess.js')
 
     submission_invitation.reply = {
         'forum': None,
@@ -272,12 +268,12 @@ if client.user['id'].lower()=='openreview.net':
 
     blind_submission_invitation = openreview.Invitation(CONFERENCE,
         'blind-submission',
-        readers=['everyone'],
-        writers=[CONFERENCE],
-        invitees=['~'],
-        signatures=[CONFERENCE],
-        duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        process='../process/submissionProcess.js')
+        readers = ['everyone'],
+        writers = [CONFERENCE],
+        invitees = ['~'],
+        signatures = [CONFERENCE],
+        duedate = 1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        process = '../process/submissionProcess.js')
 
     blind_submission_invitation.reply = {
         'forum': None,
@@ -316,10 +312,10 @@ if client.user['id'].lower()=='openreview.net':
         'spc_invitation',
         readers=['everyone'],
         writers=[CONFERENCE],
-        invitees=[SPC+'/invited'],
+        invitees=[SPC + '/invited'],
         signatures=[CONFERENCE],
         process='../process/spc_responseInvitationProcess_uai2017.js',
-        web='../webfield/web-field-invitation.html')
+        web='../webfield/spc_invitation_webfield.html')
 
     spc_invitation.reply = {
         'content': {
@@ -354,12 +350,12 @@ if client.user['id'].lower()=='openreview.net':
 
     ## Create Program_Committee recruitment invitation/form, and add it to the list of invitations to post
     pc_invitation = openreview.Invitation('auai.org/UAI/2017', 'pc_invitation',
-        readers=['everyone'],
-        writers=['auai.org/UAI/2017'],
-        invitees=[PC+'/invited'],
-        signatures=['auai.org/UAI/2017'],
-        process='../process/pc_responseInvitationProcess_uai2017.js',
-        web='../webfield/pc_invitation_webfield.html')
+        readers = ['everyone'],
+        writers = [CONFERENCE],
+        invitees = [PC + '/invited'],
+        signatures = [CONFERENCE],
+        process = '../process/pc_responseInvitationProcess_uai2017.js',
+        web = '../webfield/pc_invitation_webfield.html')
 
     pc_invitation.reply = {
         'content': {
@@ -395,7 +391,7 @@ if client.user['id'].lower()=='openreview.net':
 
     ## Create Senior_Program_Committee registration invitation, and add it to the list of invitations to post
     spc_registration = openreview.Invitation(CONFERENCE, 'spc_registration',
-        readers = [CONFERENCE,COCHAIRS],
+        readers = [CONFERENCE, COCHAIRS],
         writers = [CONFERENCE],
         invitees = ['OpenReview.net'],
         signatures = [CONFERENCE],
@@ -450,11 +446,11 @@ if client.user['id'].lower()=='openreview.net':
     }
     paper_metadata_invitation = openreview.Invitation(CONFERENCE,
         'Paper/Metadata',
-        writers=['OpenReview.net'],
-        readers=['OpenReview.net',CONFERENCE],
-        invitees=['OpenReview.net'],
-        signatures=['OpenReview.net'],
-        reply=paper_metadata_reply)
+        writers = ['OpenReview.net'],
+        readers = ['OpenReview.net',CONFERENCE],
+        invitees = ['OpenReview.net'],
+        signatures = ['OpenReview.net'],
+        reply = paper_metadata_reply)
 
     invitations.append(paper_metadata_invitation)
 
@@ -476,6 +472,7 @@ if client.user['id'].lower()=='openreview.net':
         },
         'content': {} #Content is blank. See above.
     }
+
     reviewer_metadata_invitation = openreview.Invitation(CONFERENCE,
         'Reviewer/Metadata',
         writers=['OpenReview.net'],
