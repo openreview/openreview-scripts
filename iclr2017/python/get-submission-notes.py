@@ -34,7 +34,7 @@ paper_status = {}
 # initialize paper_status for each submission
 for paper in submissions:
     paper_status[paper.number] = {}
-    paper_status[paper.number]['pdf'] = paper.content['pdf']
+    paper_status[paper.number]['paper_id'] = paper.id
 
 # add each note to the associated paper in paper_status
 for note in allnotes:
@@ -43,7 +43,7 @@ for note in allnotes:
     # WHY does paper_num work and paper_num0 not?
     paper_num = int(note.invitation.split('paper')[1].split(note_type)[0])
     if paper_num in paper_status:
-        author = note.writers[0]
+        author = note.signatures[0]
         id_str = note.id
         if id_str not in paper_status[paper_num]:
             paper_status[paper_num][id_str] = {}
@@ -61,7 +61,7 @@ with open(file_name, 'wb') as outfile:
     csvwriter = csv.writer(outfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
     row = []
     # paper ids, title, comment, recommendation, acceptance
-    row.append("PaperID")
+    row.append("PaperNum")
     row.append("Timestamp")
     row.append("Type")
     row.append("Author")
@@ -70,13 +70,13 @@ with open(file_name, 'wb') as outfile:
     csvwriter.writerow(row)
     for paper_num in paper_status:
         for note_id in paper_status[paper_num]:
-            if note_id != 'pdf':
+            if note_id != 'paper_id':
                 row = []
                 row.append(paper_num)
                 row.append(paper_status[paper_num][note_id]['timestamp'])
                 row.append(paper_status[paper_num][note_id]['type'].encode('utf-8'))
                 row.append(paper_status[paper_num][note_id]['author'].encode('utf-8'))
                 row.append(paper_status[paper_num][note_id]['content'])
-                row.append(paper_status[paper_num]['pdf'].encode('utf-8'))
+                row.append('https://openreview.net/pdf?id='+paper_status[paper_num]['paper_id'].encode('utf-8'))
                 csvwriter.writerow(row)
 
