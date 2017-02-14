@@ -31,7 +31,14 @@
         return error
       });
 
-      $.when(notesP).done(function(notes) {
+      var tagInvitationsP = httpGetP('invitations', { id: 'auai.org/UAI/2017/-/Add/Bid'}).then(function(result) {
+        return result.invitations;
+      },
+      function(error){
+        return error
+      });
+
+      $.when(notesP, tagInvitationsP).done(function(notes, tagInvitations) {
 
         sm.update('notes', {
           notes: notes
@@ -53,6 +60,7 @@
            _.forEach(notes, function(note) {
 
             var onTagChanged = function(tag) {
+
               allNotes = _.map(allNotes, function(n) {
                 if (n.id == note.id) {
                   n.tags = [tag];
@@ -67,7 +75,8 @@
               withReplyCount: true,
               withSummary: summary,
               onTagChanged: onTagChanged,
-              user: user
+              user: user,
+              tagInvitations: tagInvitations
             }], true);
           });
         }
@@ -84,17 +93,22 @@
 
           _.forEach(notes, function(n) {
 
-            if (n.tags[0].value == 'I want to review') {
-              wantToReview.push(n);
-            } else if (n.tags[0].value == 'I can review') {
-              canReview.push(n);
-            } else if (n.tags[0].value == 'I can probably review but am not an expert') {
-              probablyReview.push(n);
-            } else if (n.tags[0].value == 'I cannot review') {
-              canNotReview.push(n);
+            if (n.tags.length) {
+              if (n.tags[0].tag == 'I want to review') {
+                wantToReview.push(n);
+              } else if (n.tags[0].tag == 'I can review') {
+                canReview.push(n);
+              } else if (n.tags[0].tag == 'I can probably review but am not an expert') {
+                probablyReview.push(n);
+              } else if (n.tags[0].tag == 'I cannot review') {
+                canNotReview.push(n);
+              } else {
+                noBid.push(n);
+              }
             } else {
               noBid.push(n);
             }
+
           });
 
           var bidCount = wantToReview.length + canReview.length + probablyReview.length + canNotReview.length;

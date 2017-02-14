@@ -446,7 +446,7 @@ if client.user['id'].lower()=='openreview.net':
         'invitation': blind_submission_invitation.id,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': []
+            'value-regex': '~.*'
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
