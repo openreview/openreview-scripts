@@ -1,4 +1,5 @@
 {
+	'CONFERENCE':'auai.org/UAI/2017',
 	'COCHAIRS':'auai.org/UAI/2017/Program_Co-Chairs',
 	'PC':'auai.org/UAI/2017/Program_Committee',
 	'SPC':'auai.org/UAI/2017/Senior_Program_Committee',
