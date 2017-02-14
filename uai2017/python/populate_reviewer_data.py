@@ -199,7 +199,7 @@ def create_reviewer_metadata_note(alphas_dict, reviewer_similarity_dict, bids_sc
         note = openreview.Note(
             invitation=CONFERENCE + "/-/Reviewer/Metadata",
             cdate=int(time.time()) * 1000,
-            readers=['OpenReview.net',COCHAIRS],
+            readers=['OpenReview.net', CONFERENCE],
             writers=['OpenReview.net'],
             content=content,
             signatures=['OpenReview.net']
