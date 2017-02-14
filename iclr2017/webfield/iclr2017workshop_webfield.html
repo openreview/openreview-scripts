@@ -1,7 +1,5 @@
 <html>
   <head>
-    <!--<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>-->
-    <script src="https://cdn.jsdelivr.net/lodash/3.5.0/lodash.compat.min.js"></script>
   </head>
   <body>
     <div id='main'>
@@ -35,17 +33,40 @@
         return result.invitations[0];
       });
 
-      var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/workshop/-/submission', maxtcdate: Date.now()}).then(function(result) {
+      var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/workshop/-/submission'}).then(function(result) {
+        return result.notes;
+      });
+
+      var decisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/paper.*/acceptance'}).then(function(result) {
         return result.notes;
       });
 
 
-      $.when(invitationP, notesP).done(function(invitation, notes) {
+      $.when(invitationP, notesP, decisionsP).done(function(invitation, notes, decisions) {
         sm.update('invitationTrip', {
           invitation: invitation
         });
-        sm.update('notes', notes);
+        sm.update('notes', {
+          notes: notes,
+          decisions: decisions
+        });
       });
+
+      var updateNotes = function() {
+        var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/workshop/-/submission'}).then(function(result) {
+          return result.notes;
+        });
+
+        var decisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/paper.*/acceptance'}).then(function(result) {
+          return result.notes;
+        });
+        $.when(notesP, decisionsP).done(function(notes, decisions) {
+          sm.update('notes', {
+            notes: notes,
+            decisions: decisions
+          });
+        });
+      }
 
       sm.addHandler('workshop', {
 
@@ -55,16 +76,7 @@
             if (user && !user.id.startsWith('guest_')) {
               view.mkNewNoteEditor(invitation, null, user, {
                 onNoteCreated: function(idRecord) {
-                  httpGetP('notes', {
-                    invitation: 'ICLR.cc/2017/workshop/-/submission',
-                    maxtcdate: Date.now()
-                  }).then(function(result) {
-                    console.log("time to update notes: " + result.notes.length);
-                    sm.update('notes', result.notes);
-                  },
-                  function(error){
-                    return error;
-                  });
+                  updateNotes();
                 },
                 onCompleted: function(editor) {
                   $('#notes').prepend(editor);
@@ -76,13 +88,33 @@
           }], true);
         }},
 
-        notes: function(notes) {
-          if (notes) {
+        notes: function(data) {
+
+          if (data && data.notes) {
+
+            var notes = data.notes;
+            var decisions = data.decisions;
+
+            var decisionsDict = {};
+            _.forEach(decisions, function(n) {
+              decisionsDict[n.forum] = n;
+            });
+
+
             $('#notes').empty();
             _.forEach(notes, function(note) {
+
+              var decision = decisionsDict[note.original];
+              var summary = "";
+              if (decision && decision.content.decision == 'Invite to Workshop Track') {
+                summary = 'ICLR 2017 Conference Invite to Workshop';
+              }
+
               $attach('#notes', 'mkNotePanel', [note, {
                 titleLink: 'HREF',
-                withReplyCount: true
+                withReplyCount: true,
+                withOriginalLink: true,
+                withSummary: summary
               }], true);
             });
           }
