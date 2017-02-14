@@ -438,7 +438,9 @@ if client.user['id'].lower()=='openreview.net':
         invitees=[PC],
         signatures=['auai.org/UAI/2017'],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        web='../webfield/web-field-bid-tag-invitation.html')
+        web='../webfield/web-field-bid-tag-invitation.html',
+        multiReply=False,
+        taskCompletionCount=50)
 
     bid_tag_invitation.reply = {
         'forum': None,
