@@ -1,19 +1,20 @@
 function() {
 
     var or3client = lib.or3client;
-    var uaiGroup = 'auai.org/UAI/2017';
-    var coChairsGroup = 'auai.org/UAI/2017/Program_Co-Chairs';
-    var spcGroup = 'auai.org/UAI/2017/Senior_Program_Committee';
-    var pcGroup = 'auai.org/UAI/2017/Program_Committee';
+
+    var CONFERENCE = 'auai.org/UAI/2017';
+    var COCHAIRS = 'auai.org/UAI/2017/Program_Co-Chairs';
+    var SPC = 'auai.org/UAI/2017/Senior_Program_Committee';
+    var PC = 'auai.org/UAI/2017/Program_Committee';
 
     var overwritingNote = {
         original: note.id,
         invitation: 'auai.org/UAI/2017/-/blind-submission',
         forum: null,
         parent: null,
-        signatures: [uaiGroup],
-        writers: [uaiGroup],
-        readers: [coChairsGroup, spcGroup, pcGroup],
+        signatures: [CONFERENCE],
+        writers: [CONFERENCE],
+        readers: [CONFERENCE, COCHAIRS, SPC, PC],
         content: {
           authors: [],
           authorids: []
@@ -30,13 +31,13 @@ function() {
 
     or3client.or3request(or3client.notesUrl, overwritingNote, 'POST', token)
     .then(savedNote => {
-      var groupId = uaiGroup + '/Paper' + savedNote.number + '/Authors';
+      var groupId = CONFERENCE + '/Paper' + savedNote.number + '/Authors';
       var authorGroup = {
         id: groupId,
-        signatures: [uaiGroup],
-        writers: [uaiGroup],
+        signatures: [CONFERENCE],
+        writers: [CONFERENCE],
         members: note.content.authorids,
-        readers: [coChairsGroup, groupId],
+        readers: [COCHAIRS, groupId],
         signatories: [groupId]
       };
       return or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token)

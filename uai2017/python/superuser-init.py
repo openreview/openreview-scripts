@@ -197,7 +197,7 @@ if client.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [CONFERENCE] #formerly, the COCHAIRS could read these. But I think it's good that only the CONFERENCE (and therefore the ADMIN) can
+            'values': [CONFERENCE, COCHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',

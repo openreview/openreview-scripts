@@ -2,71 +2,75 @@ function () {
   var or3client = lib.or3client;
 
   var UAIData = <<uaidata.js>>
+  var CONFERENCE = UAIData.CONFERENCE;
+  var COCHAIRS = UAIData.COCHAIRS;
+  var SPC = UAIData.SPC;
+  var PC = UAIData.PC;
 
   // Create an empty group for this paper, e.g. "auai.org/UAI/2017/paper444"
   var paperGroup = {
-    'id': 'auai.org/UAI/2017/Paper'+note.number,
-    'signatures': ['auai.org/UAI/2017'],
-    'writers': ['auai.org/UAI/2017'],
+    'id': 'auai.org/UAI/2017/Paper' + note.number,
+    'signatures': [CONFERENCE],
+    'writers': [CONFERENCE],
     'members': [],
     'readers': ['everyone'],
-    'signatories': ['auai.org/UAI/2017', 'auai.org/UAI/2017/Paper'+note.number]
+    'signatories': []
   };
 
   var reviewerGroup = {
-    'id': paperGroup.id+'/Reviewers',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
+    'id': paperGroup.id + '/Reviewers',
+    'signatures':[CONFERENCE],
+    'writers':[CONFERENCE],
     'members':[],
-    'readers':[UAIData.CONFERENCE, UAIData.COCHAIRS, UAIData.SPC, paperGroup.id+'/Reviewers'],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers']
+    'readers':[CONFERENCE, COCHAIRS, SPC, paperGroup.id + '/Reviewers'],
+    'signatories':[]
   };
 
   var reviewerNonReadersGroup = {
-    'id': paperGroup.id+'/Reviewers/NonReaders',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
+    'id': paperGroup.id + '/Reviewers/NonReaders',
+    'signatures':[CONFERENCE],
+    'writers':[CONFERENCE],
     'members':[],
-    'readers':[UAIData.COCHAIRS,UAIData.SPC,paperGroup.id+'/Reviewers/NonReaders'],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Reviewers/NonReaders']
+    'readers':[CONFERENCE, COCHAIRS, SPC, paperGroup.id + '/Reviewers/NonReaders'],
+    'signatories':[]
   };
 
   var authorGroup = {
-    'id':paperGroup.id+'/Authors',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
+    'id':paperGroup.id + '/Authors',
+    'signatures':[CONFERENCE],
+    'writers':[CONFERENCE],
     'members': note.content.authorids,
-    'readers':[UAIData.COCHAIRS],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Authors']
+    'readers':[CONFERENCE, COCHAIRS],
+    'signatories':[paperGroup.id + '/Authors']
   };
 
   var areachairGroup = {
-    'id':paperGroup.id+'/Area_Chair',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
+    'id':paperGroup.id + '/Area_Chair',
+    'signatures':[CONFERENCE],
+    'writers':[CONFERENCE],
     'members':[], //member to be added later by assignment script
-    'readers':[UAIData.COCHAIRS,UAIData.SPC],
-    'signatories':['auai.org/UAI/2017',paperGroup.id+'/Area_Chair']
+    'readers':[COCHAIRS,SPC],
+    'signatories':[CONFERENCE,paperGroup.id + '/Area_Chair']
   };
 
   var metaReviewProcess = <<metaReviewProcess.js>>
 
   var metaReviewInvitation = {
-    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Meta/Review',
-    'signatures': ['auai.org/UAI/2017'],
-    'writers': ['auai.org/UAI/2017'],
-    'invitees': ['auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'],
+    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review',
+    'signatures': [CONFERENCE],
+    'writers': [CONFERENCE],
+    'invitees': ['auai.org/UAI/2017/Paper' + note.number + '/Area_Chair'],
     'noninvitees':[],
-    'readers': ['auai.org/UAI/2017',UAIData.SPC,UAIData.COCHAIRS],
-    'process': metaReviewProcess+'',
+    'readers': [CONFERENCE,SPC,COCHAIRS],
+    'process': metaReviewProcess + '',
     'duedate': 1507180500000, //duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
     'reply': {
       'forum': note.id,
       'replyto': note.id,
-      'writers': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
-      'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/Area_Chair'},
+      'writers': {'values-regex':'auai.org/UAI/2017/Paper' + note.number + '/Area_Chair'},
+      'signatures': {'values-regex':'auai.org/UAI/2017/Paper' + note.number + '/Area_Chair'},
       'readers': {
-        'values': [UAIData.COCHAIRS, authorGroup.id],
+        'values': [COCHAIRS, authorGroup.id],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -114,21 +118,21 @@ function () {
   var reviewProcess = <<reviewProcess.js>>
 
   var reviewInvitation = {
-    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Review',
-    'signatures': ['auai.org/UAI/2017'],
-    'writers': ['auai.org/UAI/2017'],
-    'invitees': ['auai.org/UAI/2017/Paper'+note.number+'/Reviewers'],
+    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Review',
+    'signatures': [CONFERENCE],
+    'writers': [CONFERENCE],
+    'invitees': ['auai.org/UAI/2017/Paper' + note.number + '/Reviewers'],
     'noninvitees':[],
     'readers': ['everyone'],
-    'process': reviewProcess+'',
+    'process': reviewProcess + '',
     'duedate': 1507180500000, //duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
     'reply': {
       'forum': note.id,
       'replyto': note.id,
-      'writers': {'values': ['auai.org/UAI/2017']},
-      'signatures': {'values-regex':'auai.org/UAI/2017/Paper'+note.number+'/AnonReviewer[0-9]+'},
+      'writers': {'values': [CONFERENCE]},
+      'signatures': {'values-regex':'auai.org/UAI/2017/Paper' + note.number + '/AnonReviewer[0-9]+'},
       'readers': {
-        'values': [UAIData.COCHAIRS, UAIData.SPC, UAIData.PC, authorGroup.id],
+        'values': [COCHAIRS, SPC, PC, authorGroup.id],
         'description': 'The users who will be allowed to read the above content.'
       },
       'nonreaders': {
@@ -180,15 +184,15 @@ function () {
 
   var commentProcess = <<commentProcess.js>>
 
-  var confidentialGroups = [UAIData.COCHAIRS, UAIData.PC, UAIData.SPC];
+  var confidentialGroups = [COCHAIRS, PC, SPC];
   var confidentialCommentInvite = {
-    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Confidential/Comment',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
+    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Confidential/Comment',
+    'signatures':[CONFERENCE],
+    'writers':[CONFERENCE],
     'invitees': confidentialGroups,
     'noninvitees':[],
     'readers': ['everyone'],
-    'process':commentProcess+'',
+    'process':commentProcess + '',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       'signatures': {
@@ -217,15 +221,15 @@ function () {
     }
   };
 
-  var allGroups = [UAIData.COCHAIRS, UAIData.PC, UAIData.SPC, authorGroup.id];
+  var allGroups = [COCHAIRS, PC, SPC, authorGroup.id];
   var openCommentInvite = {
-    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Open/Comment',
-    'signatures': ['auai.org/UAI/2017'],
-    'writers': ['auai.org/UAI/2017'],
+    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Open/Comment',
+    'signatures': [CONFERENCE],
+    'writers': [CONFERENCE],
     'invitees': allGroups,
     'noninvitees':[],
     'readers': ['everyone'],
-    'process': commentProcess+'',
+    'process': commentProcess + '',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       'signatures': {
@@ -258,12 +262,12 @@ function () {
   var bidProcess = <<bidProcess.js>>
   var bidInvite = {
     'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Reviewer_Bid',
-    'signatures':['auai.org/UAI/2017'],
-    'writers':['auai.org/UAI/2017'],
-    'invitees': [UAIData.PC],
-    'noninvitees':[UAIData.SPC,UAIData.COCHAIRS],
+    'signatures':[CONFERENCE],
+    'writers':[CONFERENCE],
+    'invitees': [PC],
+    'noninvitees':[SPC,COCHAIRS],
     'readers': ['everyone'],
-    'process':bidProcess+'',
+    'process':bidProcess + '',
     'reply': {
       'forum': note.id,      // links this note (comment) to the previously posted note (paper)
       'replyto': note.id,    // not specified so we can allow comments on comments
@@ -273,13 +277,13 @@ function () {
         },
       'writers': {'values-regex':'~.+'},
       'readers': {
-        'values': ['auai.org/UAI/2017'],
+        'values': [CONFERENCE],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
         'title': {
           'order': 1,
-          'value': 'UAI Reviewer bid: '+note.content.title
+          'value': 'UAI Reviewer bid: ' + note.content.title
         },
         'preferences': {
             'order': 2,
