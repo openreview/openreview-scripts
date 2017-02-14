@@ -36,30 +36,37 @@
         var valid_invitations = _.filter(result.invitations, function(inv){
           return inv.duedate > Date.now();
         })
-
         return valid_invitations[0];
-
       },
       function(error){
-        return error
+        return error;
       });
 
-      var notesP = httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/blind-submission', maxtcdate: Date.now()}).then(function(result) {
+      var notesP = httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/blind-submission'}).then(function(result) {
         return result.notes;
       },
       function(error){
-        return error
+        return error;
       });
 
+      var tagInvitationsP = httpGetP('invitations', {id: 'auai.org/UAI/2017/-/Add/Bid'}).then(function(result) {
+        return result.invitations;
+      },
+      function(error){
+        return error;
+      });
 
-      $.when(invitationP, notesP).done(function(invitation, notes) {
-        console.log('invitation',invitation)
+      $.when(invitationP, notesP, tagInvitationsP).done(function(invitation, notes, tagInvitations) {
+
         if(invitation){
           sm.update('invitationTrip', {
             invitation: invitation
           });
         }
-        sm.update('notes', notes);
+        sm.update('notes', {
+          notes: notes,
+          tagInvitations: tagInvitations
+        });
 
         sm.addHandler('conference', {
           invitationTrip: function(invitationTrip) { if (invitationTrip) {
@@ -89,14 +96,19 @@
             }], true);
           }},
 
-          notes: function(notes) {
+          notes: function(data) {
+
+            var notes = data.notes;
+            var tagInvitations = data.tagInvitations;
+
             if (notes.length > 0) {
               $('#notes').empty().append('<h3>Submitted Papers</h3><hr>');
               _.forEach(notes, function(note) {
                 $attach('#notes', 'mkNotePanel', [note, {
                   titleLink: 'HREF',
                   withReplyCount: true,
-                  user: user
+                  user: user,
+                  tagInvitations: tagInvitations
                 }], true);
               });
             }
