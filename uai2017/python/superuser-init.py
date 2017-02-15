@@ -526,6 +526,44 @@ if client.user['id'].lower()=='openreview.net':
 
     invitations.append(bid_tag_invitation)
 
+    recommendation_tag_invitation = openreview.Invitation('auai.org/UAI/2017',
+        'Recommend/Reviewer',
+        readers=['everyone'],
+        writers=['auai.org/UAI/2017'],
+        invitees=[SPC],
+        signatures=['auai.org/UAI/2017'],
+        duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        web='../webfield/web-field-bid-tag-invitation.html',
+        multiReply=True,
+        taskCompletionCount=50)
+
+    recommendation_tag_invitation.reply = {
+        'forum': None,
+        'replyto': None,
+        'invitation': blind_submission_invitation.id,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'value-regex': '~.*'
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'value-regex': '~.*'
+        },
+        'writers': {
+            'value-regex': '~.*'
+        },
+        'content': {
+            'tag': {
+                'description': 'Recommendation description',
+                'order': 1,
+                'values-url': '/groups?id=' + PC,
+                'required': True
+            }
+        }
+    }
+
+    invitations.append(recommendation_tag_invitation)
+
 
     ## Post the invitations
     for i in invitations:
