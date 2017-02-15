@@ -484,6 +484,49 @@ if client.user['id'].lower()=='openreview.net':
     invitations.append(reviewer_metadata_invitation)
 
 
+    bid_tag_invitation = openreview.Invitation('auai.org/UAI/2017',
+        'Add/Bid',
+        readers=['everyone'],
+        writers=['auai.org/UAI/2017'],
+        invitees=[PC],
+        signatures=['auai.org/UAI/2017'],
+        duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        web='../webfield/web-field-bid-tag-invitation.html',
+        multiReply=False,
+        taskCompletionCount=50)
+
+    bid_tag_invitation.reply = {
+        'forum': None,
+        'replyto': None,
+        'invitation': blind_submission_invitation.id,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'value-regex': '~.*'
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'value-regex': '~.*'
+        },
+        'writers': {
+            'value-regex': '~.*'
+        },
+        'content': {
+            'tag': {
+                'description': 'Bid description',
+                'order': 1,
+                'value-dropdown': ['I want to review',
+                    'I can review',
+                    'I can probably review but am not an expert',
+                    'I cannot review',
+                    'No bid'],
+                'required':True
+            }
+        }
+    }
+
+    invitations.append(bid_tag_invitation)
+
+
     ## Post the invitations
     for i in invitations:
         print "Posting invitation: "+i.id
