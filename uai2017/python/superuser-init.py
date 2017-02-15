@@ -93,7 +93,7 @@ if client.user['id'].lower()=='openreview.net':
             readers     = [CONFERENCE, COCHAIRS, SPC, PC],
             writers     = [CONFERENCE], #the conference needs to be a writer whenever the process functions need to modify the group
             signatures  = [CONFERENCE],
-            signatories = [],
+            signatories = [SPC],
             members     = []) #more to be added later, from the list of Senior_Program_Committee members
         groups.append(spc)
 
@@ -138,7 +138,7 @@ if client.user['id'].lower()=='openreview.net':
             readers     = [CONFERENCE, COCHAIRS, SPC, PC],
             writers     = [CONFERENCE],
             signatures  = [CONFERENCE],
-            signatories = [],
+            signatories = [PC],
             members     = []) #more to be added later, from the list of Program_Committee members
         groups.append(pc)
 
