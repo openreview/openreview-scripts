@@ -49,7 +49,7 @@
         return error;
       });
 
-      var tagInvitationsP = httpGetP('invitations', {id: 'auai.org/UAI/2017/-/Add/Bid'}).then(function(result) {
+      var tagInvitationsP = httpGetP('invitations', {replyInvitation: 'auai.org/UAI/2017/-/blind-submission'}).then(function(result) {
         return result.invitations;
       },
       function(error){
