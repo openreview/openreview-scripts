@@ -36,13 +36,14 @@ if args.output!=None:
     if ext.lower()=='csv':
         with open(args.output, 'wb') as outfile:
             csvwriter = csv.writer(outfile, delimiter=',')
-            fieldnames = ['id', 'number', 'date', 'title', 'TL;DR', 'abstract','keywords','authors','authorids','conflicts']
+            fieldnames = ['id', 'number', 'original', 'date', 'title', 'TL;DR', 'abstract','keywords','authors','authorids','conflicts']
             csvwriter.writerow(fieldnames)
 
             for note in notes:
                 row = []
                 row.append(note.id)
                 row.append(note.number)
+                row.append('https://openreview.net/forum?id=%s' % note.original if note.original else None)
                 row.append(note.tcdate)
                 row.append(note.content['title'].encode('UTF-8'))
                 row.append(note.content['TL;DR'].encode('UTF-8'))
