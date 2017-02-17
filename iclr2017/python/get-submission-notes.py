@@ -131,7 +131,7 @@ with open(file_name, 'wb') as outfile:
     row.append("PaperNum")
     row.append("Timestamp")
     row.append("Type")
-    row.append("Author")
+    row.append("NoteAuthor")
     row.append("Content")
     row.append("PdfUrl")
     csvwriter.writerow(row)
@@ -139,7 +139,7 @@ with open(file_name, 'wb') as outfile:
         for note_id in paper_status[paper_num]:
             if note_id != 'paper_id':
                 pdf_url = 'https://openreview.net/pdf?id='+paper_status[paper_num]['paper_id'].encode('utf-8')
-                author_name = 'reviewer'+str(reviewers[paper_status[paper_num][note_id]['author']])
+                author_name = 'author'+str(reviewers[paper_status[paper_num][note_id]['author']])
                 row = []
                 row.append(paper_num)
                 row.append(paper_status[paper_num][note_id]['timestamp'])
