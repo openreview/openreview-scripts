@@ -189,7 +189,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees=['~'],
         signatures=['ICLR.cc/2017/pcs'],
         reply=submission_reply,
-        duedate=1478380500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        duedate=1487369700000, #duedate is February 17, 2017, 17:15:00 (5:15pm) Eastern Time
         process='../process/submissionProcess_workshop.js')
 
     ## Create 'request for availability to review' invitation
