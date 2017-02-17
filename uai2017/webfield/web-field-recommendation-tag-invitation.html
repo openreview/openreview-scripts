@@ -1,0 +1,88 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id='main'>
+      <div id='header'></div>
+      <div id='notes'></div>
+    </div>
+    <script type="text/javascript">
+    $(function() {
+
+      var sm = mkStateManager();
+      var allNotes = [];
+
+      var httpGetP = function(url, queryOrBody) {
+        var df = $.Deferred();
+        httpGet(url, queryOrBody,
+        function(result) {
+          df.resolve(result);
+        },
+        function(result) {
+          df.reject(result);
+        });
+        return df.promise();
+      };
+
+      var notesP = httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/blind-submission'}).then(function(result) {
+        return result.notes;
+      },
+      function(error){
+        return error
+      });
+
+      var tagInvitationsP = httpGetP('invitations', { id: 'auai.org/UAI/2017/-/Recommend/Reviewer'}).then(function(result) {
+        return result.invitations;
+      },
+      function(error){
+        return error
+      });
+
+      $.when(notesP, tagInvitationsP).done(function(notes, tagInvitations) {
+
+        sm.update('notes', {
+          notes: notes
+        });
+
+        sm.addHandler('conference', {
+          notes: function(data) {
+            allNotes = data.notes;
+
+            if (allNotes) {
+              updateNotes(allNotes);
+            }
+          }
+        });
+
+        function displayNotes(notes, $panel) {
+           _.forEach(notes, function(note) {
+           $attach('#notes', 'mkNotePanel', [note, {
+              titleLink: 'HREF',
+              withReplyCount: true,
+              user: user,
+              tagInvitations: tagInvitations
+            }], true);
+          });
+        }
+
+        function updateNotes(notes) {
+          var $panel = $('#notes');
+          $panel.empty();
+          $panel.append($('<div>', { class: 'panel'}).append($('<h2>').text("UAI Area Chair status")));
+          displayNotes(_.sortBy(notes, function(n) {
+            if (n.tags.length && _.find(n.tags, { invitation: 'auai.org/UAI/2017/-/Recommend/Reviewer' })) {
+              return 0;
+            }
+            return 1;
+          }), $panel);
+        }
+
+      })
+      .fail(function(){
+        console.log("Decisions and/or notes not found")
+      });
+
+    });
+    </script>
+ </body>
+</html>

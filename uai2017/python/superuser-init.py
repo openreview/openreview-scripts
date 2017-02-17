@@ -533,7 +533,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees=[SPC],
         signatures=['auai.org/UAI/2017'],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        web='../webfield/web-field-bid-tag-invitation.html',
+        web='../webfield/web-field-recommendation-tag-invitation.html',
         multiReply=True,
         taskCompletionCount=50)
 
