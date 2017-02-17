@@ -107,7 +107,7 @@ for r in area_chairs.json():
 # make sure ALL names are in
 for paper_num in paper_status:
     for note_id in paper_status[paper_num]:
-        if note_id != 'pdf':
+        if note_id != 'paper_id':
             name = paper_status[paper_num][note_id]['author']
             if name not in reviewers:
                 reviewers[name] = name
@@ -138,12 +138,14 @@ with open(file_name, 'wb') as outfile:
     for paper_num in paper_status:
         for note_id in paper_status[paper_num]:
             if note_id != 'paper_id':
+                pdf_url = 'https://openreview.net/pdf?id='+paper_status[paper_num]['paper_id'].encode('utf-8')
+                author_name = 'reviewer'+str(reviewers[paper_status[paper_num][note_id]['author']])
                 row = []
                 row.append(paper_num)
                 row.append(paper_status[paper_num][note_id]['timestamp'])
                 row.append(paper_status[paper_num][note_id]['type'].encode('utf-8'))
-                row.append('reviewer'+reviewers[paper_status[paper_num][note_id]['author']])
+                row.append(author_name)
                 row.append(paper_status[paper_num][note_id]['content'])
-                row.append('https://openreview.net/pdf?id='+paper_status[paper_num]['paper_id'].encode('utf-8'))
+                row.append(pdf_url)
                 csvwriter.writerow(row)
 
