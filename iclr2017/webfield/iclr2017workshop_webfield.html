@@ -15,6 +15,7 @@
         "International Conference on Learning Representations",
         "Toulon, France, April 24 - 26, 2017",
         "http://www.iclr.cc",
+        "Submission Deadline: Friday, February 17th, 2017, at 5:00pm Eastern Daylight Time (EDT)"
       ], true);
 
       var sm = mkStateManager();
@@ -30,7 +31,10 @@
       };
 
       var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/workshop/-/submission'}).then(function(result) {
-        return result.invitations[0];
+        var valid_invitations = _.filter(result.invitations, function(inv){
+          return inv.duedate > Date.now();
+        })
+        return valid_invitations.length && valid_invitations[0];
       });
 
       var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/workshop/-/submission'}).then(function(result) {
@@ -43,9 +47,13 @@
 
 
       $.when(invitationP, notesP, decisionsP).done(function(invitation, notes, decisions) {
-        sm.update('invitationTrip', {
-          invitation: invitation
-        });
+
+        if (invitation) {
+          sm.update('invitationTrip', {
+            invitation: invitation
+          });
+        }
+
         sm.update('notes', {
           notes: notes,
           decisions: decisions
