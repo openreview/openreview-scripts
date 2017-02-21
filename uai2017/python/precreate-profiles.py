@@ -7,8 +7,9 @@ from uaidata import *
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('file',help="the csv file containing the Senior_Program_Committee names and email addresses")
-parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('file',help="a csv file with the users to precreate, formatted as email,firstname,lastname")
+parser.add_argument('-g','--group', help = "after creating user profiles, add them as members to this group")
+parser.add_argument('--baseurl', help="openreview base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
 
@@ -106,29 +107,32 @@ def get_or_create_profile(email, first, last):
         return profile_by_email_response.json()['profile']['id']
 
 
-spc_member_info = []
+user_info = []
 with open(args.file) as f:
     reader = csv.reader(f)
 
     for row in reader:
-        spc_member_info.append((row[0],row[1],row[2]))
+        user_info.append((row[0],row[1],row[2]))
 
-spcs_invited = client.get_group(id=SPC+'/invited')
 profiles = []
-
-for u in spc_member_info:
+for u in user_info:
     email = u[0].strip()
     first = u[1].strip()
     last = u[2].strip()
 
     if email:
         profileId = get_or_create_profile(email.lower(), first, last)
+        profiles.append(profileId)
 
-        if profileId not in spcs_invited.members:
-            profiles.append(profileId)
+add_to_group = 'y' if args.group else raw_input("Would you like to add these profiles to a group? (y/N): ")
 
-client.add_members_to_group(spcs_invited, profiles)
+if add_to_group.lower() == 'y' or add_to_group.lower() == 'yes':
+    group_id = args.group if args.group else raw_input("Please enter the full path of the group that you would like to add these members to: ")
 
-print "Profiles added: ", profiles
+    group = client.get_group(group_id)
+
+    client.add_members_to_group(group, profiles)
+
+    print "Profiles added as members of group %s" % group.id
 
 
