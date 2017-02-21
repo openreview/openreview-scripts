@@ -484,12 +484,12 @@ if client.user['id'].lower()=='openreview.net':
     invitations.append(reviewer_metadata_invitation)
 
 
-    bid_tag_invitation = openreview.Invitation('auai.org/UAI/2017',
+    bid_tag_invitation = openreview.Invitation(CONFERENCE,
         'Add/Bid',
         readers=['everyone'],
-        writers=['auai.org/UAI/2017'],
+        writers=[CONFERENCE],
         invitees=[PC],
-        signatures=['auai.org/UAI/2017'],
+        signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         web='../webfield/web-field-bid-tag-invitation.html',
         multiReply=False,
@@ -526,12 +526,12 @@ if client.user['id'].lower()=='openreview.net':
 
     invitations.append(bid_tag_invitation)
 
-    recommendation_tag_invitation = openreview.Invitation('auai.org/UAI/2017',
+    recommendation_tag_invitation = openreview.Invitation(CONFERENCE,
         'Recommend/Reviewer',
         readers=['everyone'],
-        writers=['auai.org/UAI/2017'],
+        writers=[CONFERENCE],
         invitees=[SPC],
-        signatures=['auai.org/UAI/2017'],
+        signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         web='../webfield/web-field-recommendation-tag-invitation.html',
         multiReply=True,
