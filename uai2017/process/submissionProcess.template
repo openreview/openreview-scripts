@@ -258,47 +258,36 @@ function () {
     }
   };
 
-
-  var bidProcess = <<bidProcess.js>>
-  var bidInvite = {
-    'id': 'auai.org/UAI/2017/-/Paper'+note.number+'/Reviewer_Bid',
-    'signatures':[CONFERENCE],
-    'writers':[CONFERENCE],
-    'invitees': [PC],
-    'noninvitees':[SPC,COCHAIRS],
+  var recommendReviewerInvite = {
+    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Recommend/Reviewer',
+    'signatures': [CONFERENCE],
+    'writers': [CONFERENCE],
+    'invitees': [areachairGroup.id],
+    'noninvitees':[],
     'readers': ['everyone'],
-    'process':bidProcess + '',
+    'process': null,
+    'multiReply': true,
     'reply': {
-      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      'replyto': note.id,    // not specified so we can allow comments on comments
+      'forum': note.id,
       'signatures': {
-        'values-regex':'~.+',
+        'values-regex': '~.*',
         'description': 'How your identity will be displayed with the above content.'
         },
-      'writers': {'values-regex':'~.+'},
+      'writers': { 'values-regex': '~.*' },
       'readers': {
-        'values': [CONFERENCE],
+        'values-regex': '~.*',
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
-        'title': {
+        'tag': {
+          'description': 'Recommendation description',
           'order': 1,
-          'value': 'UAI Reviewer bid: ' + note.content.title
-        },
-        'preferences': {
-            'order': 2,
-            'value-radio': [
-              'I want to review',
-              'I can review',
-              'I can probably review but am not an expert',
-              'I cannot review'
-            ],
-            'required':true
+          'values-url': '/groups?id=' + PC,
+          'required': true
         }
       }
     }
   };
-
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result => {
@@ -316,7 +305,8 @@ function () {
       or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, confidentialCommentInvite, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token)
+      or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, recommendReviewerInvite, 'POST', token)
     ];
 
     return Promise.all(invitation_promises);
