@@ -10,7 +10,7 @@ import csv
 import getpass
 import sys
 import re
-from openreview import *
+import openreview
 import requests
 
 ## Argument handling
@@ -23,16 +23,16 @@ args = parser.parse_args()
 
 ## Initialize the client library with username and password
 if args.username!=None and args.password!=None:
-    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    openreview = Client(baseurl=args.baseurl)
-baseurl = openreview.baseurl
+    client = openreview.Client(baseurl=args.baseurl)
+baseurl = client.baseurl
 
-submissions = openreview.get_notes(invitation='ICLR.cc/2017/workshop/-/submission')
+submissions = client.get_notes(invitation='ICLR.cc/2017/workshop/-/submission')
 
 def single_assignment_valid(s):
     try:
-        areachair = s.split(',')[0]
+        reviewer = s.split(',')[0]
         paper_number = s.split(',')[1]
 
         try:
@@ -40,7 +40,7 @@ def single_assignment_valid(s):
         except ValueError:
             return False
 
-        if not '@' in areachair:
+        if not '@' in reviewer:
             return False
 
         return True
@@ -68,13 +68,10 @@ def assign_reviewer(reviewer,paper_number):
 
         reviewer_group = get_reviewer_group(reviewer, paper_number, conflict_list)
         reviewer_group_id = str(reviewer_group.id)
-        review_invitation = 'ICLR.cc/2017/workshop/-/paper'+str(paper_number)+'/official/review'
-        print "Assigned reviewer", reviewer_group_id, "to invitation ", review_invitation
 
 
 def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list):
-    print 'Creating reviewer: ', new_reviewer_id
-    new_reviewer = Group(
+    new_reviewer = openreview.Group(
         new_reviewer_id,
         signatures=['ICLR.cc/2017/workshop'],
         writers=['ICLR.cc/2017/workshop'],
@@ -82,30 +79,31 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
         readers=['ICLR.cc/2017/workshop','ICLR.cc/2017/pcs',new_reviewer_id],
         nonreaders=conflict_list,
         signatories=[new_reviewer_id])
-    openreview.post_group(new_reviewer)
+    client.post_group(new_reviewer)
+    print "assigned user %s to group %s" % (reviewer, new_reviewer_id)
     return new_reviewer
 
 
 def get_reviewer_group(reviewer, paper_number, conflict_list):
 
-    reviewers = openreview.get_group('ICLR.cc/2017/workshop/paper'+paper_number+'/reviewers')
+    reviewers = client.get_group('ICLR.cc/2017/workshop/paper'+paper_number+'/reviewers')
     existing_reviewers = reviewers.members
 
-    workshop_reviewers = openreview.get_group('ICLR.cc/2017/workshop/reviewers')
-    workshop_reviewers_emailed = openreview.get_group('ICLR.cc/2017/workshop/reviewers-emailed')
+    workshop_reviewers = client.get_group('ICLR.cc/2017/workshop/reviewers')
+    workshop_reviewers_emailed = client.get_group('ICLR.cc/2017/workshop/reviewers-emailed')
 
-    if not (reviewer in workshop_reviewers_emailed.members):
+    if not reviewer in workshop_reviewers_emailed.members:
         print "WARNING: You have not sent an email invitation to user ",reviewer," asking whether or not they would like to participate in the WORKSHOP."
         cont = raw_input("Would you like to continue? (y/n) [default: NO] ")
         if cont.lower()!='y' and cont.lower()!='yes':
             print "Aborting"
             sys.exit()
-        openreview.add_members_to_group(workshop_reviewers_emailed,reviewer)
+        client.add_members_to_group(workshop_reviewers_emailed,reviewer)
 
     if not (reviewer in workshop_reviewers.members):
-        openreview.add_members_to_group(workshop_reviewers,reviewer)
+        client.add_members_to_group(workshop_reviewers,reviewer)
 
-    reviewer_tilde = requests.get(openreview.baseurl+'/user/profile', params={'email':reviewer}, headers=openreview.headers).json()['profile']['id']
+    reviewer_tilde = requests.get(client.baseurl+'/user/profile', params={'email':reviewer}, headers=client.headers).json()['profile']['id']
 
     if '~' not in reviewer_tilde:
         print "Something went wrong with reviewer at ",reviewer
@@ -113,7 +111,7 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
 
     N = 0;
     for r in existing_reviewers:
-        existing_reviewer = openreview.get_group(r)
+        existing_reviewer = client.get_group(r)
 
         reviewer_number = int(r.split('AnonReviewer')[1])
         if reviewer_number > N:
@@ -131,8 +129,8 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
 
 
     new_reviewer = create_reviewer_group(new_reviewer_id, reviewer_tilde, paper_number, conflict_list)
-    openreview.add_members_to_group(reviewers,new_reviewer_id)
-    openreview.add_members_to_group(openreview.get_group('ICLR.cc/2017/workshop/paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)
+    client.add_members_to_group(reviewers,new_reviewer_id)
+    client.add_members_to_group(client.get_group('ICLR.cc/2017/workshop/paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)
     return new_reviewer
 
 
