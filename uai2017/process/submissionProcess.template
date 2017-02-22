@@ -260,6 +260,7 @@ function () {
 
   var recommendReviewerInvite = {
     'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Recommend/Reviewer',
+    'duedate': 1507180500000,
     'signatures': [CONFERENCE],
     'writers': [CONFERENCE],
     'invitees': [areachairGroup.id],
