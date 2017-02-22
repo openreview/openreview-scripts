@@ -42,21 +42,25 @@
         return error;
       });
 
-      var notesP = httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/blind-submission'}).then(function(result) {
-        return result.notes;
-      },
-      function(error){
-        return error;
-      });
+      var getNotes = function() {
+        return httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/blind-submission'}).then(function(result) {
+          return result.notes;
+        },
+        function(error){
+          return error;
+        });
+      }
 
-      var tagInvitationsP = httpGetP('invitations', {replyInvitation: 'auai.org/UAI/2017/-/blind-submission', tags: true}).then(function(result) {
-        return result.invitations;
-      },
-      function(error){
-        return error;
-      });
+      var getTagInvitations = function() {
+        return httpGetP('invitations', {replyInvitation: 'auai.org/UAI/2017/-/blind-submission', tags: true}).then(function(result) {
+          return result.invitations;
+        },
+        function(error){
+          return error;
+        });
+      }
 
-      $.when(invitationP, notesP, tagInvitationsP).done(function(invitation, notes, tagInvitations) {
+      $.when(invitationP, getNotes(), getTagInvitations()).done(function(invitation, notes, tagInvitations) {
 
         if(invitation){
           sm.update('invitationTrip', {
@@ -75,15 +79,11 @@
               if (user && invitation) {
                 view.mkNewNoteEditor(invitation, null, user, {
                   onNoteCreated: function(idRecord) {
-                    httpGetP('notes', {
-                      invitation: 'auai.org/UAI/2017/-/blind-submission',
-                      maxtcdate: Date.now()
-                    }).then(function(result) {
-                      console.log("time to update notes: " + result.notes.length);
-                      sm.update('notes', result.notes);
-                    },
-                    function(error){
-                      return error
+                    $.when(getNotes(), getTagInvitations()).done(function(notes, tagInvitations) {
+                      sm.update('notes', {
+                        notes: notes,
+                        tagInvitations: tagInvitations
+                      });
                     });
                   },
                   onCompleted: function(editor) {
