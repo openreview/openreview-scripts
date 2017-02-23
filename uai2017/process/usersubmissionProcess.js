@@ -36,7 +36,7 @@ function() {
         id: groupId,
         signatures: [CONFERENCE],
         writers: [CONFERENCE],
-        members: note.content.authorids,
+        members: note.content.authorids.concat(note.signatures),
         readers: [COCHAIRS, groupId],
         signatories: [groupId]
       };

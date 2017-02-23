@@ -39,7 +39,7 @@ function () {
     'id':paperGroup.id + '/Authors',
     'signatures':[CONFERENCE],
     'writers':[CONFERENCE],
-    'members': note.content.authorids,
+    'members': note.content.authorids.concat(note.signatures),
     'readers':[CONFERENCE, COCHAIRS],
     'signatories':[paperGroup.id + '/Authors']
   };
