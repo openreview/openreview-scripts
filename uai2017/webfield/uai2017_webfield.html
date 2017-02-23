@@ -77,7 +77,7 @@
             var invitation = invitationTrip.invitation;
             $attach('#invitation', 'mkInvitationButton', [invitation, function() {
               if (user && invitation) {
-                view.mkNewNoteEditor(invitation, null, user, {
+                view.mkNewNoteEditor(invitation, null, null, user, {
                   onNoteCreated: function(idRecord) {
                     $.when(getNotes(), getTagInvitations()).done(function(notes, tagInvitations) {
                       sm.update('notes', {

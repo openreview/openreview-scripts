@@ -24,7 +24,7 @@
 
       var httpGetP = function(url, queryOrBody) {
         var df = $.Deferred();
-        httpGet(url, queryOrBody, 
+        httpGet(url, queryOrBody,
         function(result) {
           df.resolve(result);
         },
@@ -44,7 +44,7 @@
 
       var notesP = httpGetP('notes', {invitation: 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
-      },      
+      },
       function(error){
         return error
       });
@@ -54,16 +54,16 @@
           invitation: invitation
         });
         sm.update('notes_nips', notes);
-        
+
         sm.addHandler('conference', {
           invitationTrip_nips: function(invitationTrip) { if (invitationTrip) {
             var invitation = invitationTrip.invitation;
             $attach('#invitation', 'mkInvitationButton', [invitation, function() {
               if (user) {
-                view.mkNewNoteEditor(invitation, null, user, {
+                view.mkNewNoteEditor(invitation, null, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
-                      invitation: 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation', 
+                      invitation: 'NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation',
                       maxtcdate: Date.now()
                     }).then(function(result) {
                       console.log("time to update notes: " + result.notes.length);
@@ -101,7 +101,7 @@
         console.log("Invitation and/or notes not found")
       });
 
-      
+
 
 
 

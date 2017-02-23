@@ -35,13 +35,12 @@ function(){
       ])
       .then(result => {
         var reviewRevisionInvitation = {
-          id: 'auai.org/UAI/2017/-/Review' + note.number + '/Add/Revision',
+          id: 'auai.org/UAI/2017/-/Paper' + note_number + '/Review' + note.number + '/Add/Revision',
           signatures: ['auai.org/UAI/2017'],
           writers: ['auai.org/UAI/2017'],
           invitees: note.signatures,
           noninvitees: [],
           readers: ['everyone'],
-          process: 'function() { done() return true; }',
           reply: {
             forum: forumNote.id,
             referent: note.id,

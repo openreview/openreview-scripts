@@ -490,7 +490,7 @@ if client.user['id'].lower()=='openreview.net':
         'Add/Bid',
         readers=['everyone'],
         writers=[CONFERENCE],
-        invitees=[PC, SPC],
+        invitees=[],
         signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         web='../webfield/web-field-bid-tag-invitation.html',
@@ -527,6 +527,49 @@ if client.user['id'].lower()=='openreview.net':
     }
 
     invitations.append(bid_tag_invitation)
+
+    confidentialGroups = [COCHAIRS, PC, SPC];
+    confidential_comment_invitation = openreview.Invitation(CONFERENCE,
+        'Confidential/Comment',
+        readers=['everyone'],
+        writers=[CONFERENCE],
+        invitees=[],
+        signatures=[CONFERENCE],
+        process='../process/commentProcess.js')
+
+    confidential_comment_invitation.reply = {
+        'forum': None,
+        'replyto': None,
+        'invitation': blind_submission_invitation.id,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': confidentialGroups
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': '|'.join(confidentialGroups)
+        },
+        'writers': {
+            'values-regex': '|'.join(confidentialGroups)
+        },
+        'content': {
+            'title': {
+              'order': 1,
+              'value-regex': '.{1,500}',
+              'description': 'Brief summary of your comment.',
+              'required': True
+            },
+            'comment': {
+              'order': 2,
+              'value-regex': '[\\S\\s]{1,5000}',
+              'description': 'Your comment or reply.',
+              'required': True
+            }
+        }
+    }
+
+    invitations.append(confidential_comment_invitation)
+
 
     ## Post the invitations
     for i in invitations:
