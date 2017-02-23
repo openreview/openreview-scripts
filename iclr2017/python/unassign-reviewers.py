@@ -6,7 +6,7 @@ from openreview import *
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('assignments', help="either (1) a csv file containing reviewer unassignments or (2) a string of the format '<paper#>, <email_address>' e.g. '23,reviewer@cs.umass.edu'")
+parser.add_argument('assignments', help="either (1) a csv file containing reviewer unassignments or (2) a string of the format '<paper#>, <email_address>' e.g. 'reviewer@cs.umass.edu,25'")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -34,12 +34,12 @@ def unassign_reviewer(member, paper_number):
     else:
         print "Reviewers group not found", reviewers_id
 
-if args.assignments.endswith('.csv'):   
+if args.assignments.endswith('.csv'):
     with open(args.assignments, 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
-            paper_number = row[0]
-            member = row[1]
+            member = row[0]
+            paper_number = row[1]
             unassign_reviewer(member, paper_number)
 else:
     paper_number = args.assignments.split(',')[0]
