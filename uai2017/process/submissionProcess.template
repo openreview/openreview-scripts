@@ -118,7 +118,7 @@ function () {
   var reviewProcess = <<reviewProcess.js>>
 
   var reviewInvitation = {
-    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Review',
+    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Official/Review',
     'signatures': [CONFERENCE],
     'writers': [CONFERENCE],
     'invitees': ['auai.org/UAI/2017/Paper' + note.number + '/Reviewers'],
