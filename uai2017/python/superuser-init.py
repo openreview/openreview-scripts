@@ -488,7 +488,7 @@ if client.user['id'].lower()=='openreview.net':
         'Add/Bid',
         readers=['everyone'],
         writers=[CONFERENCE],
-        invitees=[PC, SPC],
+        invitees=[],
         signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         web='../webfield/web-field-bid-tag-invitation.html',
@@ -531,7 +531,7 @@ if client.user['id'].lower()=='openreview.net':
         'Confidential/Comment',
         readers=['everyone'],
         writers=[CONFERENCE],
-        invitees=confidentialGroups,
+        invitees=[],
         signatures=[CONFERENCE],
         process='../process/commentProcess.js')
 

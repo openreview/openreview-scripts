@@ -184,49 +184,12 @@ function () {
 
   var commentProcess = <<commentProcess.js>>
 
-  var confidentialGroups = [COCHAIRS, PC, SPC];
-  var confidentialCommentInvite = {
-    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Confidential/Comment',
-    'signatures':[CONFERENCE],
-    'writers':[CONFERENCE],
-    'invitees': confidentialGroups,
-    'noninvitees':[],
-    'readers': ['everyone'],
-    'process':commentProcess + '',
-    'reply': {
-      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      'signatures': {
-        'values-regex': confidentialGroups.join('|'),
-        'description': 'How your identity will be displayed with the above content.'
-        },
-      'writers': {'values-regex': confidentialGroups.join('|')},
-      'readers': {
-        'values': confidentialGroups,
-        'description': 'The users who will be allowed to read the above content.'
-        },
-      'content': {
-        'title': {
-          'order': 1,
-          'value-regex': '.{1,500}',
-          'description': 'Brief summary of your comment.',
-          'required':true
-        },
-        'comment': {
-          'order': 2,
-          'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Your comment or reply.',
-          'required':true
-        }
-      }
-    }
-  };
-
   var allGroups = [COCHAIRS, PC, SPC, authorGroup.id];
   var openCommentInvite = {
     'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Open/Comment',
     'signatures': [CONFERENCE],
     'writers': [CONFERENCE],
-    'invitees': allGroups,
+    'invitees': [],
     'noninvitees':[],
     'readers': ['everyone'],
     'process': commentProcess + '',
