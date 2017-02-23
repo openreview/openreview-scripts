@@ -228,7 +228,8 @@ if client.user['id'].lower()=='openreview.net':
             'subject areas': {
                 'description': 'List of areas of expertise.',
                 'order': 4,
-                'values-dropdown': SUBJECT_AREAS
+                'values-dropdown': SUBJECT_AREAS,
+                'required':True
             },
             'keywords': {
                 'description': 'Comma separated list of keywords.',
@@ -259,7 +260,8 @@ if client.user['id'].lower()=='openreview.net':
                 'value-radio': [
                     'Yes',
                     'No'
-                ]
+                ],
+                'required':True
             }
         }
     }
