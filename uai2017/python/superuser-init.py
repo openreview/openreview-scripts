@@ -234,7 +234,7 @@ if client.user['id'].lower()=='openreview.net':
             'keywords': {
                 'description': 'Comma separated list of keywords.',
                 'order': 6,
-                'values-regex': "[^;,\\n]+(,[^,\\n]+)*"
+                'values-regex': "(^$)|[^;,\\n]+(,[^,\\n]+)*"
             },
             'TL;DR': {
                 'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
