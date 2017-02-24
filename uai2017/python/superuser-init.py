@@ -94,7 +94,8 @@ if client.user['id'].lower()=='openreview.net':
             writers     = [CONFERENCE], #the conference needs to be a writer whenever the process functions need to modify the group
             signatures  = [CONFERENCE],
             signatories = [SPC],
-            members     = []) #more to be added later, from the list of Senior_Program_Committee members
+            members     = [], #more to be added later, from the list of Senior_Program_Committee members
+            web         = '../webfield/web-field-spc.html')
         groups.append(spc)
 
     if overwrite_allowed(SPC + '/invited'):
