@@ -36,6 +36,7 @@ $(function() {
   $.when(notesP, tagInvitationsP).done(function(notes, tagInvitations) {
     var sm = mkStateManager();
     var allNotes = [];
+    var activeTab = 0;
 
     sm.update('notes', {
       notes: notes
@@ -51,9 +52,7 @@ $(function() {
       }
     });
 
-    function displayNotes(notes, container, showSummary) {
-      showSummary = showSummary || false;
-
+    function displayNotes(notes, container) {
       _.forEach(notes, function(note) {
         var onTagChanged = function(tag) {
           allNotes = _.map(allNotes, function(n) {
@@ -68,7 +67,8 @@ $(function() {
         $attach(container, 'mkNotePanel', [note, {
           titleLink: 'HREF',
           withReplyCount: true,
-          withSummary: showSummary,
+          withContent: true,
+          collapseContent: true,
           onTagChanged: onTagChanged,
           user: user,
           tagInvitations: tagInvitations
@@ -110,47 +110,58 @@ $(function() {
       var $panel = $('#invitation-container');
       $panel.empty().append(
         '<div id="header" class="panel">' +
-          '<h1>UAI Reviewer Status</h1>' +
+          '<h1>UAI Paper Bidding</h1>' +
           '<h3>You have completed ' + bidCount + '/50 bids</h3>' +
         '</div>' +
         '<div class="tabs-container"></div>'
       );
 
+      var searchBarHTML = '<form class="form-inline search-form" role="search">' +
+        '<div class="form-group has-feedback">' +
+          '<input id="paper-search-input" type="text" class="form-control" placeholder="Search papers by title" autocomplete="off">' +
+          '<span class="glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></span>' +
+        '</div></form>';
+
       var templateData = {
         sections: [
+          {
+            heading: 'No bid',
+            headingCount: noBid.length,
+            id: 'noBid',
+            content: null
+          },
           {
             heading: 'I want to review',
             headingCount: wantToReview.length,
             id: 'wantToReview',
-            content: null,
-            active: true
+            content: null
           },
           {
             heading: 'I can review',
             headingCount: canReview.length,
             id: 'canReview',
-            content: null,
+            content: null
           },
           {
             heading: 'I can probably review but am not an expert',
             headingCount: probablyReview.length,
             id: 'probablyReview',
-            content: null,
+            content: null
           },
           {
             heading: 'I cannot review',
             headingCount: canNotReview.length,
             id: 'canNotReview',
-            content: null,
+            content: null
           },
           {
-            heading: 'No bid',
-            headingCount: noBid.length,
-            id: 'noBid',
-            content: null,
-          },
+            heading: 'Search &nbsp;<span class="glyphicon glyphicon-search"></span>',
+            id: 'allPapers',
+            content: searchBarHTML
+          }
         ]
       };
+      templateData.sections[activeTab].active = true;
       $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](templateData));
 
       $('ul.nav-tabs a', $panel).click(function(e) {
@@ -163,7 +174,36 @@ $(function() {
       displayNotes(probablyReview, '#probablyReview');
       displayNotes(canNotReview, '#canNotReview');
       displayNotes(noBid, '#noBid');
+      displayNotes(notes, '#allPapers');
     }
+
+    function filterPapers() {
+      var $inputElem = $(this).is('input') ? $(this) : $(this).find('input');
+      var term = $inputElem.val().trim().toLowerCase();
+      var filteredNotes;
+
+      if (!term) {
+        filteredNotes = allNotes;
+      } else if (term.length < 3) {
+        return false;
+      } else {
+        filteredNotes = _.filter(allNotes, function(n) {
+          return n.content.title.toLowerCase().indexOf(term) !== -1;
+        });
+      }
+
+      $('#allPapers .note.panel').remove();
+      displayNotes(filteredNotes, '#allPapers');
+      return false;
+    }
+
+    $('#invitation-container').on('shown.bs.tab', 'ul.nav-tabs li a', function (e) {
+      activeTab = $(e.target).data('tabIndex');
+      console.log(activeTab);
+    });
+
+    $('#invitation-container').on('submit', 'form.search-form', filterPapers);
+    $('#invitation-container').on('keyup', 'form.search-form input', _.debounce(filterPapers, 300));
 
   }).fail(function(){
     displayError();
