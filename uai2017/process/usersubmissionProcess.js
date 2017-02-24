@@ -16,8 +16,8 @@ function() {
         writers: [CONFERENCE],
         readers: [CONFERENCE, COCHAIRS, SPC, PC],
         content: {
-          authors: [],
-          authorids: []
+          authors: ['Blinded names'],
+          authorids: ['Blinded names']
         }
     }
 
