@@ -188,18 +188,34 @@ $(function() {
         return false;
       } else {
         filteredNotes = _.filter(allNotes, function(n) {
-          return n.content.title.toLowerCase().indexOf(term) !== -1;
+          var content = n.content;
+          var contentFields = ['TL;DR', 'abstract', 'keywords', 'subject areas', 'title'];
+
+          for (var i = 0; i < contentFields.length; i++) {
+            var searchText;
+            if (_.isArray(content[contentFields[i]])) {
+              searchText = content[contentFields[i]].join(' ').toLowerCase();
+            } else {
+              searchText = content[contentFields[i]].toLowerCase();
+            }
+
+            if (searchText.indexOf(term) !== -1) {
+              return true;
+            }
+          };
+
+          return false;
         });
       }
 
       $('#allPapers .note.panel').remove();
+      $('#allPapers .empty-message').remove();
       displayNotes(filteredNotes, '#allPapers');
       return false;
     }
 
     $('#invitation-container').on('shown.bs.tab', 'ul.nav-tabs li a', function (e) {
       activeTab = $(e.target).data('tabIndex');
-      console.log(activeTab);
     });
 
     $('#invitation-container').on('submit', 'form.search-form', filterPapers);
