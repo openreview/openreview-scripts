@@ -42,7 +42,7 @@ paper_metadata_reply = {
     },
     'signatures': {
         'description': 'How your identity will be displayed with the above content.',
-        'values-regex': 'OpenReview.net'
+        'values-regex': ADMIN
     },
     'writers': {
         'values-regex': 'OpenReview.net'
@@ -69,7 +69,7 @@ reviewer_metadata_reply = {
     },
     'signatures': {
         'description': 'How your identity will be displayed with the above content.',
-        'values-regex': 'OpenReview.net'
+        'values-regex': ADMIN
     },
     'writers': {
         'values-regex': 'OpenReview.net'
@@ -100,7 +100,7 @@ for n in submissions:
         forum = n.id,
         writers = ['OpenReview.net'],
         content = {'reviewers':[], 'papers':[]},
-        signatures = ['OpenReview.net']
+        signatures = [ADMIN]
     )
 
     client.post_note(note)
@@ -113,6 +113,6 @@ for g in reviewers.members:
         readers=[COCHAIRS, ADMIN],
         writers=['OpenReview.net'],
         content={'name':g, 'reviewers':[]},
-        signatures=['OpenReview.net']
+        signatures=[ADMIN]
     )
     client.post_note(note)

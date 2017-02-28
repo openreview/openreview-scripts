@@ -58,8 +58,11 @@ for b in bids:
     bids_by_number[n.number].append(b)
     bids_by_id[n.forum].append(b)
 
+submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
+recs = []
+for n in submissions:
+    recs += client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % n.number)
 
-recs = client.get_tags(invitation='auai.org/UAI/2017/-/Recommend/Reviewer')
 recs_by_number = defaultdict(list)
 recs_by_id = defaultdict(list)
 
