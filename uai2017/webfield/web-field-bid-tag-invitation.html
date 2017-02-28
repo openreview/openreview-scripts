@@ -19,7 +19,9 @@ $(function() {
   });
 
   var tagInvitationsP = httpGetP('invitations', {id: 'auai.org/UAI/2017/-/Add/Bid'}).then(function(result) {
-    return result.invitations;
+    return _.filter(result.invitations, function(invitation) {
+      return invitation.invitees.length;
+    });
   }, function(error) {
     return error
   });
