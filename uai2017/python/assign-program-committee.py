@@ -16,7 +16,7 @@ from uaidata import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('assignments', help="either (1) a csv file containing reviewer assignments or (2) a string of the format '<email_address>,<paper#>' e.g. 'reviewer@cs.umass.edu,23'")
+parser.add_argument('assignments', help="either (1) a csv file containing reviewer assignments or (2) a string of the format '<openreview_id>,<paper#>' e.g. '~Alan_Turing1,23'")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -30,6 +30,7 @@ else:
 baseurl = client.baseurl
 
 submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
+program_committee = client.get_group(PC)
 
 def single_assignment_valid(s):
     try:
@@ -41,7 +42,7 @@ def single_assignment_valid(s):
         except ValueError:
             return False
 
-        if not '~' in reviewer:
+        if not '~' in reviewer and not '@' in reviewer:
             return False
 
         return True
@@ -94,16 +95,20 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
     existing_reviewers = reviewers.members
     conference_reviewers = client.get_group(PC)
 
-    if not (reviewer in conference_reviewers.members):
-        client.add_members_to_group(conference_reviewers,reviewer)
+    reviewer_profile = client.get_profile(reviewer)
 
-    next_reviewer = get_next_reviewer_id(reviewer, paper_number)
+    if not (reviewer_profile.id in conference_reviewers.members):
+        client.add_members_to_group(conference_reviewers, [reviewer_profile.id])
+
+    next_reviewer = get_next_reviewer_id(reviewer_profile.id, paper_number)
 
     if next_reviewer:
         new_reviewer_id = 'auai.org/UAI/2017/Paper' + str(paper_number) + '/' + next_reviewer
-        new_reviewer = create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list)
-        client.add_members_to_group(reviewers,reviewer)
-        client.add_members_to_group(nonreaders_reviewers,new_reviewer.id)
+        new_reviewer = create_reviewer_group(new_reviewer_id, reviewer_profile.id, paper_number, conflict_list)
+        client.add_members_to_group(reviewers, [reviewer_profile.id])
+        client.add_members_to_group(nonreaders_reviewers, new_reviewer.id) # what is /Reviewers/NonReaders actually used for?
+        if new_reviewer_id not in program_committee.members:
+            client.add_members_to_group(program_committee,[new_reviewer.id])
         return new_reviewer
 
 
