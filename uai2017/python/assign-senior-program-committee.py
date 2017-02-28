@@ -60,14 +60,17 @@ def assign_areachair(areachair,paper_number):
         #areachair_group = get_areachair_group(areachair, paper_number, [])
 
         spc = client.get_group(SPC)
-        if areachair not in spc.members:
-            print "%s not yet a member of the Senior Program Committee; adding them now" % areachair
-            client.add_members_to_group(spc,areachair)
+
+        areachair_profile = client.get_profile(areachair)
+
+        if areachair_profile.id not in spc.members:
+            print "%s not yet a member of the Senior Program Committee; adding them now" % areachair_profile.id
+            client.add_members_to_group(spc, areachair_profile.id)
 
         acgroup = client.get_group('auai.org/UAI/2017/Paper%s/Area_Chair' % (paper_number) )
-        acgroup.members = [areachair]
+        acgroup.members = [areachair_profile.id]
         client.post_group(acgroup);
-        print "Area chair %s assigned to paper%s" %(areachair,paper_number)
+        print "Area chair %s assigned to paper%s" %(areachair_profile.id,paper_number)
 
 
 if args.assignments.endswith('.csv'):
