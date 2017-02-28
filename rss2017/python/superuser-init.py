@@ -90,7 +90,7 @@ if client.user['id'].lower()=='openreview.net':
     # PAM change to Karthik and Shayegan when have official id's
     if overwrite_allowed(COCHAIRS):
         Program_Chairs = openreview.Group(COCHAIRS,
-            readers     = [CONFERENCE, COCHAIRS, SPC, PC],
+            readers     = [CONFERENCE, COCHAIRS, REVIEWERS],
             writers     = [CONFERENCE],
             signatures  = [CONFERENCE],
             signatories = [COCHAIRS],
@@ -99,15 +99,14 @@ if client.user['id'].lower()=='openreview.net':
 
 
     # PAM why all of these sub-groups rather than 'invited', 'declined' info tagged to individuals in the group
-    PAM replace PC with REVIEWERS
-    if overwrite_allowed(PC):
-        pc = openreview.Group(PC,
-            readers     = [CONFERENCE, COCHAIRS, SPC, PC],
+    if overwrite_allowed(REVIEWERS):
+        reviewers = openreview.Group(REVIEWERS,
+            readers     = [CONFERENCE, COCHAIRS, REVIEWERS],
             writers     = [CONFERENCE],
             signatures  = [CONFERENCE],
-            signatories = [PC],
+            signatories = [REVIEWERS],
             members     = []) #more to be added later, from the list of Program_Committee members
-        groups.append(pc)
+        groups.append(reviewers)
 
     ## Post the groups
     for g in groups:
@@ -134,21 +133,22 @@ if client.user['id'].lower()=='openreview.net':
         # also should be defined once at the top - used in 4 places
         #duedate = 1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         duedate=TIMESTAMP_DUE,
-        process = '../process/usersubmissionProcess.js')
+        process = '../process/submissionProcess.js')
 
     submission_invitation.reply = {
         'forum': None,
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [CONFERENCE, COCHAIRS]
+            'values': ['everyone']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
             'values-regex': '~.*'
         },
         'writers': {
-            'value-copied': '{content.authorids}'
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': '~.*'
         },
         'content': {
             'title': {
@@ -211,7 +211,7 @@ if client.user['id'].lower()=='openreview.net':
                 'order': 9,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required': True
-            }
+            },
             'student paper': {
                 'description': 'Is this a student paper?',
                 'order': 10,
