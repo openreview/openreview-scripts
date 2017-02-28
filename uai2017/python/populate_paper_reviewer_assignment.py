@@ -90,10 +90,10 @@ for note in paper_metadata_notes:
         key = (note.forum, reviewer_info['reviewer'])
         paper_reviewer_score_dict[key].append(reviewer_info['score'])
 
-for note in reviewer_metadata_notes:
-    for paper in note.content['papers']:
-        key = (paper_number_forum_dict[int(paper['paper_number'])], note.content['name'])
-        paper_reviewer_score_dict[key].append(paper['score'])
+# for note in reviewer_metadata_notes:
+#     for paper in note.content['papers']:
+#         key = (paper_number_forum_dict[int(paper['paper_number'])], note.content['name'])
+#         paper_reviewer_score_dict[key].append(paper['score'])
 
 # Defining and Updating the weight matrix
 weights = np.zeros((len(reviewers), len(uai_blind_submissions)))
@@ -102,11 +102,13 @@ hard_constraint_dict = {}
 for (note_id, reviewer), score_array in paper_reviewer_score_dict.iteritems():
     # Separating the infinite ones with the normal scores and get the mean of the normal ones
     hard_constraint_value = get_hard_constraint_value(score_array)
-    if hard_constraint_value == -1:
-        weights[reviewer_index_dict[reviewer], paper_index_dict[note_id]] = np.mean(np.array(score_array))
-    else:
-        hard_constraint_dict[reviewer_index_dict[reviewer], paper_index_dict[note_id]] = hard_constraint_value
-
+    try:
+        if hard_constraint_value == -1:
+            weights[reviewer_index_dict[reviewer], paper_index_dict[note_id]] = np.mean(np.array(score_array))
+        else:
+            hard_constraint_dict[reviewer_index_dict[reviewer], paper_index_dict[note_id]] = hard_constraint_value
+    except KeyError as e:
+        print(e)
 # Defining the matcher
 
 beta_dict = {note.forum: (note.content['minreviewers'], note.content['maxreviewers']) for note in paper_metadata_notes}

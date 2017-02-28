@@ -9,7 +9,6 @@ import note_content
 from uaidata import *
 from lxml import etree
 import xml.etree.ElementTree
-import utils
 import time
 from collections import defaultdict
 
@@ -137,7 +136,6 @@ def parse_paper_reviewer_scores(file_path):
     submissions = root._children
     affinity_scores_dict = defaultdict(list)
 
-    #email_id_map = utils.get_email_to_id_mapping(openreview)
     for submission in submissions:
         paper_id = int(submission.attrib['submissionId'])
 
