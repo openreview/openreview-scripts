@@ -1,115 +1,79 @@
 <html>
   <head>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="stylesheet" type="text/css" href="scrollbar.css">
   </head>
   <body>
     <div id='main'>
       <div id='header'></div>
-
-      <div id='or', class='panel'>
-        <h3 id='orInfo', style="float:center">About the Open Reviewing Process</h3>
-        <div class='row'>The workshop's goal is a constructive, creative and open conversation. In principle we will accept all papers. All reviews will be made publicly available. Reviewers can choose to remain anonymous or to reveal their identity to encourage collaboration and positive feedback. Reviews and Comments may be submitted by anyone and at any time throughout the reviewing process.</div>
-
-        <div class='row'><em>When submitting a paper, comment, or review, your "signature" determines how your identity will be displayed. When you make a submission, you may select your signature from the available options in the "signatures" drop down menu. If only one signature is available to you, the "signature" field will be automatically filled.</em></div>
-      </div>
-
-      <div id='auth', class='panel'>
-        <h3 id='authInstructions'>Instruction for Authors</h3>
-        <div class='row'>Submission is open to anyone with an OpenReview account (signup is free). To submit a workshop paper to BNMW 2016, please log in and click on the button below labeled "eccv BNMW2016 submission" and enter the required information for your submission. </div>
-        <div class='row'>All papers should use provided latex format <a href=http://users.cecs.anu.edu.au/~basura/workshop/latex_format.zip>(latex_format.zip)</a> or similar text processing tool. We accept only PDF files. Papers should be only 4 pages including references. Example paper in PDF format can be downloaded <a href=http://users.cecs.anu.edu.au/~basura/workshop/format.pdf>here</a>. To make sure proper credit is given even if the idea and the experimental validation is not mature enough yet, all submissions will be made through <a href=http://arxiv.org>arXiv</a>.</div>
-      </div>
-
-      <div id='rev', class='panel'>
-        <h3 id='revInstructions'>Instruction for Reviewers</h3>
-        <div class='row'>Reviewing and commenting are open to anyone with an OpenReview account. Official assigned reviewers will also be assigned to each submission. If you are an assigned reviewer, you can find your reviewing assignments in the <a href=tasks>Tasks menu</a>. You may submit one review per submission. You may submit as many comments as you would like.</div>
-
-      </div>
-
-
       <div id='invitation'></div>
-
-      <div>
-        <h3 class='panel'>Submitted Workshop Papers</h3>
-        <div id='notes'></div>
-      </div>
-
+      <div id='notes'></div>
     </div>
     <script type="text/javascript">
     $(function() {
 
       $attach('#header', 'mkHostHeader', [
-        "RSS 2017 - Robots and stuff?",
-        "European Conference on Computer Vision",
-        "Held in Amsterdam, the Netherlands",
-        "http://roboticsfoundation.org",
-        "Submission Deadline: August 26, 2016"
+        "RSS 2017 Workshop",
+        "<FULL WORKSHOP NAME>",
+        "<WORKSHOP LOCATION AND DATE>",
+        "http://<RSS_WEBSITE_URL>"
       ], true);
 
       var sm = mkStateManager();
 
       var httpGetP = function(url, queryOrBody) {
         var df = $.Deferred();
-        httpGet(url, queryOrBody, function(result) {
+        httpGet(url, queryOrBody,
+        function(result) {
           df.resolve(result);
-        }, function(err) {
-          df.reject(err);
+        },
+        function(result) {
+          df.reject(result);
         });
         return df.promise();
       };
 
-      var submissionInvitation = 'roboticsfoundation.org/RSS/2017/-/submission';
-
-      var invitationP = httpGetP('invitations', {id: submissionInvitation}).then(function(result) {
-        return result.invitations[0];
+      var invitationP = httpGetP('invitations', {id: 'roboticsfoundation.org/RSS/2017/-/submission'}).then(function(result) {
+        console.log('result',result);
+        var valid_invitations = _.filter(result.invitations, function(inv){
+          return inv.duedate > Date.now();
+        })
+        return valid_invitations[0];
+      },
+      function(error){
+        return error;
       });
 
-
-      var notesP = httpGetP('notes', {invitation: submissionInvitation, maxtcdate: Date.now()}).then(function(result) {
-        return result.notes;
-      });
-
-      $.when(invitationP, notesP).done(function(invitation, notes) {
-        sm.update('invitationTrip', {
-          invitation: invitation
+      var getNotes = function() {
+        return httpGetP('notes', {invitation: 'roboticsfoundation.org/RSS/2017/-/submission'}).then(function(result) {
+          return result.notes;
+        },
+        function(error){
+          return error;
         });
-        sm.update('notes', notes);
-      });
+      }
 
-      sm.addHandler('workshop', {
+      $.when(invitationP, getNotes()).done(function(invitation, notes) {
 
-        invitationTrip: function(invitationTrip) { if (invitationTrip) {
-          var invitation = invitationTrip.invitation;
+        if(invitation){
+          sm.update('invitationTrip', {
+            invitation: invitation
+          });
+        }
+        sm.update('notes', {
+          notes: notes
+        });
 
-
-          $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-            var signaturesP = invitationP.then(function(invitation) {
-              if (user) {
-                return httpGetP('groups', {regex: invitation.reply.signatures['values-regex'], signatory: user.id}).then(function(result) {
-                  return result.groups.map(function(g) {
-                    return g.id;
-                  });
-                });
-              } else {
-                return [];
-              }
-            });
-
-            signaturesP.then(function(signatures){
-              if (signatures.length > 0) {
-                view.mkNewNoteEditor(invitation, null, user, {
+        sm.addHandler('conference', {
+          invitationTrip: function(invitationTrip) { if (invitationTrip) {
+            var invitation = invitationTrip.invitation;
+            $attach('#invitation', 'mkInvitationButton', [invitation, function() {
+              if (user && invitation) {
+                view.mkNewNoteEditor(invitation, null, null, user, {
                   onNoteCreated: function(idRecord) {
-                    httpGetP('notes', {
-                      invitation: submissionInvitation,
-                      maxtcdate: Date.now()
-                    }).then(function(result) {
-                      console.log("time to update notes: " + result.notes.length);
-                      sm.update('notes', result.notes);
-                    },
-                    function(error){
-                      return error
+                    $.when(getNotes()).done(function(notes) {
+                      sm.update('notes', {
+                        notes: notes,
+                        tagInvitations: tagInvitations
+                      });
                     });
                   },
                   onCompleted: function(editor) {
@@ -119,23 +83,33 @@
               } else {
                promptLogin(user);
               }
-            })
-          }], true);
-        }},
+            }], true);
+          }},
 
-        notes: function(notes) {
-          if (notes) {
-            $('#notes').empty();
+          notes: function(data) {
 
-            notes.forEach(function(note) {
-              $attach('#notes', 'mkNotePanel', [note, {
-                titleLink: 'HREF',
-                withReplyCount: true
-              }], true);
-            });
+            var notes = data.notes;
+            var tagInvitations = data.tagInvitations;
+
+            if (notes.length > 0) {
+              $('#notes').empty().append('<h3>Submitted Papers</h3><hr>');
+              _.forEach(notes, function(note) {
+                $attach('#notes', 'mkNotePanel', [note, {
+                  titleLink: 'HREF',
+                  withReplyCount: true,
+                  user: user,
+                  tagInvitations: tagInvitations
+                }], true);
+              });
+            }
           }
-        }
+        });
+
+      })
+      .fail(function(){
+        console.log("Invitation and/or notes not found")
       });
+
 
 
 
