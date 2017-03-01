@@ -215,13 +215,13 @@ if client.user['id'].lower()=='openreview.net':
                 'required':True
             },
             'authors': {
-                'description': 'Comma separated list of author names, as they appear in the paper.',
+                'description': 'Comma separated list of author names.',
                 'order': 2,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'authorids': {
-                'description': 'Comma separated list of author email addresses, in the same order as above.',
+                'description': 'Comma separated list of author email addresses, in the same order as above. Be sure each email address is linked to the each author profile.',
                 'order': 3,
                 'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
                 'required':True
