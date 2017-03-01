@@ -1,1 +1,1 @@
-alert('Process function executed');
+console.log('Process function executed');

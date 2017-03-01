@@ -71,8 +71,7 @@
                   onNoteCreated: function(idRecord) {
                     $.when(getNotes()).done(function(notes) {
                       sm.update('notes', {
-                        notes: notes,
-                        tagInvitations: tagInvitations
+                        notes: notes
                       });
                     });
                   },
@@ -89,7 +88,6 @@
           notes: function(data) {
 
             var notes = data.notes;
-            var tagInvitations = data.tagInvitations;
 
             if (notes.length > 0) {
               $('#notes').empty().append('<h3>Submitted Papers</h3><hr>');
@@ -97,8 +95,7 @@
                 $attach('#notes', 'mkNotePanel', [note, {
                   titleLink: 'HREF',
                   withReplyCount: true,
-                  user: user,
-                  tagInvitations: tagInvitations
+                  user: user
                 }], true);
               });
             }

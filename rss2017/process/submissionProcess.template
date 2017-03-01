@@ -3,5 +3,6 @@ function(){
 
 	<<pamsCode.js>>
 
+	done();
 	return true;
 };
