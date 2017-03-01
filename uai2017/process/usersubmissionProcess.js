@@ -7,6 +7,23 @@ function() {
     var SPC = 'auai.org/UAI/2017/Senior_Program_Committee';
     var PC = 'auai.org/UAI/2017/Program_Committee';
 
+    var referenceInvite = {
+      id: CONFERENCE + '/-/Paper' + note.number + '/Add/Revision',
+      signatures: [CONFERENCE],
+      writers: [CONFERENCE],
+      invitees: note.writers,
+      noninvitees: [],
+      readers: ['everyone'],
+      reply: {
+        forum: note.id,
+        referent: note.id,
+        signatures: invitation.reply.signatures,
+        writers: invitation.reply.writers,
+        readers: invitation.reply.readers,
+        content: invitation.reply.content
+      }
+    }
+
     var overwritingNote = {
         original: note.id,
         invitation: 'auai.org/UAI/2017/-/blind-submission',
@@ -29,7 +46,8 @@ function() {
     };
 
 
-    or3client.or3request(or3client.notesUrl, overwritingNote, 'POST', token)
+    or3client.or3request(or3client.inviteUrl, referenceInvite, 'POST', token)
+    .then(result => or3client.or3request(or3client.notesUrl, overwritingNote, 'POST', token))
     .then(savedNote => {
       var groupId = CONFERENCE + '/Paper' + savedNote.number + '/Authors';
       var authorGroup = {
