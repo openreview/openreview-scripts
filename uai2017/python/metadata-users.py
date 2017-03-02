@@ -27,19 +27,29 @@ else:
 # .............................................................................
 
 reviewers = client.get_group(PC)
-metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Reviewer/Metadata')
+areachairs = client.get_group(SPC)
+
+metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/User/Metadata')
 metadata_by_id = {n.forum:n for n in metadata_notes}
 
 for n in metadata_notes:
-	n.content['maxpapers'] = 3
-	n.content['minpapers'] = 0
+    n.content['maxpapers'] = 3
+    n.content['minpapers'] = 0
 
-	reviewer_similarities = []
-	for reviewer in reviewers.members:
-		reviewer_similarities.append({
-			'reviewer': reviewer,
-			'score': 1.0 if reviewer == n.content['name'] else 0,
-			'source': 'DummyModel'
-		})
-	n.content['reviewers'] = reviewer_similarities
-	client.post_note(n)
+    user_similarities = []
+    for reviewer in reviewers.members:
+        user_similarities.append({
+            'user': reviewer,
+            'score': 1.0 if reviewer == n.content['name'] else 0,
+            'source': 'DummyModel'
+        })
+    for areachair in areachairs.members:
+        user_similarities.append({
+            'user': areachair,
+            'score': 1.0 if areachair == n.content['name'] else 0,
+            'source': 'DummyModel'
+        })
+
+    n.content['users'] = user_similarities
+
+    client.post_note(n)

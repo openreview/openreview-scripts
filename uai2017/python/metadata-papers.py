@@ -4,6 +4,7 @@ from collections import defaultdict
 import xml.etree.cElementTree as ET
 import xml.dom.minidom as minidom
 from uaidata import *
+import match_utils
 
 # Parse the arguments for user authentication
 # .............................................................................
@@ -41,10 +42,11 @@ bid_score_map = {
  'I want to review': 1.0,
  'I can review': 0.75,
  'I can probably review but am not an expert': 0.5,
- 'I cannot review': 0.25,
+ 'I cannot review': '-inf',
  'No bid': 0.0
 }
 
+## Reviewer-relevant data
 reviewers = client.get_group(PC)
 bids = client.get_tags(invitation='auai.org/UAI/2017/-/Add/Bid')
 metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Paper/Metadata')
@@ -70,6 +72,20 @@ for r in recs:
     n = client.get_note(r.forum)
     recs_by_number[n.number].append(r)
     recs_by_id[n.forum].append(r)
+
+## Areachair-relevant data
+areachairs = client.get_group(SPC)
+profile_expertise_by_ac = {}
+registered_expertise_by_ac = {}
+
+for a in [x for x in areachairs.members if '~' in x]:
+    profile = client.get_profile(a)
+    profile_expertise_by_ac[a] = profile.content['expertise']
+
+spc_reg_responses = client.get_notes(invitation='auai.org/UAI/2017/-/SPC_Expertise')
+for reg in spc_reg_responses:
+    registered_expertise_by_ac[reg.signatures[0]] = reg.content
+
 
 # Write data to XML file, if applicable
 # .............................................................................
@@ -99,28 +115,36 @@ if args.out != None:
 
 for n in metadata_notes:
     forum = n.forum
-    reviewer_metadata = []
+    user_metadata = []
     paper_metadata = []
     paper_note = client.get_note(forum)
 
     for bid in bids_by_id[forum]:
-        reviewer_metadata.append({
-            'reviewer': bid.signatures[0],
-            'score': bid_score_map[bid.tag],
-            'source': 'ReviewerBid'
-        })
+
+        if bid.signatures[0] in reviewers.members:
+            user_metadata.append({
+                'user': bid.signatures[0],
+                'score': bid_score_map[bid.tag],
+                'source': 'ReviewerBid'
+            })
+        if bid.signatures[0] in areachairs.members:
+            user_metadata.append({
+                'user': bid.signatures[0],
+                'score': bid_score_map[bid.tag],
+                'source': 'AreachairBid'
+            })
 
     for bid in recs_by_id[forum]:
-        reviewer_metadata.append({
-            'reviewer': bid.tag,
-            'score': 1.0,
+        user_metadata.append({
+            'user': bid.tag,
+            'score': '+inf',
             'source': 'AreachairRec'
         })
 
     # The following for loop is needed until we have a real way of getting reviewer-paper scores
     for reviewer in reviewers.members:
-        reviewer_metadata.append({
-            'reviewer': reviewer,
+        user_metadata.append({
+            'user': reviewer,
             'score': 0.5,
             'source': 'DummyModel'
         })
@@ -133,10 +157,26 @@ for n in metadata_notes:
             'source': 'DummyModel'
         })
 
-    metadata_by_id[forum].content['reviewers'] = reviewer_metadata
+    for a in areachairs.members:
+        ac_affinity = match_utils.subject_area_affinity(
+            paper_note.content['subject areas'],
+            registered_expertise_by_ac[a]['primary area'],
+            registered_expertise_by_ac[a]['aditional areas'],
+            primary_weight = 0.7
+        )
+
+        user_metadata.append({
+            'user': a,
+            'score': ac_affinity,
+            'source': 'SubjectAreaOverlap'
+        })
+
+    metadata_by_id[forum].content['users'] = user_metadata
     metadata_by_id[forum].content['papers'] = paper_metadata
     metadata_by_id[forum].content['minreviewers'] = 1
-    metadata_by_id[forum].content['maxreviewers'] = 1
+    metadata_by_id[forum].content['maxreviewers'] = 7
+    metadata_by_id[forum].content['minareachairs'] = 0
+    metadata_by_id[forum].content['maxareachairs'] = 1
     metadata_by_id[forum].content['title'] = paper_note.content['title']
 
     client.post_note(metadata_by_id[forum])
