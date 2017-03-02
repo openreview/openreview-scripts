@@ -14,7 +14,6 @@ parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--bidscores', help="The xml file containing the reviewer bids")
-parser.add_argument('--out', help="output file")
 
 args = parser.parse_args()
 
@@ -85,30 +84,6 @@ for a in [x for x in areachairs.members if '~' in x]:
 spc_reg_responses = client.get_notes(invitation='auai.org/UAI/2017/-/SPC_Expertise')
 for reg in spc_reg_responses:
     registered_expertise_by_ac[reg.signatures[0]] = reg.content
-
-
-# Write data to XML file, if applicable
-# .............................................................................
-
-if args.out != None:
-    root = ET.Element("reviewerbid")
-
-    # open questions:
-    # can "email" field just be tilde ID field? it would make things easier
-    # can submission ID be the hash ID, or is it better for it to be the number?
-    for n in bids_by_number:
-        submission = ET.SubElement(root, "submission", submissionId = str(n))
-        for b in bids_by_number[n]:
-            profile = client.get_profile(b.signatures[0])
-            ET.SubElement(submission, "reviewer", email=profile.content['preferred_email'], score=str(bid_score_map[b.tag]), source=b.invitation)
-
-    #this code writes the file in a "minified" format
-    #tree = ET.ElementTree(root)
-    #tree.write(args.out)
-
-    #this code writes a pretty version
-    with open(out,'w') as f:
-        f.write(prettify(root))
 
 # Populate Metadata notes
 # .............................................................................
