@@ -31,6 +31,12 @@ else:
     client = openreview.Client(baseurl=args.baseurl)
 
 groups = []
+
+# Overwrite: this script is supposed to only be run once, but in reality it is usually tweaked and rerun.
+# If the project isn't in use yet it is OK to overwrite the groups, however if the project is in use,
+# we don't want to override the groups as people may have already been added to them.
+# Overwrite false - create new groups, but doesn't overwrite existing groups
+# Overwrite true - recreate from scratch
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 def overwrite_allowed(groupid):
     if not client.exists(groupid) or overwrite==True:
@@ -38,8 +44,8 @@ def overwrite_allowed(groupid):
     else:
         return False
 
-# PAM processToFile somehow converts the given template to a js file
-# but they don't resemble each other
+# processToFile takes a template file, turns it into a js file and inserts
+# process function code in as indicated by << >>
 call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process"])
 
 if client.user['id'].lower()=='openreview.net':
@@ -47,11 +53,8 @@ if client.user['id'].lower()=='openreview.net':
     #########################
     ##    SETUP GROUPS     ##
     #########################
-    # PAM why would these groups already exist?  Is this in case the script is called multiple times
-    # what does each group represent? These groups represents the entities and the heirarcal structure
+    # These groups represents the entities and the hierarchical structure and
     # may not be actual groups of people
-    # this looks like the top levels can be seen by anyone, but can only be written by the superuser
-    # what is the difference between the two?
     if overwrite_allowed('roboticsfoundation.org'):
         a_rss = openreview.Group('roboticsfoundation.org',
             readers     = ['everyone'],
@@ -71,12 +74,6 @@ if client.user['id'].lower()=='openreview.net':
             members     = [] )
         groups.append(rss)
 
-    # PAM these all caps values are set in rssdata.py
-    # CONFERENCE basically means anyone that has logged in - right?
-    # if so, under 'readers' why have CONFERENCE, COCHAIRS, SPC, PC
-    #   if you logged in as COCHAIR it still means you've logged in.
-    # also since there aren't area chairs, does that mean
-    # COHAIRS and SPCs go away?
     if overwrite_allowed(CONFERENCE):
         rss2017 = openreview.Group(CONFERENCE,
             readers     = ['everyone'],
@@ -97,8 +94,6 @@ if client.user['id'].lower()=='openreview.net':
             members     = [])
         groups.append(Program_Chairs)
 
-
-    # PAM why all of these sub-groups rather than 'invited', 'declined' info tagged to individuals in the group
     if overwrite_allowed(REVIEWERS):
         reviewers = openreview.Group(REVIEWERS,
             readers     = [CONFERENCE, COCHAIRS, REVIEWERS],
@@ -125,13 +120,9 @@ if client.user['id'].lower()=='openreview.net':
         'submission',
         readers = ['everyone'],
         writers = [CONFERENCE],
-        # PAM what does ~ mean? A special group of all registered accounts
+        # ~ is a special group of all registered accounts
         invitees = ['~'],
         signatures = [CONFERENCE],
-        # PAM I think this duedate is off by a month - Oct, probably need to change it in UAI
-        # think we should use datetime here instead for easier debugging
-        # also should be defined once at the top - used in 4 places
-        #duedate = 1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         duedate=TIMESTAMP_DUE,
         process = '../process/submissionProcess.js')
 
@@ -157,7 +148,6 @@ if client.user['id'].lower()=='openreview.net':
                 'value-regex': '.{1,250}',
                 'required':True
             },
-            # PAM what happens if the input doesn't match the regex?
             # [^;,\\n] means all chars except ';' ',' and '\n'
             'authors': {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
@@ -202,7 +192,6 @@ if client.user['id'].lower()=='openreview.net':
             'pdf': {
                 'description': 'Upload a PDF file that ends with .pdf)',
                 'order': 8,
-                # PAM is this a GUI special word that gets coded as a button?
                 'value-regex': 'upload',
                 'required':True
             },
