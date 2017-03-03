@@ -4,7 +4,7 @@ function(){
   const CONFERENCE = 'roboticsfoundation.org/RSS/2017';
   const PAPER = CONFERENCE+'/-/paper';
   const DUE_DATE = new Date(2017, 6, 30, 17, 15);
-
+    console.log('PAM - entered the submission Process function');
   var officialReviewProcess = <<officialReviewProcess.js>>
 
   var officialReviewInvitation = {
