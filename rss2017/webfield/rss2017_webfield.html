@@ -31,7 +31,7 @@
         return df.promise();
       };
 
-      var invitationP = httpGetP('invitations', {id: 'roboticsfoundation.org/RSS/2017/-/submission'}).then(function(result) {
+      var invitationP = httpGetP('invitations', {id: 'roboticsfoundation.org/RSS/2017/Workshop/-/submission'}).then(function(result) {
         console.log('result',result);
         var valid_invitations = _.filter(result.invitations, function(inv){
           return inv.duedate > Date.now();
@@ -43,7 +43,7 @@
       });
 
       var getNotes = function() {
-        return httpGetP('notes', {invitation: 'roboticsfoundation.org/RSS/2017/-/submission'}).then(function(result) {
+        return httpGetP('notes', {invitation: 'roboticsfoundation.org/RSS/2017/Workshop/-/submission'}).then(function(result) {
           return result.notes;
         },
         function(error){

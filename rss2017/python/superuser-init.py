@@ -74,6 +74,15 @@ if client.user['id'].lower()=='openreview.net':
             members     = [] )
         groups.append(rss)
 
+    if overwrite_allowed('roboticsfoundation.org/RSS/2017'):
+        rss = openreview.Group('roboticsfoundation.org/RSS/2017',
+            readers     = ['everyone'],
+            writers     = ['OpenReview.net'],
+            signatures  = ['OpenReview.net'],
+            signatories = [],
+            members     = [] )
+        groups.append(rss)
+
     if overwrite_allowed(CONFERENCE):
         rss2017 = openreview.Group(CONFERENCE,
             readers     = ['everyone'],
@@ -179,7 +188,7 @@ if client.user['id'].lower()=='openreview.net':
             'keywords': {
                 'description': 'Comma separated list of keywords.',
                 'order': 6,
-                'values-regex': "[^;,\\n]+(,[^,\\n]+)*"
+                'values-regex': "[^;,\\n]*(,[^,\\n]+)*"
             },
             'TL;DR': {
                 'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',

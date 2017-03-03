@@ -1,17 +1,37 @@
 function(){
 	var or3client = lib.or3client;
 
-  const CONFERENCE = 'roboticsfoundation.org/RSS/2017';
-  const PAPER = CONFERENCE+'/-/paper';
+  const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
+  const COCHAIRS = CONFERENCE+"/Program_Co-Chairs"
+  const PAPERGRP = CONFERENCE+'/Paper' + note.number;
+  const PAPERINV = CONFERENCE+'/-/Paper' + note.number;
   const DUE_DATE = new Date(2017, 6, 30, 17, 15);
   console.log('PAM - entered the submission Process function');
   var officialReviewProcess = <<officialReviewProcess.js>>
 
-  var officialReviewInvitation = {
-    'id': PAPER+note.number+'/official/review',
+  var paperGroup = {
+    'id': PAPERGRP,
     'signatures': [CONFERENCE],
     'writers': [CONFERENCE],
-    'invitees': [PAPER+note.number+'/reviewers'],
+    'members': [],
+    'readers': ['everyone'],
+    'signatories': []
+  };
+
+  var reviewerGroup = {
+    'id': paperGroup.id + '/Reviewers',
+    'signatures':[CONFERENCE],
+    'writers':[CONFERENCE],
+    'members':[],
+    'readers':[CONFERENCE, COCHAIRS, paperGroup.id + '/Reviewers'],
+    'signatories':[]
+  };
+
+  var officialReviewInvitation = {
+    'id': PAPERINV+'/Official/Review',
+    'signatures': [CONFERENCE],
+    'writers': [CONFERENCE],
+    'invitees': [reviewerGroup.id],
     'noninvitees':[],
     'readers': ['everyone'],
     'process': officialReviewProcess+'',
@@ -19,8 +39,8 @@ function(){
     'reply': {
       'forum': note.id,
       'replyto': note.id,
-      'writers': {'values-regex':PAPER+note.number+'/AnonReviewer[0-9]+'},
-      'signatures': {'values-regex':PAPER+note.number+'/AnonReviewer[0-9]+'},
+      'writers': {'values-regex': PAPERGRP+'/AnonReviewer[0-9]+'},
+      'signatures': {'values-regex': PAPERGRP+'/AnonReviewer[0-9]+'},
       'readers': {
         'values': ['everyone'],
         'description': 'The users who will be allowed to read the above content.'
@@ -65,10 +85,7 @@ function(){
     }
   };
 
-
-  var list = note.invitation.replace(/_/g,' ').split('/')
-  list.splice(list.indexOf('-',1));
-  var conference = list.join(' ');
+  var conference = "RSS 2017 Workshop";
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
@@ -78,7 +95,18 @@ function(){
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
 
-  mailP.then(result => done())
+
+  or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
+  .then(result => {
+    return or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token);
+  })
+  .then(result => {
+    return or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token);
+  })
+  .then(result => {
+    return mailP;
+  })
+  .then(result => done())
   .catch(error => done(error));
 
   return true;

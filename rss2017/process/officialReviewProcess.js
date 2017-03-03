@@ -1,21 +1,22 @@
 function(){
     var or3client = lib.or3client;
 
-    const CONFERENCE = 'roboticsfoundation.org/RSS/2017';
-    const PAPER = CONFERENCE+'/-/paper';
+    const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
+    const COCHAIRS = CONFERENCE+"/Program_Co-Chairs"
+    const PAPERGRP = CONFERENCE+'/Paper' + note.number;
+    const PAPERINV = CONFERENCE+'/-/Paper' + note.number;
     const DUE_DATE = new Date(2017, 6, 30, 17, 15);
 
     console.log('PAM - the official Review Process is here');
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
-    var list = note.invitation.replace(/_/g,' ').split('/');
-    list.splice(list.indexOf('-',1));
-    var conference = list.join(' ');
+
+    var conference = 'RSS 2017 Workshop'
 
     origNote.then(function(result) {
       var forum = result.notes[0];
       var note_number = forum.number;
 
-      var reviewers = [PAPER + note_number + '/reviewers'];
+      var reviewers = [PAPERGRP + '/Reviewers'];
       var authors = forum.content.authorids;
 
       var author_mail = {
@@ -25,9 +26,9 @@ function(){
       };
 
       var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
- 
+
       return Promise.all([
-        authorMailP,
+        authorMailP
       ])
     })
     .then(result => or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token))

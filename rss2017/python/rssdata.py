@@ -5,7 +5,7 @@ RSS Conference constants
 """
 
 ADMIN = "rss2017admin"
-CONFERENCE = "roboticsfoundation.org/RSS/2017"
+CONFERENCE = "roboticsfoundation.org/RSS/2017/Workshop"
 COCHAIRS = CONFERENCE+"/Program_Co-Chairs"
 REVIEWERS = CONFERENCE+"/Reviewers"
 # Due date (guess) June 30, 2017 at 5:15pm (here)
