@@ -71,18 +71,19 @@ client.post_invitation(user_metadata_invitation)
 
 # Pre-populate all the paper metadata notes
 for n in submissions:
-    print "generating note for paper %s" % n.id
 
-    note = openreview.Note(
-        invitation = CONFERENCE + "/-/Paper/Metadata",
-        readers = [COCHAIRS, ADMIN],
-        forum = n.id,
-        writers = ['OpenReview.net'],
-        content = {'users':[], 'papers':[]},
-        signatures = [ADMIN]
-    )
+    if len([n for n in client.get_notes(forum = n.id) if n.invitation == (CONFERENCE + "/-/Paper/Metadata")]) == 0:
+      print "generating note for paper %s" % n.id
+      note = openreview.Note(
+          invitation = CONFERENCE + "/-/Paper/Metadata",
+          readers = [COCHAIRS, ADMIN],
+          forum = n.id,
+          writers = ['OpenReview.net'],
+          content = {'users':[], 'papers':[]},
+          signatures = [ADMIN]
+      )
 
-    client.post_note(note)
+      client.post_note(note)
 
 # Pre-populate all the user metadata notes
 reviewers = client.get_group(PC).members
