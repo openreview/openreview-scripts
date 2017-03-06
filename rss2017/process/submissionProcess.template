@@ -19,12 +19,21 @@ function(){
   };
 
   var reviewerGroup = {
-    'id': paperGroup.id + '/Reviewers',
+    'id': PAPERGRP + '/Reviewers',
     'signatures':[CONFERENCE],
     'writers':[CONFERENCE],
     'members':[],
-    'readers':[CONFERENCE, COCHAIRS, paperGroup.id + '/Reviewers'],
+    'readers':[CONFERENCE, COCHAIRS, PAPERGRP + '/Reviewers'],
     'signatories':[]
+  };
+
+  var anonReviewer1 = {
+    'id': PAPERGRP + '/AnonReviewer1',
+    'signatures': [CONFERENCE],
+    'writers':  [CONFERENCE],
+    'members': [],
+    'readers': [CONFERENCE, COCHAIRS, PAPERGRP + '/AnonReviewer1'],
+    'signatories': [PAPERGRP + '/AnonReviewer1']
   };
 
   var officialReviewInvitation = {
@@ -98,7 +107,12 @@ function(){
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result => {
-    return or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token);
+    invitation_promises = [
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, anonReviewer1, 'POST', token)
+    ];
+
+    return Promise.all(invitation_promises);
   })
   .then(result => {
     return or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token);
