@@ -12,8 +12,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
-parser.add_argument('--bidscores', help="The xml file containing the reviewer bids")
-parser.add_argument('--out', help="output file")
 
 args = parser.parse_args()
 
@@ -27,29 +25,38 @@ else:
 # .............................................................................
 
 reviewers = client.get_group(PC)
-areachairs = client.get_group(SPC)
+reviewer_metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Reviewer/Metadata')
+reviewer_metadata_by_id = {n.forum:n for n in reviewer_metadata_notes}
 
-metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/User/Metadata')
-metadata_by_id = {n.forum:n for n in metadata_notes}
-
-for n in metadata_notes:
+for n in reviewer_metadata_notes:
     n.content['maxpapers'] = 3
     n.content['minpapers'] = 0
 
-    user_similarities = []
+    reviewer_similarities = []
     for reviewer in reviewers.members:
-        user_similarities.append({
+        reviewer_similarities.append({
             'user': reviewer,
             'score': 1.0 if reviewer == n.content['name'] else 0,
             'source': 'DummyModel'
         })
+
+    n.content['reviewers'] = reviewer_similarities
+
+    client.post_note(n)
+
+areachairs = client.get_group(SPC)
+areachair_metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Area_Chair/Metadata')
+areachair_metadata_by_id = {n.forum:n for n in areachair_metadata_notes}
+
+for n in areachair_metadata_notes:
+    areachair_similarities = []
     for areachair in areachairs.members:
-        user_similarities.append({
+        areachair_similarities.append({
             'user': areachair,
             'score': 1.0 if areachair == n.content['name'] else 0,
             'source': 'DummyModel'
         })
 
-    n.content['users'] = user_similarities
+    n.content['areachairs'] = areachair_similarities
 
     client.post_note(n)

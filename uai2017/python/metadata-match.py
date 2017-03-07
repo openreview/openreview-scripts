@@ -32,15 +32,23 @@ mode = args.mode.lower() if args.mode else 'reviewers'
 
 if mode == 'reviewers':
     user_group = client.get_group(PC)
-    params['minusers'] = 'minreviewers'
-    params['maxusers'] = 'maxreviewers'
-elif mode == 'areachairs':
+    params['minusers'] = 1
+    params['maxusers'] = 3
+    params['minpapers'] = 0
+    params['maxpapers'] = 3
+    params['metadata_group'] = 'reviewers'
+    user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Reviewer/Metadata")
+
+if mode == 'areachairs':
     user_group = client.get_group(SPC)
-    params['minusers'] = 'minareachairs'
-    params['maxusers'] = 'maxareachairs'
+    params['minusers'] = 0
+    params['maxusers'] = 1
+    params['minpapers'] = 0
+    params['maxpapers'] = 7
+    params['metadata_group'] = 'areachairs'
+    user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Area_Chair/Metadata")
 
 blind_submissions = client.get_notes(invitation = CONFERENCE+"/-/blind-submission")
-user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/User/Metadata")
 paper_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Paper/Metadata")
 
 matcher = openreview_matcher.Matcher(user_group, blind_submissions, user_metadata_notes, paper_metadata_notes, params)
