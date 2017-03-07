@@ -74,23 +74,29 @@ def get_next_reviewer_id(reviewer, paper_number):
 
     response = requests.get(client.baseurl + '/groups?id=auai.org/UAI/2017/Paper' + paper_number + '/AnonReviewer.*', headers=headers)
     reviewers = [openreview.Group.from_json(g) for g in response.json()]
-
-    if reviewers:
-        empty_reviewers = []
+    if len(reviewers) > 0:
+        empty_reviewer_ids = []
         for existing_reviewer in reviewers:
             if reviewer in existing_reviewer.members:
                 print "reviewer " + reviewer + " found in " + existing_reviewer.id
                 return None
 
             if len(existing_reviewer.members) == 0:
-                empty_reviewers.append(existing_reviewer.id)
+                empty_reviewer_ids.append(existing_reviewer.id)
 
-        next_empty_reviewer = sorted(empty_reviewers)[0]
-        print "existing reviewer " + next_empty_reviewer + "empty"
+        if len(empty_reviewer_ids) > 0:
+            next_empty_reviewer = sorted(empty_reviewer_ids)[0]
+        else:
+            reviewer_ids = [r.id for r in reviewers]
+            last_reviewer_number = sorted(reviewer_ids)[-1].split('AnonReviewer')[1]
+            next_empty_reviewer = CONFERENCE+"/Paper%s/AnonReviewer%s" % (paper_number, last_reviewer_number)
+
+        print "existing reviewer " + next_empty_reviewer + " is empty"
+
         return next_empty_reviewer
 
     else:
-        return "AnonReviewer1"
+        return CONFERENCE + "/Paper%s/AnonReviewer1" % paper_number
 
 
 def get_reviewer_group(reviewer, paper_number, conflict_list):
@@ -128,9 +134,9 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
     return new_reviewer
 
 def clear_assignments():
-    senior_program_committee = client.get_group(SPC)
-    for p in senior_program_committee.members:
-        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/Area_Chair').match(g.id)]
+    program_committee = client.get_group(PC)
+    for p in program_committee.members:
+        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/(AnonReviewer.*|Reviewers)').match(g.id)]
         for a in assignments:
             client.remove_members_from_group(a, a.members)
 

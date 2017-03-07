@@ -76,9 +76,9 @@ def assign_areachair(areachair,paper_number):
         print "Area chair %s assigned to paper%s" %(areachair_profile.id,paper_number)
 
 def clear_assignments():
-    program_committee = client.get_group(PC)
-    for p in program_committee.members:
-        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/(AnonReviewer.*|Reviewers)').match(g.id)]
+    senior_program_committee = client.get_group(SPC)
+    for p in senior_program_committee.members:
+        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/Area_Chair').match(g.id)]
         for a in assignments:
             client.remove_members_from_group(a, a.members)
 
