@@ -14,16 +14,16 @@ import openreview
 import requests
 from uaidata import *
 
-## Argument handling
+# Argument handling and initialization
+# .............................................................................
 parser = argparse.ArgumentParser()
 parser.add_argument('-a','--assignments', help="either (1) a csv file containing reviewer assignments or (2) a string of the format '<openreview_id>,<paper#>' e.g. '~Alan_Turing1,23'")
-parser.add_argument('--overwrite', help="if true, erases existing assignments before assigning")
+parser.add_argument('-o','--overwrite', help="if true, erases existing assignments before assigning")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
 
-## Initialize the client library with username and password
 if args.username!=None and args.password!=None:
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
@@ -32,6 +32,8 @@ baseurl = client.baseurl
 
 submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
 
+# Function definitions
+# .............................................................................
 def single_assignment_valid(s):
     try:
         reviewer = s.split(',')[0]
@@ -126,26 +128,29 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
     return new_reviewer
 
 def clear_assignments():
-    program_committee = client.get_group(PC)
-    for p in program_committee.members:
-        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/(AnonReviewer.*|Reviewers)').match(g.id)]
+    senior_program_committee = client.get_group(SPC)
+    for p in senior_program_committee.members:
+        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/Area_Chair').match(g.id)]
         for a in assignments:
             client.remove_members_from_group(a, a.members)
-##################################################################
 
+# Main script
+# .............................................................................
 if args.overwrite and args.overwrite.lower() == 'true':
     clear_assignments()
-elif args.assignments and args.assignments.endswith('.csv'):
-    with open(args.assignments, 'rb') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        for row in reader:
-            reviewer = row[0]
-            paper_number = row[1]
-            assign_reviewer(reviewer,paper_number)
-elif arg.assignments and single_assignment_valid(args.assignments):
-    reviewer = args.assignments.split(',')[0]
-    paper_number = args.assignments.split(',')[1]
-    assign_reviewer(reviewer,paper_number)
-else:
-    print "Invalid input"
-    sys.exit()
+
+if args.assignments:
+    if args.assignments.endswith('.csv'):
+        with open(args.assignments, 'rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in reader:
+                reviewer = row[0]
+                paper_number = row[1]
+                assign_reviewer(reviewer,paper_number)
+    elif single_assignment_valid(args.assignments):
+        reviewer = args.assignments.split(',')[0]
+        paper_number = args.assignments.split(',')[1]
+        assign_reviewer(reviewer,paper_number)
+    else:
+        print "Invalid input"
+        sys.exit()
