@@ -6,7 +6,7 @@ function(){
   const PAPERGRP = CONFERENCE+'/Paper' + note.number;
   const PAPERINV = CONFERENCE+'/-/Paper' + note.number;
   const DUE_DATE = new Date(2017, 6, 30, 17, 15);
-  console.log('PAM - entered the submission Process function');
+
   var officialReviewProcess = <<officialReviewProcess.js>>
 
   var paperGroup = {
