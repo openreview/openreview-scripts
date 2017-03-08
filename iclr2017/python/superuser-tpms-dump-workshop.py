@@ -130,25 +130,14 @@ def dump_missing(list):
             csvwriter.writerow([])
 
 profiles, missing = get_profiles(args.group)
-
-all_workshop_submissions = client.get_notes(invitation='ICLR.cc/2017/workshop/-/submission')
-unaccepted_submissions = []
-
-for n in all_workshop_submissions:
-    if not n.original:
-        unaccepted_submissions.append(n.to_json())
-    elif n.original:
-        acceptance = [x for x in client.get_notes(forum=n.original) if 'acceptance' in x.invitation][0]
-        if not 'Invite to Workshop Track' in acceptance.content['decision']:
-            unaccepted_submissions.append(n.to_json())
+papers = [s.to_json() for s in client.get_notes(invitation='ICLR.cc/2017/workshop/-/submission')]
 
 missing.remove('ICLR.cc/2017/workshop')
 missing.remove('ICLR.cc/2017/pcs')
 
 dump_names(profiles,args.outfilename)
-write_pdfs(unaccepted_submissions)
-dump_conflicts(profiles,missing,unaccepted_submissions,"conflicts-dump.csv")
+write_pdfs(papers)
+dump_conflicts(profiles,missing,papers,"conflicts-dump.csv")
 
-print missing
 
 
