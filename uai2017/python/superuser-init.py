@@ -215,13 +215,13 @@ if client.user['id'].lower()=='openreview.net':
                 'required':True
             },
             'authors': {
-                'description': 'Comma separated list of author names, as they appear in the paper.',
+                'description': 'Comma separated list of author names.',
                 'order': 2,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
             'authorids': {
-                'description': 'Comma separated list of author email addresses, in the same order as above.',
+                'description': 'Comma separated list of author email addresses, in the same order as above. Be sure each email address is linked to the each author profile.',
                 'order': 3,
                 'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
                 'required':True
@@ -528,49 +528,6 @@ if client.user['id'].lower()=='openreview.net':
     }
 
     invitations.append(bid_tag_invitation)
-
-    confidentialGroups = [COCHAIRS, PC, SPC];
-    confidential_comment_invitation = openreview.Invitation(CONFERENCE,
-        'Confidential/Comment',
-        readers=['everyone'],
-        writers=[CONFERENCE],
-        invitees=[],
-        signatures=[CONFERENCE],
-        process='../process/commentProcess.js')
-
-    confidential_comment_invitation.reply = {
-        'forum': None,
-        'replyto': None,
-        'invitation': blind_submission_invitation.id,
-        'readers': {
-            'description': 'The users who will be allowed to read the above content.',
-            'values': confidentialGroups
-        },
-        'signatures': {
-            'description': 'How your identity will be displayed with the above content.',
-            'values-regex': '|'.join(confidentialGroups)
-        },
-        'writers': {
-            'values-regex': '|'.join(confidentialGroups)
-        },
-        'content': {
-            'title': {
-              'order': 1,
-              'value-regex': '.{1,500}',
-              'description': 'Brief summary of your comment.',
-              'required': True
-            },
-            'comment': {
-              'order': 2,
-              'value-regex': '[\\S\\s]{1,5000}',
-              'description': 'Your comment or reply.',
-              'required': True
-            }
-        }
-    }
-
-    invitations.append(confidential_comment_invitation)
-
 
     ## Post the invitations
     for i in invitations:

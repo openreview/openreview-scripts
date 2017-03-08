@@ -44,13 +44,15 @@ function () {
     'signatories':[CONFERENCE,paperGroup.id + '/Area_Chair']
   };
 
+  var authorsGroupId = paperGroup.id + '/Authors';
+
   var metaReviewProcess = <<metaReviewProcess.js>>
 
   var metaReviewInvitation = {
     'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review',
     'signatures': [CONFERENCE],
     'writers': [CONFERENCE],
-    'invitees': ['auai.org/UAI/2017/Paper' + note.number + '/Area_Chair'],
+    'invitees': [],
     'noninvitees':[],
     'readers': [CONFERENCE,SPC,COCHAIRS],
     'process': metaReviewProcess + '',
@@ -61,7 +63,7 @@ function () {
       'writers': {'values-regex':'auai.org/UAI/2017/Paper' + note.number + '/Area_Chair'},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper' + note.number + '/Area_Chair'},
       'readers': {
-        'values': [COCHAIRS, paperGroup.id + '/Authors'],
+        'values': [COCHAIRS, authorsGroupId],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
@@ -112,7 +114,7 @@ function () {
     'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Official/Review',
     'signatures': [CONFERENCE],
     'writers': [CONFERENCE],
-    'invitees': ['auai.org/UAI/2017/Paper' + note.number + '/Reviewers'],
+    'invitees': [],
     'noninvitees':[],
     'readers': ['everyone'],
     'process': reviewProcess + '',
@@ -123,7 +125,7 @@ function () {
       'writers': {'values': [CONFERENCE]},
       'signatures': {'values-regex':'auai.org/UAI/2017/Paper' + note.number + '/AnonReviewer[0-9]+'},
       'readers': {
-        'values': [COCHAIRS, SPC, PC, paperGroup.id + '/Authors'],
+        'values': [COCHAIRS, SPC, PC, authorsGroupId],
         'description': 'The users who will be allowed to read the above content.'
       },
       'nonreaders': {
@@ -176,7 +178,7 @@ function () {
   var commentProcess = <<commentProcess.js>>
 
 
-  var allGroups = [COCHAIRS, PC, SPC, paperGroup.id + '/Authors'];
+  var allGroups = [COCHAIRS, PC, SPC, authorsGroupId];
   var openCommentInvite = {
     'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Open/Comment',
     'signatures': [CONFERENCE],
@@ -195,6 +197,46 @@ function () {
       'readers': {
         'values': allGroups,
         'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your comment.',
+          'required':true
+        },
+        'comment': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your comment or reply.',
+          'required':true
+        }
+      }
+    }
+  };
+
+  var confidentialGroups = [COCHAIRS, PC, SPC];
+  var confidentialCommentInvite = {
+    'id': 'auai.org/UAI/2017/-/Paper' + note.number + '/Confidential/Comment',
+    'signatures': [CONFERENCE],
+    'writers': [CONFERENCE],
+    'invitees': [],
+    'noninvitees': [authorsGroupId],
+    'readers': ['everyone'],
+    'process': commentProcess + '',
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      'signatures': {
+        'values-regex': confidentialGroups.join('|'),
+        'description': 'How your identity will be displayed with the above content.'
+      },
+      'writers': {'values-regex': confidentialGroups.join('|')},
+      'readers': {
+        'values': confidentialGroups,
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'nonreaders': {
+        'values': [authorsGroupId]
       },
       'content': {
         'title': {
@@ -259,6 +301,7 @@ function () {
     invitation_promises = [
       or3client.or3request(or3client.inviteUrl, metaReviewInvitation, 'POST', token),
       or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, confidentialCommentInvite, 'POST', token),
       or3client.or3request(or3client.inviteUrl, openCommentInvite, 'POST', token),
       or3client.or3request(or3client.inviteUrl, recommendReviewerInvite, 'POST', token)
     ];
