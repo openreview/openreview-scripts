@@ -18,18 +18,18 @@ $(function() {
     var user = pl.user;
 
     var userAreachairGroupsP = httpGetP('groups', {member: user.id, regex:'auai.org/UAI/2017/Paper.*/Area_Chair'}).then(
-      function(result){
+      function(result) {
         return result.groups;
       },
-      function(error){
+      function(error) {
         console.log('error');
         return error;
       }
     );
 
-    userAreachairGroupsP.then(function(userAreachairGroups){
+    userAreachairGroupsP.then(function(userAreachairGroups) {
       var regex = /auai\.org\/UAI\/2017\/Paper(.*)\/Area_Chair/;
-      return _.map(userAreachairGroups, function(group){
+      return _.map(userAreachairGroups, function(group) {
         var result = group.id.match(regex);
         return result.length > 1 && result[1];
       });
@@ -43,8 +43,8 @@ $(function() {
         return _.filter(result.invitations, function(invitation) {
           return invitation.id.endsWith('Recommend/Reviewer');
         });
-      }, function(error){
-        return error
+      }, function(error) {
+        return error;
       });
       return $.when(notesP, tagInvitationsP);
     })
@@ -76,7 +76,7 @@ $(function() {
         tagInvitations: tagInvitations
       }], true);
     });
-  }
+  };
 
   controller.addHandler('areachairs', {
     token: onTokenChange,

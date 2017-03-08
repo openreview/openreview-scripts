@@ -35,7 +35,7 @@
         console.log('result',result);
         var valid_invitations = _.filter(result.invitations, function(inv){
           return inv.duedate > Date.now();
-        })
+        });
         return valid_invitations[0];
       },
       function(error){
@@ -49,7 +49,7 @@
         function(error){
           return error;
         });
-      }
+      };
 
       var getTagInvitations = function() {
         return httpGetP('invitations', {replyInvitation: 'auai.org/UAI/2017/-/blind-submission', tags: true}).then(function(result) {
@@ -58,11 +58,11 @@
         function(error){
           return error;
         });
-      }
+      };
 
       $.when(invitationP, getNotes(), getTagInvitations()).done(function(invitation, notes, tagInvitations) {
 
-        if(invitation){
+        if (invitation) {
           sm.update('invitationTrip', {
             invitation: invitation
           });
@@ -117,12 +117,8 @@
 
       })
       .fail(function(){
-        console.log("Invitation and/or notes not found")
+        console.log('Invitation and/or notes not found');
       });
-
-
-
-
 
     });
     </script>
