@@ -91,8 +91,6 @@ def get_next_reviewer_id(reviewer, paper_number):
             last_reviewer_number = sorted(reviewer_ids)[-1].split('AnonReviewer')[1]
             next_empty_reviewer = CONFERENCE+"/Paper%s/AnonReviewer%s" % (paper_number, last_reviewer_number)
 
-        print "existing reviewer " + next_empty_reviewer + " is empty"
-
         return next_empty_reviewer
 
     else:
@@ -121,7 +119,6 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
 
 
 def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list):
-    print 'Creating reviewer: ', new_reviewer_id
     new_reviewer = openreview.Group(
         new_reviewer_id,
         signatures=['auai.org/UAI/2017'],
@@ -153,6 +150,7 @@ if args.assignments:
                 reviewer = row[0]
                 paper_number = row[1]
                 assign_reviewer(reviewer,paper_number)
+                print "Reviewer %s assigned to paper%s" %(reviewer, paper_number)
     elif single_assignment_valid(args.assignments):
         reviewer = args.assignments.split(',')[0]
         paper_number = args.assignments.split(',')[1]

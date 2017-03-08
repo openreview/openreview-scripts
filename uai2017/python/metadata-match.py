@@ -34,26 +34,18 @@ else:
 params = {'minusers': None, 'maxusers': None}
 mode = args.mode.lower() if args.mode else 'reviewers'
 
-# params['minusers'] = args.minusers if args.minusers else 1
-# params['maxusers'] = args.maxusers if args.maxusers else 3
-# params['minpapers'] = args.minpapers if args.minpapers else 0
-# params['maxpapers'] = args.maxpapers if args.maxpapers else 5
+params['minusers'] = int(args.minusers) if args.minusers else 1
+params['maxusers'] = int(args.maxusers) if args.maxusers else 3
+params['minpapers'] = int(args.minpapers) if args.minpapers else 0
+params['maxpapers'] = int(args.maxpapers) if args.maxpapers else 5
 
 if mode == 'reviewers':
     user_group = client.get_group(PC)
-    params['minusers'] = 1
-    params['maxusers'] = 3
-    params['minpapers'] = 0
-    params['maxpapers'] = 3
     params['metadata_group'] = 'reviewers'
     user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Reviewer/Metadata")
 
 if mode == 'areachairs':
     user_group = client.get_group(SPC)
-    params['minusers'] = 0
-    params['maxusers'] = 1
-    params['minpapers'] = 0
-    params['maxpapers'] = 7
     params['metadata_group'] = 'areachairs'
     user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Area_Chair/Metadata")
 

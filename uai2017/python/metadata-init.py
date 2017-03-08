@@ -102,7 +102,7 @@ for n in submissions:
         metadata.content['areachairs'] = []
         metadata.content['papers'] = []
         client.post_note(metadata)
-        print "overwriting metadata for PAPER %s" % n.forum
+        print "resetting metadata for PAPER %s" % n.forum
 
 # Pre-populate all the reviewer metadata notes
 reviewers = client.get_group(PC).members
@@ -124,7 +124,7 @@ for r in reviewers:
         metadata = metadata_by_reviewer[r]
         metadata.content['reviewers'] = []
         client.post_note(metadata)
-        print "overwriting metadata for REVIEWER %s" %r
+        print "resetting metadata for REVIEWER %s" %r
 
 
 # Pre-populate all the area chair metadata notes
@@ -147,4 +147,4 @@ for a in areachairs:
         metadata = metadata_by_areachair[a]
         metadata.content['areachairs'] = []
         client.post_note(metadata)
-        print "overwriting metadata for AREACHAIR %s" % a
+        print "resetting metadata for AREACHAIR %s" % a
