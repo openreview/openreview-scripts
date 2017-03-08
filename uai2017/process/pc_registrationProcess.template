@@ -1,0 +1,62 @@
+function () {
+  console.log('pc_registrationProcess function run');
+  var or3client = lib.or3client;
+
+  var process = function(){
+    var or3client = lib.or3client;
+    or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token)
+    .then(result => done())
+    .catch(error => done(error));
+    return true;
+  };
+
+
+  var UAIData = <<uaidata.js>>
+
+  var pc_expertise = {
+    'id': 'auai.org/UAI/2017/-/Reviewer_Expertise',
+    'signatures': ['auai.org/UAI/2017'],
+    'writers': ['auai.org/UAI/2017'],
+    'invitees': [UAIData.PC],
+    'noninvitees':[],
+    'readers': ['auai.org/UAI/2017', UAIData.PC],
+    'process': process + "",
+    'duedate': 1491080400000,
+    'reply': {
+      'forum': note.id,
+      'replyto': note.id,
+      'writers': {'values-regex':'~.*'},
+      'signatures': {'values-regex':'~.*'},
+      'readers': {
+        'values': [UAIData.COCHAIRS],
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'title':{
+          'value':'Reviewer Form Response',
+          'order':1,
+        },
+        'primary area': {
+          'description': 'Primary area of expertise.',
+          'order': 2,
+          'value-dropdown': UAIData.EXPERTISES,
+          'required': true
+        },
+        'aditional areas': {
+          'description': 'Aditional list of areas of expertise.',
+          'order': 3,
+          'values-dropdown': UAIData.EXPERTISES
+        }
+      }
+    }
+  };
+
+
+  or3client.or3request(or3client.inviteUrl, pc_expertise, 'POST', token)
+  .then(result=>{
+    done();
+  })
+  .catch(error=>done(error));
+
+  return true;
+};
