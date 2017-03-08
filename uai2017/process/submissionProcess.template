@@ -40,7 +40,7 @@ function () {
     'signatures':[CONFERENCE],
     'writers':[CONFERENCE],
     'members':[], //member to be added later by assignment script
-    'readers':[COCHAIRS,SPC],
+    'readers':[CONFERENCE, COCHAIRS, SPC],
     'signatories':[CONFERENCE,paperGroup.id + '/Area_Chair']
   };
 

@@ -27,11 +27,8 @@ else:
     client = openreview.Client(baseurl=args.baseurl)
 
 
-#Gather variables to be used downstream
-submissions = client.get_notes(invitation=CONFERENCE+"/-/blind-submission")
-
-
-#Create the paper metadata invitation
+# Create the paper metadata invitations
+# .............................................................................
 metadata_reply = {
     'forum': None,
     'replyto': None,
@@ -58,44 +55,96 @@ paper_metadata_invitation = openreview.Invitation(CONFERENCE,'Paper/Metadata',
 client.post_invitation(paper_metadata_invitation)
 
 
-#Create the user metadata invitation
-user_metadata_invitation = openreview.Invitation(CONFERENCE,'User/Metadata',
+#Create the reviewer metadata invitation
+reviewer_metadata_invitation = openreview.Invitation(CONFERENCE,'Reviewer/Metadata',
                                            writers=['OpenReview.net'],
                                            readers=['OpenReview.net'],
                                            invitees=['OpenReview.net'],
                                            signatures=['OpenReview.net'],
                                            reply=metadata_reply)
-client.post_invitation(user_metadata_invitation)
+client.post_invitation(reviewer_metadata_invitation)
+
+#Create the user metadata invitation
+areachair_metadata_invitation = openreview.Invitation(CONFERENCE,'Area_Chair/Metadata',
+                                           writers=['OpenReview.net'],
+                                           readers=['OpenReview.net'],
+                                           invitees=['OpenReview.net'],
+                                           signatures=['OpenReview.net'],
+                                           reply=metadata_reply)
+client.post_invitation(areachair_metadata_invitation)
 
 
+# Main Script
+# .............................................................................
+
+overwrite = args.overwrite and args.overwrite.lower()=='true'
+
+submissions = client.get_notes(invitation=CONFERENCE+"/-/blind-submission")
+existing_paper_metadata = client.get_notes(invitation=CONFERENCE + "/-/Paper/Metadata")
+metadata_by_forum = {n.forum: n for n in existing_paper_metadata}
 
 # Pre-populate all the paper metadata notes
 for n in submissions:
-
-    if len([n for n in client.get_notes(forum = n.id) if n.invitation == (CONFERENCE + "/-/Paper/Metadata")]) == 0:
-      print "generating note for paper %s" % n.id
-      note = openreview.Note(
+    if n.forum not in metadata_by_forum:
+        metadata = openreview.Note(
           invitation = CONFERENCE + "/-/Paper/Metadata",
           readers = [COCHAIRS, ADMIN],
           forum = n.id,
           writers = ['OpenReview.net'],
-          content = {'users':[], 'papers':[]},
+          content = {'reviewers':[], 'areachairs':[], 'papers':[]},
           signatures = [ADMIN]
-      )
+        )
+        client.post_note(metadata)
+        print "generating metadata for PAPER %s" % n.forum
+    elif overwrite:
+        metadata = metadata_by_forum[n.forum]
+        metadata.content['reviewers'] = []
+        metadata.content['areachairs'] = []
+        metadata.content['papers'] = []
+        client.post_note(metadata)
+        print "resetting metadata for PAPER %s" % n.forum
 
-      client.post_note(note)
-
-# Pre-populate all the user metadata notes
+# Pre-populate all the reviewer metadata notes
 reviewers = client.get_group(PC).members
-areachairs = client.get_group(SPC).members
-users = reviewers + areachairs
-for r in users:
-    note = openreview.Note(
-        invitation=CONFERENCE + "/-/User/Metadata",
-        readers=[COCHAIRS, ADMIN],
-        writers=['OpenReview.net'],
-        content={'name':r, 'users':[]},
-        signatures=[ADMIN]
-    )
-    client.post_note(note)
+existing_reviewer_metadata = client.get_notes(invitation = CONFERENCE + "/-/Reviewer/Metadata")
+metadata_by_reviewer = {u.content['name']: u for u in existing_reviewer_metadata}
 
+for r in reviewers:
+    if r not in metadata_by_reviewer:
+        metadata = openreview.Note(
+            invitation=CONFERENCE + "/-/Reviewer/Metadata",
+            readers=[COCHAIRS, ADMIN],
+            writers=['OpenReview.net'],
+            content={'name':r, 'reviewers':[]},
+            signatures=[ADMIN]
+        )
+        client.post_note(metadata)
+        print "generating metadata for REVIEWER %s" % r
+    elif overwrite:
+        metadata = metadata_by_reviewer[r]
+        metadata.content['reviewers'] = []
+        client.post_note(metadata)
+        print "resetting metadata for REVIEWER %s" %r
+
+
+# Pre-populate all the area chair metadata notes
+areachairs = client.get_group(SPC).members
+existing_areachair_metadata = client.get_notes(invitation = CONFERENCE + "/-/Area_Chair/Metadata")
+metadata_by_areachair = {u.content['name']: u for u in existing_areachair_metadata}
+
+for a in areachairs:
+    if a not in metadata_by_areachair:
+        metadata = openreview.Note(
+            invitation=CONFERENCE + "/-/Area_Chair/Metadata",
+            readers=[COCHAIRS, ADMIN],
+            writers=['OpenReview.net'],
+            content={'name':a, 'areachairs':[]},
+            signatures=[ADMIN]
+        )
+        client.post_note(metadata)
+        print "generating metadata for AREACHAIR %s" % a
+    elif overwrite:
+        metadata = metadata_by_areachair[a]
+        metadata.content['areachairs'] = []
+        client.post_note(metadata)
+        print "resetting metadata for AREACHAIR %s" % a

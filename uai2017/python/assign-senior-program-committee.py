@@ -13,15 +13,16 @@ import re
 import openreview
 from uaidata import *
 
-## Argument handling
+# Argument handling and initialization
+# .............................................................................
 parser = argparse.ArgumentParser()
-parser.add_argument('assignments', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<email_address>,<paper#>' e.g. 'areachair@cs.umass.edu,23'")
+parser.add_argument('-a','--assignments', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<email_address>,<paper#>' e.g. 'areachair@cs.umass.edu,23'")
+parser.add_argument('-o','--overwrite', help="if true, erases existing assignments before assigning")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
 
-## Initialize the client library with username and password
 if args.username!=None and args.password!=None:
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
@@ -30,6 +31,8 @@ baseurl = client.baseurl
 
 submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
 
+# Function definitions
+# .............................................................................
 def single_assignment_valid(s):
     try:
         areachair = s.split(',')[0]
@@ -72,18 +75,30 @@ def assign_areachair(areachair,paper_number):
         client.post_group(acgroup);
         print "Area chair %s assigned to paper%s" %(areachair_profile.id,paper_number)
 
+def clear_assignments():
+    senior_program_committee = client.get_group(SPC)
+    for p in senior_program_committee.members:
+        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/Area_Chair').match(g.id)]
+        for a in assignments:
+            client.remove_members_from_group(a, a.members)
 
-if args.assignments.endswith('.csv'):
-    with open(args.assignments, 'rb') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        for row in reader:
-            areachair = row[0]
-            paper_number = row[1]
-            assign_areachair(areachair,paper_number)
-elif single_assignment_valid(args.assignments):
-    areachair = args.assignments.split(',')[0]
-    paper_number = args.assignments.split(',')[1]
-    assign_areachair(areachair,paper_number)
-else:
-    print "Invalid input"
-    sys.exit()
+# Main script
+# .............................................................................
+if args.overwrite and args.overwrite.lower() == 'true':
+    clear_assignments()
+
+if args.assignments:
+    if args.assignments.endswith('.csv'):
+        with open(args.assignments, 'rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in reader:
+                areachair = row[0]
+                paper_number = row[1]
+                assign_areachair(areachair,paper_number)
+    elif single_assignment_valid(args.assignments):
+        areachair = args.assignments.split(',')[0]
+        paper_number = args.assignments.split(',')[1]
+        assign_areachair(areachair,paper_number)
+    else:
+        print "Invalid input"
+        sys.exit()
