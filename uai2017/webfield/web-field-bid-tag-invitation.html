@@ -217,7 +217,6 @@ $(function() {
         '</div>' +
         '<div class="form-group subject-area">' +
           '<label for="subject-area-dropdown">Subject Area</label>' +
-          //'<select id="subject-area-dropdown" class="form-control">'+ allOptions +'</select>' +
         '</div>' +
         '</form>';
 
@@ -268,6 +267,7 @@ $(function() {
         prefix = prefix.trim().toLowerCase();
         if (!prefix) {
           update(SUBJECT_AREAS_LIST);
+          subjectAreaSelected('');
         } else {
           update(_.filter(SUBJECT_AREAS_LIST, function(subject) {
             return subject.toLowerCase().indexOf(prefix) !== -1;
@@ -275,7 +275,7 @@ $(function() {
         }
       };
       var subjectAreaSelected = function(selectedSubject, subjectId, focus) {
-        if (!focus) {
+        if (!focus ) {
           filterPapers();
         }
       };
@@ -318,8 +318,6 @@ $(function() {
         } else {
           filteredNotes = allNotes;
         }
-      } else if (term.length < 3) {
-        return false;
       } else {
         filteredNotes = _.filter(allNotes, function(n) {
           var content = n.content;
