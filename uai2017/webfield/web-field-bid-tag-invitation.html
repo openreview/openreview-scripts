@@ -326,10 +326,13 @@ $(function() {
 
           for (var i = 0; i < contentFields.length; i++) {
             var searchText;
-            if (_.isArray(content[contentFields[i]])) {
-              searchText = content[contentFields[i]].join(' ').toLowerCase();
+            var contentField = contentFields[i];
+            var contentValue = _.has(content, contentField) ? content[contentField] : '';
+
+            if (_.isArray(contentValue)) {
+              searchText = contentValue.join(' ').toLowerCase();
             } else {
-              searchText = content[contentFields[i]].toLowerCase();
+              searchText = contentValue.toLowerCase();
             }
 
             if (searchText.indexOf(term) !== -1) {
