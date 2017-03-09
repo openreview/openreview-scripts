@@ -212,13 +212,12 @@ $(function() {
 
       var allOptions = '<option>' + SUBJECT_AREAS_LIST.join('</option>\n<option>') + '</option>';
       var searchBarHTML = '<form class="form-inline search-form" role="search">' +
-        '<div class="form-group has-feedback">' +
+        '<div class="form-group search-content has-feedback">' +
           '<input id="paper-search-input" type="text" class="form-control" placeholder="Search paper titles and metadata" autocomplete="off">' +
           '<span class="glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></span>' +
         '</div>' +
-        '<div class="form-group">' +
+        '<div class="form-group subject-area">' +
           '<label for="subject-area-dropdown">Subject Area</label>' +
-          '<select id="subject-area-dropdown" class="form-control">'+ allOptions +'</select>' +
         '</div>' +
         '</form>';
 
@@ -264,6 +263,33 @@ $(function() {
       templateData.sections[activeTab].active = true;
       $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](templateData));
 
+      // Add subject area dropdown to search form
+      var subjectAreaFilter = function(update, prefix) {
+        prefix = prefix.trim().toLowerCase();
+        if (!prefix) {
+          update(SUBJECT_AREAS_LIST);
+          subjectAreaSelected('');
+        } else {
+          update(_.filter(SUBJECT_AREAS_LIST, function(subject) {
+            return subject.toLowerCase().indexOf(prefix) !== -1;
+          }));
+        }
+      };
+      var subjectAreaSelected = function(selectedSubject, subjectId, focus) {
+        if (!focus ) {
+          filterPapers();
+        }
+      };
+
+      $('form.search-form .subject-area').append(view.mkDropdown(
+        'Enter a subject area to filter by',
+        false,
+        '',
+        _.debounce(subjectAreaFilter, 300),
+        _.debounce(subjectAreaSelected, 300),
+        'subject-area-dropdown show-arrow'
+      ));
+
       $('ul.nav-tabs a', $panel).click(function(e) {
         $(this).tab('show');
         return false;
@@ -278,23 +304,21 @@ $(function() {
     }
 
     function filterPapers() {
-      var $formElem = $(this).closest('form.search-form');
-      var term = $formElem.find('input').val().trim().toLowerCase();
-      var selectedSubjectArea = $formElem.find('select option:selected').text().trim();
-      var filterSubjects = selectedSubjectArea !== 'All';
+      var $formElem = $('.tabs-container .search-form');
+      var term = $formElem.find('.search-content input').val().trim().toLowerCase();
+      var selectedSubject = $formElem.find('.subject-area-dropdown input').val().trim();
+      var filterSubjects = selectedSubject && selectedSubject !== 'All';
       var filteredNotes;
 
       if (!term) {
         if (filterSubjects) {
           filteredNotes = _.filter(allNotes, function(n) {
             var content = n.content;
-            return _.includes(content['subject areas'], selectedSubjectArea);
+            return _.includes(content['subject areas'], selectedSubject);
           });
         } else {
           filteredNotes = allNotes;
         }
-      } else if (term.length < 3) {
-        return false;
       } else {
         filteredNotes = _.filter(allNotes, function(n) {
           var content = n.content;
@@ -302,15 +326,18 @@ $(function() {
 
           for (var i = 0; i < contentFields.length; i++) {
             var searchText;
-            if (_.isArray(content[contentFields[i]])) {
-              searchText = content[contentFields[i]].join(' ').toLowerCase();
+            var contentField = contentFields[i];
+            var contentValue = _.has(content, contentField) ? content[contentField] : '';
+
+            if (_.isArray(contentValue)) {
+              searchText = contentValue.join(' ').toLowerCase();
             } else {
-              searchText = content[contentFields[i]].toLowerCase();
+              searchText = contentValue.toLowerCase();
             }
 
             if (searchText.indexOf(term) !== -1) {
               if (filterSubjects) {
-                return _.includes(content['subject areas'], selectedSubjectArea);
+                return _.includes(content['subject areas'], selectedSubject);
               } else {
                 return true;
               }
@@ -332,8 +359,7 @@ $(function() {
     });
 
     $('#invitation-container').on('submit', 'form.search-form', filterPapers);
-    $('#invitation-container').on('keyup', 'form.search-form input', _.debounce(filterPapers, 300));
-    $('#invitation-container').on('change', '#subject-area-dropdown', filterPapers);
+    $('#invitation-container').on('keyup', 'form.search-form .search-content input', _.debounce(filterPapers, 300));
 
   }).fail(function() {
     displayError();
