@@ -46,7 +46,8 @@ def overwrite_allowed(groupid):
 
 # processToFile takes a template file, turns it into a js file and inserts
 # process function code in as indicated by << >>
-call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process"])
+call(["node", "../../scripts/processToFile.js", "../process/posterSubmissionProcess.template", "../process"])
+call(["node", "../../scripts/processToFile.js", "../process/proceedingsSubmissionProcess.template", "../process"])
 
 if client.user['id'].lower()=='openreview.net':
 
@@ -93,6 +94,27 @@ if client.user['id'].lower()=='openreview.net':
             web         = '../webfield/rss2017_webfield.html')
         groups.append(rss2017)
 
+    if overwrite_allowed(CONFERENCE+'/Proceedings'):
+        proceedings = openreview.Group(CONFERENCE+'/Proceedings',
+            readers     = ['everyone'],
+            writers     = [CONFERENCE],
+            signatures  = ['OpenReview.net'],
+            signatories = [CONFERENCE],
+            members     = [ADMIN],
+            web         = '../webfield/rss2017proceedings_webfield.html')
+        groups.append(proceedings)
+
+    if overwrite_allowed(CONFERENCE+'/Poster'):
+        poster = openreview.Group(CONFERENCE+'/Poster',
+            readers     = ['everyone'],
+            writers     = [CONFERENCE],
+            signatures  = ['OpenReview.net'],
+            signatories = [CONFERENCE],
+            members     = [ADMIN],
+            web         = '../webfield/rss2017poster_webfield.html')
+        groups.append(poster)
+
+    # PAM cochairs and reviewers per track?
     # PAM change to Karthik and Shayegan when have official id's
     if overwrite_allowed(COCHAIRS):
         Program_Chairs = openreview.Group(COCHAIRS,
@@ -124,18 +146,9 @@ if client.user['id'].lower()=='openreview.net':
     #########################
     invitations = []
 
-    ## Create the submission invitation, form, and add it to the list of invitations to post
-    submission_invitation = openreview.Invitation(CONFERENCE,
-        'submission',
-        readers = ['everyone'],
-        writers = [CONFERENCE],
-        # ~ is a special group of all registered accounts
-        invitees = ['~'],
-        signatures = [CONFERENCE],
-        duedate=TIMESTAMP_DUE,
-        process = '../process/submissionProcess.js')
-
-    submission_invitation.reply = {
+    ## Create the submission invitations (poster and proceeding tracks), form,
+    # and add it to the list of invitations to post
+    reply = {
         'forum': None,
         'replyto': None,
         'readers': {
@@ -220,8 +233,32 @@ if client.user['id'].lower()=='openreview.net':
             }
         }
     }
+    proceeding_invitation = openreview.Invitation(CONFERENCE,
+        'proceeding_submission',
+        readers = ['everyone'],
+        writers = [CONFERENCE],
+        invitees = ['~'],
+        signatures = [CONFERENCE],
+        duedate = TIMESTAMP_DUE,
+        process = '../process/proceedingsSubmissionProcess.js')
 
-    invitations.append(submission_invitation)
+    ## PAM why reply.copy instead of just reply?
+    proceeding_invitation.reply = reply.copy()
+
+
+    poster_invitation = openreview.Invitation(CONFERENCE,
+        'poster_submission',
+        readers = ['everyone'],
+        writers = [CONFERENCE],
+        invitees = ['~'],
+        signatures = [CONFERENCE],
+        duedate = TIMESTAMP_DUE,
+        process = '../process/posterSubmissionProcess.js')
+    proceeding_invitation.reply = reply.copy()
+
+    invitations.append(proceeding_invitation)
+    invitations.append(poster_invitation)
+
 
     ## Post the invitations
     for i in invitations:
