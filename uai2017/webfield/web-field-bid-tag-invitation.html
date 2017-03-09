@@ -2,6 +2,7 @@
 <script type="text/javascript">
 $(function() {
   var SUBJECT_AREAS_LIST = [
+    'All',
     'Algorithms: Approximate Inference',
     'Algorithms: Belief Propagation',
     'Algorithms: Distributed and Parallel',
@@ -306,7 +307,7 @@ $(function() {
       var $formElem = $('.tabs-container .search-form');
       var term = $formElem.find('.search-content input').val().trim().toLowerCase();
       var selectedSubject = $formElem.find('.subject-area-dropdown input').val().trim();
-      var filterSubjects = !!selectedSubject;
+      var filterSubjects = selectedSubject && selectedSubject !== 'All';
       var filteredNotes;
 
       if (!term) {
