@@ -94,43 +94,53 @@ if client.user['id'].lower()=='openreview.net':
             web         = '../webfield/rss2017_webfield.html')
         groups.append(rss2017)
 
-    if overwrite_allowed(CONFERENCE+'/Proceedings'):
-        proceedings = openreview.Group(CONFERENCE+'/Proceedings',
+    if overwrite_allowed(PROCEEDINGS):
+        proceedings = openreview.Group(PROCEEDINGS,
             readers     = ['everyone'],
-            writers     = [CONFERENCE+'/Proceedings'],
+            writers     = [PROCEEDINGS],
             signatures  = ['OpenReview.net'],
-            signatories = [CONFERENCE+'/Proceedings'],
-            members     = [ADMIN, CONFERENCE+'/Proceedings'],
+            signatories = [PROCEEDINGS],
+            members     = [ADMIN, PROCEEDINGS],
             web         = '../webfield/rss2017proceedings_webfield.html')
         groups.append(proceedings)
 
-    if overwrite_allowed(CONFERENCE+'/Poster'):
-        poster = openreview.Group(CONFERENCE+'/Poster',
+    if overwrite_allowed(POSTER):
+        poster = openreview.Group(POSTER,
             readers     = ['everyone'],
-            writers     = [CONFERENCE+'/Poster'],
+            writers     = [POSTER],
             signatures  = ['OpenReview.net'],
-            signatories = [CONFERENCE+'/Poster'],
-            members     = [ADMIN, CONFERENCE+'/Poster'],
+            signatories = [POSTER],
+            members     = [ADMIN, POSTER],
             web         = '../webfield/rss2017poster_webfield.html')
         groups.append(poster)
 
-    # PAM cochairs and reviewers per track?
+    # Co-Chairs are for the whole conference/workshop
+    # the reviewers are assigned per track
     # PAM change to Karthik and Shayegan when have official id's
     if overwrite_allowed(COCHAIRS):
         Program_Chairs = openreview.Group(COCHAIRS,
-            readers     = [CONFERENCE, COCHAIRS, REVIEWERS],
+            readers     = [CONFERENCE, COCHAIRS, PROCEEDINGS_REVIEWERS, POSTER_REVIEWERS],
             writers     = [CONFERENCE],
             signatures  = [CONFERENCE],
             signatories = [COCHAIRS],
             members     = [])
         groups.append(Program_Chairs)
 
-    if overwrite_allowed(REVIEWERS):
-        reviewers = openreview.Group(REVIEWERS,
-            readers     = [CONFERENCE, COCHAIRS, REVIEWERS],
+    if overwrite_allowed(PROCEEDINGS_REVIEWERS):
+        reviewers = openreview.Group(PROCEEDINGS_REVIEWERS,
+            readers     = [CONFERENCE, COCHAIRS, PROCEEDINGS_REVIEWERS],
             writers     = [CONFERENCE],
             signatures  = [CONFERENCE],
-            signatories = [REVIEWERS],
+            signatories = [PROCEEDINGS_REVIEWERS],
+            members     = []) #more to be added later, from the list of Program_Committee members
+        groups.append(reviewers)
+
+    if overwrite_allowed(POSTER_REVIEWERS):
+        reviewers = openreview.Group(POSTER_REVIEWERS,
+            readers     = [CONFERENCE, COCHAIRS, POSTER_REVIEWERS],
+            writers     = [CONFERENCE],
+            signatures  = [CONFERENCE],
+            signatories = [POSTER_REVIEWERS],
             members     = []) #more to be added later, from the list of Program_Committee members
         groups.append(reviewers)
 
@@ -233,12 +243,12 @@ if client.user['id'].lower()=='openreview.net':
             }
         }
     }
-    proceeding_invitation = openreview.Invitation(CONFERENCE+'/Proceedings',
+    proceeding_invitation = openreview.Invitation(PROCEEDINGS,
         'Submission',
         readers = ['everyone'],
-        writers = [CONFERENCE+'/Proceedings'],
+        writers = [PROCEEDINGS],
         invitees = ['~'],
-        signatures = [CONFERENCE+'/Proceedings'],
+        signatures = [PROCEEDINGS],
         duedate = TIMESTAMP_DUE,
         process = '../process/proceedingsSubmissionProcess.js')
 
@@ -246,12 +256,12 @@ if client.user['id'].lower()=='openreview.net':
     proceeding_invitation.reply = reply.copy()
 
 
-    poster_invitation = openreview.Invitation(CONFERENCE+'/Poster',
+    poster_invitation = openreview.Invitation(POSTER,
         'Submission',
         readers = ['everyone'],
-        writers = [CONFERENCE+'/Poster'],
+        writers = [POSTER],
         invitees = ['~'],
-        signatures = [CONFERENCE+'/Poster'],
+        signatures = [POSTER],
         duedate = TIMESTAMP_DUE,
         process = '../process/posterSubmissionProcess.js')
     proceeding_invitation.reply = reply.copy()
