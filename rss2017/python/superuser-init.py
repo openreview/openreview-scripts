@@ -97,20 +97,20 @@ if client.user['id'].lower()=='openreview.net':
     if overwrite_allowed(CONFERENCE+'/Proceedings'):
         proceedings = openreview.Group(CONFERENCE+'/Proceedings',
             readers     = ['everyone'],
-            writers     = [CONFERENCE],
+            writers     = [CONFERENCE+'/Proceedings'],
             signatures  = ['OpenReview.net'],
-            signatories = [CONFERENCE],
-            members     = [ADMIN],
+            signatories = [CONFERENCE+'/Proceedings'],
+            members     = [ADMIN, CONFERENCE+'/Proceedings'],
             web         = '../webfield/rss2017proceedings_webfield.html')
         groups.append(proceedings)
 
     if overwrite_allowed(CONFERENCE+'/Poster'):
         poster = openreview.Group(CONFERENCE+'/Poster',
             readers     = ['everyone'],
-            writers     = [CONFERENCE],
+            writers     = [CONFERENCE+'/Poster'],
             signatures  = ['OpenReview.net'],
-            signatories = [CONFERENCE],
-            members     = [ADMIN],
+            signatories = [CONFERENCE+'/Poster'],
+            members     = [ADMIN, CONFERENCE+'/Poster'],
             web         = '../webfield/rss2017poster_webfield.html')
         groups.append(poster)
 
@@ -233,12 +233,12 @@ if client.user['id'].lower()=='openreview.net':
             }
         }
     }
-    proceeding_invitation = openreview.Invitation(CONFERENCE,
-        'proceeding_submission',
+    proceeding_invitation = openreview.Invitation(CONFERENCE+'/Proceedings',
+        'Submission',
         readers = ['everyone'],
-        writers = [CONFERENCE],
+        writers = [CONFERENCE+'/Proceedings'],
         invitees = ['~'],
-        signatures = [CONFERENCE],
+        signatures = [CONFERENCE+'/Proceedings'],
         duedate = TIMESTAMP_DUE,
         process = '../process/proceedingsSubmissionProcess.js')
 
@@ -246,12 +246,12 @@ if client.user['id'].lower()=='openreview.net':
     proceeding_invitation.reply = reply.copy()
 
 
-    poster_invitation = openreview.Invitation(CONFERENCE,
-        'poster_submission',
+    poster_invitation = openreview.Invitation(CONFERENCE+'/Poster',
+        'Submission',
         readers = ['everyone'],
-        writers = [CONFERENCE],
+        writers = [CONFERENCE+'/Poster'],
         invitees = ['~'],
-        signatures = [CONFERENCE],
+        signatures = [CONFERENCE+'/Poster'],
         duedate = TIMESTAMP_DUE,
         process = '../process/posterSubmissionProcess.js')
     proceeding_invitation.reply = reply.copy()

@@ -94,41 +94,6 @@ function(){
     }
   };
 
-  var commentProcess = <<commentProcess.js>>
-
-  var publicCommentInvite = {
-    'id': PAPERINV+'/Public/Comment',
-    'signatures':[CONFERENCE],
-    'writers':[CONFERENCE],
-    'invitees': ['~'],
-    'noninvitees':[],
-    'readers': ['everyone'],
-    'process':commentProcess+'',
-    'reply': {
-      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'replyto': noteID,    // not specified so we can allow comments on comments
-      'signatures': {
-        'values-regex':'~.*|\\(anonymous\\)',
-        'description': 'How your identity will be displayed with the above content.'
-        },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
-      'readers': ['everyone'],
-      'content': {
-        'title': {
-          'order': 1,
-          'value-regex': '.{1,500}',
-          'description': 'Brief summary of your comment.'
-        },
-        'comment': {
-          'order': 2,
-          'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Your comment or reply.'
-        }
-      }
-    }
-  };
-
-
   var conference = "RSS 2017 Workshop Poster Track";
   //Send an email to the author of the submitted note, confirming its receipt
 
@@ -151,7 +116,6 @@ function(){
   })
   .then(result => {
     return or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token);
-    return or3client.or3request(or3client.inviteUrl, publicCommentInvite, 'POST', token);
   })
 
   .then(result => {
