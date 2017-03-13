@@ -264,7 +264,7 @@ if client.user['id'].lower()=='openreview.net':
         signatures = [POSTER],
         duedate = TIMESTAMP_DUE,
         process = '../process/posterSubmissionProcess.js')
-    proceeding_invitation.reply = reply.copy()
+    poster_invitation.reply = reply.copy()
 
     invitations.append(proceeding_invitation)
     invitations.append(poster_invitation)
