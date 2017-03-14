@@ -44,11 +44,6 @@ def overwrite_allowed(groupid):
     else:
         return False
 
-# processToFile takes a template file, turns it into a js file and inserts
-# process function code in as indicated by << >>
-call(["node", "../../scripts/processToFile.js", "../process/posterSubmissionProcess.template", "../process"])
-call(["node", "../../scripts/processToFile.js", "../process/proceedingsSubmissionProcess.template", "../process"])
-
 if client.user['id'].lower()=='openreview.net':
 
     #########################
@@ -243,6 +238,11 @@ if client.user['id'].lower()=='openreview.net':
             }
         }
     }
+
+    # processToFile takes a template file, turns it into a js file and inserts
+    # process function code in as indicated by << >>
+    call(["node", "../process/processToFile.js", "../process/submissionProcess.template", "../process", "Poster"])
+    call(["node", "../process/processToFile.js", "../process/submissionProcess.template", "../process", "Proceedings"])
     proceeding_invitation = openreview.Invitation(PROCEEDINGS,
         'Submission',
         readers = ['everyone'],
@@ -250,7 +250,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [PROCEEDINGS],
         duedate = TIMESTAMP_DUE,
-        process = '../process/proceedingsSubmissionProcess.js')
+        process = '../process/submissionProcessProceedings.js')
 
     ## PAM why reply.copy instead of just reply?
     proceeding_invitation.reply = reply.copy()
@@ -263,7 +263,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [POSTER],
         duedate = TIMESTAMP_DUE,
-        process = '../process/posterSubmissionProcess.js')
+        process = '../process/submissionProcessPoster.js')
     poster_invitation.reply = reply.copy()
 
     invitations.append(proceeding_invitation)

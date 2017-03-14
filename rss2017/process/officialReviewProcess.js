@@ -1,16 +1,10 @@
 function(){
     var or3client = lib.or3client;
 
-    const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
-    const COCHAIRS = CONFERENCE+"/Program_Co-Chairs"
-    const PAPERGRP = CONFERENCE+'/Paper' + note.number;
-    const PAPERINV = CONFERENCE+'/-/Paper' + note.number;
-    const DUE_DATE = new Date(2017, 6, 30, 17, 15);
-
     console.log('PAM - the official Review Process is here');
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
 
-    var conference = 'RSS 2017 Workshop'
+    var conference = 'RSS 2017 Workshop '+TRACK_NAME+' Track'
 
     origNote.then(function(result) {
       var forum = result.notes[0];
@@ -21,7 +15,7 @@ function(){
 
       var author_mail = {
         "groups": authors,
-        "subject": "Review of your submission to "+CONFERENCE+": \"" + forum.content.title + "\"",
+        "subject": "Review of your submission to "+TRACK+": \"" + forum.content.title + "\"",
         "message": "Your submission to " + conference + " has received an official review.\n\nTitle: " + note.content.title + "\n\nReview: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl+"/forum?id=" + note.forum
       };
 
