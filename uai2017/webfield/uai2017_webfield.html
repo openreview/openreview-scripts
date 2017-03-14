@@ -1,126 +1,224 @@
-<html>
-  <head>
-  </head>
-  <body>
-    <div id='main'>
-      <div id='header'></div>
-      <div id='invitation'></div>
-      <div id='notes'></div>
-    </div>
-    <script type="text/javascript">
-    $(function() {
+<!-- UAI Homepage -->
+<script type="text/javascript">
+$(function() {
 
-      $attach('#header', 'mkHostHeader', [
-        "UAI 2017 Conference",
-        "International Conference on Learning Representations",
-        "Sydney, Australia, August 11 - 15, 2017",
-        "http://auai.org/uai2017/"
-      ], true);
-
-      var sm = mkStateManager();
-
-      var httpGetP = function(url, queryOrBody) {
-        var df = $.Deferred();
-        httpGet(url, queryOrBody,
-        function(result) {
-          df.resolve(result);
-        },
-        function(result) {
-          df.reject(result);
-        });
-        return df.promise();
-      };
-
-      var invitationP = httpGetP('invitations', {id: 'auai.org/UAI/2017/-/submission'}).then(function(result) {
-        console.log('result',result);
-        var valid_invitations = _.filter(result.invitations, function(inv){
-          return inv.duedate > Date.now();
-        });
-        return valid_invitations[0];
-      },
-      function(error){
-        return error;
-      });
-
-      var getNotes = function() {
-        return httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/blind-submission'}).then(function(result) {
-          return result.notes;
-        },
-        function(error){
-          return error;
-        });
-      };
-
-      var getTagInvitations = function() {
-        return httpGetP('invitations', {replyInvitation: 'auai.org/UAI/2017/-/blind-submission', tags: true}).then(function(result) {
-          return result.invitations;
-        },
-        function(error){
-          return error;
-        });
-      };
-
-      $.when(invitationP, getNotes(), getTagInvitations()).done(function(invitation, notes, tagInvitations) {
-
-        if (invitation) {
-          sm.update('invitationTrip', {
-            invitation: invitation
-          });
-        }
-        sm.update('notes', {
-          notes: notes,
-          tagInvitations: tagInvitations
-        });
-
-        sm.addHandler('conference', {
-          invitationTrip: function(invitationTrip) { if (invitationTrip) {
-            var invitation = invitationTrip.invitation;
-            $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-              if (user && !user.id.startsWith('guest_')) {
-                view.mkNewNoteEditor(invitation, null, null, user, {
-                  onNoteCreated: function(idRecord) {
-                    $.when(getNotes(), getTagInvitations()).done(function(notes, tagInvitations) {
-                      sm.update('notes', {
-                        notes: notes,
-                        tagInvitations: tagInvitations
-                      });
-                    });
-                  },
-                  onCompleted: function(editor) {
-                    $('#notes').prepend(editor);
-                  }
-                });
-              } else {
-               promptLogin(user);
-              }
-            }], true);
-          }},
-
-          notes: function(data) {
-
-            var notes = data.notes;
-            var tagInvitations = data.tagInvitations;
-
-            if (notes.length > 0) {
-              $('#notes').empty().append('<h3>Submitted Papers</h3><hr>');
-              _.forEach(notes, function(note) {
-                $attach('#notes', 'mkNotePanel', [note, {
-                  titleLink: 'HREF',
-                  withReplyCount: true,
-                  user: user,
-                  tagInvitations: tagInvitations
-                }], true);
-              });
-            }
-          }
-        });
-
-      })
-      .fail(function(){
-        console.log('Invitation and/or notes not found');
-      });
-
+  var httpGetP = function(url, queryOrBody) {
+    var df = $.Deferred();
+    httpGet(url, queryOrBody, function(result) {
+      df.resolve(result);
+    }, function(result) {
+      df.reject(result);
     });
-    </script>
- </body>
-</html>
+    return df.promise();
+  };
+
+  var getInvitation = function() {
+    return httpGetP('invitations', {id: 'auai.org/UAI/2017/-/submission'}).then(function(result) {
+      var valid_invitations = _.filter(result.invitations, function(inv) {
+        return inv.duedate > Date.now();
+      });
+      return valid_invitations[0];
+    }, function(error) {
+      return error;
+    });
+  };
+
+  var getNotes = function() {
+    return httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/blind-submission'}).then(function(result) {
+      return result.notes;
+    }, function(error) {
+      return error;
+    });
+  };
+
+  var getAssignedNotes = function() {
+    return httpGetP('notes', {invitee: true, duedate: true}).then(function(result) {
+console.log(result);
+      return _.filter(result.notes, function(n) {
+        return n.replytoNote.invitation === 'auai.org/UAI/2017/-/blind-submission';
+      });
+    }), function(error) {
+      return error;
+    };
+  };
+
+  var getTagInvitations = function() {
+    return httpGetP('invitations', {replyInvitation: 'auai.org/UAI/2017/-/blind-submission', tags: true}).then(function(result) {
+      return result.invitations;
+    }, function(error) {
+      return error;
+    });
+  };
+
+  var getUserGroups = function() {
+    if (!user || user.id.startsWith('_guest')) {
+      return [];
+    }
+
+    return httpGetP('groups', {member: user.id}).then(function(result) {
+      return _.filter(
+        _.map(result.groups, function(g) { return g.id; }),
+        function(id) { return _.startsWith(id, 'auai.org/UAI/2017') || id === '~Super_User1'; }
+      );
+    }, function(error) {
+      return error;
+    });
+  };
+
+  var renderConferenceHeader = function() {
+    $('#group-container').append(
+      '<div id="header"></div>',
+      '<div id="invitation"></div>',
+      '<div id="notes"><div class="tabs-container"></div></div>'
+    );
+    $attach('#header', 'mkHostHeader', [
+      "UAI 2017 Conference",
+      "International Conference on Learning Representations",
+      "Sydney, Australia, August 11 - 15, 2017",
+      "http://auai.org/uai2017/"
+    ], true);
+  };
+
+  var renderConferenceInvitations = function(invitationTrip) {
+    if (invitationTrip) {
+      var invitation = invitationTrip.invitation;
+
+      var onInvitationButtonClicked = function() {
+        if (user && !user.id.startsWith('guest_')) {
+          view.mkNewNoteEditor(invitation, null, null, user, {
+            onNoteCreated: function(idRecord) {
+              $.when(getNotes(), getTagInvitations()).done(function(notes, tagInvitations) {
+                sm.update('notes', {
+                  notes: notes,
+                  tagInvitations: tagInvitations
+                });
+              });
+            },
+
+            onCompleted: function(editor) {
+              $('#notes').prepend(editor);
+            }
+          });
+
+        } else {
+          promptLogin(user);
+        }
+      };
+
+      $attach('#invitation', 'mkInvitationButton', [invitation, onInvitationButtonClicked], true);
+    }
+  };
+
+  var renderConferenceTabs = function() {
+    $('#notes .tabs-container').empty();
+console.log('in render tabs');
+    var templateData = {
+      sections: [
+        {
+          heading: 'My Submitted Papers',
+          headingCount: null,
+          id: 'my-submitted-papers',
+          content: null,
+          active: true
+        },
+        {
+          heading: 'My Tasks',
+          headingCount: null,
+          id: 'my-tasks',
+          content: null
+        }
+      ]
+    };
+
+    if (_.includes(userGroups, 'auai.org/UAI/2017/Program_Committee')) {
+      templateData.sections.push({
+        heading: 'All Papers',
+        headingCount: null,
+        id: 'all-papers',
+        content: null
+      });
+    }
+    $('#notes .tabs-container').append(Handlebars.templates['components/tabs'](templateData));
+  };
+
+  var renderConferenceNotes = function(data) {
+    var notes = data.notes;
+    var assignedNotes = data.assignedNotes;
+    var tagInvitations = data.tagInvitations;
+console.log('in render notes');
+console.log(assignedNotes);
+    if (notes.length) {
+      displayNotes(notes, tagInvitations, '#my-submitted-papers');
+      displayNotes(assignedNotes, tagInvitations, '#my-tasks');
+    }
+  };
+
+  var displayNotes = function(notes, tagInvitations, container) {
+    _.forEach(notes, function(note) {
+      $attach(container, 'mkNotePanel', [note, {
+        titleLink: 'HREF',
+        withReplyCount: true,
+        user: user,
+        tagInvitations: tagInvitations
+      }], true);
+    });
+
+    if (!notes.length) {
+      $(container).append('<p class="empty-message">No papers to display</p>');
+    }
+  };
+
+  var displayError = function(message) {
+    message = message || 'The venue invitation and/or papers could not be loaded.';
+    $('#notes').empty().append('<div class="alert alert-danger"><strong>Error:</strong> ' + message + '</div>');
+  };
+    var displayWarning = function(message) {
+    message = message || 'Please login to submit or review papers for this venue.';
+    $('#notes').empty().append('<div class="alert alert-warning">' + message + '</div>');
+  };
+
+
+  // Render page
+  var userGroups = [];
+
+  renderConferenceHeader();
+
+  $.when(getUserGroups()).then(function(groups) {
+    userGroups = groups;
+    if (_.isEmpty(userGroups)) {
+      displayWarning();
+      return false;
+    }
+
+    renderConferenceTabs();
+
+    $.when(getInvitation(), getNotes(), getAssignedNotes(), getTagInvitations()).done(function(invitation, notes, assignedNotes, tagInvitations) {
+      var sm = mkStateManager();
+console.log('assignedNotes: ' + assignedNotes);
+      if (invitation) {
+        sm.update('invitationTrip', {
+          invitation: invitation
+        });
+      }
+
+      sm.update('notes', {
+        notes: notes,
+        assignedNotes: assignedNotes,
+        tagInvitations: tagInvitations
+      });
+
+      sm.addHandler('conference', {
+        invitationTrip: renderConferenceInvitations,
+        notes: renderConferenceNotes
+      });
+
+    }).fail(function() {
+      displayError();
+    });
+  }).fail(function() {
+    displayWarning();
+  });
+
+});
+</script>
+
