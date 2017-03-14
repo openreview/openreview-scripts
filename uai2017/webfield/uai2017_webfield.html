@@ -33,13 +33,16 @@ $(function() {
 
   var getAssignedNotes = function() {
     return httpGetP('notes', {invitee: true, duedate: true}).then(function(result) {
-console.log(result);
-      return _.filter(result.notes, function(n) {
-        return n.replytoNote.invitation === 'auai.org/UAI/2017/-/blind-submission';
-      });
-    }), function(error) {
+      return _.map(
+        _.filter(
+          result.notes,
+          function(n) { return n.replytoNote.invitation === 'auai.org/UAI/2017/-/blind-submission'; }
+        ),
+        function(n) { return n.replytoNote; }
+      );
+    }, function(error) {
       return error;
-    };
+    });
   };
 
   var getTagInvitations = function() {
@@ -65,11 +68,19 @@ console.log(result);
     });
   };
 
+  var getPaperNumbersfromGroups = function(groups) {
+    var re = /auai.org\/UAI\/2017\/Paper(\d+)\/Authors/;
+    return _.map(
+      _.filter(groups, function(gid) { return re.test(gid); }),
+      function(fgid) { return parseInt(fgid.match(re)[1], 10); }
+    );
+  };
+
   var renderConferenceHeader = function() {
     $('#group-container').append(
       '<div id="header"></div>',
       '<div id="invitation"></div>',
-      '<div id="notes"><div class="tabs-container"></div></div>'
+      '<div id="notes"><div class="tabs-container" style="display: none;"></div></div>'
     );
     $attach('#header', 'mkHostHeader', [
       "UAI 2017 Conference",
@@ -111,15 +122,21 @@ console.log(result);
 
   var renderConferenceTabs = function() {
     $('#notes .tabs-container').empty();
-console.log('in render tabs');
+
     var templateData = {
       sections: [
+        {
+          heading: 'All Papers',
+          headingCount: null,
+          id: 'all-papers',
+          content: null,
+          active: true
+        },
         {
           heading: 'My Submitted Papers',
           headingCount: null,
           id: 'my-submitted-papers',
           content: null,
-          active: true
         },
         {
           heading: 'My Tasks',
@@ -130,14 +147,6 @@ console.log('in render tabs');
       ]
     };
 
-    if (_.includes(userGroups, 'auai.org/UAI/2017/Program_Committee')) {
-      templateData.sections.push({
-        heading: 'All Papers',
-        headingCount: null,
-        id: 'all-papers',
-        content: null
-      });
-    }
     $('#notes .tabs-container').append(Handlebars.templates['components/tabs'](templateData));
   };
 
@@ -145,12 +154,33 @@ console.log('in render tabs');
     var notes = data.notes;
     var assignedNotes = data.assignedNotes;
     var tagInvitations = data.tagInvitations;
-console.log('in render notes');
-console.log(assignedNotes);
-    if (notes.length) {
+
+    var acGroups = ['auai.org/UAI/2017/Program_Committee', 'auai.org/UAI/2017/Senior_Program_Committee', 'auai.org/UAI/2017/Program_Co-Chairs'];
+    if (_.intersection(userGroups, acGroups).length) {
+      displayNotes(notes, tagInvitations, '#all-papers');
+
+      var submittedPapers = getPaperNumbersfromGroups(userGroups);
+      var filteredNotes = _.filter(notes, function(n) { return _.includes(submittedPapers, n.number); });
+      if (filteredNotes.length) {
+        displayNotes(filteredNotes, tagInvitations, '#my-submitted-papers');
+      } else {
+        $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
+      }
+    } else {
+      $('.tabs-container a[href="#all-papers"]').parent().hide();
+
       displayNotes(notes, tagInvitations, '#my-submitted-papers');
-      displayNotes(assignedNotes, tagInvitations, '#my-tasks');
     }
+
+    if (assignedNotes.length) {
+      displayNotes(assignedNotes, tagInvitations, '#my-tasks');
+    } else {
+      $('.tabs-container a[href="#my-tasks"]').parent().hide();
+    }
+
+    $('#notes .tabs-container').fadeIn('fast', function() {
+      $('.tabs-container li:visible a').eq(0).click();
+    });
   };
 
   var displayNotes = function(notes, tagInvitations, container) {
@@ -194,7 +224,7 @@ console.log(assignedNotes);
 
     $.when(getInvitation(), getNotes(), getAssignedNotes(), getTagInvitations()).done(function(invitation, notes, assignedNotes, tagInvitations) {
       var sm = mkStateManager();
-console.log('assignedNotes: ' + assignedNotes);
+
       if (invitation) {
         sm.update('invitationTrip', {
           invitation: invitation
