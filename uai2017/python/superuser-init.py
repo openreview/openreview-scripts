@@ -206,7 +206,7 @@ if client.user['id'].lower()=='openreview.net':
             'values-regex': '~.*'
         },
         'writers': {
-            'value-copied': '{content.authorids}'
+            'values': []
         },
         'content': {
             'title': {
