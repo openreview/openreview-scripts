@@ -6,7 +6,7 @@ npm-debug.log
 *.ipynb
 !./tutorial/*.ipynb
 */.ipynb_checkpoints
-.csv
+*.csv
 *.log
 iclr2017/data
 iclr2017/process/submissionProcess_conference.js
