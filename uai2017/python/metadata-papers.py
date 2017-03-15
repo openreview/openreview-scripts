@@ -13,7 +13,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
-parser.add_argument('--bidscores', help="The xml file containing the reviewer bids")
 
 args = parser.parse_args()
 
@@ -90,27 +89,28 @@ for reg in spc_reg_responses:
 
 for n in metadata_notes:
     forum = n.forum
-    user_metadata = []
+    reviewer_metadata = []
+    areachair_metadata = []
     paper_metadata = []
     paper_note = client.get_note(forum)
 
     for bid in bids_by_id[forum]:
 
         if bid.signatures[0] in reviewers.members:
-            user_metadata.append({
+            reviewer_metadata.append({
                 'user': bid.signatures[0],
                 'score': bid_score_map[bid.tag],
                 'source': 'ReviewerBid'
             })
         if bid.signatures[0] in areachairs.members:
-            user_metadata.append({
+            areachair_metadata.append({
                 'user': bid.signatures[0],
                 'score': bid_score_map[bid.tag],
                 'source': 'AreachairBid'
             })
 
     for bid in recs_by_id[forum]:
-        user_metadata.append({
+        reviewer_metadata.append({
             'user': bid.tag,
             'score': '+inf',
             'source': 'AreachairRec'
@@ -118,7 +118,7 @@ for n in metadata_notes:
 
     # The following for loop is needed until we have a real way of getting reviewer-paper scores
     for reviewer in reviewers.members:
-        user_metadata.append({
+        reviewer_metadata.append({
             'user': reviewer,
             'score': 0.5,
             'source': 'DummyModel'
@@ -127,7 +127,7 @@ for n in metadata_notes:
     # The following for loop is needed until we have a real way of getting paper-paper scores
     for m in metadata_notes:
         paper_metadata.append({
-            'submissionId': m.number,
+            'submissionId': paper_note.number,
             'score': 1.0 if m.forum == n.forum else 0.0,
             'source': 'DummyModel'
         })
@@ -140,20 +140,22 @@ for n in metadata_notes:
             primary_weight = 0.7
         )
 
-        user_metadata.append({
+        areachair_metadata.append({
             'user': a,
             'score': ac_affinity,
             'source': 'SubjectAreaOverlap'
         })
 
-    metadata_by_id[forum].content['users'] = user_metadata
-    metadata_by_id[forum].content['papers'] = paper_metadata
     metadata_by_id[forum].content['minreviewers'] = 1
-    metadata_by_id[forum].content['maxreviewers'] = 7
+    metadata_by_id[forum].content['maxreviewers'] = 3
     metadata_by_id[forum].content['minareachairs'] = 0
     metadata_by_id[forum].content['maxareachairs'] = 1
+    metadata_by_id[forum].content['reviewers'] = reviewer_metadata
+    metadata_by_id[forum].content['areachairs'] = areachair_metadata
+    metadata_by_id[forum].content['papers'] = paper_metadata
     metadata_by_id[forum].content['title'] = paper_note.content['title']
 
+    print "populating metadata for PAPER %s" % forum
     client.post_note(metadata_by_id[forum])
 
 

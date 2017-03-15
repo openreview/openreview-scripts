@@ -40,6 +40,7 @@ def overwrite_allowed(groupid):
 
 call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process"])
 call(["node", "../../scripts/processToFile.js", "../process/spc_registrationProcess.template", "../process"])
+call(["node", "../../scripts/processToFile.js", "../process/pc_registrationProcess.template", "../process"])
 
 if client.user['id'].lower()=='openreview.net':
 
@@ -190,7 +191,7 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = ['~'],
         signatures = [CONFERENCE],
-        duedate = 1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        duedate = 1491044400000, #duedate is March 31, 2017, 23:59:59 Samoa Time
         process = '../process/usersubmissionProcess.js')
 
     submission_invitation.reply = {
@@ -205,7 +206,7 @@ if client.user['id'].lower()=='openreview.net':
             'values-regex': '~.*'
         },
         'writers': {
-            'value-copied': '{content.authorids}'
+            'values': []
         },
         'content': {
             'title': {
@@ -275,7 +276,6 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = ['~'],
         signatures = [CONFERENCE],
-        duedate = 1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         process = '../process/submissionProcess.js')
 
     blind_submission_invitation.reply = {
@@ -429,6 +429,45 @@ if client.user['id'].lower()=='openreview.net':
     invitations.append(spc_registration)
 
 
+
+    ## Create Senior_Program_Committee registration invitation, and add it to the list of invitations to post
+    pc_registration = openreview.Invitation(CONFERENCE, 'pc_registration',
+        readers = [CONFERENCE, COCHAIRS],
+        writers = [CONFERENCE],
+        invitees = ['OpenReview.net'],
+        signatures = [CONFERENCE],
+        process = '../process/pc_registrationProcess.js'
+        )
+
+    pc_registration.reply = {
+        "content": {
+            'title': {
+                'description': 'Title of paper.',
+                'order': 1,
+                'value-regex': '.{1,250}',
+                'required':True
+            },
+            'description': {
+                'order': 2,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'required':True
+            },
+        },
+        "readers":{
+            'values': [PC]
+        },
+        "signatures":{
+            'values': [CONFERENCE]
+        },
+        "writers":{
+            'values': [CONFERENCE]
+        }
+    }
+
+    invitations.append(pc_registration)
+
+
+
     #Create the paper metadata invitation
     paper_metadata_reply = {
         'forum': None,
@@ -495,8 +534,7 @@ if client.user['id'].lower()=='openreview.net':
         signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         web='../webfield/web-field-bid-tag-invitation.html',
-        multiReply=False,
-        taskCompletionCount=50)
+        multiReply=False)
 
     bid_tag_invitation.reply = {
         'forum': None,
@@ -544,12 +582,26 @@ if client.user['id'].lower()=='openreview.net':
         'description': "Thank you for agreeing to serve as a Senior Program Committee member. Please submit your areas of expertise on this page by clicking on the \"Add Senior_Program_Committee Expertise\" button below. You may edit your submission at any time by returning to this page and selecting the \"Edit\" button next to your submission. You can find this page again by going to your Tasks page, scrolling down to your list of submitted posts, and selecting your Senior Program Committee Form Response."
     }
 
-    #Create a note if not present
-    notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/spc_registration')
-    if not notes:
+    ## Create a root note for the pc_registration invitation
+    pc_registration_rootnote = openreview.Note(invitation='auai.org/UAI/2017/-/pc_registration',
+        readers = [PC],
+        writers = [CONFERENCE],
+        signatures = [CONFERENCE])
+    pc_registration_rootnote.content = {
+        'title': 'Reviewer Expertise Registration',
+        'description': "Thank you for agreeing to serve as a Program Committee member / Reviewer. Please submit your areas of expertise on this page by clicking on the \"Add Reviewer Expertise\" button below. You may edit your submission at any time by returning to this page and selecting the \"Edit\" button next to your submission. You can find this page again by going to your Tasks page, scrolling down to your list of submitted posts, and selecting your Reviewer Form Response."
+    }
+
+    #Post the notes above if not present
+    spc_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/spc_registration')
+    if not spc_notes:
         print 'Posting root note'
         client.post_note(spc_registration_rootnote)
 
+    pc_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/pc_registration')
+    if not pc_notes:
+        print 'Posting root note'
+        client.post_note(pc_registration_rootnote)
 
 else:
     print "Aborted. User must be Super User."

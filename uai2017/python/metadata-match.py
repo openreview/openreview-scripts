@@ -13,6 +13,10 @@ import match_utils
 # .............................................................................
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', help="choose either \"reviewers\" or \"areachairs\"")
+parser.add_argument('--minusers', help="the minimum number of users assigned per paper (default 1)")
+parser.add_argument('--maxusers', help="the maximum number of users assigned per paper (default 3)")
+parser.add_argument('--minpapers', help="the minimum number of papers assigned per user (default 0)")
+parser.add_argument('--maxpapers', help="the maximum number of papers assigned per user (default 5)")
 parser.add_argument('-o','--outdir', help="directory to write uai_assignments.csv")
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
@@ -30,17 +34,22 @@ else:
 params = {'minusers': None, 'maxusers': None}
 mode = args.mode.lower() if args.mode else 'reviewers'
 
+params['minusers'] = int(args.minusers) if args.minusers else 1
+params['maxusers'] = int(args.maxusers) if args.maxusers else 3
+params['minpapers'] = int(args.minpapers) if args.minpapers else 0
+params['maxpapers'] = int(args.maxpapers) if args.maxpapers else 5
+
 if mode == 'reviewers':
     user_group = client.get_group(PC)
-    params['minusers'] = 'minreviewers'
-    params['maxusers'] = 'maxreviewers'
-elif mode == 'areachairs':
+    params['metadata_group'] = 'reviewers'
+    user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Reviewer/Metadata")
+
+if mode == 'areachairs':
     user_group = client.get_group(SPC)
-    params['minusers'] = 'minareachairs'
-    params['maxusers'] = 'maxareachairs'
+    params['metadata_group'] = 'areachairs'
+    user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Area_Chair/Metadata")
 
 blind_submissions = client.get_notes(invitation = CONFERENCE+"/-/blind-submission")
-user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/User/Metadata")
 paper_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Paper/Metadata")
 
 matcher = openreview_matcher.Matcher(user_group, blind_submissions, user_metadata_notes, paper_metadata_notes, params)

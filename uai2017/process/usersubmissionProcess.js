@@ -11,7 +11,7 @@ function() {
       id: CONFERENCE + '/-/Paper' + note.number + '/Add/Revision',
       signatures: [CONFERENCE],
       writers: [CONFERENCE],
-      invitees: note.writers,
+      invitees: note.content.authorids.concat(note.signatures),
       noninvitees: [],
       readers: ['everyone'],
       reply: {
