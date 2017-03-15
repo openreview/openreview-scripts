@@ -191,7 +191,7 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = ['~'],
         signatures = [CONFERENCE],
-        duedate = 1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
+        duedate = 1491044400000, #duedate is March 31, 2017, 23:59:59 Samoa Time
         process = '../process/usersubmissionProcess.js')
 
     submission_invitation.reply = {
@@ -276,7 +276,6 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = ['~'],
         signatures = [CONFERENCE],
-        duedate = 1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
         process = '../process/submissionProcess.js')
 
     blind_submission_invitation.reply = {
