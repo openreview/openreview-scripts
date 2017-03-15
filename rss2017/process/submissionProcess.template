@@ -3,7 +3,7 @@ function(){
 
   const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
   const COCHAIRS = CONFERENCE+"/Program_Co-Chairs"
-  const TRACK = CONFERENCE+TRACK_NAME
+  const TRACK = CONFERENCE+'/'+TRACK_NAME
   const PAPERGRP = TRACK+'/Paper' + note.number;
   const PAPERINV = TRACK+'/-/Paper' + note.number;
   const DUE_DATE = new Date(2017, 6, 30, 17, 15);
