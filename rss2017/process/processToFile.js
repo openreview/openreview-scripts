@@ -8,12 +8,6 @@ console.log('Main process', mainProcessFile);
 
 var mainProcess = fs.readFileSync(mainProcessFile, 'utf8');
 
-// If there is track information add it as an argument to the function call
-if (track) {
-   console.log('Track: ', track);
-   mainProcess = mainProcess.replace("function(){", "function(){\n\tconst TRACK_NAME = '"+track+"';")
-}
-
 // Look for << filename.js>> and replace that string with the code in the file
 var regex = new RegExp('<<(.+\.js)>>', 'g');
 var matches = mainProcess.match(regex);
@@ -29,6 +23,19 @@ if(matches) {
 	})
 }
 
+
+// If there is track information add it as an argument to the function call
+if (track) {
+   console.log('Track: ', track);
+   var before = 'functionTrack(){'
+   var replacement = "function(){\n\tconst TRACK_NAME = '"+track+"';"
+   while (mainProcess.includes(before)) {
+        mainProcess = mainProcess.replace(before, replacement)
+        console.log('replaced ', before)
+   }
+}
+
+// The new file is based on the template file with the track name added
 var newFileName = mainProcessFile.replace('.template', track+'.js');
 console.log('Save to file', newFileName);
 fs.writeFileSync(newFileName, mainProcess);

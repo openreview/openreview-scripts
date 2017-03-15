@@ -1,4 +1,4 @@
-function(){
+functionTrack(){
 	var or3client = lib.or3client;
 
   const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
@@ -21,6 +21,15 @@ function(){
 
   var reviewerGroup = {
     'id': PAPERGRP + '/Reviewers',
+    'signatures':[TRACK],
+    'writers':[TRACK],
+    'members':[],
+    'readers':[TRACK, COCHAIRS, PAPERGRP + '/Reviewers'],
+    'signatories':[]
+  };
+
+  var reviewerNonreadersGroup = {
+    'id': PAPERGRP + '/Review-nonreaders',
     'signatures':[TRACK],
     'writers':[TRACK],
     'members':[],
@@ -95,7 +104,7 @@ function(){
     }
   };
 
-  var conference = "RSS 2017 Workshop";
+  var conference = "RSS 2017 Workshop "+TRACK_NAME;
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
@@ -105,15 +114,16 @@ function(){
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
 
-
+  console.log('PAM - posting group '+reviewerGroup.id);
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result => {
-    invitation_promises = [
+    group_promises = [
       or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, reviewerNonreadersGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, anonReviewer1, 'POST', token)
     ];
 
-    return Promise.all(invitation_promises);
+    return Promise.all(group_promises);
   })
   .then(result => {
     return or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token);
