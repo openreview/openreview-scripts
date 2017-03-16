@@ -10,6 +10,7 @@ parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--ofile', help="output file name")
+parser.add_argument('--name', help="name of the track: conference or workshop")
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
@@ -24,6 +25,10 @@ if args.ofile!=None:
 ## Initialize output file type - check for valid values
 output_type = 2
 
+conference = 'conference'
+if args.name:
+    conference = args.name
+
 class PaperStatus:
     Unassigned, Assigned, Commented, Reviewed, FullyReviewed = range(5)
 
@@ -37,15 +42,15 @@ def get_score(content_type):
     return string_var
 
 # pull all needed info from the database
-submissions = client.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
+submissions = client.get_notes(invitation='ICLR.cc/2017/' + conference + '/-/submission')
 invitation = "official/review"
 headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json',
            'Authorization': 'Bearer ' + client.token}
-anon_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/conference/paper.*/AnonReviewer.*',
+anon_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/' + conference + '/paper.*/AnonReviewer.*',
                               headers=headers)
-current_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/conference/paper.*/reviewers',
+current_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2017/' + conference + '/paper.*/reviewers',
                                  headers=headers)
-notes = client.get_notes(invitation='ICLR.cc/2017/conference/-/paper.*/' + invitation)
+notes = client.get_notes(invitation='ICLR.cc/2017/' + conference + '/-/paper.*/' + invitation)
 
 # The following are dictionaries to connect the papers, reviewers and reviews
 # 	the signature is the whole directory struct leading up to the Anonymized name
@@ -109,8 +114,11 @@ for r in current_reviewers.json():
 # now that all reviewers have been added to the paper_status
 # for each paper determine how many reviewers have completed reviewing
 for paper_num in paper_status:
-    paper_status[paper_num]['percent'] = 100 * paper_status[paper_num]['reviewed'] / paper_status[paper_num][
-        'count']
+    paper_data = paper_status[paper_num]
+    count = paper_data['count']
+    paper_data['percent'] = 0
+    if count:
+        paper_data['percent'] = 100 * paper_data['reviewed'] / count
 
 # sort on % complete (doesn't like being sorted in place)
 paper_status_sorted = sorted(paper_status, key=lambda x: (paper_status[x]['percent'], x))
