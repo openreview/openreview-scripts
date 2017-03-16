@@ -240,6 +240,12 @@ if openreview.user['id'].lower() == 'openreview.net':
                 'required': False
 
             },
+            'pub_key': {
+                'description': 'a key that uniquely identifies this record. formatted as follows: <first author lastname>|<parsed title>, where <parsed title> is the title, lowercased and with spaces replaced with _ (underscore)',
+                'order': 5,
+                'value-regex': '[^ ]+\|[^ ]+.',
+                'required': False
+            }
 
         }
     }
@@ -250,11 +256,23 @@ if openreview.user['id'].lower() == 'openreview.net':
                                        invitees=['DBLP.org/upload'],
                                        signatures=['DBLP.org'],
                                        reply=reply,
-                                       duedate=0,
-                                       # duedate of 0 means that the invitation has not been released
                                        process='../process/dblp_process.js')
 
-    invitations = [submission_invitation]
+
+    revision_reply = reply.copy()
+    revision_reply.pop('forum')
+    revision_reply.pop('replyto')
+    revision_reply['referent'] = None
+
+    revision_invitation = Invitation('DBLP.org','Add/Revision',
+        signatures = ['DBLP.org'],
+        writers = ['DBLP.org/upload'],
+        invitees = ['DBLP.org/upload'],
+        readers = ['everyone'],
+        reply = revision_reply
+    )
+
+    invitations = [submission_invitation, revision_invitation]
 
     ## Post the invitations
     for i in invitations:
