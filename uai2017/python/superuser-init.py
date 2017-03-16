@@ -199,7 +199,7 @@ if client.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [CONFERENCE, COCHAIRS]
+            'values-copied': [CONFERENCE, COCHAIRS, '{content.authorids}', '{signatures}']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
