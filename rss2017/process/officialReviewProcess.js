@@ -1,4 +1,9 @@
-functionTrack(){
+function(){
+    const TRACK_NAME = <<param0>>;
+    const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
+    const TRACK = CONFERENCE+'/'+TRACK_NAME;
+    const PAPERGRP = TRACK+'/Paper' + note.number;
+
     var or3client = lib.or3client;
 
     console.log('PAM - the official Review Process is here');
@@ -21,9 +26,7 @@ functionTrack(){
 
       var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
 
-      return Promise.all([
-        authorMailP
-      ])
+      return authorMailP;
     })
     .then(result => or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token))
     .then(result => done())

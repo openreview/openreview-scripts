@@ -241,8 +241,9 @@ if client.user['id'].lower()=='openreview.net':
 
     # processToFile takes a template file, turns it into a js file and inserts
     # process function code in as indicated by << >>
-    call(["node", "../process/processToFile.js", "../process/submissionProcess.template", "../process", "Poster"])
-    call(["node", "../process/processToFile.js", "../process/submissionProcess.template", "../process", "Proceedings"])
+
+    call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process", "Poster"])
+    call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process", "Proceedings"])
     proceeding_invitation = openreview.Invitation(PROCEEDINGS,
         'Submission',
         readers = ['everyone'],
