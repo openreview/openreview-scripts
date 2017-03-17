@@ -135,7 +135,7 @@ $(function() {
   var getAssignedNotes = function() {
     return httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/.*', invitee: true, duedate: true}).then(function(result) {
       return _.filter(result.notes, function(n) {
-        return n.replyToNote.invitation === 'auai.org/UAI/2017/-/blind-submission';
+        return n.replytoNote.invitation === 'auai.org/UAI/2017/-/blind-submission';
       });
     }, function(error) {
       return error;
@@ -151,8 +151,8 @@ $(function() {
   };
 
   var getUserGroups = function() {
-    if (!user || user.id.startsWith('_guest')) {
-      return [];
+    if (!user || user.id.startsWith('_guest') || user.id.startsWith('guest_')) {
+      return Promise.resolve([]);
     }
 
     return httpGetP('groups', {member: user.id}).then(function(result) {
@@ -212,9 +212,9 @@ $(function() {
       });
     }
 
-    $('#allPapers .note.panel').remove();
-    $('#allPapers .empty-message').remove();
-    displayNotes(filteredNotes, '#allPapers');
+    $('#all-submitted-papers .note.panel').remove();
+    $('#all-submitted-papers .empty-message').remove();
+    displayNotes(filteredNotes, '#all-submitted-papers');
     return false;
   };
 
@@ -234,7 +234,7 @@ $(function() {
     });
 
     assignedNotes = _.map(assignedNotes, function(noteInvitePair) {
-      return noteInvitePair.replyToNote;
+      return noteInvitePair.replytoNote;
     });
 
     return {
@@ -378,7 +378,7 @@ $(function() {
     var notes = data.allNotes;
     var submittedNotes = data.submittedNotes;
     var assignedNotes = data.assignedNotes;
-    var commentNotes = [];//data.commentNotes;
+    var commentNotes = data.commentNotes;
     var taskList = [];
 
     var displayOptions = {
@@ -386,8 +386,12 @@ $(function() {
     };
     var tasksOptions = {
       tagInvitations: data.tagInvitations,
-      emptyMessage: 'To view current tasks for UAI, visit the <a href="/tasks">Tasks page</a>'
+      emptyMessage: 'To view your current tasks for UAI, visit the <a href="/tasks">Tasks page</a>'
     };
+
+    if (_.isEmpty(userGroups)) {
+      return;
+    }
 
     // My Tasks tab
     displayNotes(taskList, '#my-tasks', tasksOptions);
@@ -416,7 +420,7 @@ $(function() {
 
     // My Comments & Reviews tab
     if (commentNotes.length) {
-      displayNotes(commentNotes, '#my-comments-reviews', displayOptions);
+      displayNotes(commentNotes, '#my-comments-reviews', {withParentNote: true});
     } else {
       $('.tabs-container a[href="#my-comments-reviews"]').parent().hide();
     }
