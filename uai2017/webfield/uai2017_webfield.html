@@ -151,7 +151,7 @@ $(function() {
   };
 
   var getUserGroups = function() {
-    if (!user || user.id.startsWith('_guest') || user.id.startsWith('guest_')) {
+    if (!user || _.startsWith(user.id, '_guest') || _.startsWith(user.id, 'guest_')) {
       return Promise.resolve([]);
     }
 
@@ -228,7 +228,9 @@ $(function() {
         if (original) {
           submittedNotes.push(original);
         }
-      } else {
+
+      } else if (_.startsWith(note.invitation, 'auai.org/UAI/2017') && (_.isNull(note.ddate) || _.isUndefined(note.ddate))) {
+        // TODO: remove this client side filtering when DB query is fixed
         commentNotes.push(note);
       }
     });
@@ -269,25 +271,31 @@ $(function() {
     var invitation = invitationTrip.invitation;
 
     var onInvitationButtonClicked = function() {
-      if (user && !user.id.startsWith('guest_')) {
-        view.mkNewNoteEditor(invitation, null, null, user, {
-          onNoteCreated: function(idRecord) {
-            $.when(getAllNotes(), getTagInvitations()).done(function(notes, tagInvitations) {
-              sm.update('notes', {
-                notes: notes,
-                tagInvitations: tagInvitations
-              });
-            });
-          },
-
-          onCompleted: function(editor) {
-            $('#notes').prepend(editor);
-          }
-        });
-
-      } else {
+      if (!user || _.startsWith(user.id, '_guest') || _.startsWith(user.id, 'guest_')) {
         promptLogin(user);
+        return;
       }
+
+      view.mkNewNoteEditor(invitation, null, null, user, {
+        onNoteCreated: function(idRecord) {
+          $.when(
+            getAllNotes(),
+            getSubmittedNotes(),
+            getAssignedNotes(),
+            getTagInvitations()
+          ).done(function(notes, submittedNotes, assignedNotes, tagInvitations) {
+            allNotes = notes;
+
+            var tabContents = processRawNoteData(notes, submittedNotes, assignedNotes);
+            tabContents.tagInvitations = tagInvitations;
+            sm.update('notes', tabContents);
+          });
+        },
+
+        onCompleted: function(editor) {
+          $('#invitation .panel').append(editor);
+        }
+      });
     };
 
     $attach(
@@ -405,11 +413,7 @@ $(function() {
     }
 
     // My Submitted Papers tab
-    if (submittedNotes.length) {
-      displayNotes(submittedNotes, '#my-submitted-papers', displayOptions);
-    } else {
-      $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
-    }
+    displayNotes(submittedNotes, '#my-submitted-papers', displayOptions);
 
     // My Assigned Papers tab
     if (assignedNotes.length) {
@@ -438,6 +442,8 @@ $(function() {
     };
     _.assign(config, options);
 
+    $(container).empty();
+
     _.forEach(notes, function(note) {
       $attach(container, 'mkNotePanel', [note, config], true);
     });
@@ -460,6 +466,7 @@ $(function() {
   // Start the whole thing running
   var userGroups = [];
   var allNotes = [];
+  var sm = null;
 
   renderConferenceHeader();
 
@@ -473,24 +480,19 @@ $(function() {
     getAssignedNotes(),
     getTagInvitations()
   ).done(function(groups, invitation, notes, submittedNotes, assignedNotes, tagInvitations) {
-    var sm = mkStateManager();
-
+    sm = mkStateManager();
     userGroups = groups;
     allNotes = notes;
 
+    sm.update('invitationTrip', {invitation: invitation});
+
     var tabContents = processRawNoteData(notes, submittedNotes, assignedNotes);
-
-    sm.update('invitationTrip', {
-      invitation: invitation
-    });
-
-    sm.update('notes', _.assign(tabContents, {
-      tagInvitations: tagInvitations
-    }));
+    tabContents.tagInvitations = tagInvitations;
+    sm.update('notes', tabContents);
 
     sm.addHandler('conference', {
       invitationTrip: renderConferenceInvitations,
-      notes: renderConferenceNotes
+      notes: renderConferenceNotes,
     });
 
     $('#group-container').on('shown.bs.tab', 'ul.nav-tabs li a', function (e) {
