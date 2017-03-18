@@ -442,7 +442,7 @@ $(function() {
     };
     _.assign(config, options);
 
-    $(container).empty();
+    $('.note.panel, .empty-message', container).remove();
 
     _.forEach(notes, function(note) {
       $attach(container, 'mkNotePanel', [note, config], true);
