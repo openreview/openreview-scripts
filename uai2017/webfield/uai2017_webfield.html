@@ -218,7 +218,7 @@ $(function() {
     return false;
   };
 
-  var processRawNoteData = function(blindedNotes, authorNotes, assignedNotes) {
+  var processRawNoteData = function(blindedNotes, authorNotes, assignedPairs) {
     var submittedNotes = [];
     var commentNotes = [];
 
@@ -235,7 +235,7 @@ $(function() {
       }
     });
 
-    assignedNotes = _.map(assignedNotes, function(noteInvitePair) {
+    assignedNotes = _.map(assignedPairs, function(noteInvitePair) {
       return noteInvitePair.replytoNote;
     });
 
@@ -244,8 +244,25 @@ $(function() {
       submittedNotes: submittedNotes,
       assignedNotes: assignedNotes,
       commentNotes: commentNotes,
+      tasksList: assignedPairs
     };
   };
+
+  var getDueDateStatus = function(date) {
+    var day = 24 * 60 * 60 * 1000;
+    var diff = Date.now() - date.getTime();
+
+    if (diff > 0) {
+      return 'expired';
+    }
+
+    if (diff > (-1 * 3 * day)) {
+      return 'warning';
+    }
+
+    return '';
+  };
+
 
   // Render functions
   var renderConferenceHeader = function() {
@@ -387,14 +404,11 @@ $(function() {
     var submittedNotes = data.submittedNotes;
     var assignedNotes = data.assignedNotes;
     var commentNotes = data.commentNotes;
-    var taskList = [];
+    var tasksList = data.tasksList;
+    var tagInvitations = data.tagInvitations;
 
     var displayOptions = {
-      tagInvitations: data.tagInvitations
-    };
-    var tasksOptions = {
-      tagInvitations: data.tagInvitations,
-      emptyMessage: 'To view your current tasks for UAI, visit the <a href="/tasks">Tasks page</a>'
+      tagInvitations: tagInvitations
     };
 
     if (_.isEmpty(userGroups)) {
@@ -402,7 +416,7 @@ $(function() {
     }
 
     // My Tasks tab
-    displayNotes(taskList, '#my-tasks', tasksOptions);
+    displayTasks(tasksList, tagInvitations, '#my-tasks');
 
     // All Submitted Papers tab
     var acGroups = ['auai.org/UAI/2017/Program_Committee', 'auai.org/UAI/2017/Senior_Program_Committee', 'auai.org/UAI/2017/Program_Co-Chairs'];
@@ -450,6 +464,59 @@ $(function() {
 
     if (!notes.length) {
       $(container).append('<p class="empty-message">' + config.emptyMessage + '</p>');
+    }
+  };
+
+  var displayTasks = function(invitationPairs, tagInvitations, container) {
+    var $rows = [];
+
+    $('.note.panel, .empty-message, .invitation-link', container).remove();
+
+    var spcId = 'auai.org/UAI/2017/Senior_Program_Committee';
+    if (_.includes(userGroups, spcId)) {
+      var consoleLink = '<div class="note panel"><a href="/group?id=' + spcId + '" class="console-link">UAI 2017 Senior Program Committee Console</a></div>';
+      $(container).append(consoleLink);
+    }
+
+    _.forEach(tagInvitations, function(inv) {
+      var duedate = new Date(inv.duedate);
+      var duedateStr = duedate.toLocaleDateString('en-GB', { hour: 'numeric', minute: 'numeric', day: '2-digit', month: 'short', year: 'numeric'});
+
+      if (inv.web) {
+        $rows.push($('<div>', {class: 'row'}).append(
+          $('<a>', {href: '/invitation?id=' + inv.id, text: view.prettyId(inv.id), style: 'font-size: 1rem;font-weight: bold;'}),
+          $('<div>', {class: 'invitation_duedate', text: 'Due: ' + duedateStr}).addClass(getDueDateStatus(duedate))
+        ));
+      }
+    });
+
+    _.forEach(invitationPairs, function(pair) {
+      var inv = pair.invitation;
+      var replytoNote = pair.replytoNote;
+      var duedate = new Date(inv.duedate);
+      var duedateStr = duedate.toLocaleDateString('en-GB', { hour: 'numeric', minute: 'numeric', day: '2-digit', month: 'short', year: 'numeric'});
+
+      $rows.push(
+        view.mkNotePanel(replytoNote, {
+          invitation: inv,
+          titleLink: 'HREF',
+          withReplyCount: true
+        }),
+        $('<div class="invitation-link">').append(
+          $('<a href="#">' + view.prettyInvitationId(inv.id) + '</a>').click(function() {
+            controller.removeHandler('tasks');
+            pushForum(inv.reply.forum, inv.reply.replyto, inv.id);
+            return false;
+          }),
+          '<span class="invitation-duedate ' + getDueDateStatus(duedate) + '">Due: ' + duedateStr + '</span>'
+        )
+      );
+    });
+
+    if ($rows.length) {
+      $(container).append($rows);
+    } else {
+      $(container).append('<p class="empty-message">No outstanding tasks for UAI 2017</p>');
     }
   };
 
