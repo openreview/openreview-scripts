@@ -488,9 +488,9 @@ $(function() {
       var duedateStr = duedate.toLocaleDateString('en-GB', { hour: 'numeric', minute: 'numeric', day: '2-digit', month: 'short', year: 'numeric'});
 
       if (inv.web) {
-        $rows.push($('<div>', {class: 'row'}).append(
-          $('<a>', {href: '/invitation?id=' + inv.id, text: view.prettyId(inv.id), style: 'font-size: 1rem;font-weight: bold;'}),
-          $('<div>', {class: 'invitation_duedate', text: 'Due: ' + duedateStr}).addClass(getDueDateStatus(duedate))
+        $rows.push($('<div>', {class: 'panel invitation-link'}).append(
+          $('<a>', {href: '/invitation?id=' + inv.id, text: view.prettyId(inv.id), class: 'console-link'}),
+          $('<span>', {class: 'invitation-duedate', text: 'Due: ' + duedateStr}).addClass(getDueDateStatus(duedate))
         ));
       }
     });
