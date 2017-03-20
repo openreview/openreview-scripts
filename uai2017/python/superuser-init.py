@@ -222,7 +222,7 @@ if client.user['id'].lower()=='openreview.net':
                 'required':True
             },
             'authorids': {
-                'description': 'Comma separated list of author email addresses, in the same order as above. Be sure each email address is linked to the each author profile.',
+                'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. Be sure each email address is linked to the each author profile.',
                 'order': 3,
                 'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
                 'required':True
