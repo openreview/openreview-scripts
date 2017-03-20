@@ -233,14 +233,8 @@ $(function() {
       }
     });
 
-    assignedNotes = _.map(
-      _.filter(assignedPairs, function(n) {
-        return n.replytoNote.invitation === 'auai.org/UAI/2017/-/blind-submission';
-      }),
-      function(noteInvitePair) {
-        return noteInvitePair.replytoNote;
-      }
-    );
+    var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
+    var assignedNotes = _.filter(blindedNotes, function(n) { return _.includes(assignedPaperNumbers, n.number); });
 
     return {
       allNotes: blindedNotes,
@@ -249,6 +243,14 @@ $(function() {
       commentNotes: commentNotes,
       tasksList: assignedPairs
     };
+  };
+
+  var getPaperNumbersfromGroups = function(groups) {
+    var re = /auai.org\/UAI\/2017\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
+    return _.map(
+      _.filter(groups, function(gid) { return re.test(gid); }),
+      function(fgid) { return parseInt(fgid.match(re)[1], 10); }
+    );
   };
 
   var getDueDateStatus = function(date) {
