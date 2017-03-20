@@ -134,9 +134,7 @@ $(function() {
 
   var getAssignedNotes = function() {
     return httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/.*', invitee: true, duedate: true}).then(function(result) {
-      return _.filter(result.notes, function(n) {
-        return n.replytoNote.invitation === 'auai.org/UAI/2017/-/blind-submission';
-      });
+      return result.notes;
     }, function(error) {
       return error;
     });
@@ -235,9 +233,14 @@ $(function() {
       }
     });
 
-    assignedNotes = _.map(assignedPairs, function(noteInvitePair) {
-      return noteInvitePair.replytoNote;
-    });
+    assignedNotes = _.map(
+      _.filter(assignedPairs, function(n) {
+        return n.replytoNote.invitation === 'auai.org/UAI/2017/-/blind-submission';
+      }),
+      function(noteInvitePair) {
+        return noteInvitePair.replytoNote;
+      }
+    );
 
     return {
       allNotes: blindedNotes,
@@ -296,11 +299,13 @@ $(function() {
       view.mkNewNoteEditor(invitation, null, null, user, {
         onNoteCreated: function(idRecord) {
           $.when(
+            getUserGroups(),
             getAllNotes(),
             getSubmittedNotes(),
             getAssignedNotes(),
             getTagInvitations()
-          ).done(function(notes, submittedNotes, assignedNotes, tagInvitations) {
+          ).done(function(groups, notes, submittedNotes, assignedNotes, tagInvitations) {
+            userGroups = groups;
             allNotes = notes;
 
             var tabContents = processRawNoteData(notes, submittedNotes, assignedNotes);
