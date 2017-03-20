@@ -1,0 +1,94 @@
+import argparse
+import openreview
+import csv
+
+## Argument handling
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--username')
+parser.add_argument('--password')
+parser.add_argument('--ifile', help="input file name - default to status.csv")
+args = parser.parse_args()
+
+## Initialize the client library with username and password
+if args.username!=None and args.password!=None:
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    client = openreview.Client(baseurl=args.baseurl)
+## Initialize output file name
+file_name = "acceptances.csv"
+if args.ifile!=None:
+    file_name = args.ifile
+
+submissions = client.get_notes(invitation='ICLR.cc/2017/workshop/-/submission')
+acceptances = client.get_notes(invitation='ICLR.cc/2017/workshop/-/paper.*/acceptance')
+# valid acceptance values
+valid_values = [
+    "OK",
+    "Reject"
+]
+
+# these
+ACCEPT_INDX = 6
+
+any_errors = False
+# accept_new[paper_num] dictionary w/ 'forum', 'acceptance'
+accept_new = {}
+# initialize accept_new from file
+try:
+    with open(file_name, "rb") as in_file:
+        file_reader = csv.reader(in_file, delimiter=',')
+        for row in file_reader:
+            # first column is the paper number, last column is the needed acceptance status
+            paper_num = int(row[0])
+            # print("add %s" %paper_num)
+            if row[ACCEPT_INDX] in valid_values:
+                accept_new[paper_num] = {}
+                accept_new[paper_num]['acceptance'] = row[ACCEPT_INDX]
+            else:
+                any_errors = True
+                print("Paper%s invalid acceptance value '%s'" %(paper_num,row[ACCEPT_INDX]))
+
+except (OSError, IOError) as e:
+    print(e)
+    file_data =[]
+    exit()
+
+# if any of the acceptance values were set to unrecognized values, print the accepted values
+if any_errors:
+    print("Valid acceptance values are %s" %valid_values)
+
+# Since csv files use paper numbers and acceptance notes use forum,
+# need to translate between them.  Paper_numbers a dict w/ forum as key, and num as value
+paper_numbers = {}
+for paper in submissions:
+    paper_numbers[paper.forum] = paper.number
+    if paper.number in accept_new.keys():
+        accept_new[paper.number]['forum'] = paper.forum
+
+# Remove existing acceptance notes from the accept_new list.
+for note in acceptances:
+    paper_num = paper_numbers[note.forum]
+    if paper_num in accept_new.keys():
+        # Check if acceptance notes agree w/ spreadsheet values, throw error if problem
+        if note.content['decision'] != accept_new[paper_num]['acceptance']:
+            print("Cannot change previously accepted paper %s" % paper_num)
+        # remove from the new acceptance list
+        del accept_new[paper_num]
+
+
+# fill in generic acceptance note info
+note = openreview.Note()
+note.signatures = ['ICLR.cc/2017/pcs']
+note.writers = ['ICLR.cc/2017/pcs']
+note.readers = ['everyone']
+# for all new acceptances, set paper specific info and post acceptance note
+for paper_num in accept_new:
+    invitation ='ICLR.cc/2017/workshop/-/paper' +str(paper_num)+'/acceptance'
+    note.invitation = invitation
+    note.forum = accept_new[paper_num]['forum']
+    note.replyto = accept_new[paper_num]['forum']
+    note.content = {'decision':  'Accept' if accept_new[paper_num]['acceptance'] == 'OK' else 'Reject',
+                    'title':'ICLR committee final decision'}
+    client.post_note(note)
+    print ("Paper %s: new acceptance" % paper_num)

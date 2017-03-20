@@ -223,12 +223,16 @@ function () {
         'description': 'The users who will be allowed to read the above content.'
         },
       'content': {
-        'ICLR2017': {
+        'title': {
           'order': 1,
+          'value': 'ICLR committee final decision',
+          'description': 'Brief summary of your decision.'
+        },
+        'decision': {
+          'order': 2,
           'value-radio': [
-            'Accepted',
-            'Rejected',
-            'Pending'
+            'Accept',
+            'Reject'
           ]
         }
       }
