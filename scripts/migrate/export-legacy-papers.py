@@ -7,8 +7,6 @@
 #
 # NOTE: this will *not* make any changes to the Arango Database, it outputs
 # JSON records that you can then import into the Arango "note" collection.
-# To avoid duplicates, each record has a 'legacy_migration' field which
-# is set to true. Use this to remove records before re-importing the data.
 
 from pymongo import MongoClient
 import pprint
@@ -89,8 +87,8 @@ for venue in venues:
             if (pdf is not None):
                 pdf = 'https://arxiv.org/abs/' + pdf
             else:
-                # strip off the little something extra at the front of the URL field
-                pdf = doc.get('url', '???').replace('URL~', '')
+                pdf = '/pdf/' + doc.get('url').split('/file/')[1]
+
             if DEBUG: print "PDF: " + pdf
 
             tauthor = None
@@ -127,9 +125,8 @@ for venue in venues:
             abstract = doc['summary'].replace('"', '\'')
             # the import process to Arango wants one JSON record per line.
             noteJSON = ('{'
-                '"tddate": null,'
+                '"ddate": null,'
                 '"replyto": null,'
-                '"active": true,'
                 '"tmdate": ' + createddt + ','
                 '"tcdate": ' + createddt + ','
                 '"number": ' + str(count) + ','
@@ -137,7 +134,7 @@ for venue in venues:
                 '"invitation": "' + submitInvite + '",'
                 '"forum":   "' + forumid + '",'
                 '"tauthor":  "' + tauthor + '",'
-                '"signatures": [],'
+                '"signatures": ["' + tauthor + '"],'
                 '"readers": ["everyone"],'
                 '"writers": [],'
                 '"content": {'
@@ -149,10 +146,9 @@ for venue in venues:
                     '"authors":   [' + authorNameList + '],'
                     '"keywords": [],'
                     '"authorids":   [' + authorEmailList + ']'
-                '},'
-                '"legacy_migration" : true'
+                '}'
             '}')
-            # the last field (legacy_migration) will allow us to easily remove these records if needed.
+
 
             # some of the summaries contain line breaks which we don't want for the JSON import.
             print noteJSON.replace('\r\n', ' ').replace('\n', ' ')

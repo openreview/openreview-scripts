@@ -24,9 +24,9 @@ parser.add_argument('--password')
 args = parser.parse_args()
 
 CONFERENCE = 'AKBC.ws/2013'
-COCHAIRS = CONFERENCE + "/Program_Co-Chairs"
-SPC = CONFERENCE + "/Senior_Program_Committee"
-PC = CONFERENCE + "/Program_Committee"
+# COCHAIRS = CONFERENCE + "/Program_Co-Chairs"
+# SPC = CONFERENCE + "/Senior_Program_Committee"
+# PC = CONFERENCE + "/Program_Committee"
 
 
 ## Initialize the client library with username and password
@@ -59,34 +59,34 @@ if openreview.user['id'].lower()=='openreview.net':
             web         = '../webfield/akbc2013_webfield.html')
         groups.append(akbc2013)
 
-
-    if overwrite_allowed(COCHAIRS):
-        Program_Chairs = Group(COCHAIRS,
-            readers     = [CONFERENCE, COCHAIRS, SPC, PC],
-            writers     = [CONFERENCE],
-            signatures  = [CONFERENCE],
-            signatories = [COCHAIRS],
-            members     = [])
-        groups.append(Program_Chairs)
-
-
-    if overwrite_allowed(SPC):
-        spc = Group(SPC,
-            readers     = [CONFERENCE, COCHAIRS, SPC, PC],
-            writers     = [CONFERENCE], #the conference needs to be a writer whenever the process functions need to modify the group
-            signatures  = [CONFERENCE],
-            signatories = [SPC],
-            members     = [])
-        groups.append(spc)
-
-    if overwrite_allowed(PC):
-        pc = Group(PC,
-            readers     = [CONFERENCE, COCHAIRS, SPC, PC],
-            writers     = [CONFERENCE],
-            signatures  = [CONFERENCE],
-            signatories = [PC],
-            members     = [])
-        groups.append(pc)
+    #
+    # if overwrite_allowed(COCHAIRS):
+    #     Program_Chairs = Group(COCHAIRS,
+    #         readers     = [CONFERENCE, COCHAIRS, SPC, PC],
+    #         writers     = [CONFERENCE],
+    #         signatures  = [CONFERENCE],
+    #         signatories = [COCHAIRS],
+    #         members     = [])
+    #     groups.append(Program_Chairs)
+    #
+    #
+    # if overwrite_allowed(SPC):
+    #     spc = Group(SPC,
+    #         readers     = [CONFERENCE, COCHAIRS, SPC, PC],
+    #         writers     = [CONFERENCE], #the conference needs to be a writer whenever the process functions need to modify the group
+    #         signatures  = [CONFERENCE],
+    #         signatories = [SPC],
+    #         members     = [])
+    #     groups.append(spc)
+    #
+    # if overwrite_allowed(PC):
+    #     pc = Group(PC,
+    #         readers     = [CONFERENCE, COCHAIRS, SPC, PC],
+    #         writers     = [CONFERENCE],
+    #         signatures  = [CONFERENCE],
+    #         signatories = [PC],
+    #         members     = [])
+    #     groups.append(pc)
 
     ## Post the groups
     for g in groups:
@@ -137,12 +137,6 @@ if openreview.user['id'].lower()=='openreview.net':
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required':True
             },
-            'TL;DR': {
-                'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
-                'order': 3,
-                'value-regex': '[^\\n]{0,250}',
-                'required':False
-            },
             'abstract': {
                 'description': 'Abstract of paper.',
                 'order': 4,
@@ -175,9 +169,9 @@ if openreview.user['id'].lower()=='openreview.net':
     submission_invitation = Invitation(CONFERENCE,
         'submission',
         readers=['everyone'],
-        writers=[CONFERENCE],
+        writers= ['OpenReview.net'],
         invitees=['~'],
-        signatures=[PC],
+        signatures= ['OpenReview.net'],
         reply=submission_reply,
         duedate=1369422751717)
 
