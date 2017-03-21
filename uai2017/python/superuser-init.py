@@ -275,8 +275,7 @@ if client.user['id'].lower()=='openreview.net':
         readers = ['everyone'],
         writers = [CONFERENCE],
         invitees = ['~'],
-        signatures = [CONFERENCE],
-        process = '../process/submissionProcess.js')
+        signatures = [CONFERENCE])
 
     blind_submission_invitation.reply = {
         'forum': None,
