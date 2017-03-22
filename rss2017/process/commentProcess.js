@@ -21,9 +21,7 @@ function(){
       var author_mail = {
         "groups": authors,
         "subject": "Review of your submission to "+TRACK+": \"" + forum.content.title + "\"",
-        "message": "Your submission to " + conference + " has received a public comment.\n\n
-            Title: " + note.content.title + "\n\nReview: " + note.content.comment + "\n\n
-            To view the review, click here: " + baseUrl+"/forum?id=" + note.forum
+        "message": "Your submission to " + conference + " has received a public comment.\n\nTitle: " + note.content.title + "\n\nReview: " + note.content.comment + "\n\n To view the review, click here: " + baseUrl+"/forum?id=" + note.forum
       };
 
       var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
