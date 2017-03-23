@@ -78,12 +78,11 @@ recommendation_reply = {
         }
     }
 }
-recommendation_invitation = Invitation('NIPS.cc/2016/Deep_Learning_Symposium',
-    'recommendation', 
+recommendation_invitation = Invitation('NIPS.cc/2016/Deep_Learning_Symposium/-/recommendation',
     writers     = ['NIPS.cc/2016/Deep_Learning_Symposium'],
-    readers     = ['everyone'], 
-    invitees    = ['~'], 
-    reply       = recommendation_reply, 
+    readers     = ['everyone'],
+    invitees    = ['~'],
+    reply       = recommendation_reply,
     process     = '../process/recommendationProcess_nips_symposium2016.js',
     signatures  = ['NIPS.cc/2016/Deep_Learning_Symposium'])
 

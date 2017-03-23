@@ -249,8 +249,7 @@ if openreview.user['id'].lower() == 'openreview.net':
 
         }
     }
-    submission_invitation = Invitation('DBLP.org',
-                                       'paper',
+    submission_invitation = Invitation('DBLP.org/-/paper',
                                        readers=['everyone'],
                                        writers=['DBLP.org/upload'],
                                        invitees=['DBLP.org/upload'],
@@ -264,7 +263,7 @@ if openreview.user['id'].lower() == 'openreview.net':
     revision_reply.pop('replyto')
     revision_reply['referent'] = None
 
-    revision_invitation = Invitation('DBLP.org','Add/Revision',
+    revision_invitation = Invitation('DBLP.org/-/Add/Revision',
         signatures = ['DBLP.org'],
         writers = ['DBLP.org/upload'],
         invitees = ['DBLP.org/upload'],

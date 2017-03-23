@@ -185,8 +185,7 @@ if client.user['id'].lower()=='openreview.net':
     invitations = []
 
     ## Create the submission invitation, form, and add it to the list of invitations to post
-    submission_invitation = openreview.Invitation(CONFERENCE,
-        'submission',
+    submission_invitation = openreview.Invitation(CONFERENCE+'/-/submission',
         readers = ['everyone'],
         writers = [CONFERENCE],
         invitees = ['~'],
@@ -270,8 +269,7 @@ if client.user['id'].lower()=='openreview.net':
 
     invitations.append(submission_invitation)
 
-    blind_submission_invitation = openreview.Invitation(CONFERENCE,
-        'blind-submission',
+    blind_submission_invitation = openreview.Invitation(CONFERENCE+'/-/blind-submission',
         readers = ['everyone'],
         writers = [CONFERENCE],
         invitees = ['~'],
@@ -311,8 +309,7 @@ if client.user['id'].lower()=='openreview.net':
     invitations.append(blind_submission_invitation)
 
     ## Create Senior_Program_Committee recruitment invitation/form, and add it to the list of invitations to post
-    spc_invitation = openreview.Invitation(CONFERENCE,
-        'spc_invitation',
+    spc_invitation = openreview.Invitation(CONFERENCE+'/-/spc_invitation',
         readers=['everyone'],
         writers=[CONFERENCE],
         invitees=[SPC + '/invited'],
@@ -352,7 +349,7 @@ if client.user['id'].lower()=='openreview.net':
     invitations.append(spc_invitation)
 
     ## Create Program_Committee recruitment invitation/form, and add it to the list of invitations to post
-    pc_invitation = openreview.Invitation('auai.org/UAI/2017', 'pc_invitation',
+    pc_invitation = openreview.Invitation(CONFERENCE+'/-/pc_invitation',
         readers = ['everyone'],
         writers = [CONFERENCE],
         invitees = [PC + '/invited'],
@@ -393,7 +390,7 @@ if client.user['id'].lower()=='openreview.net':
 
 
     ## Create Senior_Program_Committee registration invitation, and add it to the list of invitations to post
-    spc_registration = openreview.Invitation(CONFERENCE, 'spc_registration',
+    spc_registration = openreview.Invitation(CONFERENCE+'/-/spc_registration',
         readers = [CONFERENCE, COCHAIRS],
         writers = [CONFERENCE],
         invitees = ['OpenReview.net'],
@@ -431,7 +428,7 @@ if client.user['id'].lower()=='openreview.net':
 
 
     ## Create Senior_Program_Committee registration invitation, and add it to the list of invitations to post
-    pc_registration = openreview.Invitation(CONFERENCE, 'pc_registration',
+    pc_registration = openreview.Invitation(CONFERENCE+'/-/pc_registration',
         readers = [CONFERENCE, COCHAIRS],
         writers = [CONFERENCE],
         invitees = ['OpenReview.net'],
@@ -486,8 +483,7 @@ if client.user['id'].lower()=='openreview.net':
         'content': {} #content is blank; this allows for ANYTHING to be placed in the content field.
         #we'll want to change this later one we know what the format will be.
     }
-    paper_metadata_invitation = openreview.Invitation(CONFERENCE,
-        'Paper/Metadata',
+    paper_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Paper/Metadata',
         writers = ['OpenReview.net'],
         readers = ['OpenReview.net',CONFERENCE],
         invitees = ['OpenReview.net'],
@@ -515,8 +511,7 @@ if client.user['id'].lower()=='openreview.net':
         'content': {} #Content is blank. See above.
     }
 
-    reviewer_metadata_invitation = openreview.Invitation(CONFERENCE,
-        'Reviewer/Metadata',
+    reviewer_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Reviewer/Metadata',
         writers=['OpenReview.net'],
         readers=['OpenReview.net', CONFERENCE],
         invitees=['OpenReview.net'],
@@ -526,8 +521,7 @@ if client.user['id'].lower()=='openreview.net':
     invitations.append(reviewer_metadata_invitation)
 
 
-    bid_tag_invitation = openreview.Invitation(CONFERENCE,
-        'Add/Bid',
+    bid_tag_invitation = openreview.Invitation(CONFERENCE+'/-/Add/Bid',
         readers=['everyone'],
         writers=[CONFERENCE],
         invitees=[],
