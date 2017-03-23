@@ -32,8 +32,8 @@ submission_reply = {
     'description':'Your displayed identity associated with the above content.'
   },
   'writers': {'values-regex': '~.*'},
-  'readers': { 
-    'values': ['everyone'], 
+  'readers': {
+    'values': ['everyone'],
     'description': 'The users who will be allowed to read the above content.'
   },
   'content': {
@@ -78,7 +78,7 @@ submission_reply = {
   }
 }
 
-submission_invitation = Invitation('ECCV2016.org/BNMW','submission',
+submission_invitation = Invitation('ECCV2016.org/BNMW/-/submission',
 	readers=['everyone'],
 	writers=['ECCV2016.org/BNMW'],
 	invitees=['~'],
@@ -87,4 +87,4 @@ submission_invitation = Invitation('ECCV2016.org/BNMW','submission',
 	reply=submission_reply)
 
 openreview.post_invitation(submission_invitation)
-        
+

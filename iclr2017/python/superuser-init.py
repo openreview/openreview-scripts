@@ -279,8 +279,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
     submission_reply=reply.copy()
 
-    submission_invitation = Invitation( 'ICLR.cc/2017/conference',
-        'submission',
+    submission_invitation = Invitation( 'ICLR.cc/2017/conference/-/submission',
         readers=['everyone'],
         writers=['ICLR.cc/2017/conference'],
         invitees=['~'],
@@ -319,8 +318,7 @@ if openreview.user['id'].lower()=='openreview.net':
         }
     }
 
-    reviewer_invitation = Invitation('ICLR.cc/2017/conference',
-        'reviewer_invitation',
+    reviewer_invitation = Invitation('ICLR.cc/2017/conference/-/reviewer_invitation',
         readers=['everyone'],
         writers=['ICLR.cc/2017/conference'],
         invitees=['everyone'],
