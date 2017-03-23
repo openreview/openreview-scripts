@@ -46,7 +46,7 @@ metadata_reply = {
     'content': {}
 }
 
-paper_metadata_invitation = openreview.Invitation(CONFERENCE,'Paper/Metadata',
+paper_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Paper/Metadata',
                                            writers=['OpenReview.net'],
                                            readers=['OpenReview.net'],
                                            invitees=['OpenReview.net'],
@@ -56,7 +56,7 @@ client.post_invitation(paper_metadata_invitation)
 
 
 #Create the reviewer metadata invitation
-reviewer_metadata_invitation = openreview.Invitation(CONFERENCE,'Reviewer/Metadata',
+reviewer_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Reviewer/Metadata',
                                            writers=['OpenReview.net'],
                                            readers=['OpenReview.net'],
                                            invitees=['OpenReview.net'],
@@ -65,7 +65,7 @@ reviewer_metadata_invitation = openreview.Invitation(CONFERENCE,'Reviewer/Metada
 client.post_invitation(reviewer_metadata_invitation)
 
 #Create the user metadata invitation
-areachair_metadata_invitation = openreview.Invitation(CONFERENCE,'Area_Chair/Metadata',
+areachair_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Area_Chair/Metadata',
                                            writers=['OpenReview.net'],
                                            readers=['OpenReview.net'],
                                            invitees=['OpenReview.net'],

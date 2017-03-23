@@ -49,9 +49,7 @@ for i in iclrsubs:
         'value':'Review Rating: '+i.content['title']
     }
 
-    ac_rating_invitation = openreview.Invitation(
-        'ICLR.cc/2017/conference',
-        'paper%s/AC/Review/Rating' % i.number,
+    ac_rating_invitation = openreview.Invitation('ICLR.cc/2017/conference/-/paper%s/AC/Review/Rating' % i.number,
         readers = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/paper%s/areachairs' % i.number],
         writers = ['ICLR.cc/2017/conference'],
         signatures = ['ICLR.cc/2017/conference'],
@@ -76,8 +74,7 @@ for i in iclrsubs:
     client.post_invitation(ac_rating_invitation)
 
     author_rating_invitation = openreview.Invitation(
-        'ICLR.cc/2017/conference',
-        'paper%s/Author/Review/Rating' % i.number,
+        'ICLR.cc/2017/conference/-/paper%s/Author/Review/Rating' % i.number,
         readers = ['ICLR.cc/2017/conference','ICLR.cc/2017/conference/paper%s/authors' % i.number],
         writers = ['ICLR.cc/2017/conference'],
         signatures = ['ICLR.cc/2017/conference'],

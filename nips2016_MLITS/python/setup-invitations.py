@@ -32,8 +32,8 @@ submission_reply = {
     'description':'Your displayed identity associated with the above content.'
   },
   'writers': {'values-regex': '~.*'},
-  'readers': { 
-    'values': ['everyone'], 
+  'readers': {
+    'values': ['everyone'],
     'description': 'The users who will be allowed to read the above content.'
   },
   'content': {
@@ -70,7 +70,7 @@ submission_reply = {
   }
 }
 
-submission_invitation = Invitation('NIPS.cc/2016/workshop/MLITS','submission',
+submission_invitation = Invitation('NIPS.cc/2016/workshop/MLITS/-/submission',
 	readers=['everyone'],
 	writers=['NIPS.cc/2016/workshop/MLITS'],
 	invitees=['~'],
@@ -80,4 +80,4 @@ submission_invitation = Invitation('NIPS.cc/2016/workshop/MLITS','submission',
 
 print 'posting invitation: '+submission_invitation.id
 openreview.post_invitation(submission_invitation)
-        
+

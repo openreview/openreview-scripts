@@ -244,8 +244,7 @@ if client.user['id'].lower()=='openreview.net':
 
     call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process", "Poster"])
     call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process", "Proceedings"])
-    proceeding_invitation = openreview.Invitation(PROCEEDINGS,
-        'Submission',
+    proceeding_invitation = openreview.Invitation(PROCEEDINGS+'/-/Submission',
         readers = ['everyone'],
         writers = [PROCEEDINGS],
         invitees = ['~'],
@@ -255,8 +254,7 @@ if client.user['id'].lower()=='openreview.net':
     proceeding_invitation.reply = reply.copy()
 
 
-    poster_invitation = openreview.Invitation(POSTER,
-        'Submission',
+    poster_invitation = openreview.Invitation(POSTER+'/-/Submission',
         readers = ['everyone'],
         writers = [POSTER],
         invitees = ['~'],

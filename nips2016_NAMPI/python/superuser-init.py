@@ -41,10 +41,10 @@ def overwrite_allowed(groupid):
 print "overwrite allowed?",overwrite_allowed('NIPS.cc/2016/workshop')
 
 if openreview.user['id'].lower()=='openreview.net':
-    
+
     #########################
     ##    SETUP GROUPS     ##
-    ######################### 
+    #########################
 
     if overwrite_allowed('NIPS.cc/2016/workshop'):
         print 'workshop made'
@@ -55,13 +55,13 @@ if openreview.user['id'].lower()=='openreview.net':
             readers     = ['everyone'],
             signatures  = ['NIPS.cc/2016'])
         groups.append(nips2016_workshop)
-    
+
     if overwrite_allowed('NIPS.cc/2016/workshop/NAMPI'):
-        nips2016_workshop_NAMPI = Group('NIPS.cc/2016/workshop/NAMPI', 
-            signatories = ['NIPS.cc/2016/workshop/NAMPI'], 
+        nips2016_workshop_NAMPI = Group('NIPS.cc/2016/workshop/NAMPI',
+            signatories = ['NIPS.cc/2016/workshop/NAMPI'],
             writers     = ['NIPS.cc/2016/workshop','NIPS.cc/2016/workshop/NAMPI','NIPS.cc/2016/workshop/NAMPI/pcs'],
             members     = ['NIPS.cc/2016/workshop/NAMPI/pcs'],
-            readers     = ['everyone'], 
+            readers     = ['everyone'],
             web         = '../webfield/NAMPI-webfield.html',
             signatures  = ['NIPS.cc/2016/workshop'])
         groups.append(nips2016_workshop_NAMPI)
@@ -71,8 +71,8 @@ if openreview.user['id'].lower()=='openreview.net':
 
 
     if overwrite_allowed('NIPS.cc/2016/workshop/NAMPI/pcs'):
-        NAMPIprogramchairs = Group('NIPS.cc/2016/workshop/NAMPI/pcs', 
-            readers=['everyone'], 
+        NAMPIprogramchairs = Group('NIPS.cc/2016/workshop/NAMPI/pcs',
+            readers=['everyone'],
             writers=['NIPS.cc/2016/workshop/NAMPI','NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatures=['NIPS.cc/2016/workshop/NAMPI'],
             signatories=['NIPS.cc/2016/workshop/NAMPI/pcs'],
@@ -81,8 +81,8 @@ if openreview.user['id'].lower()=='openreview.net':
 
 
     if overwrite_allowed('NIPS.cc/2016/workshop/NAMPI/reviewers-invited'):
-        NAMPIreviewersinvited = Group('NIPS.cc/2016/workshop/NAMPI/reviewers-invited', 
-            readers=['NIPS.cc/2016/workshop/NAMPI/pcs','NIPS.cc/2016/workshop/NAMPI','OpenReview.net'], 
+        NAMPIreviewersinvited = Group('NIPS.cc/2016/workshop/NAMPI/reviewers-invited',
+            readers=['NIPS.cc/2016/workshop/NAMPI/pcs','NIPS.cc/2016/workshop/NAMPI','OpenReview.net'],
             writers=['NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatories=['NIPS.cc/2016/workshop/NAMPI/reviewers-invited'],
@@ -90,8 +90,8 @@ if openreview.user['id'].lower()=='openreview.net':
         groups.append(NAMPIreviewersinvited)
 
     if overwrite_allowed('NIPS.cc/2016/workshop/NAMPI/reviewers-emailed'):
-        NAMPIreviewersemailed = Group('NIPS.cc/2016/workshop/NAMPI/reviewers-emailed', 
-            readers=['NIPS.cc/2016/workshop/NAMPI/pcs','NIPS.cc/2016/workshop/NAMPI'], 
+        NAMPIreviewersemailed = Group('NIPS.cc/2016/workshop/NAMPI/reviewers-emailed',
+            readers=['NIPS.cc/2016/workshop/NAMPI/pcs','NIPS.cc/2016/workshop/NAMPI'],
             writers=['NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatories=['NIPS.cc/2016/workshop/NAMPI/reviewers-emailed'],
@@ -100,7 +100,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
 
     if overwrite_allowed('NIPS.cc/2016/workshop/NAMPI/reviewers'):
-        NAMPIreviewers = Group('NIPS.cc/2016/workshop/NAMPI/reviewers', 
+        NAMPIreviewers = Group('NIPS.cc/2016/workshop/NAMPI/reviewers',
             readers=['everyone'],
             writers=['NIPS.cc/2016/workshop/NAMPI','NIPS.cc/2016/workshop/NAMPI/pcs'],
             signatures=['NIPS.cc/2016/workshop/NAMPI'],
@@ -132,7 +132,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
     #########################
     ##  SETUP INVITATIONS  ##
-    ######################### 
+    #########################
 
 
     ## Create the submission invitation
@@ -221,24 +221,22 @@ if openreview.user['id'].lower()=='openreview.net':
     submission_reply=reply.copy()
     submission_reply['referenti']=['NIPS.cc/2016/workshop/NAMPI/-/reference']
 
-    submission_invitation = Invitation( 'NIPS.cc/2016/workshop/NAMPI',
-        'submission', 
-        readers=['everyone'], 
+    submission_invitation = Invitation( 'NIPS.cc/2016/workshop/NAMPI/-/submission',
+        readers=['everyone'],
         writers=['NIPS.cc/2016/workshop/NAMPI'],
-        invitees=['~'], 
-        signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'], 
+        invitees=['~'],
+        signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'],
         reply=submission_reply,
         duedate=1477871999000, #Duedate set to OCT 30 23:59:59 GMT
         process='../process/submissionProcess_NAMPI.js')
 
     reference_reply=reply.copy()
 
-    reference_invitation = Invitation('NIPS.cc/2016/workshop/NAMPI',
-        'reference',
-        readers=['everyone'], 
+    reference_invitation = Invitation('NIPS.cc/2016/workshop/NAMPI/-/reference',
+        readers=['everyone'],
         writers=['NIPS.cc/2016/workshop/NAMPI'],
-        invitees=['~'], 
-        signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'], 
+        invitees=['~'],
+        signatures=['NIPS.cc/2016/workshop/NAMPI/pcs'],
         reply=reference_reply)
 
 
@@ -272,14 +270,13 @@ if openreview.user['id'].lower()=='openreview.net':
         }
     }
 
-    reviewer_invitation = Invitation('NIPS.cc/2016/workshop/NAMPI',
-        'reviewer_invitation', 
+    reviewer_invitation = Invitation('NIPS.cc/2016/workshop/NAMPI/-/reviewer_invitation',
         readers=['everyone'],
-        writers=['NIPS.cc/2016/workshop/NAMPI'], 
+        writers=['NIPS.cc/2016/workshop/NAMPI'],
         invitees=['everyone'],
-        signatures=['NIPS.cc/2016/workshop/NAMPI'], 
-        reply=reviewer_invitation_reply, 
-        process='../process/responseInvitationProcess.js', 
+        signatures=['NIPS.cc/2016/workshop/NAMPI'],
+        reply=reviewer_invitation_reply,
+        process='../process/responseInvitationProcess.js',
         web='../webfield/NAMPI-invitation-webfield.html')
 
     invitations = [submission_invitation, reference_invitation, reviewer_invitation]
