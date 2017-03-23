@@ -185,7 +185,7 @@ if client.user['id'].lower()=='openreview.net':
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
-                # PAM put as a 'constant' up top
+                # put as a 'constant' at top?
                 # 2 or more lower case letters, numbers, _'s, -'s or .'s
                 # then @
                 # then 2 or more letters/numbers (like before)
@@ -199,7 +199,7 @@ if client.user['id'].lower()=='openreview.net':
             'abstract': {
                 'description': 'Abstract of paper.',
                 'order': 4,
-                # PAM is this up to 5,000 words, because \\S is not white space followed by \\s which is white space
+                # is this up to 5,000 words, because \\S is not white space followed by \\s which is white space
                 'value-regex': '[\\S\\s]{1,5000}',
                 'required': True
             },
@@ -252,8 +252,6 @@ if client.user['id'].lower()=='openreview.net':
         signatures = [PROCEEDINGS],
         duedate = TIMESTAMP_DUE,
         process = '../process/submissionProcessProceedings.js')
-
-    ## PAM why reply.copy instead of just reply?
     proceeding_invitation.reply = reply.copy()
 
 
