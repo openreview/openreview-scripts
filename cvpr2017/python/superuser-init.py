@@ -113,8 +113,7 @@ if client.user['id'].lower()=='openreview.net':
     invitations = []
 
     ## Create the submission invitation, form, and add it to the list of invitations to post
-    submission_invitation = openreview.Invitation(CONFERENCE,
-        'Submission',
+    submission_invitation = openreview.Invitation(CONFERENCE+'/-/Submission',
         readers = ['everyone'],
         writers = [CONFERENCE],
         invitees = ['~'],
