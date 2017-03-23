@@ -1,0 +1,182 @@
+function(){
+	var or3client = lib.or3client;
+    const TRACK_NAME = <<param0>>;
+
+  const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
+  const COCHAIRS = CONFERENCE+"/Program_Co-Chairs"
+  const TRACK = CONFERENCE+'/'+TRACK_NAME;
+  const PAPERGRP = TRACK+'/Paper' + note.number;
+  const PAPERINV = TRACK+'/-/Paper' + note.number;
+  const DUE_DATE = new Date(2017, 6, 30, 17, 15);
+
+  var officialReviewProcess = <<officialReviewProcess.js>>
+
+  var paperGroup = {
+    'id': PAPERGRP,
+    'signatures': [TRACK],
+    'writers': [TRACK],
+    'members': [],
+    'readers': ['everyone'],
+    'signatories': []
+  };
+
+  var reviewerGroup = {
+    'id': PAPERGRP + '/Reviewers',
+    'signatures':[TRACK],
+    'writers':[TRACK],
+    'members':[],
+    'readers':[TRACK, COCHAIRS, PAPERGRP + '/Reviewers'],
+    'nonreaders':[TRACK, PAPERGRP + '/Reviewers'],
+    'signatories':[]
+  };
+
+  var anonReviewer1 = {
+    'id': PAPERGRP + '/AnonReviewer1',
+    'signatures': [TRACK],
+    'writers':  [TRACK],
+    'members': [],
+    'readers': [CONFERENCE, COCHAIRS, TRACK, PAPERGRP + '/AnonReviewer1'],
+    'signatories': [PAPERGRP + '/AnonReviewer1']
+  };
+
+  var officialReviewInvitation = {
+    'id': PAPERINV+'/Official/Review',
+    'signatures': [TRACK],
+    'writers': [TRACK],
+    'invitees': [reviewerGroup.id],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process': officialReviewProcess+'',
+    'duedate': DUE_DATE.valueOf(),
+    'reply': {
+      'forum': note.id,
+      'replyto': note.id,
+      'writers': {'values-regex': PAPERGRP+'/AnonReviewer[0-9]+'},
+      'signatures': {'values-regex': PAPERGRP+'/AnonReviewer[0-9]+'},
+      'readers': {
+        'values': ['everyone'],
+        'description': 'The users who will be allowed to read the above content.'
+      },
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{0,500}',
+          'description': 'Brief summary of your review.',
+          'required':true
+        },
+        'review': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+          'required':true
+        },
+        'rating': {
+          'order': 3,
+          'value-dropdown': [
+            '10: Top 5% of accepted papers, seminal paper',
+            '9: Top 15% of accepted papers, strong accept',
+            '8: Top 50% of accepted papers, clear accept',
+            '7: Good paper, accept',
+            '6: Marginally above acceptance threshold',
+            '5: Marginally below acceptance threshold',
+            '4: Ok but not good enough - rejection',
+            '3: Clear rejection',
+            '2: Strong rejection',
+            '1: Trivial or wrong'
+          ],
+          'required':true
+        },
+        'confidence': {
+          'order': 4,
+          'value-radio': [
+            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '4: The reviewer is confident but not absolutely certain that the evaluation is correct',
+            '3: The reviewer is fairly confident that the evaluation is correct',
+            '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
+            '1: The reviewer\'s evaluation is an educated guess'
+          ],
+          'required':true
+        }
+      }
+    }
+  };
+
+ var commentProcess = <<commentProcess.js>>
+ var commentInvitation = {
+    'id': PAPERINV+'/Public/Comment',
+    'signatures': [TRACK],
+    'writers': [TRACK],
+    'invitees': ['~'],
+    'noninvitees':[],
+    'readers': ['everyone'],
+    'process': commentProcess,
+    'reply': {
+      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
+      //'replyto': noteID,    // not specified so we can allow comments on comments
+      'signatures': {
+        'values-regex':'~.*|\\(anonymous\\)',
+        'description': 'How your identity will be displayed with the above content.'
+        },    // this regex demands that the author reveal his/her ~ handle
+      'writers': {'values-regex':'~.*|\\(anonymous\\)'},    // this regex demands that the author reveal his/her ~ handle
+      'readers': {
+        'value-dropdown': [
+          'everyone',
+          COCHAIRS,
+          PAPERGRP + '/Reviewers'
+        ],
+        'description': 'The users who will be allowed to read the above content.'
+        },   // the reply must allow ANYONE to read this note (comment)
+      'content': {
+        'title': {
+          'order': 1,
+          'value-regex': '.{1,500}',
+          'description': 'Brief summary of your comment.',
+          'required':true
+        },
+        'comment': {
+          'order': 2,
+          'value-regex': '[\\S\\s]{1,5000}',
+          'description': 'Your comment or reply.',
+          'required':true
+        }
+      }
+    }
+  };
+
+  var conference = "RSS 2017 Workshop "+TRACK_NAME;
+  //Send an email to the author of the submitted note, confirming its receipt
+
+  var mail = {
+    "groups": note.content.authorids,
+    "subject": "Confirmation of your submission to " + conference + ": \"" + note.content.title + "\".",
+    "message": `Your submission to `+ conference +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
+  };
+  var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
+
+
+  or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
+  .then(result => {
+    group_promises = [
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
+      or3client.or3request(or3client.grpUrl, anonReviewer1, 'POST', token)
+    ];
+
+    return Promise.all(group_promises);
+  })
+  .then(result => {
+    invitation_promises = [
+      or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token),
+    ];
+
+    return Promise.all(invitation_promises);
+  })
+
+  .then(result => {
+    return mailP;
+  })
+  .then(result => done())
+  .catch(error => done(error));
+
+  return true;
+};
