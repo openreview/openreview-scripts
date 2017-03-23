@@ -26,15 +26,7 @@ function(){
     'writers':[TRACK],
     'members':[],
     'readers':[TRACK, COCHAIRS, PAPERGRP + '/Reviewers'],
-    'signatories':[]
-  };
-
-  var reviewerNonreadersGroup = {
-    'id': PAPERGRP + '/Review-nonreaders',
-    'signatures':[TRACK],
-    'writers':[TRACK],
-    'members':[],
-    'readers':[TRACK, COCHAIRS, PAPERGRP + '/Reviewers'],
+    'nonreaders':[TRACK, PAPERGRP + '/Reviewers'],
     'signatories':[]
   };
 
@@ -69,12 +61,14 @@ function(){
         'title': {
           'order': 1,
           'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.'
+          'description': 'Brief summary of your review.',
+          'required':true
         },
         'review': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.'
+          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+          'required':true
         },
         'rating': {
           'order': 3,
@@ -89,7 +83,8 @@ function(){
             '3: Clear rejection',
             '2: Strong rejection',
             '1: Trivial or wrong'
-          ]
+          ],
+          'required':true
         },
         'confidence': {
           'order': 4,
@@ -99,7 +94,8 @@ function(){
             '3: The reviewer is fairly confident that the evaluation is correct',
             '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
             '1: The reviewer\'s evaluation is an educated guess'
-          ]
+          ],
+          'required':true
         }
       }
     }
@@ -134,12 +130,14 @@ function(){
         'title': {
           'order': 1,
           'value-regex': '.{1,500}',
-          'description': 'Brief summary of your comment.'
+          'description': 'Brief summary of your comment.',
+          'required':true
         },
         'comment': {
           'order': 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Your comment or reply.'
+          'description': 'Your comment or reply.',
+          'required':true
         }
       }
     }
@@ -155,12 +153,11 @@ function(){
   };
   var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
 
-  console.log('PAM - posting group '+reviewerGroup.id);
+
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result => {
     group_promises = [
       or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
-      or3client.or3request(or3client.grpUrl, reviewerNonreadersGroup, 'POST', token),
       or3client.or3request(or3client.grpUrl, anonReviewer1, 'POST', token)
     ];
 
