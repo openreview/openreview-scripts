@@ -33,17 +33,10 @@ regex = new RegExp('<<(param.*)>>', 'g');
 matches = mainProcess.match(regex);
 if(matches) {
     var param_max = process.argv.length - PARAM_START_INDEX;
-    matches.forEach(function(m) {
-        var i = Number(m.replace('<<param', '').replace('>>', ''));
-        // check if index is a number and has a corresponding argument
-        if (i != NaN  && i >= 0 && i < param_max) {
-            mainProcess = mainProcess.replace(m, '\''+process.argv[PARAM_START_INDEX + i]+'\'');
-            console.log('Replaced', m, 'with', process.argv[PARAM_START_INDEX + i]);
-        }
-        else {
-            console.log('ERROR: invalid param string:', m);
-        }
-    })
+    for(var i = 0; i < param_max; i++) {
+        mainProcess = mainProcess.replace(new RegExp('<<param' + i + '>>', 'g'), "'"+process.argv[PARAM_START_INDEX + i]+"'");
+    }
+
     // Add the first of the parameters to the file name.
     newFileName = newFileName.replace('.js', process.argv[PARAM_START_INDEX]+'.js');
 }
