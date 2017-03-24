@@ -29,8 +29,10 @@ else:
 params = {}
 
 notes = openreview.get_notes(invitation='ICLR.cc/2017/workshop/-/submission')
-acceptances = openreview.get_notes(invitation = 'ICLR.cc/2017/conference/-/paper.*/acceptance')
-decision_dict = {n.forum: n.content['decision'] for n in acceptances}
+conference_acceptances = openreview.get_notes(invitation = 'ICLR.cc/2017/conference/-/paper.*/acceptance')
+conference_decision_dict = {n.forum: n.content['decision'] for n in conference_acceptances}
+workshop_acceptances = openreview.get_notes(invitation = 'ICLR.cc/2017/workshop/-/paper.*/acceptance')
+workshop_decision_dict = {n.forum: n.content['decision'] for n in workshop_acceptances}
 
 if args.output!=None:
     ext = args.output.split('.')[-1]
@@ -38,16 +40,20 @@ if args.output!=None:
     if ext.lower()=='csv':
         with open(args.output, 'wb') as outfile:
             csvwriter = csv.writer(outfile, delimiter=',')
-            fieldnames = ['id', 'number', 'original', 'decision', 'date', 'title', 'TL;DR', 'abstract','keywords','authors','authorids','conflicts']
+            fieldnames = ['id', 'number', 'original', 'conference_decision', 'workshop_decision', 'date', 'title', 'TL;DR', 'abstract','keywords','authors','authorids','conflicts']
             csvwriter.writerow(fieldnames)
 
             for note in notes:
-                decision = decision_dict[note.original] if note.original else None
+                conference_decision = conference_decision_dict[note.original] if note.original else None
+                workshop_decision = workshop_decision_dict.get(note.id)
+                if not workshop_decision and conference_decision == 'Invite to Workshop Track':
+                    workshop_decision = 'Accept'
                 row = []
                 row.append('https://openreview.net/forum?id=%s' % note.id)
                 row.append(note.number)
                 row.append('https://openreview.net/forum?id=%s' % note.original if note.original else None)
-                row.append(decision)
+                row.append(conference_decision)
+                row.append(workshop_decision)
                 row.append(note.tcdate)
                 row.append(note.content['title'].encode('UTF-8'))
                 row.append(note.content['TL;DR'].encode('UTF-8'))
