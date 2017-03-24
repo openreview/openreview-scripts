@@ -134,7 +134,9 @@ $(function() {
 
   var getAssignedNotes = function() {
     return httpGetP('notes', {invitation: 'auai.org/UAI/2017/-/.*', invitee: true, duedate: true}).then(function(result) {
-      return result.notes;
+      return _.filter(result.notes, function(note) {
+        return _.startsWith(note.invitation.id, 'auai.org/UAI/2017');
+      });
     }, function(error) {
       return error;
     });
