@@ -26,17 +26,16 @@ function(){
     'writers':[TRACK],
     'members':[],
     'readers':[TRACK, COCHAIRS, PAPERGRP + '/Reviewers'],
-    'nonreaders':[TRACK, PAPERGRP + '/Reviewers'],
     'signatories':[]
   };
 
-  var anonReviewer1 = {
-    'id': PAPERGRP + '/AnonReviewer1',
+  var incompleteGroup = {
+    'id': PAPERGRP+'/Reviewers/Incomplete',
     'signatures': [TRACK],
-    'writers':  [TRACK],
+    'writers': [TRACK],
     'members': [],
-    'readers': [CONFERENCE, COCHAIRS, TRACK, PAPERGRP + '/AnonReviewer1'],
-    'signatories': [PAPERGRP + '/AnonReviewer1']
+    'readers': [TRACK, COCHAIRS],
+    'signatories': []
   };
 
   var officialReviewInvitation = {
@@ -54,8 +53,11 @@ function(){
       'writers': {'values-regex': PAPERGRP+'/AnonReviewer[0-9]+'},
       'signatures': {'values-regex': PAPERGRP+'/AnonReviewer[0-9]+'},
       'readers': {
-        'values': ['everyone'],
+        'values': ['~'],
         'description': 'The users who will be allowed to read the above content.'
+      },
+      'nonreaders':{
+        'values': [incompleteGroup.id]
       },
       'content': {
         'title': {
@@ -156,12 +158,10 @@ function(){
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
   .then(result => {
-    group_promises = [
-      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
-      or3client.or3request(or3client.grpUrl, anonReviewer1, 'POST', token)
-    ];
-
-    return Promise.all(group_promises);
+      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token)
+        .then(result => {
+          or3client.or3request(or3client.grpUrl, incompleteGroup, 'POST', token)
+        })
   })
   .then(result => {
     invitation_promises = [
