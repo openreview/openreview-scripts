@@ -66,16 +66,21 @@ $(function() {
     );
 
     var $notesContainer = $panel.find('.notes-container');
-    _.forEach(notes, function(note) {
-      $attach($notesContainer, 'mkNotePanel', [note, {
-        titleLink: 'HREF',
-        withReplyCount: true,
-        withContent: true,
-        collapseContent: true,
-        user: user,
-        tagInvitations: tagInvitations
-      }], true);
-    });
+    if (notes.length) {
+      _.forEach(notes, function(note) {
+        $attach($notesContainer, 'mkNotePanel', [note, {
+          titleLink: 'HREF',
+          withReplyCount: true,
+          withContent: true,
+          collapseContent: true,
+          user: user,
+          tagInvitations: tagInvitations
+        }], true);
+      });
+    } else {
+      $notesContainer.append('</br><div>You don\'t have assigned papers</div>');
+    }
+
   };
 
   controller.addHandler('areachairs', {
