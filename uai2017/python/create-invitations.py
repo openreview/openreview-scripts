@@ -297,61 +297,66 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-submissions = client.get_notes(invitation = SUBMISSION)
 
-for submission in submissions:
+try:
 
-	print "Processing submission", submission.number
+  submissions = client.get_notes(invitation = SUBMISSION)
 
-	paper_group = client.get_group(id = maskPaperGroup.replace('[PAPER_NUMBER]', str(submission.number)))
+  for submission in submissions:
 
-	if paper_group:
+  	print "Processing submission", submission.number
 
-		author_group = client.get_group(id = maskAuthorsGroup.replace('[PAPER_NUMBER]', str(submission.number)))
+  	paper_group = client.get_group(id = maskPaperGroup.replace('[PAPER_NUMBER]', str(submission.number)))
 
-		if author_group:
-			# Post the necessary groups
-			reviewers_group = openreview.Group(id = paper_group.id + '/Reviewers',
-				signatures = [CONFERENCE],
-				writers = [CONFERENCE],
-				members = [],
-				readers = [CONFERENCE, COCHAIRS, SPC, paper_group.id + '/Reviewers'],
-				signatories = [])
+  	if paper_group:
 
-			client.post_group(reviewers_group)
+  		author_group = client.get_group(id = maskAuthorsGroup.replace('[PAPER_NUMBER]', str(submission.number)))
 
-			reviewers_nonreaders_group = openreview.Group(id = reviewers_group.id + '/NonReaders',
-				signatures = [CONFERENCE],
-				writers = [CONFERENCE],
-				members = [],
-				readers = [CONFERENCE, COCHAIRS, SPC, reviewers_group.id + '/NonReaders'],
-				signatories = [])
+  		if author_group:
+  			# Post the necessary groups
+  			reviewers_group = openreview.Group(id = paper_group.id + '/Reviewers',
+  				signatures = [CONFERENCE],
+  				writers = [CONFERENCE],
+  				members = [],
+  				readers = [CONFERENCE, COCHAIRS, SPC, paper_group.id + '/Reviewers'],
+  				signatories = [])
 
-			client.post_group(reviewers_nonreaders_group)
+  			client.post_group(reviewers_group)
 
-			areachair_group = openreview.Group(id = paper_group.id + '/Area_Chair',
-				signatures = [CONFERENCE],
-				writers = [CONFERENCE],
-				members = [],
-				readers = [CONFERENCE, COCHAIRS, SPC],
-				signatories = [CONFERENCE, paper_group.id + '/Area_Chair'])
+  			reviewers_nonreaders_group = openreview.Group(id = reviewers_group.id + '/NonReaders',
+  				signatures = [CONFERENCE],
+  				writers = [CONFERENCE],
+  				members = [],
+  				readers = [CONFERENCE, COCHAIRS, SPC, reviewers_group.id + '/NonReaders'],
+  				signatories = [])
 
-			client.post_group(areachair_group)
+  			client.post_group(reviewers_nonreaders_group)
 
-			#Post open comment invitation
-			client.post_invitation(get_open_comment_invitation(submission.id, submission.number, author_group.id))
-			#Post confidential comment invitation
-			client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id))
-			#Post recommend reviewer invitation
-			client.post_invitation(get_recommend_reviewer_invitation(submission.id, submission.number))
-			#Post official review invitation
-			client.post_invitation(get_official_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
-			#Post meta review invitation
-			client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
-		else:
-			print "Author group not found", submission.number
-	else:
-		print "Paper group not found ", submission.number
+  			areachair_group = openreview.Group(id = paper_group.id + '/Area_Chair',
+  				signatures = [CONFERENCE],
+  				writers = [CONFERENCE],
+  				members = [],
+  				readers = [CONFERENCE, COCHAIRS, SPC],
+  				signatories = [CONFERENCE, paper_group.id + '/Area_Chair'])
+
+  			client.post_group(areachair_group)
+
+  			#Post open comment invitation
+  			client.post_invitation(get_open_comment_invitation(submission.id, submission.number, author_group.id))
+  			#Post confidential comment invitation
+  			client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id))
+  			#Post recommend reviewer invitation
+  			client.post_invitation(get_recommend_reviewer_invitation(submission.id, submission.number))
+  			#Post official review invitation
+  			client.post_invitation(get_official_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
+  			#Post meta review invitation
+  			client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
+  		else:
+  			print "Author group not found", submission.number
+  	else:
+  		print "Paper group not found ", submission.number
+except openreview.OpenReviewException as e:
+    print "There was an error running the script: ", e
 
 
 
