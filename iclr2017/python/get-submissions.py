@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ###############################################################################
-# Group dump python script will simply print the contents of any given note.  
+# Group dump python script will simply print the contents of any given note.
 # PCs can run this as they wish to inspect the system.
 ###############################################################################
 
@@ -29,6 +29,8 @@ else:
 params = {}
 
 notes = openreview.get_notes(invitation='ICLR.cc/2017/conference/-/submission')
+conference_acceptances = openreview.get_notes(invitation = 'ICLR.cc/2017/conference/-/paper.*/acceptance')
+conference_decision_dict = {n.forum: n.content['decision'] for n in conference_acceptances}
 
 if args.output!=None:
     ext = args.output.split('.')[-1]
@@ -41,13 +43,15 @@ if args.output!=None:
     if ext.lower()=='csv':
         with open(args.output, 'wb') as outfile:
             csvwriter = csv.writer(outfile, delimiter=',')
-            fieldnames = ['id', 'number', 'date', 'title', 'TL;DR', 'abstract','keywords','authors','authorids','conflicts']
+            fieldnames = ['id', 'number', 'conference_decision', 'date', 'title', 'TL;DR', 'abstract','keywords','authors','authorids','conflicts']
             csvwriter.writerow(fieldnames)
 
             for count, note in enumerate(notes):
+                conference_decision = conference_decision_dict[note.id]
                 row = []
-                row.append(note.id)
+                row.append('https://openreview.net/forum?id=%s' % note.id)
                 row.append(note.number)
+                row.append(conference_decision)
                 row.append(note.tcdate)
                 row.append(note.content['title'].encode('UTF-8'))
                 row.append(note.content['TL;DR'].encode('UTF-8'))
