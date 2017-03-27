@@ -1,0 +1,103 @@
+<!-- UI for Area Chair Console -->
+<script type="text/javascript">
+$(function() {
+  var CONFERENCE = 'auai.org/UAI/2017';
+
+  var onTokenChange = function(token) {
+    var pl = model.tokenPayload(token);
+    var user = pl.user;
+
+    var userAreachairGroupsP = $.getJSON('groups', { member: user.id, regex: CONFERENCE + '/Paper.*/Area_Chair' })
+      .then(function(result) {
+        var noteNumbers = getPaperNumbersfromGroups(result.groups);
+        return $.when(getBlindedNotes(noteNumbers), getTagInvitations(), headerLoaded);
+      })
+      .then(displayNotes)
+      .fail(function(error) {
+        displayError();
+        return error;
+      });
+  };
+
+  var getPaperNumbersfromGroups = function(groups) {
+    var re = /auai\.org\/UAI\/2017\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
+    return _.map(
+      _.filter(groups, function(g) { return re.test(g.id); }),
+      function(fg) { return parseInt(fg.id.match(re)[1], 10); }
+    );
+  };
+
+  var getBlindedNotes = function(noteNumbers) {
+    var noteNumbersStr = noteNumbers.join(',');
+
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/blind-submission', number: noteNumbersStr })
+      .then(function(result) {
+        return result.notes;
+      });
+  };
+
+  var getTagInvitations = function() {
+    return $.getJSON('invitations', { replyInvitation: CONFERENCE + '/-/blind-submission', tags: true })
+      .then(function(result) {
+        return _.filter(result.invitations, function(invitation) {
+          return _.endsWith(invitation.id, 'Recommend/Reviewer');  //TODO
+        });
+      })
+      .fail(function(error) {
+        return null;
+      });
+  };
+
+
+  var displayHeader = function(headerP) {
+    var $panel = $('#group-container');
+    $panel.hide('fast', function() {
+      $panel.empty().append(
+        '<div id="header" class="panel">' +
+          '<h1>UAI Area Chair Assigned Papers</h1>' +
+          '<h4>Please recommend reviewers for your assigned papers</h4>' +
+        '</div>' +
+        '<div id="notes"></div>'
+      );
+      $panel.show('fast', function() {
+        headerP.resolve();
+      });
+    });
+  };
+
+  var displayNotes = function(notes, tagInvitations) {
+    _.forEach(notes, function(note) {
+      $attach('#notes', 'mkNotePanel', [note, {
+        titleLink: 'HREF',
+        withReplyCount: true,
+        withContent: true,
+        collapseContent: true,
+        user: user,
+        tagInvitations: tagInvitations
+      }], true);
+    });
+
+    if (!notes.length) {
+      $('#notes').append('<p>You don\'t have assigned papers</p>');
+    }
+  };
+
+  var displayError = function(message) {
+    message = message || 'The group data could not be loaded.';
+    $('#notes').empty().append('<div class="alert alert-danger"><strong>Error:</strong> ' + message + '</div>');
+  };
+
+  // Kick the whole thing off
+  OpenBanner.breadcrumbs([
+    { link: '/', text: 'Venues' },
+    { link: '/group?id=' + CONFERENCE, text: view.prettyId(CONFERENCE) }
+  ]);
+
+  var headerLoaded = $.Deferred();
+  displayHeader(headerLoaded);
+
+  controller.addHandler('areachairs', {
+    token: onTokenChange,
+  });
+});
+</script>
