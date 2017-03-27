@@ -25,17 +25,17 @@ function() {
     }
 
     var overwritingNote = {
-        original: note.id,
-        invitation: 'auai.org/UAI/2017/-/blind-submission',
-        forum: null,
-        parent: null,
-        signatures: [CONFERENCE],
-        writers: [CONFERENCE],
-        readers: [CONFERENCE, COCHAIRS, SPC, PC],
-        content: {
-          authors: ['Blinded names'],
-          authorids: ['Blinded names']
-        }
+      original: note.id,
+      invitation: 'auai.org/UAI/2017/-/blind-submission',
+      forum: null,
+      parent: null,
+      signatures: [CONFERENCE],
+      writers: [CONFERENCE],
+      readers: [CONFERENCE, COCHAIRS, SPC, PC],
+      content: {
+        authors: ['Blinded names'],
+        authorids: ['Blinded names']
+      }
     }
 
     //Send an email to the author of the submitted note, confirming its receipt
@@ -49,23 +49,34 @@ function() {
     or3client.or3request(or3client.inviteUrl, referenceInvite, 'POST', token)
     .then(result => or3client.or3request(or3client.notesUrl, overwritingNote, 'POST', token))
     .then(savedNote => {
-      var groupId = CONFERENCE + '/Paper' + savedNote.number + '/Authors';
-      var authorGroup = {
-        id: groupId,
+      var paperGroup = {
+        id: CONFERENCE + '/Paper' + savedNote.number,
         signatures: [CONFERENCE],
         writers: [CONFERENCE],
-        members: note.content.authorids.concat(note.signatures),
-        readers: [COCHAIRS, groupId],
-        signatories: [groupId]
+        members: [],
+        readers: ['everyone'],
+        signatories: []
       };
-      return or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token)
-      .then(savedGroup => {
-        savedNote.content = {
-          authorids: [savedGroup.id],
-          authors: ['Blinded names']
+      return or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
+      .then(savedPaperGroup => {
+        var groupId = savedPaperGroup.id + '/Authors';
+        var authorGroup = {
+          id: groupId,
+          signatures: [CONFERENCE],
+          writers: [CONFERENCE],
+          members: note.content.authorids.concat(note.signatures),
+          readers: [COCHAIRS, groupId],
+          signatories: [groupId]
         };
-        savedNote.readers.push(savedGroup.id);
-        return or3client.or3request(or3client.notesUrl, savedNote, 'POST', token);
+        return or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token)
+        .then(savedGroup => {
+          savedNote.content = {
+            authorids: [savedGroup.id],
+            authors: ['Blinded names']
+          };
+          savedNote.readers.push(savedGroup.id);
+          return or3client.or3request(or3client.notesUrl, savedNote, 'POST', token);
+        });
       });
     })
     .then(result => or3client.or3request(or3client.mailUrl, mail, 'POST', token))

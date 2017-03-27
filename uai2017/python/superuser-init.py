@@ -38,7 +38,6 @@ def overwrite_allowed(groupid):
     else:
         return False
 
-call(["node", "../../scripts/processToFile.js", "../process/submissionProcess.template", "../process"])
 call(["node", "../../scripts/processToFile.js", "../process/spc_registrationProcess.template", "../process"])
 call(["node", "../../scripts/processToFile.js", "../process/pc_registrationProcess.template", "../process"])
 
@@ -191,7 +190,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [CONFERENCE],
         duedate = 1491044400000, #duedate is March 31, 2017, 23:59:59 Samoa Time
-        process = '../process/usersubmissionProcess.js')
+        process = '../process/submissionProcess.js')
 
     submission_invitation.reply = {
         'forum': None,
@@ -273,8 +272,7 @@ if client.user['id'].lower()=='openreview.net':
         readers = ['everyone'],
         writers = [CONFERENCE],
         invitees = ['~'],
-        signatures = [CONFERENCE],
-        process = '../process/submissionProcess.js')
+        signatures = [CONFERENCE])
 
     blind_submission_invitation.reply = {
         'forum': None,

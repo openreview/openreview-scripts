@@ -7,6 +7,7 @@ COCHAIRS = "auai.org/UAI/2017/Program_Co-Chairs"
 SPC = "auai.org/UAI/2017/Senior_Program_Committee"
 PC = "auai.org/UAI/2017/Program_Committee"
 CONFERENCE = "auai.org/UAI/2017"
+SUBMISSION = "auai.org/UAI/2017/-/blind-submission"
 SUBJECT_AREAS = ["Algorithms: Approximate Inference",
 			    'Algorithms: Belief Propagation',
 			    'Algorithms: Distributed and Parallel',
