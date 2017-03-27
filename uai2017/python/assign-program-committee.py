@@ -89,7 +89,7 @@ def get_next_reviewer_id(reviewer, paper_number):
         else:
             reviewer_ids = [r.id for r in reviewers]
             last_reviewer_number = sorted(reviewer_ids)[-1].split('AnonReviewer')[1]
-            next_empty_reviewer = CONFERENCE+"/Paper%s/AnonReviewer%s" % (paper_number, last_reviewer_number)
+            next_empty_reviewer = CONFERENCE+"/Paper%s/AnonReviewer%s" % (paper_number, int(last_reviewer_number) + 1)
 
         return next_empty_reviewer
 
