@@ -137,8 +137,8 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
 
     new_reviewer = create_reviewer_group(new_reviewer_id, reviewer_tilde, conflict_list)
     client.add_members_to_group(reviewers,new_reviewer_id)
-    reviewers_incomplete = client.get_group(TRACK+'/Paper'+paper_number+'/Reviewers/Incomplete')
-    client.add_members_to_group(reviewers_incomplete, new_reviewer_id)
+    reviewers_nonreaders = client.get_group(TRACK+'/Paper'+paper_number+'/Reviewers/NonReaders')
+    client.add_members_to_group(reviewers_nonreaders, new_reviewer_id)
     #client.add_members_to_group(client.get_group(TRACK+'/Paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)
     return new_reviewer
 

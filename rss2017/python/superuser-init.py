@@ -5,6 +5,8 @@ This is the initialization script for RSS 2017.
 
 It should only be run ONCE to kick off the conference. It can only be run by the Super User.
 
+It can be run multiple times - by default it will overwrite the invitations, but not touch the groups.
+Adding "--overwrite true" will overwrite the groups as well.
 """
 
 ## Import statements

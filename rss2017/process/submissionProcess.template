@@ -29,8 +29,8 @@ function(){
     'signatories':[]
   };
 
-  var incompleteGroup = {
-    'id': PAPERGRP+'/Reviewers/Incomplete',
+  var nonReadersGroup = {
+    'id': PAPERGRP+'/Reviewers/NonReaders',
     'signatures': [TRACK],
     'writers': [TRACK],
     'members': [],
@@ -57,7 +57,7 @@ function(){
         'description': 'The users who will be allowed to read the above content.'
       },
       'nonreaders':{
-        'values': [incompleteGroup.id]
+        'values': [nonReadersGroup.id]
       },
       'content': {
         'title': {
@@ -157,12 +157,9 @@ function(){
 
 
   or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
-  .then(result => {
-      or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token)
-        .then(result => {
-          or3client.or3request(or3client.grpUrl, incompleteGroup, 'POST', token)
-        })
-  })
+  .then(result => or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token))
+  .then(result => or3client.or3request(or3client.grpUrl, nonReadersGroup, 'POST', token))
+
   .then(result => {
     invitation_promises = [
       or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
@@ -172,11 +169,10 @@ function(){
     return Promise.all(invitation_promises);
   })
 
-  .then(result => {
-    return mailP;
-  })
+  .then(result => mailP)
   .then(result => done())
   .catch(error => done(error));
 
   return true;
 };
+
