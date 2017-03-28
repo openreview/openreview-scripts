@@ -3,7 +3,6 @@ import requests
 import csv
 import argparse
 import re
-from uaidata import *
 
 def get_or_create_profile(client, email, first, last, allow_duplicates=False, verbose=False):
 
