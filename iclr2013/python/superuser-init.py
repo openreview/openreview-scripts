@@ -23,8 +23,7 @@ parser.add_argument('--password')
 
 args = parser.parse_args()
 
-BASE = 'AKBC.ws'
-CONFERENCE = BASE + '/2013'
+CONFERENCE = 'ICLR.cc/2013'
 
 ## Initialize the client library with username and password
 if args.username!=None and args.password!=None:
@@ -45,15 +44,6 @@ if openreview.user['id'].lower()=='openreview.net':
     #########################
     ##    SETUP GROUPS     ##
     #########################
-    if overwrite_allowed(BASE):
-        p = Group(BASE,
-            readers     = ['everyone'],
-            writers     = [BASE],
-            signatures  = ['OpenReview.net'],
-            signatories = [BASE],
-            members     = [])
-        groups.append(p)
-
 
     if overwrite_allowed(CONFERENCE):
         akbc2013 = Group(CONFERENCE,
@@ -62,7 +52,7 @@ if openreview.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [CONFERENCE],
             members     = [],
-            web         = '../webfield/akbc2013_webfield.html')
+            web         = '../webfield/iclr2013_webfield.html')
         groups.append(akbc2013)
 
     ## Post the groups
@@ -72,7 +62,6 @@ if openreview.user['id'].lower()=='openreview.net':
 
     openreview.post_group(openreview.get_group('host'),CONFERENCE)
     openreview.add_members_to_group(openreview.get_group('host'),CONFERENCE)
-
 
 
     #########################
@@ -146,9 +135,9 @@ if openreview.user['id'].lower()=='openreview.net':
     submission_invitation = Invitation(CONFERENCE,
         'submission',
         readers=['everyone'],
-        writers= ['OpenReview.net'],
+        writers=[CONFERENCE],
         invitees=['~'],
-        signatures= ['OpenReview.net'],
+        signatures=['OpenReview.net'],
         reply=submission_reply,
         duedate=1369422751717)
 
@@ -158,7 +147,6 @@ if openreview.user['id'].lower()=='openreview.net':
     for i in invitations:
         print "Posting invitation: "+i.id
         openreview.post_invitation(i)
-
 
 else:
     print "Aborted. User must be Super User."
