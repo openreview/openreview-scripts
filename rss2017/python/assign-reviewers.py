@@ -32,6 +32,7 @@ else:
     client = openreview.Client(baseurl=args.baseurl)
 baseurl = client.baseurl
 
+## parse track information
 if args.track != 'Poster' and args.track != 'Proceedings':
     print("set --track to either Poster or Proceedings")
     sys.exit()
@@ -56,7 +57,7 @@ def single_assignment_valid(s):
     except IndexError:
         return False
 
-# does some parameter checking before handing off to get_reviewer_group
+# does some parameter checking before handing off to get_reviewer_group()
 # which really does the assigning
 def assign_reviewer(reviewer,paper_number):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
@@ -106,11 +107,16 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
     if not (reviewer in workshop_reviewers.members):
         client.add_members_to_group(workshop_reviewers,reviewer)
 
-    reviewer_tilde = requests.get(client.baseurl+'/user/profile', params={'email':reviewer}, headers=client.headers).json()['profile']['id']
+    try:
+        reviewer_tilde = client.get_profile(reviewer).id
+    except openreview.OpenReviewException as e:
+        # generally user not found
+        print("Reviewer (%s) Error: %s"%(reviewer, e))
+        return
 
     if '~' not in reviewer_tilde:
         print "Something went wrong with reviewer at ",reviewer
-        print "reviewer_tilde = ",reviewer_tilde.id
+        print "reviewer_tilde = ",reviewer_tilde
 
     # determine what number AnonReviewer this new reviewer should be
     # by searching for largest AnonReviewer so far
@@ -132,19 +138,18 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
 
     # reviewer not in current group
     # create new group for this new reviewer with Anon name
-    # add that to the existing reviewers group
+    # add that to the existing reviewers group and the NonReaders group
     new_reviewer_id = TRACK+'/Paper'+str(paper_number)+'/AnonReviewer'+str(N+1)
 
     new_reviewer = create_reviewer_group(new_reviewer_id, reviewer_tilde, conflict_list)
     client.add_members_to_group(reviewers,new_reviewer_id)
     reviewers_nonreaders = client.get_group(TRACK+'/Paper'+paper_number+'/Reviewers/NonReaders')
     client.add_members_to_group(reviewers_nonreaders, new_reviewer_id)
-    #client.add_members_to_group(client.get_group(TRACK+'/Paper'+str(paper_number)+'/review-nonreaders'),new_reviewer_id)
     return new_reviewer
 
 
 ##################################################################
-
+## parse input csv file or command line arguments
 
 if args.assignments.endswith('.csv'):
     with open(args.assignments, 'rb') as csvfile:
