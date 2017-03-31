@@ -136,7 +136,7 @@ for n in metadata_notes:
         ac_affinity = match_utils.subject_area_affinity(
             paper_note.content['subject areas'],
             registered_expertise_by_ac[a]['primary area'],
-            registered_expertise_by_ac[a]['aditional areas'],
+            registered_expertise_by_ac[a]['additional areas'],
             primary_weight = 0.7
         )
 

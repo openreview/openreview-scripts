@@ -42,8 +42,8 @@ function () {
           'value-dropdown': UAIData.EXPERTISES,
           'required': true
         },
-        'aditional areas': {
-          'description': 'Aditional list of areas of expertise.',
+        'additional areas': {
+          'description': 'Additional list of areas of expertise.',
           'order': 3,
           'values-dropdown': UAIData.EXPERTISES
         }

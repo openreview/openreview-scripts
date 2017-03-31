@@ -101,7 +101,7 @@ def sendMail(spc_invited):
         fullname = re.sub('[0-9]','',spc_member.replace('~','').replace('_',' '))
         print "Sending message to %s (%s)" % (fullname,spc_member)
         response = openreview.send_mail("Senior Program Committee Invitation for UAI 2017", [spc_member], message %(fullname,url + "Yes", url + "No"))
-        print "Mail response: ", response.json()
+        print "Mail response: ", response
 
 if openreview.exists(SPC+"/invited") and openreview.exists(SPC+"/emailed"):
     reviewers_invited = openreview.get_group(SPC+"/invited")
