@@ -63,6 +63,6 @@ if args.email:
 	groups.extend(args.email)
 
 response = openreview.send_mail(subjectline, groups, message)
-print "Emailed the following users: ",response.json()['groups']
+print "Emailed the following users: ", response['groups']
 
 
