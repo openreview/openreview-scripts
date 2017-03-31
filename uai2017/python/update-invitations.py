@@ -24,7 +24,8 @@ invitation_invitees = {
 	'Add/Bid': { 'tags': True, 'byPaper': False, 'invitees': [SPC, PC] },
 	'Recommend/Reviewer': { 'tags': True, 'byPaper': True, 'invitees': [maskAreaChairGroup] },
 	'Official/Review': { 'byPaper': True, 'invitees': [maskReviewerGroup] },
-	'Meta/Review': { 'byPaper': True, 'invitees': [maskAreaChairGroup] }
+	'Meta/Review': { 'byPaper': True, 'invitees': [maskAreaChairGroup] },
+	'Add/Revision': { 'byPaper': True, 'invitees': [maskAuthorsGroup] }
 }
 
 def get_invitations(invitationId):
@@ -32,7 +33,7 @@ def get_invitations(invitationId):
 	config = invitation_invitees[invitationId]
 	if config['byPaper']:
 		invitations = client.get_invitations(regex = CONFERENCE + '/-/Paper.*/' + invitationId, tags = config.get('tags'))
-		return invitations
+		return [i for i in invitations if re.match(CONFERENCE + '/-/Paper[0-9]+/' + invitationId, i.id)]
 	else:
 		invitation = client.get_invitation(CONFERENCE + '/-/' + invitationId)
 		return [invitation]
@@ -61,6 +62,7 @@ if args.invitation in invitation_invitees:
 		client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 		invitations = get_invitations(invitationId)
+		updated = 0
 
 		if invitations:
 			for i in invitations:
@@ -68,8 +70,11 @@ if args.invitation in invitation_invitees:
 				print 'invitees', i.invitees
 				result = client.post_invitation(i)
 				print "Invitation updated successfully", result.id
+				updated += 1
 		else:
 			print "Invitation not found", invitationId
+
+		print "#invitations updated", updated
 
 	else:
 		print "Invalid enable value", args.enable
