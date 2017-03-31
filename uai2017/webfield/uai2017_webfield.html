@@ -248,7 +248,7 @@ $(function() {
   };
 
   var getPaperNumbersfromGroups = function(groups) {
-    var re = /auai\.org\/UAI\/2017\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
+    var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
     return _.map(
       _.filter(groups, function(gid) { return re.test(gid); }),
       function(fgid) { return parseInt(fgid.match(re)[1], 10); }
