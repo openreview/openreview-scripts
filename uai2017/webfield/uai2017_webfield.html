@@ -105,10 +105,11 @@ $(function() {
     return df.promise();
   };
 
+  var duedate_buffer = 1000 * 60 * 30; // 30 minutes buffer
   var getInvitation = function() {
     return httpGetP('invitations', {id: 'auai.org/UAI/2017/-/submission'}).then(function(result) {
       var valid_invitations = _.filter(result.invitations, function(inv) {
-        return inv.duedate > Date.now();
+        return (inv.duedate + duedate_buffer) > Date.now();
       });
       return valid_invitations[0];
     }, function(error) {
@@ -303,6 +304,7 @@ $(function() {
 
       view.mkNewNoteEditor(invitation, null, null, user, {
         onNoteCreated: function(idRecord) {
+          promptMessage("Thank you for submitting to UAI. Your paper submission will appear shortly in the 'My Submitted Papers' tab. If you don't see your paper after 15 minutes please contact us at info@openreview.net", false, true);
           $.when(
             getUserGroups(),
             getAllNotes(),
