@@ -6,7 +6,7 @@ function(){
 
     var or3client = lib.or3client;
 
-    console.log('the Public Comment Process is here');
+    console.log('the Comment Process is here');
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
 
     var conference = 'RSS 2017 Workshop '+TRACK_NAME+' Track'
@@ -21,7 +21,7 @@ function(){
       var author_mail = {
         "groups": authors,
         "subject": "Review of your submission to "+TRACK+": \"" + forum.content.title + "\"",
-        "message": "Your submission to " + conference + " has received a public comment.\n\nTitle: " + note.content.title + "\n\nReview: " + note.content.comment + "\n\n To view the review, click here: " + baseUrl+"/forum?id=" + note.forum
+        "message": "Your submission to " + conference + " has received a comment.\n\nTitle: " + note.content.title + "\n\nReview: " + note.content.comment + "\n\n To view the review, click here: " + baseUrl+"/forum?id=" + note.forum
       };
 
       var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );

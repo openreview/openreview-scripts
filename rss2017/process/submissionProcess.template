@@ -7,7 +7,7 @@ function(){
   const TRACK = CONFERENCE+'/'+TRACK_NAME;
   const PAPERGRP = TRACK+'/Paper' + note.number;
   const PAPERINV = TRACK+'/-/Paper' + note.number;
-  const DUE_DATE = new Date(2017, 6, 30, 17, 15);
+  const DUE_DATE = new Date(2017, 6, 30, 17, 0);
 
   var officialReviewProcess = <<officialReviewProcess.js>>
 
@@ -105,7 +105,7 @@ function(){
 
  var commentProcess = <<commentProcess.js>>
  var commentInvitation = {
-    'id': PAPERINV+'/Public/Comment',
+    'id': PAPERINV+'/Open/Comment',
     'signatures': [TRACK],
     'writers': [TRACK],
     'invitees': ['~'],
