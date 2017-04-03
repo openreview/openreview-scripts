@@ -224,13 +224,7 @@ $(function() {
     var commentNotes = [];
 
     _.forEach(authorNotes, function(note) {
-      if (note.invitation === 'auai.org/UAI/2017/-/submission') {
-        var original = _.find(blindedNotes, {'original': note.id});
-        if (original) {
-          submittedNotes.push(original);
-        }
-
-      } else if (_.startsWith(note.invitation, 'auai.org/UAI/2017') && (_.isNull(note.ddate) || _.isUndefined(note.ddate))) {
+      if (_.startsWith(note.invitation, 'auai.org/UAI/2017') && (note.invitation !== 'auai.org/UAI/2017/-/submission') && (_.isNull(note.ddate) || _.isUndefined(note.ddate))) {
         // TODO: remove this client side filtering when DB query is fixed
         commentNotes.push(note);
       }
@@ -238,6 +232,9 @@ $(function() {
 
     var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
     var assignedNotes = _.filter(blindedNotes, function(n) { return _.includes(assignedPaperNumbers, n.number); });
+
+    var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
+    var submittedNotes = _.filter(blindedNotes, function(n) { return _.includes(authorPaperNumbers, n.number); });
 
     return {
       allNotes: blindedNotes,
@@ -250,6 +247,14 @@ $(function() {
 
   var getPaperNumbersfromGroups = function(groups) {
     var re = /auai.org\/UAI\/2017\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
+    return _.map(
+      _.filter(groups, function(gid) { return re.test(gid); }),
+      function(fgid) { return parseInt(fgid.match(re)[1], 10); }
+    );
+  };
+
+  var getAuthorPaperNumbersfromGroups = function(groups) {
+    var re = /auai.org\/UAI\/2017\/Paper(\d+)\/Authors/;
     return _.map(
       _.filter(groups, function(gid) { return re.test(gid); }),
       function(fgid) { return parseInt(fgid.match(re)[1], 10); }
