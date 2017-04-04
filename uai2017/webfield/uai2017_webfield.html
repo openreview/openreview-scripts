@@ -332,12 +332,16 @@ $(function() {
       });
     };
 
-    $attach(
-      '#invitation',
-      'mkInvitationButton',
-      [invitation, onInvitationButtonClicked, { largeLabel: true }],
-      true
-    );
+
+    if (invitation) {
+      $attach(
+        '#invitation',
+        'mkInvitationButton',
+        [invitation, onInvitationButtonClicked, { largeLabel: true }],
+        true
+      );
+    }
+
     $('#invitation').fadeIn('fast');
   };
 
