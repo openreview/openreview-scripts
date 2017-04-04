@@ -42,7 +42,7 @@ for n in reviewer_metadata_notes:
 
     n.content['reviewers'] = reviewer_similarities
 
-    print "populating metadata for REVIEWER %s" % reviewer
+    print "populating metadata for REVIEWER %s" % n.content['name']
     client.post_note(n)
 
 areachairs = client.get_group(SPC)
@@ -59,5 +59,5 @@ for n in areachair_metadata_notes:
         })
 
     n.content['areachairs'] = areachair_similarities
-    print "populating metadata for AREACHAIR %s" % areachair
+    print "populating metadata for AREACHAIR %s" % n.content['name']
     client.post_note(n)

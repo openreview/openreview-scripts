@@ -61,6 +61,6 @@ print 'Writing %s/uai_%s_match.csv' % (outdir, mode)
 with open('%s/uai_%s_match.csv' % (outdir, mode), 'w') as outfile:
     csvwriter = csv.writer(outfile)
     for a in assignments:
-        csvwriter.writerow([a[0],a[1]])
+        csvwriter.writerow([a[0].encode('utf-8'),a[1]])
 print "Done"
 
