@@ -32,10 +32,11 @@
         return df.promise();
       };
 
+      var duedate_buffer = 1000 * 60 * 15; // 15 minutes buffer
       var invitationP = httpGetP('invitations', {id: 'roboticsfoundation.org/RSS/2017/Workshop/Proceedings/-/Submission'}).then(function(result) {
         console.log('result',result);
         var valid_invitations = _.filter(result.invitations, function(inv){
-          return inv.duedate > Date.now();
+          return (inv.duedate + duedate_buffer) > Date.now();
         })
         return valid_invitations[0];
       },

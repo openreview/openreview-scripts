@@ -145,6 +145,18 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
     client.add_members_to_group(reviewers,new_reviewer_id)
     reviewers_nonreaders = client.get_group(TRACK+'/Paper'+paper_number+'/Reviewers/NonReaders')
     client.add_members_to_group(reviewers_nonreaders, new_reviewer_id)
+
+    ## the Poster track submissions are only visible to the author, co-chairs
+    ## and the reviewers assigned to that paper.
+    ## Here we add the reviewers to readers list to see the paper.
+    if TRACK == POSTER:
+        notes = [note for note in submissions if str(note.number) == str(paper_number)]
+        reviewer_group_name = TRACK + '/Paper' + paper_number + '/Reviewers'
+        if not (reviewer_group_name in note.readers):
+            note.readers.append(reviewer_group_name)
+            client.post_note(note)
+            print("Add reviewer %s to readers for Paper%s" %(reviewer_group_name,paper_number))
+
     return new_reviewer
 
 
@@ -165,3 +177,5 @@ elif single_assignment_valid(args.assignments):
 else:
     print "Invalid input"
     sys.exit()
+
+
