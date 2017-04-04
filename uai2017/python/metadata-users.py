@@ -28,6 +28,7 @@ reviewers = client.get_group(PC)
 reviewer_metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Reviewer/Metadata')
 reviewer_metadata_by_id = {n.forum:n for n in reviewer_metadata_notes}
 
+print "Generating reviewer metadata..."
 for n in reviewer_metadata_notes:
     n.content['maxpapers'] = 3
     n.content['minpapers'] = 0
@@ -42,13 +43,13 @@ for n in reviewer_metadata_notes:
 
     n.content['reviewers'] = reviewer_similarities
 
-    print "populating metadata for REVIEWER %s" % n.content['name']
     client.post_note(n)
 
 areachairs = client.get_group(SPC)
 areachair_metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Area_Chair/Metadata')
 areachair_metadata_by_id = {n.forum:n for n in areachair_metadata_notes}
 
+print "Generating areachair metadata..."
 for n in areachair_metadata_notes:
     areachair_similarities = []
     for areachair in areachairs.members:
@@ -59,5 +60,4 @@ for n in areachair_metadata_notes:
         })
 
     n.content['areachairs'] = areachair_similarities
-    print "populating metadata for AREACHAIR %s" % n.content['name']
     client.post_note(n)

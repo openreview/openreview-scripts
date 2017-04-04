@@ -167,8 +167,11 @@ for n in metadata_notes:
     metadata_by_id[forum].content['papers'] = paper_metadata
     metadata_by_id[forum].content['title'] = paper_note.content['title']
 
-    print "populating metadata for PAPER %s: %s" % (n.number, forum)
     client.post_note(metadata_by_id[forum])
 
-print "Missing AC registration: ", list(missing_spc_reg)
+print "Done."
+print ''
+print "Missing AC registration: "
+for spc in list(missing_spc_reg):
+    print spc
 
