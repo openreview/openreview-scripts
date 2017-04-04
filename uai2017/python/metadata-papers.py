@@ -19,7 +19,7 @@ args = parser.parse_args()
 if args.username is not None and args.password is not None:
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    client = openreview.Client(baseurl=args.baseurl)
+    client = openreview.Client()
 
 
 # Function definitions
@@ -44,6 +44,7 @@ bid_score_map = {
  'No bid': 0.0
 }
 
+print "Obtaining reviewer-relevant data..."
 ## Reviewer-relevant data
 reviewers = client.get_group(PC)
 bids = client.get_tags(invitation='auai.org/UAI/2017/-/Add/Bid')
@@ -53,11 +54,13 @@ metadata_by_id = {n.forum:n for n in metadata_notes}
 bids_by_number = defaultdict(list)
 bids_by_id = defaultdict(list)
 
+print "Processing bids... (this may take a while)"
 for b in bids:
     n = client.get_note(b.forum)
     bids_by_number[n.number].append(b)
     bids_by_id[n.forum].append(b)
 
+print "Processing submissions..."
 submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
 recs = []
 for n in submissions:
@@ -66,11 +69,13 @@ for n in submissions:
 recs_by_number = defaultdict(list)
 recs_by_id = defaultdict(list)
 
+print "Processing recommendations..."
 for r in recs:
     n = client.get_note(r.forum)
     recs_by_number[n.number].append(r)
     recs_by_id[n.forum].append(r)
 
+print "Obtaining areachair-relevant data..."
 ## Areachair-relevant data
 areachairs = client.get_group(SPC)
 profile_expertise_by_ac = {}
@@ -84,6 +89,9 @@ spc_reg_responses = client.get_notes(invitation='auai.org/UAI/2017/-/SPC_Experti
 for reg in spc_reg_responses:
     registered_expertise_by_ac[reg.signatures[0]] = reg.content
 
+missing_spc_reg = set()
+
+print "Populating metadata notes..."
 # Populate Metadata notes
 # .............................................................................
 
@@ -133,18 +141,22 @@ for n in metadata_notes:
         })
 
     for a in areachairs.members:
-        ac_affinity = match_utils.subject_area_affinity(
-            paper_note.content['subject areas'],
-            registered_expertise_by_ac[a]['primary area'],
-            registered_expertise_by_ac[a]['additional areas'],
-            primary_weight = 0.7
-        )
+        if a in registered_expertise_by_ac.keys():
+            registered_ac = a
+            ac_affinity = match_utils.subject_area_affinity(
+                paper_note.content['subject areas'],
+                registered_expertise_by_ac[registered_ac]['primary area'],
+                registered_expertise_by_ac[registered_ac]['additional areas'],
+                primary_weight = 0.7
+            )
 
-        areachair_metadata.append({
-            'user': a,
-            'score': ac_affinity,
-            'source': 'SubjectAreaOverlap'
-        })
+            areachair_metadata.append({
+                'user': registered_ac,
+                'score': ac_affinity,
+                'source': 'SubjectAreaOverlap'
+            })
+        else:
+            missing_spc_reg.update([a])
 
     metadata_by_id[forum].content['minreviewers'] = 1
     metadata_by_id[forum].content['maxreviewers'] = 3
@@ -155,7 +167,8 @@ for n in metadata_notes:
     metadata_by_id[forum].content['papers'] = paper_metadata
     metadata_by_id[forum].content['title'] = paper_note.content['title']
 
-    print "populating metadata for PAPER %s" % forum
+    print "populating metadata for PAPER %s: %s" % (n.number, forum)
     client.post_note(metadata_by_id[forum])
 
+print "Missing AC registration: ", list(missing_spc_reg)
 
