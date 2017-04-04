@@ -534,14 +534,11 @@ if client.user['id'].lower()=='openreview.net':
         'invitation': blind_submission_invitation.id,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'value-regex': '~.*'
+            'values-copied': [CONFERENCE, '{signatures}']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'value-regex': '~.*'
-        },
-        'writers': {
-            'value-regex': '~.*'
+            'values-regex': '~.*'
         },
         'content': {
             'tag': {
