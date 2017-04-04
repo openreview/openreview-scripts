@@ -24,7 +24,7 @@ args = parser.parse_args()
 if args.username!=None and args.password!=None:
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    client = openreview.Client(baseurl=args.baseurl)
+    client = openreview.Client()
 
 
 # Create the paper metadata invitations
@@ -77,6 +77,7 @@ client.post_invitation(areachair_metadata_invitation)
 # Main Script
 # .............................................................................
 
+print "Obtaining submission data..."
 overwrite = args.overwrite and args.overwrite.lower()=='true'
 
 submissions = client.get_notes(invitation=CONFERENCE+"/-/blind-submission")
