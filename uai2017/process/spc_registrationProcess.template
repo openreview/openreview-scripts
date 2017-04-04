@@ -15,11 +15,11 @@ function () {
 
   var spc_expertise = {
     'id': 'auai.org/UAI/2017/-/SPC_Expertise',
-    'signatures': ['auai.org/UAI/2017'],
-    'writers': ['auai.org/UAI/2017'],
+    'signatures': [UAIData.CONFERENCE],
+    'writers': [UAIData.CONFERENCE],
     'invitees': [UAIData.SPC],
     'noninvitees':[],
-    'readers': ['auai.org/UAI/2017',UAIData.SPC],
+    'readers': [UAIData.CONFERENCE, UAIData.SPC],
     'process': process + "",
     'duedate': 1485813353000,
     'reply': {
@@ -28,7 +28,7 @@ function () {
       'writers': {'values-regex':'~.*'},
       'signatures': {'values-regex':'~.*'},
       'readers': {
-        'values': [UAIData.COCHAIRS],
+        'values': [UAIData.COCHAIRS, UAIData.CONFERENCE],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {
