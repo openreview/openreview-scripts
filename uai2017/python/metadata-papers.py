@@ -44,39 +44,24 @@ bid_score_map = {
  'No bid': 0.0
 }
 
-print "Obtaining reviewer-relevant data..."
 ## Reviewer-relevant data
+print "Obtaining reviewer-relevant data..."
 reviewers = client.get_group(PC)
-bids = client.get_tags(invitation='auai.org/UAI/2017/-/Add/Bid')
-metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Paper/Metadata')
-metadata_by_id = {n.forum:n for n in metadata_notes}
+profile_expertise_by_reviewer = {}
+registered_expertise_by_reviewer = {}
 
-bids_by_number = defaultdict(list)
-bids_by_id = defaultdict(list)
+for r in [x for x in reviewers.members if '~' in x]:
+    profile = client.get_profile(r)
+    profile_expertise_by_reviewer[r] = profile.content['expertise']
 
-print "Processing bids... (this may take a while)"
-for b in bids:
-    n = client.get_note(b.forum)
-    bids_by_number[n.number].append(b)
-    bids_by_id[n.forum].append(b)
+reviewer_reg_responses = client.get_notes(invitation='auai.org/UAI/2017/-/Reviewer_Expertise')
+for reg in reviewer_reg_responses:
+    registered_expertise_by_reviewer[reg.signatures[0]] = reg.content
 
-print "Processing submissions..."
-submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
-recs = []
-for n in submissions:
-    recs += client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % n.number)
+missing_reviewer_reg = set()
 
-recs_by_number = defaultdict(list)
-recs_by_id = defaultdict(list)
-
-print "Processing recommendations..."
-for r in recs:
-    n = client.get_note(r.forum)
-    recs_by_number[n.number].append(r)
-    recs_by_id[n.forum].append(r)
-
-print "Obtaining areachair-relevant data..."
 ## Areachair-relevant data
+print "Obtaining areachair-relevant data..."
 areachairs = client.get_group(SPC)
 profile_expertise_by_ac = {}
 registered_expertise_by_ac = {}
@@ -90,6 +75,38 @@ for reg in spc_reg_responses:
     registered_expertise_by_ac[reg.signatures[0]] = reg.content
 
 missing_spc_reg = set()
+
+## Bid-relevant data
+bids = client.get_tags(invitation='auai.org/UAI/2017/-/Add/Bid')
+metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Paper/Metadata')
+metadata_by_id = {n.forum:n for n in metadata_notes}
+
+
+print "Processing submissions..."
+submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
+submissions_by_forum = {n.forum: n for n in submissions}
+recs = []
+for n in submissions:
+    recs += client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % n.number)
+
+print "Processing bids... (this may take a while)"
+bids_by_id = defaultdict(list)
+for b in bids:
+    try:
+        n = submissions_by_forum[b.forum]
+        bids_by_id[n.forum].append(b)
+    except KeyError as e:
+        print "Bid found on deleted paper: ", b.forum
+
+print "Processing recommendations..."
+recs_by_id = defaultdict(list)
+for r in recs:
+    try:
+        n = submissions_by_forum[r.forum]
+        recs_by_id[n.forum].append(r)
+    except KeyError as e:
+        print "Recommendation found on deleted paper: ", r.forum
+
 
 print "Populating metadata notes..."
 # Populate Metadata notes
@@ -124,14 +141,6 @@ for n in metadata_notes:
             'source': 'AreachairRec'
         })
 
-    # The following for loop is needed until we have a real way of getting reviewer-paper scores
-    for reviewer in reviewers.members:
-        reviewer_metadata.append({
-            'user': reviewer,
-            'score': 0.5,
-            'source': 'DummyModel'
-        })
-
     # The following for loop is needed until we have a real way of getting paper-paper scores
     for m in metadata_notes:
         paper_metadata.append({
@@ -139,6 +148,25 @@ for n in metadata_notes:
             'score': 1.0 if m.forum == n.forum else 0.0,
             'source': 'DummyModel'
         })
+
+    # The following for loop is needed until we have a real way of getting reviewer-paper scores
+    for reviewer in reviewers.members:
+        if reviewer in registered_expertise_by_reviewer.keys():
+            registered_reviewer = reviewer
+            reviewer_affinity = match_utils.subject_area_affinity(
+                paper_note.content['subject areas'],
+                registered_expertise_by_reviewer[registered_reviewer]['primary area'],
+                registered_expertise_by_reviewer[registered_reviewer]['additional areas'],
+                primary_weight = 0.7
+            )
+
+            reviewer_metadata.append({
+                'user': registered_reviewer,
+                'score': reviewer_affinity,
+                'source': 'SubjectAreaOverlap'
+            })
+        else:
+            missing_reviewer_reg.update([reviewer])
 
     for a in areachairs.members:
         if a in registered_expertise_by_ac.keys():
@@ -171,7 +199,12 @@ for n in metadata_notes:
 
 print "Done."
 print ''
-print "Missing AC registration: "
+print "Missing %s of %s areachair expertise areas: " % (len(list(missing_spc_reg)), len(areachairs.members))
 for spc in list(missing_spc_reg):
     print spc
+
+print ''
+print "Missing %s of %s reviewer expertise areas: " % (len(list(missing_reviewer_reg)), len(reviewers.members))
+for reviewer in list(missing_reviewer_reg):
+    print reviewer
 
