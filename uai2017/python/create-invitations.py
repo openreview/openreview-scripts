@@ -116,11 +116,8 @@ def get_recommend_reviewer_invitation(submissionId, number):
         	'values-regex': '~.*',
         	'description': 'How your identity will be displayed with the above content.'
       	},
-      		'writers': {
-      		'values-regex': '~.*'
-      	},
       	'readers': {
-        	'values': '~.*',
+        	'values-copied': [CONFERENCE, '{signatures}'],
         	'description': 'The users who will be allowed to read the above content.'
       	},
       	'content': {
