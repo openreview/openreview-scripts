@@ -151,10 +151,11 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
     ## Here we add the reviewers to readers list to see the paper.
     if TRACK == POSTER:
         notes = [note for note in submissions if str(note.number) == str(paper_number)]
-        if not (reviewer in note.readers):
-            note.readers.append(reviewer)
+        reviewer_group_name = TRACK + '/Paper' + paper_number + '/Reviewers'
+        if not (reviewer_group_name in note.readers):
+            note.readers.append(reviewer_group_name)
             client.post_note(note)
-            print("Add reviewer %s to readers for Paper%s" %(reviewer,paper_number))
+            print("Add reviewer %s to readers for Paper%s" %(reviewer_group_name,paper_number))
 
     return new_reviewer
 
