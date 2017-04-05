@@ -399,11 +399,11 @@ for n in reviewer_metadata_notes:
     for reviewer in reviewers_group.members:
 
         try:
-            primary_subjects_A = registered_expertise_by_reviewer[reviewer]['primary area']
-            secondary_subjects_A = registered_expertise_by_reviewer[reviewer]['additional areas']
+            primary_subjects_A = registered_expertise_by_reviewer[reviewer].get('primary area', [])
+            secondary_subjects_A = registered_expertise_by_reviewer[reviewer].get('additional areas', [])
 
-            primary_subjects_B = registered_expertise_by_reviewer[n.content['name']]['primary area']
-            secondary_subjects_B = registered_expertise_by_reviewer[n.content['name']]['additional areas']
+            primary_subjects_B = registered_expertise_by_reviewer[n.content['name']].get('primary area', [])
+            secondary_subjects_B = registered_expertise_by_reviewer[n.content['name']].get('additional areas', [])
 
             primary_affinity = match_utils.subject_area_overlap(primary_subjects_A, primary_subjects_B)
             secondary_affinity = match_utils.subject_area_overlap(secondary_subjects_A, secondary_subjects_B)
@@ -430,11 +430,11 @@ for n in areachair_metadata_notes:
     areachair_similarities = []
     for areachair in areachairs_group.members:
         try:
-            primary_subjects_A = registered_expertise_by_ac[areachair]['primary area']
-            secondary_subjects_A = registered_expertise_by_ac[areachair]['additional areas']
+            primary_subjects_A = registered_expertise_by_ac[areachair].get('primary area', [])
+            secondary_subjects_A = registered_expertise_by_ac[areachair].get('additional areas', [])
 
-            primary_subjects_B = registered_expertise_by_ac[n.content['name']]['primary area']
-            secondary_subjects_B = registered_expertise_by_ac[n.content['name']]['additional areas']
+            primary_subjects_B = registered_expertise_by_ac[n.content['name']].get('primary area', [])
+            secondary_subjects_B = registered_expertise_by_ac[n.content['name']].get('additional areas', [])
 
             primary_affinity = match_utils.subject_area_overlap(primary_subjects_A, primary_subjects_B)
             secondary_affinity = match_utils.subject_area_overlap(secondary_subjects_A, secondary_subjects_B)
