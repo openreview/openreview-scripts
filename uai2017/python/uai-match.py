@@ -41,7 +41,7 @@ else:
     defaultconfig = {
         'reviewer_primary_weight': 0.7,
         'areachair_primary_weight': 0.7,
-        'recommendation_weight': '+inf',
+        'recommendation_score': '+inf',
         'minreviewers': 1,
         'maxreviewers': 3,
         'minareachairs': 1,
@@ -141,7 +141,6 @@ for n in original_notes:
             author_profile = client.get_profile(author_email)
             domains_by_email[author_email] = set([p.split('@')[1] for p in author_profile.content['emails']])
         except openreview.OpenReviewException:
-            #print "Profile not found for author email %s" % author_email
             pass
 
 # .............................................................................
@@ -269,7 +268,7 @@ for n in paper_metadata_notes:
     for bid in recs_by_forum[forum]:
         reviewer_metadata.append({
             'user': bid.tag,
-            'score': config['recommendation_weight'],
+            'score': config['recommendation_score'],
             'source': 'AreachairRec'
         })
 
@@ -345,7 +344,7 @@ for n in paper_metadata_notes:
             conflicts.update([(reviewer, paper_note.number)])
             reviewer_metadata.append({
                 'user': reviewer,
-                'score': config['conflict_weight'],
+                'score': config['conflict_score'],
                 'source': 'ConflictOfInterest'
             })
 
