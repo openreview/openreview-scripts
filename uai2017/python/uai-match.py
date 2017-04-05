@@ -16,6 +16,27 @@ import match_utils
 
 from uaidata import *
 
+
+# Configuration
+config = {
+    'reviewer_primary_weight': 0.7,
+    'areachair_primary_weight': 0.7,
+    'recommendation_weight': '+inf',
+    'minreviewers': 1,
+    'maxreviewers': 3,
+    'minareachairs': 1,
+    'maxareachairs': 1,
+    'minpapers': 1,
+    'maxpapers': 15,
+    'bid_score_map': {
+         'I want to review': 1.0,
+         'I can review': 0.75,
+         'I can probably review but am not an expert': 0.5,
+         'I cannot review': '-inf',
+         'No bid': 0.0
+    }
+}
+
 # Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
@@ -36,29 +57,69 @@ if args.username!=None and args.password!=None:
 else:
     client = openreview.Client()
 
-
-# .............................................................................
-#
-# Metadata init
-#
-# .............................................................................
-
-print "Obtaining submission data..."
 overwrite = args.overwrite and args.overwrite.lower()=='true'
+mode = args.mode.lower() if args.mode else 'reviewers'
+outdir = args.outdir if args.outdir else '.'
 
-submissions = client.get_notes(invitation = CONFERENCE+"/-/blind-submission")
+params = {'minusers': None, 'maxusers': None}
+params['minusers'] = config['minreviewers'] if mode == 'reviewers' else config['minareachairs']
+params['maxusers'] = config['maxreviewers'] if mode == 'reviewers' else config['maxareachairs']
+params['minpapers'] = config['minpapers']
+params['maxpapers'] = config['maxpapers']
 
-existing_paper_metadata = client.get_notes(invitation=CONFERENCE + "/-/Paper/Metadata")
-metadata_by_forum = {n.forum: n for n in existing_paper_metadata}
+missing_reviewer_expertise = set()
+missing_areachair_expertise = set()
+
+# API calls
+print "Getting paper notes..."
+paper_notes = client.get_notes(invitation = CONFERENCE + "/-/blind-submission")
+print "Getting submission metadata..."
+paper_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Paper/Metadata')
+print "Getting reviewer metadata..."
+reviewer_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer/Metadata')
+print "Getting areachair metadata..."
+areachair_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Area_Chair/Metadata')
+print "Getting reviewer expertise..."
+reviewer_expertise_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer_Expertise')
+print "Getting areachair expertise..."
+areachair_expertise_notes = client.get_notes(invitation = CONFERENCE + '/-/SPC_Expertise')
+
+reviewers_group = client.get_group(PC)
+areachairs_group = client.get_group(SPC)
+print "Getting bids..."
+bids = client.get_tags(invitation = CONFERENCE + '/-/Add/Bid')
+
+print "Getting areachair recommendations..."
+recs = []
+for n in paper_notes:
+    recs += client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % n.number)
+
+
+# Indexes
+metadata_by_forum = {n.forum: n for n in paper_metadata_notes}
+metadata_by_reviewer = {u.content['name']: u for u in reviewer_metadata_notes}
+metadata_by_areachair = {u.content['name']: u for u in areachair_metadata_notes}
+
+submissions_by_forum = {n.forum: n for n in paper_notes}
+
+registered_expertise_by_reviewer = {n.signatures[0]: n.content for n in reviewer_expertise_notes}
+registered_expertise_by_ac = {n.signatures[0]: n.content for n in areachair_expertise_notes}
+
+# .............................................................................
+#
+# Initialize Metadata
+#
+# Initialize the metadata in OpenReview by creating notes
+# .............................................................................
 
 # Pre-populate all the paper metadata notes
 print "Overwriting paper metadata..." if overwrite else "Generating Paper Metadata..."
-for n in submissions:
+for n in paper_notes:
     if n.forum not in metadata_by_forum:
         metadata = openreview.Note(
           invitation = CONFERENCE + "/-/Paper/Metadata",
           readers = [COCHAIRS, CONFERENCE],
-          forum = n.id,
+          forum = n.forum,
           writers = [CONFERENCE],
           content = {'reviewers':[], 'areachairs':[], 'papers':[]},
           signatures = [CONFERENCE]
@@ -72,12 +133,8 @@ for n in submissions:
         client.post_note(metadata)
 
 # Pre-populate all the reviewer metadata notes
-reviewers = client.get_group(PC).members
-existing_reviewer_metadata = client.get_notes(invitation = CONFERENCE + "/-/Reviewer/Metadata")
-metadata_by_reviewer = {u.content['name']: u for u in existing_reviewer_metadata}
-
 print "Overwriting reviewer metadata..." if overwrite else "Generating reviewer metadata..."
-for r in reviewers:
+for r in reviewers_group.members:
     if r not in metadata_by_reviewer:
         metadata = openreview.Note(
             invitation=CONFERENCE + "/-/Reviewer/Metadata",
@@ -92,14 +149,9 @@ for r in reviewers:
         metadata.content['reviewers'] = []
         client.post_note(metadata)
 
-
 # Pre-populate all the area chair metadata notes
-areachairs = client.get_group(SPC).members
-existing_areachair_metadata = client.get_notes(invitation = CONFERENCE + "/-/Area_Chair/Metadata")
-metadata_by_areachair = {u.content['name']: u for u in existing_areachair_metadata}
-
 print "Overwriting areachair metadata..." if overwrite else "Generating areachair metadata..."
-for a in areachairs:
+for a in areachairs_group.members:
     if a not in metadata_by_areachair:
         metadata = openreview.Note(
             invitation=CONFERENCE + "/-/Area_Chair/Metadata",
@@ -114,10 +166,13 @@ for a in areachairs:
         metadata.content['areachairs'] = []
         client.post_note(metadata)
 
+paper_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Paper/Metadata')
+reviewer_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer/Metadata')
+areachair_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Area_Chair/Metadata')
 
-
-
-
+metadata_by_forum = {n.forum: n for n in paper_metadata_notes}
+metadata_by_reviewer = {u.content['name']: u for u in reviewer_metadata_notes}
+metadata_by_areachair = {u.content['name']: u for u in areachair_metadata_notes}
 
 # .............................................................................
 #
@@ -125,67 +180,18 @@ for a in areachairs:
 #
 # .............................................................................
 
-bid_score_map = {
- 'I want to review': 1.0,
- 'I can review': 0.75,
- 'I can probably review but am not an expert': 0.5,
- 'I cannot review': '-inf',
- 'No bid': 0.0
-}
-
-## Reviewer-relevant data
-print "Obtaining reviewer-relevant data..."
-reviewers = client.get_group(PC)
-profile_expertise_by_reviewer = {}
-registered_expertise_by_reviewer = {}
-
-for r in [x for x in reviewers.members if '~' in x]:
-    profile = client.get_profile(r)
-    profile_expertise_by_reviewer[r] = profile.content['expertise']
-
-reviewer_reg_responses = client.get_notes(invitation='auai.org/UAI/2017/-/Reviewer_Expertise')
-for reg in reviewer_reg_responses:
-    registered_expertise_by_reviewer[reg.signatures[0]] = reg.content
-
-missing_reviewer_reg = set()
-
-## Areachair-relevant data
-print "Obtaining areachair-relevant data..."
-areachairs = client.get_group(SPC)
-profile_expertise_by_ac = {}
-registered_expertise_by_ac = {}
-
-for a in [x for x in areachairs.members if '~' in x]:
-    profile = client.get_profile(a)
-    profile_expertise_by_ac[a] = profile.content['expertise']
-
-spc_reg_responses = client.get_notes(invitation='auai.org/UAI/2017/-/SPC_Expertise')
-for reg in spc_reg_responses:
-    registered_expertise_by_ac[reg.signatures[0]] = reg.content
-
-missing_spc_reg = set()
-
 ## Bid-relevant data
-bids = client.get_tags(invitation='auai.org/UAI/2017/-/Add/Bid')
-metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Paper/Metadata')
-metadata_by_id = {n.forum:n for n in metadata_notes}
 
+print "Processing bids..."
 
-print "Processing submissions..."
-submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
-submissions_by_forum = {n.forum: n for n in submissions}
-recs = []
-for n in submissions:
-    recs += client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % n.number)
-
-print "Processing bids... (this may take a while)"
 bids_by_id = defaultdict(list)
+deleted_papers = set()
 for b in bids:
     try:
         n = submissions_by_forum[b.forum]
         bids_by_id[n.forum].append(b)
     except KeyError as e:
-        print "Bid found on deleted paper: ", b.forum
+        deleted_papers.update([b.forum])
 
 print "Processing recommendations..."
 recs_by_id = defaultdict(list)
@@ -194,111 +200,119 @@ for r in recs:
         n = submissions_by_forum[r.forum]
         recs_by_id[n.forum].append(r)
     except KeyError as e:
-        print "Recommendation found on deleted paper: ", r.forum
+        deleted_papers.update([r.forum])
 
 
-print "Populating metadata notes..."
+# Populate Paper metadata notes
+print "Populating paper metadata... (this may take a while)"
 
-# Populate Metadata notes
-# .............................................................................
-
-for n in metadata_notes:
+for n in paper_metadata_notes:
     forum = n.forum
     reviewer_metadata = []
     areachair_metadata = []
     paper_metadata = []
-    paper_note = client.get_note(forum)
+    paper_note = submissions_by_forum[forum]
 
     for bid in bids_by_id[forum]:
 
-        if bid.signatures[0] in reviewers.members:
+        if bid.signatures[0] in reviewers_group.members:
             reviewer_metadata.append({
                 'user': bid.signatures[0],
-                'score': bid_score_map[bid.tag],
+                'score': config['bid_score_map'][bid.tag],
                 'source': 'ReviewerBid'
             })
-        if bid.signatures[0] in areachairs.members:
+        if bid.signatures[0] in areachairs_group.members:
             areachair_metadata.append({
                 'user': bid.signatures[0],
-                'score': bid_score_map[bid.tag],
+                'score': config['bid_score_map'][bid.tag],
                 'source': 'AreachairBid'
             })
 
     for bid in recs_by_id[forum]:
         reviewer_metadata.append({
             'user': bid.tag,
-            'score': '+inf',
+            'score': config['recommendation_weight'],
             'source': 'AreachairRec'
         })
 
-    # The following for loop is needed until we have a real way of getting paper-paper scores
-    for m in metadata_notes:
+    # Compute paper-paper affinity by subject area overlap
+    for m in paper_metadata_notes:
+        paper_subjects_A = paper_note.content['subject areas']
+        paper_subjects_B = submissions_by_forum[m.forum].content['subject areas']
+        paper_paper_affinity = match_utils.subject_area_overlap(paper_subjects_A, paper_subjects_B)
+
         paper_metadata.append({
             'submissionId': paper_note.number,
-            'score': 1.0 if m.forum == n.forum else 0.0,
-            'source': 'DummyModel'
+            'score': paper_paper_affinity,
+            'source': 'SubjectAreaOverlap'
         })
 
-    # The following for loop is needed until we have a real way of getting reviewer-paper scores
-    for reviewer in reviewers.members:
+    # Get paper-reviewer affinity scores
+    for reviewer in reviewers_group.members:
         if reviewer in registered_expertise_by_reviewer.keys():
-            registered_reviewer = reviewer
-            reviewer_affinity = match_utils.subject_area_affinity(
-                paper_note.content['subject areas'],
-                registered_expertise_by_reviewer[registered_reviewer]['primary area'],
-                registered_expertise_by_reviewer[registered_reviewer]['additional areas'],
-                primary_weight = 0.7
-            )
+            paper_subjects = paper_note.content['subject areas']
+            primary_subjects = registered_expertise_by_reviewer[reviewer]['primary area']
+            secondary_subjects = registered_expertise_by_reviewer[reviewer]['additional areas']
+
+            primary_affinity = match_utils.subject_area_overlap(primary_subjects, paper_subjects)
+            secondary_affinity = match_utils.subject_area_overlap(secondary_subjects, paper_subjects)
+
+            reviewer_affinity = (primary_affinity * config['reviewer_primary_weight']) + (secondary_affinity * (1-config['reviewer_primary_weight']))
 
             reviewer_metadata.append({
-                'user': registered_reviewer,
+                'user': reviewer,
                 'score': reviewer_affinity,
                 'source': 'SubjectAreaOverlap'
             })
         else:
-            missing_reviewer_reg.update([reviewer])
+            missing_reviewer_expertise.update([reviewer])
 
-    for a in areachairs.members:
-        if a in registered_expertise_by_ac.keys():
-            registered_ac = a
-            ac_affinity = match_utils.subject_area_affinity(
-                paper_note.content['subject areas'],
-                registered_expertise_by_ac[registered_ac]['primary area'],
-                registered_expertise_by_ac[registered_ac]['additional areas'],
-                primary_weight = 0.7
-            )
+    # Get paper-areachair affinity scores
+    for areachair in areachairs_group.members:
+        if areachair in registered_expertise_by_ac.keys():
+            paper_subjects = paper_note.content['subject areas']
+            primary_subjects = registered_expertise_by_ac[areachair]['primary area']
+            secondary_subjects = registered_expertise_by_ac[areachair]['additional areas']
+
+            primary_affinity = match_utils.subject_area_overlap(primary_subjects, paper_subjects)
+            secondary_affinity = match_utils.subject_area_overlap(secondary_subjects, paper_subjects)
+
+            ac_affinity = (primary_affinity * config['areachair_primary_weight']) + (secondary_affinity * (1-config['areachair_primary_weight']))
 
             areachair_metadata.append({
-                'user': registered_ac,
+                'user': areachair,
                 'score': ac_affinity,
                 'source': 'SubjectAreaOverlap'
             })
         else:
-            missing_spc_reg.update([a])
+            missing_areachair_expertise.update([a])
 
-    metadata_by_id[forum].content['minreviewers'] = 1
-    metadata_by_id[forum].content['maxreviewers'] = 3
-    metadata_by_id[forum].content['minareachairs'] = 0
-    metadata_by_id[forum].content['maxareachairs'] = 1
-    metadata_by_id[forum].content['reviewers'] = reviewer_metadata
-    metadata_by_id[forum].content['areachairs'] = areachair_metadata
-    metadata_by_id[forum].content['papers'] = paper_metadata
-    metadata_by_id[forum].content['title'] = paper_note.content['title']
+    metadata_by_forum[forum].content['minreviewers'] = config['minreviewers']
+    metadata_by_forum[forum].content['maxreviewers'] = config['maxreviewers']
+    metadata_by_forum[forum].content['minareachairs'] = config['minareachairs']
+    metadata_by_forum[forum].content['maxareachairs'] = config['maxareachairs']
+    metadata_by_forum[forum].content['reviewers'] = reviewer_metadata
+    metadata_by_forum[forum].content['areachairs'] = areachair_metadata
+    metadata_by_forum[forum].content['papers'] = paper_metadata
+    metadata_by_forum[forum].content['title'] = paper_note.content['title']
 
-    client.post_note(metadata_by_id[forum])
+    client.post_note(metadata_by_forum[forum])
 
-print "Done."
-print ''
-print "Missing %s of %s areachair expertise areas: " % (len(list(missing_spc_reg)), len(areachairs.members))
-for spc in list(missing_spc_reg):
-    print spc
+paper_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Paper/Metadata')
+metadata_by_forum = {n.forum: n for n in paper_metadata_notes}
 
-print ''
-print "Missing %s of %s reviewer expertise areas: " % (len(list(missing_reviewer_reg)), len(reviewers.members))
-for reviewer in list(missing_reviewer_reg):
-    print reviewer
+print "Missing %s of %s areachair expertise areas. Writing %s/missing_areachair_expertise.csv" % (len(list(missing_areachair_expertise)), len(areachairs_group.members), outdir)
+with open('%s/missing_areachair_expertise.csv' % outdir, 'w') as outfile:
+    csvwriter = csv.writer(outfile)
+    for areachair in list(missing_areachair_expertise):
+        csvwriter.writerow([areachair.encode('utf-8')])
 
 
+print "Missing %s of %s reviewer expertise areas. Writing %s/missing_reviewer_expertise.csv" % (len(list(missing_reviewer_expertise)), len(reviewers_group.members), outdir)
+with open('%s/missing_reviewer_expertise.csv' % outdir, 'w') as outfile:
+    csvwriter = csv.writer(outfile)
+    for reviewer in list(missing_reviewer_expertise):
+        csvwriter.writerow([reviewer.encode('utf-8')])
 
 # .............................................................................
 #
@@ -308,44 +322,71 @@ for reviewer in list(missing_reviewer_reg):
 
 
 # Organize data
-
-reviewers = client.get_group(PC)
-reviewer_metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Reviewer/Metadata')
-reviewer_metadata_by_id = {n.forum:n for n in reviewer_metadata_notes}
-
 print "Generating reviewer metadata..."
 for n in reviewer_metadata_notes:
-    n.content['maxpapers'] = 3
-    n.content['minpapers'] = 0
+    n.content['maxpapers'] = config['maxpapers']
+    n.content['minpapers'] = config['minpapers']
 
     reviewer_similarities = []
-    for reviewer in reviewers.members:
-        reviewer_similarities.append({
-            'user': reviewer,
-            'score': 1.0 if reviewer == n.content['name'] else 0,
-            'source': 'DummyModel'
-        })
+    for reviewer in reviewers_group.members:
+
+        try:
+            primary_subjects_A = registered_expertise_by_reviewer[reviewer]['primary area']
+            secondary_subjects_A = registered_expertise_by_reviewer[reviewer]['additional areas']
+
+            primary_subjects_B = registered_expertise_by_reviewer[n.content['name']]['primary area']
+            secondary_subjects_B = registered_expertise_by_reviewer[n.content['name']]['additional areas']
+
+            primary_affinity = match_utils.subject_area_overlap(primary_subjects_A, primary_subjects_B)
+            secondary_affinity = match_utils.subject_area_overlap(secondary_subjects_A, secondary_subjects_B)
+
+            reviewer_affinity = (primary_affinity * config['reviewer_primary_weight']) + (secondary_affinity * (1-config['reviewer_primary_weight']))
+
+            reviewer_similarities.append({
+                'user': reviewer,
+                'score': reviewer_affinity,
+                'source': 'SubjectAreaOverlap'
+            })
+        except KeyError:
+            pass
 
     n.content['reviewers'] = reviewer_similarities
 
     client.post_note(n)
 
-areachairs = client.get_group(SPC)
-areachair_metadata_notes = client.get_notes(invitation = 'auai.org/UAI/2017/-/Area_Chair/Metadata')
-areachair_metadata_by_id = {n.forum:n for n in areachair_metadata_notes}
+reviewer_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer/Metadata')
+metadata_by_reviewer = {u.content['name']: u for u in reviewer_metadata_notes}
 
 print "Generating areachair metadata..."
 for n in areachair_metadata_notes:
     areachair_similarities = []
-    for areachair in areachairs.members:
-        areachair_similarities.append({
-            'user': areachair,
-            'score': 1.0 if areachair == n.content['name'] else 0,
-            'source': 'DummyModel'
-        })
+    for areachair in areachairs_group.members:
+        try:
+            primary_subjects_A = registered_expertise_by_ac[areachair]['primary area']
+            secondary_subjects_A = registered_expertise_by_ac[areachair]['additional areas']
+
+            primary_subjects_B = registered_expertise_by_ac[n.content['name']]['primary area']
+            secondary_subjects_B = registered_expertise_by_ac[n.content['name']]['additional areas']
+
+            primary_affinity = match_utils.subject_area_overlap(primary_subjects_A, primary_subjects_B)
+            secondary_affinity = match_utils.subject_area_overlap(secondary_subjects_A, secondary_subjects_B)
+
+            areachair_affinity = (primary_affinity * config['reviewer_primary_weight']) + (secondary_affinity * (1-config['reviewer_primary_weight']))
+
+
+            areachair_similarities.append({
+                'user': areachair,
+                'score': areachair_affinity,
+                'source': 'SubjectAreaOverlap'
+            })
+        except KeyError as e:
+            pass
 
     n.content['areachairs'] = areachair_similarities
     client.post_note(n)
+
+areachair_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Area_Chair/Metadata')
+metadata_by_areachair = {u.content['name']: u for u in areachair_metadata_notes}
 
 # .............................................................................
 #
@@ -353,29 +394,17 @@ for n in areachair_metadata_notes:
 #
 # .............................................................................
 
-
-params = {'minusers': None, 'maxusers': None}
-mode = args.mode.lower() if args.mode else 'reviewers'
-
-params['minusers'] = int(args.minusers) if args.minusers else 1
-params['maxusers'] = int(args.maxusers) if args.maxusers else 3
-params['minpapers'] = int(args.minpapers) if args.minpapers else 0
-params['maxpapers'] = int(args.maxpapers) if args.maxpapers else 5
-
 if mode == 'reviewers':
-    user_group = client.get_group(PC)
+    user_group = reviewers_group
     params['metadata_group'] = 'reviewers'
-    user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Reviewer/Metadata")
+    user_metadata_notes = reviewer_metadata_notes
 
 if mode == 'areachairs':
-    user_group = client.get_group(SPC)
+    user_group = areachairs_group
     params['metadata_group'] = 'areachairs'
-    user_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Area_Chair/Metadata")
+    user_metadata_notes = areachair_metadata_notes
 
-blind_submissions = client.get_notes(invitation = CONFERENCE+"/-/blind-submission")
-paper_metadata_notes = client.get_notes(invitation = CONFERENCE+"/-/Paper/Metadata")
-
-matcher = openreview_matcher.Matcher(user_group, blind_submissions, user_metadata_notes, paper_metadata_notes, params)
+matcher = openreview_matcher.Matcher(user_group, paper_notes, user_metadata_notes, paper_metadata_notes, params)
 assignments = matcher.solve()
 
 outdir = args.outdir if args.outdir else '.'
