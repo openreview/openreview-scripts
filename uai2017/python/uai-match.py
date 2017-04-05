@@ -288,11 +288,8 @@ for n in paper_metadata_notes:
     for reviewer in reviewers_group.members:
         if reviewer in registered_expertise_by_reviewer.keys():
             paper_subjects = paper_note.content['subject areas']
-            primary_subjects = registered_expertise_by_reviewer[reviewer].get('primary area')
-            secondary_subjects = registered_expertise_by_reviewer[reviewer].get('additional areas')
-
-            if not primary_subjects: primary_subjects = []
-            if not secondary_subjects: secondary_subjects = []
+            primary_subjects = registered_expertise_by_reviewer[reviewer].get('primary area', [])
+            secondary_subjects = registered_expertise_by_reviewer[reviewer].get('additional areas', [])
 
             primary_affinity = match_utils.subject_area_overlap(primary_subjects, paper_subjects)
             secondary_affinity = match_utils.subject_area_overlap(secondary_subjects, paper_subjects)
@@ -311,11 +308,8 @@ for n in paper_metadata_notes:
     for areachair in areachairs_group.members:
         if areachair in registered_expertise_by_ac.keys():
             paper_subjects = paper_note.content['subject areas']
-            primary_subjects = registered_expertise_by_ac[areachair].get('primary area')
-            secondary_subjects = registered_expertise_by_ac[areachair].get('additional areas')
-
-            if not primary_subjects: primary_subjects = []
-            if not secondary_subjects: secondary_subjects = []
+            primary_subjects = registered_expertise_by_ac[areachair].get('primary area', [])
+            secondary_subjects = registered_expertise_by_ac[areachair].get('additional areas', [])
 
             primary_affinity = match_utils.subject_area_overlap(primary_subjects, paper_subjects)
             secondary_affinity = match_utils.subject_area_overlap(secondary_subjects, paper_subjects)
