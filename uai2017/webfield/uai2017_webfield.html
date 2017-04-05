@@ -493,6 +493,12 @@ $(function() {
 
     $('.note.panel, .empty-message, .invitation-link', container).remove();
 
+    var pcId = 'auai.org/UAI/2017/Program_Co-Chairs';
+    if (_.includes(userGroups, pcId)) {
+      var consoleLink = '<div class="note panel"><a href="/reviewers?id=auai.org/UAI/2017" class="console-link">UAI 2017 Matching Browser</a></div>';
+      $(container).append(consoleLink);
+    }
+
     var spcId = 'auai.org/UAI/2017/Senior_Program_Committee';
     if (_.includes(userGroups, spcId)) {
       var consoleLink = '<div class="note panel"><a href="/group?id=' + spcId + '" class="console-link">UAI 2017 Senior Program Committee Console</a></div>';
