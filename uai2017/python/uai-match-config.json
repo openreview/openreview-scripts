@@ -1,0 +1,20 @@
+{
+  "minreviewers": 1,
+  "maxreviewers": 3,
+  "minareachairs": 1,
+  "maxareachairs": 1,
+  "minpapers": 1,
+  "maxpapers": 15,
+  "reviewer_primary_weight": 0.7,
+  "areachair_primary_weight": 0.7,
+  "recommendation_score": "+inf",
+  "conflict_score": "-inf",
+  "conflict_exceptions": ["gmail.com"],
+  "bid_score_map": {
+    "I want to review": 1.0,
+    "I can review": 0.75,
+    "I can probably review but am not an expert": 0.5,
+    "I cannot review": "-inf",
+    "No bid": 0.0
+  }
+}
