@@ -54,7 +54,9 @@ else:
              'I can probably review but am not an expert': 0.5,
              'I cannot review': '-inf',
              'No bid': 0.0
-        }
+        },
+        'conflict_exceptions': [],
+        'conflict_score': '-inf'
     }
     config = defaultconfig
 
