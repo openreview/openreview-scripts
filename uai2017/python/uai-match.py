@@ -7,6 +7,7 @@ Initializes the structures used for paper/user metadata
 import argparse
 import csv
 import sys
+import json
 import numpy as np
 from collections import defaultdict
 
@@ -16,36 +17,12 @@ import match_utils
 
 from uaidata import *
 
-
-# Configuration
-config = {
-    'reviewer_primary_weight': 0.7,
-    'areachair_primary_weight': 0.7,
-    'recommendation_weight': '+inf',
-    'minreviewers': 1,
-    'maxreviewers': 3,
-    'minareachairs': 1,
-    'maxareachairs': 1,
-    'minpapers': 1,
-    'maxpapers': 15,
-    'bid_score_map': {
-         'I want to review': 1.0,
-         'I can review': 0.75,
-         'I can probably review but am not an expert': 0.5,
-         'I cannot review': '-inf',
-         'No bid': 0.0
-    }
-}
-
 # Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
 parser.add_argument('--mode', help="choose either \"reviewers\" or \"areachairs\"")
-parser.add_argument('--minusers', help="the minimum number of users assigned per paper (default 1)")
-parser.add_argument('--maxusers', help="the maximum number of users assigned per paper (default 3)")
-parser.add_argument('--minpapers', help="the minimum number of papers assigned per user (default 0)")
-parser.add_argument('--maxpapers', help="the maximum number of papers assigned per user (default 5)")
+parser.add_argument('-c', '--configfile', help="the JSON configuration file")
 parser.add_argument('-o','--outdir', help="directory to write uai_assignments.csv")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -56,6 +33,30 @@ if args.username!=None and args.password!=None:
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
     client = openreview.Client()
+
+if args.configfile:
+    with open(args.configfile) as f:
+        config = json.load(f)
+else:
+    defaultconfig = {
+        'reviewer_primary_weight': 0.7,
+        'areachair_primary_weight': 0.7,
+        'recommendation_weight': '+inf',
+        'minreviewers': 1,
+        'maxreviewers': 3,
+        'minareachairs': 1,
+        'maxareachairs': 1,
+        'minpapers': 1,
+        'maxpapers': 15,
+        'bid_score_map': {
+             'I want to review': 1.0,
+             'I can review': 0.75,
+             'I can probably review but am not an expert': 0.5,
+             'I cannot review': '-inf',
+             'No bid': 0.0
+        }
+    }
+    config = defaultconfig
 
 overwrite = args.overwrite and args.overwrite.lower()=='true'
 mode = args.mode.lower() if args.mode else 'reviewers'
@@ -69,10 +70,12 @@ params['maxpapers'] = config['maxpapers']
 
 missing_reviewer_expertise = set()
 missing_areachair_expertise = set()
+conflicts = set()
 
 # API calls
 print "Getting paper notes..."
 paper_notes = client.get_notes(invitation = CONFERENCE + "/-/blind-submission")
+original_notes = client.get_notes(invitation = CONFERENCE + "/-/submission")
 print "Getting submission metadata..."
 paper_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Paper/Metadata')
 print "Getting reviewer metadata..."
@@ -86,6 +89,7 @@ areachair_expertise_notes = client.get_notes(invitation = CONFERENCE + '/-/SPC_E
 
 reviewers_group = client.get_group(PC)
 areachairs_group = client.get_group(SPC)
+
 print "Getting bids..."
 bids = client.get_tags(invitation = CONFERENCE + '/-/Add/Bid')
 
@@ -94,16 +98,51 @@ recs = []
 for n in paper_notes:
     recs += client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % n.number)
 
-
 # Indexes
 metadata_by_forum = {n.forum: n for n in paper_metadata_notes}
 metadata_by_reviewer = {u.content['name']: u for u in reviewer_metadata_notes}
 metadata_by_areachair = {u.content['name']: u for u in areachair_metadata_notes}
 
-submissions_by_forum = {n.forum: n for n in paper_notes}
+papers_by_forum = {n.forum: n for n in paper_notes}
+originals_by_forum = {n.forum: n for n in original_notes}
+originalforum_by_paperforum = {n.forum: n.original for n in paper_notes}
 
 registered_expertise_by_reviewer = {n.signatures[0]: n.content for n in reviewer_expertise_notes}
 registered_expertise_by_ac = {n.signatures[0]: n.content for n in areachair_expertise_notes}
+
+# Get conflict information
+print "Getting conflict of interesting information... (this may take a while)"
+domains_by_user = defaultdict(set)
+
+for reviewer in reviewers_group.members:
+    if reviewer not in domains_by_user.keys():
+        try:
+            reviewer_profile = client.get_profile(reviewer)
+            domains_by_user[reviewer] = set([p.split('@')[1] for p in reviewer_profile.content['emails']])
+        except openreview.OpenReviewException:
+            print "Profile not found for reviewer %s" % reviewer
+            pass
+
+for areachair in areachairs_group.members:
+    if areachair not in domains_by_user.keys():
+        try:
+            areachair_profile = client.get_profile(areachair)
+            domains_by_user[areachair] = set([p.split('@')[1] for p in areachair_profile.content['emails']])
+        except openreview.OpenReviewException:
+            print "Profile not found for areachair %s" % areachair
+            pass
+
+domains_by_email = defaultdict(set)
+
+for n in original_notes:
+    author_emails = n.content['authorids']
+    for author_email in author_emails:
+        try:
+            author_profile = client.get_profile(author_email)
+            domains_by_email[author_email] = set([p.split('@')[1] for p in author_profile.content['emails']])
+        except openreview.OpenReviewException:
+            #print "Profile not found for author email %s" % author_email
+            pass
 
 # .............................................................................
 #
@@ -183,22 +222,21 @@ metadata_by_areachair = {u.content['name']: u for u in areachair_metadata_notes}
 ## Bid-relevant data
 
 print "Processing bids..."
-
-bids_by_id = defaultdict(list)
+bids_by_forum = defaultdict(list)
 deleted_papers = set()
 for b in bids:
     try:
-        n = submissions_by_forum[b.forum]
-        bids_by_id[n.forum].append(b)
+        n = papers_by_forum[b.forum]
+        bids_by_forum[n.forum].append(b)
     except KeyError as e:
         deleted_papers.update([b.forum])
 
 print "Processing recommendations..."
-recs_by_id = defaultdict(list)
+recs_by_forum = defaultdict(list)
 for r in recs:
     try:
-        n = submissions_by_forum[r.forum]
-        recs_by_id[n.forum].append(r)
+        n = papers_by_forum[r.forum]
+        recs_by_forum[n.forum].append(r)
     except KeyError as e:
         deleted_papers.update([r.forum])
 
@@ -211,10 +249,10 @@ for n in paper_metadata_notes:
     reviewer_metadata = []
     areachair_metadata = []
     paper_metadata = []
-    paper_note = submissions_by_forum[forum]
+    paper_note = papers_by_forum[forum]
+    original_note = originals_by_forum[originalforum_by_paperforum[forum]]
 
-    for bid in bids_by_id[forum]:
-
+    for bid in bids_by_forum[forum]:
         if bid.signatures[0] in reviewers_group.members:
             reviewer_metadata.append({
                 'user': bid.signatures[0],
@@ -228,7 +266,7 @@ for n in paper_metadata_notes:
                 'source': 'AreachairBid'
             })
 
-    for bid in recs_by_id[forum]:
+    for bid in recs_by_forum[forum]:
         reviewer_metadata.append({
             'user': bid.tag,
             'score': config['recommendation_weight'],
@@ -238,7 +276,7 @@ for n in paper_metadata_notes:
     # Compute paper-paper affinity by subject area overlap
     for m in paper_metadata_notes:
         paper_subjects_A = paper_note.content['subject areas']
-        paper_subjects_B = submissions_by_forum[m.forum].content['subject areas']
+        paper_subjects_B = papers_by_forum[m.forum].content['subject areas']
         paper_paper_affinity = match_utils.subject_area_overlap(paper_subjects_A, paper_subjects_B)
 
         paper_metadata.append({
@@ -287,6 +325,30 @@ for n in paper_metadata_notes:
         else:
             missing_areachair_expertise.update([a])
 
+    # Get conflicts of interest
+    for reviewer in reviewers_group.members:
+        author_emails = original_note.content['authorids']
+        author_domain_set = set()
+        for e in author_emails:
+            author_domain_set.update(domains_by_email[e])
+
+        reviewer_domain_set = set()
+        reviewer_domain_set.update(domains_by_user[reviewer])
+
+        for exception in config['conflict_exceptions']:
+            if exception in author_domain_set: author_domain_set.remove(exception)
+            if exception in reviewer_domain_set: reviewer_domain_set.remove(exception)
+
+        intersection = int(len(reviewer_domain_set & author_domain_set))
+
+        if intersection > 0:
+            conflicts.update([(reviewer, paper_note.number)])
+            reviewer_metadata.append({
+                'user': reviewer,
+                'score': config['conflict_weight'],
+                'source': 'ConflictOfInterest'
+            })
+
     metadata_by_forum[forum].content['minreviewers'] = config['minreviewers']
     metadata_by_forum[forum].content['maxreviewers'] = config['maxreviewers']
     metadata_by_forum[forum].content['minareachairs'] = config['minareachairs']
@@ -301,17 +363,24 @@ for n in paper_metadata_notes:
 paper_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Paper/Metadata')
 metadata_by_forum = {n.forum: n for n in paper_metadata_notes}
 
-print "Missing %s of %s areachair expertise areas. Writing %s/missing_areachair_expertise.csv" % (len(list(missing_areachair_expertise)), len(areachairs_group.members), outdir)
+print "%s conflicts detected. Writing %s/conflicts.csv" % (len(conflicts), outdir)
+with open('%s/conflicts.csv' % outdir, 'w') as outfile:
+    csvwriter = csv.writer(outfile)
+    for conflict in conflicts:
+        csvwriter.writerow([conflict[0].encode('utf-8'), conflict[1]])
+
+
+print "Missing %s of %s areachair expertise areas. Writing %s/missing_areachair_expertise.csv" % (len(missing_areachair_expertise), len(areachairs_group.members), outdir)
 with open('%s/missing_areachair_expertise.csv' % outdir, 'w') as outfile:
     csvwriter = csv.writer(outfile)
-    for areachair in list(missing_areachair_expertise):
+    for areachair in missing_areachair_expertise:
         csvwriter.writerow([areachair.encode('utf-8')])
 
 
-print "Missing %s of %s reviewer expertise areas. Writing %s/missing_reviewer_expertise.csv" % (len(list(missing_reviewer_expertise)), len(reviewers_group.members), outdir)
+print "Missing %s of %s reviewer expertise areas. Writing %s/missing_reviewer_expertise.csv" % (len(missing_reviewer_expertise), len(reviewers_group.members), outdir)
 with open('%s/missing_reviewer_expertise.csv' % outdir, 'w') as outfile:
     csvwriter = csv.writer(outfile)
-    for reviewer in list(missing_reviewer_expertise):
+    for reviewer in missing_reviewer_expertise:
         csvwriter.writerow([reviewer.encode('utf-8')])
 
 # .............................................................................
@@ -373,12 +442,12 @@ for n in areachair_metadata_notes:
 
             areachair_affinity = (primary_affinity * config['reviewer_primary_weight']) + (secondary_affinity * (1-config['reviewer_primary_weight']))
 
-
             areachair_similarities.append({
                 'user': areachair,
                 'score': areachair_affinity,
                 'source': 'SubjectAreaOverlap'
             })
+
         except KeyError as e:
             pass
 
