@@ -2,9 +2,9 @@ function(){
 	var or3client = lib.or3client;
     const TRACK_NAME = <<param0>>;
 
-  const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
+  const CONFERENCE = 'roboticsfoundation.org/RSS/2017/RCW_Workshop';
   const COCHAIRS = CONFERENCE+"/Program_Co-Chairs"
-  const TRACK = CONFERENCE+'/'+TRACK_NAME;
+  const TRACK = CONFERENCE+'/-_'+TRACK_NAME;
   const PAPERGRP = TRACK+'/Paper' + note.number;
   const PAPERINV = TRACK+'/-/Paper' + note.number;
   const DUE_DATE = new Date(2017, 6, 30, 17, 0);
@@ -45,7 +45,7 @@ function(){
     'invitees': [reviewerGroup.id],
     'noninvitees':[],
     'readers': ['everyone'],
-    'process': officialReviewProcess+'',
+    'process': officialReviewProcess,
     'duedate': DUE_DATE.valueOf(),
     'reply': {
       'forum': note.id,
@@ -75,26 +75,19 @@ function(){
         'rating': {
           'order': 3,
           'value-dropdown': [
-            '10: Top 5% of accepted papers, seminal paper',
-            '9: Top 15% of accepted papers, strong accept',
-            '8: Top 50% of accepted papers, clear accept',
-            '7: Good paper, accept',
-            '6: Marginally above acceptance threshold',
-            '5: Marginally below acceptance threshold',
-            '4: Ok but not good enough - rejection',
-            '3: Clear rejection',
-            '2: Strong rejection',
-            '1: Trivial or wrong'
+            '5: Top 15% of accepted papers, strong accept',
+            '4: Top 50% of accepted papers, clear accept',
+            '3: Marginally above acceptance threshold',
+            '2: Marginally below acceptance threshold',
+            '1: Strong rejection'
           ],
           'required':true
         },
         'confidence': {
           'order': 4,
           'value-radio': [
-            '5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
-            '4: The reviewer is confident but not absolutely certain that the evaluation is correct',
-            '3: The reviewer is fairly confident that the evaluation is correct',
-            '2: The reviewer is willing to defend the evaluation, but it is quite likely that the reviewer did not understand central parts of the paper',
+            '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '2: The reviewer is fairly confident that the evaluation is correct',
             '1: The reviewer\'s evaluation is an educated guess'
           ],
           'required':true
@@ -102,7 +95,9 @@ function(){
       }
     }
   };
-
+/********************************************************
+ * Comments aren't allowed until review process completed
+ ********************************************************
  var commentProcess = <<commentProcess.js>>
  var commentInvitation = {
     'id': PAPERINV+'/Open/Comment',
@@ -144,8 +139,8 @@ function(){
       }
     }
   };
-
-  var conference = "RSS 2017 Workshop "+TRACK_NAME;
+*/
+  var conference = "RSS 2017 RCW Workshop - "+TRACK_NAME;
   //Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
@@ -163,7 +158,7 @@ function(){
   .then(result => {
     invitation_promises = [
       or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token),
+//      or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token),
     ];
 
     return Promise.all(invitation_promises);
