@@ -55,7 +55,7 @@ else:
              'I cannot review': '-inf',
              'No bid': 0.0
         },
-        'conflict_exceptions': [],
+        'conflict_exceptions': ['gmail.com'],
         'conflict_score': '-inf'
     }
     config = defaultconfig
@@ -245,12 +245,12 @@ for r in recs:
 # Populate Paper metadata notes
 print "Populating paper metadata... (this may take a while)"
 
-for n in paper_metadata_notes:
+for n in paper_notes:
     forum = n.forum
     reviewer_metadata = []
     areachair_metadata = []
     paper_metadata = []
-    paper_note = papers_by_forum[forum]
+    paper_note = n
     original_note = originals_by_forum[originalforum_by_paperforum[forum]]
 
     for bid in bids_by_forum[forum]:
@@ -275,9 +275,9 @@ for n in paper_metadata_notes:
         })
 
     # Compute paper-paper affinity by subject area overlap
-    for m in paper_metadata_notes:
+    for m in paper_notes:
         paper_subjects_A = paper_note.content['subject areas']
-        paper_subjects_B = papers_by_forum[m.forum].content['subject areas']
+        paper_subjects_B = m.content['subject areas']
         paper_paper_affinity = match_utils.subject_area_overlap(paper_subjects_A, paper_subjects_B)
 
         paper_metadata.append({
@@ -474,7 +474,8 @@ if mode == 'areachairs':
     params['metadata_group'] = 'areachairs'
     user_metadata_notes = areachair_metadata_notes
 
-matcher = openreview_matcher.Matcher(user_group, paper_notes, user_metadata_notes, paper_metadata_notes, params)
+filtered_paper_metadata_notes = [n for n in paper_metadata_notes if n.forum in papers_by_forum]
+matcher = openreview_matcher.Matcher(user_group, paper_notes, user_metadata_notes, filtered_paper_metadata_notes, params)
 assignments = matcher.solve()
 
 outdir = args.outdir if args.outdir else '.'
