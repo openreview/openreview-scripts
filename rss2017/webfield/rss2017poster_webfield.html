@@ -33,7 +33,7 @@
       };
 
       var duedate_buffer = 1000 * 60 * 15; // 15 minutes buffer
-      var invitationP = httpGetP('invitations', {id: 'roboticsfoundation.org/RSS/2017/Workshop/Poster/-/Submission'}).then(function(result) {
+      var invitationP = httpGetP('invitations', {id: 'roboticsfoundation.org/RSS/2017/RCW_Workshop/-_Poster/-/Submission'}).then(function(result) {
         console.log('result',result);
         var valid_invitations = _.filter(result.invitations, function(inv){
           return (inv.duedate + duedate_buffer) > Date.now();
@@ -45,7 +45,7 @@
       });
 
       var getNotes = function() {
-        return httpGetP('notes', {invitation: 'roboticsfoundation.org/RSS/2017/Workshop/Poster/-/Submission'}).then(function(result) {
+        return httpGetP('notes', {invitation: 'roboticsfoundation.org/RSS/2017/RCW_Workshop/-_Poster/-/Submission'}).then(function(result) {
           return result.notes;
         },
         function(error){

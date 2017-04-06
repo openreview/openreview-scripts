@@ -36,7 +36,7 @@ baseurl = client.baseurl
 if args.track != 'Poster' and args.track != 'Proceedings':
     print("set --track to either Poster or Proceedings")
     sys.exit()
-TRACK = CONFERENCE+"/"+args.track
+TRACK = CONFERENCE+"/-_"+args.track
 submissions = client.get_notes(invitation=TRACK+'/-/Submission')
 
 ## parses command line assignments - looks for pairs of emails and paper numbers
