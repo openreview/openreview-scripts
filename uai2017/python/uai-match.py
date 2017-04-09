@@ -52,14 +52,15 @@ else:
              'I want to review': 1.0,
              'I can review': 0.75,
              'I can probably review but am not an expert': 0.5,
-             'I cannot review': '-inf',
+             'I cannot review': 0.2,
              'No bid': 0.0
         },
         'conflict_exceptions': ['gmail.com'],
-        'conflict_score': '-inf'
+        'conflict_score': -1.5
     }
     config = defaultconfig
 
+print "config",config
 overwrite = args.overwrite and args.overwrite.lower()=='true'
 mode = args.mode.lower() if args.mode else 'reviewers'
 outdir = args.outdir if args.outdir else '.'
@@ -164,13 +165,13 @@ for n in paper_notes:
           content = {'reviewers':[], 'areachairs':[], 'papers':[]},
           signatures = [CONFERENCE]
         )
-        client.post_note(metadata)
+        metadata_by_forum[n.forum] = client.post_note(metadata)
     elif overwrite:
         metadata = metadata_by_forum[n.forum]
         metadata.content['reviewers'] = []
         metadata.content['areachairs'] = []
         metadata.content['papers'] = []
-        client.post_note(metadata)
+        metadata_by_forum[n.forum] = client.post_note(metadata)
 
 # Pre-populate all the reviewer metadata notes
 print "Overwriting reviewer metadata..." if overwrite else "Generating reviewer metadata..."
@@ -180,14 +181,14 @@ for r in reviewers_group.members:
             invitation=CONFERENCE + "/-/Reviewer/Metadata",
             readers=[COCHAIRS, CONFERENCE],
             writers=[CONFERENCE],
-            content={'name':r, 'reviewers':[]},
+            content={'name': r, 'reviewers': []},
             signatures=[CONFERENCE]
         )
-        client.post_note(metadata)
+        metadata_by_reviewer[r] = client.post_note(metadata)
     elif overwrite:
         metadata = metadata_by_reviewer[r]
         metadata.content['reviewers'] = []
-        client.post_note(metadata)
+        metadata_by_reviewer[r] = client.post_note(metadata)
 
 # Pre-populate all the area chair metadata notes
 print "Overwriting areachair metadata..." if overwrite else "Generating areachair metadata..."
@@ -200,19 +201,11 @@ for a in areachairs_group.members:
             content={'name':a, 'areachairs':[]},
             signatures=[CONFERENCE]
         )
-        client.post_note(metadata)
+        metadata_by_areachair[a] = client.post_note(metadata)
     elif overwrite:
         metadata = metadata_by_areachair[a]
         metadata.content['areachairs'] = []
-        client.post_note(metadata)
-
-paper_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Paper/Metadata')
-reviewer_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer/Metadata')
-areachair_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Area_Chair/Metadata')
-
-metadata_by_forum = {n.forum: n for n in paper_metadata_notes}
-metadata_by_reviewer = {u.content['name']: u for u in reviewer_metadata_notes}
-metadata_by_areachair = {u.content['name']: u for u in areachair_metadata_notes}
+        metadata_by_areachair[a] = client.post_note(metadata)
 
 # .............................................................................
 #
@@ -280,11 +273,12 @@ for n in paper_notes:
         paper_subjects_B = m.content['subject areas']
         paper_paper_affinity = match_utils.subject_area_overlap(paper_subjects_A, paper_subjects_B)
 
-        paper_metadata.append({
-            'submissionId': paper_note.number,
-            'score': paper_paper_affinity,
-            'source': 'SubjectAreaOverlap'
-        })
+        if paper_paper_affinity > 0:
+            paper_metadata.append({
+                'submissionId': paper_note.number,
+                'score': paper_paper_affinity,
+                'source': 'SubjectAreaOverlap'
+            })
 
     # Get paper-reviewer affinity scores
     for reviewer in reviewers_group.members:
@@ -298,11 +292,12 @@ for n in paper_notes:
 
             reviewer_affinity = (primary_affinity * config['reviewer_primary_weight']) + (secondary_affinity * (1-config['reviewer_primary_weight']))
 
-            reviewer_metadata.append({
-                'user': reviewer,
-                'score': reviewer_affinity,
-                'source': 'SubjectAreaOverlap'
-            })
+            if reviewer_affinity > 0:
+                reviewer_metadata.append({
+                    'user': reviewer,
+                    'score': reviewer_affinity,
+                    'source': 'SubjectAreaOverlap'
+                })
         else:
             missing_reviewer_expertise.update([reviewer])
 
@@ -318,11 +313,12 @@ for n in paper_notes:
 
             ac_affinity = (primary_affinity * config['areachair_primary_weight']) + (secondary_affinity * (1-config['areachair_primary_weight']))
 
-            areachair_metadata.append({
-                'user': areachair,
-                'score': ac_affinity,
-                'source': 'SubjectAreaOverlap'
-            })
+            if ac_affinity > 0:
+                areachair_metadata.append({
+                    'user': areachair,
+                    'score': ac_affinity,
+                    'source': 'SubjectAreaOverlap'
+                })
         else:
             missing_areachair_expertise.update([a])
 
@@ -359,10 +355,8 @@ for n in paper_notes:
     metadata_by_forum[forum].content['papers'] = paper_metadata
     metadata_by_forum[forum].content['title'] = paper_note.content['title']
 
-    client.post_note(metadata_by_forum[forum])
+    metadata_by_forum[forum] = client.post_note(metadata_by_forum[forum])
 
-paper_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Paper/Metadata')
-metadata_by_forum = {n.forum: n for n in paper_metadata_notes}
 
 print "%s conflicts detected. Writing %s/conflicts.csv" % (len(conflicts), outdir)
 with open('%s/conflicts.csv' % outdir, 'w') as outfile:
@@ -412,20 +406,19 @@ for n in reviewer_metadata_notes:
 
             reviewer_affinity = (primary_affinity * config['reviewer_primary_weight']) + (secondary_affinity * (1-config['reviewer_primary_weight']))
 
-            reviewer_similarities.append({
-                'user': reviewer,
-                'score': reviewer_affinity,
-                'source': 'SubjectAreaOverlap'
-            })
+            if reviewer_affinity > 0:
+                reviewer_similarities.append({
+                    'user': reviewer,
+                    'score': reviewer_affinity,
+                    'source': 'SubjectAreaOverlap'
+                })
+
         except KeyError:
             pass
 
     n.content['reviewers'] = reviewer_similarities
 
-    client.post_note(n)
-
-reviewer_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer/Metadata')
-metadata_by_reviewer = {u.content['name']: u for u in reviewer_metadata_notes}
+    metadata_by_reviewer[n.content['name']] = client.post_note(n)
 
 print "Generating areachair metadata..."
 for n in areachair_metadata_notes:
@@ -443,20 +436,18 @@ for n in areachair_metadata_notes:
 
             areachair_affinity = (primary_affinity * config['reviewer_primary_weight']) + (secondary_affinity * (1-config['reviewer_primary_weight']))
 
-            areachair_similarities.append({
-                'user': areachair,
-                'score': areachair_affinity,
-                'source': 'SubjectAreaOverlap'
-            })
+            if areachair_affinity > 0:
+                areachair_similarities.append({
+                    'user': areachair,
+                    'score': areachair_affinity,
+                    'source': 'SubjectAreaOverlap'
+                })
 
         except KeyError as e:
             pass
 
     n.content['areachairs'] = areachair_similarities
-    client.post_note(n)
-
-areachair_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Area_Chair/Metadata')
-metadata_by_areachair = {u.content['name']: u for u in areachair_metadata_notes}
+    metadata_by_areachair[n.content['name']] = client.post_note(n)
 
 # .............................................................................
 #
