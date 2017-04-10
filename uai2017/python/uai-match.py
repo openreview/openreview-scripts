@@ -6,10 +6,7 @@ Initializes the structures used for paper/user metadata
 
 import argparse
 import csv
-import sys
 import json
-import numpy as np
-from collections import defaultdict
 
 import openreview
 import openreview_matcher
