@@ -15,11 +15,11 @@ function () {
 
   var pc_expertise = {
     'id': 'auai.org/UAI/2017/-/Reviewer_Expertise',
-    'signatures': ['auai.org/UAI/2017'],
-    'writers': ['auai.org/UAI/2017'],
+    'signatures': [UAIData.CONFERENCE],
+    'writers': [UAIData.CONFERENCE],
     'invitees': [UAIData.PC],
     'noninvitees':[],
-    'readers': ['auai.org/UAI/2017', UAIData.PC],
+    'readers': [UAIData.CONFERENCE, UAIData.PC],
     'process': process + "",
     'duedate': 1491080400000,
     'reply': {
@@ -28,7 +28,7 @@ function () {
       'writers': {'values-regex':'~.*'},
       'signatures': {'values-regex':'~.*'},
       'readers': {
-        'values': [UAIData.COCHAIRS],
+        'values': [UAIData.COCHAIRS, UAIData.CONFERENCE],
         'description': 'The users who will be allowed to read the above content.'
       },
       'content': {

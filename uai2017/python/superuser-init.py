@@ -463,60 +463,49 @@ if client.user['id'].lower()=='openreview.net':
 
 
 
-    #Create the paper metadata invitation
-    paper_metadata_reply = {
+    metadata_reply = {
         'forum': None,
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['OpenReview.net', CONFERENCE] #who should be allowed to read UAI submissions and when?
+            'values': [COCHAIRS, CONFERENCE] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': 'OpenReview.net'
+            'values-regex': CONFERENCE
         },
         'writers': {
-            'values-regex': 'OpenReview.net'
+            'values-regex': CONFERENCE
         },
-        'content': {} #content is blank; this allows for ANYTHING to be placed in the content field.
-        #we'll want to change this later one we know what the format will be.
+        'content': {}
     }
-    paper_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Paper/Metadata',
-        writers = ['OpenReview.net'],
-        readers = ['OpenReview.net',CONFERENCE],
-        invitees = ['OpenReview.net'],
-        signatures = ['OpenReview.net'],
-        reply = paper_metadata_reply)
 
+    paper_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Paper/Metadata',
+                                               writers=['OpenReview.net'],
+                                               readers=[CONFERENCE],
+                                               invitees=[CONFERENCE],
+                                               signatures=['OpenReview.net'],
+                                               reply=metadata_reply)
     invitations.append(paper_metadata_invitation)
 
 
     #Create the reviewer metadata invitation
-    reviewer_metadata_reply = {
-        'forum': None,
-        'replyto': None,
-        'readers': {
-            'description': 'The users who will be allowed to read the above content.',
-            'values': ['OpenReview.net', CONFERENCE] #who should be allowed to read UAI submissions and when?
-        },
-        'signatures': {
-            'description': 'How your identity will be displayed with the above content.',
-            'values-regex': 'OpenReview.net'
-        },
-        'writers': {
-            'values-regex': 'OpenReview.net'
-        },
-        'content': {} #Content is blank. See above.
-    }
-
     reviewer_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Reviewer/Metadata',
-        writers=['OpenReview.net'],
-        readers=['OpenReview.net', CONFERENCE],
-        invitees=['OpenReview.net'],
-        signatures=['OpenReview.net'],
-        reply=reviewer_metadata_reply)
-
+                                               writers=['OpenReview.net'],
+                                               readers=[CONFERENCE],
+                                               invitees=[CONFERENCE],
+                                               signatures=['OpenReview.net'],
+                                               reply=metadata_reply)
     invitations.append(reviewer_metadata_invitation)
+
+    #Create the user metadata invitation
+    areachair_metadata_invitation = openreview.Invitation(CONFERENCE+'/-/Area_Chair/Metadata',
+                                               writers=['OpenReview.net'],
+                                               readers=[CONFERENCE],
+                                               invitees=[CONFERENCE],
+                                               signatures=['OpenReview.net'],
+                                               reply=metadata_reply)
+    invitations.append(areachair_metadata_invitation)
 
 
     bid_tag_invitation = openreview.Invitation(CONFERENCE+'/-/Add/Bid',
@@ -534,14 +523,11 @@ if client.user['id'].lower()=='openreview.net':
         'invitation': blind_submission_invitation.id,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'value-regex': '~.*'
+            'values-copied': [CONFERENCE, '{signatures}']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'value-regex': '~.*'
-        },
-        'writers': {
-            'value-regex': '~.*'
+            'values-regex': '~.*'
         },
         'content': {
             'tag': {

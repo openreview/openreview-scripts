@@ -16,7 +16,7 @@ from uaidata import *
 # Argument handling and initialization
 # .............................................................................
 parser = argparse.ArgumentParser()
-parser.add_argument('-a','--assignments', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<email_address>,<paper#>' e.g. 'areachair@cs.umass.edu,23'")
+parser.add_argument('-a','--assignments', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<user_id>,<paper#>' e.g. '~Area_Chair1,23'")
 parser.add_argument('-o','--overwrite', help="if true, erases existing assignments before assigning")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
@@ -26,7 +26,7 @@ args = parser.parse_args()
 if args.username!=None and args.password!=None:
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    client = openreview.Client(baseurl=args.baseurl)
+    client = openreview.Client()
 baseurl = client.baseurl
 
 submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')

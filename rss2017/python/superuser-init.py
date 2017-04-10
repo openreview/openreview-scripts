@@ -168,7 +168,7 @@ if client.user['id'].lower()=='openreview.net':
         },
         'writers': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': '~.*'
+            'values-copied':['{content.authorids}', '{signatures}']
         },
         'content': {
             'title': {
@@ -255,14 +255,20 @@ if client.user['id'].lower()=='openreview.net':
         process = '../process/submissionProcessProceedings.js')
     proceeding_invitation.reply = reply.copy()
 
+    poster_invitation = openreview.Invitation(POSTER + '/-/Submission',
+                                              readers=['everyone'],
+                                              writers=[POSTER],
+                                              invitees=['~'],
+                                              signatures=[POSTER],
+                                              duedate=TIMESTAMP_DUE,
+                                              process='../process/submissionProcessPoster.js')
 
-    poster_invitation = openreview.Invitation(POSTER+'/-/Submission',
-        readers = ['everyone'],
-        writers = [POSTER],
-        invitees = ['~'],
-        signatures = [POSTER],
-        duedate = TIMESTAMP_DUE,
-        process = '../process/submissionProcessPoster.js')
+    ## Submissions to the Poster track are not visible to everyone, just to the people that need to know
+    reply['readers'] = {
+            'description': 'The users who will be allowed to read the above content.',
+            'values-copied': [CONFERENCE, COCHAIRS, '{content.authorids}', '{signatures}']
+        }
+
     poster_invitation.reply = reply.copy()
 
     invitations.append(proceeding_invitation)

@@ -1,7 +1,7 @@
 function(){
     const TRACK_NAME = <<param0>>;
-    const CONFERENCE = 'roboticsfoundation.org/RSS/2017/Workshop';
-    const TRACK = CONFERENCE+'/'+TRACK_NAME;
+    const CONFERENCE = 'roboticsfoundation.org/RSS/2017/RCW_Workshop';
+    const TRACK = CONFERENCE+'/-_'+TRACK_NAME;
     const PAPERGRP = TRACK+'/Paper' + note.number;
     const CONFERENCE_NAME = 'RSS 2017 Workshop '+TRACK_NAME+' Track';
     var or3client = lib.or3client;

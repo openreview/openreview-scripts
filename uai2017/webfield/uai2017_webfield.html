@@ -220,17 +220,12 @@ $(function() {
   };
 
   var processRawNoteData = function(blindedNotes, authorNotes, assignedPairs) {
-    var submittedNotes = [];
     var commentNotes = [];
 
     _.forEach(authorNotes, function(note) {
-      if (note.invitation === 'auai.org/UAI/2017/-/submission') {
-        var original = _.find(blindedNotes, {'original': note.id});
-        if (original) {
-          submittedNotes.push(original);
-        }
-
-      } else if (_.startsWith(note.invitation, 'auai.org/UAI/2017') && (_.isUndefined(note.ddate) || _.isNull(note.ddate))) {
+      if (_.startsWith(note.invitation, 'auai.org/UAI/2017') &&
+          (note.invitation !== 'auai.org/UAI/2017/-/submission') &&
+          (_.isNull(note.ddate) || _.isUndefined(note.ddate))) {
         // TODO: remove this client side filtering when DB query is fixed
         commentNotes.push(note);
       }
@@ -238,6 +233,9 @@ $(function() {
 
     var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
     var assignedNotes = _.filter(blindedNotes, function(n) { return _.includes(assignedPaperNumbers, n.number); });
+
+    var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
+    var submittedNotes = _.filter(blindedNotes, function(n) { return _.includes(authorPaperNumbers, n.number); });
 
     return {
       allNotes: blindedNotes,
@@ -250,6 +248,14 @@ $(function() {
 
   var getPaperNumbersfromGroups = function(groups) {
     var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
+    return _.map(
+      _.filter(groups, function(gid) { return re.test(gid); }),
+      function(fgid) { return parseInt(fgid.match(re)[1], 10); }
+    );
+  };
+
+  var getAuthorPaperNumbersfromGroups = function(groups) {
+    var re = /auai.org\/UAI\/2017\/Paper(\d+)\/Authors/;
     return _.map(
       _.filter(groups, function(gid) { return re.test(gid); }),
       function(fgid) { return parseInt(fgid.match(re)[1], 10); }
@@ -327,12 +333,16 @@ $(function() {
       });
     };
 
-    $attach(
-      '#invitation',
-      'mkInvitationButton',
-      [invitation, onInvitationButtonClicked, { largeLabel: true }],
-      true
-    );
+
+    if (invitation) {
+      $attach(
+        '#invitation',
+        'mkInvitationButton',
+        [invitation, onInvitationButtonClicked, { largeLabel: true }],
+        true
+      );
+    }
+
     $('#invitation').fadeIn('fast');
   };
 
@@ -481,12 +491,19 @@ $(function() {
 
   var displayTasks = function(invitationPairs, tagInvitations, container) {
     var $rows = [];
+    var consoleLink;
 
     $('.note.panel, .empty-message, .invitation-link', container).remove();
 
+    var pcId = 'auai.org/UAI/2017/Program_Co-Chairs';
+    if (_.includes(userGroups, pcId)) {
+      consoleLink = '<div class="note panel"><a href="/reviewers?id=auai.org/UAI/2017" class="console-link">UAI 2017 Matching Browser</a></div>';
+      $(container).append(consoleLink);
+    }
+
     var spcId = 'auai.org/UAI/2017/Senior_Program_Committee';
     if (_.includes(userGroups, spcId)) {
-      var consoleLink = '<div class="note panel"><a href="/group?id=' + spcId + '" class="console-link">UAI 2017 Senior Program Committee Console</a></div>';
+      consoleLink = '<div class="note panel"><a href="/group?id=' + spcId + '" class="console-link">UAI 2017 Senior Program Committee Console</a></div>';
       $(container).append(consoleLink);
     }
 

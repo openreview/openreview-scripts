@@ -74,7 +74,7 @@
           invitationTrip: function(invitationTrip) { if (invitationTrip) {
             var invitation = invitationTrip.invitation;
             $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-              if (user && !user.id.startsWith('guest_') && invitation) {
+              if (user && !_.startsWith(user.id, 'guest_') && invitation) {
                 view.mkNewNoteEditor(invitation, null, null, user, {
                   onNoteCreated: function(idRecord) {
                     httpGetP('notes', {
