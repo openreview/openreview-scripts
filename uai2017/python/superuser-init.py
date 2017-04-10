@@ -95,7 +95,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = [CONFERENCE],
             signatories = [SPC],
             members     = [], #more to be added later, from the list of Senior_Program_Committee members
-            web         = '../webfield/web-field-spc.html')
+            web         = '../webfield/spc_group_webfield.html')
         groups.append(spc)
 
     if overwrite_allowed(SPC + '/invited'):
