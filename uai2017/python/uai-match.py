@@ -41,7 +41,11 @@ if args.data:
 else:
     datapath = './metadata'
 
-data = match_utils.load_obj(datapath)
+try:
+    data = match_utils.load_obj(datapath)
+except IOError as e:
+    raise Exception("local metadata file not found. Please run uai-metadata.py first.")
+
 
 # Data should look like this:
 #
@@ -424,7 +428,6 @@ with open('%s/uai_%s_match.csv' % (outdir, mode), 'w') as outfile:
     csvwriter = csv.writer(outfile)
     for a in assignments:
         csvwriter.writerow([a[0].encode('utf-8'),a[1]])
-print "Done"
 
 outdata = {
     'reviewers_group': reviewers_group,
@@ -443,5 +446,7 @@ outdata = {
     'registered_expertise_by_ac': registered_expertise_by_ac
 }
 
+print "Saving local metadata to %s.pkl" % datapath
 match_utils.save_obj(outdata, datapath)
 
+print "Done"
