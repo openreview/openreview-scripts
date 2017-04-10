@@ -16,7 +16,7 @@ from uaidata import *
 
 # Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('-i','--data', help='the name of the .pkl file (without extension) containing existing OpenReview data. Defaults to ./metadata.pkl')
+parser.add_argument('-i','--data', help='the .pkl file (with extension) containing existing OpenReview data. Defaults to ./metadata.pkl')
 parser.add_argument('-o','--outdir', help='the directory for output .csv files to be saved. Defaults to current directory.')
 parser.add_argument('-c','--config', help='the .json file (WITH extension) containing the match configuration.', required=True)
 parser.add_argument('-m','--mode', help="choose either \"reviewers\" or \"areachairs\"", required=True)
@@ -36,7 +36,7 @@ with open(args.config) as data_file:
 if args.data:
     datapath = args.data
 else:
-    datapath = './metadata'
+    datapath = './metadata.pkl'
 
 try:
     data = match_utils.load_obj(datapath)
@@ -443,7 +443,7 @@ outdata = {
     'registered_expertise_by_ac': registered_expertise_by_ac
 }
 
-print "Saving local metadata to %s.pkl" % datapath
-match_utils.save_obj(outdata, datapath)
+print "Saving local metadata to %s" % datapath
+match_utils.save_obj(outdata, datapath.split('.')[0])
 
 print "Done"
