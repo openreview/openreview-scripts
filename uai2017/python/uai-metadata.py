@@ -20,7 +20,7 @@ from uaidata import *
 # Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--download', help = "the filename (without extension) of the .pkl file to save the downloaded data. Defaults to ./metadata.pkl")
-parser.add_argument('--upload', help = "the .pkl file (with extension) to upload to OpenReview")
+parser.add_argument('--upload', help = "the .pkl file (with extension) to upload to OpenReview. If \"true\", defaults to ./metadata.pkl")
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--baseurl', help = "base URL")
@@ -153,8 +153,11 @@ if not args.upload:
     match_utils.save_obj(data, download)
 
 if args.upload:
-    print "Uploading metadata %s to OpenReview" % args.upload
-    data = match_utils.load_obj(args.upload)
+    if args.upload.lower() == 'true':
+        data = match_utils.load_obj('./metadata')
+    else:
+        data = match_utils.load_obj(args.upload)
+    print "Uploading metadata to OpenReview"
     metadata_by_forum = data['metadata_by_forum']
     metadata_by_reviewer = data['metadata_by_reviewer']
     metadata_by_areachair = data['metadata_by_areachair']
@@ -167,3 +170,5 @@ if args.upload:
 
     for n in metadata_by_areachair.values():
         client.post_note(n)
+
+    print "Done."
