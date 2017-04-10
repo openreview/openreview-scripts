@@ -514,7 +514,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees=[],
         signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        web='../webfield/web-field-bid-tag-invitation.html',
+        web='../webfield/add_bid_invitation_webfield.html',
         multiReply=False)
 
     bid_tag_invitation.reply = {
