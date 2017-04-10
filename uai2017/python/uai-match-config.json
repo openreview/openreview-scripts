@@ -3,18 +3,20 @@
   "maxreviewers": 3,
   "minareachairs": 1,
   "maxareachairs": 1,
-  "minpapers": 1,
-  "maxpapers": 15,
+  "min_areachair_papers": 1,
+  "max_areachair_papers": 15,
+  "min_reviewer_papers": 1,
+  "max_reviewer_papers": 3,
   "reviewer_primary_weight": 0.7,
   "areachair_primary_weight": 0.7,
   "recommendation_score": "+inf",
-  "conflict_score": "-inf",
+  "conflict_score": -1.5,
   "conflict_exceptions": ["gmail.com"],
   "bid_score_map": {
     "I want to review": 1.0,
     "I can review": 0.75,
     "I can probably review but am not an expert": 0.5,
-    "I cannot review": "-inf",
+    "I cannot review": 0.0,
     "No bid": 0.0
   }
 }
