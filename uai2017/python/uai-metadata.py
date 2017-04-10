@@ -14,7 +14,7 @@ from uaidata import *
 
 # Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('--download', help = "the filename (without extension) of the .pkl file to save the downloaded data. Defaults to ./metadata.pkl")
+parser.add_argument('--download', help = "the filename (without extension) of the .pkl file to save the downloaded data. Defaults to ./metadata")
 parser.add_argument('--upload', help = "the .pkl file (with extension) to upload to OpenReview. If \"true\", defaults to ./metadata.pkl")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -149,7 +149,7 @@ if not args.upload:
 
 if args.upload:
     if args.upload.lower() == 'true':
-        data = match_utils.load_obj('./metadata')
+        data = match_utils.load_obj('./metadata.pkl')
     else:
         data = match_utils.load_obj(args.upload)
     print "Uploading metadata to OpenReview"
