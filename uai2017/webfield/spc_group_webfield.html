@@ -34,31 +34,61 @@ $(function() {
   };
 
   var getOfficialReviews = function(noteNumbers) {
-    var noteMap = Object.create(null);
-    for (var i = 0; i < noteNumbers.length; i++) {
-      noteMap[noteNumbers[i]] = [];
-    }
+    var noteMap = buildNoteMap(noteNumbers);
 
     return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Official/Review' })
       .then(function(result) {
-        // TODO: remove
+        var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
+        var ratingExp = /^(\d+): .*/;
+
+        // TODO: remove test data
+        /***
         result.notes = [
           {"tddate":null,"tmdate":1490619279383,"tcdate":1490619279383,"number":8,
           "id":"Bkv9oYIne","invitation":"auai.org/UAI/2017/-/Paper8/Official/Review",
-          "forum":"Syd5Kcpsx","replyto":"Syd5Kcpsx","signatures":["auai.org/UAI/2017/Paper8/AnonReviewer1"],
+          "forum":"Syd5Kcpsx","replyto":"Syd5Kcpsx","signatures":["auai.org/UAI/2017/Paper8/AnonReviewer5"],
           "writers":["auai.org/UAI/2017"],"nonreaders":["auai.org/UAI/2017/Paper8/Reviewers/NonReaders"],
           "content":{
             "title":"title test","rating":"10: Top 5% of accepted papers, seminal paper",
             "review":"review test","confidence":"5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature"
           },
           "readers":["auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee","auai.org/UAI/2017/Paper8/Authors"],
-          "replyCount":0,"writable":false}
+          "replyCount":0,"writable":false},
+          {"tddate":null,"tmdate":1490619279383,"tcdate":1490619279383,"number":8,
+          "id":"Bkv9oYIne","invitation":"auai.org/UAI/2017/-/Paper8/Official/Review",
+          "forum":"Syd5Kcpsx","replyto":"Syd5Kcpsx","signatures":["auai.org/UAI/2017/Paper8/AnonReviewer6"],
+          "writers":["auai.org/UAI/2017"],"nonreaders":["auai.org/UAI/2017/Paper8/Reviewers/NonReaders"],
+          "content":{
+            "title":"title test","rating":"9: Top 10% of accepted papers, paper",
+            "review":"review test","confidence":"5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature"
+          },
+          "readers":["auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee","auai.org/UAI/2017/Paper8/Authors"],
+          "replyCount":0,"writable":false},
+          {"tddate":null,"tmdate":1490619279383,"tcdate":1490619279383,"number":3,
+          "id":"Bkv9oYIne","invitation":"auai.org/UAI/2017/-/Paper3/Official/Review",
+          "forum":"Syd5Kcpsx","replyto":"Syd5Kcpsx","signatures":["auai.org/UAI/2017/Paper3/AnonReviewer7"],
+          "writers":["auai.org/UAI/2017"],"nonreaders":["auai.org/UAI/2017/Paper8/Reviewers/NonReaders"],
+          "content":{
+            "title":"title test","rating":"8: Rating 8",
+            "review":"review test","confidence":"5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature"
+          },
+          "readers":["auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee","auai.org/UAI/2017/Paper3/Authors"],
+          "replyCount":0,"writable":false},
         ];
+        ***/
 
         result.notes.forEach(function(n) {
-          var num = n.number;
-          if (num && (num in noteMap)) {
-            noteMap[num].push(n);
+          var matches = n.signatures[0].match(re);
+          var num, index, ratingMatch;
+          if (matches) {
+            num = parseInt(matches[1], 10);
+            index = parseInt(matches[2], 10);
+
+            if (num in noteMap) {
+              ratingMatch = n.content.rating.match(ratingExp);
+              n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+              noteMap[num][index] = n;
+            }
           }
         });
         return noteMap;
@@ -70,17 +100,23 @@ $(function() {
   };
 
   var getReviewerGroups = function(noteNumbers) {
-    var noteMap = Object.create(null);
-    for (var i = 0; i < noteNumbers.length; i++) {
-      noteMap[noteNumbers[i]] = {};
-    }
+    var noteMap = buildNoteMap(noteNumbers);
 
     return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/AnonReviewer.*' })
       .then(function(result) {
         var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
 
-        // TODO: remove
-        result.groups = [{"web":null,"tddate":null,"ddate":null,"tcdate":1491422150752,"cdate":1491422150752,"tmdate":1491422150752,"id":"auai.org/UAI/2017/Paper8/AnonReviewer1","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper8/AnonReviewer1"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Red_Reviewer1"]},{"web":null,"tddate":null,"ddate":null,"tcdate":1491422147135,"cdate":1491422147135,"tmdate":1491422147135,"id":"auai.org/UAI/2017/Paper3/AnonReviewer1","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer1"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Melisa_TestBok1"]},{"web":null,"tddate":null,"ddate":null,"tcdate":1491422145463,"cdate":1491422145463,"tmdate":1491422145463,"id":"auai.org/UAI/2017/Paper8/AnonReviewer2","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper8/AnonReviewer2"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Melisa_TestBok1"]},{"web":null,"tddate":null,"ddate":null,"tcdate":1491422143385,"cdate":1491422143385,"tmdate":1491422143385,"id":"auai.org/UAI/2017/Paper3/AnonReviewer2","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer2"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Red_Reviewer1"]},{"web":null,"tddate":null,"ddate":null,"tcdate":1491422142352,"cdate":1491422142352,"tmdate":1491422142352,"id":"auai.org/UAI/2017/Paper2/AnonReviewer1","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper2/AnonReviewer1"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Red_Reviewer1"]}];
+        // TODO: remove test data
+        /***
+        result.groups = [
+          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422150752,"cdate":1491422150752,"tmdate":1491422150752,"id":"auai.org/UAI/2017/Paper8/AnonReviewer5","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper8/AnonReviewer5"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Red_Reviewer1"]},
+          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422145463,"cdate":1491422145463,"tmdate":1491422145463,"id":"auai.org/UAI/2017/Paper8/AnonReviewer6","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper8/AnonReviewer6"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Melisa_TestBok1"]},
+          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422147135,"cdate":1491422147135,"tmdate":1491422147135,"id":"auai.org/UAI/2017/Paper3/AnonReviewer7","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer7"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Melisa_TestBok1"]},
+          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422143385,"cdate":1491422143385,"tmdate":1491422143385,"id":"auai.org/UAI/2017/Paper3/AnonReviewer8","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer8"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Red_Reviewer1"]},
+          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422142352,"cdate":1491422142352,"tmdate":1491422142352,"id":"auai.org/UAI/2017/Paper3/AnonReviewer9","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer9"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Zach_Bialecki1"]},
+          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422147135,"cdate":1491422147135,"tmdate":1491422147135,"id":"auai.org/UAI/2017/Paper3/AnonReviewer10","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer10"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Violet_Reviewer1"]}
+        ];
+        ***/
 
         result.groups.forEach(function(g) {
           var matches = g.id.match(re);
@@ -100,6 +136,15 @@ $(function() {
         displayError();
         return null;
       });
+  };
+
+  var getUserProfiles = function(userIds) {
+    return $.post('/user/profiles', JSON.stringify({ids: userIds}), function(results) {
+      return results.profiles;
+    }, 'json').fail(function(error) {
+      displayError();
+      return null;
+    });
   };
 
 
@@ -124,7 +169,7 @@ $(function() {
             active: true
           },
           {
-            heading: 'My Assigned Papers',
+            heading: 'Your Assigned Papers',
             id: 'assigned-papers',
             content: loadingMessage,
           }
@@ -139,17 +184,32 @@ $(function() {
   };
 
   var displayStatusTable = function(notes, completedReviews, reviewerIds, container, options) {
-    var tableData = {
-      headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
-      rows: _.map(notes, function(note) {
-        console.log(completedReviews[note.number]);
-        console.log(reviewerIds[note.number]);
-        return buildTableRow(note, reviewerIds[note.number], completedReviews[note.number]);
-      }),
-      extraClasses: 'uai-console-table'
-    };
+    var uniqueIds = _.uniq(_.reduce(reviewerIds, function(result, idsObj, noteNum) {
+      return result.concat(_.values(idsObj));
+    }, []));
 
-    $(container).empty().append(Handlebars.templates['components/table'](tableData));
+    $.when(getUserProfiles(uniqueIds)).then(function(userProfiles) {
+      var rowData = _.map(notes, function(note) {
+        var revIds = reviewerIds[note.number];
+        for (var revNumber in revIds) {
+          var profile = _.find(userProfiles.profiles, 'id', revIds[revNumber]);
+
+          var name = _.find(profile.content.names, 'preferred', true) || _.first(profile.content.names);
+          profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
+          profile.email = profile.content.preferred_email;
+          revIds[revNumber] = profile;
+        }
+
+        return buildTableRow(note, revIds, completedReviews[note.number]);
+      });
+
+      var tableHTML = Handlebars.templates['components/table']({
+        headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
+        rows: rowData,
+        extraClasses: 'uai-console-table'
+      });
+      $(container).empty().append(tableHTML);
+    });
   };
 
   var displayNotes = function(notes, tagInvitations) {
@@ -180,20 +240,68 @@ $(function() {
 
 
   // Helper functions
-  var buildTableRow = function(note, reviewerIds, reviewStatus) {
+  var buildTableRow = function(note, reviewerIds, completedReviews) {
     var number = '<strong class="note-number">' + note.number + '</strong>';
-    note.content.authors = null;  // Don't display 'Blinded Authors'
-    var paperSummary = Handlebars.templates.noteSummary(note);
-    var reviewProgress = Handlebars.templates.noteReviewers(reviewerIds);
-    var status = Handlebars.templates.noteReviewStatus(reviewStatus);
 
-    return [number, paperSummary, reviewProgress, status];
+    note.content.authors = null;  // Don't display 'Blinded Authors'
+    var summaryHtml = Handlebars.templates.noteSummary(note);
+
+    var reviewObj;
+    var combinedObj = {};
+    var ratings = [];
+    for (var reviewerNum in reviewerIds) {
+      if (reviewerNum in completedReviews) {
+        reviewObj = completedReviews[reviewerNum];
+        combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
+          completedReview: true,
+          forum: reviewObj.forum,
+          note: reviewObj.id,
+          rating: reviewObj.content.rating
+        });
+        ratings.push(reviewObj.rating);
+      } else {
+        combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum]);
+      }
+    }
+    var reviewProgressData = {
+      numSubmittedReviews: Object.keys(completedReviews).length,
+      numReviewers: Object.keys(reviewerIds).length,
+      reviewers: combinedObj,
+      averageRating: ratings.length ? _.round(_.sum(ratings) / ratings.length, 2) : 'N/A'
+    };
+    var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
+
+    // TODO: remove demo data
+    var reviewStatus = {}; /***{
+      recommendation: 'Accept',
+      ratingMax: 5,
+      reviewerRatings: {
+        6: 5,
+        7: 5
+      }
+    };
+    ***/
+    var statusHtml = Handlebars.templates.noteReviewStatus(reviewStatus);
+
+    return [number, summaryHtml, reviewHtml, statusHtml];
+  };
+
+  var buildNoteMap = function(noteNumbers) {
+    var noteMap = Object.create(null);
+    for (var i = 0; i < noteNumbers.length; i++) {
+      noteMap[noteNumbers[i]] = Object.create(null);
+    }
+    return noteMap;
   };
 
 
   // Kick the whole thing off
   var headerLoaded = $.Deferred();
   displayHeader(headerLoaded);
+
+  $.ajaxSetup({
+    contentType: 'application/json; charset=utf-8'
+  });
 
   controller.addHandler('areachairs', {
     token: function(token) {
@@ -211,14 +319,21 @@ $(function() {
             headerLoaded
           );
         })
-        .then(function(blindedNotes, officialReviews, reviewerIds, tagInvitations, loaded) {
+        .then(function(blindedNotes, officialReviews, noteToReviewerIds, tagInvitations, loaded) {
           displayNotes(blindedNotes, tagInvitations);
-          displayStatusTable(blindedNotes, officialReviews, reviewerIds, '#reviewer-status');
+          displayStatusTable(blindedNotes, officialReviews, noteToReviewerIds, '#reviewer-status');
         })
         .fail(function(error) {
           displayError();
         });
     }
+  });
+
+  $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
+    var hiddenText = 'Show paper details';
+    var visibleText = 'Hide paper details';
+    var updated = $(this).text() === hiddenText ? visibleText : hiddenText;
+    $(this).text(updated);
   });
 
   OpenBanner.breadcrumbs([
