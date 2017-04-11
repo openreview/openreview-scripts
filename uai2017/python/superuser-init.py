@@ -25,10 +25,7 @@ parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-if args.username!=None and args.password!=None:
-    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-else:
-    client = openreview.Client(baseurl=args.baseurl)
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 groups = []
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False

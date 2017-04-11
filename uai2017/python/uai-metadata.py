@@ -22,10 +22,7 @@ parser.add_argument('--baseurl', help = "base URL")
 
 args = parser.parse_args()
 
-if args.username!=None and args.password!=None:
-    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-else:
-    client = openreview.Client()
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 if args.download:
     download = args.download
