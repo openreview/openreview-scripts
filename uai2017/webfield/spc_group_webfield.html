@@ -42,7 +42,6 @@ $(function() {
         var ratingExp = /^(\d+): .*/;
 
         // TODO: remove test data
-        /***
         result.notes = [
           {"tddate":null,"tmdate":1490619279383,"tcdate":1490619279383,"number":8,
           "id":"Bkv9oYIne","invitation":"auai.org/UAI/2017/-/Paper8/Official/Review",
@@ -75,7 +74,6 @@ $(function() {
           "readers":["auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee","auai.org/UAI/2017/Paper3/Authors"],
           "replyCount":0,"writable":false},
         ];
-        ***/
 
         result.notes.forEach(function(n) {
           var matches = n.signatures[0].match(re);
@@ -85,8 +83,12 @@ $(function() {
             index = parseInt(matches[2], 10);
 
             if (num in noteMap) {
+              // Need to parse rating and confidence strings into ints
               ratingMatch = n.content.rating.match(ratingExp);
               n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+              confidenceMatch = n.content.confidence.match(ratingExp);
+              n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+
               noteMap[num][index] = n;
             }
           }
@@ -107,7 +109,6 @@ $(function() {
         var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
 
         // TODO: remove test data
-        /***
         result.groups = [
           {"web":null,"tddate":null,"ddate":null,"tcdate":1491422150752,"cdate":1491422150752,"tmdate":1491422150752,"id":"auai.org/UAI/2017/Paper8/AnonReviewer5","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper8/AnonReviewer5"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Red_Reviewer1"]},
           {"web":null,"tddate":null,"ddate":null,"tcdate":1491422145463,"cdate":1491422145463,"tmdate":1491422145463,"id":"auai.org/UAI/2017/Paper8/AnonReviewer6","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper8/AnonReviewer6"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Melisa_TestBok1"]},
@@ -116,7 +117,6 @@ $(function() {
           {"web":null,"tddate":null,"ddate":null,"tcdate":1491422142352,"cdate":1491422142352,"tmdate":1491422142352,"id":"auai.org/UAI/2017/Paper3/AnonReviewer9","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer9"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Zach_Bialecki1"]},
           {"web":null,"tddate":null,"ddate":null,"tcdate":1491422147135,"cdate":1491422147135,"tmdate":1491422147135,"id":"auai.org/UAI/2017/Paper3/AnonReviewer10","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer10"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Violet_Reviewer1"]}
         ];
-        ***/
 
         result.groups.forEach(function(g) {
           var matches = g.id.match(re);
@@ -139,12 +139,22 @@ $(function() {
   };
 
   var getUserProfiles = function(userIds) {
-    return $.post('/user/profiles', JSON.stringify({ids: userIds}), function(results) {
-      return results.profiles;
+    return $.post('/user/profiles', JSON.stringify({ids: userIds}), function(result) {
+      return result.profiles;
     }, 'json').fail(function(error) {
       displayError();
       return null;
     });
+  };
+
+  var getMetaReviews = function() {
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Meta/Review' })
+      .then(function(result) {
+        return result.notes;
+      }).fail(function(error) {
+        displayError();
+        return null;
+      });
   };
 
 
@@ -168,11 +178,11 @@ $(function() {
             content: loadingMessage,
             active: true
           },
-          {
-            heading: 'Your Assigned Papers',
-            id: 'assigned-papers',
-            content: loadingMessage,
-          }
+          // {
+          //   heading: 'Your Assigned Papers',
+          //   id: 'assigned-papers',
+          //   content: loadingMessage,
+          // }
         ]
       };
       $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](tabsData));
@@ -183,7 +193,7 @@ $(function() {
     });
   };
 
-  var displayStatusTable = function(notes, completedReviews, reviewerIds, container, options) {
+  var displayStatusTable = function(notes, completedReviews, metaReviews, reviewerIds, container, options) {
     var uniqueIds = _.uniq(_.reduce(reviewerIds, function(result, idsObj, noteNum) {
       return result.concat(_.values(idsObj));
     }, []));
@@ -200,7 +210,8 @@ $(function() {
           revIds[revNumber] = profile;
         }
 
-        return buildTableRow(note, revIds, completedReviews[note.number]);
+        var metaReview = _.find(metaReviews, 'invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review');
+        return buildTableRow(note, revIds, completedReviews[note.number], metaReview);
       });
 
       var tableHTML = Handlebars.templates['components/table']({
@@ -240,12 +251,14 @@ $(function() {
 
 
   // Helper functions
-  var buildTableRow = function(note, reviewerIds, completedReviews) {
+  var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     var number = '<strong class="note-number">' + note.number + '</strong>';
 
+    // Build Note Summary Cell
     note.content.authors = null;  // Don't display 'Blinded Authors'
     var summaryHtml = Handlebars.templates.noteSummary(note);
 
+    // Build Review Progress Cell
     var reviewObj;
     var combinedObj = {};
     var ratings = [];
@@ -256,7 +269,8 @@ $(function() {
           completedReview: true,
           forum: reviewObj.forum,
           note: reviewObj.id,
-          rating: reviewObj.content.rating
+          rating: reviewObj.rating,
+          confidence: reviewObj.confidence
         });
         ratings.push(reviewObj.rating);
       } else {
@@ -271,16 +285,21 @@ $(function() {
     };
     var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
 
-    // TODO: remove demo data
-    var reviewStatus = {}; /***{
-      recommendation: 'Accept',
-      ratingMax: 5,
-      reviewerRatings: {
-        6: 5,
-        7: 5
-      }
+    // Build Status Cell
+    var invitationUrlParams = {
+      id: note.forum,
+      noteId: note.id,
+      invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta/Review'
     };
-    ***/
+    var reviewStatus = {
+      invitationUrl: '/forum?' + $.param(invitationUrlParams),
+      ratingUrl: '/invitation?id=' + CONFERENCE + '/-/Paper' + note.number + '/Area_Chair/Review/Rating',
+      ratingMax: 5
+    };
+    if (metaReview) {
+      reviewStatus.recommendation = metaReview.recommendation;
+      reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
+    }
     var statusHtml = Handlebars.templates.noteReviewStatus(reviewStatus);
 
     return [number, summaryHtml, reviewHtml, statusHtml];
@@ -314,14 +333,15 @@ $(function() {
           return $.when(
             getBlindedNotes(noteNumbers),
             getOfficialReviews(noteNumbers),
+            getMetaReviews(),
             getReviewerGroups(noteNumbers),
             getTagInvitations(),
             headerLoaded
           );
         })
-        .then(function(blindedNotes, officialReviews, noteToReviewerIds, tagInvitations, loaded) {
-          displayNotes(blindedNotes, tagInvitations);
-          displayStatusTable(blindedNotes, officialReviews, noteToReviewerIds, '#reviewer-status');
+        .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, tagInvitations, loaded) {
+          //displayNotes(blindedNotes, tagInvitations);
+          displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, '#reviewer-status');
         })
         .fail(function(error) {
           displayError();
