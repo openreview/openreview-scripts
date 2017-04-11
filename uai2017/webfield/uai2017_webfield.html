@@ -220,11 +220,12 @@ $(function() {
   };
 
   var processRawNoteData = function(blindedNotes, authorNotes, assignedPairs) {
-    var submittedNotes = [];
     var commentNotes = [];
 
     _.forEach(authorNotes, function(note) {
-      if (_.startsWith(note.invitation, 'auai.org/UAI/2017') && (note.invitation !== 'auai.org/UAI/2017/-/submission') && (_.isNull(note.ddate) || _.isUndefined(note.ddate))) {
+      if (_.startsWith(note.invitation, 'auai.org/UAI/2017') &&
+          (note.invitation !== 'auai.org/UAI/2017/-/submission') &&
+          (_.isNull(note.ddate) || _.isUndefined(note.ddate))) {
         // TODO: remove this client side filtering when DB query is fixed
         commentNotes.push(note);
       }
@@ -246,7 +247,7 @@ $(function() {
   };
 
   var getPaperNumbersfromGroups = function(groups) {
-    var re = /auai.org\/UAI\/2017\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
+    var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
     return _.map(
       _.filter(groups, function(gid) { return re.test(gid); }),
       function(fgid) { return parseInt(fgid.match(re)[1], 10); }
@@ -490,18 +491,19 @@ $(function() {
 
   var displayTasks = function(invitationPairs, tagInvitations, container) {
     var $rows = [];
+    var consoleLink;
 
     $('.note.panel, .empty-message, .invitation-link', container).remove();
 
     var pcId = 'auai.org/UAI/2017/Program_Co-Chairs';
     if (_.includes(userGroups, pcId)) {
-      var consoleLink = '<div class="note panel"><a href="/reviewers?id=auai.org/UAI/2017" class="console-link">UAI 2017 Matching Browser</a></div>';
+      consoleLink = '<div class="note panel"><a href="/reviewers?id=auai.org/UAI/2017" class="console-link">UAI 2017 Matching Browser</a></div>';
       $(container).append(consoleLink);
     }
 
     var spcId = 'auai.org/UAI/2017/Senior_Program_Committee';
     if (_.includes(userGroups, spcId)) {
-      var consoleLink = '<div class="note panel"><a href="/group?id=' + spcId + '" class="console-link">UAI 2017 Senior Program Committee Console</a></div>';
+      consoleLink = '<div class="note panel"><a href="/group?id=' + spcId + '" class="console-link">UAI 2017 Senior Program Committee Console</a></div>';
       $(container).append(consoleLink);
     }
 
@@ -551,7 +553,7 @@ $(function() {
     message = message || 'The venue invitation and/or papers could not be loaded.';
     $('#notes').empty().append('<div class="alert alert-danger"><strong>Error:</strong> ' + message + '</div>');
   };
-    var displayWarning = function(message) {
+  var displayWarning = function(message) {
     message = message || 'Please login to submit or review papers for this venue.';
     $('#notes').empty().append('<div class="alert alert-warning">' + message + '</div>');
   };

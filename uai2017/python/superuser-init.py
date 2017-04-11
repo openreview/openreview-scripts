@@ -92,7 +92,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = [CONFERENCE],
             signatories = [SPC],
             members     = [], #more to be added later, from the list of Senior_Program_Committee members
-            web         = '../webfield/web-field-spc.html')
+            web         = '../webfield/spc_group_webfield.html')
         groups.append(spc)
 
     if overwrite_allowed(SPC + '/invited'):
@@ -511,7 +511,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees=[],
         signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        web='../webfield/web-field-bid-tag-invitation.html',
+        web='../webfield/add_bid_invitation_webfield.html',
         multiReply=False)
 
     bid_tag_invitation.reply = {
