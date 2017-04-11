@@ -41,40 +41,6 @@ $(function() {
         var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
         var ratingExp = /^(\d+): .*/;
 
-        // TODO: remove test data
-        result.notes = [
-          {"tddate":null,"tmdate":1490619279383,"tcdate":1490619279383,"number":8,
-          "id":"Bkv9oYIne","invitation":"auai.org/UAI/2017/-/Paper8/Official/Review",
-          "forum":"Syd5Kcpsx","replyto":"Syd5Kcpsx","signatures":["auai.org/UAI/2017/Paper8/AnonReviewer5"],
-          "writers":["auai.org/UAI/2017"],"nonreaders":["auai.org/UAI/2017/Paper8/Reviewers/NonReaders"],
-          "content":{
-            "title":"title test","rating":"10: Top 5% of accepted papers, seminal paper",
-            "review":"review test","confidence":"5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature"
-          },
-          "readers":["auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee","auai.org/UAI/2017/Paper8/Authors"],
-          "replyCount":0,"writable":false},
-          {"tddate":null,"tmdate":1490619279383,"tcdate":1490619279383,"number":8,
-          "id":"Bkv9oYIne","invitation":"auai.org/UAI/2017/-/Paper8/Official/Review",
-          "forum":"Syd5Kcpsx","replyto":"Syd5Kcpsx","signatures":["auai.org/UAI/2017/Paper8/AnonReviewer6"],
-          "writers":["auai.org/UAI/2017"],"nonreaders":["auai.org/UAI/2017/Paper8/Reviewers/NonReaders"],
-          "content":{
-            "title":"title test","rating":"9: Top 10% of accepted papers, paper",
-            "review":"review test","confidence":"5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature"
-          },
-          "readers":["auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee","auai.org/UAI/2017/Paper8/Authors"],
-          "replyCount":0,"writable":false},
-          {"tddate":null,"tmdate":1490619279383,"tcdate":1490619279383,"number":3,
-          "id":"Bkv9oYIne","invitation":"auai.org/UAI/2017/-/Paper3/Official/Review",
-          "forum":"Syd5Kcpsx","replyto":"Syd5Kcpsx","signatures":["auai.org/UAI/2017/Paper3/AnonReviewer7"],
-          "writers":["auai.org/UAI/2017"],"nonreaders":["auai.org/UAI/2017/Paper8/Reviewers/NonReaders"],
-          "content":{
-            "title":"title test","rating":"8: Rating 8",
-            "review":"review test","confidence":"5: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature"
-          },
-          "readers":["auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee","auai.org/UAI/2017/Paper3/Authors"],
-          "replyCount":0,"writable":false},
-        ];
-
         result.notes.forEach(function(n) {
           var matches = n.signatures[0].match(re);
           var num, index, ratingMatch;
@@ -107,16 +73,6 @@ $(function() {
     return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/AnonReviewer.*' })
       .then(function(result) {
         var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
-
-        // TODO: remove test data
-        result.groups = [
-          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422150752,"cdate":1491422150752,"tmdate":1491422150752,"id":"auai.org/UAI/2017/Paper8/AnonReviewer5","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper8/AnonReviewer5"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Red_Reviewer1"]},
-          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422145463,"cdate":1491422145463,"tmdate":1491422145463,"id":"auai.org/UAI/2017/Paper8/AnonReviewer6","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper8/AnonReviewer6"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Melisa_TestBok1"]},
-          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422147135,"cdate":1491422147135,"tmdate":1491422147135,"id":"auai.org/UAI/2017/Paper3/AnonReviewer7","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer7"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Melisa_TestBok1"]},
-          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422143385,"cdate":1491422143385,"tmdate":1491422143385,"id":"auai.org/UAI/2017/Paper3/AnonReviewer8","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer8"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Red_Reviewer1"]},
-          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422142352,"cdate":1491422142352,"tmdate":1491422142352,"id":"auai.org/UAI/2017/Paper3/AnonReviewer9","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer9"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Zach_Bialecki1"]},
-          {"web":null,"tddate":null,"ddate":null,"tcdate":1491422147135,"cdate":1491422147135,"tmdate":1491422147135,"id":"auai.org/UAI/2017/Paper3/AnonReviewer10","signatures":["auai.org/UAI/2017"],"signatories":["auai.org/UAI/2017/Paper3/AnonReviewer10"],"writers":["auai.org/UAI/2017"],"nonreaders":[],"readers":["auai.org/UAI/2017","auai.org/UAI/2017/Program_Co-Chairs","auai.org/UAI/2017/Senior_Program_Committee","auai.org/UAI/2017/Program_Committee"],"members":["~Violet_Reviewer1"]}
-        ];
 
         result.groups.forEach(function(g) {
           var matches = g.id.match(re);
@@ -340,7 +296,6 @@ $(function() {
           );
         })
         .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, tagInvitations, loaded) {
-          //displayNotes(blindedNotes, tagInvitations);
           displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, '#reviewer-status');
         })
         .fail(function(error) {
