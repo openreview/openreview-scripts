@@ -253,7 +253,7 @@ $(function() {
       ratingMax: 5
     };
     if (metaReview) {
-      reviewStatus.recommendation = metaReview.recommendation;
+      reviewStatus.recommendation = metaReview.content.recommendation;
       reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
     }
     var statusHtml = Handlebars.templates.noteReviewStatus(reviewStatus);
