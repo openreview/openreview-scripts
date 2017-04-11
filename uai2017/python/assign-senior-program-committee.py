@@ -16,7 +16,7 @@ from uaidata import *
 # Argument handling and initialization
 # .............................................................................
 parser = argparse.ArgumentParser()
-parser.add_argument('-a','--assignments', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<user_id>,<paper#>' e.g. '~Area_Chair1,23'")
+parser.add_argument('-a','--assignments', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<user_id>,<paper#>' e.g. '~Area_Chair1,23'",required=True)
 parser.add_argument('-o','--overwrite', help="if true, erases existing assignments before assigning")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
@@ -50,7 +50,7 @@ def single_assignment_valid(s):
     except IndexError:
         return False
 
-def assign_areachair(areachair,paper_number):
+def assign_areachair(areachair, paper_number):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
     valid_email = re.compile('^[^@\s,]+@[^@\s,]+\.[^@\s,]+$')
     valid_tilde = re.compile('~.+')
@@ -84,21 +84,27 @@ def clear_assignments():
 
 # Main script
 # .............................................................................
-if args.overwrite and args.overwrite.lower() == 'true':
-    clear_assignments()
 
-if args.assignments:
-    if args.assignments.endswith('.csv'):
-        with open(args.assignments, 'rb') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-            for row in reader:
-                areachair = row[0]
-                paper_number = row[1]
-                assign_areachair(areachair,paper_number)
-    elif single_assignment_valid(args.assignments):
-        areachair = args.assignments.split(',')[0]
-        paper_number = args.assignments.split(',')[1]
-        assign_areachair(areachair,paper_number)
-    else:
-        print "Invalid input"
-        sys.exit()
+
+if args.assignments.endswith('.csv'):
+
+    if args.overwrite and args.overwrite.lower() == 'true':
+        clear_assignments()
+
+    with open(args.assignments, 'rb') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in reader:
+            areachair = row[0]
+            paper_number = row[1]
+            assign_areachair(areachair,paper_number)
+
+elif single_assignment_valid(args.assignments):
+    areachair = args.assignments.split(',')[0]
+    paper_number = args.assignments.split(',')[1]
+
+
+    assign_areachair(areachair,paper_number)
+
+else:
+    print "Invalid input"
+    sys.exit()
