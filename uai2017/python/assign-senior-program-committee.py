@@ -23,10 +23,9 @@ parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
 
-if args.username!=None and args.password!=None:
-    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-else:
-    client = openreview.Client()
+
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+
 baseurl = client.baseurl
 
 submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
