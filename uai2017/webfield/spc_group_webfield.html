@@ -226,11 +226,17 @@ $(function() {
           forum: reviewObj.forum,
           note: reviewObj.id,
           rating: reviewObj.rating,
-          confidence: reviewObj.confidence
+          confidence: reviewObj.confidence,
         });
         ratings.push(reviewObj.rating);
       } else {
-        combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum]);
+        combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
+          forumUrl: '/forum?' + $.param({
+            id: note.forum,
+            noteId: note.id,
+            invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official/Review'
+          })
+        });
       }
     }
     var reviewProgressData = {
@@ -317,8 +323,7 @@ $(function() {
     var postData = {
       subject: 'UAI 2017 Reminder',
       message: 'This is a reminder to please submit your official reviews for UAI 2017. ' +
-        'Click on the link below to go to the review page:\n\n<a href="' + forumUrl + '">Submit Review</a>' +
-        '\n\nThank you.',
+        'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
       groups: [userId]
     };
 
