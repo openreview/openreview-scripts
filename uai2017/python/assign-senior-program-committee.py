@@ -115,6 +115,7 @@ def assign(assignments):
             user_continue = raw_input("Remove conflicts and continue? y/[n]: ").lower() == 'y'
 
         if user_continue:
+            [conflict_list.remove(conflict) for conflict in assignee_conflicts]
             assign_areachair(areachair, paper_number, conflict_list)
         else:
             print "Paper %s not assigned" % paper_number
