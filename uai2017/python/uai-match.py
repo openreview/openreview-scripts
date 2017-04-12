@@ -109,7 +109,7 @@ for n in papers_by_forum.values():
           signatures = [CONFERENCE]
         )
     else:
-        metadata_by_forum[n.forum].content = empty_paper_note_content
+        metadata_by_forum[n.forum].content = empty_paper_note_content.copy()
 
 # Pre-populate all the reviewer metadata notes
 
@@ -130,7 +130,7 @@ for r in reviewers_group.members:
             signatures=[CONFERENCE]
         )
     else:
-        metadata_by_reviewer[r].content = empty_reviewer_note_content
+        metadata_by_reviewer[r].content = empty_reviewer_note_content.copy()
 
 # Pre-populate all the area chair metadata notes
 print "Resetting Areachair Metadata"
@@ -150,7 +150,7 @@ for a in areachairs_group.members:
             signatures=[CONFERENCE]
         )
     else:
-        metadata_by_areachair[a].content = empty_areachair_note_content
+        metadata_by_areachair[a].content = empty_areachair_note_content.copy()
 
 # .............................................................................
 #
@@ -243,7 +243,7 @@ for n in papers_by_forum.values():
                     'source': 'SubjectAreaOverlap'
                 })
         else:
-            missing_areachair_expertise.update([a])
+            missing_areachair_expertise.update([areachair])
 
     # Get conflicts of interest
 
@@ -443,7 +443,8 @@ outdata = {
     'registered_expertise_by_ac': registered_expertise_by_ac
 }
 
-print "Saving local metadata to %s" % datapath
-match_utils.save_obj(outdata, datapath.split('.')[0])
+filename = datapath.split('.pkl')[0]
+print "Saving local metadata to %s.pkl" % filename
+match_utils.save_obj(outdata, filename)
 
 print "Done"
