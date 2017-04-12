@@ -50,9 +50,7 @@ def single_assignment_valid(s):
         return False
 
 def get_nonreaders(paper_number):
-    # nonreaders are:
-    # (1) all authors of the paper
-    # (2) all domain groups of the authors of the paper
+    # nonreaders are a list of all domain groups of the authors of the paper
 
     authors = client.get_group('auai.org/UAI/2017/Paper%s/Authors' % paper_number)
     conflicts = set()
