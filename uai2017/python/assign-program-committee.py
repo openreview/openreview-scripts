@@ -56,8 +56,14 @@ def get_nonreaders(paper_number):
     conflicts = set()
     for author in authors.members:
         try:
+            # author_members = client.get_groups(member=author)
+            # member_domains = [d.id for d in author_members if '@' in d.id]
+            # conflicts.update([p.split('@')[1] for p in member_domains])
+
             author_profile = client.get_profile(author)
             conflicts.update([p.split('@')[1] for p in author_profile.content['emails']])
+            conflicts.update([p['institution']['domain'] for p in author_profile.content['history']])
+
         except openreview.OpenReviewException:
             pass
 
@@ -159,6 +165,7 @@ def clear_assignments():
 # .............................................................................
 
 def assign(assignments):
+    conflicts = []
     for a in assignments:
         reviewer = a[0]
         paper_number = a[1]
@@ -169,7 +176,7 @@ def assign(assignments):
 
         user_continue = True
         if len(assignee_conflicts) > 0:
-            print 'This assignment has the following conflicts: %s' % assignee_conflicts
+            print 'This %s has the following conflicts on paper %s: %s' % (reviewer, paper_number, assignee_conflicts)
             user_continue = raw_input("Remove conflicts and continue? y/[n]: ").lower() == 'y'
 
         if user_continue:
@@ -177,7 +184,8 @@ def assign(assignments):
             assign_reviewer(reviewer, paper_number, conflict_list)
         else:
             print "Paper %s not assigned" % paper_number
-
+            conflicts.append((reviewer,paper_number,assignee_conflicts))
+    return conflicts
 
 if args.assignments.endswith('.csv'):
     if args.overwrite and args.overwrite.lower() == 'true':
@@ -185,7 +193,8 @@ if args.assignments.endswith('.csv'):
 
     with open(args.assignments, 'rb') as csvfile:
         assignments = csv.reader(csvfile, delimiter=',', quotechar='|')
-        assign(assignments)
+        conflicts = assign(assignments)
+        print conflicts
 
 elif single_assignment_valid(args.assignments):
     reviewer = args.assignments.split(',')[0]

@@ -98,7 +98,8 @@ if not args.upload:
         if reviewer not in domains_by_user.keys():
             try:
                 reviewer_profile = client.get_profile(reviewer)
-                domains_by_user[reviewer] = set([p.split('@')[1] for p in reviewer_profile.content['emails']])
+                domains_by_user[reviewer].update([p.split('@')[1] for p in reviewer_profile.content['emails']])
+                domains_by_user[reviewer].update([p['institution']['domain'] for p in reviewer_profile.content['history']])
             except openreview.OpenReviewException:
                 print "Profile not found for reviewer %s" % reviewer
                 pass
@@ -107,7 +108,8 @@ if not args.upload:
         if areachair not in domains_by_user.keys():
             try:
                 areachair_profile = client.get_profile(areachair)
-                domains_by_user[areachair] = set([p.split('@')[1] for p in areachair_profile.content['emails']])
+                domains_by_user[areachair].update([p.split('@')[1] for p in areachair_profile.content['emails']])
+                domains_by_user[areachair].update([p['institution']['domain'] for p in areachair_profile.content['history']])
             except openreview.OpenReviewException:
                 print "Profile not found for areachair %s" % areachair
                 pass
@@ -119,7 +121,8 @@ if not args.upload:
         for author_email in author_emails:
             try:
                 author_profile = client.get_profile(author_email)
-                domains_by_email[author_email] = set([p.split('@')[1] for p in author_profile.content['emails']])
+                domains_by_email[author_email].update([p.split('@')[1] for p in author_profile.content['emails']])
+                domains_by_email[author_email].update([p['institution']['domain'] for p in author_profile.content['history']])
             except openreview.OpenReviewException:
                 pass
 

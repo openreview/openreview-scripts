@@ -56,8 +56,14 @@ def get_nonreaders(paper_number):
     conflicts = set()
     for author in authors.members:
         try:
+            # author_members = client.get_groups(member=author)
+            # member_domains = [d.id for d in author_members if '@' in d.id]
+            # conflicts.update([p.split('@')[1] for p in member_domains])
+
             author_profile = client.get_profile(author)
             conflicts.update([p.split('@')[1] for p in author_profile.content['emails']])
+            conflicts.update([p['institution']['domain'] for p in author_profile.content['history']])
+
         except openreview.OpenReviewException:
             pass
 
@@ -109,7 +115,7 @@ def assign(assignments):
 
         user_continue = True
         if len(assignee_conflicts) > 0:
-            print 'This assignment has the following conflicts: %s' % assignee_conflicts
+            print 'This %s has the following conflicts on paper %s: %s' % (areachair, paper_number, assignee_conflicts)
             user_continue = raw_input("Remove conflicts and continue? y/[n]: ").lower() == 'y'
 
         if user_continue:
