@@ -259,11 +259,6 @@ for n in papers_by_forum.values():
         elif author in domains_by_user:
             author_domain_set.update(domains_by_user[author])
 
-    # author_emails = original_note.content['authorids']
-    # author_domain_set = set()
-    # for e in author_emails:
-    #     author_domain_set.update(domains_by_email[e])
-
     # ... for reviewers
     for reviewer in reviewers_group.members:
 
