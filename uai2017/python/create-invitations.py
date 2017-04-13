@@ -20,9 +20,11 @@ maskAuthorsGroup = maskPaperGroup + "/Authors"
 
 def get_open_comment_invitation(submissionId, number, authorsGroupId):
 
+    invitationId = CONFERENCE + '/-/Paper' + str(number) + '/Open/Comment'
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
         'forum': submissionId,
+        'invitation': invitationId,
         'signatures': {
             'values-regex': '|'.join(allGroups),
             'description': 'How your identity will be displayed with the above content.'
@@ -50,7 +52,7 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
         }
     }
 
-    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Open/Comment',
+    invitation = openreview.Invitation(id = invitationId,
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
         invitees = [],
@@ -63,44 +65,94 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
 
 def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
 
+    invitationId = CONFERENCE + '/-/Paper' + str(number) + '/Confidential/Comment'
     allGroups = [COCHAIRS, PC, SPC]
     reply = {
         'forum': submissionId,
-            'signatures': {
-                'values-regex': '|'.join(allGroups),
-                'description': 'How your identity will be displayed with the above content.'
+        'invitation': invitationId,
+        'signatures': {
+            'values-regex': '|'.join(allGroups),
+            'description': 'How your identity will be displayed with the above content.'
+        },
+        'writers': {
+            'values-regex': '~.*'
+        },
+        'readers': {
+            'values': allGroups,
+            'description': 'The users who will be allowed to read the above content.'
+        },
+        'nonreaders': {
+            'values': [authorsGroupId]
+        },
+        'content': {
+            'title': {
+                'order': 1,
+                'value-regex': '.{1,500}',
+                'description': 'Brief summary of your comment.',
+                'required': True
             },
-            'writers': {
-                'values-regex': '~.*'
-            },
-            'readers': {
-                'values': allGroups,
-                'description': 'The users who will be allowed to read the above content.'
-            },
-            'nonreaders': {
-                'values': [authorsGroupId]
-            },
-            'content': {
-                'title': {
-                    'order': 1,
-                    'value-regex': '.{1,500}',
-                    'description': 'Brief summary of your comment.',
-                    'required': True
-                },
-                'comment': {
-                    'order': 2,
-                    'value-regex': '[\\S\\s]{1,5000}',
-                    'description': 'Your comment or reply.',
-                    'required': True
-                }
+            'comment': {
+                'order': 2,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'description': 'Your comment or reply.',
+                'required': True
             }
         }
+        }
 
-    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Confidential/Comment',
+    invitation = openreview.Invitation(id = invitationId,
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
         invitees = [],
         noninvitees = [authorsGroupId],
+        readers = ['everyone'],
+        process = '../process/commentProcess.js',
+        reply = reply)
+
+    return invitation
+
+def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewerNonReadersGroupId):
+
+    invitationId = CONFERENCE + '/-/Paper' + str(number) + '/Review/Open/Comment'
+    allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
+    reply = {
+        'forum': submissionId,
+        'invitation': CONFERENCE + '/-/Paper' + str(number) + '/Official/Review',
+        'signatures': {
+            'values-regex': '|'.join(allGroups),
+            'description': 'How your identity will be displayed with the above content.'
+        },
+        'writers': {
+            'values-regex': '~.*'
+        },
+        'readers': {
+            'values': allGroups,
+            'description': 'The users who will be allowed to read the above content.'
+        },
+        'nonreaders': {
+            'values': [reviewerNonReadersGroupId]
+        },
+        'content': {
+            'title': {
+                'order': 1,
+                'value-regex': '.{1,500}',
+                'description': 'Brief summary of your comment.',
+                'required': True
+            },
+            'comment': {
+                'order': 2,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'description': 'Your comment or reply.',
+                'required': True
+            }
+        }
+        }
+
+    invitation = openreview.Invitation(id = invitationId,
+        signatures = [CONFERENCE],
+        writers = [CONFERENCE],
+        invitees = allGroups,
+        noninvitees = [reviewerNonReadersGroupId],
         readers = ['everyone'],
         process = '../process/commentProcess.js',
         reply = reply)
@@ -368,6 +420,8 @@ try:
                 client.post_invitation(get_recommend_reviewer_invitation(submission.id, submission.number))
                 #Post official review invitation
                 client.post_invitation(get_official_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
+                #Post comment review invitation
+                client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
                 #Post meta review invitation
                 client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id, reviewers_nonreaders_group.id))
 
