@@ -27,8 +27,8 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
             'values-regex': '|'.join(allGroups),
             'description': 'How your identity will be displayed with the above content.'
         },
-            'writers': {
-            'values-regex': '|'.join(allGroups)
+        'writers': {
+            'values-regex': '~.*'
         },
         'readers': {
             'values': allGroups,
@@ -70,8 +70,8 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
                 'values-regex': '|'.join(allGroups),
                 'description': 'How your identity will be displayed with the above content.'
             },
-                'writers': {
-                'values-regex': '|'.join(allGroups)
+            'writers': {
+                'values-regex': '~.*'
             },
             'readers': {
                 'values': allGroups,
