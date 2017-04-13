@@ -160,11 +160,6 @@ if args.remove:
         with open(args.remove, 'rb') as csvfile:
             unassignments = csv.reader(csvfile, delimiter=',', quotechar='|')
 
-<<<<<<< HEAD
-    with open(args.assignments, 'rb') as csvfile:
-        assignments = csv.reader(csvfile, delimiter=',', quotechar='|')
-        assign(assignments)
-=======
     elif assignment_utils.single_assignment_valid(args.remove):
         reviewer, paper_number = args.remove.split(',')
         unassignments = [(reviewer, paper_number)]
@@ -172,7 +167,6 @@ if args.remove:
     else:
         print "Invalid input: ", args.remove
         sys.exit()
->>>>>>> 5d789d0... refactored assignment scripts
 
     unassign(unassignments)
 
