@@ -12,13 +12,14 @@ import sys
 import re
 import openreview
 import requests
+import assignment_utils
 from uaidata import *
 
 # Argument handling and initialization
 # .............................................................................
 parser = argparse.ArgumentParser()
-parser.add_argument('-a','--assignments', help="either (1) a csv file containing reviewer assignments or (2) a string of the format '<openreview_id>,<paper#>' e.g. '~Alan_Turing1,23'", required=True)
-parser.add_argument('-o','--overwrite', help="if true, erases existing assignments before assigning")
+parser.add_argument('-a','--add', help="either (1) a csv file containing reviewer assignments or (2) a string of the format '<user_id>,<paper#>' e.g. '~Reviewer1,23'")
+parser.add_argument('-r','--remove', help="either (1) a csv file containing reviewer assignments or (2) a string of the format '<user_id>,<paper#>' e.g. '~Reviewer1,23'")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -30,48 +31,16 @@ baseurl = client.baseurl
 
 submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
 
+headers = {
+    'User-Agent': 'test-create-script',
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + client.token
+}
+
 # Function definitions
 # .............................................................................
-def single_assignment_valid(s):
-    try:
-        reviewer = s.split(',')[0]
-        paper_number = s.split(',')[1]
 
-        try:
-            int(paper_number)
-        except ValueError:
-            return False
-
-        if not '~' in reviewer and not '@' in reviewer:
-            return False
-
-        return True
-    except IndexError:
-        return False
-
-def get_nonreaders(paper_number):
-    # nonreaders are a list of all domain groups of the authors of the paper
-
-    authors = client.get_group('auai.org/UAI/2017/Paper%s/Authors' % paper_number)
-    conflicts = set()
-    for author in authors.members:
-        try:
-            # author_members = client.get_groups(member=author)
-            # member_domains = [d.id for d in author_members if '@' in d.id]
-            # conflicts.update([p.split('@')[1] for p in member_domains])
-
-            author_profile = client.get_profile(author)
-            conflicts.update([p.split('@')[1] for p in author_profile.content['emails']])
-            conflicts.update([p['institution']['domain'] for p in author_profile.content['history']])
-
-        except openreview.OpenReviewException:
-            pass
-
-    if 'gmail.com' in conflicts: conflicts.remove('gmail.com')
-
-    return list(conflicts)
-
-def assign_reviewer(reviewer,paper_number,conflict_list):
+def assign_reviewer(reviewer, paper_number, conflict_list):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
     valid_email = re.compile('^[^@\s,]+@[^@\s,]+\.[^@\s,]+$')
     valid_tilde = re.compile('~.+')
@@ -84,12 +53,6 @@ def assign_reviewer(reviewer,paper_number,conflict_list):
 
 
 def get_next_reviewer_id(reviewer, paper_number):
-
-    headers = {
-    'User-Agent': 'test-create-script',
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + client.token
-    }
 
     response = requests.get(client.baseurl + '/groups?id=auai.org/UAI/2017/Paper' + paper_number + '/AnonReviewer.*', headers=headers)
     reviewers = [openreview.Group.from_json(g) for g in response.json()]
@@ -141,7 +104,6 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
 
         return new_reviewer
 
-
 def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list):
     new_reviewer = openreview.Group(
         new_reviewer_id,
@@ -154,22 +116,11 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
     client.post_group(new_reviewer)
     return new_reviewer
 
-def clear_assignments():
-    program_committee = client.get_group(PC)
-    for p in program_committee.members:
-        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/(AnonReviewer.*|Reviewers)').match(g.id)]
-        for a in assignments:
-            client.remove_members_from_group(a, a.members)
-
-# Main script
-# .............................................................................
-
 def assign(assignments):
     conflicts = []
     for a in assignments:
-        reviewer = a[0]
-        paper_number = a[1]
-        conflict_list = get_nonreaders(paper_number)
+        reviewer, paper_number = a
+        conflict_list = assignment_utils.get_nonreaders(paper_number, client)
 
         members = set([g.id for g in client.get_groups(member=reviewer)])
         assignee_conflicts = members.intersection(set(conflict_list))
@@ -187,21 +138,52 @@ def assign(assignments):
             conflicts.append((reviewer,paper_number,assignee_conflicts))
     return conflicts
 
-if args.assignments.endswith('.csv'):
-    if args.overwrite and args.overwrite.lower() == 'true':
-        clear_assignments()
+def unassign(assignments):
+    for a in assignments:
+        reviewer, paper_number = a
 
-    with open(args.assignments, 'rb') as csvfile:
-        assignments = csv.reader(csvfile, delimiter=',', quotechar='|')
-        conflicts = assign(assignments)
-        print conflicts
+        # remove reviewer from AnonReviewer group
+        response = requests.get(client.baseurl + '/groups?id=auai.org/UAI/2017/Paper' + paper_number + '/AnonReviewer.*', headers=headers)
+        anon_reviewers = [openreview.Group.from_json(g) for g in response.json()]
 
-elif single_assignment_valid(args.assignments):
-    reviewer = args.assignments.split(',')[0]
-    paper_number = args.assignments.split(',')[1]
-    assignments = [(reviewer, paper_number)]
-    assign(assignments)
+        for r in anon_reviewers:
+            if reviewer in r.members: print "removing member %s from group %s" % (reviewer, r.id)
+            client.remove_members_from_group(r, [reviewer])
 
-else:
-    print "Invalid input"
-    sys.exit()
+        # remove reviewer from Paper#/Reviewers group
+        reviewers_group = client.get_group('auai.org/UAI/2017/Paper%s/Reviewers' % paper_number)
+        client.remove_members_from_group(reviewers_group, [reviewer])
+
+# Main script
+# .............................................................................
+
+if args.remove:
+    if args.remove.endswith('.csv'):
+        with open(args.remove, 'rb') as csvfile:
+            unassignments = csv.reader(csvfile, delimiter=',', quotechar='|')
+
+    elif assignment_utils.single_assignment_valid(args.remove):
+        reviewer, paper_number = args.remove.split(',')
+        unassignments = [(reviewer, paper_number)]
+
+    else:
+        print "Invalid input: ", args.remove
+        sys.exit()
+
+    unassign(unassignments)
+
+if args.add:
+    if args.add.endswith('.csv'):
+        with open(args.add, 'rb') as csvfile:
+            assignments = csv.reader(csvfile, delimiter=',', quotechar='|')
+
+    elif assignment_utils.single_assignment_valid(args.add):
+        reviewer, paper_number = args.add.split(',')
+        assignments = [(reviewer, paper_number)]
+
+    else:
+        print "Invalid input: ", args.add
+        sys.exit()
+
+    conflicts = assign(assignments)
+    print "conflicts found: ",conflicts
