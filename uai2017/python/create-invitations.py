@@ -26,7 +26,7 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
         'forum': submissionId,
         'selfReply': True,
         'signatures': {
-            'values-regex': '|'.join(allGroups),
+            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+',
             'description': 'How your identity will be displayed with the above content.'
         },
         'writers': {
@@ -120,7 +120,7 @@ def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewer
         'invitation': CONFERENCE + '/-/Paper' + str(number) + '/Official/Review',
         'selfReply': True,
         'signatures': {
-            'values-regex': '|'.join(allGroups),
+            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+',
             'description': 'How your identity will be displayed with the above content.'
         },
         'writers': {
