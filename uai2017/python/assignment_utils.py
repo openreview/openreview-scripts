@@ -1,3 +1,5 @@
+import openreview
+
 def single_assignment_valid(s):
     try:
         user, paper_number= s.split(',')
