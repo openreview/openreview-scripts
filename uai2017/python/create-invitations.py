@@ -20,7 +20,6 @@ maskAuthorsGroup = maskPaperGroup + "/Authors"
 
 def get_open_comment_invitation(submissionId, number, authorsGroupId):
 
-    invitationId = CONFERENCE + '/-/Paper' + str(number) + '/Open/Comment'
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
         'forum': submissionId,
@@ -52,7 +51,7 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
         }
     }
 
-    invitation = openreview.Invitation(id = invitationId,
+    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Open/Comment',
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
         invitees = [],
@@ -65,7 +64,6 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
 
 def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
 
-    invitationId = CONFERENCE + '/-/Paper' + str(number) + '/Confidential/Comment'
     allGroups = [COCHAIRS, PC, SPC]
     reply = {
         'forum': submissionId,
@@ -100,7 +98,7 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
         }
     }
 
-    invitation = openreview.Invitation(id = invitationId,
+    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Confidential/Comment',
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
         invitees = [],
@@ -113,7 +111,6 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
 
 def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewerNonReadersGroupId):
 
-    invitationId = CONFERENCE + '/-/Paper' + str(number) + '/Review/Open/Comment'
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
         'forum': submissionId,
@@ -149,7 +146,7 @@ def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewer
         }
     }
 
-    invitation = openreview.Invitation(id = invitationId,
+    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Review/Open/Comment',
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
         invitees = allGroups,
