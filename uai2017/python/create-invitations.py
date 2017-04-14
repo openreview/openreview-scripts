@@ -358,6 +358,25 @@ try:
 
             if author_group:
                 # Check the necessary groups and post them if they don't exist
+
+                try:
+                    areachair_group = client.get_group(paper_group.id + '/Area_Chair')
+
+                except openreview.OpenReviewException as e:
+                    if 'Not Found' in e[0]:
+                        areachair_group = openreview.Group(id = paper_group.id + '/Area_Chair',
+                            signatures = [CONFERENCE],
+                            writers = [CONFERENCE],
+                            members = [],
+                            readers = [CONFERENCE, COCHAIRS, paper_group.id + '/Area_Chair'],
+                            signatories = [CONFERENCE, paper_group.id + '/Area_Chair'])
+
+                        client.post_group(areachair_group)
+
+                    else:
+                        raise(e)
+
+
                 try:
                     reviewers_group = client.get_group(paper_group.id + '/Reviewers')
 
@@ -367,7 +386,7 @@ try:
                             signatures = [CONFERENCE],
                             writers = [CONFERENCE],
                             members = [],
-                            readers = [CONFERENCE, COCHAIRS, SPC, paper_group.id + '/Reviewers'],
+                            readers = [CONFERENCE, COCHAIRS, areachair_group.id, paper_group.id + '/Reviewers'],
                             signatories = [])
 
                         client.post_group(reviewers_group)
@@ -388,23 +407,6 @@ try:
                             signatories = [])
 
                         client.post_group(reviewers_nonreaders_group)
-
-                    else:
-                        raise(e)
-
-                try:
-                    areachair_group = client.get_group(paper_group.id + '/Area_Chair')
-
-                except openreview.OpenReviewException as e:
-                    if 'Not Found' in e[0]:
-                        areachair_group = openreview.Group(id = paper_group.id + '/Area_Chair',
-                            signatures = [CONFERENCE],
-                            writers = [CONFERENCE],
-                            members = [],
-                            readers = [CONFERENCE, COCHAIRS, SPC],
-                            signatories = [CONFERENCE, paper_group.id + '/Area_Chair'])
-
-                        client.post_group(areachair_group)
 
                     else:
                         raise(e)
