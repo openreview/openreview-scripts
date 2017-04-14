@@ -18,14 +18,14 @@ maskPaperGroup = CONFERENCE + "/Paper[PAPER_NUMBER]"
 maskAuthorsGroup = maskPaperGroup + "/Authors"
 
 
-def get_open_comment_invitation(submissionId, number, authorsGroupId):
+def get_open_comment_invitation(submissionId, number, authorsGroupId, areachairGroupId):
 
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
         'forum': submissionId,
         'selfReplyOnly': True,
         'signatures': {
-            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+',
+            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+' + '|' + areachairGroupId,
             'description': 'How your identity will be displayed with the above content.'
         },
         'writers': {
@@ -62,14 +62,14 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
 
     return invitation
 
-def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
+def get_confidential_comment_invitation(submissionId, number, authorsGroupId, areachairGroupId):
 
     allGroups = [COCHAIRS, PC, SPC]
     reply = {
         'forum': submissionId,
         'selfReplyOnly': True,
         'signatures': {
-            'values-regex': '|'.join(allGroups),
+            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+' + '|' + areachairGroupId,
             'description': 'How your identity will be displayed with the above content.'
         },
         'writers': {
@@ -109,7 +109,7 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
 
     return invitation
 
-def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewerNonReadersGroupId):
+def get_review_comment_invitation(submissionId, number, authorsGroupId, areachairGroupId, reviewerNonReadersGroupId):
 
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
@@ -117,7 +117,7 @@ def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewer
         'invitation': CONFERENCE + '/-/Paper' + str(number) + '/Official/Review',
         'selfReplyOnly': True,
         'signatures': {
-            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+',
+            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+' + '|' + areachairGroupId,
             'description': 'How your identity will be displayed with the above content.'
         },
         'writers': {
@@ -413,15 +413,15 @@ try:
 
 
                 #Post open comment invitation
-                client.post_invitation(get_open_comment_invitation(submission.id, submission.number, author_group.id))
+                client.post_invitation(get_open_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
                 #Post confidential comment invitation
-                client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id))
+                client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
                 #Post recommend reviewer invitation
                 client.post_invitation(get_recommend_reviewer_invitation(submission.id, submission.number))
                 #Post official review invitation
                 client.post_invitation(get_official_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
                 #Post comment review invitation
-                client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
+                client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id,reviewers_nonreaders_group.id))
                 #Post meta review invitation
                 client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id, reviewers_nonreaders_group.id))
 
