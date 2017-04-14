@@ -93,7 +93,8 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
 
     next_reviewer = get_next_reviewer_id(reviewer_profile.id, paper_number)
 
-    reviewers.nonreaders = conflict_list + ['auai.org/UAI/2017/Paper%s/Authors' % paper_number]
+    conflict_list += ['auai.org/UAI/2017/Paper%s/Authors' % paper_number]
+    reviewers.nonreaders = conflict_list
     client.post_group(reviewers)
 
     if next_reviewer:
