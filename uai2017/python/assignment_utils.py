@@ -21,17 +21,25 @@ def get_nonreaders(paper_number, client):
     conflicts = set()
     for author in authors.members:
         try:
-            author_members = client.get_groups(member=author)
-            member_domains = [d.id for d in author_members if '@' in d.id]
-            conflicts.update([p.split('@')[1] for p in member_domains])
-
-            author_profile = client.get_profile(author)
-            conflicts.update([p.split('@')[1] for p in author_profile.content['emails']])
-            conflicts.update([p['institution']['domain'] for p in author_profile.content['history']])
+            conflicts.update(get_user_domains(author, client))
 
         except openreview.OpenReviewException:
             pass
 
     if 'gmail.com' in conflicts: conflicts.remove('gmail.com')
 
-    return list(conflicts)
+    return conflicts
+
+
+def get_user_domains(user, client):
+
+    domains = set()
+    members = client.get_groups(member = user)
+    member_domains = [d.id for d in members if '@' in d.id]
+    domains.update([p.split('@')[1] for p in member_domains])
+
+    profile = client.get_profile(user)
+    domains.update([p.split('@')[1] for p in profile.content['emails']])
+    domains.update([p['institution']['domain'] for p in profile.content['history']])
+
+    return domains
