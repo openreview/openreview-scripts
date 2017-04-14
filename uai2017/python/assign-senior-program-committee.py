@@ -51,9 +51,9 @@ def assign_areachair(areachair, paper_number, conflict_list):
             print "%s not yet a member of the Senior Program Committee; adding them now" % areachair_profile.id
             client.add_members_to_group(spc, str(areachair_profile.id))
 
-        acgroup = client.get_group('auai.org/UAI/2017/Paper%s/Area_Chair' % (paper_number) )
+        acgroup = client.get_group('auai.org/UAI/2017/Paper%s/Area_Chair' % paper_number )
         acgroup.members = [areachair_profile.id]
-        acgroup.nonreaders = conflict_list
+        acgroup.nonreaders = conflict_list + ['auai.org/UAI/2017/Paper%s/Authors' % paper_number]
         client.post_group(acgroup);
         print "Area chair %s assigned to paper%s" % (areachair_profile.id, paper_number)
 
