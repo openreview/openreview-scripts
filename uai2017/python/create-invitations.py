@@ -403,7 +403,7 @@ try:
                             signatures = [CONFERENCE],
                             writers = [CONFERENCE],
                             members = [],
-                            readers = [CONFERENCE, COCHAIRS, SPC, reviewers_group.id + '/NonReaders'],
+                            readers = [CONFERENCE, COCHAIRS, areachair_group.id, reviewers_group.id + '/NonReaders'],
                             signatories = [])
 
                         client.post_group(reviewers_nonreaders_group)
