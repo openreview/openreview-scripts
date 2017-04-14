@@ -122,8 +122,8 @@ def assign(assignments):
         reviewer, paper_number = a
         conflict_list = assignment_utils.get_nonreaders(paper_number, client)
 
-        members = set([g.id for g in client.get_groups(member=reviewer)])
-        assignee_conflicts = members.intersection(set(conflict_list))
+        reviewer_domains = assignment_utils.get_user_domains(reviewer, client)
+        assignee_conflicts = reviewer_domains.intersection(conflict_list)
 
         user_continue = True
         if len(assignee_conflicts) > 0:
@@ -132,7 +132,7 @@ def assign(assignments):
 
         if user_continue:
             [conflict_list.remove(conflict) for conflict in assignee_conflicts]
-            assign_reviewer(reviewer, paper_number, conflict_list)
+            assign_reviewer(reviewer, paper_number, list(conflict_list))
         else:
             print "Paper %s not assigned" % paper_number
 
