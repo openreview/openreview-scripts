@@ -24,7 +24,7 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
         'forum': submissionId,
-        'invitation': invitationId,
+        'selfReply': True,
         'signatures': {
             'values-regex': '|'.join(allGroups),
             'description': 'How your identity will be displayed with the above content.'
@@ -69,7 +69,7 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
     allGroups = [COCHAIRS, PC, SPC]
     reply = {
         'forum': submissionId,
-        'invitation': invitationId,
+        'selfReply': True,
         'signatures': {
             'values-regex': '|'.join(allGroups),
             'description': 'How your identity will be displayed with the above content.'
@@ -98,7 +98,7 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
                 'required': True
             }
         }
-        }
+    }
 
     invitation = openreview.Invitation(id = invitationId,
         signatures = [CONFERENCE],
@@ -118,6 +118,7 @@ def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewer
     reply = {
         'forum': submissionId,
         'invitation': CONFERENCE + '/-/Paper' + str(number) + '/Official/Review',
+        'selfReply': True,
         'signatures': {
             'values-regex': '|'.join(allGroups),
             'description': 'How your identity will be displayed with the above content.'
@@ -146,7 +147,7 @@ def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewer
                 'required': True
             }
         }
-        }
+    }
 
     invitation = openreview.Invitation(id = invitationId,
         signatures = [CONFERENCE],
@@ -163,23 +164,23 @@ def get_recommend_reviewer_invitation(submissionId, number):
 
     reply = {
         'forum': submissionId,
-            'signatures': {
-                'values-regex': '~.*',
-                'description': 'How your identity will be displayed with the above content.'
-            },
-            'readers': {
-                'values-copied': [CONFERENCE, '{signatures}'],
-                'description': 'The users who will be allowed to read the above content.'
-            },
-            'content': {
-                'tag': {
-                    'description': 'Recommendation description',
-                    'order': 1,
-                    'values-url': '/groups?id=' + PC,
-                    'required': True
-                }
+        'signatures': {
+            'values-regex': '~.*',
+            'description': 'How your identity will be displayed with the above content.'
+        },
+        'readers': {
+            'values-copied': [CONFERENCE, '{signatures}'],
+            'description': 'The users who will be allowed to read the above content.'
+        },
+        'content': {
+            'tag': {
+                'description': 'Recommendation description',
+                'order': 1,
+                'values-url': '/groups?id=' + PC,
+                'required': True
             }
         }
+    }
 
     invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Recommend/Reviewer',
         duedate = 1507180500000,
