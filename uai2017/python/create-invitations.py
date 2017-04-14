@@ -24,7 +24,7 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
         'forum': submissionId,
-        'selfReply': True,
+        'selfReplyOnly': True,
         'signatures': {
             'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+',
             'description': 'How your identity will be displayed with the above content.'
@@ -69,7 +69,7 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
     allGroups = [COCHAIRS, PC, SPC]
     reply = {
         'forum': submissionId,
-        'selfReply': True,
+        'selfReplyOnly': True,
         'signatures': {
             'values-regex': '|'.join(allGroups),
             'description': 'How your identity will be displayed with the above content.'
@@ -118,7 +118,7 @@ def get_review_comment_invitation(submissionId, number, authorsGroupId, reviewer
     reply = {
         'forum': submissionId,
         'invitation': CONFERENCE + '/-/Paper' + str(number) + '/Official/Review',
-        'selfReply': True,
+        'selfReplyOnly': True,
         'signatures': {
             'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+',
             'description': 'How your identity will be displayed with the above content.'
