@@ -11,13 +11,14 @@ import getpass
 import sys
 import re
 import openreview
+import assignment_utils
 from uaidata import *
 
 # Argument handling and initialization
 # .............................................................................
 parser = argparse.ArgumentParser()
-parser.add_argument('-a','--assignments', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<user_id>,<paper#>' e.g. '~Area_Chair1,23'",required=True)
-parser.add_argument('-o','--overwrite', help="if true, erases existing assignments before assigning")
+parser.add_argument('-a','--add', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<user_id>,<paper#>' e.g. '~Area_Chair1,23'")
+parser.add_argument('-r','--remove', help="either (1) a csv file containing areachair assignments or (2) a string of the format '<user_id>,<paper#>' e.g. '~Area_Chair1,23'")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -32,38 +33,6 @@ submissions = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission'
 
 # Function definitions
 # .............................................................................
-def single_assignment_valid(s):
-    try:
-        areachair = s.split(',')[0]
-        paper_number = s.split(',')[1]
-
-        try:
-            int(paper_number)
-        except ValueError:
-            return False
-
-        if not '@' in areachair and not '~' in areachair:
-            return False
-
-        return True
-    except IndexError:
-        return False
-
-def get_nonreaders(paper_number):
-    # nonreaders are a list of all domain groups of the authors of the paper
-
-    authors = client.get_group('auai.org/UAI/2017/Paper%s/Authors' % paper_number)
-    conflicts = set()
-    for author in authors.members:
-        try:
-            author_profile = client.get_profile(author)
-            conflicts.update([p.split('@')[1] for p in author_profile.content['emails']])
-        except openreview.OpenReviewException:
-            pass
-
-    if 'gmail.com' in conflicts: conflicts.remove('gmail.com')
-
-    return list(conflicts)
 
 def assign_areachair(areachair, paper_number, conflict_list):
     notes = [note for note in submissions if str(note.number)==str(paper_number)]
@@ -86,23 +55,13 @@ def assign_areachair(areachair, paper_number, conflict_list):
         acgroup.members = [areachair_profile.id]
         acgroup.nonreaders = conflict_list
         client.post_group(acgroup);
-        print "Area chair %s assigned to paper%s" %(areachair_profile.id,paper_number)
-
-def clear_assignments():
-    senior_program_committee = client.get_group(SPC)
-    for p in senior_program_committee.members:
-        assignments = [g for g in client.get_groups(member = p) if re.compile('auai.org/UAI/2017/Paper.*/Area_Chair').match(g.id)]
-        for a in assignments:
-            client.remove_members_from_group(a, a.members)
-
-# Main script
-# .............................................................................
+        print "Area chair %s assigned to paper%s" % (areachair_profile.id, paper_number)
 
 def assign(assignments):
     for a in assignments:
         areachair = a[0]
         paper_number = a[1]
-        conflict_list = get_nonreaders(paper_number)
+        conflict_list = assignment_utils.get_nonreaders(paper_number, client)
 
         members = set([g.id for g in client.get_groups(member=areachair)])
         assignee_conflicts = members.intersection(set(conflict_list))
@@ -118,25 +77,49 @@ def assign(assignments):
         else:
             print "Paper %s not assigned" % paper_number
 
-if args.assignments.endswith('.csv'):
-    if args.overwrite and args.overwrite.lower() == 'true':
-        clear_assignments()
+def unassign(assignments):
+    for a in assignments:
+        areachair, paper_number = a
 
-    with open(args.assignments, 'rb') as csvfile:
-        assignments = csv.reader(csvfile, delimiter=',', quotechar='|')
-        assign(assignments)
+        acgroup = client.get_group('auai.org/UAI/2017/Paper%s/Area_Chair' % (paper_number) )
 
-elif single_assignment_valid(args.assignments):
-    areachair = args.assignments.split(',')[0]
-    paper_number = args.assignments.split(',')[1]
+        if areachair in acgroup.members:
+            print "removing area chair %s from group %s" % (areachair, acgroup.id)
+            client.remove_members_from_group(acgroup,[areachair])
+        else:
+            print "area chair %s not found in group %s" % (areachair, acgroup.id)
 
-    # conflict_list = get_nonreaders(paper_number)
-    # assign_areachair(areachair, paper_number, conflict_list)
+# Main script
+# .............................................................................
 
-    assignments = [(areachair, paper_number)]
+if args.remove:
+    if args.remove.endswith('.csv'):
+        with open(args.remove, 'rb') as csvfile:
+            unassignments = csv.reader(csvfile, delimiter=',', quotechar='|')
+
+    elif assignment_utils.single_assignment_valid(args.remove):
+        areachair, paper_number = args.remove.split(',')
+        unassignments = [(areachair, paper_number)]
+
+    else:
+        print "Invalid input"
+        sys.exit()
+
+    unassign(unassignments)
+
+if args.add:
+    if args.add.endswith('.csv'):
+        with open(args.add, 'rb') as csvfile:
+            assignments = csv.reader(csvfile, delimiter=',', quotechar='|')
+
+    elif assignment_utils.single_assignment_valid(args.add):
+        areachair, paper_number = args.add.split(',')
+        assignments = [(areachair, paper_number)]
+
+    else:
+        print "Invalid input"
+        sys.exit()
+
     assign(assignments)
-else:
-    print "Invalid input"
-    sys.exit()
 
 
