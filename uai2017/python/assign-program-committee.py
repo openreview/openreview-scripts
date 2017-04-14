@@ -110,7 +110,7 @@ def create_reviewer_group(new_reviewer_id, reviewer, paper_number, conflict_list
         signatures=['auai.org/UAI/2017'],
         writers=['auai.org/UAI/2017'],
         members=[reviewer],
-        readers=[CONFERENCE, COCHAIRS, SPC, PC],
+        readers=[CONFERENCE, COCHAIRS, 'auai.org/UAI/2017/Paper%s/Area_Chair', 'auai.org/UAI/2017/Paper%s/Reviewers'],
         nonreaders=conflict_list,
         signatories=[new_reviewer_id])
     client.post_group(new_reviewer)
@@ -145,12 +145,15 @@ def unassign(assignments):
         anon_reviewers = [openreview.Group.from_json(g) for g in response.json()]
 
         for r in anon_reviewers:
-            if reviewer in r.members: print "removing member %s from group %s" % (reviewer, r.id)
-            client.remove_members_from_group(r, [reviewer])
+            if reviewer in r.members:
+                print "removing member %s from group %s" % (reviewer, r.id)
+                client.remove_members_from_group(r, [reviewer])
 
         # remove reviewer from Paper#/Reviewers group
         reviewers_group = client.get_group('auai.org/UAI/2017/Paper%s/Reviewers' % paper_number)
-        client.remove_members_from_group(reviewers_group, [reviewer])
+        if reviewer in reviewers_group.members:
+            print "removing member %s from group %s" % (reviewer, reviewers_group.id)
+            client.remove_members_from_group(reviewers_group, [reviewer])
 
 # Main script
 # .............................................................................
