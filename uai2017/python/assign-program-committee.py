@@ -97,9 +97,10 @@ def get_reviewer_group(reviewer, paper_number, conflict_list):
     reviewers.nonreaders = conflict_list
     client.post_group(reviewers)
 
+    client.add_members_to_group(reviewers, [reviewer_profile.id])
+
     if next_reviewer:
         new_reviewer = create_reviewer_group(next_reviewer, reviewer_profile.id, paper_number, conflict_list)
-        client.add_members_to_group(reviewers, [reviewer_profile.id])
         client.add_members_to_group(nonreaders_reviewers, new_reviewer.id)
         print "Reviewer %s assigned to paper%s" % (reviewer, paper_number)
 
