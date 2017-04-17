@@ -1,8 +1,4 @@
 <html>
-  <head>
-    <!--<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>-->
-    <script src="https://cdn.jsdelivr.net/lodash/3.5.0/lodash.compat.min.js"></script>
-  </head>
   <body>
     <div id='main'>
       <div id='header'></div>
@@ -35,18 +31,18 @@
       };
 
       var invitationP = httpGetP('invitations', {id: 'NIPS.cc/2016/workshop/MLITS/-/submission'}).then(function(result) {
-        console.log('result',result)
+        console.log('result',result);
         return result.invitations[0];
       },
       function(error){
-        return error
+        return error;
       });
 
       var notesP = httpGetP('notes', {invitation: 'NIPS.cc/2016/workshop/MLITS/-/submission', maxtcdate: Date.now()}).then(function(result) {
         return result.notes;
       },
       function(error){
-        return error
+        return error;
       });
 
       $.when(invitationP, notesP).done(function(invitation, notes) {
@@ -70,7 +66,7 @@
                       sm.update('notes_nips', result.notes);
                     },
                     function(error){
-                      return error
+                      return error;
                     });
                   },
                   onCompleted: function(editor) {

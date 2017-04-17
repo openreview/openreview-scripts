@@ -1,8 +1,4 @@
 <html>
-  <head>
-    <!--<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>-->
-    <script src="https://cdn.jsdelivr.net/lodash/3.5.0/lodash.compat.min.js"></script>
-  </head>
   <body>
     <div id='main'>
       <div id='header'></div>
@@ -57,7 +53,7 @@
               view.mkNewNoteEditor(invitation, null, user, {
                 onNoteCreated: function(idRecord) {
                   httpGetP('notes', {
-                    invitation: 'ICLR.cc/2016/workshop/-/submission', 
+                    invitation: 'ICLR.cc/2016/workshop/-/submission',
                     maxtcdate: Date.now()
                   }).then(function(result) {
                     console.log("time to update notes: " + result.notes.length);
@@ -89,7 +85,7 @@
           }
         }
       });
-      
+
 
 
 
