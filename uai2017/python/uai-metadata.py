@@ -63,6 +63,12 @@ if not args.upload:
     reviewers_group = client.get_group(PC)
     areachairs_group = client.get_group(SPC)
 
+    print "Getting author groups..."
+    authorgroups_by_forum = {}
+    for n in paper_notes:
+        authorgroups_by_forum[n.forum] = client.get_group('auai.org/UAI/2017/Paper%s/Authors' % n.number)
+
+
     print "Getting bids..."
     bids = client.get_tags(invitation = CONFERENCE + '/-/Add/Bid')
 
@@ -98,7 +104,20 @@ if not args.upload:
         if reviewer not in domains_by_user.keys():
             try:
                 reviewer_profile = client.get_profile(reviewer)
-                domains_by_user[reviewer] = set([p.split('@')[1] for p in reviewer_profile.content['emails']])
+
+                domains_by_user[reviewer].update([p.split('@')[1] for p in reviewer_profile.content['emails']])
+                domains_by_user[reviewer].update([p['institution']['domain'] for p in reviewer_profile.content['history']])
+
+                reviewer_members = client.get_groups(member=reviewer)
+
+                domains = [g.id.split('@')[1] for g in reviewer_members if '@' in g.id]
+                subdomains = []
+                for d in domains:
+                    subcomponents = d.split('.')
+                    for i in range(len(subcomponents)-1, 0, -1):
+                        subdomains.append('.'.join(subcomponents[i-1:len(subcomponents)]))
+
+                domains_by_user[reviewer].update(subdomains)
             except openreview.OpenReviewException:
                 print "Profile not found for reviewer %s" % reviewer
                 pass
@@ -107,26 +126,59 @@ if not args.upload:
         if areachair not in domains_by_user.keys():
             try:
                 areachair_profile = client.get_profile(areachair)
-                domains_by_user[areachair] = set([p.split('@')[1] for p in areachair_profile.content['emails']])
+
+                domains_by_user[areachair].update([p.split('@')[1] for p in areachair_profile.content['emails']])
+                domains_by_user[areachair].update([p['institution']['domain'] for p in areachair_profile.content['history']])
+
+                areachair_members = client.get_groups(member=areachair)
+
+                domains = [g.id.split('@')[1] for g in areachair_members if '@' in g.id]
+                subdomains = []
+                for d in domains:
+                    subcomponents = d.split('.')
+                    for i in range(len(subcomponents)-1, 0, -1):
+                        subdomains.append('.'.join(subcomponents[i-1:len(subcomponents)]))
+
+                domains_by_user[areachair].update(subdomains)
+
+
             except openreview.OpenReviewException:
                 print "Profile not found for areachair %s" % areachair
                 pass
 
     domains_by_email = defaultdict(set)
 
-    for n in original_notes:
-        author_emails = n.content['authorids']
-        for author_email in author_emails:
+    for n in paper_notes:
+        author_group = authorgroups_by_forum[n.forum]
+        for author in author_group.members:
             try:
-                author_profile = client.get_profile(author_email)
-                domains_by_email[author_email] = set([p.split('@')[1] for p in author_profile.content['emails']])
+                author_profile = client.get_profile(author)
+                if '~' in author:
+                    index = domains_by_user
+                elif '@' in author:
+                    index = domains_by_email
+
+                index[author].update([p.split('@')[1] for p in author_profile.content['emails']])
+                index[author].update([p['institution']['domain'] for p in author_profile.content['history']])
+
+                author_members = client.get_groups(member=author)
+
+                domains = [g.id.split('@')[1] for g in author_members if '@' in g.id]
+                subdomains = []
+                for d in domains:
+                    subcomponents = d.split('.')
+                    for i in range(len(subcomponents)-1, 0, -1):
+                        subdomains.append('.'.join(subcomponents[i-1:len(subcomponents)]))
+
+                index[author].update(subdomains)
+
             except openreview.OpenReviewException:
                 pass
-
 
     data = {
         'reviewers_group': reviewers_group,
         'areachairs_group': areachairs_group,
+        'authorgroups_by_forum': authorgroups_by_forum,
         'papers_by_forum': papers_by_forum,
         'originals_by_forum': originals_by_forum,
         'originalforum_by_paperforum': originalforum_by_paperforum,

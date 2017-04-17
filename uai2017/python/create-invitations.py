@@ -18,17 +18,18 @@ maskPaperGroup = CONFERENCE + "/Paper[PAPER_NUMBER]"
 maskAuthorsGroup = maskPaperGroup + "/Authors"
 
 
-def get_open_comment_invitation(submissionId, number, authorsGroupId):
+def get_open_comment_invitation(submissionId, number, authorsGroupId, areachairGroupId):
 
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
         'forum': submissionId,
+        'selfReplyOnly': True,
         'signatures': {
-            'values-regex': '|'.join(allGroups),
+            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+' + '|' + areachairGroupId,
             'description': 'How your identity will be displayed with the above content.'
         },
-            'writers': {
-            'values-regex': '|'.join(allGroups)
+        'writers': {
+            'values-regex': '~.*'
         },
         'readers': {
             'values': allGroups,
@@ -61,40 +62,41 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId):
 
     return invitation
 
-def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
+def get_confidential_comment_invitation(submissionId, number, authorsGroupId, areachairGroupId):
 
     allGroups = [COCHAIRS, PC, SPC]
     reply = {
         'forum': submissionId,
-            'signatures': {
-                'values-regex': '|'.join(allGroups),
-                'description': 'How your identity will be displayed with the above content.'
+        'selfReplyOnly': True,
+        'signatures': {
+            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+' + '|' + areachairGroupId,
+            'description': 'How your identity will be displayed with the above content.'
+        },
+        'writers': {
+            'values-regex': '~.*'
+        },
+        'readers': {
+            'values': allGroups,
+            'description': 'The users who will be allowed to read the above content.'
+        },
+        'nonreaders': {
+            'values': [authorsGroupId]
+        },
+        'content': {
+            'title': {
+                'order': 1,
+                'value-regex': '.{1,500}',
+                'description': 'Brief summary of your comment.',
+                'required': True
             },
-                'writers': {
-                'values-regex': '|'.join(allGroups)
-            },
-            'readers': {
-                'values': allGroups,
-                'description': 'The users who will be allowed to read the above content.'
-            },
-            'nonreaders': {
-                'values': [authorsGroupId]
-            },
-            'content': {
-                'title': {
-                    'order': 1,
-                    'value-regex': '.{1,500}',
-                    'description': 'Brief summary of your comment.',
-                    'required': True
-                },
-                'comment': {
-                    'order': 2,
-                    'value-regex': '[\\S\\s]{1,5000}',
-                    'description': 'Your comment or reply.',
-                    'required': True
-                }
+            'comment': {
+                'order': 2,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'description': 'Your comment or reply.',
+                'required': True
             }
         }
+    }
 
     invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Confidential/Comment',
         signatures = [CONFERENCE],
@@ -107,27 +109,75 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId):
 
     return invitation
 
+def get_review_comment_invitation(submissionId, number, authorsGroupId, areachairGroupId, reviewerNonReadersGroupId):
+
+    allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
+    reply = {
+        'forum': submissionId,
+        'invitation': CONFERENCE + '/-/Paper' + str(number) + '/Submit/Review',
+        'selfReplyOnly': True,
+        'signatures': {
+            'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+' + '|' + areachairGroupId,
+            'description': 'How your identity will be displayed with the above content.'
+        },
+        'writers': {
+            'values-regex': '~.*'
+        },
+        'readers': {
+            'values': allGroups,
+            'description': 'The users who will be allowed to read the above content.'
+        },
+        'nonreaders': {
+            'values': [reviewerNonReadersGroupId]
+        },
+        'content': {
+            'title': {
+                'order': 1,
+                'value-regex': '.{1,500}',
+                'description': 'Brief summary of your comment.',
+                'required': True
+            },
+            'comment': {
+                'order': 2,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'description': 'Your comment or reply.',
+                'required': True
+            }
+        }
+    }
+
+    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Review/Open/Comment',
+        signatures = [CONFERENCE],
+        writers = [CONFERENCE],
+        invitees = allGroups,
+        noninvitees = [reviewerNonReadersGroupId],
+        readers = ['everyone'],
+        process = '../process/commentProcess.js',
+        reply = reply)
+
+    return invitation
+
 def get_recommend_reviewer_invitation(submissionId, number):
 
     reply = {
         'forum': submissionId,
-            'signatures': {
-                'values-regex': '~.*',
-                'description': 'How your identity will be displayed with the above content.'
-            },
-            'readers': {
-                'values-copied': [CONFERENCE, '{signatures}'],
-                'description': 'The users who will be allowed to read the above content.'
-            },
-            'content': {
-                'tag': {
-                    'description': 'Recommendation description',
-                    'order': 1,
-                    'values-url': '/groups?id=' + PC,
-                    'required': True
-                }
+        'signatures': {
+            'values-regex': '~.*',
+            'description': 'How your identity will be displayed with the above content.'
+        },
+        'readers': {
+            'values-copied': [CONFERENCE, '{signatures}'],
+            'description': 'The users who will be allowed to read the above content.'
+        },
+        'content': {
+            'tag': {
+                'description': 'Recommendation description',
+                'order': 1,
+                'values-url': '/groups?id=' + PC,
+                'required': True
             }
         }
+    }
 
     invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Recommend/Reviewer',
         duedate = 1507180500000,
@@ -141,7 +191,7 @@ def get_recommend_reviewer_invitation(submissionId, number):
 
     return invitation
 
-def get_official_review_invitation(submissionId, number, authorsGroupId, reviewerNonReadersGroupId):
+def get_submit_review_invitation(submissionId, number, authorsGroupId, reviewerNonReadersGroupId):
     reply = {
         'forum': submissionId,
         'replyto': submissionId,
@@ -173,7 +223,7 @@ def get_official_review_invitation(submissionId, number, authorsGroupId, reviewe
             },
             'rating': {
                     'order': 3,
-                    'value-dropdown': [
+                    'value-radio': [
                         '10: Top 5% of accepted papers, seminal paper',
                         '9: Top 15% of accepted papers, strong accept',
                         '8: Top 50% of accepted papers, clear accept',
@@ -201,7 +251,7 @@ def get_official_review_invitation(submissionId, number, authorsGroupId, reviewe
         }
     }
 
-    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Official/Review',
+    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Submit/Review',
         duedate = 1507180500000,
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
@@ -308,6 +358,25 @@ try:
 
             if author_group:
                 # Check the necessary groups and post them if they don't exist
+
+                try:
+                    areachair_group = client.get_group(paper_group.id + '/Area_Chair')
+
+                except openreview.OpenReviewException as e:
+                    if 'Not Found' in e[0]:
+                        areachair_group = openreview.Group(id = paper_group.id + '/Area_Chair',
+                            signatures = [CONFERENCE],
+                            writers = [CONFERENCE],
+                            members = [],
+                            readers = [CONFERENCE, COCHAIRS, paper_group.id + '/Area_Chair'],
+                            signatories = [CONFERENCE, paper_group.id + '/Area_Chair'])
+
+                        client.post_group(areachair_group)
+
+                    else:
+                        raise(e)
+
+
                 try:
                     reviewers_group = client.get_group(paper_group.id + '/Reviewers')
 
@@ -317,7 +386,7 @@ try:
                             signatures = [CONFERENCE],
                             writers = [CONFERENCE],
                             members = [],
-                            readers = [CONFERENCE, COCHAIRS, SPC, paper_group.id + '/Reviewers'],
+                            readers = [CONFERENCE, COCHAIRS, areachair_group.id, paper_group.id + '/Reviewers'],
                             signatories = [])
 
                         client.post_group(reviewers_group)
@@ -334,7 +403,7 @@ try:
                             signatures = [CONFERENCE],
                             writers = [CONFERENCE],
                             members = [],
-                            readers = [CONFERENCE, COCHAIRS, SPC, reviewers_group.id + '/NonReaders'],
+                            readers = [CONFERENCE, COCHAIRS, areachair_group.id, reviewers_group.id + '/NonReaders'],
                             signatories = [])
 
                         client.post_group(reviewers_nonreaders_group)
@@ -342,32 +411,17 @@ try:
                     else:
                         raise(e)
 
-                try:
-                    areachair_group = client.get_group(paper_group.id + '/Area_Chair')
-
-                except openreview.OpenReviewException as e:
-                    if 'Not Found' in e[0]:
-                        areachair_group = openreview.Group(id = paper_group.id + '/Area_Chair',
-                            signatures = [CONFERENCE],
-                            writers = [CONFERENCE],
-                            members = [],
-                            readers = [CONFERENCE, COCHAIRS, SPC],
-                            signatories = [CONFERENCE, paper_group.id + '/Area_Chair'])
-
-                        client.post_group(areachair_group)
-
-                    else:
-                        raise(e)
-
 
                 #Post open comment invitation
-                client.post_invitation(get_open_comment_invitation(submission.id, submission.number, author_group.id))
+                client.post_invitation(get_open_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
                 #Post confidential comment invitation
-                client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id))
+                client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
                 #Post recommend reviewer invitation
                 client.post_invitation(get_recommend_reviewer_invitation(submission.id, submission.number))
-                #Post official review invitation
-                client.post_invitation(get_official_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
+                #Post submit review invitation
+                client.post_invitation(get_submit_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
+                #Post comment review invitation
+                client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id,reviewers_nonreaders_group.id))
                 #Post meta review invitation
                 client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id, reviewers_nonreaders_group.id))
 

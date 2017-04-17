@@ -8,7 +8,7 @@ function(){
       var author_mail = {
         "groups": forumNoteAuthors,
         "subject": "Comment on your submission to UAI 2017: \"" + forumNote.content.title + "\".",
-        "message": "Your submission to UAI 2017 has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+        "message": "Your submission to UAI 2017 has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum + "&noteId=" + note.id
       };
       return or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
     };
@@ -28,7 +28,7 @@ function(){
         var reviewer_mail = {
           "groups": reviewers,
           "subject": commentType + " Comment posted to your assigned paper: \"" + forumNote.content.title + "\"",
-          "message": "A submission to UAI 2017, for which you are a reviewer, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to UAI 2017, for which you are a reviewer, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum + "&noteId=" + note.id
         };
         return or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
       });
@@ -46,7 +46,7 @@ function(){
         var areachair_mail = {
           "groups": areachairs,
           "subject": commentType + " Comment posted to your assigned paper: \"" + forumNote.content.title + "\"",
-          "message": "A submission to UAI 2017, for which you are the area chair, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to UAI 2017, for which you are the area chair, has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum + "&noteId=" + note.id
         };
         return or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
       });
@@ -64,24 +64,10 @@ function(){
         var pc_mail = {
           "groups": pcs,
           "subject": commentType + " Comment posted to a paper: \"" + forumNote.content.title + "\"",
-          "message": "A submission to UAI 2017 has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
+          "message": "A submission to UAI 2017 has received a comment. \n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum + "&noteId=" + note.id
         };
         return or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token );
       });
-    };
-
-    var getCommentEmails = function(replytoNoteSignatures, forumNote){
-
-      if(note.readers.indexOf('everyone') == -1){
-        replytoNoteSignatures=[];
-      };
-
-      var comment_mail = {
-        "groups": replytoNoteSignatures,
-        "subject": "Your post has received a comment, paper: \"" + forumNote.content.title + "\"",
-        "message": "One of your posts has received a comment.\n\nTitle: "+note.content.title+"\n\nComment: "+note.content.comment+"\n\nTo view the comment, click here: "+baseUrl+"/forum?id=" + note.forum
-      };
-      return or3client.or3request( or3client.mailUrl, comment_mail, 'POST', token);
     };
 
     var forumNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
@@ -94,6 +80,7 @@ function(){
       var pcGroup = uaiGroup + '/Program_Committee';
       var spcGroup = uaiGroup + '/Senior_Program_Committee';
       var coChairsGroup = uaiGroup + '/Program_Co-Chairs';
+      var nonReadersGroup = uaiGroup + '/Paper' + forumNote.number + '/Reviewers/NonReaders';
 
       var regex = /auai\.org\/UAI\/2017\/-\/Paper[1-9]+\/(.*)\/Comment/;
       var commentType = "";
@@ -107,6 +94,7 @@ function(){
 
       var visibleToAuthors = note.readers.includes(authorsGroup);
       var visibleToReviewers = note.readers.includes(pcGroup);
+      var invisibleToReviewers = note.nonreaders.includes(nonReadersGroup);
       var visibleToAreachairs = note.readers.includes(spcGroup);
       var visibleToPCs = note.readers.includes(coChairsGroup);
 
@@ -116,7 +104,7 @@ function(){
         promises.push(authorMailP);
       };
 
-      if (visibleToReviewers) {
+      if (visibleToReviewers && !invisibleToReviewers) {
         console.log('Send notification to reviewers...');
         var reviewerMailP = getReviewerEmails(forumNote, commentType);
         promises.push(reviewerMailP);

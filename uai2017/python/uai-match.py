@@ -46,9 +46,10 @@ except IOError as e:
 
 # Data should look like this:
 #
-# {
+# data = {
 #     'reviewers_group': reviewers_group,
 #     'areachairs_group': areachairs_group,
+#     'authorgroups_by_forum': authorgroups_by_forum,
 #     'papers_by_forum': papers_by_forum,
 #     'originals_by_forum': originals_by_forum,
 #     'originalforum_by_paperforum': originalforum_by_paperforum,
@@ -59,12 +60,13 @@ except IOError as e:
 #     'domains_by_email': domains_by_email,
 #     'bids_by_forum': bids_by_forum,
 #     'recs_by_forum': recs_by_forum,
-#     'registered_expertise_by_reviewer': registered_expertise_by_reviewer
+#     'registered_expertise_by_reviewer': registered_expertise_by_reviewer,
 #     'registered_expertise_by_ac': registered_expertise_by_ac
 # }
 
 reviewers_group = data['reviewers_group']
 areachairs_group = data['areachairs_group']
+authorgroups_by_forum = data['authorgroups_by_forum']
 papers_by_forum = data['papers_by_forum']
 originals_by_forum = data['originals_by_forum']
 originalforum_by_paperforum = data['originalforum_by_paperforum']
@@ -109,7 +111,7 @@ for n in papers_by_forum.values():
           signatures = [CONFERENCE]
         )
     else:
-        metadata_by_forum[n.forum].content = empty_paper_note_content
+        metadata_by_forum[n.forum].content = empty_paper_note_content.copy()
 
 # Pre-populate all the reviewer metadata notes
 
@@ -130,7 +132,7 @@ for r in reviewers_group.members:
             signatures=[CONFERENCE]
         )
     else:
-        metadata_by_reviewer[r].content = empty_reviewer_note_content
+        metadata_by_reviewer[r].content = empty_reviewer_note_content.copy()
 
 # Pre-populate all the area chair metadata notes
 print "Resetting Areachair Metadata"
@@ -150,7 +152,7 @@ for a in areachairs_group.members:
             signatures=[CONFERENCE]
         )
     else:
-        metadata_by_areachair[a].content = empty_areachair_note_content
+        metadata_by_areachair[a].content = empty_areachair_note_content.copy()
 
 # .............................................................................
 #
@@ -243,15 +245,19 @@ for n in papers_by_forum.values():
                     'source': 'SubjectAreaOverlap'
                 })
         else:
-            missing_areachair_expertise.update([a])
+            missing_areachair_expertise.update([areachair])
 
     # Get conflicts of interest
 
     # ... for authors
-    author_emails = original_note.content['authorids']
+
+    author_group = authorgroups_by_forum[forum]
     author_domain_set = set()
-    for e in author_emails:
-        author_domain_set.update(domains_by_email[e])
+    for author in author_group.members:
+        if author in domains_by_email:
+            author_domain_set.update(domains_by_email[author])
+        elif author in domains_by_user:
+            author_domain_set.update(domains_by_user[author])
 
     # ... for reviewers
     for reviewer in reviewers_group.members:
@@ -429,6 +435,7 @@ with open('%s/uai_%s_match.csv' % (outdir, mode), 'w') as outfile:
 outdata = {
     'reviewers_group': reviewers_group,
     'areachairs_group': areachairs_group,
+    'authorgroups_by_forum': authorgroups_by_forum,
     'papers_by_forum': papers_by_forum,
     'originals_by_forum': originals_by_forum,
     'originalforum_by_paperforum': originalforum_by_paperforum,
@@ -443,7 +450,8 @@ outdata = {
     'registered_expertise_by_ac': registered_expertise_by_ac
 }
 
-print "Saving local metadata to %s" % datapath
-match_utils.save_obj(outdata, datapath.split('.')[0])
+filename = datapath.split('.pkl')[0]
+print "Saving local metadata to %s.pkl" % filename
+match_utils.save_obj(outdata, filename)
 
 print "Done"
