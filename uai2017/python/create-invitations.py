@@ -114,7 +114,7 @@ def get_review_comment_invitation(submissionId, number, authorsGroupId, areachai
     allGroups = [COCHAIRS, PC, SPC, authorsGroupId]
     reply = {
         'forum': submissionId,
-        'invitation': CONFERENCE + '/-/Paper' + str(number) + '/Official/Review',
+        'invitation': CONFERENCE + '/-/Paper' + str(number) + '/Submit/Review',
         'selfReplyOnly': True,
         'signatures': {
             'values-regex': '|'.join(allGroups) + '|' + CONFERENCE + '/Paper' + str(number) + '/AnonReviewer[0-9]+' + '|' + areachairGroupId,
@@ -191,7 +191,7 @@ def get_recommend_reviewer_invitation(submissionId, number):
 
     return invitation
 
-def get_official_review_invitation(submissionId, number, authorsGroupId, reviewerNonReadersGroupId):
+def get_submit_review_invitation(submissionId, number, authorsGroupId, reviewerNonReadersGroupId):
     reply = {
         'forum': submissionId,
         'replyto': submissionId,
@@ -223,7 +223,7 @@ def get_official_review_invitation(submissionId, number, authorsGroupId, reviewe
             },
             'rating': {
                     'order': 3,
-                    'value-dropdown': [
+                    'value-radio': [
                         '10: Top 5% of accepted papers, seminal paper',
                         '9: Top 15% of accepted papers, strong accept',
                         '8: Top 50% of accepted papers, clear accept',
@@ -251,7 +251,7 @@ def get_official_review_invitation(submissionId, number, authorsGroupId, reviewe
         }
     }
 
-    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Official/Review',
+    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Submit/Review',
         duedate = 1507180500000,
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
@@ -418,8 +418,8 @@ try:
                 client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
                 #Post recommend reviewer invitation
                 client.post_invitation(get_recommend_reviewer_invitation(submission.id, submission.number))
-                #Post official review invitation
-                client.post_invitation(get_official_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
+                #Post submit review invitation
+                client.post_invitation(get_submit_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
                 #Post comment review invitation
                 client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id,reviewers_nonreaders_group.id))
                 #Post meta review invitation
