@@ -1,6 +1,4 @@
 <html>
-  <head>
-  </head>
   <body>
     <div id='main'>
       <div id='header'></div>
@@ -34,10 +32,9 @@
 
       var duedate_buffer = 1000 * 60 * 15; // 15 minutes buffer
       var invitationP = httpGetP('invitations', {id: 'roboticsfoundation.org/RSS/2017/RCW_Workshop/-_Poster/-/Submission'}).then(function(result) {
-        console.log('result',result);
         var valid_invitations = _.filter(result.invitations, function(inv){
           return (inv.duedate + duedate_buffer) > Date.now();
-        })
+        });
         return valid_invitations[0];
       },
       function(error){
@@ -51,7 +48,7 @@
         function(error){
           return error;
         });
-      }
+      };
 
       $.when(invitationP, getNotes()).done(function(invitation, notes) {
 
@@ -78,7 +75,7 @@
                     });
                   },
                   onCompleted: function(editor) {
-                    $('#notes').prepend(editor);
+                    $('#invitation .panel').append(editor);
                   }
                 });
               } else {
@@ -106,7 +103,7 @@
 
       })
       .fail(function(){
-        console.log("Invitation and/or notes not found")
+        console.log('Invitation and/or notes not found');
       });
 
 
