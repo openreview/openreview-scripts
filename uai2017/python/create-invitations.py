@@ -217,7 +217,7 @@ def get_submit_review_invitation(submissionId, number, authorsGroupId, reviewerN
             },
             'review': {
                 'order': 2,
-                    'value-regex': '[\\S\\s]{1,5000}',
+                    'value-regex': '[\\S\\s]+',
                     'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
                     'required': True
             },
