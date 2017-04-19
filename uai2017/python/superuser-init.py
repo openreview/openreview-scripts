@@ -465,7 +465,7 @@ if client.user['id'].lower()=='openreview.net':
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [CONFERENCE] #who should be allowed to read UAI submissions and when?
+            'values': [CONFERENCE, COCHAIRS] #who should be allowed to read UAI submissions and when?
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
