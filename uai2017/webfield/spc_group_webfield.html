@@ -21,18 +21,6 @@ $(function() {
       });
   };
 
-  var getTagInvitations = function() {
-    return $.getJSON('invitations', { replyInvitation: CONFERENCE + '/-/blind-submission', tags: true })
-      .then(function(result) {
-        return _.filter(result.invitations, function(invitation) {
-          return _.endsWith(invitation.id, 'Recommend/Reviewer');
-        });
-      })
-      .fail(function(error) {
-        return null;
-      });
-  };
-
   var getOfficialReviews = function(noteNumbers) {
     var noteMap = buildNoteMap(noteNumbers);
 
@@ -179,27 +167,6 @@ $(function() {
     });
   };
 
-  var displayNotes = function(notes, tagInvitations) {
-    var container = '#assigned-papers';
-    var displayOptions = {
-      titleLink: 'HREF',
-      withReplyCount: true,
-      withContent: true,
-      collapseContent: true,
-      user: user,
-      tagInvitations: tagInvitations
-    };
-
-    $('.note.panel, .empty-message', container).remove();
-    notes.forEach(function(note) {
-      $attach(container, 'mkNotePanel', [note, displayOptions], true);
-    });
-
-    if (!notes.length) {
-      $(container).append('<p class="empty-message">You don\'t have assigned papers</p>');
-    }
-  };
-
   var displayError = function(message) {
     message = message || 'The group data could not be loaded.';
     $('#notes').empty().append('<div class="alert alert-danger"><strong>Error:</strong> ' + message + '</div>');
@@ -297,11 +264,10 @@ $(function() {
             getOfficialReviews(noteNumbers),
             getMetaReviews(),
             getReviewerGroups(noteNumbers),
-            getTagInvitations(),
             headerLoaded
           );
         })
-        .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, tagInvitations, loaded) {
+        .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, loaded) {
           displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, '#reviewer-status');
         })
         .fail(function(error) {
