@@ -310,7 +310,8 @@ $(function() {
 
       view.mkNewNoteEditor(invitation, null, null, user, {
         onNoteCreated: function(idRecord) {
-          promptMessage("Thank you for submitting to UAI. Your paper submission will appear shortly in the 'My Submitted Papers' tab. If you don't see your paper after 15 minutes please contact us at info@openreview.net", false, true);
+          promptMessage('Thank you for submitting to UAI. Your paper submission will appear shortly in the "My Submitted Papers" tab. If you don\'t see your paper after 15 minutes please contact us at info@openreview.net', {noTimeout: true});
+
           $.when(
             getUserGroups(),
             getAllNotes(),
