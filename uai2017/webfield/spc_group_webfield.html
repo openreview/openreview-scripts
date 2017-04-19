@@ -210,7 +210,8 @@ $(function() {
       numSubmittedReviews: Object.keys(completedReviews).length,
       numReviewers: Object.keys(reviewerIds).length,
       reviewers: combinedObj,
-      averageRating: ratings.length ? _.round(_.sum(ratings) / ratings.length, 2) : 'N/A'
+      averageRating: ratings.length ? _.round(_.sum(ratings) / ratings.length, 2) : 'N/A',
+      sendReminder: true
     };
     var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
 

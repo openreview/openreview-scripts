@@ -67,7 +67,7 @@ $(function() {
             num = parseInt(matches[1], 10);
             index = parseInt(matches[2], 10);
 
-            if (num in noteMap) {
+            if ((num in noteMap) && g.members.length) {
               noteMap[num][index] = g.members[0];
             }
           }
@@ -93,7 +93,7 @@ $(function() {
           if (matches) {
             num = parseInt(matches[1], 10);
 
-            if (num in noteMap) {
+            if ((num in noteMap) && g.members.length) {
               noteMap[num][0] = g.members[0];
             }
           }
@@ -176,7 +176,6 @@ $(function() {
       var rowData = _.map(notes, function(note) {
         var revIds = reviewerIds[note.number];
         for (var revNumber in revIds) {
-          console.log('revIds[revNumber]', revIds[revNumber]);
           var profile = _.find(userProfiles.profiles, ['id', revIds[revNumber]]);
 
           var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
@@ -253,24 +252,14 @@ $(function() {
     };
     var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
 
-    // Build Status Cell
-    var invitationUrlParams = {
-      id: note.forum,
-      noteId: note.id,
-      invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta/Review'
+    var areachairProgressData = {
+      numMetaReview: metaReview ? 'One' : 'No',
+      areachair: areachairProfile,
+      metaReview: metaReview
     };
-    var reviewStatus = {
-      invitationUrl: '/forum?' + $.param(invitationUrlParams),
-      ratingUrl: '/invitation?id=' + CONFERENCE + '/-/Paper' + note.number + '/Area_Chair/Review/Rating',
-      ratingMax: 5
-    };
-    if (metaReview) {
-      reviewStatus.recommendation = metaReview.content.recommendation;
-      reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
-    }
-    var statusHtml = Handlebars.templates.noteReviewStatus(reviewStatus);
+    var areachairHtml = Handlebars.templates.noteAreaChairs(areachairProgressData);
 
-    return [number, summaryHtml, reviewHtml, statusHtml];
+    return [number, summaryHtml, reviewHtml, areachairHtml];
   };
 
   var buildNoteMap = function(noteNumbers) {
