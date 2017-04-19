@@ -146,15 +146,15 @@ $(function() {
       var rowData = _.map(notes, function(note) {
         var revIds = reviewerIds[note.number];
         for (var revNumber in revIds) {
-          var profile = _.find(userProfiles.profiles, 'id', revIds[revNumber]);
+          var profile = _.find(userProfiles.profiles, ['id', revIds[revNumber]]);
 
-          var name = _.find(profile.content.names, 'preferred', true) || _.first(profile.content.names);
+          var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
           profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
           profile.email = profile.content.preferred_email;
           revIds[revNumber] = profile;
         }
 
-        var metaReview = _.find(metaReviews, 'invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review');
+        var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
         return buildTableRow(note, revIds, completedReviews[note.number], metaReview);
       });
 
