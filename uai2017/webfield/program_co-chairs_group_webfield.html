@@ -1,0 +1,334 @@
+<!-- UI for Area Chair Console -->
+<script type="text/javascript">
+$(function() {
+  var CONFERENCE = 'auai.org/UAI/2017';
+
+  // Ajax functions
+  var getPaperNumbersfromGroups = function(groups) {
+    var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/Area_Chair/;
+    return _.map(
+      _.filter(groups, function(g) { return re.test(g.id); }),
+      function(fg) { return parseInt(fg.id.match(re)[1], 10); }
+    );
+  };
+
+  var getBlindedNotes = function() {
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/blind-submission' })
+      .then(function(result) {
+        return result.notes;
+      });
+  };
+
+  var getOfficialReviews = function(noteNumbers) {
+    var noteMap = buildNoteMap(noteNumbers);
+
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Submit/Review' })
+      .then(function(result) {
+        var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
+        var ratingExp = /^(\d+): .*/;
+
+        result.notes.forEach(function(n) {
+          var matches = n.signatures[0].match(re);
+          var num, index, ratingMatch;
+          if (matches) {
+            num = parseInt(matches[1], 10);
+            index = parseInt(matches[2], 10);
+
+            if (num in noteMap) {
+              // Need to parse rating and confidence strings into ints
+              ratingMatch = n.content.rating.match(ratingExp);
+              n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+              confidenceMatch = n.content.confidence.match(ratingExp);
+              n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+
+              noteMap[num][index] = n;
+            }
+          }
+        });
+        return noteMap;
+      })
+      .fail(function(error) {
+        displayError();
+        return null;
+      });
+  };
+
+  var getReviewerGroups = function(noteNumbers) {
+    var noteMap = buildNoteMap(noteNumbers);
+
+    return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/AnonReviewer.*' })
+      .then(function(result) {
+        var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
+
+        result.groups.forEach(function(g) {
+          var matches = g.id.match(re);
+          var num, index;
+          if (matches) {
+            num = parseInt(matches[1], 10);
+            index = parseInt(matches[2], 10);
+
+            if (num in noteMap) {
+              noteMap[num][index] = g.members[0];
+            }
+          }
+        });
+        return noteMap;
+      })
+      .fail(function(error) {
+        displayError();
+        return null;
+      });
+  };
+
+  var getAreaChairGroups = function(noteNumbers) {
+    var noteMap = buildNoteMap(noteNumbers);
+
+    return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/Area_Chair' })
+      .then(function(result) {
+        var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/Area_Chair/;
+
+        result.groups.forEach(function(g) {
+          var matches = g.id.match(re);
+          var num;
+          if (matches) {
+            num = parseInt(matches[1], 10);
+
+            if (num in noteMap) {
+              noteMap[num][0] = g.members[0];
+            }
+          }
+        });
+        return noteMap;
+      })
+      .fail(function(error) {
+        displayError();
+        return null;
+      });
+  };
+
+  var getUserProfiles = function(userIds) {
+    return $.post('/user/profiles', JSON.stringify({ids: userIds}), function(result) {
+      return result.profiles;
+    }, 'json').fail(function(error) {
+      displayError();
+      return null;
+    });
+  };
+
+  var getMetaReviews = function() {
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Meta/Review' })
+      .then(function(result) {
+        return result.notes;
+      }).fail(function(error) {
+        displayError();
+        return null;
+      });
+  };
+
+
+  // Render functions
+  var displayHeader = function(headerP) {
+    var $panel = $('#group-container');
+    $panel.hide('fast', function() {
+      $panel.empty().append(
+        '<div id="header" class="panel">' +
+          '<h1>UAI Program Co-Chairs Console</h1><br>' +
+        '</div>' +
+        '<div id="notes"><div class="tabs-container"></div></div>'
+      );
+
+      var loadingMessage = '<p class="empty-message">Loading...</p>';
+      var tabsData = {
+        sections: [
+          {
+            heading: 'Reviewer Status',
+            id: 'reviewer-status',
+            content: loadingMessage,
+            active: true
+          },
+          // {
+          //   heading: 'Your Assigned Papers',
+          //   id: 'assigned-papers',
+          //   content: loadingMessage,
+          // }
+        ]
+      };
+      $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](tabsData));
+
+      $panel.show('fast', function() {
+        headerP.resolve(true);
+      });
+    });
+  };
+
+  var displayStatusTable = function(notes, completedReviews, metaReviews, reviewerIds, container, options) {
+    var uniqueIds = _.uniq(_.reduce(reviewerIds, function(result, idsObj, noteNum) {
+      return result.concat(_.values(idsObj));
+    }, []));
+
+    $.when(getUserProfiles(uniqueIds)).then(function(userProfiles) {
+      var rowData = _.map(notes, function(note) {
+        var revIds = reviewerIds[note.number];
+        for (var revNumber in revIds) {
+          var profile = _.find(userProfiles.profiles, 'id', revIds[revNumber]);
+
+          var name = _.find(profile.content.names, 'preferred', true) || _.first(profile.content.names);
+          profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
+          profile.email = profile.content.preferred_email;
+          revIds[revNumber] = profile;
+        }
+
+        var metaReview = _.find(metaReviews, 'invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review');
+        return buildTableRow(note, revIds, completedReviews[note.number], metaReview);
+      });
+
+      var tableHTML = Handlebars.templates['components/table']({
+        headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
+        rows: rowData,
+        extraClasses: 'uai-console-table'
+      });
+      $(container).empty().append(tableHTML);
+    });
+  };
+
+  var displayError = function(message) {
+    message = message || 'The group data could not be loaded.';
+    $('#notes').empty().append('<div class="alert alert-danger"><strong>Error:</strong> ' + message + '</div>');
+  };
+
+
+  // Helper functions
+  var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
+    var number = '<strong class="note-number">' + note.number + '</strong>';
+
+    // Build Note Summary Cell
+    note.content.authors = null;  // Don't display 'Blinded Authors'
+    var summaryHtml = Handlebars.templates.noteSummary(note);
+
+    // Build Review Progress Cell
+    var reviewObj;
+    var combinedObj = {};
+    var ratings = [];
+    for (var reviewerNum in reviewerIds) {
+      if (reviewerNum in completedReviews) {
+        reviewObj = completedReviews[reviewerNum];
+        combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
+          completedReview: true,
+          forum: reviewObj.forum,
+          note: reviewObj.id,
+          rating: reviewObj.rating,
+          confidence: reviewObj.confidence,
+        });
+        ratings.push(reviewObj.rating);
+      } else {
+        combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
+          forumUrl: '/forum?' + $.param({
+            id: note.forum,
+            noteId: note.id,
+            invitationId: CONFERENCE + '/-/Paper' + note.number + '/Submit/Review'
+          })
+        });
+      }
+    }
+    var reviewProgressData = {
+      numSubmittedReviews: Object.keys(completedReviews).length,
+      numReviewers: Object.keys(reviewerIds).length,
+      reviewers: combinedObj,
+      averageRating: ratings.length ? _.round(_.sum(ratings) / ratings.length, 2) : 'N/A'
+    };
+    var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
+
+    // Build Status Cell
+    var invitationUrlParams = {
+      id: note.forum,
+      noteId: note.id,
+      invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta/Review'
+    };
+    var reviewStatus = {
+      invitationUrl: '/forum?' + $.param(invitationUrlParams),
+      ratingUrl: '/invitation?id=' + CONFERENCE + '/-/Paper' + note.number + '/Area_Chair/Review/Rating',
+      ratingMax: 5
+    };
+    if (metaReview) {
+      reviewStatus.recommendation = metaReview.content.recommendation;
+      reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
+    }
+    var statusHtml = Handlebars.templates.noteReviewStatus(reviewStatus);
+
+    return [number, summaryHtml, reviewHtml, statusHtml];
+  };
+
+  var buildNoteMap = function(noteNumbers) {
+    var noteMap = Object.create(null);
+    for (var i = 0; i < noteNumbers.length; i++) {
+      noteMap[noteNumbers[i]] = Object.create(null);
+    }
+    return noteMap;
+  };
+
+
+  // Kick the whole thing off
+  var headerLoaded = $.Deferred();
+  displayHeader(headerLoaded);
+
+  $.ajaxSetup({
+    contentType: 'application/json; charset=utf-8'
+  });
+
+  controller.addHandler('areachairs', {
+    token: function(token) {
+      var pl = model.tokenPayload(token);
+      var user = pl.user;
+
+      getBlindedNotes()
+      .then(function(notes) {
+        var noteNumbers = _.map(notes, function(note) { return note.number; });
+        return $.when(
+          notes,
+          getOfficialReviews(noteNumbers),
+          getMetaReviews(),
+          getReviewerGroups(noteNumbers),
+          headerLoaded
+        );
+      })
+      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, loaded) {
+        displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, '#reviewer-status');
+      })
+      .fail(function(error) {
+        displayError();
+      });
+    }
+  });
+
+  $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
+    var hiddenText = 'Show paper details';
+    var visibleText = 'Hide paper details';
+    var updated = $(this).text() === hiddenText ? visibleText : hiddenText;
+    $(this).text(updated);
+  });
+
+  $('#group-container').on('click', 'a.send-reminder-link', function(e) {
+    var userId = $(this).data('userId');
+    var forumUrl = $(this).data('forumUrl');
+    var postData = {
+      subject: 'UAI 2017 Reminder',
+      message: 'This is a reminder to please submit your official reviews for UAI 2017. ' +
+        'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
+      groups: [userId]
+    };
+
+    $.post('/mail', JSON.stringify(postData), function(result) {
+      promptMessage('A reminder email has been sent to ' + view.prettyId(userId));
+    }, 'json').fail(function(error) {
+      console.log(error);
+      promptError('The reminder email could not be sent at this time');
+    });
+    return false;
+  });
+
+  OpenBanner.breadcrumbs([
+    { link: '/', text: 'Venues' },
+    { link: '/group?id=' + CONFERENCE, text: view.prettyId(CONFERENCE) }
+  ]);
+});
+</script>
