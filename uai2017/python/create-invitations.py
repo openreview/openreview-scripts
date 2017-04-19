@@ -217,7 +217,7 @@ def get_submit_review_invitation(submissionId, number, authorsGroupId, reviewerN
             },
             'review': {
                 'order': 2,
-                    'value-regex': '[\\S\\s]{1,5000}',
+                    'value-regex': '[\\S\\s]+',
                     'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
                     'required': True
             },
@@ -252,7 +252,7 @@ def get_submit_review_invitation(submissionId, number, authorsGroupId, reviewerN
     }
 
     invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Submit/Review',
-        duedate = 1507180500000,
+        duedate = 1494846000000, #May 15th, 7:00am EST (May 14th, 12:00am SST)
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
         invitees = [],
@@ -323,7 +323,7 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
     }
 
     invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Meta/Review',
-        duedate = 1507180500000,
+        duedate = 1496314800000, #June 2nd, 7:00am EST (June 1st, 12:00am SST)
         signatures = [CONFERENCE],
         writers = [CONFERENCE],
         invitees = [],

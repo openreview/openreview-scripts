@@ -21,22 +21,10 @@ $(function() {
       });
   };
 
-  var getTagInvitations = function() {
-    return $.getJSON('invitations', { replyInvitation: CONFERENCE + '/-/blind-submission', tags: true })
-      .then(function(result) {
-        return _.filter(result.invitations, function(invitation) {
-          return _.endsWith(invitation.id, 'Recommend/Reviewer');
-        });
-      })
-      .fail(function(error) {
-        return null;
-      });
-  };
-
   var getOfficialReviews = function(noteNumbers) {
     var noteMap = buildNoteMap(noteNumbers);
 
-    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Official/Review' })
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Submit/Review' })
       .then(function(result) {
         var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
         var ratingExp = /^(\d+): .*/;
@@ -158,15 +146,15 @@ $(function() {
       var rowData = _.map(notes, function(note) {
         var revIds = reviewerIds[note.number];
         for (var revNumber in revIds) {
-          var profile = _.find(userProfiles.profiles, 'id', revIds[revNumber]);
+          var profile = _.find(userProfiles.profiles, ['id', revIds[revNumber]]);
 
-          var name = _.find(profile.content.names, 'preferred', true) || _.first(profile.content.names);
+          var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
           profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
           profile.email = profile.content.preferred_email;
           revIds[revNumber] = profile;
         }
 
-        var metaReview = _.find(metaReviews, 'invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review');
+        var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
         return buildTableRow(note, revIds, completedReviews[note.number], metaReview);
       });
 
@@ -177,27 +165,6 @@ $(function() {
       });
       $(container).empty().append(tableHTML);
     });
-  };
-
-  var displayNotes = function(notes, tagInvitations) {
-    var container = '#assigned-papers';
-    var displayOptions = {
-      titleLink: 'HREF',
-      withReplyCount: true,
-      withContent: true,
-      collapseContent: true,
-      user: user,
-      tagInvitations: tagInvitations
-    };
-
-    $('.note.panel, .empty-message', container).remove();
-    notes.forEach(function(note) {
-      $attach(container, 'mkNotePanel', [note, displayOptions], true);
-    });
-
-    if (!notes.length) {
-      $(container).append('<p class="empty-message">You don\'t have assigned papers</p>');
-    }
   };
 
   var displayError = function(message) {
@@ -234,7 +201,7 @@ $(function() {
           forumUrl: '/forum?' + $.param({
             id: note.forum,
             noteId: note.id,
-            invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official/Review'
+            invitationId: CONFERENCE + '/-/Paper' + note.number + '/Submit/Review'
           })
         });
       }
@@ -297,11 +264,10 @@ $(function() {
             getOfficialReviews(noteNumbers),
             getMetaReviews(),
             getReviewerGroups(noteNumbers),
-            getTagInvitations(),
             headerLoaded
           );
         })
-        .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, tagInvitations, loaded) {
+        .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, loaded) {
           displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, '#reviewer-status');
         })
         .fail(function(error) {
@@ -322,7 +288,7 @@ $(function() {
     var forumUrl = $(this).data('forumUrl');
     var postData = {
       subject: 'UAI 2017 Reminder',
-      message: 'This is a reminder to please submit your official reviews for UAI 2017. ' +
+      message: 'This is a reminder to please submit your review for UAI 2017. ' +
         'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
       groups: [userId]
     };

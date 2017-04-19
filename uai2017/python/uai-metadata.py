@@ -108,6 +108,12 @@ if not args.upload:
                 domains_by_user[reviewer].update([p.split('@')[1] for p in reviewer_profile.content['emails']])
                 domains_by_user[reviewer].update([p['institution']['domain'] for p in reviewer_profile.content['history']])
 
+                if 'relations' in reviewer_profile.content:
+                    relations = reviewer_profile.content['relations']
+                    for r in relations:
+                        if r['email'] and '@' in r['email']:
+                            domains_by_user[reviewer].update([r['email'].split('@')[1]])
+
                 reviewer_members = client.get_groups(member=reviewer)
 
                 domains = [g.id.split('@')[1] for g in reviewer_members if '@' in g.id]
@@ -129,6 +135,12 @@ if not args.upload:
 
                 domains_by_user[areachair].update([p.split('@')[1] for p in areachair_profile.content['emails']])
                 domains_by_user[areachair].update([p['institution']['domain'] for p in areachair_profile.content['history']])
+
+                if 'relations' in areachair_profile.content:
+                    relations = areachair_profile.content['relations']
+                    for r in relations:
+                        if r['email'] and '@' in r['email']:
+                            domains_by_user[areachair].update([r['email'].split('@')[1]])
 
                 areachair_members = client.get_groups(member=areachair)
 
@@ -160,6 +172,12 @@ if not args.upload:
 
                 index[author].update([p.split('@')[1] for p in author_profile.content['emails']])
                 index[author].update([p['institution']['domain'] for p in author_profile.content['history']])
+
+                if 'relations' in author_profile.content:
+                    relations = author_profile.content['relations']
+                    for r in relations:
+                        if r['email'] and '@' in r['email']:
+                            index[author].update([r['email'].split('@')[1]])
 
                 author_members = client.get_groups(member=author)
 

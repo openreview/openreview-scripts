@@ -104,7 +104,7 @@ for n in papers_by_forum.values():
     if n.forum not in metadata_by_forum:
         metadata_by_forum[n.forum] = openreview.Note(
           invitation = CONFERENCE + "/-/Paper/Metadata",
-          readers = [COCHAIRS, CONFERENCE],
+          readers = [CONFERENCE, COCHAIRS],
           forum = n.forum,
           writers = [CONFERENCE],
           content = empty_paper_note_content,
@@ -126,7 +126,7 @@ for r in reviewers_group.members:
     if r not in metadata_by_reviewer:
         metadata_by_reviewer[r] = openreview.Note(
             invitation=CONFERENCE + "/-/Reviewer/Metadata",
-            readers=[COCHAIRS, CONFERENCE],
+            readers=[CONFERENCE, COCHAIRS],
             writers=[CONFERENCE],
             content= empty_reviewer_note_content,
             signatures=[CONFERENCE]
@@ -146,7 +146,7 @@ for a in areachairs_group.members:
     if a not in metadata_by_areachair:
         metadata_by_areachair[a] = openreview.Note(
             invitation=CONFERENCE + "/-/Area_Chair/Metadata",
-            readers=[COCHAIRS, CONFERENCE],
+            readers=[CONFERENCE, COCHAIRS],
             writers=[CONFERENCE],
             content=empty_areachair_note_content,
             signatures=[CONFERENCE]
