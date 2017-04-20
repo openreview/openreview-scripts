@@ -12,10 +12,8 @@ $(function() {
     );
   };
 
-  var getBlindedNotes = function(noteNumbers) {
-    var noteNumbersStr = noteNumbers.join(',');
-
-    return $.getJSON('notes', { invitation: CONFERENCE + '/-/blind-submission', number: noteNumbersStr })
+  var getBlindedNotes = function() {
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/blind-submission' })
       .then(function(result) {
         return result.notes;
       });
@@ -69,8 +67,34 @@ $(function() {
             num = parseInt(matches[1], 10);
             index = parseInt(matches[2], 10);
 
-            if (num in noteMap) {
+            if ((num in noteMap) && g.members.length) {
               noteMap[num][index] = g.members[0];
+            }
+          }
+        });
+        return noteMap;
+      })
+      .fail(function(error) {
+        displayError();
+        return null;
+      });
+  };
+
+  var getAreaChairGroups = function(noteNumbers) {
+    var noteMap = buildNoteMap(noteNumbers);
+
+    return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/Area_Chair' })
+      .then(function(result) {
+        var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/Area_Chair/;
+
+        result.groups.forEach(function(g) {
+          var matches = g.id.match(re);
+          var num;
+          if (matches) {
+            num = parseInt(matches[1], 10);
+
+            if ((num in noteMap) && g.members.length) {
+              noteMap[num][0] = g.members[0];
             }
           }
         });
@@ -108,7 +132,7 @@ $(function() {
     $panel.hide('fast', function() {
       $panel.empty().append(
         '<div id="header" class="panel">' +
-          '<h1>UAI Area Chair Console</h1><br>' +
+          '<h1>UAI Program Co-Chairs Console</h1><br>' +
         '</div>' +
         '<div id="notes"><div class="tabs-container"></div></div>'
       );
@@ -137,10 +161,16 @@ $(function() {
     });
   };
 
-  var displayStatusTable = function(notes, completedReviews, metaReviews, reviewerIds, container, options) {
-    var uniqueIds = _.uniq(_.reduce(reviewerIds, function(result, idsObj, noteNum) {
+  var displayStatusTable = function(notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
+    var uniqueReviewerIds = _.uniq(_.reduce(reviewerIds, function(result, idsObj, noteNum) {
       return result.concat(_.values(idsObj));
     }, []));
+
+    var uniqueAreaChairIds = _.uniq(_.reduce(areachairIds, function(result, idsObj, noteNum) {
+      return result.concat(_.values(idsObj));
+    }, []));
+
+    var uniqueIds = _.union(uniqueReviewerIds, uniqueAreaChairIds);
 
     $.when(getUserProfiles(uniqueIds)).then(function(userProfiles) {
       var rowData = _.map(notes, function(note) {
@@ -154,8 +184,15 @@ $(function() {
           revIds[revNumber] = profile;
         }
 
+        var areachairId = areachairIds[note.number][0];
+        var areachairProfile = _.find(userProfiles.profiles, ['id', areachairId]);
+
+        var name = _.find(areachairProfile.content.names, ['preferred', true]) || _.first(areachairProfile.content.names);
+        areachairProfile.name = _.isEmpty(name) ? view.prettyId(areachairProfile.id) : name.first + ' ' + name.last;
+        areachairProfile.email = areachairProfile.content.preferred_email;
+
         var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
-        return buildTableRow(note, revIds, completedReviews[note.number], metaReview);
+        return buildTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
       });
 
       var tableHTML = Handlebars.templates['components/table']({
@@ -174,7 +211,7 @@ $(function() {
 
 
   // Helper functions
-  var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
+  var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
     var number = '<strong class="note-number">' + note.number + '</strong>';
 
     // Build Note Summary Cell
@@ -211,28 +248,18 @@ $(function() {
       numReviewers: Object.keys(reviewerIds).length,
       reviewers: combinedObj,
       averageRating: ratings.length ? _.round(_.sum(ratings) / ratings.length, 2) : 'N/A',
-      sendReminder: true
+      sendReminder: false
     };
     var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
 
-    // Build Status Cell
-    var invitationUrlParams = {
-      id: note.forum,
-      noteId: note.id,
-      invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta/Review'
+    var areachairProgressData = {
+      numMetaReview: metaReview ? 'One' : 'No',
+      areachair: areachairProfile,
+      metaReview: metaReview
     };
-    var reviewStatus = {
-      invitationUrl: '/forum?' + $.param(invitationUrlParams),
-      ratingUrl: '/invitation?id=' + CONFERENCE + '/-/Paper' + note.number + '/Area_Chair/Review/Rating',
-      ratingMax: 5
-    };
-    if (metaReview) {
-      reviewStatus.recommendation = metaReview.content.recommendation;
-      reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
-    }
-    var statusHtml = Handlebars.templates.noteReviewStatus(reviewStatus);
+    var areachairHtml = Handlebars.templates.noteAreaChairs(areachairProgressData);
 
-    return [number, summaryHtml, reviewHtml, statusHtml];
+    return [number, summaryHtml, reviewHtml, areachairHtml];
   };
 
   var buildNoteMap = function(noteNumbers) {
@@ -257,23 +284,24 @@ $(function() {
       var pl = model.tokenPayload(token);
       var user = pl.user;
 
-      var userAreachairGroupsP = $.getJSON('groups', { member: user.id, regex: CONFERENCE + '/Paper.*/Area_Chair' })
-        .then(function(result) {
-          var noteNumbers = getPaperNumbersfromGroups(result.groups);
-          return $.when(
-            getBlindedNotes(noteNumbers),
-            getOfficialReviews(noteNumbers),
-            getMetaReviews(),
-            getReviewerGroups(noteNumbers),
-            headerLoaded
-          );
-        })
-        .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, loaded) {
-          displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, '#reviewer-status');
-        })
-        .fail(function(error) {
-          displayError();
-        });
+      getBlindedNotes()
+      .then(function(notes) {
+        var noteNumbers = _.map(notes, function(note) { return note.number; });
+        return $.when(
+          notes,
+          getOfficialReviews(noteNumbers),
+          getMetaReviews(),
+          getReviewerGroups(noteNumbers),
+          getAreaChairGroups(noteNumbers),
+          headerLoaded
+        );
+      })
+      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, noteToAreaChairIds, loaded) {
+        displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, noteToAreaChairIds, '#reviewer-status');
+      })
+      .fail(function(error) {
+        displayError();
+      });
     }
   });
 
@@ -289,7 +317,7 @@ $(function() {
     var forumUrl = $(this).data('forumUrl');
     var postData = {
       subject: 'UAI 2017 Reminder',
-      message: 'This is a reminder to please submit your review for UAI 2017. ' +
+      message: 'This is a reminder to please submit your official reviews for UAI 2017. ' +
         'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
       groups: [userId]
     };
