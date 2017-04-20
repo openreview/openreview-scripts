@@ -69,7 +69,7 @@ $(function() {
             num = parseInt(matches[1], 10);
             index = parseInt(matches[2], 10);
 
-            if (num in noteMap) {
+            if ((num in noteMap) && g.members.length) {
               noteMap[num][index] = g.members[0];
             }
           }
