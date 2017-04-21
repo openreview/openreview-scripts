@@ -185,12 +185,18 @@ $(function() {
         }
 
         var areachairId = areachairIds[note.number][0];
-        var areachairProfile = _.find(userProfiles.profiles, ['id', areachairId]);
+        var areachairProfile = {}
 
-        var name = _.find(areachairProfile.content.names, ['preferred', true]) || _.first(areachairProfile.content.names);
-        areachairProfile.name = _.isEmpty(name) ? view.prettyId(areachairProfile.id) : name.first + ' ' + name.last;
-        areachairProfile.email = areachairProfile.content.preferred_email;
+        if (areachairId) {
+          areachairProfile = _.find(userProfiles.profiles, ['id', areachairId]);
 
+          var name = _.find(areachairProfile.content.names, ['preferred', true]) || _.first(areachairProfile.content.names);
+          areachairProfile.name = _.isEmpty(name) ? view.prettyId(areachairProfile.id) : name.first + ' ' + name.last;
+          areachairProfile.email = areachairProfile.content.preferred_email;
+        } else {
+          areachairProfile.name = view.prettyId('auai.org/UAI/2017/-/Paper' + note.number + '/Area_Chair');
+          areachairProfile.email = '-';
+        }
         var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
         return buildTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
       });
