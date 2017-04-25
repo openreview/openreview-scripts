@@ -38,9 +38,6 @@ def overwrite_allowed(groupid):
     else:
         return False
 
-def get_path(path):
-    return os.path.join(os.path.dirname(__file__), path)
-
 if client.user['id'].lower()=='openreview.net':
 
     #########################
