@@ -12,10 +12,13 @@ Adding "--overwrite true" will overwrite the groups as well.
 ## Import statements
 import argparse
 import csv
-import sys, os
 import openreview
 from rssdata import *
-from subprocess import call
+
+import sys, os
+def get_path(path): return os.path.join(os.path.dirname(__file__), path)
+sys.path.insert(0, get_path("../../../../../../utils"))
+import utils
 
 
 ## Handle the arguments
@@ -246,19 +249,8 @@ if client.user['id'].lower()=='openreview.net':
     # processToFile takes a template file, turns it into a js file and inserts
     # process function code in as indicated by << >>
 
-    call(["node",
-        get_path("../../../../../../utils/processToFile.js"),
-        get_path("../process/submissionProcess.template"),
-        get_path("../process"),
-        "Poster"
-        ])
-
-    call(["node",
-        get_path("../../../../../../utils/processToFile.js"),
-        get_path("../process/submissionProcess.template"),
-        get_path("../process"),
-        "Proceedings"
-        ])
+    utils.process_to_file(get_path("../process/submissionProcess.template"), get_path("../process"), "Poster")
+    utils.process_to_file(get_path("../process/submissionProcess.template"), get_path("../process"), "Proceedings")
 
     proceeding_invitation = openreview.Invitation(PROCEEDINGS+'/-/Submission',
         readers = ['everyone'],

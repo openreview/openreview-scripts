@@ -10,9 +10,12 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 ## Import statements
 import argparse
 import openreview
-import sys, os
 from cvprdata import *
-from subprocess import call
+
+import sys, os
+def get_path(path): return os.path.join(os.path.dirname(__file__), path)
+sys.path.insert(0, get_path("../../../../../../utils"))
+import utils
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -111,11 +114,7 @@ if client.user['id'].lower()=='openreview.net':
     ##  SETUP INVITATIONS  ##
     #########################
 
-    call(["node",
-        get_path("../../../../../../utils/processToFile.js"),
-        get_path("../process/submissionProcess.template"),
-        get_path("../process")
-        ])
+    utils.process_to_file(get_path("../process/submissionProcess.template"), get_path("../process"))
 
     invitations = []
 

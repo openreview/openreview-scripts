@@ -10,10 +10,14 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 ## Import statements
 import argparse
 import csv
-import sys, os
 import openreview
 from uaidata import *
 from subprocess import call
+
+import sys, os
+def get_path(path): return os.path.join(os.path.dirname(__file__), path)
+sys.path.insert(0, get_path("../../../../../utils"))
+import utils
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -27,37 +31,19 @@ args = parser.parse_args()
 ## Initialize the client library with username and password
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-groups = []
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 
-def overwrite_allowed(groupid):
-    if not client.exists(groupid) or overwrite==True:
-        return True
-    else:
-        return False
+utils.process_to_file(get_path("../process/spc_registrationProcess.template"), get_path("../process"))
+utils.process_to_file(get_path("../process/pc_registrationProcess.template"), get_path("../process"))
 
-def get_path(path):
-    return os.path.join(os.path.dirname(__file__), path)
-
-call(["node",
-    get_path("../../../../../utils/processToFile.js"),
-    get_path("../process/spc_registrationProcess.template"),
-    get_path("../process")
-    ])
-
-call(["node",
-    get_path("../../../../../utils/processToFile.js"),
-    get_path("../process/pc_registrationProcess.template"),
-    get_path("../process")
-    ])
-
+groups = []
 if client.user['id'].lower()=='openreview.net':
 
     #########################
     ##    SETUP GROUPS     ##
     #########################
 
-    if overwrite_allowed('auai.org'):
+    if not client.exists('auai.org') or overwrite==True:
         auai = openreview.Group('auai.org',
             readers     = ['everyone'],
             writers     = ['OpenReview.net'],
@@ -67,7 +53,7 @@ if client.user['id'].lower()=='openreview.net':
         groups.append(auai)
 
 
-    if overwrite_allowed('auai.org/UAI'):
+    if not client.exists('auai.org/UAI') or overwrite==True:
         uai = openreview.Group('auai.org/UAI',
             readers     = ['everyone'],
             writers     = ['OpenReview.net'],
@@ -77,7 +63,7 @@ if client.user['id'].lower()=='openreview.net':
         groups.append(uai)
 
 
-    if overwrite_allowed(CONFERENCE):
+    if not client.exists(CONFERENCE) or overwrite==True:
         uai2017 = openreview.Group(CONFERENCE,
             readers     = ['everyone'],
             writers     = [CONFERENCE],
@@ -88,7 +74,7 @@ if client.user['id'].lower()=='openreview.net':
         groups.append(uai2017)
 
 
-    if overwrite_allowed(COCHAIRS):
+    if not client.exists(COCHAIRS) or overwrite==True:
         Program_Chairs = openreview.Group(COCHAIRS,
             readers     = [CONFERENCE, COCHAIRS, SPC, PC],
             writers     = [CONFERENCE],
@@ -98,7 +84,7 @@ if client.user['id'].lower()=='openreview.net':
         groups.append(Program_Chairs)
 
 
-    if overwrite_allowed(SPC):
+    if not client.exists(SPC) or overwrite==True:
         spc = openreview.Group(SPC,
             readers     = [CONFERENCE, COCHAIRS, SPC, PC],
             writers     = [CONFERENCE], #the conference needs to be a writer whenever the process functions need to modify the group
@@ -108,7 +94,7 @@ if client.user['id'].lower()=='openreview.net':
             web         = get_path('../webfield/spc_group_webfield.html'))
         groups.append(spc)
 
-    if overwrite_allowed(SPC + '/invited'):
+    if not client.exists(SPC + '/invited') or overwrite==True:
         spc_invited = openreview.Group(SPC + '/invited',
             readers     = [CONFERENCE, COCHAIRS],
             writers     = [CONFERENCE, COCHAIRS],
@@ -117,7 +103,7 @@ if client.user['id'].lower()=='openreview.net':
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_invited)
 
-    if overwrite_allowed(SPC + '/declined'):
+    if not client.exists(SPC + '/declined') or overwrite==True:
         spc_declined = openreview.Group(SPC+'/declined',
             readers     = [CONFERENCE, COCHAIRS], #Should cochairs be reader of this group?
             writers     = [CONFERENCE],
@@ -126,7 +112,7 @@ if client.user['id'].lower()=='openreview.net':
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_declined)
 
-    if overwrite_allowed(SPC + '/emailed'):
+    if not client.exists(SPC + '/emailed') or overwrite==True:
         spc_emailed = openreview.Group(SPC + '/emailed',
             readers     = [CONFERENCE, COCHAIRS],
             writers     = [CONFERENCE],
@@ -135,7 +121,7 @@ if client.user['id'].lower()=='openreview.net':
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_emailed)
 
-    if overwrite_allowed(SPC + '/reminded'):
+    if not client.exists(SPC + '/reminded') or overwrite==True:
         spc_emailed = openreview.Group(SPC + '/reminded',
             readers     = [CONFERENCE, COCHAIRS],
             writers     = [CONFERENCE],
@@ -144,7 +130,7 @@ if client.user['id'].lower()=='openreview.net':
             members     = []) #more to be added later from the Senior_Program_Committee invitation process
         groups.append(spc_emailed)
 
-    if overwrite_allowed(PC):
+    if not client.exists(PC) or overwrite==True:
         pc = openreview.Group(PC,
             readers     = [CONFERENCE, COCHAIRS, SPC, PC],
             writers     = [CONFERENCE],
@@ -153,7 +139,7 @@ if client.user['id'].lower()=='openreview.net':
             members     = []) #more to be added later, from the list of Program_Committee members
         groups.append(pc)
 
-    if overwrite_allowed(PC+'/invited'):
+    if not client.exists(PC+'/invited') or overwrite==True:
         pc_invited      = openreview.Group(PC+'/invited',
             readers     = [CONFERENCE, COCHAIRS],
             writers     = [CONFERENCE],
@@ -162,7 +148,7 @@ if client.user['id'].lower()=='openreview.net':
             members     = []) #members to be added by process function
         groups.append(pc_invited)
 
-    if overwrite_allowed(PC+'/declined'):
+    if not client.exists(PC+'/declined') or overwrite==True:
         pc_declined     = openreview.Group(PC+'/declined',
             readers     = [CONFERENCE, COCHAIRS],
             writers     = [CONFERENCE, COCHAIRS],
@@ -171,7 +157,7 @@ if client.user['id'].lower()=='openreview.net':
             members     = [])
         groups.append(pc_declined)
 
-    if overwrite_allowed(PC+'/emailed'):
+    if not client.exists(PC+'/emailed') or overwrite==True:
         pc_emailed     = openreview.Group(PC+'/emailed',
             readers     = [CONFERENCE, COCHAIRS],
             writers     = [CONFERENCE],
