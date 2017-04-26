@@ -1,9 +1,0 @@
-<alphas>
-	<reviewer email="redreviewer@openreview.net" 	maxPapers="1"  minPapers="1"/>
-    <reviewer email="orangereviewer@openreview.net" 	maxPapers="1"  minPapers="1"/>
-	<reviewer email="yellowreviewer@openreview.net" 	maxPapers="1"  minPapers="1"/>
-	<reviewer email="greenreviewer@openreview.net" 	maxPapers="1"  minPapers="1"/>
-	<reviewer email="bluereviewer@openreview.net" 	maxPapers="1"  minPapers="1"/>
-	<reviewer email="indigoreviewer@openreview.net" 	maxPapers="1"  minPapers="1"/>
-	<reviewer email="violetreviewer@openreview.net" 	maxPapers="1"  minPapers="1"/>
-</alphas>
