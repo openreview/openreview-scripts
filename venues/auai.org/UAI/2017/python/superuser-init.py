@@ -13,10 +13,9 @@ import csv
 import openreview
 from uaidata import *
 from subprocess import call
-
 import sys, os
-def get_path(path): return os.path.join(os.path.dirname(__file__), path)
-sys.path.insert(0, get_path("../../../../../utils"))
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__),"../../../../../utils"))
 import utils
 
 ## Handle the arguments
@@ -33,8 +32,15 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 
-utils.process_to_file(get_path("../process/spc_registrationProcess.template"), get_path("../process"))
-utils.process_to_file(get_path("../process/pc_registrationProcess.template"), get_path("../process"))
+utils.process_to_file(
+    utils.get_path("../process/spc_registrationProcess.template", __file__),
+    utils.get_path("../process", __file__)
+    )
+
+utils.process_to_file(
+    utils.get_path("../process/pc_registrationProcess.template", __file__),
+    utils.get_path("../process", __file__)
+    )
 
 groups = []
 if client.user['id'].lower()=='openreview.net':
@@ -70,7 +76,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [CONFERENCE],
             members     = [ADMIN],
-            web         = get_path('../webfield/uai2017_webfield.html'))
+            web         = utils.get_path('../webfield/uai2017_webfield.html', __file__))
         groups.append(uai2017)
 
 
@@ -91,7 +97,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = [CONFERENCE],
             signatories = [SPC],
             members     = [], #more to be added later, from the list of Senior_Program_Committee members
-            web         = get_path('../webfield/spc_group_webfield.html'))
+            web         = utils.get_path('../webfield/spc_group_webfield.html', __file__))
         groups.append(spc)
 
     if not client.exists(SPC + '/invited') or overwrite==True:
@@ -186,7 +192,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [CONFERENCE],
         duedate = 1491044400000, #duedate is March 31, 2017, 23:59:59 Samoa Time
-        process = get_path('../process/submissionProcess.js'))
+        process = utils.get_path('../process/submissionProcess.js', __file__))
 
     submission_invitation.reply = {
         'forum': None,
@@ -308,8 +314,8 @@ if client.user['id'].lower()=='openreview.net':
         writers=[CONFERENCE],
         invitees=[SPC + '/invited'],
         signatures=[CONFERENCE],
-        process=get_path('../process/spc_responseInvitationProcess_uai2017.js'),
-        web=get_path('../webfield/spc_invitation_webfield.html'))
+        process=utils.get_path('../process/spc_responseInvitationProcess_uai2017.js', __file__),
+        web=utils.get_path('../webfield/spc_invitation_webfield.html', __file__))
 
     spc_invitation.reply = {
         'content': {
@@ -348,8 +354,8 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = [PC + '/invited'],
         signatures = [CONFERENCE],
-        process = get_path('../process/pc_responseInvitationProcess_uai2017.js'),
-        web = get_path('../webfield/pc_invitation_webfield.html'))
+        process = utils.get_path('../process/pc_responseInvitationProcess_uai2017.js', __file__),
+        web = utils.get_path('../webfield/pc_invitation_webfield.html', __file__))
 
     pc_invitation.reply = {
         'content': {
@@ -389,7 +395,7 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = ['OpenReview.net'],
         signatures = [CONFERENCE],
-        process = get_path('../process/spc_registrationProcess.js')
+        process = utils.get_path('../process/spc_registrationProcess.js', __file__)
         )
 
     spc_registration.reply = {
@@ -427,7 +433,7 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = ['OpenReview.net'],
         signatures = [CONFERENCE],
-        process = get_path('../process/pc_registrationProcess.js')
+        process = utils.get_path('../process/pc_registrationProcess.js', __file__)
         )
 
     pc_registration.reply = {
@@ -510,7 +516,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees=[],
         signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        web=get_path('../webfield/add_bid_invitation_webfield.html'),
+        web=utils.get_path('../webfield/add_bid_invitation_webfield.html', __file__),
         multiReply=False)
 
     bid_tag_invitation.reply = {

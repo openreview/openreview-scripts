@@ -14,12 +14,10 @@ import argparse
 import csv
 import openreview
 from rssdata import *
-
 import sys, os
-def get_path(path): return os.path.join(os.path.dirname(__file__), path)
-sys.path.insert(0, get_path("../../../../../../utils"))
-import utils
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../../utils"))
+import utils
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -90,7 +88,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [CONFERENCE],
             members     = [ADMIN],
-            web         = get_path('../webfield/rss2017_webfield.html'))
+            web         = utils.get_path('../webfield/rss2017_webfield.html', __file__))
         groups.append(rss2017)
 
     if overwrite_allowed(PROCEEDINGS):
@@ -100,7 +98,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [PROCEEDINGS],
             members     = [ADMIN, PROCEEDINGS],
-            web         = get_path('../webfield/rss2017proceedings_webfield.html'))
+            web         = utils.get_path('../webfield/rss2017proceedings_webfield.html', __file__))
         groups.append(proceedings)
 
     if overwrite_allowed(POSTER):
@@ -110,7 +108,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [POSTER],
             members     = [ADMIN, POSTER],
-            web         = get_path('../webfield/rss2017poster_webfield.html'))
+            web         = utils.get_path('../webfield/rss2017poster_webfield.html', __file__))
         groups.append(poster)
 
     # Co-Chairs are for the whole conference/workshop
@@ -246,8 +244,17 @@ if client.user['id'].lower()=='openreview.net':
     # processToFile takes a template file, turns it into a js file and inserts
     # process function code in as indicated by << >>
 
-    utils.process_to_file(get_path("../process/submissionProcess.template"), get_path("../process"), "Poster")
-    utils.process_to_file(get_path("../process/submissionProcess.template"), get_path("../process"), "Proceedings")
+    utils.process_to_file(
+        utils.get_path("../process/submissionProcess.template", __file__),
+        utils.get_path("../process", __file__),
+        "Poster"
+        )
+
+    utils.process_to_file(
+        utils.get_path("../process/submissionProcess.template", __file__),
+        utils.get_path("../process", __file__),
+        "Proceedings"
+        )
 
     proceeding_invitation = openreview.Invitation(PROCEEDINGS+'/-/Submission',
         readers = ['everyone'],
@@ -255,7 +262,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [PROCEEDINGS],
         duedate = TIMESTAMP_DUE,
-        process = get_path('../process/submissionProcessProceedings.js'))
+        process = utils.get_path('../process/submissionProcessProceedings.js', __file__))
     proceeding_invitation.reply = reply.copy()
 
     poster_invitation = openreview.Invitation(POSTER + '/-/Submission',
@@ -264,7 +271,7 @@ if client.user['id'].lower()=='openreview.net':
                                               invitees=['~'],
                                               signatures=[POSTER],
                                               duedate=TIMESTAMP_DUE,
-                                              process=get_path('../process/submissionProcessPoster.js'))
+                                              process=utils.get_path('../process/submissionProcessPoster.js', __file__))
 
     ## Submissions to the Poster track are not visible to everyone, just to the people that need to know
     reply['readers'] = {

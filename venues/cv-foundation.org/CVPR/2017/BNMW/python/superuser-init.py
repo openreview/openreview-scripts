@@ -13,8 +13,8 @@ import openreview
 from cvprdata import *
 
 import sys, os
-def get_path(path): return os.path.join(os.path.dirname(__file__), path)
-sys.path.insert(0, get_path("../../../../../../utils"))
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../../utils"))
 import utils
 
 ## Handle the arguments
@@ -78,7 +78,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [CONFERENCE],
             members     = [ADMIN],
-            web         = get_path('../webfield/cvpr2017_webfield.html'))
+            web         = utils.get_path('../webfield/cvpr2017_webfield.html', __file__))
         groups.append(conf)
 
     if overwrite_allowed(COCHAIRS):
@@ -111,7 +111,10 @@ if client.user['id'].lower()=='openreview.net':
     ##  SETUP INVITATIONS  ##
     #########################
 
-    utils.process_to_file(get_path("../process/submissionProcess.template"), get_path("../process"))
+    utils.process_to_file(
+        utils.get_path("../process/submissionProcess.template", __file__),
+        utils.get_path("../process", __file__)
+        )
 
     invitations = []
 
@@ -122,7 +125,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [CONFERENCE],
         duedate = EIGHT_PG_TIMESTAMP_DUE,
-        process = get_path('../process/submissionProcess.js'))
+        process = utils.get_path('../process/submissionProcess.js', __file__))
 
     submission_invitation.reply = {
         'forum': None,
