@@ -8,29 +8,16 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 """
 
 ## Import statements
-import argparse
-import csv
 import openreview
 from uaidata import *
-from subprocess import call
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__),"../../../../../utils"))
 import utils
 
-## Handle the arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('--baseurl', help="base URL")
-parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
-parser.add_argument('--username')
-parser.add_argument('--password')
+args, parser, overwrite = utils.parse_args()
 
-args = parser.parse_args()
-
-## Initialize the client library with username and password
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-
-overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 
 utils.process_to_file(
     utils.get_path("../process/spc_registrationProcess.template", __file__),

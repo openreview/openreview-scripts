@@ -10,8 +10,6 @@ Adding "--overwrite true" will overwrite the groups as well.
 """
 
 ## Import statements
-import argparse
-import csv
 import openreview
 from rssdata import *
 import sys, os
@@ -19,14 +17,7 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../../utils"))
 import utils
 
-## Handle the arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('--baseurl', help="base URL")
-parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
-parser.add_argument('--username')
-parser.add_argument('--password')
-
-args = parser.parse_args()
+args, parser, overwrite = utils.parse_args()
 
 ## Initialize the client library with username and password
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
@@ -38,7 +29,6 @@ groups = []
 # we don't want to override the groups as people may have already been added to them.
 # Overwrite false - create new groups, but doesn't overwrite existing groups
 # Overwrite true - recreate from scratch
-overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 
 def overwrite_allowed(groupid):
     if not client.exists(groupid) or overwrite==True:
