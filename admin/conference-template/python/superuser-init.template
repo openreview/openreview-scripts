@@ -1,0 +1,55 @@
+#!/usr/bin/python
+
+import openreview
+import sys, os
+import config
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), <<UTILS_DIR>>))
+import utils
+import templates
+
+
+args, parser, overwrite = utils.parse_args()
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+
+"""
+
+OPTIONAL SCRIPT ARGUMENTS
+
+	baseurl -  the URL of the OpenReview server to connect to (live site: https://openreview.net)
+ 	username - the email address of the logging in user
+	password - the user's password
+
+See openreview-scripts/utils for utility function and template details.
+
+"""
+
+conf_group = openreview.Group(config.CONF, **config.conf_params)
+
+pc_group = openreview.Group(config.PROGRAM_CHAIRS, **config.group_params)
+ac_group = openreview.Group(config.AREA_CHAIRS, **config.group_params)
+rev_group = openreview.Group(config.REVIEWERS, **config.group_params)
+
+
+submission_inv = openreview.Invitation(config.SUBMISSION, duedate=<<SUBMISSION_DUEDATE>>, **config.invitation_params)
+comment_inv = openreview.Invitation(config.COMMENT, **config.invitation_params)
+
+submission_inv.reply = templates.SubmissionReply().body
+comment_inv.reply = templates.CommentReply(params={'invitation': config.SUBMISSION}).body
+
+client.post_group(conf_group)
+client.post_group(pc_group)
+client.post_group(ac_group)
+client.post_group(rev_group)
+
+client.post_invitation(submission_inv)
+client.post_invitation(comment_inv)
+
+# TODO:
+# webfield
+# process functions
+
+# Optional stuff:
+# recruiting pipeline (maybe automate, maybe don't)
+# bids
+# blind submissions
