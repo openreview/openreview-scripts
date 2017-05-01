@@ -20,6 +20,7 @@ Example:
 """
 
 CONF = <<CONF>>
+ADMIN = CONF + '/Admin'
 PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'

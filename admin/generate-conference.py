@@ -4,13 +4,24 @@ import sys, os, shutil
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../utils"))
 import utils
 import templates
+import argparse
 
-conference = raw_input("Enter the full path of the conference group you would like to create (e.g. my-conferece.org/MYCONF/2017): ")
-directory = utils.get_path('../venues/%s' % conference, __file__)
-submission_name = raw_input("Enter the name of the submission (e.g. \"Submission\"): " )
-duedate = raw_input("Enter the duedate, in milliseconds, of the submission (e.g. 1524846935000): ")
+parser = argparse.ArgumentParser()
+parser.add_argument('--test', help="base URL")
+args = parser.parse_args()
 
-assert not os.path.exists(directory)
+if not args.test:
+	conference = raw_input("Enter the full path of the conference group you would like to create (e.g. my-conference.org/MYCONF/2017): ")
+	directory = utils.get_path('../venues/%s' % conference, __file__)
+	submission_name = raw_input("Enter the name of the submission (e.g. \"Submission\"): " )
+	duedate = raw_input("Enter the duedate, in milliseconds, of the submission (e.g. 1524846935000): ")
+else:
+	conference = 'my-conference.org/MYCONF/2017'
+	directory = utils.get_path('../venues/%s' % conference, __file__)
+	submission_name = "Submission"
+	duedate = '1524846935000'
+
+assert not os.path.exists(directory), "%s already exists" % conference
 
 os.makedirs(directory)
 os.makedirs(directory + '/python')
@@ -35,6 +46,11 @@ with open(directory + '/webfield/conf.html', 'w') as webfile:
 	webfield = templates.Webfield(web_params)
 
 	webfile.write(webfield.html)
+
+with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
+	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
+	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "\"%s\"" % duedate)
+	new_initfile.write(templatestring)
 
 with open(directory + '/python/superuser-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/superuser-init.template', __file__)) as template_initfile:
 	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
