@@ -4,6 +4,7 @@ import sys, os, inspect
 import openreview
 from subprocess import call
 import argparse
+import time, datetime
 
 """
 
@@ -83,3 +84,22 @@ def get_path(rel_path, _file):
     """
     return os.path.abspath(os.path.join(os.path.dirname(_file), rel_path))
 
+def get_duedate(year, month, day, hour=23, minute=59):
+    """
+
+    Returns the date given by the parameters represented in milliseconds since unix epoch time
+
+    :parameters:
+        year - an int representing the year
+        month - int representing the month
+        day - int representing the day
+        hour (default: 23) - int representing the hour, using 24 hour format
+        minute (default: 59) - int representing the minute
+
+    :returns:
+        an int that represents the date in milliseconds
+
+    """
+    DATE_DUE = datetime.datetime(year, month, day, hour, minute)
+    TIMESTAMP_DUE = int(time.mktime(DATE_DUE.timetuple()))*1000
+    return TIMESTAMP_DUE
