@@ -61,6 +61,7 @@ print "writing %s/python/config.py" % directory
 with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.get_path('./conference-template/python/config.template', __file__)) as template_configfile:
 	templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
 	templatestring = templatestring.replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
+	templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
 	new_configfile.write(templatestring)
 
 print "writing %s/webfield/conf.html" % directory
