@@ -55,6 +55,7 @@ $(function() {
 
   var getReviewerGroups = function(noteNumbers) {
     var noteMap = buildNoteMap(noteNumbers);
+    var reviewerMap = {};
 
     return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/AnonReviewer.*' })
       .then(function(result) {
@@ -67,12 +68,25 @@ $(function() {
             num = parseInt(matches[1], 10);
             index = parseInt(matches[2], 10);
 
-            if ((num in noteMap) && g.members.length) {
-              noteMap[num][index] = g.members[0];
+            if (g.members.length) {
+              var reviewer = g.members[0];
+              if ((num in noteMap)) {
+                noteMap[num][index] = reviewer;
+              }
+
+              if (!(reviewer in reviewerMap)) {
+                reviewerMap[reviewer] = [];
+              }
+
+              reviewerMap[reviewer].push(num);
             }
+
           }
         });
-        return noteMap;
+        return {
+          byNotes: noteMap,
+          byReviewers: reviewerMap
+        };
       })
       .fail(function(error) {
         displayError();
@@ -82,6 +96,7 @@ $(function() {
 
   var getAreaChairGroups = function(noteNumbers) {
     var noteMap = buildNoteMap(noteNumbers);
+    var areaChairMap = {};
 
     return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/Area_Chair' })
       .then(function(result) {
@@ -93,12 +108,23 @@ $(function() {
           if (matches) {
             num = parseInt(matches[1], 10);
 
-            if ((num in noteMap) && g.members.length) {
-              noteMap[num][0] = g.members[0];
+            if (g.members.length) {
+              var areaChair = g.members[0];
+              if (num in noteMap) {
+                noteMap[num][0] = areaChair;
+              }
+
+              if (!(areaChair in areaChairMap)) {
+                areaChairMap[areaChair] = [];
+              }
+              areaChairMap[areaChair].push(num);
             }
           }
         });
-        return noteMap;
+        return {
+          byNotes: noteMap,
+          byAreaChairs: areaChairMap
+        };
       })
       .fail(function(error) {
         displayError();
@@ -107,9 +133,23 @@ $(function() {
   };
 
   var getUserProfiles = function(userIds) {
-    return $.post('/user/profiles', JSON.stringify({ids: userIds}), function(result) {
-      return result.profiles;
-    }, 'json').fail(function(error) {
+    return $.post('/user/profiles', JSON.stringify({ids: userIds}))
+    .then(function(result) {
+
+      var profileMap = {};
+
+      _.forEach(result.profiles, function(profile) {
+
+        var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
+        profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
+        profile.email = profile.content.preferred_email;
+        profileMap[profile.id] = profile;
+      })
+
+      console.log('profileMap', profileMap);
+      return profileMap;
+    })
+    .fail(function(error) {
       displayError();
       return null;
     });
@@ -141,16 +181,21 @@ $(function() {
       var tabsData = {
         sections: [
           {
-            heading: 'Reviewer Status',
-            id: 'reviewer-status',
+            heading: 'Paper Status',
+            id: 'paper-status',
             content: loadingMessage,
             active: true
           },
-          // {
-          //   heading: 'Your Assigned Papers',
-          //   id: 'assigned-papers',
-          //   content: loadingMessage,
-          // }
+          {
+            heading: 'Area Chair Status',
+            id: 'areachair-status',
+            content: loadingMessage,
+          },
+          {
+            heading: 'Reviewer Status',
+            id: 'reviewer-status',
+            content: loadingMessage,
+          }
         ]
       };
       $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](tabsData));
@@ -161,53 +206,128 @@ $(function() {
     });
   };
 
-  var displayStatusTable = function(notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
-    var uniqueReviewerIds = _.uniq(_.reduce(reviewerIds, function(result, idsObj, noteNum) {
-      return result.concat(_.values(idsObj));
-    }, []));
+  var displayPaperStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
 
-    var uniqueAreaChairIds = _.uniq(_.reduce(areachairIds, function(result, idsObj, noteNum) {
-      return result.concat(_.values(idsObj));
-    }, []));
+    var rowData = _.map(notes, function(note) {
+      var revIds = reviewerIds[note.number];
+      for (var revNumber in revIds) {
+        var profile = profiles[revIds[revNumber]];
+        revIds[revNumber] = profile;
+      }
 
-    var uniqueIds = _.union(uniqueReviewerIds, uniqueAreaChairIds);
+      var areachairId = areachairIds[note.number][0];
+      var areachairProfile = {}
 
-    $.when(getUserProfiles(uniqueIds)).then(function(userProfiles) {
-      var rowData = _.map(notes, function(note) {
-        var revIds = reviewerIds[note.number];
-        for (var revNumber in revIds) {
-          var profile = _.find(userProfiles.profiles, ['id', revIds[revNumber]]);
-
-          var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
-          profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-          profile.email = profile.content.preferred_email;
-          revIds[revNumber] = profile;
-        }
-
-        var areachairId = areachairIds[note.number][0];
-        var areachairProfile = {}
-
-        if (areachairId) {
-          areachairProfile = _.find(userProfiles.profiles, ['id', areachairId]);
-
-          var name = _.find(areachairProfile.content.names, ['preferred', true]) || _.first(areachairProfile.content.names);
-          areachairProfile.name = _.isEmpty(name) ? view.prettyId(areachairProfile.id) : name.first + ' ' + name.last;
-          areachairProfile.email = areachairProfile.content.preferred_email;
-        } else {
-          areachairProfile.name = view.prettyId('auai.org/UAI/2017/-/Paper' + note.number + '/Area_Chair');
-          areachairProfile.email = '-';
-        }
-        var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
-        return buildTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
-      });
-
-      var tableHTML = Handlebars.templates['components/table']({
-        headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
-        rows: rowData,
-        extraClasses: 'uai-console-table'
-      });
-      $(container).empty().append(tableHTML);
+      if (areachairId) {
+        areachairProfile = profiles[areachairId];
+      } else {
+        areachairProfile.name = view.prettyId('auai.org/UAI/2017/-/Paper' + note.number + '/Area_Chair');
+        areachairProfile.email = '-';
+      }
+      var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
+      return buildPaperTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
     });
+
+    var tableHTML = Handlebars.templates['components/table']({
+      headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
+      rows: rowData,
+      extraClasses: 'uai-console-table'
+    });
+    $(container).empty().append(tableHTML);
+  };
+
+  var displaySPCStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
+
+    var rowData = [];
+    var index = 1;
+    var sortedAreaChairIds = _.sortBy(_.keys(areachairIds));
+    _.forEach(sortedAreaChairIds, function(areaChair) {
+      var numbers = areachairIds[areaChair];
+
+      var papers = [];
+      _.forEach(numbers, function(number) {
+        var note = _.find(notes, ['number', number]);
+
+        if (note) {
+          var reviewers = reviewerIds[number];
+          var reviews = completedReviews[number];
+          var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + number + '/Meta/Review']);
+
+          papers.push({
+            note: note,
+            reviewers: reviewers,
+            reviews: reviews,
+            metaReview: metaReview
+          });
+        }
+
+      });
+
+      var areaChairProfile = profiles[areaChair];
+      rowData.push(buildSPCTableRow(index, areaChairProfile, papers));
+      index++;
+    });
+
+    var tableHTML = Handlebars.templates['components/table']({
+      headings: ['#', 'Area Chair', 'Review Progress', 'Status'],
+      rows: rowData,
+      extraClasses: 'uai-console-table'
+    });
+    $(container).empty().append(tableHTML);
+
+  };
+
+  var displayPCStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerByNote, reviewerById, container, options) {
+
+    var rowData = [];
+    var index = 1;
+    var sortedReviewerIds = _.sortBy(_.keys(reviewerById));
+    _.forEach(sortedReviewerIds, function(reviewer) {
+      var numbers = reviewerById[reviewer];
+
+      var papers = [];
+      _.forEach(numbers, function(number) {
+        var note = _.find(notes, ['number', number]);
+
+        if (note) {
+          var reviewerNum = 0;
+          var reviewers = reviewerByNote[number];
+
+
+          for (var revNumber in reviewers) {
+            if (reviewer == reviewers[revNumber].id) {
+              reviewerNum = revNumber;
+              break;
+            }
+          }
+
+          var reviews = completedReviews[number];
+          var review = reviews[reviewerNum];
+          var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + number + '/Meta/Review']);
+
+          papers.push({
+            note: note,
+            review: review,
+            reviewers: reviewers,
+            reviews: reviews,
+            metaReview: metaReview
+          });
+        }
+
+      });
+
+      var reviewerProfile = profiles[reviewer];
+      rowData.push(buildPCTableRow(index, reviewerProfile, papers));
+      index++;
+    });
+
+    var tableHTML = Handlebars.templates['components/table']({
+      headings: ['#', 'Reviewer', 'Review Progress', 'Status'],
+      rows: rowData,
+      extraClasses: 'uai-console-table'
+    });
+    $(container).empty().append(tableHTML);
+
   };
 
   var displayError = function(message) {
@@ -217,7 +337,7 @@ $(function() {
 
 
   // Helper functions
-  var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
+  var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
     var number = '<strong class="note-number">' + note.number + '</strong>';
 
     // Build Note Summary Cell
@@ -237,6 +357,7 @@ $(function() {
           note: reviewObj.id,
           rating: reviewObj.rating,
           confidence: reviewObj.confidence,
+          reviewLength: reviewObj.content.review.length
         });
         ratings.push(reviewObj.rating);
       } else {
@@ -249,11 +370,22 @@ $(function() {
         });
       }
     }
+    var averageRating = 'N/A';
+    var minRating = 'N/A';
+    var maxRating = 'N/A';
+    if (ratings.length) {
+      averageRating = _.round(_.sum(ratings) / ratings.length, 2);
+      minRating = _.min(ratings);
+      maxRating = _.max(ratings);
+    }
+
     var reviewProgressData = {
       numSubmittedReviews: Object.keys(completedReviews).length,
       numReviewers: Object.keys(reviewerIds).length,
       reviewers: combinedObj,
-      averageRating: ratings.length ? _.round(_.sum(ratings) / ratings.length, 2) : 'N/A',
+      averageRating: averageRating,
+      maxRating: maxRating,
+      minRating: minRating,
       sendReminder: false
     };
     var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
@@ -266,6 +398,136 @@ $(function() {
     var areachairHtml = Handlebars.templates.noteAreaChairs(areachairProgressData);
 
     return [number, summaryHtml, reviewHtml, areachairHtml];
+  };
+
+  var buildSPCTableRow = function(index, areaChair, papers) {
+
+    var summary = {
+      id: areaChair.id,
+      name: areaChair.name,
+      email: areaChair.email
+    }
+    var summaryHtml = Handlebars.templates.committeeSummary(summary);
+
+    var numCompletedReviews = 0;
+    var numCompletedMetaReviews = 0;
+    var paperProgressData = _.map(papers, function(paper) {
+      var ratings = [];
+      var numOfReviewers = 0;
+
+      for (var reviewerNum in paper.reviewers) {
+        if (reviewerNum in paper.reviews) {
+          ratings.push(paper.reviews[reviewerNum].rating);
+        }
+        numOfReviewers++;
+      }
+
+      var averageRating = 'N/A';
+      var minRating = 'N/A';
+      var maxRating = 'N/A';
+      if (ratings.length) {
+        averageRating = _.round(_.sum(ratings) / ratings.length, 2);
+        minRating = _.min(ratings);
+        maxRating = _.max(ratings);
+      }
+
+      if (ratings.length == numOfReviewers) {
+        numCompletedReviews++;
+      }
+
+      if (paper.metaReview) {
+        numCompletedMetaReviews++;
+      }
+
+      return {
+        note: paper.note,
+        averageRating: averageRating,
+        maxRating: maxRating,
+        minRating: minRating,
+        numOfReviews: ratings.length,
+        numOfReviewers: numOfReviewers,
+        metaReview: paper.metaReview
+      }
+    });
+
+    var reviewProgressData = {
+      numCompletedMetaReviews: numCompletedMetaReviews,
+      numCompletedReviews: numCompletedReviews,
+      numPapers: papers.length,
+      papers: _.sortBy(paperProgressData, [function(p) { return p.note.number; }])
+    }
+
+    var reviewHtml = Handlebars.templates.notesAreaChairProgress(reviewProgressData);
+
+    var areachairHtml = Handlebars.templates.notesAreaChairStatus(reviewProgressData);
+
+    return [index, summaryHtml, reviewHtml, areachairHtml];
+  };
+
+
+  var buildPCTableRow = function(index, reviewer, papers) {
+
+    var summary = {
+      id: reviewer.id,
+      name: reviewer.name,
+      email: reviewer.email
+    }
+    var summaryHtml = Handlebars.templates.committeeSummary(summary);
+
+    var reviewProgressData = {
+      numCompletedMetaReviews: _.size(_.filter(papers, function(p) { return p.metaReview; })),
+      numCompletedReviews: _.size(_.filter(papers, function(p) { return p.review; })),
+      numPapers: papers.length,
+      papers: _.sortBy(papers, [function(p) { return p.note.number; }])
+    }
+
+    var reviewHtml = Handlebars.templates.notesReviewerProgress(reviewProgressData);
+
+    var numCompletedReviews = 0;
+    var paperProgressData = _.map(papers, function(paper) {
+      var ratings = [];
+      var numOfReviewers = 0;
+
+      for (var reviewerNum in paper.reviewers) {
+        if (reviewerNum in paper.reviews) {
+          ratings.push(paper.reviews[reviewerNum].rating);
+        }
+        numOfReviewers++;
+      }
+
+      var averageRating = 'N/A';
+      var minRating = 'N/A';
+      var maxRating = 'N/A';
+      if (ratings.length) {
+        averageRating = _.round(_.sum(ratings) / ratings.length, 2);
+        minRating = _.min(ratings);
+        maxRating = _.max(ratings);
+      }
+
+      if (ratings.length == numOfReviewers) {
+        numCompletedReviews++;
+      }
+
+      return {
+        note: paper.note,
+        averageRating: averageRating,
+        maxRating: maxRating,
+        minRating: minRating,
+        numOfReviews: ratings.length,
+        numOfReviewers: numOfReviewers,
+        metaReview: paper.metaReview
+      }
+    });
+
+    var reviewStatusData = {
+      numCompletedReviews: numCompletedReviews,
+      numPapers: papers.length,
+      papers: _.sortBy(paperProgressData, [function(p) { return p.note.number; }])
+    }
+
+    var areachairHtml = Handlebars.templates.notesReviewerStatus(reviewStatusData);
+
+    return [index, summaryHtml, reviewHtml, areachairHtml];
   };
 
   var buildNoteMap = function(noteNumbers) {
@@ -302,8 +564,25 @@ $(function() {
           headerLoaded
         );
       })
-      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, noteToAreaChairIds, loaded) {
-        displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, noteToAreaChairIds, '#reviewer-status');
+      .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
+
+        var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj, noteNum) {
+          return result.concat(_.values(idsObj));
+        }, []));
+
+        var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj, noteNum) {
+          return result.concat(_.values(idsObj));
+        }, []));
+
+        var uniqueIds = _.union(uniqueReviewerIds, uniqueAreaChairIds);
+
+        return getUserProfiles(uniqueIds)
+        .then(function(profiles) {
+          console.log('profiles', profiles);
+          displayPaperStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
+          displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
+          displayPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
+        })
       })
       .fail(function(error) {
         displayError();
