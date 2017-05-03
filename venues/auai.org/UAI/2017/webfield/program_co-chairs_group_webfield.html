@@ -295,18 +295,26 @@ $(function() {
 
 
           for (var revNumber in reviewers) {
-            if (reviewer == reviewers[revNumber]) {
+            if (reviewer == reviewers[revNumber].id) {
               reviewerNum = revNumber;
               break;
             }
           }
 
-          var review = completedReviews[number][reviewerNum];
+          var reviews = completedReviews[number];
+          var review = reviews[reviewerNum];
           var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + number + '/Meta/Review']);
+          if (reviewer == '~Andrey_Kolobov1') {
+            console.log('reviewer', reviewer, review);
+            console.log('reviews', reviews);
+            console.log('reviewers', reviewers);
+          }
 
           papers.push({
             note: note,
             review: review,
+            reviewers: reviewers,
+            reviews: reviews,
             metaReview: metaReview
           });
         }
@@ -454,9 +462,9 @@ $(function() {
       papers: _.sortBy(paperProgressData, [function(p) { return p.note.number; }])
     }
 
-    var reviewHtml = Handlebars.templates.notesAreaChairDetail(reviewProgressData);
+    var reviewHtml = Handlebars.templates.notesAreaChairProgress(reviewProgressData);
 
-    var areachairHtml = Handlebars.templates.notesAreaChairs(reviewProgressData);
+    var areachairHtml = Handlebars.templates.notesAreaChairStatus(reviewProgressData);
 
     return [index, summaryHtml, reviewHtml, areachairHtml];
   };
@@ -471,8 +479,6 @@ $(function() {
     }
     var summaryHtml = Handlebars.templates.committeeSummary(summary);
 
-    var numCompletedReviews = 0;
-
     var reviewProgressData = {
       numCompletedMetaReviews: _.size(_.filter(papers, function(p) { return p.metaReview; })),
       numCompletedReviews: _.size(_.filter(papers, function(p) { return p.review; })),
@@ -480,9 +486,51 @@ $(function() {
       papers: _.sortBy(papers, [function(p) { return p.note.number; }])
     }
 
-    var reviewHtml = Handlebars.templates.notesReviewerDetail(reviewProgressData);
+    var reviewHtml = Handlebars.templates.notesReviewerProgress(reviewProgressData);
 
-    var areachairHtml = Handlebars.templates.notesAreaChairs(reviewProgressData);
+    var numCompletedReviews = 0;
+    var paperProgressData = _.map(papers, function(paper) {
+      var ratings = [];
+      var numOfReviewers = 0;
+
+      for (var reviewerNum in paper.reviewers) {
+        if (reviewerNum in paper.reviews) {
+          ratings.push(paper.reviews[reviewerNum].rating);
+        }
+        numOfReviewers++;
+      }
+
+      var averageRating = 'N/A';
+      var minRating = 'N/A';
+      var maxRating = 'N/A';
+      if (ratings.length) {
+        averageRating = _.round(_.sum(ratings) / ratings.length, 2);
+        minRating = _.min(ratings);
+        maxRating = _.max(ratings);
+      }
+
+      if (ratings.length == numOfReviewers) {
+        numCompletedReviews++;
+      }
+
+      return {
+        note: paper.note,
+        averageRating: averageRating,
+        maxRating: maxRating,
+        minRating: minRating,
+        numOfReviews: ratings.length,
+        numOfReviewers: numOfReviewers,
+        metaReview: paper.metaReview
+      }
+    });
+
+    var reviewStatusData = {
+      numCompletedReviews: numCompletedReviews,
+      numPapers: papers.length,
+      papers: _.sortBy(paperProgressData, [function(p) { return p.note.number; }])
+    }
+
+    var areachairHtml = Handlebars.templates.notesReviewerStatus(reviewStatusData);
 
     return [index, summaryHtml, reviewHtml, areachairHtml];
   };
