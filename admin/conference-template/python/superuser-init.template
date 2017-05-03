@@ -64,7 +64,7 @@ client.add_members_to_group(conf_group, [config.ADMIN])
 create_admin = raw_input("Create administrator login? (y/[n]): ").lower()
 
 if create_admin == 'y' or create_admin == 'yes':
-	username = raw_input("Please provide administrator login (if not a valid email address, you must activate the account manually): ")
+	username = raw_input("Please provide administrator login (must be lowercase. if not a valid email address, you must activate the account manually): ")
 	firstname = raw_input("Please provide administrator first name: ")
 	lastname = raw_input("Please provide administrator last name: ")
 
