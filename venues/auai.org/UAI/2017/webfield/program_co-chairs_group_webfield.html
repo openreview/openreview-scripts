@@ -271,7 +271,7 @@ $(function() {
     var tableHTML = Handlebars.templates['components/table']({
       headings: ['#', 'Area Chair', 'Review Progress', 'Status'],
       rows: rowData,
-      extraClasses: 'uai-console-spc-table'
+      extraClasses: 'uai-console-table'
     });
     $(container).empty().append(tableHTML);
 
@@ -329,7 +329,7 @@ $(function() {
     var tableHTML = Handlebars.templates['components/table']({
       headings: ['#', 'Reviewer', 'Review Progress', 'Status'],
       rows: rowData,
-      extraClasses: 'uai-console-pc-table'
+      extraClasses: 'uai-console-table'
     });
     $(container).empty().append(tableHTML);
 
