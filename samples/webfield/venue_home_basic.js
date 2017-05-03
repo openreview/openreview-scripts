@@ -48,6 +48,7 @@ function load() {
 function render(invitation, notes) {
   // Display submission button and form
   $('#invitation').empty();
+  var onInvitationButtonClicked = function(e) {};
   Webfield.ui.invitationButton(invitation, onInvitationButtonClicked, { largeLabel: true });
   Webfield.ui.noteEditor(invitation, function() {
     // Callback funtion to be run when a paper has successfully been submitted
