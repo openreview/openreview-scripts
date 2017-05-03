@@ -192,7 +192,7 @@ $(function() {
     });
   };
 
-  var displayStatusTable = function(notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
+  var displayPaperStatusTable = function(notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
     var uniqueReviewerIds = _.uniq(_.reduce(reviewerIds, function(result, idsObj, noteNum) {
       return result.concat(_.values(idsObj));
     }, []));
@@ -229,7 +229,7 @@ $(function() {
           areachairProfile.email = '-';
         }
         var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
-        return buildTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
+        return buildPaperTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
       });
 
       var tableHTML = Handlebars.templates['components/table']({
@@ -335,7 +335,7 @@ $(function() {
 
 
   // Helper functions
-  var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
+  var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
     var number = '<strong class="note-number">' + note.number + '</strong>';
 
     // Build Note Summary Cell
@@ -521,7 +521,7 @@ $(function() {
         );
       })
       .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
-        displayStatusTable(blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
+        displayPaperStatusTable(blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
         displaySPCStatusTable(blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
         displayPCStatusTable(blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
       })
