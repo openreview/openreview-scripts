@@ -12,7 +12,7 @@ import argparse
 import csv
 import json
 import sys
-from openreview import *
+import openreview
 
 ## Parse the arguments
 parser = argparse.ArgumentParser()
@@ -24,12 +24,15 @@ parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 
-group = openreview.get_group(args.group)
+group = client.get_group(args.group)
 print group.id
 
 with open(args.webfield) as f:
     group.web = f.read()
-    updated_group = openreview.post_group(group)
+
+group.signatures = [client.signature]
+
+updated_group = client.post_group(group)
