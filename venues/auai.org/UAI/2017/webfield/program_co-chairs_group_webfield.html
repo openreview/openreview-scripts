@@ -304,11 +304,6 @@ $(function() {
           var reviews = completedReviews[number];
           var review = reviews[reviewerNum];
           var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + number + '/Meta/Review']);
-          if (reviewer == '~Andrey_Kolobov1') {
-            console.log('reviewer', reviewer, review);
-            console.log('reviews', reviews);
-            console.log('reviewers', reviewers);
-          }
 
           papers.push({
             note: note,
