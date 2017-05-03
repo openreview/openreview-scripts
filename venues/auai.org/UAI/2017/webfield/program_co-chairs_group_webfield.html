@@ -240,7 +240,8 @@ $(function() {
 
     var rowData = [];
     var index = 1;
-    for (var areaChair in areachairIds) {
+    var sortedAreaChairIds = _.sortBy(_.keys(areachairIds));
+    _.forEach(sortedAreaChairIds, function(areaChair) {
       var numbers = areachairIds[areaChair];
 
       var papers = [];
@@ -265,7 +266,7 @@ $(function() {
       var areaChairProfile = profiles[areaChair];
       rowData.push(buildSPCTableRow(index, areaChairProfile, papers));
       index++;
-    }
+    });
 
     var tableHTML = Handlebars.templates['components/table']({
       headings: ['#', 'Area Chair', 'Review Progress', 'Status'],
@@ -280,7 +281,8 @@ $(function() {
 
     var rowData = [];
     var index = 1;
-    for (var reviewer in reviewerById) {
+    var sortedReviewerIds = _.sortBy(_.keys(reviewerById));
+    _.forEach(sortedReviewerIds, function(reviewer) {
       var numbers = reviewerById[reviewer];
 
       var papers = [];
@@ -314,7 +316,7 @@ $(function() {
       var reviewerProfile = profiles[reviewer];
       rowData.push(buildPCTableRow(index, reviewerProfile, papers));
       index++;
-    }
+    });
 
     var tableHTML = Handlebars.templates['components/table']({
       headings: ['#', 'Reviewer', 'Review Progress', 'Status'],
