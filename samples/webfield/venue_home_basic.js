@@ -1,47 +1,43 @@
-// -----------------------------
+// ------------------------------------
 // Basic venue homepage template
 //
-// This webfield displays the conference header and a list of all submitted papers.
-// -----------------------------
+// This webfield displays the conference header, the submit button, and a list
+// of all submitted papers.
+// ------------------------------------
 
 // Constants
 var CONFERENCE = 'ICLR.cc/2017/conference';
 var INVITATION = CONFERENCE + '/-/submission';
 
-// Main is the entry point to the code and starts everything off
+var BUFFER = 1000 * 60 * 30;  // 30 minutes
+
+// Main is the entry point to the webfield code and runs everything
 function main() {
+  Webfield.ui.setup('#group-container');
+
   renderConferenceHeader();
+
   load().then(render);
 }
 
-// RenderConferenceHeader just renders the static info at the top of the page
+// RenderConferenceHeader renders the static info at the top of the page. Since that content
+// never changes, put it in its own function
 function renderConferenceHeader() {
-  Webfield.ui.setup('#group-container');
   Webfield.ui.venueHeader({
     title: 'ICLR 2017 - Conference Track',
     subtitle: 'International Conference on Learning Representations',
     location: 'Toulon, France',
     date: 'April 24 - 26, 2017',
     website: 'http://www.iclr.cc',
-    instructions: 'Submission Deadline Extended: Saturday, November 5th, 2016, at 5:00pm Eastern Daylight Time (EDT)'
+    deadline: 'Submission Deadline Extended: Saturday, November 5th, 2016, at 5:00pm Eastern Daylight Time (EDT)'
   });
 }
 
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-  var invitationP = Webfield.get('invitations', {id: INVITATION})
-    .then(function(result) {
-      var valid_invitations = _.filter(result.invitations, function(inv) {
-        return inv.duedate > Date.now();
-      });
-      return valid_invitations[0];
-    });
-
-  var notesP = Webfield.get('notes', {invitation: INVITATION})
-    .then(function(result) {
-      return result.notes;
-    });
+  var invitationP = Webfield.getSubmissionInvitation(INVITATION, {deadlineBuffer: BUFFER});
+  var notesP = Webfield.getSubmissions(INVITATION);
 
   return $.when(invitationP, notesP);
 }
