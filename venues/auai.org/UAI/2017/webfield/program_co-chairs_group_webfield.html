@@ -213,10 +213,10 @@ $(function() {
     })
     var sortBarHTML = '<form class="form-inline search-form" role="search">' +
       '<span><strong>Sort: </strong></span>' +
-      '<div class="form-group search-content has-feedback">' +
-        '<select id="form-sort">' + allOptions.join('') + '</select>' +
+      '<div class="form-group search-content has-feedback" style="margin-right: 2px">' +
+        '<select id="form-sort" style="width: 320px">' + allOptions.join('') + '</select>' +
       '</div>' +
-      '<div id="form-order" class="form-group glyphicon glyphicon-sort"></div>' +
+      '<div id="form-order" class="form-group glyphicon glyphicon-sort btn btn-xs"></div>' +
       '</form>';
 
     $(container).empty().append(sortBarHTML);
