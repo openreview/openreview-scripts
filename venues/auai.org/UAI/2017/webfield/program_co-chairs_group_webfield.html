@@ -239,7 +239,8 @@ $(function() {
       Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
       Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
       Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
-      Missing_Reviews: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; }
+      Missing_Reviews: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
+      Missing_Meta_Review: function(row) { return row.areachairProgressData.numMetaReview; }
     };
 
     var sortResults = function(newOption, newOrder) {
