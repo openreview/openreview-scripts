@@ -239,8 +239,9 @@ $(function() {
       Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
       Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
       Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
-      Missing_Reviews: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
-      Missing_Meta_Review: function(row) { return row.areachairProgressData.numMetaReview; }
+      Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
+      Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
+      Meta_Review_Missing: function(row) { return row.areachairProgressData.numMetaReview; }
     };
 
     var sortResults = function(newOption, newOrder) {
@@ -331,8 +332,10 @@ $(function() {
     var order = 'asc';
     var sortOptions = {
       Area_Chair: function(row) { return row.summary.name; },
-      Papers_with_Reviews_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedReviews; },
-      Papers_with_Meta_Review_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedMetaReviews; }
+      Papers_with_Completed_Review_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedReviews; },
+      Papers_with_Completed_Review: function(row) { return row.reviewProgressData.numCompletedReviews; },
+      Papers_with_Completed_MetaReview_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedMetaReviews; },
+      Papers_with_Completed_MetaReview: function(row) { return row.reviewProgressData.numCompletedMetaReviews; }
     };
 
     var sortResults = function(newOption, newOrder) {
@@ -430,12 +433,62 @@ $(function() {
       index++;
     });
 
-    var tableHTML = Handlebars.templates['components/table']({
-      headings: ['#', 'Reviewer', 'Review Progress', 'Status'],
-      rows: rowData,
-      extraClasses: 'uai-console-table'
+    var order = 'asc';
+    var sortOptions = {
+      Reviewer: function(row) { return row.summary.name; },
+      Papers_with_Reviews_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedReviews; },
+      Papers_with_Reviews_Submitted: function(row) { return row.reviewProgressData.numCompletedReviews; },
+      Papers_with_Completed_Reviews_Missing: function(row) { return row.reviewStatusData.numPapers - row.reviewStatusData.numCompletedReviews; },
+      Papers_with_Completed_Reviews: function(row) { return row.reviewStatusData.numCompletedReviews; }
+    };
+
+    var sortResults = function(newOption, newOrder) {
+      order = newOrder;
+      var selectedOption = newOption;
+      rowData = _.orderBy(rowData, sortOptions[selectedOption], order);
+      renderTable(container, rowData);
+    }
+
+    var renderTable = function(container, data) {
+
+      var index = 1;
+      var rowData = _.map(data, function(d) {
+        var number = '<strong class="note-number">' + index++ + '</strong>';
+        var summaryHtml = Handlebars.templates.committeeSummary(d.summary);
+        var progressHtml = Handlebars.templates.notesReviewerProgress(d.reviewProgressData);
+        var statusHtml = Handlebars.templates.notesReviewerStatus(d.reviewStatusData);
+        return [number, summaryHtml, progressHtml, statusHtml];
+      });
+
+      var tableHTML = Handlebars.templates['components/table']({
+        headings: ['#', 'Reviewer', 'Review Progress', 'Status'],
+        rows: rowData,
+        extraClasses: 'uai-console-table'
+      });
+
+      $(container).find('.table-responsive').remove();
+      $(container).append(tableHTML);
+    }
+
+    var allOptions = _.map(_.keys(sortOptions), function(option) {
+      return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
+    })
+    var sortBarHTML = '<form class="form-inline search-form" role="search">' +
+      '<span><strong>Sort: </strong></span>' +
+      '<div class="form-group search-content has-feedback">' +
+        '<select id="form-sort">' + allOptions.join('') + '</select>' +
+      '</div>' +
+      '<div id="form-order" class="form-group glyphicon glyphicon-sort"></div>' +
+      '</form>';
+
+    $(container).empty().append(sortBarHTML);
+    $(container).on('change', 'select#form-sort', function(event) {
+      sortResults($(event.target).val(), order)
     });
-    $(container).empty().append(tableHTML);
+    $(container).on('click', 'div#form-order', function(event) {
+      sortResults($(container).find('#form-sort').val(), order == 'asc' ? 'desc' : 'asc')
+    });
+    renderTable(container, rowData);
 
   };
 
@@ -580,7 +633,6 @@ $(function() {
       name: reviewer.name,
       email: reviewer.email
     }
-    var summaryHtml = Handlebars.templates.committeeSummary(summary);
 
     var reviewProgressData = {
       numCompletedMetaReviews: _.size(_.filter(papers, function(p) { return p.metaReview; })),
@@ -588,8 +640,6 @@ $(function() {
       numPapers: papers.length,
       papers: _.sortBy(papers, [function(p) { return p.note.number; }])
     }
-
-    var reviewHtml = Handlebars.templates.notesReviewerProgress(reviewProgressData);
 
     var numCompletedReviews = 0;
     var paperProgressData = _.map(papers, function(paper) {
@@ -633,9 +683,11 @@ $(function() {
       papers: _.sortBy(paperProgressData, [function(p) { return p.note.number; }])
     }
 
-    var areachairHtml = Handlebars.templates.notesReviewerStatus(reviewStatusData);
-
-    return [index, summaryHtml, reviewHtml, areachairHtml];
+    return {
+      summary: summary,
+      reviewProgressData: reviewProgressData,
+      reviewStatusData: reviewStatusData
+    }
   };
 
   var buildNoteMap = function(noteNumbers) {
