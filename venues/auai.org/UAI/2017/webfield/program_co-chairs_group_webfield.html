@@ -238,7 +238,8 @@ $(function() {
       Paper_Title: function(row) { return row.note.content.title; },
       Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
       Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
-      Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); }
+      Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
+      Missing_Reviews: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; }
     };
 
     var sortResults = function(newOption, newOrder) {
@@ -268,11 +269,12 @@ $(function() {
       $(container).append(tableHTML);
     }
 
-    var sortList = _.keys(sortOptions);
-    var allOptions = '<option>' + sortList.join('</option>\n<option>') + '</option>';
+    var allOptions = _.map(_.keys(sortOptions), function(option) {
+      return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
+    })
     var searchBarHTML = '<form class="form-inline search-form" role="search">' +
       '<div class="form-group search-content has-feedback">' +
-        '<select id="form-sort">' + allOptions + '</select>' +
+        '<select id="form-sort">' + allOptions.join('') + '</select>' +
       '</div>' +
       '<div id="form-order" class="form-group glyphicon glyphicon-sort"></div>' +
       '</form>';
