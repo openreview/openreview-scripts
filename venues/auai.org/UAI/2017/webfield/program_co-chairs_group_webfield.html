@@ -273,14 +273,15 @@ $(function() {
     var allOptions = _.map(_.keys(sortOptions), function(option) {
       return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
     })
-    var searchBarHTML = '<form class="form-inline search-form" role="search">' +
+    var sortBarHTML = '<form class="form-inline search-form" role="search">' +
+      '<span><strong>Sort: </strong></span>' +
       '<div class="form-group search-content has-feedback">' +
         '<select id="form-sort">' + allOptions.join('') + '</select>' +
       '</div>' +
       '<div id="form-order" class="form-group glyphicon glyphicon-sort"></div>' +
       '</form>';
 
-    $(container).empty().append(searchBarHTML);
+    $(container).empty().append(sortBarHTML);
     $(container).on('change', 'select#form-sort', function(event) {
       sortResults($(event.target).val(), order)
     });
