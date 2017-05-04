@@ -206,6 +206,28 @@ $(function() {
     });
   };
 
+  var displaySortPanel = function(container, sortOptions, sortResults) {
+
+    var allOptions = _.map(_.keys(sortOptions), function(option) {
+      return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
+    })
+    var sortBarHTML = '<form class="form-inline search-form" role="search">' +
+      '<span><strong>Sort: </strong></span>' +
+      '<div class="form-group search-content has-feedback">' +
+        '<select id="form-sort">' + allOptions.join('') + '</select>' +
+      '</div>' +
+      '<div id="form-order" class="form-group glyphicon glyphicon-sort"></div>' +
+      '</form>';
+
+    $(container).empty().append(sortBarHTML);
+    $(container).on('change', 'select#form-sort', function(event) {
+      sortResults($(event.target).val(), false);
+    });
+    $(container).on('click', 'div#form-order', function(event) {
+      sortResults($(container).find('#form-sort').val(), true);
+    });
+  }
+
   var displayPaperStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
 
     var rowData = _.map(notes, function(note) {
@@ -244,8 +266,11 @@ $(function() {
       Meta_Review_Missing: function(row) { return row.areachairProgressData.numMetaReview; }
     };
 
-    var sortResults = function(newOption, newOrder) {
-      order = newOrder;
+    var sortResults = function(newOption, switchOrder) {
+      if (switchOrder) {
+        order = (order == 'asc' ? 'desc' : 'asc');
+      }
+
       var selectedOption = newOption;
       rowData = _.orderBy(rowData, sortOptions[selectedOption], order);
       renderTable(container, rowData);
@@ -271,24 +296,7 @@ $(function() {
       $(container).append(tableHTML);
     }
 
-    var allOptions = _.map(_.keys(sortOptions), function(option) {
-      return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
-    })
-    var sortBarHTML = '<form class="form-inline search-form" role="search">' +
-      '<span><strong>Sort: </strong></span>' +
-      '<div class="form-group search-content has-feedback">' +
-        '<select id="form-sort">' + allOptions.join('') + '</select>' +
-      '</div>' +
-      '<div id="form-order" class="form-group glyphicon glyphicon-sort"></div>' +
-      '</form>';
-
-    $(container).empty().append(sortBarHTML);
-    $(container).on('change', 'select#form-sort', function(event) {
-      sortResults($(event.target).val(), order)
-    });
-    $(container).on('click', 'div#form-order', function(event) {
-      sortResults($(container).find('#form-sort').val(), order == 'asc' ? 'desc' : 'asc')
-    });
+    displaySortPanel(container, sortOptions, sortResults);
     renderTable(container, rowData);
 
   };
@@ -338,8 +346,11 @@ $(function() {
       Papers_with_Completed_MetaReview: function(row) { return row.reviewProgressData.numCompletedMetaReviews; }
     };
 
-    var sortResults = function(newOption, newOrder) {
-      order = newOrder;
+    var sortResults = function(newOption, switchOrder) {
+      if (switchOrder) {
+        order = (order == 'asc' ? 'desc' : 'asc');
+      }
+
       var selectedOption = newOption;
       rowData = _.orderBy(rowData, sortOptions[selectedOption], order);
       renderTable(container, rowData);
@@ -366,24 +377,7 @@ $(function() {
       $(container).append(tableHTML);
     }
 
-    var allOptions = _.map(_.keys(sortOptions), function(option) {
-      return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
-    })
-    var sortBarHTML = '<form class="form-inline search-form" role="search">' +
-      '<span><strong>Sort: </strong></span>' +
-      '<div class="form-group search-content has-feedback">' +
-        '<select id="form-sort">' + allOptions.join('') + '</select>' +
-      '</div>' +
-      '<div id="form-order" class="form-group glyphicon glyphicon-sort"></div>' +
-      '</form>';
-
-    $(container).empty().append(sortBarHTML);
-    $(container).on('change', 'select#form-sort', function(event) {
-      sortResults($(event.target).val(), order)
-    });
-    $(container).on('click', 'div#form-order', function(event) {
-      sortResults($(container).find('#form-sort').val(), order == 'asc' ? 'desc' : 'asc')
-    });
+    displaySortPanel(container, sortOptions, sortResults);
     renderTable(container, rowData);
 
 
@@ -442,8 +436,10 @@ $(function() {
       Papers_with_Completed_Reviews: function(row) { return row.reviewStatusData.numCompletedReviews; }
     };
 
-    var sortResults = function(newOption, newOrder) {
-      order = newOrder;
+    var sortResults = function(newOption, switchOrder) {
+      if (switchOrder) {
+        order = (order == 'asc' ? 'desc' : 'asc');
+      }
       var selectedOption = newOption;
       rowData = _.orderBy(rowData, sortOptions[selectedOption], order);
       renderTable(container, rowData);
@@ -470,24 +466,7 @@ $(function() {
       $(container).append(tableHTML);
     }
 
-    var allOptions = _.map(_.keys(sortOptions), function(option) {
-      return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
-    })
-    var sortBarHTML = '<form class="form-inline search-form" role="search">' +
-      '<span><strong>Sort: </strong></span>' +
-      '<div class="form-group search-content has-feedback">' +
-        '<select id="form-sort">' + allOptions.join('') + '</select>' +
-      '</div>' +
-      '<div id="form-order" class="form-group glyphicon glyphicon-sort"></div>' +
-      '</form>';
-
-    $(container).empty().append(sortBarHTML);
-    $(container).on('change', 'select#form-sort', function(event) {
-      sortResults($(event.target).val(), order)
-    });
-    $(container).on('click', 'div#form-order', function(event) {
-      sortResults($(container).find('#form-sort').val(), order == 'asc' ? 'desc' : 'asc')
-    });
+    displaySortPanel(container, sortOptions, sortResults);
     renderTable(container, rowData);
 
   };
