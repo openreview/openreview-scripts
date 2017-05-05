@@ -223,7 +223,7 @@ $(function() {
     $(container).on('change', 'select#form-sort', function(event) {
       sortResults($(event.target).val(), false);
     });
-    $(container).on('click', 'div#form-order', function(event) {
+    $(container).on('click', '#form-order', function(event) {
       sortResults($(container).find('#form-sort').val(), true);
     });
   };
