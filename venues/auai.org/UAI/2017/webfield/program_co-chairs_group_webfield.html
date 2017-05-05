@@ -210,13 +210,13 @@ $(function() {
 
     var allOptions = _.map(_.keys(sortOptions), function(option) {
       return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
-    })
-    var sortBarHTML = '<form class="form-inline search-form" role="search">' +
-      '<span><strong>Sort: </strong></span>' +
-      '<div class="form-group search-content has-feedback" style="margin-right: 2px">' +
-        '<select id="form-sort" style="width: 320px">' + allOptions.join('') + '</select>' +
+    });
+    var sortBarHTML = '<form class="form-inline search-form" role="search" style="margin: -10px 0 -1px -16px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; padding: 1rem;">' +
+      '<strong>Sort: </strong>' +
+      '<div class="form-group search-content" style="margin-right: 0;">' +
+        '<select id="form-sort" class="form-control" style="width: 320px">' + allOptions.join('') + '</select>' +
       '</div>' +
-      '<div id="form-order" class="form-group glyphicon glyphicon-sort btn btn-xs"></div>' +
+      '<button id="form-order" class="btn" style="min-width:auto;"><span class="glyphicon glyphicon-sort"></span></button>' +
       '</form>';
 
     $(container).empty().append(sortBarHTML);
@@ -226,7 +226,7 @@ $(function() {
     $(container).on('click', 'div#form-order', function(event) {
       sortResults($(container).find('#form-sort').val(), true);
     });
-  }
+  };
 
   var displayPaperStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
 
