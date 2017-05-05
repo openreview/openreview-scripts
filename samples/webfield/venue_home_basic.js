@@ -10,6 +10,7 @@ var CONFERENCE = 'ICLR.cc/2017/conference';
 var INVITATION = CONFERENCE + '/-/submission';
 
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
+var PAGE_SIZE = 100;
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -17,7 +18,9 @@ function main() {
 
   renderConferenceHeader();
 
-  load().then(render);
+  load().then(render).then(function() {
+    Webfield.setupAutoLoading(INVITATION, PAGE_SIZE);
+  });
 }
 
 // RenderConferenceHeader renders the static info at the top of the page. Since that content
@@ -40,7 +43,7 @@ function renderConferenceHeader() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
   var invitationP = Webfield.api.getSubmissionInvitation(INVITATION, {deadlineBuffer: BUFFER});
-  var notesP = Webfield.api.getSubmissions(INVITATION);
+  var notesP = Webfield.api.getSubmissions(INVITATION, {limit: PAGE_SIZE});
 
   return $.when(invitationP, notesP);
 }
