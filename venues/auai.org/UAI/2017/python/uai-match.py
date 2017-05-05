@@ -9,6 +9,7 @@ import csv
 import openreview
 import match_utils
 import openreview_matcher
+
 from uaidata import *
 
 # Argument handling
@@ -37,8 +38,7 @@ except IOError as e:
     raise Exception("local metadata file not found. Please run uai-metadata.py first.")
 
 
-## Main processing
-
+## Settings (move this outside at some point)
 matching_configuration = {
     "minusers": 1,
     "maxusers": 4,
@@ -47,18 +47,11 @@ matching_configuration = {
     "weights": [5, 3, 1]
 }
 
-
-
-matching_args = {
-    'group': data['user_groups']['auai.org/UAI/2017/Program_Committee'],
-    'papers': data['papers_to_match'],
-    'metadata': data['paper_metadata'],
-    'config': matching_configuration
-}
-
-matcher = openreview_matcher.Matcher(**matching_args)
+## Solve the matcher
+matcher = openreview_matcher.Matcher(group=data['user_groups'][PC], papers=data['papers'], metadata=data['metadata'], config=matching_configuration)
 assignments = matcher.solve()
 
+## Write assignments to CSV
 with open(outdir + '/uai-assignments-redesigned.csv', 'w') as outfile:
     csvwriter = csv.writer(outfile)
     for a in assignments:
