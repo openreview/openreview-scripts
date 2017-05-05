@@ -225,6 +225,7 @@ $(function() {
     });
     $(container).on('click', '#form-order', function(event) {
       sortResults($(container).find('#form-sort').val(), true);
+      return false;
     });
   };
 
