@@ -48,9 +48,7 @@ print "Getting areachair recommendations..."
 recs_by_forum = defaultdict(list)
 for forum in papers_by_forum:
     tags = client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % papers_by_forum[forum].number)
-    recs_by_forum[forum] tags
-
-###
+    recs_by_forum[forum] = tags
 
 # reset the metadata
 empty_paper_note_content = {
