@@ -17,6 +17,14 @@ def post_or_update(client, content, verbose=False):
         pub_key = content['pub_key']
         matches = client.search_notes(pub_key)
 
+        # remove the pub_key, it'll get generated
+        # when the note is inserted as a "paper hash"
+        content.pop('pub_key')
+
+        # if there is a date, make sure it is passed as a string
+        if 'year' in content :
+            content['year'] = str(content['year'])
+
         # If no matches, post a new note
         if len(matches) == 0:
             if verbose: print "pub_key not found. Creating new note."
