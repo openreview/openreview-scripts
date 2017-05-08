@@ -45,7 +45,7 @@ def get_open_comment_invitation(submissionId, number, authorsGroupId, areachairG
             'comment': {
                 'order': 2,
                 'value-regex': '[\\S\\s]{1,5000}',
-                'description': 'Your comment or reply.',
+                'description': 'Your comment or reply (5000 characters maximum)',
                 'required': True
             }
         }
@@ -92,7 +92,7 @@ def get_confidential_comment_invitation(submissionId, number, authorsGroupId, ar
             'comment': {
                 'order': 2,
                 'value-regex': '[\\S\\s]{1,5000}',
-                'description': 'Your comment or reply.',
+                'description': 'Your comment or reply (5000 characters maximum)',
                 'required': True
             }
         }
@@ -140,7 +140,7 @@ def get_review_comment_invitation(submissionId, number, authorsGroupId, areachai
             'comment': {
                 'order': 2,
                 'value-regex': '[\\S\\s]{1,5000}',
-                'description': 'Your comment or reply.',
+                'description': 'Your comment or reply (5000 characters maximum)',
                 'required': True
             }
         }
@@ -291,7 +291,7 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
             'metareview': {
                     'order': 2,
                     'value-regex': '[\\S\\s]{1,5000}',
-                    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+                    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (5000 characters maximum)',
                     'required': True
             },
             'recommendation': {
