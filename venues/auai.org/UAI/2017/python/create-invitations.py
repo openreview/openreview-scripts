@@ -296,7 +296,7 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
             },
             'recommendation': {
                     'order': 3,
-                    'value-dropdown': [
+                    'value-radio': [
                         'Accept',
                         'Reject'
                     ],
@@ -308,7 +308,7 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
                         'Poster',
                         'Oral'
                     ],
-                    'required': True
+                    'required': False
             },
             'best paper':{
                     'order': 5,
@@ -317,7 +317,16 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
                         'Yes',
                         'No'
                     ],
-                    'required': True
+                    'required': False
+            },
+            'best student paper':{
+                    'order': 6,
+                    'description': 'Nominate as best student paper',
+                    'value-radio': [
+                        'Yes',
+                        'No'
+                    ],
+                    'required': False
             }
         }
     }
