@@ -1,25 +1,46 @@
 // ------------------------------------
 // Basic venue homepage template
 //
-// This webfield displays the conference header, the submit button, and a list
-// of all submitted papers.
+// This webfield displays the conference header (#header), the submit button (#invitation),
+// and a list of all submitted papers (#notes).
 // ------------------------------------
 
 // Constants
 var CONFERENCE = 'ICLR.cc/2017/conference';
 var INVITATION = CONFERENCE + '/-/submission';
-
+var SUBJECT_AREAS = [
+  'All',
+  'Algorithms: Approximate Inference',
+  'Algorithms: Belief Propagation',
+  'Algorithms: Distributed and Parallel',
+  'Algorithms: Exact Inference',
+  'Algorithms: Graph Theory',
+  'Algorithms: Heuristics',
+  'Algorithms: Lifted Inference',
+  'Algorithms: MCMC methods',
+  'Algorithms: Optimization',
+  'Algorithms: Other',
+  'Algorithms: Software and Tools'
+  // ...
+  // Incomplete list, add more subject areas here
+];
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 100;
 
+var paperDisplayOptions = {
+  pdfLink: true,
+  replyCount: true,
+  showContents: true
+};
+
 // Main is the entry point to the webfield code and runs everything
 function main() {
-  Webfield.ui.setup('#group-container');  // required
+  Webfield.ui.setup('#group-container', CONFERENCE);  // required
 
   renderConferenceHeader();
 
   load().then(render).then(function() {
-    Webfield.setupAutoLoading(INVITATION, PAGE_SIZE);
+    Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
   });
 }
 
@@ -43,7 +64,7 @@ function renderConferenceHeader() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
   var invitationP = Webfield.api.getSubmissionInvitation(INVITATION, {deadlineBuffer: BUFFER});
-  var notesP = Webfield.api.getSubmissions(INVITATION, {limit: PAGE_SIZE});
+  var notesP = Webfield.api.getSubmissions(INVITATION, {pageSize: PAGE_SIZE});
 
   return $.when(invitationP, notesP);
 }
@@ -57,16 +78,29 @@ function render(invitation, notes) {
   Webfield.ui.submissionButton(invitation, user, {
     onNoteCreated: function() {
       // Callback funtion to be run when a paper has successfully been submitted (required)
-      load().then(render);
+      load().then(render).then(function() {
+        Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
+      });
     }
   });
 
   // Display the list of all submitted papers
   $('#notes').empty();
-  Webfield.ui.notesList(notes, {
+  Webfield.ui.submissionList(notes, {
     heading: 'Submitted Papers',
-    pdfLink: true,
-    replyCount: true
+    displayOptions: paperDisplayOptions,
+    search: {
+      enabled: true,
+      subjectAreas: SUBJECT_AREAS,
+      onResults: function(searchResults) {
+        Webfield.ui.searchResults(searchResults, paperDisplayOptions);
+        Webfield.disableAutoLoading();
+      },
+      onReset: function() {
+        Webfield.ui.searchResults(notes);
+        Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
+      }
+    }
   });
 }
 
