@@ -72,7 +72,7 @@ user_groups = {
 }
 
 print "building metadata..."
-metadata = openreview_matcher.metadata.get_metadata(papers=papers, groups=user_groups, features=features)
+metadata = openreview_matcher.metadata.get_metadata(papers=papers, groups=user_groups, features=features, metadata=metadata)
 
 posted_metadata = []
 for m in metadata:

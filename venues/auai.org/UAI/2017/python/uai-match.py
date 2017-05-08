@@ -15,7 +15,7 @@ from uaidata import *
 # Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('-g','--group', help='the ID of the group to match (required)', required=True)
-parser.add_argument('-i','--data', help='the .pkl file (with extension) containing existing OpenReview data. Defaults to ./metadata.pkl')
+parser.add_argument('-d','--data', help='the .pkl file (with extension) containing existing OpenReview data')
 parser.add_argument('-o','--outdir', help='the directory for output .csv files to be saved. Defaults to current directory')
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -33,6 +33,7 @@ if args.data:
     papers = data['papers']
     metadata = data['metadata']
 else:
+    print "Retrieving data from ", client.baseurl
     group = client.get_group(args.group)
     papers = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
     metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')
@@ -51,8 +52,10 @@ matcher = openreview_matcher.Matcher(group=group, papers=papers, metadata=metada
 assignments = matcher.solve()
 
 ## Write assignments to CSV
-with open(outdir + '/uai-assignments-redesigned.csv', 'w') as outfile:
-    csvwriter = csv.writer(outfile)
+outfile = outdir + '/uai-assignments-redesigned.csv'
+print "writing assignments to ", outfile
+with open(outfile, 'w') as o:
+    csvwriter = csv.writer(o)
     for a in assignments:
         csvwriter.writerow([a[0].encode('utf-8'),a[1]])
 
