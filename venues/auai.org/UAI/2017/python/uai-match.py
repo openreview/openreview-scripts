@@ -14,9 +14,9 @@ from uaidata import *
 
 # Argument handling
 parser = argparse.ArgumentParser()
+parser.add_argument('-g','--group', help='the ID of the group to match (required)', required=True)
 parser.add_argument('-i','--data', help='the .pkl file (with extension) containing existing OpenReview data. Defaults to ./metadata.pkl')
-parser.add_argument('-o','--outdir', help='the directory for output .csv files to be saved. Defaults to current directory.')
-
+parser.add_argument('-o','--outdir', help='the directory for output .csv files to be saved. Defaults to current directory')
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--baseurl', help="base URL")
@@ -28,15 +28,14 @@ outdir = '.' if not args.outdir else args.outdir
 client = openreview.Client(username=args.username, password=args.password, baseurl=args.baseurl)
 
 if args.data:
-    datapath = args.data
+    data = match_utils.load_obj(args.data)
+    group = data['user_groups'][args.group]
+    papers = data['papers']
+    metadata = data['metadata']
 else:
-    datapath = './metadata.pkl'
-
-try:
-    data = match_utils.load_obj(datapath)
-except IOError as e:
-    raise Exception("local metadata file not found. Please run uai-metadata.py first.")
-
+    group = client.get_group(args.group)
+    papers = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
+    metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')
 
 ## Settings (move this outside at some point)
 matching_configuration = {
@@ -48,7 +47,7 @@ matching_configuration = {
 }
 
 ## Solve the matcher
-matcher = openreview_matcher.Matcher(group=data['user_groups'][PC], papers=data['papers'], metadata=data['metadata'], config=matching_configuration)
+matcher = openreview_matcher.Matcher(group=group, papers=papers, metadata=metadata, config=matching_configuration)
 assignments = matcher.solve()
 
 ## Write assignments to CSV

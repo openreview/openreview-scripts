@@ -1,7 +1,7 @@
 from collections import defaultdict
-from openreview_matcher import features
+from openreview_matcher import metadata
 
-class SubjectAreaOverlap(features.OpenReviewFeature):
+class SubjectAreaOverlap(metadata.OpenReviewFeature):
     def __init__(self, name, data):
         """
         @data - dict which has the following attributes:
@@ -38,7 +38,7 @@ class SubjectAreaOverlap(features.OpenReviewFeature):
             return 0.0
 
 
-class BidScore(features.OpenReviewFeature):
+class BidScore(metadata.OpenReviewFeature):
     def __init__(self, name, data):
         """
         @data - a dict which has the following attributes:
@@ -66,7 +66,7 @@ class BidScore(features.OpenReviewFeature):
             return 0.0
 
 
-class ACRecommendation(features.OpenReviewFeature):
+class ACRecommendation(metadata.OpenReviewFeature):
     def __init__(self, name, data):
         """
         @data - dict which has the following attributes:

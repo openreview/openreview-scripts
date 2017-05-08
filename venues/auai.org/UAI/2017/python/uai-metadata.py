@@ -76,7 +76,6 @@ metadata = openreview_matcher.metadata.get_metadata(papers=papers, groups=user_g
 
 posted_metadata = []
 for m in metadata:
-    print "posting ", m.forum
     posted_metadata.append(client.post_note(m))
 
 print "Saving OpenReview metadata to %s.pkl" % download
