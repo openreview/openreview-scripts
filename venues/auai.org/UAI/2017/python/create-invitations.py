@@ -296,17 +296,10 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
             },
             'recommendation': {
                     'order': 3,
-                    'value-dropdown': [
-                        'Accept',
-                        'Reject'
-                    ],
-                    'required': True
-            },
-            'format': {
-                    'order': 4,
                     'value-radio': [
-                        'Poster',
-                        'Oral'
+                        'Accept (Oral)',
+                        'Accept (Poster)',
+                        'Reject'
                     ],
                     'required': True
             },
@@ -317,7 +310,16 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
                         'Yes',
                         'No'
                     ],
-                    'required': True
+                    'required': False
+            },
+            'best student paper':{
+                    'order': 6,
+                    'description': 'Nominate as best student paper',
+                    'value-radio': [
+                        'Yes',
+                        'No'
+                    ],
+                    'required': False
             }
         }
     }
