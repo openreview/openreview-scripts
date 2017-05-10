@@ -297,18 +297,11 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
             'recommendation': {
                     'order': 3,
                     'value-radio': [
-                        'Accept',
+                        'Accept (Oral)',
+                        'Accept (Poster)',
                         'Reject'
                     ],
                     'required': True
-            },
-            'format': {
-                    'order': 4,
-                    'value-radio': [
-                        'Poster',
-                        'Oral'
-                    ],
-                    'required': False
             },
             'best paper':{
                     'order': 5,
