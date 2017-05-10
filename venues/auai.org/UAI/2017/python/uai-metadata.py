@@ -61,7 +61,8 @@ ac_recommendation_data = {
 
 
 features = [
-    uai_features.SubjectAreaOverlap(name='subject_area_overlap', data=subject_area_overlap_data),
+    uai_features.PrimarySubjectOverlap(name='primary_subject_overlap', data=subject_area_overlap_data),
+    uai_features.SecondarySubjectOverlap(name='secondary_subject_overlap', data=subject_area_overlap_data),
     uai_features.BidScore(name='bid_score', data=bid_score_data),
     uai_features.ACRecommendation(name='ac_recommendation', data=ac_recommendation_data)
 ]
@@ -72,17 +73,16 @@ user_groups = {
 }
 
 print "building metadata..."
-metadata = openreview_matcher.metadata.get_metadata(papers=papers, groups=user_groups, features=features, metadata=metadata)
+new_metadata = openreview_matcher.metadata.get_metadata(papers=papers, groups=user_groups, features=features, metadata=metadata)
 
-posted_metadata = []
-for m in metadata:
-    posted_metadata.append(client.post_note(m))
+for m in new_metadata:
+    client.post_note(m)
 
 print "Saving OpenReview metadata to %s.pkl" % download
 match_utils.save_obj(
     {
         'user_groups': user_groups,
         'papers': papers,
-        'metadata': posted_metadata
+        'metadata': new_metadata
     },
     download)

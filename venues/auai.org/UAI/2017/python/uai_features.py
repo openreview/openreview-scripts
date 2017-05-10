@@ -28,14 +28,24 @@ class SubjectAreaOverlap(metadata.OpenReviewFeature):
             user_subjects = set(user_subject_list)
             forum_subjects = set(paper_subject_list)
             intersection = int(len(user_subjects & forum_subjects))
-            max_denominator = max([int(len(s)) for s in [user_subjects, forum_subjects]])
+            max_denominator = max([len(user_subjects), len(forum_subjects)])
 
             if max_denominator > 0:
-                return intersection / max_denominator
+                return float(intersection) / float(max_denominator)
             else:
                 return 0.0
-        except:
+        except KeyError:
             return 0.0
+
+class PrimarySubjectOverlap(SubjectAreaOverlap):
+    def __init__(self, name, data):
+        SubjectAreaOverlap.__init__(self, name, data)
+        self.subjectareas_by_signature = {n.signatures[0]: [n.content['primary area']] for n in self.data['subject_areas']}
+
+class SecondarySubjectOverlap(SubjectAreaOverlap):
+    def __init__(self, name, data):
+        SubjectAreaOverlap.__init__(self, name, data)
+        self.subjectareas_by_signature = {n.signatures[0]: n.content['additional areas'] for n in self.data['subject_areas']}
 
 
 class BidScore(metadata.OpenReviewFeature):
@@ -47,7 +57,7 @@ class BidScore(metadata.OpenReviewFeature):
         """
         self.name = name
         self.data = data
-        self.bids_by_signature = {bid.signatures[0]: bid for bid in self.data['bids']},
+        self.bids_by_signature = {bid.signatures[0]: bid for bid in self.data['bids']}
 
     def score(self, signature, forum):
         """
@@ -84,8 +94,6 @@ class ACRecommendation(metadata.OpenReviewFeature):
         @forum - forum of paper
 
         """
-
-
         recs = self.recs_by_forum[forum]
         recommended_users = [rec.tag for rec in recs]
 
