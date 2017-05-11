@@ -54,20 +54,7 @@ class Webfield(object):
 var CONFERENCE = '%s';
 var INVITATION = '%s';
 var SUBJECT_AREAS = [
-  'All',
-  'Algorithms: Approximate Inference',
-  'Algorithms: Belief Propagation',
-  'Algorithms: Distributed and Parallel',
-  'Algorithms: Exact Inference',
-  'Algorithms: Graph Theory',
-  'Algorithms: Heuristics',
-  'Algorithms: Lifted Inference',
-  'Algorithms: MCMC methods',
-  'Algorithms: Optimization',
-  'Algorithms: Other',
-  'Algorithms: Software and Tools'
-  // ...
-  // Incomplete list, add more subject areas here
+  // Add conference specific subject areas here
 ];
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 50;
