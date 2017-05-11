@@ -26,7 +26,8 @@ invitation_invitees = {
 	'Recommend/Reviewer': { 'tags': True, 'byPaper': True, 'invitees': [maskAreaChairGroup] },
 	'Submit/Review': { 'byPaper': True, 'invitees': [maskReviewerGroup] },
 	'Meta/Review': { 'byPaper': True, 'invitees': [maskAreaChairGroup] },
-	'Add/Revision': { 'byPaper': True, 'invitees': [maskAuthorsGroup] }
+	'Add/Revision': { 'byPaper': True, 'invitees': [maskAuthorsGroup] },
+	'Area_Chair/Review/Rating' : { 'byPaper': True, 'invitees': [maskAreaChairGroup]}
 }
 
 def get_invitations(invitationId):
