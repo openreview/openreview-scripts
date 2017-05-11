@@ -25,7 +25,7 @@ var SUBJECT_AREAS = [
   // Incomplete list, add more subject areas here
 ];
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
-var PAGE_SIZE = 100;
+var PAGE_SIZE = 50;
 
 var paperDisplayOptions = {
   pdfLink: true,
@@ -97,7 +97,7 @@ function render(invitation, notes) {
         Webfield.disableAutoLoading();
       },
       onReset: function() {
-        Webfield.ui.searchResults(notes);
+        Webfield.ui.searchResults(notes, paperDisplayOptions);
         Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
       }
     }
