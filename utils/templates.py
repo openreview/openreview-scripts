@@ -31,7 +31,7 @@ class Webfield(object):
     def __init__(self, params):
         self.html = self.build_webfield(**params)
 
-    def build_webfield(self, header='', title='', info='', url='', invitation='', html = ''):
+    def build_webfield(self, groupId='', invitationId='', title='', subtitle='', location='', date='', url=''):
         """
 
         Returns a string of HTML for making a standardized webfield
@@ -43,125 +43,115 @@ class Webfield(object):
         """
 
         webfield = """
-        <html>
-          <head>
-          </head>
-          <body>
-            <div id='main'>
-              <div id='header'></div>
-              <div id='invitation'></div>
-              <div id='notes'></div>
-            </div>
-            <script type="text/javascript">
-            $(function() {
+// ------------------------------------
+// Basic venue homepage template
+//
+// This webfield displays the conference header (#header), the submit button (#invitation),
+// and a list of all submitted papers (#notes).
+// ------------------------------------
 
-              $attach('#header', 'mkHostHeader', [
-              '%s', '%s', '%s', '%s'
-              ], true);
+// Constants
+var CONFERENCE = '%s';
+var INVITATION = '%s';
+var SUBJECT_AREAS = [
+  'All',
+  'Algorithms: Approximate Inference',
+  'Algorithms: Belief Propagation',
+  'Algorithms: Distributed and Parallel',
+  'Algorithms: Exact Inference',
+  'Algorithms: Graph Theory',
+  'Algorithms: Heuristics',
+  'Algorithms: Lifted Inference',
+  'Algorithms: MCMC methods',
+  'Algorithms: Optimization',
+  'Algorithms: Other',
+  'Algorithms: Software and Tools'
+  // ...
+  // Incomplete list, add more subject areas here
+];
+var BUFFER = 1000 * 60 * 30;  // 30 minutes
+var PAGE_SIZE = 50;
 
-              var sm = mkStateManager();
+var paperDisplayOptions = {
+  pdfLink: true,
+  replyCount: true,
+  showContents: true
+};
 
-              var httpGetP = function(url, queryOrBody) {
-                var df = $.Deferred();
-                httpGet(url, queryOrBody,
-                function(result) {
-                  df.resolve(result);
-                },
-                function(result) {
-                  df.reject(result);
-                });
-                return df.promise();
-              };
+// Main is the entry point to the webfield code and runs everything
+function main() {
+  Webfield.ui.setup('#group-container', CONFERENCE);  // required
 
-              var invitationP = httpGetP('invitations', {id: '%s'}).then(function(result) {
-                var valid_invitations = _.filter(result.invitations, function(inv){
-                  return inv.duedate > Date.now();
-                })
+  renderConferenceHeader();
 
-                return valid_invitations[0];
+  load().then(render).then(function() {
+    Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
+  });
+}
 
-              },
-              function(error){
-                return error
-              });
+// RenderConferenceHeader renders the static info at the top of the page. Since that content
+// never changes, put it in its own function
+function renderConferenceHeader() {
+  Webfield.ui.venueHeader({
+    title: '%s',
+    subtitle: '%s',
+    location: '%s',
+    date: '%s',
+    website: '%s',
+    instructions: null,  // Add any custom instructions here. Accepts HTML
+    deadline: ''
+  });
 
-              var notesP = httpGetP('notes', {invitation: '%s'}).then(function(result) {
-                return result.notes;
-              },
-              function(error){
-                return error
-              });
+  Webfield.ui.spinner('#notes');
+}
 
+// Load makes all the API calls needed to get the data to render the page
+// It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
+function load() {
+  var invitationP = Webfield.api.getSubmissionInvitation(INVITATION, {deadlineBuffer: BUFFER});
+  var notesP = Webfield.api.getSubmissions(INVITATION, {pageSize: PAGE_SIZE});
 
-              $.when(invitationP, notesP).done(function(invitation, notes) {
-                console.log('invitation',invitation)
-                if(invitation){
-                  sm.update('invitationTrip', {
-                    invitation: invitation
-                  });
-                }
-                sm.update('notes', notes);
+  return $.when(invitationP, notesP);
+}
 
-                sm.addHandler('conference', {
-                  invitationTrip: function(invitationTrip) { if (invitationTrip) {
-                    var invitation = invitationTrip.invitation;
-                    $attach('#invitation', 'mkInvitationButton', [invitation, function() {
-                      if (user && !user.id.startsWith('guest_') && invitation) {
-                        view.mkNewNoteEditor(invitation, null, null, user, {
-                          onNoteCreated: function(idRecord) {
-                            httpGetP('notes', {
-                              invitation: '%s'
-                            }).then(function(result) {
-                              console.log("time to update notes: " + result.notes.length);
-                              sm.update('notes', result.notes);
-                            },
-                            function(error){
-                              return error
-                            });
-                          },
-                          onCompleted: function(editor) {
-                            $('#notes').prepend(editor);
-                          },
-                          onError: function(error) {
-                            if (error) {
-                              var errors = error.responseJSON ? error.responseJSON.errors : null;
-                              var message = errors ? errors[0] : 'Something went wrong';
-                              if(message == "Invitation has expired") {
-                                promptError("The submission is closed");
-                              } else {
-                                promptError(message);
-                             }
-                            }
-                          }
-                        });
-                      } else {
-                       promptLogin(user);
-                      }
-                    }], true);
-                  }},
+// Render is called when all the data is finished being loaded from the server
+// It should also be called when the page needs to be refreshed, for example after a user
+// submits a new paper.
+function render(invitation, notes) {
+  // Display submission button and form
+  $('#invitation').empty();
+  Webfield.ui.submissionButton(invitation, user, {
+    onNoteCreated: function() {
+      // Callback funtion to be run when a paper has successfully been submitted (required)
+      load().then(render).then(function() {
+        Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
+      });
+    }
+  });
 
-                  notes: function(notes) {
-                    if (notes) {
-                      $('#notes').empty();
-                      _.forEach(notes, function(note) {
-                        $attach('#notes', 'mkNotePanel', [note, {
-                          titleLink: 'HREF',
-                          withReplyCount: true
-                        }], true);
-                      });
-                    }
-                  }
-                });
+  // Display the list of all submitted papers
+  $('#notes').empty();
+  Webfield.ui.submissionList(notes, {
+    heading: 'Submitted Papers',
+    displayOptions: paperDisplayOptions,
+    search: {
+      enabled: true,
+      subjectAreas: SUBJECT_AREAS,
+      onResults: function(searchResults) {
+        Webfield.ui.searchResults(searchResults, paperDisplayOptions);
+        Webfield.disableAutoLoading();
+      },
+      onReset: function() {
+        Webfield.ui.searchResults(notes, paperDisplayOptions);
+        Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
+      }
+    }
+  });
+}
 
-              })
-              .fail(function(){
-                console.log("Invitation and/or notes not found")
-              });
-            });
-            </script>
-         </body>
-        </html>
-        """ % (header, title, info, url, invitation, invitation, invitation)
+// Go!
+main();
+        """ % (groupId, invitationId, title, subtitle, location, date, url)
         return webfield
 
 class InvitationReply(object):
