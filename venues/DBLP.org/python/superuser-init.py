@@ -27,8 +27,7 @@ args = parser.parse_args()
 
 ## Initialize the client library with username and password
 if args.username != None and args.password != None:
-    openreview = Client(baseurl=args.baseurl, username=args.username,
-                        password=args.password)
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
     openreview = Client(baseurl=args.baseurl)
 
@@ -93,7 +92,7 @@ if openreview.user['id'].lower() == 'openreview.net':
             'title': {
                 'description': 'Title of paper.',
                 'order': 1,
-                'value-regex': '.{0,300}',
+                'value-regex': '.{0,500}',
                 'required': False
             },
             'abstract': {
@@ -254,8 +253,7 @@ if openreview.user['id'].lower() == 'openreview.net':
                                        writers=['DBLP.org/upload'],
                                        invitees=['DBLP.org/upload'],
                                        signatures=['DBLP.org'],
-                                       reply=reply,
-                                       process='../process/dblp_process.js')
+                                       reply=reply)
 
 
     revision_reply = reply.copy()
