@@ -214,6 +214,7 @@ function renderContent(notes, submittedNotes, userGroups) {
 
   if (_.isEmpty(userGroups)) {
     // If the user isn't part of the conference don't render tabs
+    $('.tabs-container').hide();
     return;
   }
 
