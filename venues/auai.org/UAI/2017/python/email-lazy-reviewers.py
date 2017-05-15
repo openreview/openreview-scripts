@@ -79,8 +79,6 @@ def get_data(invitation):
             if username not in reviewers:
                 reviewers[username] = []
             reviewers[username].append(reviewer_id)
-        # else:
-        #     print 'Reviewer ', reviewer_id, ' has no members'
 
     for r in current_reviewers.json():
         reviewers_id = r['id']
