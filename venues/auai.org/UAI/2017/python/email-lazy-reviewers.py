@@ -124,7 +124,7 @@ for paper_number in sorted(reviewers_by_paper):
                 print "late reviewers on paper %s: %s" % (paper_number, reviewer)
             late_users.add(reviewer)
 
-# Comment this out to send the emails
+# Uncomment this out to send the emails
 # response = client.send_mail(subjectline, list(late_users), message)
 # print "Emailing the following users:"
 # print response['groups']
