@@ -6,7 +6,6 @@ import utils
 import templates
 import argparse
 import datetime
-import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--test', help="base URL")
@@ -29,8 +28,8 @@ try:
 	year = int(year)
 	# this will catch invalid values for date
 	duedate = utils.get_duedate(year, month, day)
-	current_timestamp = int(round(time.time() * 1000))
-	assert duedate > current_timestamp, "Cannot enter a date in the past"
+	now = datetime.datetime.now()
+	assert duedate > now, "Cannot enter a date in the past"
 
 	# get due time
 	duetime_input = raw_input(
@@ -39,7 +38,7 @@ try:
 	hour = int(hour)
 	minute = int(minute)
 	duedate = utils.get_duedate(year, month, day, hour, minute)
-	assert duedate > current_timestamp, "Cannot enter a time in the past"
+	assert duedate > now, "Cannot enter a time in the past"
 except Exception, e:
 	print "Duedate invalid: ", e
 	sys.exit()
