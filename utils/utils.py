@@ -100,6 +100,7 @@ def get_duedate(year, month, day, hour=23, minute=59):
         an int that represents the date in milliseconds
 
     """
-    DATE_DUE = datetime.datetime(year, month, day, hour, minute)
-    TIMESTAMP_DUE = int(time.mktime(DATE_DUE.timetuple()))*1000
-    return TIMESTAMP_DUE
+    return datetime.datetime(year, month, day, hour, minute)
+
+def date_to_timestamp(date):
+    return int(time.mktime(date.timetuple())) * 1000

@@ -83,9 +83,22 @@ $(function() {
   };
 
   var getUserProfiles = function(userIds) {
-    return $.post('/user/profiles', JSON.stringify({ids: userIds}), function(result) {
-      return result.profiles;
-    }, 'json').fail(function(error) {
+    return $.post('/user/profiles', JSON.stringify({ids: userIds}))
+    .then(function(result) {
+
+      var profileMap = {};
+
+      _.forEach(result.profiles, function(profile) {
+
+        var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
+        profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
+        profile.email = profile.content.preferred_email;
+        profileMap[profile.id] = profile;
+      })
+
+      return profileMap;
+    })
+    .fail(function(error) {
       displayError();
       return null;
     });
@@ -108,7 +121,7 @@ $(function() {
     $panel.hide('fast', function() {
       $panel.empty().append(
         '<div id="header" class="panel">' +
-          '<h1>UAI Area Chair Console</h1><br>' +
+          '<h1>UAI Area Chair Console</h1>' +
         '</div>' +
         '<div id="notes"><div class="tabs-container"></div></div>'
       );
@@ -137,34 +150,26 @@ $(function() {
     });
   };
 
-  var displayStatusTable = function(notes, completedReviews, metaReviews, reviewerIds, container, options) {
-    var uniqueIds = _.uniq(_.reduce(reviewerIds, function(result, idsObj, noteNum) {
-      return result.concat(_.values(idsObj));
-    }, []));
+  var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container, options) {
 
-    $.when(getUserProfiles(uniqueIds)).then(function(userProfiles) {
-      var rowData = _.map(notes, function(note) {
-        var revIds = reviewerIds[note.number];
-        for (var revNumber in revIds) {
-          var profile = _.find(userProfiles.profiles, ['id', revIds[revNumber]]);
+    var rowData = _.map(notes, function(note) {
+      var revIds = reviewerIds[note.number];
+      for (var revNumber in revIds) {
+        var profile = profiles[revIds[revNumber]];
+        revIds[revNumber] = profile;
+      }
 
-          var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
-          profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-          profile.email = profile.content.preferred_email;
-          revIds[revNumber] = profile;
-        }
-
-        var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
-        return buildTableRow(note, revIds, completedReviews[note.number], metaReview);
-      });
-
-      var tableHTML = Handlebars.templates['components/table']({
-        headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
-        rows: rowData,
-        extraClasses: 'uai-console-table'
-      });
-      $(container).empty().append(tableHTML);
+      var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
+      return buildTableRow(note, revIds, completedReviews[note.number], metaReview);
     });
+
+    var tableHTML = Handlebars.templates['components/table']({
+      headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
+      rows: rowData,
+      extraClasses: 'uai-console-table'
+    });
+
+    $(container).empty().append(tableHTML);
   };
 
   var displayError = function(message) {
@@ -186,25 +191,35 @@ $(function() {
     var combinedObj = {};
     var ratings = [];
     for (var reviewerNum in reviewerIds) {
+      var reviewer = reviewerIds[reviewerNum];
       if (reviewerNum in completedReviews) {
         reviewObj = completedReviews[reviewerNum];
-        combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
+        combinedObj[reviewerNum] = {
+          id: reviewer.id,
+          name: reviewer.name,
+          email: reviewer.email,
           completedReview: true,
           forum: reviewObj.forum,
           note: reviewObj.id,
           rating: reviewObj.rating,
           confidence: reviewObj.confidence,
           reviewLength: reviewObj.content.review.length
-        });
+        };
         ratings.push(reviewObj.rating);
       } else {
-        combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
-          forumUrl: '/forum?' + $.param({
-            id: note.forum,
-            noteId: note.id,
-            invitationId: CONFERENCE + '/-/Paper' + note.number + '/Submit/Review'
-          })
+        var forumUrl = '/forum?' + $.param({
+          id: note.forum,
+          noteId: note.id,
+          invitationId: CONFERENCE + '/-/Paper' + note.number + '/Submit/Review'
         });
+        var lastReminderSent = window.localStorage.getItem(forumUrl + '|' + reviewer.id);
+        combinedObj[reviewerNum] = {
+          id: reviewer.id,
+          name: reviewer.name,
+          email: reviewer.email,
+          forumUrl: forumUrl,
+          lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
+        };
       }
     }
     var averageRating = 'N/A';
@@ -264,6 +279,7 @@ $(function() {
     contentType: 'application/json; charset=utf-8'
   });
 
+  var fetchedData = {};
   controller.addHandler('areachairs', {
     token: function(token) {
       var pl = model.tokenPayload(token);
@@ -281,13 +297,38 @@ $(function() {
           );
         })
         .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, loaded) {
-          displayStatusTable(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, '#reviewer-status');
+
+          var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
+            return result.concat(_.values(idsObj));
+          }, []));
+
+          return getUserProfiles(uniqueIds)
+          .then(function(profiles) {
+            fetchedData = {
+              profiles: profiles,
+              blindedNotes: blindedNotes,
+              officialReviews: officialReviews,
+              metaReviews: metaReviews,
+              noteToReviewerIds: noteToReviewerIds
+            }
+            renderTable();
+          });
+
         })
         .fail(function(error) {
           displayError();
         });
     }
   });
+
+  var renderTable = function() {
+    displayStatusTable(fetchedData.profiles,
+      fetchedData.blindedNotes,
+      fetchedData.officialReviews,
+      fetchedData.metaReviews,
+      _.cloneDeep(fetchedData.noteToReviewerIds), //I need to clone this dictionary because some values are missing after the first refresh
+      '#reviewer-status');
+  }
 
   $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
     var hiddenText = 'Show paper details';
@@ -308,6 +349,9 @@ $(function() {
 
     $.post('/mail', JSON.stringify(postData), function(result) {
       promptMessage('A reminder email has been sent to ' + view.prettyId(userId));
+      //Save the timestamp in the local storage
+      window.localStorage.setItem(forumUrl + '|' + userId, Date.now());
+      renderTable();
     }, 'json').fail(function(error) {
       console.log(error);
       promptError('The reminder email could not be sent at this time');
