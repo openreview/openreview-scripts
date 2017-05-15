@@ -218,7 +218,7 @@ $(function() {
           name: reviewer.name,
           email: reviewer.email,
           forumUrl: forumUrl,
-          lastReminderSent: lastReminderSent ? new Date(Date.now(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
+          lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
         };
       }
     }
