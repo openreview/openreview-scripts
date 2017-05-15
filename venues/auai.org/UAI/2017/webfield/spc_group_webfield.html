@@ -249,9 +249,7 @@ $(function() {
       invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta/Review'
     };
     var reviewStatus = {
-      invitationUrl: '/forum?' + $.param(invitationUrlParams),
-      ratingUrl: '/invitation?id=' + CONFERENCE + '/-/Paper' + note.number + '/Area_Chair/Review/Rating',
-      ratingMax: 5
+      invitationUrl: '/forum?' + $.param(invitationUrlParams)
     };
     if (metaReview) {
       reviewStatus.recommendation = metaReview.content.recommendation;
