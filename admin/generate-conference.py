@@ -47,6 +47,7 @@ while not valid_duetime:
 		print "Time invalid."
 
 duedate = utils.get_duedate(year, month, day, hour, minute)
+duedate_milliseconds = utils.date_to_timestamp(duedate)
 
 assert not os.path.exists(directory), "%s already exists" % conference
 
@@ -67,11 +68,13 @@ with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.ge
 print "writing %s/webfield/conf.html" % directory
 with open(directory + '/webfield/conf.html', 'w') as webfile:
 	web_params = {
-		"header": "This is the header",
+		"groupId": conference,
+		"invitationId": "%s/-/%s" % (conference, submission_name),
 		"title": "This is the title",
-		"info": "This is the info",
-		"url": "www.thisistheurl.com",
-		"invitation": "%s/-/%s" % (conference, submission_name)
+		"subtitle": "This is the subtitle",
+		"location" : "This is the location",
+		"date": duedate.strftime('%Y-%m-%d %H:%M:%S'),
+		"url": "www.thisistheurl.com"
 	}
 
 	webfield = templates.Webfield(web_params)
@@ -81,11 +84,11 @@ with open(directory + '/webfield/conf.html', 'w') as webfile:
 print "writing %s/python/admin-init.py" % directory
 with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
 	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
-	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate)
+	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate_milliseconds)
 	new_initfile.write(templatestring)
 
 print "writing %s/python/superuser-init.py" % directory
 with open(directory + '/python/superuser-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/superuser-init.template', __file__)) as template_initfile:
 	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
-	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "\"%s\"" % duedate)
+	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "\"%s\"" % duedate_milliseconds)
 	new_initfile.write(templatestring)

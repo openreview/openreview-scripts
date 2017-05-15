@@ -35,26 +35,26 @@
       var invitationP = httpGetP('invitations', {id: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
         var valid_invitations = _.filter(result.invitations, function(inv){
           return inv.duedate > Date.now();
-        })
+        });
 
         return valid_invitations[0];
 
       },
-      function(error){
-        return error
+      function(error) {
+        return error;
       });
 
       var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
         return result.notes;
       },
-      function(error){
-        return error
+      function(error) {
+        return error;
       });
 
 
       $.when(invitationP, notesP).done(function(invitation, notes) {
-        console.log('invitation',invitation)
-        if(invitation){
+        console.log('invitation', invitation);
+        if (invitation) {
           sm.update('invitationTrip', {
             invitation: invitation
           });
@@ -74,8 +74,8 @@
                       console.log("time to update notes: " + result.notes.length);
                       sm.update('notes', result.notes);
                     },
-                    function(error){
-                      return error
+                    function(error) {
+                      return error;
                     });
                   },
                   onCompleted: function(editor) {
@@ -113,13 +113,9 @@
         });
 
       })
-      .fail(function(){
-        console.log("Invitation and/or notes not found")
+      .fail(function() {
+        console.log('Invitation and/or notes not found');
       });
-
-
-
-
 
     });
     </script>
