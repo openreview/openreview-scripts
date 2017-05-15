@@ -336,6 +336,57 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
 
     return invitation
 
+def get_reviewer_rating_invitation(submissionId, number, areachairGroupId, reviewerNonReadersGroupId, reviewersGroup):
+
+    field_content = {
+        'description': 'Rating for this reviewer',
+        'order': 1,
+        'value-radio': [
+            '5. Reviewer feedback was very informative, factually correct and constructive.',
+            '4. Reviewer feedback was informative but it contained some factual errors or missing points which were later acknowledged.',
+            '3. Reviewer feedback was mostly informative, but not entirely accurate.',
+            '2. Reviewer feedback was not very informative.',
+            '1. Reviewer feedback was incorrect or reviewer did not seem to have read the paper in enough detail.'
+        ]
+    }
+
+    content = {t:field_content for t in reviewersGroup.members}
+    content['title'] = {
+        'description': 'the title of the paper of the reviewers being rated',
+        'order':0,
+        'value':'Paper%s Review Rating' % number
+    }
+
+    reply = {
+        'forum': submissionId,
+        'replyto': submissionId,
+        'writers': {
+            'values-regex': areachairGroupId
+        },
+        'signatures': {
+            'values-regex': areachairGroupId
+        },
+        'readers': {
+            'values': [COCHAIRS],
+            'description': 'The users who will be allowed to read the above content.'
+        },
+        'nonreaders': {
+            'values': [reviewerNonReadersGroupId]
+        },
+        'content': content
+    }
+
+
+    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Area_Chair/Review/Rating',
+        duedate = 1496314800000, #June 2nd, 7:00am EST (June 1st, 12:00am SST)
+        signatures = [CONFERENCE],
+        writers = [CONFERENCE],
+        invitees = [],
+        noninvitees = [],
+        readers = [CONFERENCE, SPC, COCHAIRS],
+        reply = reply)
+    return invitation
+
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -426,7 +477,8 @@ try:
                 client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id,reviewers_nonreaders_group.id))
                 #Post meta review invitation
                 client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id, reviewers_nonreaders_group.id))
-
+                #Post review rating invitation
+                client.post_invitation(get_reviewer_rating_invitation(submission.id, submission.number, areachair_group.id, reviewers_nonreaders_group.id, reviewers_group))
             else:
                 print "Author group not found", submission.number
 

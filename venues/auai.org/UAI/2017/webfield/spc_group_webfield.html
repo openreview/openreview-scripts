@@ -248,9 +248,14 @@ $(function() {
       noteId: note.id,
       invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta/Review'
     };
+    var ratingUrlParams = {
+      id: note.forum,
+      noteId: note.id,
+      invitationId: CONFERENCE + '/-/Paper' + note.number + '/Area_Chair/Review/Rating'
+    }
     var reviewStatus = {
       invitationUrl: '/forum?' + $.param(invitationUrlParams),
-      ratingUrl: '/invitation?id=' + CONFERENCE + '/-/Paper' + note.number + '/Area_Chair/Review/Rating',
+      ratingUrl: '/forum?' + $.param(ratingUrlParams),
       ratingMax: 5
     };
     if (metaReview) {
