@@ -31,12 +31,12 @@ if args.data:
     data = match_utils.load_obj(args.data)
     group = data['user_groups'][args.group]
     papers = data['papers']
-    metadata = data['metadata']
+    paper_metadata = data['paper_metadata']
 else:
     print "Retrieving data from ", client.baseurl
     group = client.get_group(args.group)
     papers = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
-    metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')
+    paper_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')
 
 ## Settings (move this outside at some point)
 matching_configuration = {
@@ -44,11 +44,16 @@ matching_configuration = {
     "maxusers": 4,
     "minpapers": 1,
     "maxpapers": 15,
-    "weights": [5, 3, 1]
+    "weights": {
+        "primary_subject_overlap": 1,
+        "secondary_subject_overlap": 1,
+        "bid_score": 1,
+        "ac_recommendation": 1
+    }
 }
 
 ## Solve the matcher
-matcher = openreview_matcher.Matcher(group=group, papers=papers, metadata=metadata, config=matching_configuration)
+matcher = openreview_matcher.Matcher(group=group, papers=papers, metadata=paper_metadata, config=matching_configuration)
 assignments = matcher.solve()
 
 ## Write assignments to CSV

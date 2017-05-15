@@ -25,7 +25,9 @@ download = './metadata' if args.download == None else args.download
 
 print "getting notes..."
 papers = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
-metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')
+paper_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')
+reviewer_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Reviewer/Metadata')
+areachair_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Area_Chair/Metadata')
 
 print "getting expertise..."
 reviewer_expertise_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer_Expertise')
@@ -59,12 +61,17 @@ ac_recommendation_data = {
     'recs': recs
 }
 
-
-features = [
+# Define
+paper_features = [
     uai_features.PrimarySubjectOverlap(name='primary_subject_overlap', data=subject_area_overlap_data),
     uai_features.SecondarySubjectOverlap(name='secondary_subject_overlap', data=subject_area_overlap_data),
     uai_features.BidScore(name='bid_score', data=bid_score_data),
     uai_features.ACRecommendation(name='ac_recommendation', data=ac_recommendation_data)
+]
+
+reviewer_features = [
+    uai_features.PrimaryUserAffinity(name='primary_user_affinity', data=subject_area_overlap_data),
+    uai_features.SecondaryUserAffinity(name='secondary_user_affinity', data=subject_area_overlap_data)
 ]
 
 user_groups = {
@@ -72,10 +79,19 @@ user_groups = {
     SPC: client.get_group(SPC)
 }
 
-print "building metadata..."
-new_metadata = openreview_matcher.metadata.get_metadata(papers=papers, groups=user_groups, features=features, metadata=metadata)
+print "generating paper metadata..."
+new_paper_metadata = openreview_matcher.metadata.generate_metadata(forum_ids=[n.forum for n in papers], groups=user_groups, features=paper_features, invitation='auai.org/UAI/2017/-/Paper/Metadata', metadata=paper_metadata)
+for m in new_paper_metadata:
+    client.post_note(m)
 
-for m in new_metadata:
+print "generating reviewer metadata..."
+new_reviewer_metadata = openreview_matcher.metadata.generate_metadata(forum_ids=user_groups[PC].members, groups=user_groups, features=reviewer_features, invitation='auai.org/UAI/2017/-/Reviewer/Metadata', metadata=reviewer_metadata)
+for m in new_reviewer_metadata:
+    client.post_note(m)
+
+print "generating areachair metadata..."
+new_areachair_metadata = openreview_matcher.metadata.generate_metadata(forum_ids=user_groups[SPC].members, groups=user_groups, features=reviewer_features, invitation='auai.org/UAI/2017/-/Area_Chair/Metadata', metadata=areachair_metadata)
+for m in new_areachair_metadata:
     client.post_note(m)
 
 print "Saving OpenReview metadata to %s.pkl" % download
@@ -83,6 +99,8 @@ match_utils.save_obj(
     {
         'user_groups': user_groups,
         'papers': papers,
-        'metadata': new_metadata
+        'paper_metadata': new_paper_metadata,
+        'reviewer_metadata': new_reviewer_metadata,
+        'areachair_metadata': new_areachair_metadata
     },
     download)
