@@ -169,7 +169,7 @@ $(function() {
 
   // Helper functions
   var filterPapers = function() {
-    var $formElem = $('.tabs-container .search-form');
+    var $formElem = $('.tabs-container .notes-search-form');
     var term = $formElem.find('.search-content input').val().trim().toLowerCase();
     var selectedSubject = $formElem.find('.subject-area-dropdown input').val().trim();
     var filterSubjects = selectedSubject && selectedSubject !== 'All';
@@ -351,7 +351,7 @@ $(function() {
     $('#notes .tabs-container').empty();
 
     var allOptions = '<option>' + SUBJECT_AREAS_LIST.join('</option>\n<option>') + '</option>';
-    var searchBarHTML = '<form class="form-inline search-form" role="search">' +
+    var searchBarHTML = '<form class="form-inline notes-search-form" role="search">' +
       '<div class="form-group search-content has-feedback">' +
         '<input id="paper-search-input" type="text" class="form-control" placeholder="Search paper titles and metadata" autocomplete="off">' +
         '<span class="glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></span>' +
@@ -412,7 +412,7 @@ $(function() {
       }
     };
 
-    $('form.search-form .subject-area').append(view.mkDropdown(
+    $('form.notes-search-form .subject-area').append(view.mkDropdown(
       'Enter a subject area to filter by',
       false,
       '',
@@ -599,8 +599,8 @@ $(function() {
       activeTab = $(e.target).data('tabIndex');
     });
 
-    $('#group-container').on('submit', 'form.search-form', filterPapers);
-    $('#group-container').on('keyup', 'form.search-form .search-content input', _.debounce(filterPapers, 300));
+    $('#group-container').on('submit', 'form.notes-search-form', filterPapers);
+    $('#group-container').on('keyup', 'form.notes-search-form .search-content input', _.debounce(filterPapers, 300));
 
   }).fail(function() {
     displayError();

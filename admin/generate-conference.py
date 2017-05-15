@@ -19,34 +19,31 @@ submission_name = raw_input("Enter the name of the submission (press enter for d
 if submission_name.strip() == '':
 	submission_name = "Submission"
 
-valid_duedate = False
-while not valid_duedate:
-	duedate_input = raw_input("Enter the duedate (DD/MM/YYYY): ")
-	try:
-		day, month, year = duedate_input.split('/')
-		day = int(day)
-		month = int(month)
-		year = int(year)
-		assert day <= 31, "Day must be less than or equal to 31"
-		assert month <= 12, "Month must be less than or equal to 12"
-		assert year >= datetime.datetime.now().year, "Cannot enter a year in the past"
-		valid_duedate = True
-	except AssertionError as e:
-		print "Duedate invalid: ", e
+# check if due date/time is valid and after current time
+duedate_input = raw_input("Enter the duedate (DD/MM/YYYY): ")
+try:
+	day, month, year = duedate_input.split('/')
+	day = int(day)
+	month = int(month)
+	year = int(year)
+	# this will catch invalid values for date
+	duedate = utils.get_duedate(year, month, day)
+	now = datetime.datetime.now()
+	assert duedate > now, "Cannot enter a date in the past"
 
-valid_duetime = False
-while not valid_duetime:
-	duetime_input = raw_input("Enter the time of day that the \"%s\" is due in 24-hour format (e.g. enter 23:59 for 11:59 pm): " % submission_name)
+	# get due time
+	duetime_input = raw_input(
+		"Enter the time of day that the \"%s\" is due in 24-hour format (e.g. enter 23:59 for 11:59 pm): " % submission_name)
+	hour, minute = duetime_input.split(':')
+	hour = int(hour)
+	minute = int(minute)
+	duedate = utils.get_duedate(year, month, day, hour, minute)
+	assert duedate > now, "Cannot enter a time in the past"
+except Exception, e:
+	print "Duedate invalid: ", e
+	sys.exit()
 
-	try:
-		hour, minute = duetime_input.split(':')
-		hour = int(hour)
-		minute = int(minute)
-		valid_duetime = True
-	except:
-		print "Time invalid."
-
-duedate = utils.get_duedate(year, month, day, hour, minute)
+duedate_milliseconds = utils.date_to_timestamp(duedate)
 
 assert not os.path.exists(directory), "%s already exists" % conference
 
@@ -62,16 +59,19 @@ with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.ge
 	templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
 	templatestring = templatestring.replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
 	templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
+	templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate))
 	new_configfile.write(templatestring)
 
 print "writing %s/webfield/conf.html" % directory
 with open(directory + '/webfield/conf.html', 'w') as webfile:
 	web_params = {
-		"header": "This is the header",
+		"groupId": conference,
+		"invitationId": "%s/-/%s" % (conference, submission_name),
 		"title": "This is the title",
-		"info": "This is the info",
-		"url": "www.thisistheurl.com",
-		"invitation": "%s/-/%s" % (conference, submission_name)
+		"subtitle": "This is the subtitle",
+		"location" : "This is the location",
+		"date": duedate.strftime('%Y-%m-%d %H:%M:%S'),
+		"url": "www.thisistheurl.com"
 	}
 
 	webfield = templates.Webfield(web_params)
@@ -81,11 +81,11 @@ with open(directory + '/webfield/conf.html', 'w') as webfile:
 print "writing %s/python/admin-init.py" % directory
 with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
 	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
-	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate)
+	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate_milliseconds)
 	new_initfile.write(templatestring)
 
 print "writing %s/python/superuser-init.py" % directory
 with open(directory + '/python/superuser-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/superuser-init.template', __file__)) as template_initfile:
 	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
-	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "\"%s\"" % duedate)
+	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "\"%s\"" % duedate_milliseconds)
 	new_initfile.write(templatestring)

@@ -121,7 +121,7 @@ $(function() {
     $panel.hide('fast', function() {
       $panel.empty().append(
         '<div id="header" class="panel">' +
-          '<h1>UAI Area Chair Console</h1><br>' +
+          '<h1>UAI Area Chair Console</h1>' +
         '</div>' +
         '<div id="notes"><div class="tabs-container"></div></div>'
       );
@@ -218,7 +218,7 @@ $(function() {
           name: reviewer.name,
           email: reviewer.email,
           forumUrl: forumUrl,
-          lastReminderSent: lastReminderSent ? new Date(Date.now(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
+          lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
         };
       }
     }
@@ -249,9 +249,7 @@ $(function() {
       invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta/Review'
     };
     var reviewStatus = {
-      invitationUrl: '/forum?' + $.param(invitationUrlParams),
-      ratingUrl: '/invitation?id=' + CONFERENCE + '/-/Paper' + note.number + '/Area_Chair/Review/Rating',
-      ratingMax: 5
+      invitationUrl: '/forum?' + $.param(invitationUrlParams)
     };
     if (metaReview) {
       reviewStatus.recommendation = metaReview.content.recommendation;
