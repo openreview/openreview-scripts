@@ -59,7 +59,7 @@ with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.ge
 	templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
 	templatestring = templatestring.replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
 	templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
-	templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate))
+	templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate_milliseconds))
 	new_configfile.write(templatestring)
 
 print "writing %s/webfield/conf.html" % directory
