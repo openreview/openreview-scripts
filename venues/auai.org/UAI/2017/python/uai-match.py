@@ -27,13 +27,18 @@ outdir = '.' if not args.outdir else args.outdir
 
 client = openreview.Client(username=args.username, password=args.password, baseurl=args.baseurl)
 
-if args.data:
-    data = match_utils.load_obj(args.data)
+if args.data == None:
+    datafile = './metadata.pkl'
+else:
+    datafile = args.data
+
+try:
+    data = match_utils.load_obj(datafile)
     group = data['user_groups'][args.group]
     papers = data['papers']
     paper_metadata = data['paper_metadata']
-else:
-    print "Retrieving data from ", client.baseurl
+except:
+    print "datafile not found. retrieving data from ", client.baseurl
     group = client.get_group(args.group)
     papers = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
     paper_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')

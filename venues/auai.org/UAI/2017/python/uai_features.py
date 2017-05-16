@@ -60,7 +60,16 @@ class BidScore(metadata.OpenReviewFeature):
         """
         self.name = name
         self.data = data
-        self.bids_by_signature = {bid.signatures[0]: bid for bid in self.data['bids']}
+        self.bids_by_signature = {bid.signatures[0]: bid for bid in self.data}
+
+        self.bid_score_map ={
+            "I want to review": 1.0,
+            "I can review": 0.75,
+            "I can probably review but am not an expert": 0.5,
+            "I cannot review": 0.25,
+            "No bid": 0.0
+        }
+
 
     def score(self, signature, forum):
         """
@@ -69,10 +78,9 @@ class BidScore(metadata.OpenReviewFeature):
 
         """
 
-        bid_score_map = self.data['bid_score_map']
         try:
             bid = self.bids_by_signature[signature]
-            score = bid_score_map[bid.tag]
+            score = self.bid_score_map[bid.tag]
 
             return score
         except:
@@ -88,7 +96,7 @@ class ACRecommendation(metadata.OpenReviewFeature):
         self.name = name
         self.data = data
         self.recs_by_forum = defaultdict(list)
-        for rec in self.data['recs']:
+        for rec in self.data:
             self.recs_by_forum[rec.forum] += [rec]
 
     def score(self, signature, forum):
