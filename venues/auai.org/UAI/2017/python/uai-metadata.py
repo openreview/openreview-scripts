@@ -1,8 +1,3 @@
-#!/usr/bin/python
-
-"""
-Initializes the structures used for paper/user metadata
-"""
 
 import argparse
 from collections import defaultdict
@@ -11,11 +6,14 @@ import openreview
 import match_utils
 
 from uaidata import *
+import uai_features
+
+import openreview_matcher
 
 # Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--download', help = "the filename (without extension) of the .pkl file to save the downloaded data. Defaults to ./metadata")
-parser.add_argument('--upload', help = "the .pkl file (with extension) to upload to OpenReview. If \"true\", defaults to ./metadata.pkl")
+parser.add_argument('--overwrite', help = "if true, erases the old metadata")
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--baseurl', help = "base URL")
@@ -24,213 +22,114 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-if args.download:
-    download = args.download
-else:
-    download = './metadata'
+download = './metadata' if args.download == None else args.download
 
-if not args.upload:
-    # API calls
-    print "Getting paper notes..."
-    paper_notes = client.get_notes(invitation = CONFERENCE + "/-/blind-submission")
-    papers_by_forum = {n.forum: n for n in paper_notes}
-    originalforum_by_paperforum = {n.forum: n.original for n in paper_notes}
+print "getting notes..."
+papers = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
 
-    original_notes = client.get_notes(invitation = CONFERENCE + "/-/submission")
-    originals_by_forum = {n.forum: n for n in original_notes}
+if args.overwrite.lower()=='true':
+    print "erasing old metadata..."
+    paper_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')
+    reviewer_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Reviewer/Metadata')
+    areachair_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Area_Chair/Metadata')
 
-    print "Getting submission metadata..."
-    paper_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Paper/Metadata')
-    metadata_by_forum = {n.forum: n for n in paper_metadata_notes}
+    for p in paper_metadata: client.delete_note(p)
+    for r in reviewer_metadata: client.delete_note(r)
+    for a in areachair_metadata: client.delete_note(a)
 
-    print "Getting reviewer metadata..."
-    reviewer_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer/Metadata')
-    metadata_by_reviewer = {u.content['name']: u for u in reviewer_metadata_notes}
+print "getting expertise..."
+reviewer_expertise_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer_Expertise')
+areachair_expertise_notes = client.get_notes(invitation = CONFERENCE + '/-/SPC_Expertise')
 
-    print "Getting areachair metadata..."
-    areachair_metadata_notes = client.get_notes(invitation = CONFERENCE + '/-/Area_Chair/Metadata')
-    metadata_by_areachair = {u.content['name']: u for u in areachair_metadata_notes}
+print "getting recommendations..."
+recs = []
+for p in papers:
+    recs += client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % p.number)
 
-    print "Getting reviewer expertise..."
-    reviewer_expertise_notes = client.get_notes(invitation = CONFERENCE + '/-/Reviewer_Expertise')
-    registered_expertise_by_reviewer = {n.signatures[0]: n.content for n in reviewer_expertise_notes}
+bids = client.get_tags(invitation = CONFERENCE + '/-/Add/Bid')
 
-    print "Getting areachair expertise..."
-    areachair_expertise_notes = client.get_notes(invitation = CONFERENCE + '/-/SPC_Expertise')
-    registered_expertise_by_ac = {n.signatures[0]: n.content for n in areachair_expertise_notes}
+subject_area_overlap_data = {
+    'subject_areas': reviewer_expertise_notes + areachair_expertise_notes,
+    'papers': papers
+}
 
-    print "Getting user groups..."
-    reviewers_group = client.get_group(PC)
-    areachairs_group = client.get_group(SPC)
+# Define features
+paper_features = [
+    uai_features.PrimarySubjectOverlap(name='primary_subject_overlap', data=subject_area_overlap_data),
+    uai_features.SecondarySubjectOverlap(name='secondary_subject_overlap', data=subject_area_overlap_data),
+    uai_features.BidScore(name='bid_score', data=bids),
+    uai_features.ACRecommendation(name='ac_recommendation', data=recs)
+]
 
-    print "Getting author groups..."
-    authorgroups_by_forum = {}
-    for n in paper_notes:
-        authorgroups_by_forum[n.forum] = client.get_group('auai.org/UAI/2017/Paper%s/Authors' % n.number)
+reviewer_features = [
+    uai_features.PrimaryUserAffinity(name='primary_user_affinity', data=subject_area_overlap_data),
+    uai_features.SecondaryUserAffinity(name='secondary_user_affinity', data=subject_area_overlap_data)
+]
 
+user_groups = {
+    PC: client.get_group(PC),
+    SPC: client.get_group(SPC)
+}
 
-    print "Getting bids..."
-    bids = client.get_tags(invitation = CONFERENCE + '/-/Add/Bid')
+print "generating paper metadata..."
+paper_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=[n.forum for n in papers], groups=user_groups.values(), features=paper_features)
 
-    print "Processing bids..."
-    bids_by_forum = defaultdict(list)
-    deleted_papers = set()
-    for b in bids:
-        try:
-            n = papers_by_forum[b.forum]
-            bids_by_forum[n.forum].append(b)
-        except KeyError as e:
-            deleted_papers.update([b.forum])
+print "generating reviewer metadata..."
+reviewer_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=user_groups[PC].members, groups=user_groups.values(), features=reviewer_features)
 
-    print "Getting areachair recommendations..."
-    recs = []
-    for n in paper_notes:
-        recs += client.get_tags(invitation='auai.org/UAI/2017/-/Paper%s/Recommend/Reviewer' % n.number)
+print "generating areachair metadata..."
+areachair_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=user_groups[SPC].members, groups=user_groups.values(), features=reviewer_features)
 
-    print "Processing recommendations..."
-    recs_by_forum = defaultdict(list)
-    for r in recs:
-        try:
-            n = papers_by_forum[r.forum]
-            recs_by_forum[n.forum].append(r)
-        except KeyError as e:
-            deleted_papers.update([r.forum])
+new_paper_metadata = []
+for forum in paper_metadata_contents:
+    new_paper_metadata.append(openreview.Note(
+        forum = forum,
+        content = paper_metadata_contents[forum],
+        invitation = 'auai.org/UAI/2017/-/Paper/Metadata',
+        readers = ['auai.org/UAI/2017'],
+        writers = ['auai.org/UAI/2017'],
+        signatures = ['auai.org/UAI/2017']
+    ))
 
-    # Get conflict information
-    print "Getting conflict of interesting information... (this may take a while)"
-    domains_by_user = defaultdict(set)
+new_reviewer_metadata = []
+for forum in reviewer_metadata_contents:
+    new_reviewer_metadata.append(openreview.Note(
+        forum = forum,
+        content = reviewer_metadata_contents[forum],
+        invitation = 'auai.org/UAI/2017/-/Reviewer/Metadata',
+        readers = ['auai.org/UAI/2017'],
+        writers = ['auai.org/UAI/2017'],
+        signatures = ['auai.org/UAI/2017']
+    ))
 
-    for reviewer in reviewers_group.members:
-        if reviewer not in domains_by_user.keys():
-            try:
-                reviewer_profile = client.get_profile(reviewer)
+new_areachair_metadata = []
+for forum in areachair_metadata_contents:
+    new_areachair_metadata.append(openreview.Note(
+        forum = forum,
+        content = areachair_metadata_contents[forum],
+        invitation = 'auai.org/UAI/2017/-/Area_Chair/Metadata',
+        readers = ['auai.org/UAI/2017'],
+        writers = ['auai.org/UAI/2017'],
+        signatures = ['auai.org/UAI/2017']
+    ))
 
-                domains_by_user[reviewer].update([p.split('@')[1] for p in reviewer_profile.content['emails']])
-                domains_by_user[reviewer].update([p['institution']['domain'] for p in reviewer_profile.content['history']])
+print "Saving OpenReview metadata to %s.pkl" % download
+match_utils.save_obj(
+    {
+        'user_groups': user_groups,
+        'papers': papers,
+        'paper_metadata': new_paper_metadata,
+        'reviewer_metadata': new_reviewer_metadata,
+        'areachair_metadata': new_areachair_metadata
+    },
+    download)
 
-                if 'relations' in reviewer_profile.content:
-                    relations = reviewer_profile.content['relations']
-                    for r in relations:
-                        if r['email'] and '@' in r['email']:
-                            domains_by_user[reviewer].update([r['email'].split('@')[1]])
+post_notes = raw_input("Would you like to post the metadata notes? (y/[n]): ")
 
-                reviewer_members = client.get_groups(member=reviewer)
-
-                domains = [g.id.split('@')[1] for g in reviewer_members if '@' in g.id]
-                subdomains = []
-                for d in domains:
-                    subcomponents = d.split('.')
-                    for i in range(len(subcomponents)-1, 0, -1):
-                        subdomains.append('.'.join(subcomponents[i-1:len(subcomponents)]))
-
-                domains_by_user[reviewer].update(subdomains)
-            except openreview.OpenReviewException:
-                print "Profile not found for reviewer %s" % reviewer
-                pass
-
-    for areachair in areachairs_group.members:
-        if areachair not in domains_by_user.keys():
-            try:
-                areachair_profile = client.get_profile(areachair)
-
-                domains_by_user[areachair].update([p.split('@')[1] for p in areachair_profile.content['emails']])
-                domains_by_user[areachair].update([p['institution']['domain'] for p in areachair_profile.content['history']])
-
-                if 'relations' in areachair_profile.content:
-                    relations = areachair_profile.content['relations']
-                    for r in relations:
-                        if r['email'] and '@' in r['email']:
-                            domains_by_user[areachair].update([r['email'].split('@')[1]])
-
-                areachair_members = client.get_groups(member=areachair)
-
-                domains = [g.id.split('@')[1] for g in areachair_members if '@' in g.id]
-                subdomains = []
-                for d in domains:
-                    subcomponents = d.split('.')
-                    for i in range(len(subcomponents)-1, 0, -1):
-                        subdomains.append('.'.join(subcomponents[i-1:len(subcomponents)]))
-
-                domains_by_user[areachair].update(subdomains)
-
-
-            except openreview.OpenReviewException:
-                print "Profile not found for areachair %s" % areachair
-                pass
-
-    domains_by_email = defaultdict(set)
-
-    for n in paper_notes:
-        author_group = authorgroups_by_forum[n.forum]
-        for author in author_group.members:
-            try:
-                author_profile = client.get_profile(author)
-                if '~' in author:
-                    index = domains_by_user
-                elif '@' in author:
-                    index = domains_by_email
-
-                index[author].update([p.split('@')[1] for p in author_profile.content['emails']])
-                index[author].update([p['institution']['domain'] for p in author_profile.content['history']])
-
-                if 'relations' in author_profile.content:
-                    relations = author_profile.content['relations']
-                    for r in relations:
-                        if r['email'] and '@' in r['email']:
-                            index[author].update([r['email'].split('@')[1]])
-
-                author_members = client.get_groups(member=author)
-
-                domains = [g.id.split('@')[1] for g in author_members if '@' in g.id]
-                subdomains = []
-                for d in domains:
-                    subcomponents = d.split('.')
-                    for i in range(len(subcomponents)-1, 0, -1):
-                        subdomains.append('.'.join(subcomponents[i-1:len(subcomponents)]))
-
-                index[author].update(subdomains)
-
-            except openreview.OpenReviewException:
-                pass
-
-    data = {
-        'reviewers_group': reviewers_group,
-        'areachairs_group': areachairs_group,
-        'authorgroups_by_forum': authorgroups_by_forum,
-        'papers_by_forum': papers_by_forum,
-        'originals_by_forum': originals_by_forum,
-        'originalforum_by_paperforum': originalforum_by_paperforum,
-        'metadata_by_forum': metadata_by_forum,
-        'metadata_by_reviewer': metadata_by_reviewer,
-        'metadata_by_areachair': metadata_by_areachair,
-        'domains_by_user': domains_by_user,
-        'domains_by_email': domains_by_email,
-        'bids_by_forum': bids_by_forum,
-        'recs_by_forum': recs_by_forum,
-        'registered_expertise_by_reviewer': registered_expertise_by_reviewer,
-        'registered_expertise_by_ac': registered_expertise_by_ac
-    }
-
-    print "Saving OpenReview metadata to %s.pkl" % download
-    match_utils.save_obj(data, download)
-
-if args.upload:
-    if args.upload.lower() == 'true':
-        data = match_utils.load_obj('./metadata.pkl')
-    else:
-        data = match_utils.load_obj(args.upload)
-    print "Uploading metadata to OpenReview"
-    metadata_by_forum = data['metadata_by_forum']
-    metadata_by_reviewer = data['metadata_by_reviewer']
-    metadata_by_areachair = data['metadata_by_areachair']
-
-    for n in metadata_by_forum.values():
-        client.post_note(n)
-
-    for n in metadata_by_reviewer.values():
-        client.post_note(n)
-
-    for n in metadata_by_areachair.values():
-        client.post_note(n)
-
-    print "Done."
+if post_notes.lower()=='y':
+    print "posting paper metadata..."
+    for p in new_paper_metadata: client.post_note(p)
+    print "posting reviewer metadata..."
+    for r in new_reviewer_metadata: client.post_note(r)
+    print "posting area chair metadata..."
+    for a in new_areachair_metadata: client.post_note(a)
