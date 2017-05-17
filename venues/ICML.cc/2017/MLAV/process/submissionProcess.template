@@ -1,10 +1,10 @@
 function(){
   var or3client = lib.or3client;
 
-  const CONFERENCE = <<param0>>;
-  const PROGRAM_CHAIRS = <<param1>>;
-  const DUE_DATE = <<param2>>;
-  const CONFERENCE_NAME = <<param3>>;
+  const CONFERENCE = 'ICML.cc/2017/MLAV';
+  const PROGRAM_CHAIRS = 'ICML.cc/2017/MLAV/Program_Chairs';
+  const DUE_DATE = '1496782800000';
+  const CONFERENCE_NAME = CONFERENCE.replace('/', ' ');
   const PAPERGRP = CONFERENCE+'/Paper' + note.number;
   const PAPERINV = CONFERENCE+'/-/Paper' + note.number;
 
@@ -96,7 +96,7 @@ function(){
     }
   };
 /********************************************************
- * Comments aren't allowed until review process completed
+ * Comments
  ********************************************************/
  var commentProcess = <<commentProcess.js>>
  var commentInvitation = {
@@ -158,7 +158,7 @@ function(){
   .then(result => {
     invitation_promises = [
       or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
-//      or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token),
+      or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token),
     ];
 
     return Promise.all(invitation_promises);

@@ -7,6 +7,7 @@ import getpass
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "/Users/mandler/projects/openreview-scripts/utils"))
 import utils
 import templates
+
 args, parser, overwrite = utils.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
@@ -177,13 +178,19 @@ reply = {
 		},
 	}
 }
+
+utils.process_to_file(
+	utils.get_path("../process/submissionProcess.template", __file__),
+	utils.get_path("../process", __file__),
+)
+
 submit_invitation = openreview.Invitation(config.CONF + '/-/Submission',
 											  readers=['everyone'],
 											  writers=[config.CONF],
 											  invitees=['~'],
 											  signatures=[config.CONF],
 											  duedate=config.DUE_TIMESTAMP,
-											  #process=utils.get_path('../process/submissionProcess.js',__file__)
+											  process=utils.get_path('../process/submissionProcess.js',__file__)
 										  )
 submit_invitation.reply = reply.copy()
 
