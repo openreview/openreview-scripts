@@ -63,12 +63,12 @@ def get_reviews():
     limit = 1000
 
     notes = client.get_notes(invitation='auai.org/UAI/2017/-/Paper.*/' + invitation, limit = limit, offset = offset)
-    all_notes = []
+    all_notes = notes
 
-    while notes:
-        all_notes.extend(notes)
+    while len(notes) == limit:
         offset = offset + limit
         notes = client.get_notes(invitation='auai.org/UAI/2017/-/Paper.*/' + invitation, limit = limit, offset = offset)
+        all_notes.extend(notes)
 
 
     return all_notes
