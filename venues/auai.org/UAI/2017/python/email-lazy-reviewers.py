@@ -55,12 +55,31 @@ verbose = True if args.verbose and args.verbose.lower()=='true' else False
 total_missing = 0;
 total_complete = 0;
 
+
+def get_reviews():
+
+    invitation_id = 'auai.org/UAI/2017/-/Paper.*/' + invitation
+    offset = 0
+    limit = 1000
+
+    notes = client.get_notes(invitation='auai.org/UAI/2017/-/Paper.*/' + invitation, limit = limit, offset = offset)
+    all_notes = []
+
+    while notes:
+        all_notes.extend(notes)
+        offset = offset + limit
+        notes = client.get_notes(invitation='auai.org/UAI/2017/-/Paper.*/' + invitation, limit = limit, offset = offset)
+
+
+    return all_notes
+
+
 def get_data(invitation):
 
     headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + client.token}
     anon_reviewers = requests.get(client.baseurl+'/groups?id=auai.org/UAI/2017/Paper.*/AnonReviewer.*', headers = headers)
     current_reviewers = requests.get(client.baseurl+'/groups?id=auai.org/UAI/2017/Paper.*/Reviewers', headers = headers)
-    notes = client.get_notes(invitation='auai.org/UAI/2017/-/Paper.*/' + invitation)
+    notes = get_reviews()
 
     reviews = {}
     reviewers = {}
