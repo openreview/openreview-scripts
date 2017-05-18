@@ -19,38 +19,60 @@ $(function() {
       });
   };
 
+  var getAllReviews = function(callback) {
+    var invitationId = CONFERENCE + '/-/Paper.*/Submit/Review';
+    var allNotes = [];
+
+    function getPromise(offset, limit) {
+      return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Submit/Review', offset: offset, limit: limit })
+      .then(function(result) {
+        allNotes = _.union(allNotes, result.notes);
+        if (result.notes.length == limit) {
+          return getPromise(offset + limit, limit);
+        } else {
+          callback(allNotes);
+        }
+      });
+    };
+
+    getPromise(0, 1000);
+
+  };
+
   var getOfficialReviews = function(noteNumbers) {
+
+    var dfd = $.Deferred();
+
     var noteMap = buildNoteMap(noteNumbers);
 
-    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Submit/Review' })
-      .then(function(result) {
-        var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
-        var ratingExp = /^(\d+): .*/;
+    getAllReviews(function(notes) {
+      var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
+      var ratingExp = /^(\d+): .*/;
 
-        result.notes.forEach(function(n) {
-          var matches = n.signatures[0].match(re);
-          var num, index, ratingMatch;
-          if (matches) {
-            num = parseInt(matches[1], 10);
-            index = parseInt(matches[2], 10);
+      notes.forEach(function(n) {
+        var matches = n.signatures[0].match(re);
+        var num, index, ratingMatch;
+        if (matches) {
+          num = parseInt(matches[1], 10);
+          index = parseInt(matches[2], 10);
 
-            if (num in noteMap) {
-              // Need to parse rating and confidence strings into ints
-              ratingMatch = n.content.rating.match(ratingExp);
-              n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
-              confidenceMatch = n.content.confidence.match(ratingExp);
-              n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+          if (num in noteMap) {
+            // Need to parse rating and confidence strings into ints
+            ratingMatch = n.content.rating.match(ratingExp);
+            n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+            confidenceMatch = n.content.confidence.match(ratingExp);
+            n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
 
-              noteMap[num][index] = n;
-            }
+            noteMap[num][index] = n;
           }
-        });
-        return noteMap;
-      })
-      .fail(function(error) {
-        displayError();
-        return null;
+        }
       });
+      dfd.resolve(noteMap);
+
+    });
+
+    return dfd.promise();
+
   };
 
   var getReviewerGroups = function(noteNumbers) {
