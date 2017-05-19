@@ -1,173 +1,24 @@
 function(){
+ console.log("In submissionProcess");
+
   var or3client = lib.or3client;
 
-  const CONFERENCE = 'ICML.cc/2017/MLAV';
-  const PROGRAM_CHAIRS = 'ICML.cc/2017/MLAV/Program_Chairs';
-  const DUE_DATE = '1496782800000';
-  const CONFERENCE_NAME = CONFERENCE.replace('/', ' ');
-  const PAPERGRP = CONFERENCE+'/Paper' + note.number;
-  const PAPERINV = CONFERENCE+'/-/Paper' + note.number;
+  const CONFERENCE_NAME = "ICML 2017 MLAV workshop";
 
+//  console.log("In submissionProcess for paper "+note.number);
 
-  var officialReviewProcess = <<officialReviewProcess.js>>
-
-  var paperGroup = {
-    'id': PAPERGRP,
-    'signatures': [CONFERENCE],
-    'writers': [CONFERENCE],
-    'members': [],
-    'readers': ['everyone'],
-    'signatories': []
-  };
-
-  var reviewerGroup = {
-    'id': PAPERGRP + '/Reviewers',
-    'signatures':[CONFERENCE],
-    'writers':[CONFERENCE],
-    'members':[],
-    'readers':[CONFERENCE, PROGRAM_CHAIRS, PAPERGRP + '/Reviewers'],
-    'signatories':[]
-  };
-
-  var nonReadersGroup = {
-    'id': PAPERGRP+'/Reviewers/NonReaders',
-    'signatures': [CONFERENCE],
-    'writers': [CONFERENCE],
-    'members': [],
-    'readers': [CONFERENCE, PROGRAM_CHAIRS],
-    'signatories': []
-  };
-
-  var officialReviewInvitation = {
-    'id': PAPERINV+'/Official/Review',
-    'signatures': [CONFERENCE],
-    'writers': [CONFERENCE],
-    'invitees': [reviewerGroup.id],
-    'noninvitees':[],
-    'readers': ['everyone'],
-    'process': officialReviewProcess,
-    'duedate': DUE_DATE.valueOf(),
-    'reply': {
-      'forum': note.id,
-      'replyto': note.id,
-      'writers': {'values-regex': PAPERGRP+'/AnonReviewer[0-9]+'},
-      'signatures': {'values-regex': PAPERGRP+'/AnonReviewer[0-9]+'},
-      'readers': {
-        'values': ['~'],
-        'description': 'The users who will be allowed to read the above content.'
-      },
-      'nonreaders':{
-        'values': [nonReadersGroup.id]
-      },
-      'content': {
-        'title': {
-          'order': 1,
-          'value-regex': '.{0,500}',
-          'description': 'Brief summary of your review.',
-          'required':true
-        },
-        'review': {
-          'order': 2,
-          'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
-          'required':true
-        },
-        'rating': {
-          'order': 3,
-          'value-dropdown': [
-            '5: Top 15% of accepted papers, strong accept',
-            '4: Top 50% of accepted papers, clear accept',
-            '3: Marginally above acceptance threshold',
-            '2: Marginally below acceptance threshold',
-            '1: Strong rejection'
-          ],
-          'required':true
-        },
-        'confidence': {
-          'order': 4,
-          'value-radio': [
-            '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
-            '2: The reviewer is fairly confident that the evaluation is correct',
-            '1: The reviewer\'s evaluation is an educated guess'
-          ],
-          'required':true
-        }
-      }
-    }
-  };
-/********************************************************
- * Comments
- ********************************************************/
- var commentProcess = <<commentProcess.js>>
- var commentInvitation = {
-    'id': PAPERINV+'/Open/Comment',
-    'signatures': [CONFERENCE],
-    'writers': [CONFERENCE],
-    'invitees': ['~'],
-    'noninvitees':[],
-    'readers': ['everyone'],
-    'process': commentProcess,
-    'reply': {
-      'forum': note.id,      // links this note (comment) to the previously posted note (paper)
-      //'replyto': noteID,    // not specified so we can allow comments on comments
-      'signatures': {
-        'values-regex':'~.*|\\(anonymous\\)',
-        'description': 'How your identity will be displayed with the above content.'
-        },    // this regex demands that the author reveal his/her ~ handle
-      'writers': {'values-regex':'~.*|\\(anonymous\\)'},
-      'readers': {
-        'value-dropdown': [
-          'everyone',
-          PROGRAM_CHAIRS,
-          PAPERGRP + '/Reviewers'
-        ],
-        'description': 'The users who will be allowed to read the above content.'
-        },
-      'content': {
-        'title': {
-          'order': 1,
-          'value-regex': '.{1,500}',
-          'description': 'Brief summary of your comment.',
-          'required':true
-        },
-        'comment': {
-          'order': 2,
-          'value-regex': '[\\S\\s]{1,5000}',
-          'description': 'Your comment or reply.',
-          'required':true
-        }
-      }
-    }
-  };
-
-
-  //Send an email to the author of the submitted note, confirming its receipt
+  // Send an email to the author of the submitted note, confirming its receipt
 
   var mail = {
     "groups": note.content.authorids,
     "subject": "Confirmation of your submission to " + CONFERENCE_NAME + ": \"" + note.content.title + "\".",
     "message": `Your submission to `+ CONFERENCE_NAME +` has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
   };
-  var mailP = or3client.or3request( or3client.mailUrl, mail, 'POST', token )
-
-
-  or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
-  .then(result => or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token))
-  .then(result => or3client.or3request(or3client.grpUrl, nonReadersGroup, 'POST', token))
-
-  .then(result => {
-    invitation_promises = [
-      or3client.or3request(or3client.inviteUrl, officialReviewInvitation, 'POST', token),
-      or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token),
-    ];
-
-    return Promise.all(invitation_promises);
-  })
-
-  .then(result => mailP)
+/*
+  or3client.or3request(or3client.or3request( or3client.mailUrl, mail, 'POST', token )
   .then(result => done())
   .catch(error => done(error));
-
+*/
   return true;
 };
 
