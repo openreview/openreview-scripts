@@ -32,10 +32,6 @@ groups[config.REVIEWERS] = openreview.Group(config.REVIEWERS, **config.group_par
 invitations = {}
 
 ## Submission invitation
-utils.process_to_file(
-	utils.get_path("../process/submissionProcess.template", __file__),
-	utils.get_path("../process", __file__),
-)
 process_path =utils.get_path('../process/submissionProcess.js', __file__)
 invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=config.DUE_TIMESTAMP, process=process_path,**config.invitation_params)
 
