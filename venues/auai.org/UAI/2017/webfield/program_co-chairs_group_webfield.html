@@ -284,6 +284,9 @@ $(function() {
       Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
       Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
       Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
+      Average_Confidence: function(row) { return toNumber(row.reviewProgressData.averageConfidence); },
+      Max_Confidence: function(row) { return toNumber(row.reviewProgressData.maxConfidence); },
+      Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
       Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
       Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
       Meta_Review_Missing: function(row) { return row.areachairProgressData.numMetaReview; }
@@ -506,6 +509,7 @@ $(function() {
     var reviewObj;
     var combinedObj = {};
     var ratings = [];
+    var confidences = [];
     for (var reviewerNum in reviewerIds) {
       if (reviewerNum in completedReviews) {
         reviewObj = completedReviews[reviewerNum];
@@ -518,6 +522,7 @@ $(function() {
           reviewLength: reviewObj.content.review.length
         });
         ratings.push(reviewObj.rating);
+        confidences.push(reviewObj.confidence);
       } else {
         combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
           forumUrl: '/forum?' + $.param({
@@ -537,6 +542,15 @@ $(function() {
       maxRating = _.max(ratings);
     }
 
+    var averageConfidence = 'N/A';
+    var minConfidence = 'N/A';
+    var maxConfidence = 'N/A';
+    if (confidences.length) {
+      averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
+      minConfidence = _.min(confidences);
+      maxConfidence = _.max(confidences);
+    }
+
     var reviewProgressData = {
       numSubmittedReviews: Object.keys(completedReviews).length,
       numReviewers: Object.keys(reviewerIds).length,
@@ -544,6 +558,9 @@ $(function() {
       averageRating: averageRating,
       maxRating: maxRating,
       minRating: minRating,
+      averageConfidence: averageConfidence,
+      minConfidence: minConfidence,
+      maxConfidence: maxConfidence,
       sendReminder: false
     };
 
