@@ -4,7 +4,7 @@ import openreview
 import sys, os
 import config
 import getpass
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "/Users/mandler/projects/openreview-scripts/utils"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../utils"))
 import utils
 import templates
 
@@ -41,14 +41,8 @@ for p in paths:
 		))
 		print "Posting group: ", p
 
-# CONF group needs a webpath - different configuation parameters
-if True:
-	#not client.exists(config.CONF):
-	conf_group = client.post_group(openreview.Group(config.CONF, **config.conf_params))
-	print "Posting group: ", config.CONF
-else:
-	print "Group %s already exists" % config.CONF
-	conf_group = client.get_group(config.CONF)
+conf_group = client.post_group(openreview.Group(config.CONF, **config.conf_params))
+print "Posting group: ", config.CONF
 
 if not client.exists(config.ADMIN):
 	admin_group = client.post_group(openreview.Group(
