@@ -1,35 +1,40 @@
 function(){
-    const TRACK_NAME = <<param0>>;
-    const CONFERENCE = 'roboticsfoundation.org/RSS/2017/RCW_Workshop';
-    const TRACK = CONFERENCE+'/-_'+TRACK_NAME;
-    const PAPERGRP = TRACK+'/Paper' + note.number;
-    var CONFERENCE_NAME = 'RSS 2017 RCW Workshop -'+TRACK_NAME+' Track'
     var or3client = lib.or3client;
 
-    console.log('the Comment Process is here');
-    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
+    var origNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
+    var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token) : null;
 
+    console.log("commentProcess");
+    Promise.all([
+      origNoteP,
+      replytoNoteP
+    ]).then(function(result) {
 
+      var origNote = result[0].notes[0];
+      var replytoNote = note.replyto ? result[1].notes[0] : null;
 
-    origNote.then(function(result) {
-      var forum = result.notes[0];
-      var note_number = forum.number;
+      var author_mail;
 
-      var reviewers = [PAPERGRP + '/Reviewers'];
-      var authors = forum.content.authorids;
+      if(replytoNote.id == origNote.id){
+        author_mail = {
+          "groups": origNote.content.authorids,
+          "subject": "Your submission to ICML 2017 MLAV Workshop has received a comment",
+          "message": "Your submission to the Machine Learning for Autonomous Vehicles workshop has received a comment.\n\nComment title: " + note.content.title + "\n\nComment: " + note.content.comment + "\n\nTo view the comment, click here: " + baseUrl+"/forum?id=" + note.forum +'&noteId='+note.id
+        };
+      } else {
+        author_mail = {
+          "groups": replytoNote.signatures == '(anonymous)' ? [] : replytoNote.signatures,
+          "subject": "Your comment has received a response",
+          "message": "Your comment titled \""+replytoNote.content.title+"\" has received a response.\n\nComment title: " + note.content.title + "\n\nComment: " + note.content.comment + "\n\nTo view the comment, click here: " + baseUrl+"/forum?id=" + note.forum +'&noteId='+note.id
+        };
+      }
 
-      var author_mail = {
-        "groups": authors,
-        "subject": "Review of your submission to "+TRACK+": \"" + forum.content.title + "\"",
-        "message": "Your submission to " + CONFERENCE_NAME + " has received a comment.\n\nTitle: " + note.content.title + "\n\nReview: " + note.content.comment + "\n\n To view the review, click here: " + baseUrl+"/forum?id=" + note.forum
-      };
+      promises = [or3client.or3request(or3client.mailUrl, author_mail, 'POST', token)];
 
-      var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
-
-      return authorMailP;
+      return Promise.all(promises);
     })
-    .then(result => or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token))
     .then(result => done())
     .catch(error => done(error));
+
     return true;
   };
