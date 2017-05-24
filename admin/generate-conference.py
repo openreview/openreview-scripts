@@ -3,7 +3,6 @@
 import sys, os, shutil
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../utils"))
 import utils
-import templates
 import argparse
 import datetime
 
@@ -13,6 +12,13 @@ args = parser.parse_args()
 
 
 conference = raw_input("Enter the full path of the conference group you would like to create (e.g. my-conference.org/MYCONF/2017): ")
+conference_title = raw_input("Enter the title of this conference (this will appear at the top of the homepage): ")
+conference_subtitle = raw_input("Enter the subtitle of this conference (this will appear just below the title): ")
+conference_location = raw_input("Enter the location of the conference: ")
+human_duedate = raw_input("Enter the human-readable due date string that will appear on the homepage (this will have no effect on the system due date): ")
+url = raw_input("Enter the conference URL: ")
+print "When users submit a paper, they will receive an email. Fill in the blank below: "
+conference_phrase = raw_input("Your submission to ______ has been received. ")
 directory = utils.get_path('../venues/%s' % conference, __file__)
 submission_name = raw_input("Enter the name of the submission (press enter for default: \"Submission\"): " )
 
@@ -63,20 +69,15 @@ with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.ge
 	new_configfile.write(templatestring)
 
 print "writing %s/webfield/conf.html" % directory
-with open(directory + '/webfield/conf.html', 'w') as webfile:
-	web_params = {
-		"groupId": conference,
-		"invitationId": "%s/-/%s" % (conference, submission_name),
-		"title": "This is the title",
-		"subtitle": "This is the subtitle",
-		"location" : "This is the location",
-		"date": duedate.strftime('%Y-%m-%d %H:%M:%S'),
-		"url": "www.thisistheurl.com"
-	}
-
-	webfield = templates.Webfield(web_params)
-
-	webfile.write(webfield.html)
+with open(directory + '/webfield/conf.html', 'w') as new_webfile, open(utils.get_path('./conference-template/webfield/conf.template',__file__)) as template_webfile:
+	templatestring = template_webfile.read().replace('<<TITLE>>',"\"%s\"" % conference_title)
+	templatestring = templatestring.replace('<<CONF>>',"\"%s\"" % conference)
+	templatestring = templatestring.replace('<<SUBMISSION_NAME>>', submission_name)
+	templatestring = templatestring.replace('<<SUBTITLE>>',"\"%s\"" % conference_subtitle)
+	templatestring = templatestring.replace('<<LOCATION>>',"\"%s\"" % conference_location)
+	templatestring = templatestring.replace('<<DATE>>',"\"%s\"" % human_duedate)
+	templatestring = templatestring.replace('<<URL>>',"\"%s\"" % url)
+	new_webfile.write(templatestring)
 
 print "writing %s/python/admin-init.py" % directory
 with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
@@ -89,3 +90,14 @@ with open(directory + '/python/superuser-init.py', 'w') as new_initfile, open(ut
 	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
 	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "\"%s\"" % duedate_milliseconds)
 	new_initfile.write(templatestring)
+
+print "writing %s/process/submissionProcess.template" % directory
+with open(directory + '/process/submissionProcess.template', 'w') as new_submissionprocess, open(utils.get_path('./conference-template/process/submissionProcess.template', __file__)) as template_submissionprocess:
+	templatestring = template_submissionprocess.read().replace('<<CONF>>', "\"%s\"" % conference)
+	templatestring = templatestring.replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
+	new_submissionprocess.write(templatestring)
+
+print "writing %s/process/commentProcess.js" % directory
+with open(directory + '/process/commentProcess.js', 'w') as new_commentprocess, open(utils.get_path('./conference-template/process/commentProcess.template', __file__)) as template_commentprocess:
+	templatestring = template_commentprocess.read().replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
+	new_commentprocess.write(templatestring)

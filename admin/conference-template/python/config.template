@@ -77,11 +77,20 @@ group_params = {
     'signatories': [CONF],
 }
 
-invitation_params = {
+submission_params = {
     'readers': ['everyone'],
     'writers': [CONF],
     'invitees': ['~'],
-    'signatures': [CONF]
+    'signatures': [CONF],
+    'process': utils.get_path('../process/submissionProcess.js', __file__)
+}
+
+comment_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': ['~'],
+    'signatures': [CONF],
+    'process': utils.get_path('../process/commentProcess.js', __file__)
 }
 
 
