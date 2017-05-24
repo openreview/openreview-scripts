@@ -149,8 +149,9 @@ if client.user['id'].lower()=='openreview.net':
         'forum': None,
         'replyto': None,
         'readers': {
+            ## Submissions to the Poster track are not visible to everyone, just to the people that need to know
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
+            'values-copied': [CONFERENCE, COCHAIRS, '{content.authorids}', '{signatures}']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -215,7 +216,7 @@ if client.user['id'].lower()=='openreview.net':
                 'required':True
             },
             'conflicts': {
-                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu;google.com, etc.).',
+                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu,google.com, etc.).',
                 'order': 9,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
                 'required': True
@@ -262,15 +263,7 @@ if client.user['id'].lower()=='openreview.net':
                                               signatures=[POSTER],
                                               duedate=TIMESTAMP_DUE,
                                               process=utils.get_path('../process/submissionProcessPoster.js', __file__))
-
-    ## Submissions to the Poster track are not visible to everyone, just to the people that need to know
-    reply['readers'] = {
-            'description': 'The users who will be allowed to read the above content.',
-            'values-copied': [CONFERENCE, COCHAIRS, '{content.authorids}', '{signatures}']
-        }
-
     poster_invitation.reply = reply.copy()
-
     invitations.append(proceeding_invitation)
     invitations.append(poster_invitation)
 
