@@ -24,14 +24,19 @@ See openreview-scripts/utils for utility function and template details.
 
 """
 
+utils.process_to_file(
+    utils.get_path("../process/submissionProcess.template", __file__),
+    utils.get_path("../process", __file__)
+    )
+
 groups = {}
 groups[config.PROGRAM_CHAIRS] = openreview.Group(config.PROGRAM_CHAIRS, **config.group_params)
 groups[config.AREA_CHAIRS] = openreview.Group(config.AREA_CHAIRS, **config.group_params)
 groups[config.REVIEWERS] = openreview.Group(config.REVIEWERS, **config.group_params)
 
 invitations = {}
-invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=<<SUBMISSION_DUEDATE>>, **config.invitation_params)
-invitations[config.COMMENT] = openreview.Invitation(config.COMMENT, **config.invitation_params)
+invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=<<SUBMISSION_DUEDATE>>, **config.submission_params)
+invitations[config.COMMENT] = openreview.Invitation(config.COMMENT, **config.comment_params)
 
 invitations[config.SUBMISSION].reply = templates.SubmissionReply().body
 invitations[config.COMMENT].reply = templates.CommentReply(params={'invitation': config.SUBMISSION}).body
