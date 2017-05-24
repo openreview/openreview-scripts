@@ -1,8 +1,6 @@
 function () {
   var or3client = lib.or3client;
 
-  var CONFERENCE = <<CONF>>;
-  var PAPERINV = CONFERENCE+'/-/Paper' + note.number;
   var CONFERENCEPHRASE = <<PHRASE>>;
 
   var author_mail = {
