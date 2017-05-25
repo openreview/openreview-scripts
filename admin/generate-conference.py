@@ -15,6 +15,7 @@ conference = raw_input("Enter the full path of the conference group you would li
 conference_title = raw_input("Enter the title of this conference (this will appear at the top of the homepage): ")
 conference_subtitle = raw_input("Enter the subtitle of this conference (this will appear just below the title): ")
 conference_location = raw_input("Enter the location of the conference: ")
+conference_date = raw_input("Enter date of the conference in human-readable form:")
 human_duedate = raw_input("Enter the human-readable due date string that will appear on the homepage (this will have no effect on the system due date): ")
 url = raw_input("Enter the conference URL: ")
 print "When users submit a paper, they will receive an email. Fill in the blank below: "
@@ -75,7 +76,8 @@ with open(directory + '/webfield/conf.html', 'w') as new_webfile, open(utils.get
 	templatestring = templatestring.replace('<<SUBMISSION_NAME>>', submission_name)
 	templatestring = templatestring.replace('<<SUBTITLE>>',"\"%s\"" % conference_subtitle)
 	templatestring = templatestring.replace('<<LOCATION>>',"\"%s\"" % conference_location)
-	templatestring = templatestring.replace('<<DATE>>',"\"%s\"" % human_duedate)
+	templatestring = templatestring.replace('<<CONF_DATE>>',"\"%s\"" % conference_date)
+	templatestring = templatestring.replace('<<DATE>>',"%s" % human_duedate)
 	templatestring = templatestring.replace('<<URL>>',"\"%s\"" % url)
 	new_webfile.write(templatestring)
 
