@@ -163,8 +163,10 @@ class SecondaryUserAffinity(UserAffinity):
 class TFIDF(metadata.OpenReviewFeature):
     def __init__(self, name, data):
         self.name = name
-        self.model = data
+        self.model = data['model']
+        self.papers_by_forum = {paper.to_json()['forum']:paper.to_json() for paper in data['papers']}
 
     def score(self, signature, forum):
-        return self.model.tfidf_distance(signature, forum)
+        note_record = self.papers_by_forum[forum]
+        return self.model.score(signature, note_record)
 
