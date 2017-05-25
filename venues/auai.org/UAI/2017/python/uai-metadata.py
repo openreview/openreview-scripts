@@ -7,9 +7,9 @@ import openreview
 from uaidata import *
 import uai_features
 
-import openreview_matcher
-from models import tfidf
-from util import utils
+from openreview_matcher.metadata import generate_metadata
+from openreview_matcher.models import tfidf
+from openreview_matcher import utils
 
 # Argument handling
 parser = argparse.ArgumentParser()
@@ -78,13 +78,13 @@ user_groups = {
 }
 
 print "generating paper metadata..."
-paper_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=[n.forum for n in papers], groups=user_groups.values(), features=paper_features)
+paper_metadata_contents = generate_metadata(forum_ids=[n.forum for n in papers], groups=user_groups.values(), features=paper_features)
 
 print "generating reviewer metadata..."
-reviewer_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=user_groups[PC].members, groups=user_groups.values(), features=reviewer_features)
+reviewer_metadata_contents = generate_metadata(forum_ids=user_groups[PC].members, groups=user_groups.values(), features=reviewer_features)
 
 print "generating areachair metadata..."
-areachair_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=user_groups[SPC].members, groups=user_groups.values(), features=reviewer_features)
+areachair_metadata_contents = generate_metadata(forum_ids=user_groups[SPC].members, groups=user_groups.values(), features=reviewer_features)
 
 new_paper_metadata = []
 for forum in paper_metadata_contents:

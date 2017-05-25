@@ -6,8 +6,8 @@ import json
 
 import openreview
 
-from openreview_matcher.util import utils
 from openreview_matcher.models import tfidf
+from openreview_matcher import utils
 
 client = openreview.Client()
 
@@ -43,6 +43,8 @@ write_to_json(train_data, "../data/uai_train.json")
 write_to_json(test_data, "../data/uai_test.json")
 write_to_json(archive, "../data/uai_archive.json")
 
+print "training TFIDF model..."
 tfidf_model = tfidf.Model()
 tfidf_model.fit(train_data=utils.SerializedData("../data/uai_train.json"), archive_data=utils.SerializedData("../data/uai_archive.json"))
+print "saving to ../data/tfidf.pkl"
 utils.save_obj(tfidf_model,'../data/tfidf.pkl')
