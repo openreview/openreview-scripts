@@ -1,19 +1,20 @@
-
 import argparse
 from collections import defaultdict
+import imp
 
 import openreview
-import match_utils
 
 from uaidata import *
 import uai_features
 
-import openreview_matcher
+from openreview_matcher.metadata import generate_metadata
+from openreview_matcher.models import tfidf
+from openreview_matcher import utils
 
 # Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--download', help = "the filename (without extension) of the .pkl file to save the downloaded data. Defaults to ./metadata")
-parser.add_argument('--overwrite', help = "if true, erases the old metadata")
+parser.add_argument('--overwrite', action='store_true', help = "if present erases the old metadata")
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--baseurl', help = "base URL")
@@ -26,8 +27,9 @@ download = './metadata' if args.download == None else args.download
 
 print "getting notes..."
 papers = client.get_notes(invitation='auai.org/UAI/2017/-/blind-submission')
+program_committee = client.get_group('auai.org/UAI/2017/Program_Committee')
 
-if args.overwrite.lower()=='true':
+if args.overwrite:
     print "erasing old metadata..."
     paper_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Paper/Metadata')
     reviewer_metadata = client.get_notes(invitation='auai.org/UAI/2017/-/Reviewer/Metadata')
@@ -53,12 +55,16 @@ subject_area_overlap_data = {
     'papers': papers
 }
 
+print "loading TFIDF model..."
+tfidf_model = utils.load_obj('../data/tfidf.pkl')
+
 # Define features
 paper_features = [
     uai_features.PrimarySubjectOverlap(name='primary_subject_overlap', data=subject_area_overlap_data),
     uai_features.SecondarySubjectOverlap(name='secondary_subject_overlap', data=subject_area_overlap_data),
     uai_features.BidScore(name='bid_score', data=bids),
-    uai_features.ACRecommendation(name='ac_recommendation', data=recs)
+    uai_features.ACRecommendation(name='ac_recommendation', data=recs),
+    uai_features.TFIDF(name='tfidf', data=tfidf_model)
 ]
 
 reviewer_features = [
@@ -72,13 +78,13 @@ user_groups = {
 }
 
 print "generating paper metadata..."
-paper_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=[n.forum for n in papers], groups=user_groups.values(), features=paper_features)
+paper_metadata_contents = generate_metadata(forum_ids=[n.forum for n in papers], groups=user_groups.values(), features=paper_features)
 
 print "generating reviewer metadata..."
-reviewer_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=user_groups[PC].members, groups=user_groups.values(), features=reviewer_features)
+reviewer_metadata_contents = generate_metadata(forum_ids=user_groups[PC].members, groups=user_groups.values(), features=reviewer_features)
 
 print "generating areachair metadata..."
-areachair_metadata_contents = openreview_matcher.metadata.generate_metadata(forum_ids=user_groups[SPC].members, groups=user_groups.values(), features=reviewer_features)
+areachair_metadata_contents = generate_metadata(forum_ids=user_groups[SPC].members, groups=user_groups.values(), features=reviewer_features)
 
 new_paper_metadata = []
 for forum in paper_metadata_contents:
@@ -114,7 +120,7 @@ for forum in areachair_metadata_contents:
     ))
 
 print "Saving OpenReview metadata to %s.pkl" % download
-match_utils.save_obj(
+utils.save_obj(
     {
         'user_groups': user_groups,
         'papers': papers,

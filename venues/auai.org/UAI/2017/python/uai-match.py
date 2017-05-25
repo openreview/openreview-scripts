@@ -50,10 +50,11 @@ matching_configuration = {
     "minpapers": 1,
     "maxpapers": 15,
     "weights": {
-        "primary_subject_overlap": 1,
-        "secondary_subject_overlap": 1,
-        "bid_score": 1,
-        "ac_recommendation": 1
+        "primary_subject_overlap": 0,
+        "secondary_subject_overlap": 0,
+        "bid_score": 0,
+        "ac_recommendation": 0,
+        "tfidf": 1
     }
 }
 

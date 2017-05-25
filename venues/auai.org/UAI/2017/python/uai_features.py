@@ -160,3 +160,11 @@ class SecondaryUserAffinity(UserAffinity):
         self.subjectareas_by_signature = {n.signatures[0]: n.content['additional areas'] for n in self.data['subject_areas']}
 
 
+class TFIDF(metadata.OpenReviewFeature):
+    def __init__(self, name, data):
+        self.name = name
+        self.model = data
+
+    def score(self, signature, forum):
+        return self.model.tfidf_distance(signature, forum)
+
