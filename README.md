@@ -1,6 +1,11 @@
 # openreview-scripts
-Scripts to populate OpenReview conferences. Most conferences use a client library written in Javascript. ICLR 2017 uses the latest Python library to allow conference organizers to run scripts themselves. For details on ICLR 2017, please see the [ICLR 2017 readme](./iclr2017).
+This is a public repository containing scripts used to generate conferences, workshops, and other events using [OpenReview.net](https://openreview.net).
 
-This is a work in progress and is changing frequently. 
+Scripts use the [openreview python library](https://github.com/iesl/openreview-py) to interact with the OpenReview API. Code for specific events are are organized in the `/venues` directory. Events are further organized by institution domain name, year, workshop name, etc.
 
-Please contact Michael Spector at spector@cs.umass.edu for technical support. 
+## How to host your own event
+If you would like to use OpenReview to host your own event, please contact us at info@openreview.net. 
+
+Once your conference has been approved, we will provide you with an administrator-level username and password, and will help you get started with your event and provide technical support. For larger conferences, we can also provide some degree of administrative support.
+
+OpenReview can also be used as an internal paper archive and reviewing system for labs and other organizations.
