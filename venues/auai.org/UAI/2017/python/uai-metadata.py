@@ -58,6 +58,8 @@ subject_area_overlap_data = {
 print "loading TFIDF model..."
 tfidf_model = utils.load_obj('../data/tfidf.pkl')
 
+tfidf_data = {'model': tfidf_model, 'papers': papers}
+
 # Define features
 paper_features = [
     uai_features.PrimarySubjectOverlap(name='primary_subject_overlap', data=subject_area_overlap_data),
