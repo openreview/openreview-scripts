@@ -66,7 +66,7 @@ paper_features = [
     uai_features.SecondarySubjectOverlap(name='secondary_subject_overlap', data=subject_area_overlap_data),
     uai_features.BidScore(name='bid_score', data=bids),
     uai_features.ACRecommendation(name='ac_recommendation', data=recs),
-    uai_features.TFIDF(name='tfidf', data=tfidf_model)
+    uai_features.TFIDF(name='tfidf', data=tfidf_data)
 ]
 
 reviewer_features = [
