@@ -1,7 +1,7 @@
 function () {
   var or3client = lib.or3client;
 
-  var CONFERENCEPHRASE = "the Reproducible Machine Learning Workshop";
+  var CONFERENCEPHRASE = "the Reproducibility in Machine Learning Workshop";
 
   var author_mail = {
     "groups": note.content.authorids,
