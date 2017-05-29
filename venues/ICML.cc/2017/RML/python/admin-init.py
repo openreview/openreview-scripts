@@ -30,7 +30,9 @@ utils.process_to_file(
     )
 
 groups = {}
-groups[config.PROGRAM_CHAIRS] = openreview.Group(config.PROGRAM_CHAIRS, **config.group_params)
+prog_chairs = openreview.Group(config.PROGRAM_CHAIRS, **config.group_params)
+prog_chairs.members = ["rosemary.nan.ke@gmail.com","~Anirudh_Goyal1", "~Alex_Lamb1","~Joelle_Pineau1", "~Samy_Bengio1", "~Yoshua_Bengio1"]
+groups[config.PROGRAM_CHAIRS] = prog_chairs
 groups[config.AREA_CHAIRS] = openreview.Group(config.AREA_CHAIRS, **config.group_params)
 groups[config.REVIEWERS] = openreview.Group(config.REVIEWERS, **config.group_params)
 
