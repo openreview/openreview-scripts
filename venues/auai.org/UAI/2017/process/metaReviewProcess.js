@@ -7,13 +7,6 @@ function() {
 
     origNote.then(function(result){
       var forum = result.notes[0];
-      var authors = forum.content.authorids;
-
-      var author_mail = {
-        "groups": authors,
-        "subject": "[UAI 2017] Meta-review by an area chair has been posted: " + "\"" + forum.content.title + "\".",
-        "message": "Your submission to UAI 2017 has received an meta-review.\n\nTitle: " + note.content.title + "\n\nMeta-review: "+note.content.metareview+"\n\nTo view the meta-review, click here: "+baseUrl+"/forum?id=" + note.forum
-      };
 
       var pc_mail = {
         "groups": programchairs,
@@ -22,8 +15,7 @@ function() {
       };
 
       var promises = [
-        or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token ),
-        or3client.or3request( or3client.mailUrl, author_mail, 'POST', token )
+        or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token )
       ];
       return Promise.all(promises)
 
