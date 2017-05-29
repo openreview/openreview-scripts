@@ -263,7 +263,7 @@ def get_submit_review_invitation(submissionId, number, authorsGroupId, reviewerN
 
     return invitation
 
-def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGroupId, reviewerNonReadersGroupId):
+def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGroupId, reviewerNonReadersGroupId, reviewersGroupId):
 
     reply = {
         'forum': submissionId,
@@ -275,7 +275,7 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
             'values-regex': areachairGroupId
         },
         'readers': {
-            'values': [COCHAIRS],
+            'values': [COCHAIRS, reviewersGroupId],
             'description': 'The users who will be allowed to read the above content.'
         },
         'nonreaders': {
@@ -415,17 +415,17 @@ try:
 
 
                 #Post open comment invitation
-                client.post_invitation(get_open_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
+                #client.post_invitation(get_open_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
                 #Post confidential comment invitation
-                client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
+                #client.post_invitation(get_confidential_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id))
                 #Post recommend reviewer invitation
-                client.post_invitation(get_recommend_reviewer_invitation(submission.id, submission.number))
+                #client.post_invitation(get_recommend_reviewer_invitation(submission.id, submission.number))
                 #Post submit review invitation
-                client.post_invitation(get_submit_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
+                #client.post_invitation(get_submit_review_invitation(submission.id, submission.number, author_group.id, reviewers_nonreaders_group.id))
                 #Post comment review invitation
-                client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id,reviewers_nonreaders_group.id))
+                #client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id,reviewers_nonreaders_group.id))
                 #Post meta review invitation
-                client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id, reviewers_nonreaders_group.id))
+                client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id, reviewers_nonreaders_group.id, reviewers_group.id))
 
             else:
                 print "Author group not found", submission.number
