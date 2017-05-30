@@ -2,10 +2,8 @@
 
 """
 
-This is the initialization script for dblp.org
-added dblp directory and tutorial section
-
-It should only be run ONCE to kick off the conference. It can only be run by the Super User.
+This script reads in DBLP JSON data and inserts a new
+record or a revision to an existing record.
 
 """
 
@@ -26,7 +24,7 @@ parser.add_argument('--overwrite',
                     help="If set to true, overwrites existing groups")
 parser.add_argument('--username')
 parser.add_argument('--password')
-parser.add_argument('--json')
+parser.add_argument('--json', help="File containint a list of DBLP JSON objects.")
 
 args = parser.parse_args()
 ## Initialize the client library with username and password
@@ -60,7 +58,3 @@ for d in data:
         f.close()
 
     print count
-
-
-
-pass
