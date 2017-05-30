@@ -75,13 +75,6 @@ function(){
     forumNoteP.then(result => {
 
       var forumNote = result.notes[0];
-      var uaiGroup = 'auai.org/UAI/2017';
-      var authorsGroup = uaiGroup + '/Paper' + forumNote.number + '/Authors';
-      var pcGroup = uaiGroup + '/Program_Committee';
-      var spcGroup = uaiGroup + '/Senior_Program_Committee';
-      var coChairsGroup = uaiGroup + '/Program_Co-Chairs';
-      var nonReadersGroup = uaiGroup + '/Paper' + forumNote.number + '/Reviewers/NonReaders';
-
       var regex = /auai\.org\/UAI\/2017\/-\/Paper[1-9]+\/(.*)\/Comment/;
       var commentType = "";
 
@@ -92,29 +85,19 @@ function(){
 
       var promises = [];
 
-      var visibleToAuthors = note.readers.includes(authorsGroup);
-      var visibleToReviewers = note.readers.includes(pcGroup);
-      var invisibleToReviewers = note.nonreaders.includes(nonReadersGroup);
-      var visibleToAreachairs = note.readers.includes(spcGroup);
-      var visibleToPCs = note.readers.includes(coChairsGroup);
-
-      if (visibleToAuthors) {
+      if (commentType === 'Open') {
         console.log('Send notification to authors...');
         var authorMailP = getAuthorEmails(forumNote);
         promises.push(authorMailP);
       };
 
-      if (visibleToReviewers && !invisibleToReviewers) {
-        console.log('Send notification to reviewers...');
-        var reviewerMailP = getReviewerEmails(forumNote, commentType);
-        promises.push(reviewerMailP);
-      };
+      console.log('Send notification to reviewers...');
+      var reviewerMailP = getReviewerEmails(forumNote, commentType);
+      promises.push(reviewerMailP);
 
-      if (visibleToAreachairs) {
-        console.log('Send notification to area chairs...');
-        var areachairMailP = getAreachairEmails(forumNote, commentType);
-        promises.push(areachairMailP);
-      };
+      console.log('Send notification to area chairs...');
+      var areachairMailP = getAreachairEmails(forumNote, commentType);
+      promises.push(areachairMailP);
 
       return Promise.all(promises);
     })
