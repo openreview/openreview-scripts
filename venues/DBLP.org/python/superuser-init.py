@@ -112,7 +112,7 @@ if openreview.user['id'].lower() == 'openreview.net':
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required':True
+                'required':False
             },
             'DBLP_url': {
                 'description': 'DBLP.org url associated with this paper',

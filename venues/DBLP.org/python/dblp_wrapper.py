@@ -1,0 +1,66 @@
+#!/usr/bin/python
+
+"""
+
+This is the initialization script for dblp.org
+added dblp directory and tutorial section
+
+It should only be run ONCE to kick off the conference. It can only be run by the Super User.
+
+"""
+
+## Import statements
+import argparse
+import csv
+import sys
+from openreview import *
+import update_records
+import json
+import os
+import traceback
+
+## Handle the arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--overwrite',
+                    help="If set to true, overwrites existing groups")
+parser.add_argument('--username')
+parser.add_argument('--password')
+parser.add_argument('--json')
+
+args = parser.parse_args()
+## Initialize the client library with username and password
+if args.username != None and args.password != None:
+    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+else:
+    openreview = Client(baseurl=args.baseurl)
+
+dblp_inv = openreview.get_invitation('DBLP.org/-/paper')
+
+data = json.loads(open(args.json).read())
+
+count = 0
+for d in data:
+    count += 1
+    try:
+        ## Not all data from DBLP exactly fits the invitation we've defined, so we need to rename a few fields.
+        content = update_records.process_content(d)
+
+        ## Use the post_or_update function to post a new record
+        dblp_record = update_records.post_or_update(openreview, content, verbose=True)
+    except :
+        print "Error in : " + args.json + " : " + str(d)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        # get the json file name
+        fp = args.json.split('/')
+        f = open("./" + fp.pop() + ".err",  "a", 0)
+        f.write("line: " + str(count) + " : " + str(d) + os.linesep)
+        traceback.print_tb(exc_traceback, None, file=f)
+        f.write(os.linesep)
+        f.close()
+
+    print count
+
+
+
+pass
