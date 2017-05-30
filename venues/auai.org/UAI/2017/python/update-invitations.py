@@ -21,7 +21,7 @@ maskAreaChairGroup = CONFERENCE + "/Paper[PAPER_NUMBER]/Area_Chair"
 invitation_invitees = {
 	'Open/Comment': { 'byPaper': True, 'invitees': [COCHAIRS, SPC, PC, maskAuthorsGroup] },
 	'Review/Open/Comment': { 'byPaper': True, 'invitees': [COCHAIRS, SPC, PC, maskAuthorsGroup] },
-	'Confidential/Comment': { 'byPaper': True, 'invitees': [COCHAIRS, SPC, PC] },
+	'Confidential/Comment': { 'byPaper': True, 'invitees': [COCHAIRS, maskAreaChairGroup, maskReviewerGroup] },
 	'Add/Bid': { 'tags': True, 'byPaper': False, 'invitees': [SPC, PC] },
 	'Recommend/Reviewer': { 'tags': True, 'byPaper': True, 'invitees': [maskAreaChairGroup] },
 	'Submit/Review': { 'byPaper': True, 'invitees': [maskReviewerGroup] },
