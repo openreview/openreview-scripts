@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "/Users/mandler/projects/openreview-scripts/utils"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../../utils"))
 import utils
 
 """
