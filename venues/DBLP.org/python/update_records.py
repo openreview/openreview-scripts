@@ -11,7 +11,7 @@ def post_or_update(client, content, verbose=False):
     client  : an instance of the openreview.Client class
     content : a dictionary representing the content of the record to be posted or updated.
 
-    Note: "content" argument should conform to the reply field of the invitation "DBLP.org/-/paper"
+    Note: "content" argument should conform to the reply field of the invitation "DBLP.org/-/Upload"
 
     '''
 
