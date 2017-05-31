@@ -248,7 +248,7 @@ if openreview.user['id'].lower() == 'openreview.net':
 
         }
     }
-    submission_invitation = Invitation('DBLP.org/-/paper',
+    submission_invitation = Invitation('DBLP.org/-/Upload',
                                        readers=['everyone'],
                                        writers=['DBLP.org/upload'],
                                        invitees=['DBLP.org/upload'],
@@ -260,6 +260,11 @@ if openreview.user['id'].lower() == 'openreview.net':
     revision_reply.pop('forum')
     revision_reply.pop('replyto')
     revision_reply['referent'] = None
+    # the authoreid field has "UNK" for the emails, we don't send
+    # that as a revision becuase it would overwrite the (probable) good
+    # email addresses in that field.
+    revision_reply['content']['authorids']['required'] = False;
+
 
     revision_invitation = Invitation('DBLP.org/-/Add/Revision',
         signatures = ['DBLP.org'],
