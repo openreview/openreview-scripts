@@ -49,7 +49,7 @@ def post_or_update(client, content, verbose=False):
             new_note = client.post_note(openreview.Note.from_json(
                 {
                     'cdate' : cdate * 1000,
-                    'invitation': 'DBLP.org/-/paper',
+                    'invitation': 'DBLP.org/-/Upload',
                     'readers': ['everyone'],
                     'signatures': ['DBLP.org/upload'],
                     'writers': ['DBLP.org/upload'],

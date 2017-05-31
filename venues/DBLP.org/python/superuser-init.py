@@ -112,7 +112,7 @@ if openreview.user['id'].lower() == 'openreview.net':
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required':False
+                'required':True
             },
             'DBLP_url': {
                 'description': 'DBLP.org url associated with this paper',
@@ -249,19 +249,23 @@ if openreview.user['id'].lower() == 'openreview.net':
 
         }
     }
-    submission_invitation = Invitation('DBLP.org/-/paper',
+    submission_invitation = Invitation('DBLP.org/-/Upload',
                                        readers=['everyone'],
                                        writers=['DBLP.org/upload'],
                                        invitees=['DBLP.org/upload'],
                                        signatures=['DBLP.org'],
-                                       reply=reply,
-                                       process='../process/dblp_process.js')
+                                       reply=reply)
 
 
     revision_reply = reply.copy()
     revision_reply.pop('forum')
     revision_reply.pop('replyto')
     revision_reply['referent'] = None
+    # the authoreid field has "UNK" for the emails, we don't send
+    # that as a revision becuase it would overwrite the (probable) good
+    # email addresses in that field.
+    revision_reply['content']['authorids']['required'] = False;
+
 
     revision_invitation = Invitation('DBLP.org/-/Add/Revision',
         signatures = ['DBLP.org'],
