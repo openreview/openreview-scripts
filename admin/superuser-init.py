@@ -1,36 +1,46 @@
 #!/usr/bin/python
-
-import openreview
 import sys, os
-import config
+import argparse
 import getpass
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), <<UTILS_DIR>>))
+import openreview
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), './utils'))
 import utils
-import templates
-
-
-args, parser, overwrite = utils.parse_args()
-client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 """
+REQUIRED ARGUMENTS
 
-OPTIONAL SCRIPT ARGUMENTS
+	conf - the full path of the conference group you would like to create.
+		e.g. auai.org/UAI/2017
 
-	baseurl -  the URL of the OpenReview server to connect to (live site: https://openreview.net)
+OPTIONAL ARGUMENTS
+
+	baseurl -  the URL of the OpenReview server to connect to (live site:
+		https://openreview.net)
  	username - the email address of the logging in user
 	password - the user's password
 
-See openreview-scripts/utils for utility function and template details.
-
 """
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-c','--conf', help = "the full path of the conference group to create", required=True)
+parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--username')
+parser.add_argument('--password')
+
+args = parser.parse_args()
+
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+
+admin = args.conf + '/Admin'
 
 if client.username.lower() != "openreview.net": raise(Exception('This script may only be run by the superuser'))
 
-path_components = config.CONF.split('/')
+path_components = args.conf.split('/')
 paths = ['/'.join(path_components[0:index+1]) for index, path in enumerate(path_components)]
 
 for p in paths:
-	if not client.exists(p) and p != config.CONF:
+	if not client.exists(p) and p != args.conf:
 		client.post_group(openreview.Group(
 			p,
 			readers = ['everyone'],
@@ -41,25 +51,30 @@ for p in paths:
 		))
 		print "Posting group: ", p
 
-if not client.exists(config.CONF):
-	conf_group = client.post_group(openreview.Group(config.CONF, **config.conf_params))
-	print "Posting group: ", config.CONF
-else:
-	print "Group %s already exists" % config.CONF
-	conf_group = client.get_group(config.CONF)
-
-if not client.exists(config.ADMIN):
-	admin_group = client.post_group(openreview.Group(
-		config.ADMIN,
-		readers = [config.ADMIN],
-		signatories = [config.ADMIN]
+if not client.exists(args.conf):
+	print "Posting group: ", args.conf
+	conf_group = client.post_group(openreview.Group(
+		args.conf,
+	    readers = ['everyone'],
+	    writers = [args.conf],
+	    signatories = [args.conf]
 	))
-	print "Posting group: ", config.ADMIN
 else:
-	print "Group %s already exists" % config.ADMIN
-	admin_group = client.get_group(config.ADMIN)
+	print "Group %s already exists" % args.conf
+	conf_group = client.get_group(args.conf)
 
-client.add_members_to_group(conf_group, [config.ADMIN])
+if not client.exists(admin):
+	admin_group = client.post_group(openreview.Group(
+		admin,
+		readers = [admin],
+		signatories = [admin]
+	))
+	print "Posting group: ", admin
+else:
+	print "Group %s already exists" % admin
+	admin_group = client.get_group(admin)
+
+client.add_members_to_group(conf_group, [admin])
 
 create_admin = raw_input("Create administrator login? (y/[n]): ").lower()
 
@@ -97,7 +112,7 @@ if create_admin == 'y' or create_admin == 'yes':
 	else:
 		print "Admin account not activated. Please respond to the email confirmation sent to %s" % username
 	client.add_members_to_group(admin_group, [username])
-	print "Added %s to %s: " % (username, config.CONF)
+	print "Added %s to %s: " % (username, args.conf)
 
 
 
