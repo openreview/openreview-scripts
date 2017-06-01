@@ -1,13 +1,12 @@
 # For now, run this script from /openreview-scripts
 
 import sys, os, shutil
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../utils"))
 import utils
 import argparse
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--test', help="base URL")
+parser.add_argument('--overwrite', action='store_true', help="if true, overwrites the conference directory")
 args = parser.parse_args()
 
 
@@ -52,19 +51,21 @@ except Exception, e:
 
 duedate_milliseconds = utils.date_to_timestamp(duedate)
 
-assert not os.path.exists(directory), "%s already exists" % conference
+if not args.overwrite: assert not os.path.exists(directory), "%s already exists" % conference
 
 print "Creating conference directory at %s" % directory
-os.makedirs(directory)
-os.makedirs(directory + '/python')
-os.makedirs(directory + '/webfield')
-os.makedirs(directory + '/process')
-os.makedirs(directory + '/data')
+
+makedir = lambda d: os.makedirs(d) if not os.path.exists(d) else None
+
+makedir(directory)
+makedir(directory + '/python')
+makedir(directory + '/webfield')
+makedir(directory + '/process')
+makedir(directory + '/data')
 
 print "writing %s/python/config.py" % directory
 with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.get_path('./conference-template/python/config.template', __file__)) as template_configfile:
 	templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
-	templatestring = templatestring.replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
 	templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
 	templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate_milliseconds))
 	new_configfile.write(templatestring)
@@ -83,14 +84,7 @@ with open(directory + '/webfield/conf.html', 'w') as new_webfile, open(utils.get
 
 print "writing %s/python/admin-init.py" % directory
 with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
-	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
-	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate_milliseconds)
-	new_initfile.write(templatestring)
-
-print "writing %s/python/superuser-init.py" % directory
-with open(directory + '/python/superuser-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/superuser-init.template', __file__)) as template_initfile:
-	templatestring = template_initfile.read().replace('<<UTILS_DIR>>', "\"%s\"" % utils.get_path('../utils', __file__))
-	templatestring = templatestring.replace('<<SUBMISSION_DUEDATE>>', "\"%s\"" % duedate_milliseconds)
+	templatestring = template_initfile.read().replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate_milliseconds)
 	new_initfile.write(templatestring)
 
 print "writing %s/process/submissionProcess.template" % directory

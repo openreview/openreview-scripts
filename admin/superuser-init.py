@@ -3,8 +3,6 @@ import sys, os
 import argparse
 import getpass
 import openreview
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), './utils'))
 import utils
 
 """
@@ -39,6 +37,8 @@ if client.username.lower() != "openreview.net": raise(Exception('This script may
 path_components = args.conf.split('/')
 paths = ['/'.join(path_components[0:index+1]) for index, path in enumerate(path_components)]
 
+# We need to check if ancestors of the conference exist. If they don't, they
+# must be created before continuing.
 for p in paths:
 	if not client.exists(p) and p != args.conf:
 		client.post_group(openreview.Group(
@@ -75,6 +75,11 @@ else:
 	admin_group = client.get_group(admin)
 
 client.add_members_to_group(conf_group, [admin])
+
+utils.process_to_file(
+	os.path.join(os.path.dirname(__file__), "../venues/%s/process/submissionProcess.template" % args.conf),
+	os.path.join(os.path.dirname(__file__), "../venues/%s/process" % args.conf)
+	)
 
 create_admin = raw_input("Create administrator login? (y/[n]): ").lower()
 
@@ -115,18 +120,3 @@ if create_admin == 'y' or create_admin == 'yes':
 	print "Added %s to %s: " % (username, args.conf)
 
 
-
-
-
-
-
-
-
-# TODO:
-# webfield
-# process functions
-
-# Optional stuff:
-# recruiting pipeline (maybe automate, maybe don't)
-# bids
-# blind submissions
