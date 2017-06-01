@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
 ###############################################################################
-# ex. python submission_done.py --baseurl http://localhost:3000
+# ex. python create_invitations.py --baseurl http://localhost:3000
 #       --username admin --password admin_pw
 #
+# To be run after submission due date to create review invitations for all the papers.
 # For each paper:
 # 1) create authorGroup (can see reviews, can't write a review)
 #           reviewer group (reviewers for this paper)
