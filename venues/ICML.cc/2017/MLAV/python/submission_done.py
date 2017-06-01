@@ -85,19 +85,19 @@ for paper in submissions:
         signatories=[]))
 
     ## review invitation
-    review_params = dict(
-        forum=paper.id,
-        replyto=paper.id,
-        writers={'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
-        signatures={'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
-        readers={
+    review_reply = {
+        'forum':paper.id,
+        'replyto':paper.id,
+        'writers':{'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
+        'signatures':{'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
+        'readers':{
             'values': [config.PROGRAM_CHAIRS, authorGroup],
             'description': 'The users who will be allowed to read the above content.'
         },
-        nonreaders={
-            'values': [nonReviewerGroup]
-        })
-    review_reply = templates.ShortReviewReply(params=review_params).body
+        'nonreaders':{
+            'values': [nonReviewerGroup]},
+        'content':config.review_content
+    }
     client.post_invitation(openreview.Invitation(paperinv + '/Official/Review',
                                                  signatures=[config.CONF],
                                                  writers=[config.CONF],
