@@ -1,16 +1,13 @@
 function(){
-// This function assumes the following are already defined:
-//            CONFERENCE, CONFERENCE_NAME, PAPERGRP and or3client = lib.or3client;
+    const CONFERENCE = 'ICML.cc/2017/MLAV';
+    const CONFERENCE_NAME = "the Machine Learning for Autonomous Vehicles workshop";
+    var or3client = lib.or3client;
 
-    // send email to author of paper submission
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
     origNote.then(function(result) {
       var forum = result.notes[0];
-      var note_number = forum.number;
-
-      var reviewers = [PAPERGRP + '/Reviewers'];
+      // send email to author of paper submission
       var authors = forum.content.authorids;
-
       var author_mail = {
         "groups": authors,
         "subject": "Review of your submission to "+CONFERENCE_NAME+": \"" + forum.content.title + "\"",
@@ -20,7 +17,8 @@ function(){
       var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
 
       // allow this reviewer to see other reviews
-      var non_reviewer_group = CONFERENCE_NAME+'/Paper'+note_number+'/Reviewers/NonReaders';
+      var note_number = forum.number;
+      var non_reviewer_group = CONFERENCE+'/Paper'+note_number+'/Reviewers/NonReaders';
       var reviewReader = or3client.removeGroupMember(non_reviewer_group, note.signatures[0], token);
 
       return Promise.all([

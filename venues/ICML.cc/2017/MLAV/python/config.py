@@ -26,7 +26,8 @@ AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
 DUE_TIMESTAMP = 1496782800000
 WEBPATH = utils.get_path('../webfield/conf.html', __file__)
-
+## June 16, 2017 midnight
+REVIEW_DUE = 1496179498000
 
 """
 INVITATIONS
