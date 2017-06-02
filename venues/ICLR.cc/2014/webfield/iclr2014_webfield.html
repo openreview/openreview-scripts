@@ -31,14 +31,14 @@
             return df.promise();
         };
 
-        var workshopNotesP = httpGetP('notes', {invitation: 'ICLR.cc/2014/-/submission/workshop'}).then(function (result) {
+        var workshopNotesP = httpGetP('notes', {invitation: 'ICLR.cc/2014/workshop/-/submission'}).then(function (result) {
                 return result.notes;
             },
             function (error) {
                 return error
             });
 
-        var conferenceNotesP = httpGetP('notes', {invitation: 'ICLR.cc/2014/-/submission/conference'}).then(function (result) {
+        var conferenceNotesP = httpGetP('notes', {invitation: 'ICLR.cc/2014/conference/-/submission'}).then(function (result) {
                 return result.notes;
             },
             function (error) {

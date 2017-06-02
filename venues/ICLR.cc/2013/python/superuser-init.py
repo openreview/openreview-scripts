@@ -9,10 +9,7 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 
 ## Import statements
 import argparse
-import csv
-import sys
 from openreview import *
-from subprocess import call
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -46,14 +43,23 @@ if openreview.user['id'].lower()=='openreview.net':
     #########################
 
     if overwrite_allowed(CONFERENCE):
-        akbc2013 = Group(CONFERENCE,
-            readers     = ['everyone'],
-            writers     = [CONFERENCE],
-            signatures  = ['OpenReview.net'],
-            signatories = [CONFERENCE],
-            members     = [],
-            web         = '../webfield/iclr2013_webfield.html')
-        groups.append(akbc2013)
+        conf = Group(CONFERENCE,
+                     readers=['everyone'],
+                     writers=[CONFERENCE],
+                     signatures=['OpenReview.net'],
+                     signatories=[CONFERENCE],
+                     members=[],
+                     web='../webfield/iclr2013_webfield.html')
+        groups.append(conf)
+
+        conf = Group(CONFERENCE + '/conference',
+                 readers=['everyone'],
+                 writers=[CONFERENCE],
+                 signatures=['OpenReview.net'],
+                 signatories=[CONFERENCE],
+                 members=[],
+                 web='../webfield/iclr2013_webfield.html')
+        groups.append(conf)
 
     ## Post the groups
     for g in groups:
@@ -132,8 +138,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
     submission_reply=reply.copy()
 
-    submission_invitation = Invitation(CONFERENCE,
-        'submission',
+    submission_invitation = Invitation(CONFERENCE + '/conference/-/submission',
         readers=['everyone'],
         writers=[CONFERENCE],
         invitees=['~'],
