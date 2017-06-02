@@ -9,10 +9,7 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 
 ## Import statements
 import argparse
-import csv
-import sys
 from openreview import *
-from subprocess import call
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -44,16 +41,32 @@ if openreview.user['id'].lower()=='openreview.net':
     #########################
     ##    SETUP GROUPS     ##
     #########################
+    # iclr = Group(CONFERENCE,
+    #          readers=['everyone'],
+    #          writers=[CONFERENCE],
+    #          signatures=['OpenReview.net'],
+    #          signatories=[CONFERENCE],
+    #          members=[],
+    #          web='../webfield/iclr2014_webfield.html')
+    # groups.append(iclr)
 
-    if overwrite_allowed(CONFERENCE):
-        iclr = Group(CONFERENCE,
-                     readers=['everyone'],
-                     writers=[CONFERENCE],
-                     signatures=['OpenReview.net'],
-                     signatories=[CONFERENCE],
-                     members=[],
-                     web='../webfield/iclr2014_webfield.html')
-        groups.append(iclr)
+    iclr = Group(CONFERENCE + '/workshop',
+             readers=['everyone'],
+             writers=[CONFERENCE],
+             signatures=['OpenReview.net'],
+             signatories=[CONFERENCE],
+             members=[],
+             web='../webfield/iclr2014_webfield.html')
+    groups.append(iclr)
+
+    iclr = Group(CONFERENCE + '/conference',
+             readers=['everyone'],
+             writers=[CONFERENCE],
+             signatures=['OpenReview.net'],
+             signatories=[CONFERENCE],
+             members=[],
+             web='../webfield/iclr2014_webfield.html')
+    groups.append(iclr)
 
     ## Post the groups
     for g in groups:
@@ -132,8 +145,7 @@ if openreview.user['id'].lower()=='openreview.net':
 
     submission_reply=reply.copy()
 
-    submission_invitation = Invitation(CONFERENCE,
-                                       'submission',
+    conf_invitation = Invitation(CONFERENCE + '/workshop/-/submission',
                                        readers=['everyone'],
                                        writers=[CONFERENCE],
                                        invitees=['~'],
@@ -141,8 +153,7 @@ if openreview.user['id'].lower()=='openreview.net':
                                        reply=submission_reply,
                                        duedate=1369422751717)
 
-    conf_invitation = Invitation(CONFERENCE,
-                                       'submission/conference',
+    workshop_invitation = Invitation(CONFERENCE + '/conference/-/submission',
                                        readers=['everyone'],
                                        writers=[CONFERENCE],
                                        invitees=['~'],
@@ -150,16 +161,7 @@ if openreview.user['id'].lower()=='openreview.net':
                                        reply=submission_reply,
                                        duedate=1369422751717)
 
-    workshop_invitation = Invitation(CONFERENCE,
-                                       'submission/workshop',
-                                       readers=['everyone'],
-                                       writers=[CONFERENCE],
-                                       invitees=['~'],
-                                       signatures=['OpenReview.net'],
-                                       reply=submission_reply,
-                                       duedate=1369422751717)
-
-    invitations = [submission_invitation, conf_invitation, workshop_invitation]
+    invitations = [conf_invitation, workshop_invitation]
 
     ## Post the invitations
     for i in invitations:
