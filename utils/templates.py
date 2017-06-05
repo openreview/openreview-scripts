@@ -261,3 +261,4 @@ class CommentReply(InvitationReply):
 
         self.body = copy.deepcopy(self.params)
         self.body.update({'content': self.content})
+
