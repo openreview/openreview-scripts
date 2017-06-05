@@ -290,8 +290,8 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
             },
             'metareview': {
                     'order': 2,
-                    'value-regex': '[\\S\\s]{1,5000}',
-                    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (5000 characters maximum)',
+                    'value-regex': '[\\S\\s]+',
+                    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons',
                     'required': True
             },
             'recommendation': {
