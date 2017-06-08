@@ -24,6 +24,7 @@ ADMIN = CONF + '/Admin'
 PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
+## June 15th at 11:59 pm (CEST) = - 6hrs to EDT = 5:59 pm
 DUE_TIMESTAMP = 1497563999000
 WEBPATH = utils.get_path('../webfield/conf.html', __file__)
 
