@@ -1,7 +1,7 @@
 function () {
   var or3client = lib.or3client;
 
-  var CONFERENCEPHRASE = "DeSemWeb2017";
+  var CONFERENCEPHRASE = "DeSemWeb 2017";
 
   var author_mail = {
     "groups": note.content.authorids,
