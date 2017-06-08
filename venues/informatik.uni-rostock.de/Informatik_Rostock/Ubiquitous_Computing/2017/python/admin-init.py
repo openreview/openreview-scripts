@@ -31,15 +31,18 @@ utils.process_to_file(
 
 groups = {}
 groups[config.PROGRAM_CHAIRS] = openreview.Group(config.PROGRAM_CHAIRS, **config.group_params)
+groups[config.PROGRAM_CHAIRS].members = ["~Max_Schröder1", "~Stefan_Lüdtke1", "~Sebastian_Bader1", "thomas.kirste@uni-rostock.de"  ]
 groups[config.AREA_CHAIRS] = openreview.Group(config.AREA_CHAIRS, **config.group_params)
 groups[config.REVIEWERS] = openreview.Group(config.REVIEWERS, **config.group_params)
+groups[config.CLASS_MEMBERS] = openreview.Group(config.CLASS_MEMBERS, **config.group_params)
+groups[config.CLASS_MEMBERS].members = config.class_members
 
 invitations = {}
-invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=1497560340000, **config.submission_params)
-invitations[config.COMMENT] = openreview.Invitation(config.COMMENT, **config.comment_params)
+invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=config.DUE_TIMESTAMP, **config.submission_params)
+#invitations[config.COMMENT] = openreview.Invitation(config.COMMENT, **config.comment_params)
 
 invitations[config.SUBMISSION].reply = templates.SubmissionReply().body
-invitations[config.COMMENT].reply = templates.CommentReply(params={'invitation': config.SUBMISSION}).body
+#invitations[config.COMMENT].reply = templates.CommentReply(params={'invitation': config.SUBMISSION}).body
 
 for g in groups.values():
 	print "Posting group: ", g.id
@@ -48,6 +51,13 @@ for g in groups.values():
 for i in invitations.values():
 	print "Posting invitation: ", i.id
 	client.post_invitation(i)
+
+# Insert this conference to the top of the host lists so it will show on main page under All Venues
+top_level = client.get_group("host")
+members = top_level.members
+client.remove_members_from_group(top_level,members)
+members.insert(0, config.CONF)
+client.add_members_to_group(top_level,members)
 
 # TODO:
 # webfield
