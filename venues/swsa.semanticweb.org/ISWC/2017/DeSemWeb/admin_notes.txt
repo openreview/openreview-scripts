@@ -1,0 +1,17 @@
+Notes for the administrator:
+
+Reviews are generated with create-invitations.py.
+
+the Program_Chairs group and the Admin group are members of all paper reviewer
+groups. This ensures that Program Chairs and Admins can post reviews if they
+need to.
+
+Each paper has a single Paper#/AnonReviewer group, on which all members have
+signatory permission. The assign-reviewer.py script adds a given user to
+both the Paper#/AnonReviewer and Paper#/Reviewers group.
+
+We are not using single AnonReviewer groups (as we have done in the past) as
+a workaround for some technical issues in the backend that we haven't yet
+resolved. The short version: Single AnonReviewer groups don't allow users to
+choose between their anonymous and public signatures, but aggregate
+AnonReviewer groups do allow it.
