@@ -1,3 +1,4 @@
+import sys, os
 import argparse
 import openreview
 import config
@@ -7,10 +8,10 @@ def get_submit_review_invitation(submissionId, number):
         'forum': submissionId,
         'replyto': submissionId,
         'writers': {
-            'values': [config.CONF]
+            'values-regex': '~.*|%s/Paper%s/AnonReviewer' % (config.CONF, number)
         },
         'signatures': {
-            'values-regex': '~.*|\(anonymous\)'
+            'values-regex': '~.*|%s/Paper%s/AnonReviewer' % (config.CONF, number)
         },
         'readers': {
             'values': ['everyone'],
@@ -34,7 +35,7 @@ def get_submit_review_invitation(submissionId, number):
             },
             'rating': {
                 'order': 3,
-                'value-radio': ['+3','+2','+1','0','-1','-2','-3'],
+                'value-dropdown': ['+3','+2','+1','0','-1','-2','-3'],
                 'required': True
             }
         }
@@ -44,10 +45,10 @@ def get_submit_review_invitation(submissionId, number):
         duedate = config.DUE_TIMESTAMP,
         signatures = [config.CONF],
         writers = [config.CONF],
-        invitees = ['everyone'],
+        invitees = [config.PROGRAM_CHAIRS, "%s/Paper%s/Reviewers" % (config.CONF, number)],
         noninvitees = [],
         readers = ['everyone'],
-        process = '../process/reviewProcess.js',
+        process = os.path.join(os.path.dirname(__file__), '../process/reviewProcess.js'),
         reply = reply)
 
     return invitation
@@ -57,6 +58,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
+parser.add_argument('--overwrite',action='store_true')
 args = parser.parse_args()
 
 
@@ -65,4 +67,15 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 submissions = client.get_notes(invitation=config.SUBMISSION)
 
 for n in submissions:
+    papergroup = client.post_group(openreview.Group(config.CONF+'/Paper%s' % n.number, **config.group_params))
+    reviewergroup = openreview.Group(papergroup.id+'/Reviewers', **config.group_params)
+    reviewergroup.members += [config.ADMIN, config.PROGRAM_CHAIRS]
+    client.post_group(reviewergroup)
+    anonreviewergroup = openreview.Group(papergroup.id+'/AnonReviewer', **config.group_params)
+    anonreviewergroup.readers += [anonreviewergroup.id]
+    anonreviewergroup.signatories += [anonreviewergroup.id]
+    anonreviewergroup.members += [config.ADMIN, config.PROGRAM_CHAIRS]
+    client.post_group(anonreviewergroup)
+
     client.post_invitation(get_submit_review_invitation(n.id, n.number))
+    print "Submission %s" % n.number

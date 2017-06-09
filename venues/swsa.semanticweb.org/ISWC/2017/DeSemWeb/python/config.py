@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "/Users/michaelspector/projects/openreview/openreview-scripts/utils"))
-import utils
 
 """
 GROUPS
@@ -24,9 +22,8 @@ ADMIN = CONF + '/Admin'
 PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
-DUE_TIMESTAMP = 1500695940000
-WEBPATH = utils.get_path('../webfield/conf.html', __file__)
-
+DUE_TIMESTAMP = 1501300740000
+WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conf.html')
 
 """
 INVITATIONS
@@ -64,17 +61,11 @@ Example:
     for the newly created Group that uses it.
 """
 
-conf_params = {
-    'readers': ['everyone'],
-    'writers': [CONF],
-    'signatories': [CONF],
-    'web': WEBPATH
-}
-
 group_params = {
-    'readers': [CONF],
+    'readers': [CONF, PROGRAM_CHAIRS],
     'writers': [CONF],
     'signatories': [CONF],
+    'signatures': [CONF]
 }
 
 submission_params = {
@@ -82,7 +73,7 @@ submission_params = {
     'writers': [CONF],
     'invitees': ['~'],
     'signatures': [CONF],
-    'process': utils.get_path('../process/submissionProcess.js', __file__)
+    'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')
 }
 
 comment_params = {
@@ -90,8 +81,108 @@ comment_params = {
     'writers': [CONF],
     'invitees': ['~'],
     'signatures': [CONF],
-    'process': utils.get_path('../process/commentProcess.js', __file__)
+    'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js')
 }
 
+"""
+TEMPLATES
+
+"""
 
 
+submission_reply = {
+    'forum': None,
+    'replyto': None,
+    'invitation': None,
+    'readers': {
+        'description': 'The users who will be allowed to read the above content.',
+        'values': ['everyone']
+    },
+    'signatures': {
+        'description': 'How your identity will be displayed with the above content.',
+        'values-regex': '~.*'
+    },
+    'writers': {
+        'values-regex': '~.*'
+    },
+    'content':{
+        'title': {
+            'description': 'Title of paper.',
+            'order': 1,
+            'value-regex': '.{1,250}',
+            'required':True
+        },
+        'submission category': {
+            'description': 'Select a submission category',
+            'order': 2,
+            'value-radio': ['Research Article','Intelligent Client Challenge / Demo', 'Vision Statement'],
+            'required': True
+        },
+        'authors': {
+            'description': 'Comma separated list of author names.',
+            'order': 3,
+            'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+            'required':True
+        },
+        'authorids': {
+            'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
+            'order': 4,
+            'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+            'required':True
+        },
+        'keywords': {
+            'description': 'Comma separated list of keywords.',
+            'order': 6,
+            'values-regex': "(^$)|[^;,\\n]+(,[^,\\n]+)*"
+        },
+        'TL;DR': {
+            'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
+            'order': 7,
+            'value-regex': '[^\\n]{0,250}',
+            'required':False
+        },
+        'abstract': {
+            'description': 'Abstract of paper.',
+            'order': 8,
+            'value-regex': '[\\S\\s]{1,5000}',
+            'required':True
+        },
+        'pdf': {
+            'description': 'Upload a PDF file or submit a URL',
+            'order': 9,
+            'value-regex': 'upload|http(s)?:\/\/.+',
+            'required':True
+        }
+    }
+}
+
+comment_reply = {
+    'forum': None,
+    'replyto': None,
+    'invitation': SUBMISSION,
+    'readers': {
+        'description': 'The users who will be allowed to read the above content.',
+        'values': ['everyone']
+    },
+    'signatures': {
+        'description': 'How your identity will be displayed with the above content.',
+        'values-regex': '~.*'
+    },
+    'writers': {
+        'values-regex': '~.*'
+    },
+    'content':{
+        'title': {
+            'order': 0,
+            'value-regex': '.{1,500}',
+            'description': 'Brief summary of your comment.',
+            'required': True
+        },
+        'comment': {
+            'order': 1,
+            'value-regex': '[\\S\\s]{1,5000}',
+            'description': 'Your comment or reply.',
+            'required': True
+        }
+    }
+}

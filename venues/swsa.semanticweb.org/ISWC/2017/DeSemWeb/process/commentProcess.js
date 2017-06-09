@@ -1,7 +1,7 @@
 function(){
     var or3client = lib.or3client;
 
-    var CONFERENCEPHRASE = "DeSemWeb2017"
+    var CONFERENCEPHRASE = "DeSemWeb 2017"
 
     var origNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token) : null;
