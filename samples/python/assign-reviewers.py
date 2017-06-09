@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ###############################################################################
-''' Assigns reviewers to papers
+''' Assigns reviewers to papers - run in same directory as config.py
  ex. python assign-reviewers.py --baseurl http://localhost:3000
        --username admin --password admin_pw 'reviewer@gmail.com,3'
 
