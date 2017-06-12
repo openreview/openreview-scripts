@@ -39,10 +39,7 @@ groups[config.CLASS_MEMBERS].members = config.class_members
 
 invitations = {}
 invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=config.DUE_TIMESTAMP, **config.submission_params)
-#invitations[config.COMMENT] = openreview.Invitation(config.COMMENT, **config.comment_params)
-
 invitations[config.SUBMISSION].reply = templates.SubmissionReply().body
-#invitations[config.COMMENT].reply = templates.CommentReply(params={'invitation': config.SUBMISSION}).body
 
 for g in groups.values():
 	print "Posting group: ", g.id
