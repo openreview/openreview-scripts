@@ -336,6 +336,46 @@ def get_meta_review_invitation(submissionId, number, authorsGroupId, areachairGr
 
     return invitation
 
+def get_acceptance_invitation(submissionId, number):
+    reply = {
+        'forum': submissionId,
+        'replyto': submissionId,
+        'writers': {
+            'values': ['~UAI_Admin1', COCHAIRS]
+        },
+        'signatures': {
+            'values-regex': '~UAI_Admin1|' + COCHAIRS
+        },
+        'readers': {
+            'values': ['~UAI_Admin1', COCHAIRS],
+            'description': 'The users who will be allowed to read the above content.'
+        },
+        'content': {
+            'title': {
+                'order': 0,
+                'value': "Paper%s Acceptance Decision" % number
+            },
+            'decision': {
+                'order': 1,
+                'required': True,
+                'value-radio': [
+                    'Accept (Oral)',
+                    'Accept (Poster)',
+                    'Reject'
+                ]
+            }
+        }
+    }
+
+    invitation = openreview.Invitation(id = CONFERENCE + '/-/Paper' + str(number) + '/Acceptance/Decision',
+        signatures = [CONFERENCE],
+        writers = [CONFERENCE],
+        invitees = [ADMIN],
+        noninvitees = [],
+        readers = [CONFERENCE, COCHAIRS],
+        reply = reply)
+
+    return invitation
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -426,7 +466,8 @@ try:
                 client.post_invitation(get_review_comment_invitation(submission.id, submission.number, author_group.id, areachair_group.id,reviewers_nonreaders_group.id))
                 #Post meta review invitation
                 client.post_invitation(get_meta_review_invitation(submission.id, submission.number, author_group.id, areachair_group.id, reviewers_nonreaders_group.id, reviewers_group.id))
-
+                #Post acceptance invitation
+                client.post_invitation(get_acceptance_invitation(submission.id, submission.number))
             else:
                 print "Author group not found", submission.number
 
