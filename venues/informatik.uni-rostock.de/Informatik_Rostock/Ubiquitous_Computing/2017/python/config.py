@@ -24,7 +24,8 @@ ADMIN = CONF + '/Admin'
 PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
-DUE_TIMESTAMP = 1497560340000
+## June 15th at 11:59 pm (CEST) = - 6hrs to EDT = 5:59 pm
+DUE_TIMESTAMP = 1497563999000
 WEBPATH = utils.get_path('../webfield/conf.html', __file__)
 
 
@@ -46,6 +47,33 @@ Example:
 SUBMISSION = CONF + '/-/Submission'
 COMMENT = CONF + '/-/Comment'
 
+""" Class members that can read/write submissions and comments """
+CLASS_MEMBERS = CONF + '/Class_Members'
+class_members =  ['max.schroeder@uni-rostock.de',
+                  'stefan.luedtke2@uni-rostock.de',
+                'sebastian.bader@uni-rostock.de',
+                'thomas.kirste@uni-rostock.de',
+                'albert.hein@uni-rostock.de',
+                'martin.nyolt@uni-rostock.de',
+                'kristina.yordanova2@uni-rostock.de',
+                'frank.krueger2@uni-rostock.de',
+                'tom.schmidt4@uni-rostock.de',
+                'jasper.roloff@uni-rostock.de',
+                'sebastian.rutofski@uni-rostock.de',
+                'max.kaseler@uni-rostock.de',
+                'erik.manthey@uni-rostock.de',
+                'nic.scharlau@uni-rostock.de',
+                'paul.lidzba@uni-rostock.de',
+                'eric.kirbach@uni-rostock.de',
+                'maximilian.lamster@uni-rostock.de',
+                'paul.lahne2@uni-rostock.de',
+                'tom.raddei@uni-rostock.de',
+                'sergej.schimanski@uni-rostock.de',
+                'maximilian.popko@uni-rostock.de',
+                'karl.ginnuth@uni-rostock.de',
+                'tim.bayer@uni-rostock.de',
+                'jakob.zimmer@uni-rostock.de',
+                  'mandler@cs.umass.edu']
 
 """
 PARAMETERS
@@ -78,20 +106,19 @@ group_params = {
 }
 
 submission_params = {
-    'readers': ['everyone'],
+    'readers': [CLASS_MEMBERS,PROGRAM_CHAIRS],
     'writers': [CONF],
-    'invitees': ['~'],
+    'invitees': [CLASS_MEMBERS, PROGRAM_CHAIRS],
     'signatures': [CONF],
     'process': utils.get_path('../process/submissionProcess.js', __file__)
 }
 
 comment_params = {
-    'readers': ['everyone'],
+    'readers': [CLASS_MEMBERS, PROGRAM_CHAIRS],
     'writers': [CONF],
-    'invitees': ['~'],
+    'invitees': [CLASS_MEMBERS, PROGRAM_CHAIRS],
     'signatures': [CONF],
     'process': utils.get_path('../process/commentProcess.js', __file__)
 }
-
 
 
