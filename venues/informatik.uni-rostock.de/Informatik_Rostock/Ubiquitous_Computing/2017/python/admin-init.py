@@ -49,13 +49,6 @@ for i in invitations.values():
 	print "Posting invitation: ", i.id
 	client.post_invitation(i)
 
-# Insert this conference to the top of the host lists so it will show on main page under All Venues
-top_level = client.get_group("host")
-members = top_level.members
-client.remove_members_from_group(top_level,members)
-members.insert(0, config.CONF)
-client.add_members_to_group(top_level,members)
-
 # TODO:
 # webfield
 # process functions
