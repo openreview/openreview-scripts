@@ -2,7 +2,7 @@
 
 ###############################################################################
 # Print csv file with basic paper info to help match w/ reviewers
-# ex. python get-submissions.py --baseurl http://localhost:3000 --output submissions.csv
+# ex. python get-submissions.py --cid MyConf.org/2017 --baseurl http://localhost:3000 --output submissions.csv
 # run in same directory as config.py
 ###############################################################################
 
@@ -14,6 +14,7 @@ from openreview import *
 
 ## Import statements and argument handling
 parser = argparse.ArgumentParser()
+parser.add_argument('--cid', required=True, help="conference id")
 parser.add_argument('-o','--output', help="The directory to save the output file")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
@@ -25,6 +26,15 @@ if args.username!=None and args.password!=None:
     openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
     openreview = Client(baseurl=args.baseurl)
+
+## check conference directory exists
+base_path = "../../venues/"+args.cid
+config_path = base_path+"/python/"
+if os.path.isfile(config_path+"config.py") is False:
+    print "Cannot locate config.py in:"+config_path
+    sys.exit()
+sys.path.insert(0, config_path)
+import config
 
 if args.baseurl == None:
     try:
