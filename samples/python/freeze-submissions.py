@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ###############################################################################
-# ex. python freeze_submissions.py --baseurl http://localhost:3000
+# ex. python freeze-submissions.py --baseurl http://localhost:3000
 #       --username admin --password admin_pw
 # run in same directory as config.py
 # Prevents submissions from being edited or deleted.
