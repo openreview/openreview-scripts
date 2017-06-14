@@ -22,7 +22,7 @@ ADMIN = CONF + '/Admin'
 PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
-DUE_TIMESTAMP = 1501300740000
+DUE_TIMESTAMP = 1500681599000
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conf.html')
 
 """
@@ -148,10 +148,16 @@ submission_reply = {
             'required':True
         },
         'pdf': {
-            'description': 'Upload a PDF file or submit a URL',
+            'description': 'Upload a PDF file or submit a PDF URL (PDF URLs must begin with "http" or "https" and end with ".pdf"). Submit all other formats in the "url" field below.',
             'order': 9,
-            'value-regex': 'upload|http(s)?:\/\/.+',
-            'required':True
+            'value-regex': 'upload|http(s)?:\/\/.+\.pdf',
+            'required': False
+        },
+        'url': {
+            'description': 'Submit a non-PDF URL (e.g. HTML submissions). URLs must begin with "http" or "https".',
+            'order': 10,
+            'value-regex': 'http(s)?:\/\/.+',
+            'required': False
         }
     }
 }
