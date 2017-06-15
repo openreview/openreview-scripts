@@ -99,56 +99,56 @@ except Exception, e:
 
 duedate_milliseconds = utils.date_to_timestamp(duedate)
 
-if not args.overwrite: assert not os.path.exists(directory), "%s already exists" % conference
+if args.overwrite or not os.path.exists(directory):
 
-print "Creating conference directory at %s" % directory
+    print "Creating conference directory at %s" % directory
 
-makedir = lambda d: os.makedirs(d) if not os.path.exists(d) else None
+    makedir = lambda d: os.makedirs(d) if not os.path.exists(d) else None
 
-makedir(directory)
-makedir(directory + '/python')
-makedir(directory + '/webfield')
-makedir(directory + '/process')
-makedir(directory + '/data')
+    makedir(directory)
+    makedir(directory + '/python')
+    makedir(directory + '/webfield')
+    makedir(directory + '/process')
+    makedir(directory + '/data')
 
-print "writing %s/python/config.py" % directory
-with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.get_path('./conference-template/python/config.template', __file__)) as template_configfile:
-    templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
-    templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
-    templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate_milliseconds))
-    new_configfile.write(templatestring)
+    print "writing %s/python/config.py" % directory
+    with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.get_path('./conference-template/python/config.template', __file__)) as template_configfile:
+        templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
+        templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
+        templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate_milliseconds))
+        new_configfile.write(templatestring)
 
-print "writing %s/webfield/conf.html" % directory
-with open(directory + '/webfield/conf.html', 'w') as new_webfile, open(utils.get_path('./conference-template/webfield/conf.template',__file__)) as template_webfile:
-    templatestring = template_webfile.read().replace('<<TITLE>>',"\"%s\"" % conference_title)
-    templatestring = templatestring.replace('<<CONF>>',"\"%s\"" % conference)
-    templatestring = templatestring.replace('<<SUBMISSION_NAME>>', submission_name)
-    templatestring = templatestring.replace('<<SUBTITLE>>',"\"%s\"" % conference_subtitle)
-    templatestring = templatestring.replace('<<LOCATION>>',"\"%s\"" % conference_location)
-    templatestring = templatestring.replace('<<CONF_DATE>>',"\"%s\"" % conference_date)
-    templatestring = templatestring.replace('<<DATE>>',"%s" % human_duedate)
-    templatestring = templatestring.replace('<<URL>>',"\"%s\"" % url)
-    new_webfile.write(templatestring)
+    print "writing %s/webfield/conf.html" % directory
+    with open(directory + '/webfield/conf.html', 'w') as new_webfile, open(utils.get_path('./conference-template/webfield/conf.template',__file__)) as template_webfile:
+        templatestring = template_webfile.read().replace('<<TITLE>>',"\"%s\"" % conference_title)
+        templatestring = templatestring.replace('<<CONF>>',"\"%s\"" % conference)
+        templatestring = templatestring.replace('<<SUBMISSION_NAME>>', submission_name)
+        templatestring = templatestring.replace('<<SUBTITLE>>',"\"%s\"" % conference_subtitle)
+        templatestring = templatestring.replace('<<LOCATION>>',"\"%s\"" % conference_location)
+        templatestring = templatestring.replace('<<CONF_DATE>>',"\"%s\"" % conference_date)
+        templatestring = templatestring.replace('<<DATE>>',"%s" % human_duedate)
+        templatestring = templatestring.replace('<<URL>>',"\"%s\"" % url)
+        new_webfile.write(templatestring)
 
-print "writing %s/python/admin-init.py" % directory
-with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
-    templatestring = template_initfile.read().replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate_milliseconds)
-    new_initfile.write(templatestring)
+    print "writing %s/python/admin-init.py" % directory
+    with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
+        templatestring = template_initfile.read().replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate_milliseconds)
+        new_initfile.write(templatestring)
 
-print "writing %s/process/submissionProcess.template" % directory
-with open(directory + '/process/submissionProcess.template', 'w') as new_submissionprocess, open(utils.get_path('./conference-template/process/submissionProcess.template', __file__)) as template_submissionprocess:
-    templatestring = template_submissionprocess.read().replace('<<CONF>>', "\"%s\"" % conference)
-    templatestring = templatestring.replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
-    new_submissionprocess.write(templatestring)
+    print "writing %s/process/submissionProcess.template" % directory
+    with open(directory + '/process/submissionProcess.template', 'w') as new_submissionprocess, open(utils.get_path('./conference-template/process/submissionProcess.template', __file__)) as template_submissionprocess:
+        templatestring = template_submissionprocess.read().replace('<<CONF>>', "\"%s\"" % conference)
+        templatestring = templatestring.replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
+        new_submissionprocess.write(templatestring)
 
-print "writing %s/process/commentProcess.js" % directory
-with open(directory + '/process/commentProcess.js', 'w') as new_commentprocess, open(utils.get_path('./conference-template/process/commentProcess.template', __file__)) as template_commentprocess:
-    templatestring = template_commentprocess.read().replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
-    new_commentprocess.write(templatestring)
+    print "writing %s/process/commentProcess.js" % directory
+    with open(directory + '/process/commentProcess.js', 'w') as new_commentprocess, open(utils.get_path('./conference-template/process/commentProcess.template', __file__)) as template_commentprocess:
+        templatestring = template_commentprocess.read().replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
+        new_commentprocess.write(templatestring)
 
-print "writing %s/params.json" % directory
-with open(directory + '/params.json', 'w') as paramsfile:
-    json.dump(data, paramsfile, indent=4)
+    print "writing %s/params.json" % directory
+    with open(directory + '/params.json', 'w') as paramsfile:
+        json.dump(data, paramsfile, indent=4)
 
 
 admin = args.conf + '/Admin'

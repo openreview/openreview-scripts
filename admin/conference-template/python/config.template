@@ -65,6 +65,7 @@ group_params = {
     'readers': [CONF],
     'writers': [CONF],
     'signatories': [CONF],
+    'signatures': [CONF]
 }
 
 submission_params = {
