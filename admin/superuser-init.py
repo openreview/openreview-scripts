@@ -60,46 +60,47 @@ def get_input_or_data(name):
     return data[name]
 
 conference = get_input_or_data("conference")
-conference_title = get_input_or_data("conference_title")
-conference_subtitle = get_input_or_data("conference_subtitle")
-conference_location = get_input_or_data("conference_location")
-conference_date = get_input_or_data("conference_date")
-human_duedate = get_input_or_data("human_duedate")
-url = get_input_or_data("url")
-conference_phrase = get_input_or_data("conference_phrase")
 directory = utils.get_path('../venues/%s' % conference, __file__)
-submission_name = get_input_or_data("submission_name")
-
-if submission_name.strip() == '':
-    submission_name = "Submission"
-    data['submission_name'] = submission_name
-
-# check if due date/time is valid and after current time
-duedate_input = get_input_or_data("duedate_input")
-try:
-    day, month, year = duedate_input.split('/')
-    day = int(day)
-    month = int(month)
-    year = int(year)
-    # this will catch invalid values for date
-    duedate = utils.get_duedate(year, month, day)
-    now = datetime.datetime.now()
-    assert duedate > now, "Cannot enter a date in the past"
-
-    # get due time
-    duetime_input = get_input_or_data("duetime_input")
-    hour, minute = duetime_input.split(':')
-    hour = int(hour)
-    minute = int(minute)
-    duedate = utils.get_duedate(year, month, day, hour, minute)
-    assert duedate > now, "Cannot enter a time in the past"
-except Exception, e:
-    print "Duedate invalid: ", e
-    sys.exit()
-
-duedate_milliseconds = utils.date_to_timestamp(duedate)
 
 if args.overwrite or not os.path.exists(directory):
+    conference_title = get_input_or_data("conference_title")
+    conference_subtitle = get_input_or_data("conference_subtitle")
+    conference_location = get_input_or_data("conference_location")
+    conference_date = get_input_or_data("conference_date")
+    human_duedate = get_input_or_data("human_duedate")
+    url = get_input_or_data("url")
+    conference_phrase = get_input_or_data("conference_phrase")
+    submission_name = get_input_or_data("submission_name")
+
+    if submission_name.strip() == '':
+        submission_name = "Submission"
+        data['submission_name'] = submission_name
+
+    # check if due date/time is valid and after current time
+    duedate_input = get_input_or_data("duedate_input")
+    try:
+        day, month, year = duedate_input.split('/')
+        day = int(day)
+        month = int(month)
+        year = int(year)
+        # this will catch invalid values for date
+        duedate = utils.get_duedate(year, month, day)
+        now = datetime.datetime.now()
+        assert duedate > now, "Cannot enter a date in the past"
+
+        # get due time
+        duetime_input = get_input_or_data("duetime_input")
+        hour, minute = duetime_input.split(':')
+        hour = int(hour)
+        minute = int(minute)
+        duedate = utils.get_duedate(year, month, day, hour, minute)
+        assert duedate > now, "Cannot enter a time in the past"
+    except Exception, e:
+        print "Duedate invalid: ", e
+        sys.exit()
+
+    duedate_milliseconds = utils.date_to_timestamp(duedate)
+
 
     print "Creating conference directory at %s" % directory
 
