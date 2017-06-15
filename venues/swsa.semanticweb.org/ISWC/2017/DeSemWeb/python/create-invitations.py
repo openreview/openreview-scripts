@@ -45,8 +45,8 @@ def get_submit_review_invitation(submissionId, number):
         duedate = config.DUE_TIMESTAMP,
         signatures = [config.CONF],
         writers = [config.CONF],
-        invitees = [config.PROGRAM_CHAIRS, "%s/Paper%s/Reviewers" % (config.CONF, number)],
-        noninvitees = [],
+        invitees = [config.PROGRAM_CHAIRS, "{0}/Paper{1}/Reviewers".format(config.CONF, number)],
+        noninvitees = ["{0}/Paper{1}/Authors".format(config.CONF, number)],
         readers = ['everyone'],
         process = os.path.join(os.path.dirname(__file__), '../process/reviewProcess.js'),
         reply = reply)
@@ -67,15 +67,5 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 submissions = client.get_notes(invitation=config.SUBMISSION)
 
 for n in submissions:
-    papergroup = client.post_group(openreview.Group(config.CONF+'/Paper%s' % n.number, **config.group_params))
-    reviewergroup = openreview.Group(papergroup.id+'/Reviewers', **config.group_params)
-    reviewergroup.members += [config.ADMIN, config.PROGRAM_CHAIRS]
-    client.post_group(reviewergroup)
-    anonreviewergroup = openreview.Group(papergroup.id+'/AnonReviewer', **config.group_params)
-    anonreviewergroup.readers += [anonreviewergroup.id]
-    anonreviewergroup.signatories += [anonreviewergroup.id]
-    anonreviewergroup.members += [config.ADMIN, config.PROGRAM_CHAIRS]
-    client.post_group(anonreviewergroup)
-
     client.post_invitation(get_submit_review_invitation(n.id, n.number))
     print "Submission %s" % n.number

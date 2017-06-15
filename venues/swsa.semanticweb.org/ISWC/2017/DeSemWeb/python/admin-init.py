@@ -35,7 +35,7 @@ groups[config.CONF].signatures = [client.signature]
 groups[config.CONF].add_webfield(config.WEBPATH)
 
 invitations = {}
-invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=1501300740000, **config.submission_params)
+invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=config.DUE_TIMESTAMP, **config.submission_params)
 invitations[config.COMMENT] = openreview.Invitation(config.COMMENT, **config.comment_params)
 
 invitations[config.SUBMISSION].reply = config.submission_reply
