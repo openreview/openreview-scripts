@@ -60,95 +60,96 @@ def get_input_or_data(name):
     return data[name]
 
 conference = get_input_or_data("conference")
-conference_title = get_input_or_data("conference_title")
-conference_subtitle = get_input_or_data("conference_subtitle")
-conference_location = get_input_or_data("conference_location")
-conference_date = get_input_or_data("conference_date")
-human_duedate = get_input_or_data("human_duedate")
-url = get_input_or_data("url")
-conference_phrase = get_input_or_data("conference_phrase")
 directory = utils.get_path('../venues/%s' % conference, __file__)
-submission_name = get_input_or_data("submission_name")
 
-if submission_name.strip() == '':
-    submission_name = "Submission"
-    data['submission_name'] = submission_name
+if args.overwrite or not os.path.exists(directory):
+    conference_title = get_input_or_data("conference_title")
+    conference_subtitle = get_input_or_data("conference_subtitle")
+    conference_location = get_input_or_data("conference_location")
+    conference_date = get_input_or_data("conference_date")
+    human_duedate = get_input_or_data("human_duedate")
+    url = get_input_or_data("url")
+    conference_phrase = get_input_or_data("conference_phrase")
+    submission_name = get_input_or_data("submission_name")
 
-# check if due date/time is valid and after current time
-duedate_input = get_input_or_data("duedate_input")
-try:
-    day, month, year = duedate_input.split('/')
-    day = int(day)
-    month = int(month)
-    year = int(year)
-    # this will catch invalid values for date
-    duedate = utils.get_duedate(year, month, day)
-    now = datetime.datetime.now()
-    assert duedate > now, "Cannot enter a date in the past"
+    if submission_name.strip() == '':
+        submission_name = "Submission"
+        data['submission_name'] = submission_name
 
-    # get due time
-    duetime_input = get_input_or_data("duetime_input")
-    hour, minute = duetime_input.split(':')
-    hour = int(hour)
-    minute = int(minute)
-    duedate = utils.get_duedate(year, month, day, hour, minute)
-    assert duedate > now, "Cannot enter a time in the past"
-except Exception, e:
-    print "Duedate invalid: ", e
-    sys.exit()
+    # check if due date/time is valid and after current time
+    duedate_input = get_input_or_data("duedate_input")
+    try:
+        day, month, year = duedate_input.split('/')
+        day = int(day)
+        month = int(month)
+        year = int(year)
+        # this will catch invalid values for date
+        duedate = utils.get_duedate(year, month, day)
+        now = datetime.datetime.now()
+        assert duedate > now, "Cannot enter a date in the past"
 
-duedate_milliseconds = utils.date_to_timestamp(duedate)
+        # get due time
+        duetime_input = get_input_or_data("duetime_input")
+        hour, minute = duetime_input.split(':')
+        hour = int(hour)
+        minute = int(minute)
+        duedate = utils.get_duedate(year, month, day, hour, minute)
+        assert duedate > now, "Cannot enter a time in the past"
+    except Exception, e:
+        print "Duedate invalid: ", e
+        sys.exit()
 
-if not args.overwrite: assert not os.path.exists(directory), "%s already exists" % conference
+    duedate_milliseconds = utils.date_to_timestamp(duedate)
 
-print "Creating conference directory at %s" % directory
 
-makedir = lambda d: os.makedirs(d) if not os.path.exists(d) else None
+    print "Creating conference directory at %s" % directory
 
-makedir(directory)
-makedir(directory + '/python')
-makedir(directory + '/webfield')
-makedir(directory + '/process')
-makedir(directory + '/data')
+    makedir = lambda d: os.makedirs(d) if not os.path.exists(d) else None
 
-print "writing %s/python/config.py" % directory
-with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.get_path('./conference-template/python/config.template', __file__)) as template_configfile:
-    templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
-    templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
-    templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate_milliseconds))
-    new_configfile.write(templatestring)
+    makedir(directory)
+    makedir(directory + '/python')
+    makedir(directory + '/webfield')
+    makedir(directory + '/process')
+    makedir(directory + '/data')
 
-print "writing %s/webfield/conf.html" % directory
-with open(directory + '/webfield/conf.html', 'w') as new_webfile, open(utils.get_path('./conference-template/webfield/conf.template',__file__)) as template_webfile:
-    templatestring = template_webfile.read().replace('<<TITLE>>',"\"%s\"" % conference_title)
-    templatestring = templatestring.replace('<<CONF>>',"\"%s\"" % conference)
-    templatestring = templatestring.replace('<<SUBMISSION_NAME>>', submission_name)
-    templatestring = templatestring.replace('<<SUBTITLE>>',"\"%s\"" % conference_subtitle)
-    templatestring = templatestring.replace('<<LOCATION>>',"\"%s\"" % conference_location)
-    templatestring = templatestring.replace('<<CONF_DATE>>',"\"%s\"" % conference_date)
-    templatestring = templatestring.replace('<<DATE>>',"%s" % human_duedate)
-    templatestring = templatestring.replace('<<URL>>',"\"%s\"" % url)
-    new_webfile.write(templatestring)
+    print "writing %s/python/config.py" % directory
+    with open(directory + '/python/config.py', 'w') as new_configfile, open(utils.get_path('./conference-template/python/config.template', __file__)) as template_configfile:
+        templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
+        templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
+        templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate_milliseconds))
+        new_configfile.write(templatestring)
 
-print "writing %s/python/admin-init.py" % directory
-with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
-    templatestring = template_initfile.read().replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate_milliseconds)
-    new_initfile.write(templatestring)
+    print "writing %s/webfield/conf.html" % directory
+    with open(directory + '/webfield/conf.html', 'w') as new_webfile, open(utils.get_path('./conference-template/webfield/conf.template',__file__)) as template_webfile:
+        templatestring = template_webfile.read().replace('<<TITLE>>',"\"%s\"" % conference_title)
+        templatestring = templatestring.replace('<<CONF>>',"\"%s\"" % conference)
+        templatestring = templatestring.replace('<<SUBMISSION_NAME>>', submission_name)
+        templatestring = templatestring.replace('<<SUBTITLE>>',"\"%s\"" % conference_subtitle)
+        templatestring = templatestring.replace('<<LOCATION>>',"\"%s\"" % conference_location)
+        templatestring = templatestring.replace('<<CONF_DATE>>',"\"%s\"" % conference_date)
+        templatestring = templatestring.replace('<<DATE>>',"%s" % human_duedate)
+        templatestring = templatestring.replace('<<URL>>',"\"%s\"" % url)
+        new_webfile.write(templatestring)
 
-print "writing %s/process/submissionProcess.template" % directory
-with open(directory + '/process/submissionProcess.template', 'w') as new_submissionprocess, open(utils.get_path('./conference-template/process/submissionProcess.template', __file__)) as template_submissionprocess:
-    templatestring = template_submissionprocess.read().replace('<<CONF>>', "\"%s\"" % conference)
-    templatestring = templatestring.replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
-    new_submissionprocess.write(templatestring)
+    print "writing %s/python/admin-init.py" % directory
+    with open(directory + '/python/admin-init.py', 'w') as new_initfile, open(utils.get_path('./conference-template/python/admin-init.template', __file__)) as template_initfile:
+        templatestring = template_initfile.read().replace('<<SUBMISSION_DUEDATE>>', "%s" % duedate_milliseconds)
+        new_initfile.write(templatestring)
 
-print "writing %s/process/commentProcess.js" % directory
-with open(directory + '/process/commentProcess.js', 'w') as new_commentprocess, open(utils.get_path('./conference-template/process/commentProcess.template', __file__)) as template_commentprocess:
-    templatestring = template_commentprocess.read().replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
-    new_commentprocess.write(templatestring)
+    print "writing %s/process/submissionProcess.template" % directory
+    with open(directory + '/process/submissionProcess.template', 'w') as new_submissionprocess, open(utils.get_path('./conference-template/process/submissionProcess.template', __file__)) as template_submissionprocess:
+        templatestring = template_submissionprocess.read().replace('<<CONF>>', "\"%s\"" % conference)
+        templatestring = templatestring.replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
+        new_submissionprocess.write(templatestring)
 
-print "writing %s/params.json" % directory
-with open(directory + '/params.json', 'w') as paramsfile:
-    json.dump(data, paramsfile, indent=4)
+    print "writing %s/process/commentProcess.js" % directory
+    with open(directory + '/process/commentProcess.js', 'w') as new_commentprocess, open(utils.get_path('./conference-template/process/commentProcess.template', __file__)) as template_commentprocess:
+        templatestring = template_commentprocess.read().replace('<<PHRASE>>', "\"%s\"" % conference_phrase)
+        new_commentprocess.write(templatestring)
+
+    print "writing %s/params.json" % directory
+    with open(directory + '/params.json', 'w') as paramsfile:
+        json.dump(data, paramsfile, indent=4)
 
 
 admin = args.conf + '/Admin'
@@ -205,7 +206,9 @@ utils.process_to_file(
 create_admin = raw_input("Create administrator login? (y/[n]): ").lower()
 
 if create_admin == 'y' or create_admin == 'yes':
-    username = raw_input("Please provide administrator login, in lowercase, with no spaces (suggested: %s): " % (conference.split('/')[-1].lower()+'_admin'))
+    default_username = conference.split('/')[-1].lower()+'_admin'
+    username = raw_input("Please provide administrator login, in lowercase, with no spaces (default: {0}): ".format(default_username))
+    if not username.strip(): username = default_username
     firstname = raw_input("Please provide administrator first name: ")
     lastname = raw_input("Please provide administrator last name: ")
 
