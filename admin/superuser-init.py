@@ -206,7 +206,9 @@ utils.process_to_file(
 create_admin = raw_input("Create administrator login? (y/[n]): ").lower()
 
 if create_admin == 'y' or create_admin == 'yes':
-    username = raw_input("Please provide administrator login, in lowercase, with no spaces (suggested: %s): " % (conference.split('/')[-1].lower()+'_admin'))
+    default_username = conference.split('/')[-1].lower()+'_admin'
+    username = raw_input("Please provide administrator login, in lowercase, with no spaces (default: {0}): ".format(default_username))
+    if not username.strip(): username = default_username
     firstname = raw_input("Please provide administrator first name: ")
     lastname = raw_input("Please provide administrator last name: ")
 
