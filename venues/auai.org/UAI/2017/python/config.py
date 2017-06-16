@@ -8,6 +8,7 @@ SPC = "auai.org/UAI/2017/Senior_Program_Committee"
 PC = "auai.org/UAI/2017/Program_Committee"
 CONFERENCE = "auai.org/UAI/2017"
 SUBMISSION = "auai.org/UAI/2017/-/blind-submission"
+METADATA = "auai.org/UAI/2017/-/Paper_Metadata"
 SUBJECT_AREAS = ["Algorithms: Approximate Inference",
 			    'Algorithms: Belief Propagation',
 			    'Algorithms: Distributed and Parallel',
