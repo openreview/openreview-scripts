@@ -24,7 +24,7 @@ ADMIN = CONF + '/Admin'
 PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
-DUE_TIMESTAMP = 1497708000000
+DUE_TIMESTAMP = 1498140000000
 WEBPATH = utils.get_path('../webfield/conf.html', __file__)
 
 
