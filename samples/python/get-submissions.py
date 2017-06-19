@@ -22,7 +22,7 @@ parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 ## check conference directory exists
 base_path = "../../venues/"+args.cpath
@@ -51,7 +51,7 @@ if args.output!=None:
     if ext.lower()=='csv':
         with open(args.output, 'wb') as outfile:
             csvwriter = csv.writer(outfile, delimiter=',')
-            fieldnames = ['id', 'number', 'date', 'title', 'TL;DR', 'abstract','keywords','authors','authorids']
+            fieldnames = ['id', 'number', 'date', 'title', 'abstract','keywords','authors','authorids']
             csvwriter.writerow(fieldnames)
 
             for count, note in enumerate(notes):
@@ -60,7 +60,6 @@ if args.output!=None:
                 row.append(note.number)
                 row.append(note.tcdate)
                 row.append(note.content['title'].encode('UTF-8'))
-                row.append(note.content['TL;DR'].encode('UTF-8'))
                 row.append(note.content['abstract'].encode('UTF-8'))
                 row.append(', '.join(note.content['keywords']).encode('UTF-8'))
                 row.append(', '.join(note.content['authors']).encode('UTF-8'))
