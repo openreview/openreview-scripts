@@ -96,5 +96,40 @@ comment_params = {
     'process': utils.get_path('../process/commentProcess.js', __file__)
 }
 
-
+review_content = {
+    'title': {
+        'order': 1,
+        'value-regex': '.{0,500}',
+        'description': 'Brief summary of your review.',
+        'required': True
+    },
+    'review': {
+        'order': 2,
+        'value-regex': '[\\S\\s]{1,5000}',
+        'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+        'required': True
+    },
+    'rating': {
+        'order': 3,
+        'value-dropdown': [
+            '7: Top 10% of accepted papers, strong accept',
+            '6: Top 25% of accepted papers, clear accept',
+            '5: Top 50% of accepted papers, clear accept',
+            '4: Marginally above acceptance threshold',
+            '3: Marginally below acceptance threshold',
+            '2: Clear rejection',
+            '1: Strong rejection'
+        ],
+        'required': True
+    },
+    'confidence': {
+        'order': 4,
+        'value-radio': [
+            '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '2: The reviewer is fairly confident that the evaluation is correct',
+            '1: The reviewer\'s evaluation is an educated guess'
+        ],
+        'required': True
+    }
+}
 
