@@ -20,7 +20,6 @@
 import argparse
 import csv
 import sys
-import config
 from openreview import *
 
 ## Argument handling
@@ -32,13 +31,9 @@ parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-if args.username!=None and args.password!=None:
-    client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
-else:
-    client = Client(baseurl=args.baseurl)
-baseurl = client.baseurl
+client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-submissions = client.get_notes(invitation= config.SUBMISSION)
+submissions = client.get_notes(invitation=config.SUBMISSION)
 
 ## parses command line assignments - looks for pairs of emails and paper numbers
 ## full checks for valid paper numbers and email addresses done in assign reviewer
