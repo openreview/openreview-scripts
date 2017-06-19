@@ -37,7 +37,7 @@ groups[config.AREA_CHAIRS] = openreview.Group(config.AREA_CHAIRS, **config.group
 groups[config.REVIEWERS] = openreview.Group(config.REVIEWERS, **config.group_params)
 
 invitations = {}
-invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=1497733200000, **config.submission_params)
+invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=config.DUE_TIMESTAMP, **config.submission_params)
 invitations[config.COMMENT] = openreview.Invitation(config.COMMENT, **config.comment_params)
 
 invitations[config.SUBMISSION].reply = templates.SubmissionReply().body
