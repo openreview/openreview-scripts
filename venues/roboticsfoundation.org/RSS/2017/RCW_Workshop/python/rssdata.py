@@ -12,6 +12,11 @@ POSTER = CONFERENCE+"/-_Poster"
 PROCEEDINGS = CONFERENCE+"/-_Proceedings"
 POSTER_REVIEWERS = POSTER+"/Reviewers"
 PROCEEDINGS_REVIEWERS = PROCEEDINGS+"/Reviewers"
-# Due date May 21, 2017 at 5:00pm (here)
-# June 17th 11:59:59pm AoE time = June 18 7:59:59 here
-TIMESTAMP_DUE = 1497787200000
+# Due date June 18, 2017 at 7:59am here
+DATE_DUE = datetime.datetime(2017, 6, 18, 7, 59)
+TIMESTAMP_DUE = int(time.mktime(DATE_DUE.timetuple()))*1000
+# June 27, 2017, 11:59:59pm Anywhere on Earth time (UTC -12).
+#  == June 28, 2017, 7:59am EST
+REVIEW_DUE = datetime.datetime(2017, 6, 28, 7, 59)
+REVIEW_DUE = int(time.mktime(REVIEW_DUE.timetuple()))*1000
+
