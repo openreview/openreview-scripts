@@ -45,6 +45,8 @@ except:
 
 ## Settings (move this outside at some point)
 matching_configuration = {
+    "group": group.id,
+    "invitation": 'auai.org/UAI/2017/-/blind-submission',
     "minusers": 3,
     "maxusers": 5,
     "minpapers": 1,
@@ -79,19 +81,17 @@ for n in assignments:
     forum = forum_by_number[n[1]]
     assignments_by_forum[forum].append(user)
 
-assignment_info_by_forum = {}
+assignment_info_by_number = {}
 for n in papers:
-    assignment_info_by_forum[n.forum] = {
+    assignment_info_by_number['Paper{0}'.format(n.number)] = {
         'title': n.content['title'],
-        'number': n.number,
-        'reviewers': assignments_by_forum[n.forum]
+        'forum': n.forum,
+        'assigned': assignments_by_forum[n.forum]
     }
-
-
 
 assignment_content = {
     "configuration": matching_configuration,
-    "assignments": assignment_info_by_forum
+    "assignments": assignment_info_by_number
 }
 
 assignment_note = openreview.Note(
