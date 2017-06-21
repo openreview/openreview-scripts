@@ -142,7 +142,7 @@ for paper in submissions:
                                                  writers=[conf_track],
                                                  invitees=[paperGroup + '/Reviewers'],
                                                  noninvitees=[],
-                                                 readers=[rssdata.COCHAIRS, reviewerGroup],
+                                                 readers=['everyone'],
                                                  process=review_path,
                                                  duedate=rssdata.REVIEW_DUE,
                                                  reply=review_reply))
