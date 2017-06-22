@@ -26,9 +26,13 @@ AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
 ## June 15th at 11:59 pm (CEST) = - 6hrs to EDT = 5:59 pm
 DUE_TIMESTAMP = 1497563999000
-WEBPATH = utils.get_path('../webfield/conf.html', __file__)
-
-
+WEBPATH = utils.get_path('../webfield/conf.html', __file__)\
+##2017, June 25th at 11:59 pm (CEST) = 17:59 EST
+REVIEW_DUE = 1498427999000
+## 2017, July 15th at 11:59 pm (CEST)
+CAMERA_DUE = 1500155999000
+##  2017, August 04
+CONF_DATE = 1501891200000
 """
 INVITATIONS
 
@@ -46,6 +50,7 @@ Example:
 
 SUBMISSION = CONF + '/-/Submission'
 COMMENT = CONF + '/-/Comment'
+COMMENTERS = CONF + '/Commenters'
 
 """ Class members that can read/write submissions and comments """
 CLASS_MEMBERS = CONF + '/Class_Members'
@@ -114,11 +119,46 @@ submission_params = {
 }
 
 comment_params = {
-    'readers': [CLASS_MEMBERS, PROGRAM_CHAIRS],
+    'readers': [CONF, COMMENTERS],
     'writers': [CONF],
-    'invitees': [CLASS_MEMBERS, PROGRAM_CHAIRS],
+    'invitees': [COMMENTERS],
     'signatures': [CONF],
-    'process': utils.get_path('../process/commentProcess.js', __file__)
+    'duedate': CONF_DATE
+}
+
+review_content = {
+    'title': {
+        'order': 1,
+        'value-regex': '.{0,500}',
+        'description': 'Brief summary of your review.',
+        'required': True
+    },
+    'review': {
+        'order': 2,
+        'value-regex': '[\\S\\s]{1,5000}',
+        'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+        'required': True
+    },
+    'rating': {
+        'order': 3,
+        'value-dropdown': [
+            '5: Top 15% of accepted papers, strong accept',
+            '4: Top 50% of accepted papers, clear accept',
+            '3: Marginally above acceptance threshold',
+            '2: Marginally below acceptance threshold',
+            '1: Strong rejection'
+        ],
+        'required': True
+    },
+    'confidence': {
+        'order': 4,
+        'value-radio': [
+            '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '2: The reviewer is fairly confident that the evaluation is correct',
+            '1: The reviewer\'s evaluation is an educated guess'
+        ],
+        'required': True
+    }
 }
 
 
