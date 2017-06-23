@@ -40,7 +40,23 @@ groups[config.CLASS_MEMBERS].members = config.class_members
 
 invitations = {}
 invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedate=config.DUE_TIMESTAMP, **config.submission_params)
-invitations[config.SUBMISSION].reply = templates.SubmissionReply().body
+invitations[config.SUBMISSION].reply = templates.SubmissionReply({
+            'forum': None,
+            'replyto': None,
+            'invitation': None,
+            'readers': {
+                'description': 'The users who will be allowed to read the above content.',
+                'values': [config.CLASS_MEMBERS]
+            },
+            'signatures': {
+                'description': 'How your identity will be displayed with the above content.',
+                'values-regex': '~.*'
+            },
+            'writers': {
+                'values-regex': '~.*'
+            },
+            'content': {}
+        }).body
 
 for g in groups.values():
 	print "Posting group: ", g.id
