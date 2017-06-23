@@ -145,13 +145,100 @@ if client.user['id'].lower()=='openreview.net':
 
     ## Create the submission invitations (poster and proceeding tracks), form,
     # and add it to the list of invitations to post
-    reply = {
+    poster_reply = {
         'forum': None,
         'replyto': None,
         'readers': {
             ## Submissions to the Poster track are not visible to everyone, just to the people that need to know
             'description': 'The users who will be allowed to read the above content.',
-            'values-copied': [CONFERENCE, COCHAIRS, '{content.authorids}', '{signatures}']
+            'values-copied': [POSTER, COCHAIRS, '{content.authorids}', '{signatures}']
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': '~.*'
+        },
+        'writers': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-copied':['{content.authorids}', '{signatures}']
+        },
+        'content': {
+            'title': {
+                'description': 'Title of paper.',
+                'order': 1,
+                'value-regex': '.{1,250}',
+                'required':True
+            },
+            # [^;,\\n] means all chars except ';' ',' and '\n'
+            'authors': {
+                'description': 'Comma separated list of author names, as they appear in the paper.',
+                'order': 2,
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+                'required':True
+            },
+            'authorids': {
+                'description': 'Comma separated list of author email addresses, in the same order as above.',
+                'order': 3,
+                # put as a 'constant' at top?
+                # 2 or more lower case letters, numbers, _'s, -'s or .'s
+                # then @
+                # then 2 or more letters/numbers (like before)
+                # then a .
+                # then 2 or more letters only
+                # then shows that with a comma for zero or more times followed by at least one proper expression
+                # i.e. a list of email addresses
+                'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+                'required':True
+            },
+            'abstract': {
+                'description': 'Abstract of paper.',
+                'order': 4,
+                # is this up to 5,000 words, because \\S is not white space followed by \\s which is white space
+                'value-regex': '[\\S\\s]{1,5000}',
+                'required': True
+            },
+            'keywords': {
+                'description': 'Comma separated list of keywords.',
+                'order': 6,
+                'values-regex': "[^;,\\n]*(,[^,\\n]+)*"
+            },
+            'TL;DR': {
+                'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
+                'order': 7,
+                # up to 250 chars with no line return
+                'value-regex': '[^\\n]{0,250}',
+                'required':False
+            },
+
+            'pdf': {
+                'description': 'Upload a PDF file that ends with .pdf)',
+                'order': 8,
+                'value-regex': 'upload',
+                'required':True
+            },
+            'conflicts': {
+                'description': 'Comma separated list of email domains of people who would have a conflict of interest in reviewing this paper, (e.g., cs.umass.edu,google.com, etc.).',
+                'order': 9,
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+                'required': True
+            },
+            'student paper': {
+                'description': 'Is this a student paper?',
+                'order': 10,
+                'value-radio': [
+                    'Yes',
+                    'No'
+                ]
+            }
+        }
+    }
+
+    proceedings_reply = {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            ## Submissions to the Poster track are not visible to everyone, just to the people that need to know
+            'description': 'The users who will be allowed to read the above content.',
+            'values-copied': [PROCEEDINGS, COCHAIRS, '{content.authorids}', '{signatures}']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -254,7 +341,7 @@ if client.user['id'].lower()=='openreview.net':
         signatures = [PROCEEDINGS],
         duedate = TIMESTAMP_DUE,
         process = utils.get_path('../process/submissionProcessProceedings.js', __file__))
-    proceeding_invitation.reply = reply.copy()
+    proceeding_invitation.reply = proceedings_reply
 
     poster_invitation = openreview.Invitation(POSTER + '/-/Submission',
                                               readers=['everyone'],
@@ -263,7 +350,7 @@ if client.user['id'].lower()=='openreview.net':
                                               signatures=[POSTER],
                                               duedate=TIMESTAMP_DUE,
                                               process=utils.get_path('../process/submissionProcessPoster.js', __file__))
-    poster_invitation.reply = reply.copy()
+    poster_invitation.reply = poster_reply
     invitations.append(proceeding_invitation)
     invitations.append(poster_invitation)
 
