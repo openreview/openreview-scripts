@@ -41,7 +41,6 @@ invitations[config.SUBMISSION] = openreview.Invitation(config.SUBMISSION, duedat
 #invitations[config.COMMENT] = openreview.Invitation(config.COMMENT, **config.comment_params)
 
 invitations[config.SUBMISSION].reply = templates.SubmissionReply().body
-
 #invitations[config.COMMENT].reply = templates.CommentReply(params={'invitation': config.SUBMISSION}).body
 
 for g in groups.values():
