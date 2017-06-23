@@ -111,7 +111,7 @@ group_params = {
 }
 
 submission_params = {
-    'readers': [CLASS_MEMBERS,PROGRAM_CHAIRS],
+    'readers': [CONF, CLASS_MEMBERS,PROGRAM_CHAIRS],
     'writers': [CONF],
     'invitees': [CLASS_MEMBERS, PROGRAM_CHAIRS],
     'signatures': [CONF],
