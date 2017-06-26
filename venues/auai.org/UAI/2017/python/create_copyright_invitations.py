@@ -28,7 +28,7 @@ def make_copyright_invitation(submissionId, number, authors):
                 'required': True
             },
             'pdf': {
-                'description': 'Upload a copyright PDF form)',
+                'description': 'Upload a copyright PDF form',
                 'order': 1,
                 'value-regex': 'upload',
                 'required':True
