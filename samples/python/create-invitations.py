@@ -68,7 +68,7 @@ for paper in submissions:
         id=authorGroup,
         signatures=[config.CONF],
         writers=[config.CONF],
-        members=[],
+        members=[paper.content['authorids']],
         readers=[config.CONF, config.PROGRAM_CHAIRS, authorGroup],
         signatories=[]))
 
