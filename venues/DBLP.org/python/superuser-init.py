@@ -105,13 +105,13 @@ if openreview.user['id'].lower() == 'openreview.net':
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 2,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required':True
+                'required':False
             },
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required':True
+                'required':False
             },
             'DBLP_url': {
                 'description': 'DBLP.org url associated with this paper',
@@ -149,10 +149,9 @@ if openreview.user['id'].lower() == 'openreview.net':
 
             },
             'month': {
-                'description': 'the month in which the paper or work was '
-                               'published. 3 letter abbrevivation',
+                'description': 'the month in which the paper or work was published.',
                 'order': 5,
-                'value-regex': '[a-zA-Z]{0,3}',
+                'value-regex': '[a-zA-Z]{0,20}',
                 'required': False
 
             },
@@ -248,7 +247,7 @@ if openreview.user['id'].lower() == 'openreview.net':
 
         }
     }
-    submission_invitation = Invitation('DBLP.org/-/Upload',
+    submission_invitation = Invitation('DBLP.org/-/upload',
                                        readers=['everyone'],
                                        writers=['DBLP.org/upload'],
                                        invitees=['DBLP.org/upload'],
@@ -256,25 +255,7 @@ if openreview.user['id'].lower() == 'openreview.net':
                                        reply=reply)
 
 
-    revision_reply = reply.copy()
-    revision_reply.pop('forum')
-    revision_reply.pop('replyto')
-    revision_reply['referent'] = None
-    # the authoreid field has "UNK" for the emails, we don't send
-    # that as a revision becuase it would overwrite the (probable) good
-    # email addresses in that field.
-    revision_reply['content']['authorids']['required'] = False;
-
-
-    revision_invitation = Invitation('DBLP.org/-/Add/Revision',
-        signatures = ['DBLP.org'],
-        writers = ['DBLP.org/upload'],
-        invitees = ['DBLP.org/upload'],
-        readers = ['everyone'],
-        reply = revision_reply
-    )
-
-    invitations = [submission_invitation, revision_invitation]
+    invitations = [submission_invitation]
 
     ## Post the invitations
     for i in invitations:

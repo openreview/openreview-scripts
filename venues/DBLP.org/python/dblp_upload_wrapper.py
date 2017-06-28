@@ -41,11 +41,9 @@ count = 0
 for d in data:
     count += 1
     try:
-        ## Not all data from DBLP exactly fits the invitation we've defined, so we need to rename a few fields.
-        content = update_records.process_content(d)
 
         ## Use the post_or_update function to post a new record
-        dblp_record = update_records.post_or_update(openreview, content, verbose=True)
+        dblp_record = update_records.post_or_update(openreview, d, verbose=True)
     except :
         print "Error in : " + args.json + " : " + str(d)
         exc_type, exc_value, exc_traceback = sys.exc_info()
