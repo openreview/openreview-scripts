@@ -92,7 +92,7 @@ if openreview.user['id'].lower() == 'openreview.net':
             'title': {
                 'description': 'Title of paper.',
                 'order': 1,
-                'value-regex': '.{0,500}',
+                'value-regex': '.{0,750}',
                 'required': False
             },
             'abstract': {
@@ -129,7 +129,7 @@ if openreview.user['id'].lower() == 'openreview.net':
             'ee': {
                 'description': 'electronic edition of the paper',
                 'order': 6,
-                'value-regex': '[^\\n]{0,250}',
+                'value-regex': '[^\\n]{0,500}',
                 'required': False
 
             },
@@ -151,7 +151,7 @@ if openreview.user['id'].lower() == 'openreview.net':
             'month': {
                 'description': 'the month in which the paper or work was published.',
                 'order': 5,
-                'value-regex': '[a-zA-Z]{0,20}',
+                'value-regex': '.{0,200}',
                 'required': False
 
             },
@@ -165,7 +165,7 @@ if openreview.user['id'].lower() == 'openreview.net':
             'booktitle': {
                 'description': 'Title of a book, part of which is being cited',
                 'order': 5,
-                'value-regex': '.{0,100}',
+                'value-regex': '.{0,500}',
                 'required': False
 
             },
