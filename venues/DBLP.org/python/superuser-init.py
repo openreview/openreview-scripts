@@ -248,6 +248,7 @@ if openreview.user['id'].lower() == 'openreview.net':
 
         }
     }
+
     submission_invitation = Invitation(INVITATION,
                                        readers=['everyone'],
                                        writers=[GROUP],

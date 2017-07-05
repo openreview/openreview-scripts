@@ -100,12 +100,12 @@ review_content = {
     'title': {
         'order': 1,
         'value-regex': '.{0,500}',
-        'description': 'Brief summary of your review.',
+        'description': 'Brief (500 char max) summary of your review.',
         'required': True
     },
     'review': {
         'order': 2,
-        'value-regex': '[\\S\\s]{1,5000}',
+        'value-regex': '[\\S\\s]+',
         'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
         'required': True
     },
