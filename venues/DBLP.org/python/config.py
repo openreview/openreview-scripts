@@ -1,3 +1,3 @@
 BASE = 'DBLP.org'
-GROUP = BASE + '/upload'
+GROUP = BASE
 INVITATION = BASE + '/-/upload'

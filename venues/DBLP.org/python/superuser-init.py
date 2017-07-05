@@ -11,10 +11,8 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 
 ## Import statements
 import argparse
-import csv
-import sys
 from openreview import *
-from dblp_data import *
+import config
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -49,21 +47,21 @@ if openreview.user['id'].lower() == 'openreview.net':
     #########################
     ##    SETUP GROUPS     ##
     #########################
-    if overwrite_allowed(BASE):
-        DBLP = Group('DBLP.org',
+    if overwrite_allowed(config.BASE):
+        DBLP = Group(config.BASE,
                      readers=['OpenReview.net'],
-                     writers=['OpenReview.net', BASE],
+                     writers=['OpenReview.net', config.BASE],
                      signatures=['OpenReview.net'],
-                     signatories=[BASE],
+                     signatories=[config.BASE],
                      members=[])
         groups.append(DBLP)
 
-    if overwrite_allowed(GROUP):
-        DBLP_upload = Group(GROUP,
-                            readers=[GROUP],
-                            writers=[BASE, GROUP],
-                            signatures=[BASE],
-                            signatories=[GROUP],
+    if overwrite_allowed(config.GROUP):
+        DBLP_upload = Group(config.GROUP,
+                            readers=[config.GROUP],
+                            writers=[config.GROUP],
+                            signatures=[config.BASE],
+                            signatories=[config.GROUP],
                             members=['spector@cs.umass.edu',
                                      'mbok@cs.umass.edu', 'rbhat@cs.umass.edu',
                                      'ngovindraja@cs.umass.edu', 'rbhat@umass.edu',
@@ -84,10 +82,10 @@ if openreview.user['id'].lower() == 'openreview.net':
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values': ['DBLP.org/upload']
+            'values': [ config.GROUP ]
         },
         'writers': {
-            'values': ['DBLP.org/upload']
+            'values':  [ config.GROUP ]
         },
         'content': {
             'title': {
@@ -249,11 +247,11 @@ if openreview.user['id'].lower() == 'openreview.net':
         }
     }
 
-    submission_invitation = Invitation(INVITATION,
+    submission_invitation = Invitation(config.INVITATION,
                                        readers=['everyone'],
-                                       writers=[GROUP],
-                                       invitees=[GROUP],
-                                       signatures=[BASE],
+                                       writers=[config.GROUP],
+                                       invitees=[config.GROUP],
+                                       signatures=[config.BASE],
                                        reply=reply)
 
 

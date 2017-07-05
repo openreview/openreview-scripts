@@ -4,7 +4,7 @@ import datetime
 import calendar
 
 import pytz
-from dblp_data import *
+import config
 
 def post_or_update(client, _content, verbose=False):
     '''
@@ -65,10 +65,10 @@ def post_or_update(client, _content, verbose=False):
         new_note = client.post_note(openreview.Note.from_json(
             {
                 'cdate' : cdate,
-                'invitation': INVITATION,
+                'invitation': config.INVITATION,
                 'readers': ['everyone'],
-                'signatures': [GROUP],
-                'writers': [GROUP],
+                'signatures': [config.GROUP],
+                'writers': [config.GROUP],
                 'content': content
             }
         ))
@@ -86,7 +86,7 @@ def post_or_update(client, _content, verbose=False):
     need_revision = True
 
     for rev in revisions:
-        if rev['invitation'].startswith(BASE):
+        if rev['invitation'].startswith(config.BASE):
             if all(content.get(k) == rev['content'].get(k) for k in ("ee", "isbn", "journal", "volume")):
                 need_revision = False
                 break
@@ -115,10 +115,10 @@ def post_or_update(client, _content, verbose=False):
         {
             'forum': match.forum,
             'referent': match.forum,
-            'invitation': INVITATION,
+            'invitation': config.INVITATION,
             'readers': ['everyone'],
-            'signatures': [GROUP],
-            'writers': [GROUP],
+            'signatures': [config.GROUP],
+            'writers': [config.GROUP],
             'content': content
         }
     ))
