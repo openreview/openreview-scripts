@@ -92,7 +92,7 @@ if openreview.user['id'].lower() == 'openreview.net':
             'title': {
                 'description': 'Title of paper.',
                 'order': 1,
-                'value-regex': '.{0,750}',
+                'value-regex': '[\\S\\s]{0,750}',
                 'required': False
             },
             'abstract': {
