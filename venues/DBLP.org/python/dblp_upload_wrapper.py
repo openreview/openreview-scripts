@@ -33,8 +33,6 @@ if args.username != None and args.password != None:
 else:
     openreview = Client(baseurl=args.baseurl)
 
-dblp_inv = openreview.get_invitation('DBLP.org/-/paper')
-
 data = json.loads(open(args.json).read())
 
 count = 0
