@@ -14,6 +14,7 @@ import argparse
 import csv
 import sys
 from openreview import *
+from dblp_data import *
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -48,21 +49,21 @@ if openreview.user['id'].lower() == 'openreview.net':
     #########################
     ##    SETUP GROUPS     ##
     #########################
-    if overwrite_allowed('DBLP.org'):
+    if overwrite_allowed(BASE):
         DBLP = Group('DBLP.org',
                      readers=['OpenReview.net'],
-                     writers=['OpenReview.net', 'DBLP.org'],
+                     writers=['OpenReview.net', BASE],
                      signatures=['OpenReview.net'],
-                     signatories=['DBLP.org'],
+                     signatories=[BASE],
                      members=[])
         groups.append(DBLP)
 
-    if overwrite_allowed('DBLP.org/upload'):
-        DBLP_upload = Group('DBLP.org/upload',
-                            readers=['DBLP.org/upload'],
-                            writers=['DBLP.org', 'DBLP.org/upload'],
-                            signatures=['DBLP.org'],
-                            signatories=['DBLP.org/upload'],
+    if overwrite_allowed(GROUP):
+        DBLP_upload = Group(GROUP,
+                            readers=[GROUP],
+                            writers=[BASE, GROUP],
+                            signatures=[BASE],
+                            signatories=[GROUP],
                             members=['spector@cs.umass.edu',
                                      'mbok@cs.umass.edu', 'rbhat@cs.umass.edu',
                                      'ngovindraja@cs.umass.edu', 'rbhat@umass.edu',
@@ -247,11 +248,11 @@ if openreview.user['id'].lower() == 'openreview.net':
 
         }
     }
-    submission_invitation = Invitation('DBLP.org/-/upload',
+    submission_invitation = Invitation(INVITATION,
                                        readers=['everyone'],
-                                       writers=['DBLP.org/upload'],
-                                       invitees=['DBLP.org/upload'],
-                                       signatures=['DBLP.org'],
+                                       writers=[GROUP],
+                                       invitees=[GROUP],
+                                       signatures=[BASE],
                                        reply=reply)
 
 

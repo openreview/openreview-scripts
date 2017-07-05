@@ -4,8 +4,7 @@ import datetime
 import calendar
 
 import pytz
-import sys
-
+from dblp_data import *
 
 def post_or_update(client, _content, verbose=False):
     '''
@@ -37,6 +36,9 @@ def post_or_update(client, _content, verbose=False):
     if (pub_key.find("\\") != -1):
         pub_key = pub_key.replace("\\", "\\\\")
 
+    if (content['title'].find("\\") != -1):
+        content['title'] = content['title'].replace("\\", "\\\\")
+
     matches = client.get_notes(paperhash = pub_key)
 
     # If more than one match is found, something has gone wrong, so do nothing.
@@ -63,10 +65,10 @@ def post_or_update(client, _content, verbose=False):
         new_note = client.post_note(openreview.Note.from_json(
             {
                 'cdate' : cdate,
-                'invitation': 'DBLP.org/-/upload',
+                'invitation': INVITATION,
                 'readers': ['everyone'],
-                'signatures': ['DBLP.org/upload'],
-                'writers': ['DBLP.org/upload'],
+                'signatures': [GROUP],
+                'writers': [GROUP],
                 'content': content
             }
         ))
@@ -74,7 +76,6 @@ def post_or_update(client, _content, verbose=False):
         return new_note
 
     # get all the revisions
-    # TODO make const for things like: 'DBLP.org/-/add/revision'
     revisions = client.get_revisions(matches[0].id)
 
     # check all the revisions and see if this adds any new information.
@@ -83,49 +84,21 @@ def post_or_update(client, _content, verbose=False):
     # newer information.
 
     need_revision = True
-    # todo - proably a more efficeint way to do this but just want to get it working for now
 
     for rev in revisions:
-        if rev['invitation'].startswith("DBLP.org"):
+        if rev['invitation'].startswith(BASE):
             if all(content.get(k) == rev['content'].get(k) for k in ("ee", "isbn", "journal", "volume")):
                 need_revision = False
                 break
 
-    # ???? need to account for the note too, it's possible there are no revisions? although
-    # evert note has a revision, so would have an 'upload' invitation rather than a 'revision'
-
-
     # If one match is found, post a revision to the note IF the new content adds information.
-    if len(matches) == 1 and not need_revision: # all(content.get(k) == matches[0].content.get(k) for k in ("ee", "isbn", "journal", "volume")):
+    if len(matches) == 1 and not need_revision:
         if verbose: print "Provided content is the same as latest revision. No change."
         return None
-
-    # try:
-    #     if len(matches) == 1 and all(content[k] == matches[0].content[k] for k in ("ee", "isbn", "journal", "volume")):
-    #         if verbose: print "Provided content is the same as latest revision. No change."
-    #         return None
-    # except KeyError:
-    #     # if we get a key error, it's most likely because the "match" does not contain the fields the
-    #     # DBLP record is adding, which is the case if the "match" was a paper submitted to OpenReview directly.
-    #     pass
-    # except:
-    #     print "Unexpected error:", sys.exc_info()[0]
-    #     raise
-
 
     # if we got here, we want to add a revision
     if verbose: print "pub_key found. Adding revision to %s" % pub_key
     match = matches[0]
-
-    # we often have to re-run a set of JSON files from DBLP so
-    # we want to make sure we don't put duplicate revisions.
-    # right now (5/2017) DBLP data has "UNK" for authors so we'll remove
-    # that field from BOTH so the comparison doesn't take them into account.
-    match.content.pop('authorids')
-    content.pop('authorids')
-    # also remove 'paperhash' from the existing record, the JSON has 'pub-key' which
-    # we removed above.
-    match.content.pop('paperhash')
 
     # don't overwrite any existing fields.
     # right now (5/2017) DBLP data has "UNK" for authors so we'll remove
@@ -142,10 +115,10 @@ def post_or_update(client, _content, verbose=False):
         {
             'forum': match.forum,
             'referent': match.forum,
-            'invitation': 'DBLP.org/-/upload',
+            'invitation': INVITATION,
             'readers': ['everyone'],
-            'signatures': ['DBLP.org/upload'],
-                        'writers': ['DBLP.org/upload'],
+            'signatures': [GROUP],
+            'writers': [GROUP],
             'content': content
         }
     ))
@@ -162,9 +135,8 @@ def process_content(content):
     content : a dictionary representing the content of the record to be posted or updated.
 
     '''
-    if 'dblp_coref_emails' in content: content['authorids'] = content.pop('dblp_coref_emails')
-    if 'names_readable' in content: content['authors'] = content.pop('names_readable')
-    if 'venue' in content: content['journal'] = content.pop('venue')
+    if 'url' in content : content['url'] = "http://dblp.dagstuhl.de/" + content['url']
+
     return content
 
 def get_cdate(content):
@@ -188,9 +160,3 @@ def get_cdate(content):
     eastern = pytz.timezone('US/Eastern')
     # we want the date/time in microseconds hence the multiplication by 1000
     return calendar.timegm(eastern.localize(date).utctimetuple()) * 1000
-
-def are_dblp_records_the_same(new, old):
-    # we may not store fields that have no value like 'isbn', so we need to
-    # do a bit more work to check if two records are equivalent.
-    pass
-
