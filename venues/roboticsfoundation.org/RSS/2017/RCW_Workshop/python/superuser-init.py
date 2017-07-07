@@ -13,11 +13,18 @@ Adding "--overwrite true" will overwrite the groups as well.
 import openreview
 from rssdata import *
 import sys, os
+import subprocess
+import argparse
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../../utils"))
-import utils
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
+parser.add_argument('--username')
+parser.add_argument('--password')
 
-args, parser, overwrite = utils.parse_args()
+args = parser.parse_args()
+
+overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 
 ## Initialize the client library with username and password
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
@@ -78,7 +85,8 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [CONFERENCE],
             members     = [ADMIN],
-            web         = utils.get_path('../webfield/rss2017_webfield.html', __file__))
+            web         = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/rss2017_webfield.html'))
+            )
         groups.append(rss2017)
 
     if overwrite_allowed(PROCEEDINGS):
@@ -88,7 +96,8 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [PROCEEDINGS],
             members     = [ADMIN, PROCEEDINGS],
-            web         = utils.get_path('../webfield/rss2017proceedings_webfield.html', __file__))
+            web         = os.path.abspath(os.path.join(os.path.dirname(__file__),'../webfield/rss2017proceedings_webfield.html'))
+            )
         groups.append(proceedings)
 
     if overwrite_allowed(POSTER):
@@ -98,7 +107,8 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [POSTER],
             members     = [ADMIN, POSTER],
-            web         = utils.get_path('../webfield/rss2017poster_webfield.html', __file__))
+            web         = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/rss2017poster_webfield.html'))
+            )
         groups.append(poster)
 
     # Co-Chairs are for the whole conference/workshop
@@ -322,17 +332,21 @@ if client.user['id'].lower()=='openreview.net':
     # processToFile takes a template file, turns it into a js file and inserts
     # process function code in as indicated by << >>
 
-    utils.process_to_file(
-        utils.get_path("../process/submissionProcess.template", __file__),
-        utils.get_path("../process", __file__),
+    subprocess.call([
+        "node",
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../../utils/processToFile.js")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../process/submissionProcess.template")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../process")),
         "Poster"
-        )
+    ])
 
-    utils.process_to_file(
-        utils.get_path("../process/submissionProcess.template", __file__),
-        utils.get_path("../process", __file__),
+    subprocess.call([
+        "node",
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../../utils/processToFile.js")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../process/submissionProcess.template")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../process")),
         "Proceedings"
-        )
+    ])
 
     proceeding_invitation = openreview.Invitation(PROCEEDINGS+'/-/Submission',
         readers = ['everyone'],
@@ -340,7 +354,8 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [PROCEEDINGS],
         duedate = TIMESTAMP_DUE,
-        process = utils.get_path('../process/submissionProcessProceedings.js', __file__))
+        process = os.path.abspath(os.path.join(os.path.dirname(__file__),'../process/submissionProcessProceedings.js'))
+        )
     proceeding_invitation.reply = proceedings_reply
 
     poster_invitation = openreview.Invitation(POSTER + '/-/Submission',
@@ -349,7 +364,8 @@ if client.user['id'].lower()=='openreview.net':
                                               invitees=['~'],
                                               signatures=[POSTER],
                                               duedate=TIMESTAMP_DUE,
-                                              process=utils.get_path('../process/submissionProcessPoster.js', __file__))
+                                              process=os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/submissionProcessPoster.js'))
+                                              )
     poster_invitation.reply = poster_reply
     invitations.append(proceeding_invitation)
     invitations.append(poster_invitation)

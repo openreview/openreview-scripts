@@ -16,10 +16,7 @@
 import argparse
 import sys, os
 import config
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../utils"))
-import utils
-import templates
-from openreview import *
+import openreview
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -30,13 +27,12 @@ args = parser.parse_args()
 
 ## Initialize the client library with username and password
 if args.username!=None and args.password!=None:
-    client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
+    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 else:
-    client = Client(baseurl=args.baseurl)
+    client = openreview.Client(baseurl=args.baseurl)
 baseurl = client.baseurl
 
-
-review_path =utils.get_path('../process/officialReviewProcess.js', __file__)
+review_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'))
 submissions = client.get_notes(invitation=config.SUBMISSION)
 for paper in submissions:
     paper_num = str(paper.number)
@@ -99,7 +95,7 @@ for paper in submissions:
             'values': [nonReviewerGroup]},
         'content':config.review_content
     }
-    client.post_invitation(openreview.Invitation(paperinv + '/Official/Review',
+    inv = client.post_invitation(openreview.Invitation(paperinv + '/Official/Review',
                                                  signatures=[config.CONF],
                                                  writers=[config.CONF],
                                                  invitees=[paperGroup + '/Reviewers'],
@@ -108,3 +104,5 @@ for paper in submissions:
                                                  process=review_path,
                                                  duedate=config.REVIEW_DUE,
                                                  reply=review_reply))
+    print "posting invitation: ",inv.id
+    print "process: ", inv.process

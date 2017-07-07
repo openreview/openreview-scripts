@@ -4,12 +4,18 @@ import openreview
 import sys, os
 import config
 import getpass
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../../utils"))
-import utils
-import templates
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
+parser.add_argument('--username')
+parser.add_argument('--password')
 
-args, parser, overwrite = utils.parse_args()
+args = parser.parse_args()
+
+overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
+
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 """
@@ -19,8 +25,6 @@ OPTIONAL SCRIPT ARGUMENTS
 	baseurl -  the URL of the OpenReview server to connect to (live site: https://openreview.net)
  	username - the email address of the logging in user
 	password - the user's password
-
-See openreview-scripts/utils for utility function and template details.
 
 """
 

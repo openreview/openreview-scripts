@@ -48,7 +48,7 @@ def get_submit_review_invitation(submissionId, number):
         invitees = [config.PROGRAM_CHAIRS, "{0}/Paper{1}/Reviewers".format(config.CONF, number)],
         noninvitees = ["{0}/Paper{1}/Authors".format(config.CONF, number)],
         readers = ['everyone'],
-        process = os.path.join(os.path.dirname(__file__), '../process/reviewProcess.js'),
+        process = os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/reviewProcess.js')),
         reply = reply)
 
     return invitation
