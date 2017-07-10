@@ -42,7 +42,7 @@ Example:
 
 SUBMISSION = CONF + '/-/Submission'
 COMMENT = CONF + '/-/Comment'
-
+ACCEPTANCE = CONF + '/-/Acceptance/Decision'
 
 """
 PARAMETERS
@@ -89,6 +89,13 @@ comment_params = {
     'signatures': [CONF],
     'process': os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/commentProcess.js'))
 }
+
+acceptance_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': ['~Super_User1', CONF, PROGRAM_CHAIRS],
+    'signatures': [CONF]
+    }
 
 submission_content = {
     'title': {
@@ -183,5 +190,35 @@ comment_reply = {
         'values-regex': '~.*'
     },
     'content': comment_content
+}
+
+acceptance_decision_content = {
+    'title': {
+      'order': 0,
+      'value-regex': 'Paper[0-9]+ Acceptance Decision',
+      'description': 'Brief summary of your comment.',
+      'required': True
+    },
+    'decision': {
+      'order': 1,
+      'value-radio': ['Accept as Oral', 'Accept as Poster', 'Reject'],
+      'required': True
+    }
+}
+
+acceptance_decision_reply = {
+    'forum': None,
+    'replyto': None,
+    'invitation': SUBMISSION,
+    'readers': {
+        'values': ['everyone']
+    },
+    'signatures': {
+        'values': [PROGRAM_CHAIRS]
+    },
+    'writers': {
+        'values': [PROGRAM_CHAIRS]
+    },
+    'content': acceptance_decision_content
 }
 
