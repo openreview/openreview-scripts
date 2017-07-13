@@ -118,6 +118,12 @@ submission_params = {
     'process': utils.get_path('../process/submissionProcess.js', __file__)
 }
 
+revision_params = {
+    'readers': [CONF, CLASS_MEMBERS, PROGRAM_CHAIRS],
+    'writers': [CONF],
+    'signatures': [CONF]
+}
+
 comment_params = {
     'readers': [CONF, COMMENTERS],
     'writers': [CONF],
