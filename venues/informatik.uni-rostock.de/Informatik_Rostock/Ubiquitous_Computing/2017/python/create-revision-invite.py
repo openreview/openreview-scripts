@@ -23,7 +23,6 @@ def create_revision_invitation(n):
     revision_invitation.reply = config.submission_reply
     revision_invitation.reply['referent'] = n.forum
     revision_invitation.reply['forum'] = n.forum
-    revision_invitation.duedate = 1500163199000
     return revision_invitation
 
 for n in submissions:
