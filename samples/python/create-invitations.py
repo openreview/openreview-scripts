@@ -101,7 +101,7 @@ for paper in submissions:
         'writers':{'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
         'signatures':{'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
         'readers':{
-            'values': [config.PROGRAM_CHAIRS, authorGroup],
+            'values': [config.CONF, config.PROGRAM_CHAIRS, reviewerGroup, authorGroup],
             'description': 'The users who will be allowed to read the above content.'
         },
         'nonreaders':{
