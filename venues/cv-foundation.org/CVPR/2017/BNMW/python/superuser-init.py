@@ -11,11 +11,19 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 import openreview
 from cvprdata import *
 import sys, os
+import subprocess
+import argparse
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../../utils"))
-import utils
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
+parser.add_argument('--username')
+parser.add_argument('--password')
 
-args, parser, overwrite = utils.parse_args()
+args = parser.parse_args()
+
+overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
+
 
 ## Initialize the client library with username and password
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
@@ -69,7 +77,8 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [CONFERENCE],
             members     = [ADMIN],
-            web         = utils.get_path('../webfield/cvpr2017_webfield.html', __file__))
+            web         = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/cvpr2017_webfield.html'))
+            )
         groups.append(conf)
 
     if overwrite_allowed(COCHAIRS):
@@ -102,10 +111,12 @@ if client.user['id'].lower()=='openreview.net':
     ##  SETUP INVITATIONS  ##
     #########################
 
-    utils.process_to_file(
-        utils.get_path("../process/submissionProcess.template", __file__),
-        utils.get_path("../process", __file__)
-        )
+    subprocess.call([
+        "node",
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../../utils/processToFile.js")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../process/submissionProcess.template")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../process"))
+    ])
 
     invitations = []
 
@@ -116,7 +127,8 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [CONFERENCE],
         duedate = EIGHT_PG_TIMESTAMP_DUE,
-        process = utils.get_path('../process/submissionProcess.js', __file__))
+        process = os.path.abspath(os.path.join(os.path.dirname(__file__),'../process/submissionProcess.js'))
+        )
 
     submission_invitation.reply = {
         'forum': None,

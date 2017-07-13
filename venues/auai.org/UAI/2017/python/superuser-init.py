@@ -11,23 +11,34 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 import openreview
 from uaidata import *
 import sys, os
+import subprocess
+import argparse
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__),"../../../../../utils"))
-import utils
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--overwrite', help="If set to true, overwrites existing groups")
+parser.add_argument('--username')
+parser.add_argument('--password')
 
-args, parser, overwrite = utils.parse_args()
+args = parser.parse_args()
+
+overwrite = True if (args.overwrite!=None and args.overwrite.lower()=='true') else False
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-utils.process_to_file(
-    utils.get_path("../process/spc_registrationProcess.template", __file__),
-    utils.get_path("../process", __file__)
-    )
+subprocess.call([
+    "node",
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../utils/processToFile.js")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../process/spc_registrationProcess.template")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../process")),
+])
 
-utils.process_to_file(
-    utils.get_path("../process/pc_registrationProcess.template", __file__),
-    utils.get_path("../process", __file__)
-    )
+subprocess.call([
+    "node",
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../utils/processToFile.js")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../process/pc_registrationProcess.template")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../process")),
+])
 
 groups = []
 if client.user['id'].lower()=='openreview.net':
@@ -63,7 +74,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = ['OpenReview.net'],
             signatories = [CONFERENCE],
             members     = [ADMIN],
-            web         = utils.get_path('../webfield/uai2017_webfield.html', __file__))
+            web         = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/uai2017_webfield.html')))
         groups.append(uai2017)
 
 
@@ -84,7 +95,7 @@ if client.user['id'].lower()=='openreview.net':
             signatures  = [CONFERENCE],
             signatories = [SPC],
             members     = [], #more to be added later, from the list of Senior_Program_Committee members
-            web         = utils.get_path('../webfield/spc_group_webfield.html', __file__))
+            web         = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/spc_group_webfield.html')))
         groups.append(spc)
 
     if not client.exists(SPC + '/invited') or overwrite==True:
@@ -179,7 +190,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees = ['~'],
         signatures = [CONFERENCE],
         duedate = 1491044400000, #duedate is March 31, 2017, 23:59:59 Samoa Time
-        process = utils.get_path('../process/submissionProcess.js', __file__))
+        process = os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')))
 
     submission_invitation.reply = {
         'forum': None,
@@ -301,8 +312,8 @@ if client.user['id'].lower()=='openreview.net':
         writers=[CONFERENCE],
         invitees=[SPC + '/invited'],
         signatures=[CONFERENCE],
-        process=utils.get_path('../process/spc_responseInvitationProcess_uai2017.js', __file__),
-        web=utils.get_path('../webfield/spc_invitation_webfield.html', __file__))
+        process=os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/spc_responseInvitationProcess_uai2017.js')),
+        web=os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/spc_invitation_webfield.html')))
 
     spc_invitation.reply = {
         'content': {
@@ -341,8 +352,8 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = [PC + '/invited'],
         signatures = [CONFERENCE],
-        process = utils.get_path('../process/pc_responseInvitationProcess_uai2017.js', __file__),
-        web = utils.get_path('../webfield/pc_invitation_webfield.html', __file__))
+        process = os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/pc_responseInvitationProcess_uai2017.js')),
+        web = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/pc_invitation_webfield.html')))
 
     pc_invitation.reply = {
         'content': {
@@ -382,7 +393,7 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = ['OpenReview.net'],
         signatures = [CONFERENCE],
-        process = utils.get_path('../process/spc_registrationProcess.js', __file__)
+        process = os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/spc_registrationProcess.js'))
         )
 
     spc_registration.reply = {
@@ -420,7 +431,7 @@ if client.user['id'].lower()=='openreview.net':
         writers = [CONFERENCE],
         invitees = ['OpenReview.net'],
         signatures = [CONFERENCE],
-        process = utils.get_path('../process/pc_registrationProcess.js', __file__)
+        process = os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/pc_registrationProcess.js'))
         )
 
     pc_registration.reply = {
@@ -503,7 +514,7 @@ if client.user['id'].lower()=='openreview.net':
         invitees=[],
         signatures=[CONFERENCE],
         duedate=1507180500000, #duedate is Nov 5, 2017, 17:15:00 (5:15pm) Eastern Time
-        web=utils.get_path('../webfield/add_bid_invitation_webfield.html', __file__),
+        web=os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/add_bid_invitation_webfield.html')),
         multiReply=False)
 
     bid_tag_invitation.reply = {
