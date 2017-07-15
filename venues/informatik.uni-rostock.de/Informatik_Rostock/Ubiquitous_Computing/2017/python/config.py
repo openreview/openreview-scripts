@@ -116,6 +116,12 @@ submission_params = {
     'process': os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js'))
 }
 
+revision_params = {
+    'readers': [CONF, CLASS_MEMBERS, PROGRAM_CHAIRS],
+    'writers': [CONF],
+    'signatures': [CONF]
+}
+
 comment_params = {
     'readers': [CONF, COMMENTERS],
     'writers': [CONF],
