@@ -22,7 +22,9 @@ ADMIN = CONF + '/Admin'
 PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
-DUE_TIMESTAMP = 1500681599000
+"""28 July 23:59:59 Hawaii Time
+   == GMT: Friday, July 29, 2017 9:59:59 AM"""
+DUE_TIMESTAMP = 1501322399000
 WEBPATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/conf.html'))
 
 """
