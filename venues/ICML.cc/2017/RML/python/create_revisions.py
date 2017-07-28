@@ -15,9 +15,6 @@ print client.baseurl
 # setup variables
 submissions = client.get_notes(invitation = config.SUBMISSION)
 
-# Adrian Weller, a PC and author, wasn't able to see how to modify PDF submissions.
-# This fix adds a revision invitation to all WHI papers.
-
 def revision_invitation(n):
     revision_content = {
         'title': {
