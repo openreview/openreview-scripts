@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-
+mcz - August 2017
 This script reads in DBLP XML data and inserts a new
 record or a revision to an existing record.
 
