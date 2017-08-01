@@ -2,29 +2,53 @@
 
 """
 
-This script reads in DBLP JSON data and inserts a new
+This script reads in DBLP XML data and inserts a new
 record or a revision to an existing record.
+
+It processes all .xml files for the file path passed in.
+
+The DBLP data can be downloaded from : http://dblp.dagstuhl.de/xml/
+
+Which is a LARGE file. To process, split the XML using xml_split so there is one
+record per file:
+
+    xml_split dblp.xml
+
+The xml_split command creates a file that allows xml_merge to recreate the
+original XML, we don't want to process that file so remove it:
+
+    rm dblp-00.xml
+
+Then created sub-folders and put 10K files in each folder.
+
+To create the folders:
+
+    for i in {0..600}; do mkdir $i; done;
+
+To move the files, 10k at a time:
+
+    for i in {1..600}; do mv dblp-$i????.xml ./$i; done;
+
+then move the stragglers:
+
+    mv dblp-*.xml ./0
 
 """
 
 ## Import statements
 import argparse
-import csv
 import sys
 from openreview import *
-import update_records
-import json
 import os
 import traceback
+import glob
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
-parser.add_argument('--overwrite',
-                    help="If set to true, overwrites existing groups")
 parser.add_argument('--username')
 parser.add_argument('--password')
-parser.add_argument('--json', help="File containint a list of DBLP JSON objects.")
+parser.add_argument('--dir', help="Folder containing XML files, all will be processed.");
 
 args = parser.parse_args()
 ## Initialize the client library with username and password
@@ -33,24 +57,38 @@ if args.username != None and args.password != None:
 else:
     openreview = Client(baseurl=args.baseurl)
 
-data = json.loads(open(args.json).read())
-
 count = 0
-for d in data:
+error_count = 0
+for file in glob.glob(args.dir + "/*.xml"):
     count += 1
     try:
+        f = open(file)
+        xml = f.read()
+        rec = openreview.post_dblp_record({'dblp' : xml})
+        # print rec
+        if rec.get('message'):
+            print rec['message']
+        elif rec.get('referent'):
+            print 'Created reference for: ' + rec['content']['paperhash']
+        else:
+            print 'New note for: ' + rec['content']['paperhash']
 
-        ## Use the post_or_update function to post a new record
-        dblp_record = update_records.post_or_update(openreview, d, verbose=True)
+
     except :
-        print "Error in : " + args.json + " : " + str(d)
+        # write the error out with a ".err" extension.
+        error_count += 1
+        print "Error in : " + file + " : " + xml
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        # get the json file name
-        fp = args.json.split('/')
-        f = open("./" + fp.pop() + ".err",  "a", 0)
-        f.write("line: " + str(count) + " : " + str(d) + os.linesep)
+        f = open(file + ".err",  "a", 0)
+        f.write(str(xml) + os.linesep)
         traceback.print_tb(exc_traceback, None, file=f)
         f.write(os.linesep)
         f.close()
 
-    print count
+    if not (count % 100):
+        print count
+
+print
+print str(count) + " files read."
+print "There were " + str(error_count) + " error(s)."
+
