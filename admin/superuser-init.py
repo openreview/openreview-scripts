@@ -47,10 +47,11 @@ prompts = {
     'conference_location': "Enter the location of the conference: ",
     'conference_date': "Enter date of the conference in human-readable form: ",
     'human_duedate': "Enter the human-readable due date string that will appear on the homepage (this will have no effect on the system due date): ",
-    'conference_phrase': "When users submit a paper, they will receive an email. Fill in the blank: Your submission to ______ has been received. ",
+    'conference_phrase': "When users submit a paper, they will receive an email. Fill in the blank: \"Your submission to ______ has been received.\" ",
     'submission_name': "Enter the name of the submission invitation: ",
     "duedate_input": "Enter the duedate (DD/MM/YYYY): ",
     "duetime_input": "Enter the time of day that the submission is due in 24-hour format (e.g. enter 23:59 for 11:59 pm): ",
+    "url": "Enter the URL of the conference: "
 }
 
 def get_input_or_data(name):
@@ -241,6 +242,6 @@ if create_admin == 'y' or create_admin == 'yes':
     else:
         print "Admin account not activated. Please respond to the email confirmation sent to %s" % username
     client.add_members_to_group(admin_group, [username])
-    print "Added %s to %s: " % (username, args.conf)
+    print "Added %s to %s" % (username, args.conf)
 
 

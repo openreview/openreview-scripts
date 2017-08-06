@@ -38,6 +38,7 @@ if args.track != 'Poster' and args.track != 'Proceedings':
     sys.exit()
 TRACK = CONFERENCE+"/-_"+args.track
 submissions = client.get_notes(invitation=TRACK+'/-/Submission')
+print TRACK+'/-/Submission'
 
 ## parses command line assignments - looks for pairs of emails and paper numbers
 def single_assignment_valid(s):

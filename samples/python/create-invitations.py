@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ###############################################################################
-# ex. python create_invitations.py --baseurl http://localhost:3000
+# ex. python create-invitations.py --cpath MyConf.org/2017 --baseurl http://localhost:3000
 #       --username admin --password admin_pw
 #
 # To be run after submission due date to create review invitations for all the papers.
@@ -14,25 +14,38 @@
 
 ## Import statements
 import argparse
-import sys, os
-import config
-import openreview
+import sys
+import os
+from openreview import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
+parser.add_argument('--cpath', required=True, help="conference path ex. MyConf.org/2017")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
+
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-if args.username!=None and args.password!=None:
-    client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-else:
-    client = openreview.Client(baseurl=args.baseurl)
-baseurl = client.baseurl
+client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-review_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'))
+## check conference directory exists
+base_path = "../../venues/"+args.cpath
+config_path = base_path+"/python/"
+if os.path.isfile(config_path+"config.py") is False:
+    print "Cannot locate config.py in:"+config_path
+    sys.exit()
+## load conference specific data
+sys.path.insert(0, config_path)
+import config
+
+## check review process function exists
+review_path = base_path+'/process/officialReviewProcess.js'
+if os.path.isfile(review_path) is False:
+    print "Cannot locate review process function at:"+review_path
+    sys.exit()
+
 submissions = client.get_notes(invitation=config.SUBMISSION)
 for paper in submissions:
     paper_num = str(paper.number)
@@ -55,7 +68,7 @@ for paper in submissions:
         id=authorGroup,
         signatures=[config.CONF],
         writers=[config.CONF],
-        members=[],
+        members=[paper.content['authorids']],
         readers=[config.CONF, config.PROGRAM_CHAIRS, authorGroup],
         signatories=[]))
 
@@ -88,14 +101,14 @@ for paper in submissions:
         'writers':{'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
         'signatures':{'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
         'readers':{
-            'values': [config.PROGRAM_CHAIRS, authorGroup],
+            'values': [config.CONF, config.PROGRAM_CHAIRS, reviewerGroup, authorGroup],
             'description': 'The users who will be allowed to read the above content.'
         },
         'nonreaders':{
             'values': [nonReviewerGroup]},
         'content':config.review_content
     }
-    inv = client.post_invitation(openreview.Invitation(paperinv + '/Official/Review',
+    client.post_invitation(openreview.Invitation(paperinv + '/Official/Review',
                                                  signatures=[config.CONF],
                                                  writers=[config.CONF],
                                                  invitees=[paperGroup + '/Reviewers'],
@@ -104,5 +117,3 @@ for paper in submissions:
                                                  process=review_path,
                                                  duedate=config.REVIEW_DUE,
                                                  reply=review_reply))
-    print "posting invitation: ",inv.id
-    print "process: ", inv.process

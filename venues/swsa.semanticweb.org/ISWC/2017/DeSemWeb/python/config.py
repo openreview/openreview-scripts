@@ -22,8 +22,10 @@ ADMIN = CONF + '/Admin'
 PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
-DUE_TIMESTAMP = 1500681599000
-WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conf.html')
+"""28 July 23:59:59 Hawaii Time
+   == GMT: Friday, July 29, 2017 9:59:59 AM"""
+DUE_TIMESTAMP = 1501322399000
+WEBPATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/conf.html'))
 
 """
 INVITATIONS
@@ -73,7 +75,7 @@ submission_params = {
     'writers': [CONF],
     'invitees': ['~'],
     'signatures': [CONF],
-    'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')
+    'process': os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js'))
 }
 
 comment_params = {
@@ -81,7 +83,7 @@ comment_params = {
     'writers': [CONF],
     'invitees': ['~'],
     'signatures': [CONF],
-    'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js')
+    'process': os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/commentProcess.js'))
 }
 
 """

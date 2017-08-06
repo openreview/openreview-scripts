@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../../utils"))
-import utils
 
 """
 GROUPS
@@ -26,9 +24,13 @@ AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
 ## June 15th at 11:59 pm (CEST) = - 6hrs to EDT = 5:59 pm
 DUE_TIMESTAMP = 1497563999000
-WEBPATH = utils.get_path('../webfield/conf.html', __file__)
-
-
+WEBPATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/conf.html'))
+##2017, June 25th at 11:59 pm (CEST) = 17:59 EST
+REVIEW_DUE = 1498427999000
+## 2017, July 15th at 11:59 pm (CEST)
+CAMERA_DUE = 1500155999000
+##  2017, August 04
+CONF_DATE = 1501891200000
 """
 INVITATIONS
 
@@ -46,6 +48,7 @@ Example:
 
 SUBMISSION = CONF + '/-/Submission'
 COMMENT = CONF + '/-/Comment'
+COMMENTERS = CONF + '/Commenters'
 
 """ Class members that can read/write submissions and comments """
 CLASS_MEMBERS = CONF + '/Class_Members'
@@ -106,19 +109,121 @@ group_params = {
 }
 
 submission_params = {
-    'readers': [CLASS_MEMBERS,PROGRAM_CHAIRS],
+    'readers': [CONF, CLASS_MEMBERS,PROGRAM_CHAIRS],
     'writers': [CONF],
     'invitees': [CLASS_MEMBERS, PROGRAM_CHAIRS],
     'signatures': [CONF],
-    'process': utils.get_path('../process/submissionProcess.js', __file__)
+    'process': os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js'))
+}
+
+revision_params = {
+    'readers': [CONF, CLASS_MEMBERS, PROGRAM_CHAIRS],
+    'writers': [CONF],
+    'signatures': [CONF]
 }
 
 comment_params = {
-    'readers': [CLASS_MEMBERS, PROGRAM_CHAIRS],
+    'readers': [CONF, COMMENTERS],
     'writers': [CONF],
-    'invitees': [CLASS_MEMBERS, PROGRAM_CHAIRS],
+    'invitees': [COMMENTERS],
     'signatures': [CONF],
-    'process': utils.get_path('../process/commentProcess.js', __file__)
+    'duedate': CONF_DATE
 }
 
+review_content = {
+    'title': {
+        'order': 1,
+        'value-regex': '.{0,500}',
+        'description': 'Brief summary of your review.',
+        'required': True
+    },
+    'review': {
+        'order': 2,
+        'value-regex': '[\\S\\s]{1,5000}',
+        'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+        'required': True
+    },
+    'rating': {
+        'order': 3,
+        'value-dropdown': [
+            '5: Top 15% of accepted papers, strong accept',
+            '4: Top 50% of accepted papers, clear accept',
+            '3: Marginally above acceptance threshold',
+            '2: Marginally below acceptance threshold',
+            '1: Strong rejection'
+        ],
+        'required': True
+    },
+    'confidence': {
+        'order': 4,
+        'value-radio': [
+            '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '2: The reviewer is fairly confident that the evaluation is correct',
+            '1: The reviewer\'s evaluation is an educated guess'
+        ],
+        'required': True
+    }
+}
+
+submission_content = {
+    'title': {
+        'description': 'Title of paper.',
+        'order': 1,
+        'value-regex': '.{1,250}',
+        'required':True
+    },
+    'authors': {
+        'description': 'Comma separated list of author names.',
+        'order': 2,
+        'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+        'required':True
+    },
+    'authorids': {
+        'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
+        'order': 3,
+        'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+        'required':True
+    },
+    'keywords': {
+        'description': 'Comma separated list of keywords.',
+        'order': 6,
+        'values-regex': "(^$)|[^;,\\n]+(,[^,\\n]+)*"
+    },
+    'TL;DR': {
+        'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
+        'order': 7,
+        'value-regex': '[^\\n]{0,250}',
+        'required':False
+    },
+    'abstract': {
+        'description': 'Abstract of paper.',
+        'order': 8,
+        'value-regex': '[\\S\\s]{1,5000}',
+        'required':True
+    },
+    'pdf': {
+        'description': 'Upload a PDF file that ends with .pdf',
+        'order': 9,
+        'value-regex': 'upload',
+        'required':True
+    }
+}
+
+submission_reply = {
+    'forum': None,
+    'replyto': None,
+    'invitation': None,
+    'readers': {
+        'description': 'The users who will be allowed to read the above content.',
+        'values': [CLASS_MEMBERS]
+    },
+    'signatures': {
+        'description': 'How your identity will be displayed with the above content.',
+        'values-regex': '~.*'
+    },
+    'writers': {
+        'values-regex': '~.*'
+    },
+    'content': submission_content
+}
 

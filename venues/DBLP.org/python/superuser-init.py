@@ -11,9 +11,8 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 
 ## Import statements
 import argparse
-import csv
-import sys
 from openreview import *
+import config
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -48,21 +47,21 @@ if openreview.user['id'].lower() == 'openreview.net':
     #########################
     ##    SETUP GROUPS     ##
     #########################
-    if overwrite_allowed('DBLP.org'):
-        DBLP = Group('DBLP.org',
+    if overwrite_allowed(config.BASE):
+        DBLP = Group(config.BASE,
                      readers=['OpenReview.net'],
-                     writers=['OpenReview.net', 'DBLP.org'],
+                     writers=['OpenReview.net', config.BASE],
                      signatures=['OpenReview.net'],
-                     signatories=['DBLP.org'],
+                     signatories=[config.BASE],
                      members=[])
         groups.append(DBLP)
 
-    if overwrite_allowed('DBLP.org/upload'):
-        DBLP_upload = Group('DBLP.org/upload',
-                            readers=['DBLP.org/upload'],
-                            writers=['DBLP.org', 'DBLP.org/upload'],
-                            signatures=['DBLP.org'],
-                            signatories=['DBLP.org/upload'],
+    if overwrite_allowed(config.GROUP):
+        DBLP_upload = Group(config.GROUP,
+                            readers=[config.GROUP],
+                            writers=[config.GROUP],
+                            signatures=[config.BASE],
+                            signatories=[config.GROUP],
                             members=['spector@cs.umass.edu',
                                      'mbok@cs.umass.edu', 'rbhat@cs.umass.edu',
                                      'ngovindraja@cs.umass.edu', 'rbhat@umass.edu',
@@ -83,16 +82,16 @@ if openreview.user['id'].lower() == 'openreview.net':
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values': ['DBLP.org/upload']
+            'values': [ config.GROUP ]
         },
         'writers': {
-            'values': ['DBLP.org/upload']
+            'values':  [ config.GROUP ]
         },
         'content': {
             'title': {
                 'description': 'Title of paper.',
                 'order': 1,
-                'value-regex': '.{0,500}',
+                'value-regex': '[\\S\\s]{0,750}',
                 'required': False
             },
             'abstract': {
@@ -105,13 +104,13 @@ if openreview.user['id'].lower() == 'openreview.net':
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 2,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required':True
+                'required':False
             },
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 3,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required':True
+                'required':False
             },
             'DBLP_url': {
                 'description': 'DBLP.org url associated with this paper',
@@ -129,7 +128,7 @@ if openreview.user['id'].lower() == 'openreview.net':
             'ee': {
                 'description': 'electronic edition of the paper',
                 'order': 6,
-                'value-regex': '[^\\n]{0,250}',
+                'value-regex': '[^\\n]{0,500}',
                 'required': False
 
             },
@@ -149,10 +148,9 @@ if openreview.user['id'].lower() == 'openreview.net':
 
             },
             'month': {
-                'description': 'the month in which the paper or work was '
-                               'published. 3 letter abbrevivation',
+                'description': 'the month in which the paper or work was published.',
                 'order': 5,
-                'value-regex': '[a-zA-Z]{0,3}',
+                'value-regex': '.{0,200}',
                 'required': False
 
             },
@@ -166,7 +164,7 @@ if openreview.user['id'].lower() == 'openreview.net':
             'booktitle': {
                 'description': 'Title of a book, part of which is being cited',
                 'order': 5,
-                'value-regex': '.{0,100}',
+                'value-regex': '.{0,500}',
                 'required': False
 
             },
@@ -248,33 +246,16 @@ if openreview.user['id'].lower() == 'openreview.net':
 
         }
     }
-    submission_invitation = Invitation('DBLP.org/-/Upload',
+
+    submission_invitation = Invitation(config.INVITATION,
                                        readers=['everyone'],
-                                       writers=['DBLP.org/upload'],
-                                       invitees=['DBLP.org/upload'],
-                                       signatures=['DBLP.org'],
+                                       writers=[config.GROUP],
+                                       invitees=[config.GROUP],
+                                       signatures=[config.BASE],
                                        reply=reply)
 
 
-    revision_reply = reply.copy()
-    revision_reply.pop('forum')
-    revision_reply.pop('replyto')
-    revision_reply['referent'] = None
-    # the authoreid field has "UNK" for the emails, we don't send
-    # that as a revision becuase it would overwrite the (probable) good
-    # email addresses in that field.
-    revision_reply['content']['authorids']['required'] = False;
-
-
-    revision_invitation = Invitation('DBLP.org/-/Add/Revision',
-        signatures = ['DBLP.org'],
-        writers = ['DBLP.org/upload'],
-        invitees = ['DBLP.org/upload'],
-        readers = ['everyone'],
-        reply = revision_reply
-    )
-
-    invitations = [submission_invitation, revision_invitation]
+    invitations = [submission_invitation]
 
     ## Post the invitations
     for i in invitations:
