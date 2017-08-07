@@ -508,6 +508,34 @@ if client.user['id'].lower()=='openreview.net':
     invitations.append(areachair_metadata_invitation)
 
 
+    #Define the matching assignments reply
+    assignments_reply = {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': [CONFERENCE]
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': CONFERENCE
+        },
+        'writers': {
+            'values-regex': CONFERENCE
+        },
+        'content': {}
+    }
+
+    #Create the matching assignments invitation
+    matching_assignments_invitation = openreview.Invitation(CONFERENCE + '/-/Matching/Assignments',
+                                                writers = ['OpenReview.net'],
+                                                readers = [CONFERENCE],
+                                                invitees = [CONFERENCE],
+                                                signatures = ['OpenReview.net'],
+                                                reply = assignments_reply)
+    invitations.append(matching_assignments_invitation)
+
+
     bid_tag_invitation = openreview.Invitation(CONFERENCE+'/-/Add/Bid',
         readers=['everyone'],
         writers=[CONFERENCE],

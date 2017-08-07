@@ -9,7 +9,7 @@ import csv
 import openreview
 import match_utils
 import openreview_matcher
-
+from collections import defaultdict
 from uaidata import *
 
 # Argument handling
@@ -45,8 +45,10 @@ except:
 
 ## Settings (move this outside at some point)
 matching_configuration = {
-    "minusers": 1,
-    "maxusers": 4,
+    "group": group.id,
+    "invitation": 'auai.org/UAI/2017/-/blind-submission',
+    "minusers": 3,
+    "maxusers": 5,
     "minpapers": 1,
     "maxpapers": 15,
     "weights": {
@@ -70,4 +72,36 @@ with open(outfile, 'w') as o:
     for a in assignments:
         csvwriter.writerow([a[0].encode('utf-8'),a[1]])
 
+## Post a note with the configuration and assignments for later use
+forum_by_number = {n.number: n.forum for n in papers}
+
+assignments_by_forum = defaultdict(list)
+for n in assignments:
+    user = n[0]
+    forum = forum_by_number[n[1]]
+    assignments_by_forum[forum].append(user)
+
+assignment_info_by_number = {}
+for n in papers:
+    assignment_info_by_number['Paper{0}'.format(n.number)] = {
+        'title': n.content['title'],
+        'forum': n.forum,
+        'assigned': assignments_by_forum[n.forum]
+    }
+
+assignment_content = {
+    "configuration": matching_configuration,
+    "assignments": assignment_info_by_number
+}
+
+assignment_note = openreview.Note(
+        content = assignment_content,
+        invitation = 'auai.org/UAI/2017/-/Matching/Assignments',
+        readers = ['auai.org/UAI/2017'],
+        writers = ['auai.org/UAI/2017'],
+        signatures = ['auai.org/UAI/2017']
+    )
+
+print "posting assignment note {0}".format(assignment_note.forum)
+client.post_note(assignment_note)
 
