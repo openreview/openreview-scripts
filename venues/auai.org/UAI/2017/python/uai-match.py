@@ -102,6 +102,6 @@ assignment_note = openreview.Note(
         signatures = ['auai.org/UAI/2017']
     )
 
-print "posting assignment note {0}".format(assignment_note.forum)
-client.post_note(assignment_note)
+assignment_note = client.post_note(assignment_note)
+print "posted assignment note {0}".format(assignment_note.forum)
 
