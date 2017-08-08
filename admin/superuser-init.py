@@ -47,10 +47,11 @@ prompts = {
     'conference_location': "Enter the location of the conference: ",
     'conference_date': "Enter date of the conference in human-readable form: ",
     'human_duedate': "Enter the human-readable due date string that will appear on the homepage (this will have no effect on the system due date): ",
-    'conference_phrase': "When users submit a paper, they will receive an email. Fill in the blank: Your submission to ______ has been received. ",
+    'conference_phrase': "When users submit a paper, they will receive an email. Fill in the blank: \"Your submission to ______ has been received.\" ",
     'submission_name': "Enter the name of the submission invitation: ",
     "duedate_input": "Enter the duedate (DD/MM/YYYY): ",
     "duetime_input": "Enter the time of day that the submission is due in 24-hour format (e.g. enter 23:59 for 11:59 pm): ",
+    "url": "Enter the URL of the conference: "
 }
 
 def get_input_or_data(name):
@@ -67,7 +68,6 @@ if args.overwrite or not os.path.exists(directory):
     conference_subtitle = get_input_or_data("conference_subtitle")
     conference_location = get_input_or_data("conference_location")
     conference_date = get_input_or_data("conference_date")
-    human_duedate = get_input_or_data("human_duedate")
     url = get_input_or_data("url")
     conference_phrase = get_input_or_data("conference_phrase")
     submission_name = get_input_or_data("submission_name")
@@ -76,28 +76,34 @@ if args.overwrite or not os.path.exists(directory):
         submission_name = "Submission"
         data['submission_name'] = submission_name
 
+    human_duedate = get_input_or_data("human_duedate")
     # check if due date/time is valid and after current time
-    duedate_input = get_input_or_data("duedate_input")
-    try:
-        day, month, year = duedate_input.split('/')
-        day = int(day)
-        month = int(month)
-        year = int(year)
-        # this will catch invalid values for date
-        duedate = utils.get_duedate(year, month, day)
-        now = datetime.datetime.now()
-        assert duedate > now, "Cannot enter a date in the past"
 
-        # get due time
-        duetime_input = get_input_or_data("duetime_input")
-        hour, minute = duetime_input.split(':')
-        hour = int(hour)
-        minute = int(minute)
-        duedate = utils.get_duedate(year, month, day, hour, minute)
-        assert duedate > now, "Cannot enter a time in the past"
-    except Exception, e:
-        print "Duedate invalid: ", e
-        sys.exit()
+    duedate_valid = False
+    while not duedate_valid and "duedate_input" not in data.keys():
+        duedate_input = raw_input(prompts["duedate_input"])
+        try:
+            day, month, year = duedate_input.split('/')
+            day = int(day)
+            month = int(month)
+            year = int(year)
+            # this will catch invalid values for date
+            duedate = utils.get_duedate(year, month, day)
+            now = datetime.datetime.now()
+            assert duedate > now, "Cannot enter a date in the past"
+
+            # get due time
+            duetime_input = get_input_or_data("duetime_input")
+            hour, minute = duetime_input.split(':')
+            hour = int(hour)
+            minute = int(minute)
+            duedate = utils.get_duedate(year, month, day, hour, minute)
+            assert duedate > now, "Cannot enter a time in the past"
+
+            duedate_valid = True
+            data["duedate_input"] = duedate_input
+        except Exception, e:
+            print "Duedate invalid: ", e
 
     duedate_milliseconds = utils.date_to_timestamp(duedate)
 
@@ -241,6 +247,6 @@ if create_admin == 'y' or create_admin == 'yes':
     else:
         print "Admin account not activated. Please respond to the email confirmation sent to %s" % username
     client.add_members_to_group(admin_group, [username])
-    print "Added %s to %s: " % (username, args.conf)
+    print "Added %s to %s" % (username, args.conf)
 
 
