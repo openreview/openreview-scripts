@@ -8,7 +8,7 @@ from uaidata import *
 import uai_features
 
 from openreview_matcher.metadata import generate_metadata
-from openreview_matcher.models import tfidf
+
 from openreview_matcher import utils
 
 # Argument handling
@@ -55,18 +55,12 @@ subject_area_overlap_data = {
     'papers': papers
 }
 
-print "loading TFIDF model..."
-tfidf_model = utils.load_obj('../data/tfidf.pkl')
-
-tfidf_data = {'model': tfidf_model, 'papers': papers}
-
 # Define features
 paper_features = [
     uai_features.PrimarySubjectOverlap(name='primary_subject_overlap', data=subject_area_overlap_data),
     uai_features.SecondarySubjectOverlap(name='secondary_subject_overlap', data=subject_area_overlap_data),
     uai_features.BidScore(name='bid_score', data=bids),
     uai_features.ACRecommendation(name='ac_recommendation', data=recs),
-    uai_features.TFIDF(name='tfidf', data=tfidf_data)
 ]
 
 reviewer_features = [
