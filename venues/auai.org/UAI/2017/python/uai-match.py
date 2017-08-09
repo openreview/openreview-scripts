@@ -46,7 +46,8 @@ except:
 ## Settings (move this outside at some point)
 matching_configuration = {
     "group": group.id,
-    "invitation": 'auai.org/UAI/2017/-/blind-submission',
+    "submission": 'auai.org/UAI/2017/-/blind-submission',
+    "metadata": 'auai.org/UAI/2017/-/Paper/Metadata',
     "minusers": 3,
     "maxusers": 5,
     "minpapers": 1,
@@ -102,6 +103,6 @@ assignment_note = openreview.Note(
         signatures = ['auai.org/UAI/2017']
     )
 
-print "posting assignment note {0}".format(assignment_note.forum)
-client.post_note(assignment_note)
+assignment_note = client.post_note(assignment_note)
+print "posted assignment note {0}".format(assignment_note.forum)
 
