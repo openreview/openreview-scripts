@@ -13,7 +13,7 @@ import re
 import openreview
 import requests
 import assignment_utils
-from uaidata import *
+from config import *
 
 # Argument handling and initialization
 # .............................................................................
