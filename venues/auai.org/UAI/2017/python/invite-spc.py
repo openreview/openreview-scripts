@@ -10,7 +10,7 @@ import csv
 import sys
 from openreview import *
 import re
-from uaidata import *
+from config import *
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()

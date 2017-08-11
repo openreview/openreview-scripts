@@ -12,7 +12,7 @@ import sys
 import re
 import openreview
 import requests
-from uaidata import *
+from config import *
 
 maskPaperGroup = CONFERENCE + "/Paper[PAPER_NUMBER]"
 maskAuthorsGroup = maskPaperGroup + "/Authors"

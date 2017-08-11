@@ -12,7 +12,7 @@ import sys
 import re
 import openreview
 import assignment_utils
-from uaidata import *
+from config import *
 
 # Argument handling and initialization
 # .............................................................................
