@@ -21,10 +21,10 @@ client = openreview.Client(username=args.username, password=args.password, baseu
 # get the already-posted configuration note
 configuration_note = client.get_note(args.config)
 
-matcher = openreview_matcher.Matcher(config_note=configuration_note)
+matcher = openreview_matcher.Matcher(client=client)
 
 # solving the matcher returns a configuration note object with the content.assignments field filled in.
-configuration_note = matcher.solve()
+configuration_note = matcher.solve(configuration_note)
 
 # Post a note with the configuration and assignments for later use
 configuration_note = client.post_note(configuration_note)
