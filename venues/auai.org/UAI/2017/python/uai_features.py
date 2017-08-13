@@ -159,14 +159,3 @@ class SecondaryUserAffinity(UserAffinity):
         UserAffinity.__init__(self, name, data)
         self.subjectareas_by_signature = {n.signatures[0]: n.content['additional areas'] for n in self.data['subject_areas']}
 
-
-class ElasticSearchModel(metadata.OpenReviewFeature):
-    def __init__(self, name, data):
-        self.name = name
-        self.model = data['model']
-        self.papers_by_forum = {paper.to_json()['forum']:paper.to_json() for paper in data['papers']}
-
-    def score(self, signature, forum):
-        note_record = self.papers_by_forum[forum]
-        return self.model.score(signature, note_record)
-
