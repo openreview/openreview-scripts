@@ -507,7 +507,7 @@ if client.user['id'].lower()=='openreview.net':
     }
 
     #Create the matching assignments invitation
-    matching_assignments_invitation = openreview.Invitation(CONFERENCE + '/-/Matching/Assignments',
+    matching_assignments_invitation = openreview.Invitation(CONFERENCE + '/-/Matching_Assignments',
                                                 writers = ['OpenReview.net'],
                                                 readers = [CONFERENCE],
                                                 invitees = [CONFERENCE],
