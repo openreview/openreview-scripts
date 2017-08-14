@@ -9,7 +9,7 @@ It should only be run ONCE to kick off the conference. It can only be run by the
 
 ## Import statements
 import openreview
-from uaidata import *
+from config import *
 import sys, os
 import subprocess
 import argparse

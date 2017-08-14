@@ -1,5 +1,5 @@
 import openreview
-from uaidata import *
+from config import *
 import re
 import argparse
 
