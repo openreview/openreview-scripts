@@ -23,7 +23,7 @@ def clear_configs():
 clear_configs()
 
 matching_configuration = {
-    "assignment_label": 'reviewers',
+    "label": 'reviewers',
     "group": config.PC,
     "submission": config.SUBMISSION,
     "metadata": config.METADATA,
