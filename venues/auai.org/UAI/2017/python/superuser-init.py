@@ -13,7 +13,6 @@ from config import *
 import sys, os
 import subprocess
 import argparse
-import config
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
@@ -480,7 +479,7 @@ if client.user['id'].lower()=='openreview.net':
         'content': {}
     }
 
-    paper_metadata_invitation = openreview.Invitation(config.METADATA,
+    paper_metadata_invitation = openreview.Invitation(METADATA,
                                                writers=['OpenReview.net'],
                                                readers=[CONFERENCE],
                                                invitees=[CONFERENCE],
@@ -508,7 +507,7 @@ if client.user['id'].lower()=='openreview.net':
     }
 
     #Create the matching assignments invitation
-    matching_assignments_invitation = openreview.Invitation(config.ASSIGNMENT,
+    matching_assignments_invitation = openreview.Invitation(ASSIGNMENT,
                                                 writers = ['OpenReview.net'],
                                                 readers = [CONFERENCE],
                                                 invitees = [CONFERENCE],
