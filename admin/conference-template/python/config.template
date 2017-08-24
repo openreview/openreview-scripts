@@ -84,6 +84,14 @@ comment_params = {
     'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js')
 }
 
+review_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'signatures': [CONF],
+    'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js')
+}
+
+
 """
 TEMPLATES
 
@@ -103,11 +111,11 @@ submission_reply = {
         'values-regex': '~.*'
     },
     'writers': {
-        'values-regex': '~.*'
+        'values': []
     },
     'content':{
         'title': {
-            'description': 'Title of paper.',
+            'description': 'Title of paper (up to 250 chars).',
             'order': 1,
             'value-regex': '.{1,250}',
             'required':True
@@ -119,7 +127,7 @@ submission_reply = {
             'required':True
         },
         'authorids': {
-            'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
+            'description': 'Comma separated list of author email addresses, lowercase, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
             'order': 3,
             'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
             'required':True
@@ -130,13 +138,13 @@ submission_reply = {
             'values-regex': "(^$)|[^;,\\n]+(,[^,\\n]+)*"
         },
         'TL;DR': {
-            'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
+            'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper (up to 250 chars)',
             'order': 7,
             'value-regex': '[^\\n]{0,250}',
             'required':False
         },
         'abstract': {
-            'description': 'Abstract of paper.',
+            'description': 'Abstract of paper (up to 5000 chars).',
             'order': 8,
             'value-regex': '[\\S\\s]{1,5000}',
             'required':True
@@ -169,14 +177,49 @@ comment_reply = {
         'title': {
             'order': 0,
             'value-regex': '.{1,500}',
-            'description': 'Brief summary of your comment.',
+            'description': 'Brief summary of your comment (up to 500 chars).',
             'required': True
         },
         'comment': {
             'order': 1,
             'value-regex': '[\\S\\s]{1,5000}',
-            'description': 'Your comment or reply.',
+            'description': 'Your comment or reply (up to 5000 chars).',
             'required': True
         }
+    }
+}
+
+review_content = {
+    'title': {
+        'order': 1,
+        'value-regex': '.{0,500}',
+        'description': 'Brief summary of your review (up to 500 chars).',
+        'required': True
+    },
+    'review': {
+        'order': 2,
+        'value-regex': '[\\S\\s]{1,5000}',
+        'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (up to 5000 chars).',
+        'required': True
+    },
+    'rating': {
+        'order': 3,
+        'value-dropdown': [
+            '5: Top 15% of accepted papers, strong accept',
+            '4: Top 50% of accepted papers, clear accept',
+            '3: Marginally above acceptance threshold',
+            '2: Marginally below acceptance threshold',
+            '1: Strong rejection'
+        ],
+        'required': True
+    },
+    'confidence': {
+        'order': 4,
+        'value-radio': [
+            '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
+            '2: The reviewer is fairly confident that the evaluation is correct',
+            '1: The reviewer\'s evaluation is an educated guess'
+        ],
+        'required': True
     }
 }
