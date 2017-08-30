@@ -46,7 +46,6 @@ data = {'conference': args.conf}
 if args.data:
     datafile = open(os.path.join(os.path.dirname(__file__), args.data), 'r')
     data.update(json.loads(datafile.read()))
-    print data
 
 prompts = {
     'conference': "Enter the full path of the conference group you would like to create (e.g. my-conference.org/MYCONF/2017): ",
@@ -59,6 +58,7 @@ prompts = {
     'submission_name': "Enter the name of the submission invitation: ",
     "duedate_input": "Enter the duedate (DD/MM/YYYY): ",
     "duetime_input": "Enter the time of day that the submission is due in 24-hour format (e.g. enter 23:59 for 11:59 pm): ",
+    "reviewduedate_input": "Enter the review duedate(DD / MM / YYYY): ",
     "url": "Enter the URL of the conference: "
 }
 
@@ -91,10 +91,7 @@ if args.overwrite or not os.path.exists(directory):
     human_duedate = get_input_or_data("human_duedate")
     # check if due date/time is valid and after current time
     duedate_valid = False
-    if "duedate_input" not in data.keys():
-        duedate_input = raw_input(prompts["duedate_input"])
-    else:
-        duedate_input = data["duedate_input"]
+    duedate_input = get_input_or_data("duedate_input")
     while not duedate_valid:
         try:
             day, month, year = duedate_input.split('/')
@@ -122,6 +119,23 @@ if args.overwrite or not os.path.exists(directory):
 
     duedate_milliseconds = utils.date_to_timestamp(duedate)
 
+    duedate_valid = False
+    reviewduedate_input = get_input_or_data("reviewduedate_input")
+    while not duedate_valid:
+        try:
+            day, month, year = reviewduedate_input.split('/')
+            day = int(day)
+            month = int(month)
+            year = int(year)
+            # this will catch invalid values for date
+            duedate = utils.get_duedate(year, month, day, 23, 59)
+            reviewduedate_milliseconds = utils.date_to_timestamp(duedate)
+            assert reviewduedate_milliseconds > duedate_milliseconds , "Review date must be after submission date:"+duedate_input
+            duedate_valid=True
+        except Exception, e:
+            print "Reviews Duedate invalid: ", e
+            reviewduedate_input = raw_input(prompts["reviewduedate_input"])
+
 
     print "Creating conference directory at %s" % directory
     ## create directory structure
@@ -139,6 +153,7 @@ if args.overwrite or not os.path.exists(directory):
         templatestring = template_configfile.read().replace('<<CONF>>', "\"%s\"" % conference)
         templatestring = templatestring.replace('<<SUBMISSION_NAME>>',submission_name)
         templatestring = templatestring.replace('<<TIMESTAMP>>',str(duedate_milliseconds))
+        templatestring = templatestring.replace('<<REVIEW_TIMESTAMP>>', str(reviewduedate_milliseconds))
         new_configfile.write(templatestring)
 
     ## add data inputs to webfield file
