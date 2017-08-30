@@ -175,7 +175,7 @@ def assign_reviewer(reviewer_email, paper_num):
     new_reviewer = create_reviewer_group(anon_reviewer_id, reviewer_email, conflict_list)
     client.add_members_to_group(reviewers, anon_reviewer_id)
     ## reviewers are blocked from other reviews until complete
-    client.add_members_to_group(client.get_group(paper_group + '/Reviewers/NonReaders'), new_reviewer_id)
+    client.add_members_to_group(client.get_group(paper_group + '/Reviewers/NonReaders'), anon_reviewer_id)
 
 
 ##################################################################

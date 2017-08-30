@@ -9,11 +9,8 @@ function(){
       var forum = result.notes[0];
       var note_number = forum.number;
 
-      var reviewers = [PAPERGRP + '/Reviewers'];
-      var authors = forum.content.authorids;
-
       var author_mail = {
-        "groups": authors,
+        "groups": forum.content.authorids,
         "subject": "Review of your submission to "+CONFERENCE_NAME+": \"" + forum.content.title + "\"",
         "message": "Your submission to " + CONFERENCE_NAME + " has received an official review.\n\nTitle: " + note.content.title + "\n\nReview: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl+"/forum?id=" + note.forum
       };
