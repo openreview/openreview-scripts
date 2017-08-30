@@ -39,8 +39,8 @@ submissions = client.get_notes(invitation=config.SUBMISSION)
 ## full checks for valid paper numbers and email addresses done in assign reviewer
 def parse_single_assigment(s):
     try:    
-        email_addr = s.split(',')[0]
-        paper_number = s.split(',')[1]
+        email_addr = s.split(',')[0].strip()
+        paper_number = s.split(',')[1].strip()
 
         try: 
             int(paper_number)
