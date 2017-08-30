@@ -23,6 +23,7 @@ PROGRAM_CHAIRS = CONF + '/Program_Chairs'
 AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
 DUE_TIMESTAMP = <<TIMESTAMP>>
+REVIEW_DUE_TIMESTAMP = <<REVIEW_TIMESTAMP>>
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conf.html')
 
 """
