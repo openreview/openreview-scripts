@@ -1,3 +1,9 @@
+"""
+Demo for ICLR 2018
+
+Instance needs to be set to "secure_activation: false"
+"""
+
 import openreview
 import config
 import argparse
@@ -13,9 +19,9 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 print client.baseurl
 
-# client.register_user(email='greenreviewer@openreview.net', first='Green', last='Reviewer', password='1234')
-# client.register_user(email='bluereviewer@openreview.net', first='Blue', last='Reviewer', password='1234')
-# client.register_user(email='redreviewer@openreview.net', first='Red', last='Reviewer', password='1234')
+client.register_user(email='greenreviewer@openreview.net', first='Green', last='Reviewer', password='1234')
+client.register_user(email='bluereviewer@openreview.net', first='Blue', last='Reviewer', password='1234')
+client.register_user(email='redreviewer@openreview.net', first='Red', last='Reviewer', password='1234')
 
 client.activate_user('greenreviewer@openreview.net')
 client.activate_user('bluereviewer@openreview.net')
