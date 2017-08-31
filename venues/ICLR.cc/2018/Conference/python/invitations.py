@@ -20,6 +20,10 @@ import re
 import openreview
 import requests
 import config
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
+
 
 maskAuthorsGroup = config.CONF + "/Paper[PAPER_NUMBER]/Authors"
 maskReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers"
@@ -33,12 +37,13 @@ invitation_configurations = {
     },
     'Public_Comment': {
         'byPaper': False,
-        'invitees': ['~']
+        'invitees': ['~'],
+        'params': config.public_comment_params
     },
     'Official_Comment': {
         'byPaper': True,
-        'invitees': [maskReviewerGroup, maskAuthorsGroup, maskAreaChairGroup],
-        'signatures': [maskAnonReviewerGroup, maskAuthorsGroup, maskAreaChairGroup],
+        'invitees': [maskReviewerGroup, maskAuthorsGroup, maskAreaChairGroup, config.PROGRAM_CHAIRS],
+        'signatures': [maskAnonReviewerGroup, maskAuthorsGroup, maskAreaChairGroup, config.PROGRAM_CHAIRS],
         'byForum': True,
         'params': config.official_comment_params
     },
@@ -60,27 +65,20 @@ invitation_configurations = {
     'Add_Bid': {
         'tags': True,
         'byPaper': False,
-        'invitees': [config.REVIEWERS]
-    },
-    'Recommend_Reviewer': {
-        'tags': True,
-        'byPaper': True,
-        'invitees': [maskAreaChairGroup]
+        'invitees': [config.REVIEWERS],
+        'params': config.add_bid_params
     }
 }
 
 def get_or_create_invitations(invitationId, overwrite):
     invitation_config = invitation_configurations[invitationId]
     if invitation_config['byPaper']:
-        print "by paper ", invitationId
         papers = client.get_notes(invitation = config.BLIND_SUBMISSION)
-        invitations = client.get_invitations(regex = config.CONF + '/-/Paper[^\/]*/' + invitationId, tags = invitation_config.get('tags'))
-        print 'invitations', [i.id for i in invitations]
+        invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/' + invitationId, tags = invitation_config.get('tags'))
         if invitations and len(invitations) == len(papers) and not overwrite:
             # TODO: why is this here? why not just return invitations?
             return [i for i in invitations if re.match(config.CONF + '/-/Paper[0-9]+/' + invitationId, i.id)]
         else:
-            print "Some or all of the invitations do not exist. Generating invitations."
             invitations = []
             for n in papers:
                 new_invitation = openreview.Invitation(config.CONF + '/-/Paper{0}/'.format(n.number) + invitationId, **invitation_config['params'])
@@ -94,21 +92,23 @@ def get_or_create_invitations(invitationId, overwrite):
                 if 'signatures' in invitation_config:
                     new_invitation.reply['signatures']['values-regex'] = prepare_regex(new_invitation.id, invitation_config['signatures'])
 
-                print new_invitation.id
                 invitations.append(client.post_invitation(new_invitation))
             return invitations
     else:
         try:
             invitation = client.get_invitation(config.CONF + '/-/' + invitationId)
-            return [invitation]
+            invitation_exists = True
         except openreview.OpenReviewException as error:
             if error[0][0]['type'].lower() == 'not found':
-                print "Invitation does not exist. Generating invitation."
-                new_invitation = openreview.Invitation(config.CONF + '/-/' + invitationId, **invitation_config['params'])
-                print new_invitation.id
-                return client.post_invitation(new_invitation)
+                invitation_exists = False
             else:
                 raise error
+
+        if invitation_exists and not overwrite:
+            return [invitation]
+        else:
+            new_invitation = openreview.Invitation(config.CONF + '/-/' + invitationId, **invitation_config['params'])
+            return [client.post_invitation(new_invitation)]
 
 def prepare_invitees(invitationId, invitees):
     match = re.search('.*\/-\/Paper([0-9]+)\/.*', invitationId)
@@ -126,7 +126,7 @@ def prepare_regex(invitationId, members):
 
 ## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('invitation', help="invitation id: " + ", ".join(invitation_configurations.keys()))
+parser.add_argument('invitations', nargs='*', help="invitation id: " + ", ".join(invitation_configurations.keys()))
 parser.add_argument('--enable', action='store_true', help="if present, enables the given invitation")
 parser.add_argument('--disable', action='store_true', help='if present, disables the given invitation')
 parser.add_argument('--overwrite', action='store_true')
@@ -135,34 +135,44 @@ parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
 
-if args.invitation in invitation_configurations:
-    if args.enable or args.disable:
-        invitationId = args.invitation
-        enable = args.enable and not args.disable
+if args.invitations == ['all']:
+    invitations_to_process = invitation_configurations.keys()
+else:
+    invitations_to_process = args.invitations
 
-        client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+for invitationId in invitations_to_process:
+    print "processing invitation ", invitationId
+    if invitationId in invitation_configurations:
+        if args.enable or args.disable:
+            enable = args.enable and not args.disable
 
-        invitations = get_or_create_invitations(invitationId, args.overwrite)
-        updated = 0
+            client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-        if invitations:
-            for i in invitations:
+            invitations = get_or_create_invitations(invitationId, args.overwrite)
+            updated = 0
 
-                i.invitees = prepare_invitees(i.id, invitation_configurations[invitationId]['invitees']) if enable else []
+            if invitations:
+                for i in invitations:
 
-                result = client.post_invitation(i)
-                print "SUCCESS: {0}, {1}".format(result.id, i.invitees)
-                updated += 1
+                    i.invitees = prepare_invitees(i.id, invitation_configurations[invitationId]['invitees']) if enable else []
+
+                    result = client.post_invitation(i)
+
+                    pp.pprint({'Invitation ID ..': result.id, 'Invitees .......': i.invitees})
+                    print '\n'
+                    updated += 1
+            else:
+                print "Invitation not found: ", invitationId
+
+            print "# Invitations updated: ", updated
+
         else:
-            print "Invitation not found: ", invitationId
-
-        print "# Invitations updated: ", updated
+            print "Invalid enable value: ", args.enable
 
     else:
-        print "Invalid enable value: ", args.enable
+        print "Invalid invitation: ", invitationId
 
-else:
-    print "Invalid invitation: ", args.invitation
+    print '\n'
 
 
 
