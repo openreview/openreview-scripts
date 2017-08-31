@@ -97,10 +97,10 @@ if args.assignments:
         "group": config.REVIEWERS,
         "submission": config.BLIND_SUBMISSION,
         "metadata": config.METADATA,
-        "minusers": 1,
+        "minusers": 0,
         "maxusers": 1,
         "minpapers": 1,
-        "maxpapers": 10,
+        "maxpapers": 1,
         "weights": {
             "bid_score": 1
         }
@@ -111,7 +111,7 @@ if args.assignments:
         "group": config.AREA_CHAIRS,
         "submission": config.BLIND_SUBMISSION,
         "metadata": config.METADATA,
-        "minusers": 1,
+        "minusers": 0,
         "maxusers": 5,
         "minpapers": 1,
         "maxpapers": 10,
