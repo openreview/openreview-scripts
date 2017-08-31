@@ -111,6 +111,26 @@ function() {
           signatories: [anonReviewer3GroupId]
         };
 
+        var anonReviewer4GroupId = savedPaperGroup.id + '/AnonReviewer4';
+        var anonReviewer4Group = {
+          id: anonReviewer4GroupId,
+          signatures: [CONF],
+          writers: [CONF],
+          members: [],
+          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS, anonReviewer4GroupId],
+          signatories: [anonReviewer4GroupId]
+        };
+
+        var anonReviewer5GroupId = savedPaperGroup.id + '/AnonReviewer5';
+        var anonReviewer5Group = {
+          id: anonReviewer5GroupId,
+          signatures: [CONF],
+          writers: [CONF],
+          members: [],
+          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS, anonReviewer5GroupId],
+          signatories: [anonReviewer5GroupId]
+        };
+
         var areachairGroupId = savedPaperGroup.id + '/Area_Chair';
         var areachairGroup = {
           id: areachairGroupId,
@@ -128,6 +148,8 @@ function() {
           or3client.or3request(or3client.grpUrl, anonReviewer1Group, 'POST', token),
           or3client.or3request(or3client.grpUrl, anonReviewer2Group, 'POST', token),
           or3client.or3request(or3client.grpUrl, anonReviewer3Group, 'POST', token),
+          or3client.or3request(or3client.grpUrl, anonReviewer4Group, 'POST', token),
+          or3client.or3request(or3client.grpUrl, anonReviewer5Group, 'POST', token),
           or3client.addGroupMember(AUTHORS, note.content.authorids.concat(note.signatures), token)
         ]);
 
