@@ -25,11 +25,11 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 groups = {}
-groups[config.PROGRAM_CHAIRS] = openreview.Group(config.PROGRAM_CHAIRS, **config.group_params)
+groups[config.PROGRAM_CHAIRS] = openreview.Group(config.PROGRAM_CHAIRS, **config.program_chairs_params)
 
 groups[config.AUTHORS] = openreview.Group(config.AUTHORS, **config.group_params)
 
-groups[config.AREA_CHAIRS] = openreview.Group(config.AREA_CHAIRS, **config.group_params)
+groups[config.AREA_CHAIRS] = openreview.Group(config.AREA_CHAIRS, **config.area_chairs_params)
 groups[config.AREA_CHAIRS_INVITED] = openreview.Group(config.AREA_CHAIRS_INVITED, **config.group_params)
 groups[config.AREA_CHAIRS_DECLINED] = openreview.Group(config.AREA_CHAIRS_DECLINED, **config.group_params)
 groups[config.AREA_CHAIRS_EMAILED] = openreview.Group(config.AREA_CHAIRS_EMAILED, **config.group_params)

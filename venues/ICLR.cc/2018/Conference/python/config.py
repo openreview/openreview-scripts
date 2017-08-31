@@ -72,6 +72,21 @@ group_params = {
     'signatures': [CONF]
 }
 
+program_chairs_params = {
+    'readers': [CONF, PROGRAM_CHAIRS],
+    'writers': [CONF],
+    'signatories': [CONF, PROGRAM_CHAIRS],
+    'signatures': [CONF]
+}
+
+area_chairs_params = {
+    'readers': [CONF, PROGRAM_CHAIRS, AREA_CHAIRS],
+    'writers': [CONF],
+    'signatories': [CONF],
+    'signatures': [CONF],
+    'web': os.path.join(os.path.dirname(__file__), '../webfield/areachairWebfield.html'),
+}
+
 reviewer_group_params = {
     'readers': [CONF, AREA_CHAIRS, PROGRAM_CHAIRS],
     'writers': [CONF],
@@ -215,7 +230,7 @@ public_comment_params = {
     'readers': ['everyone'],
     'writers': [CONF],
     'invitees': [],
-    'noninvitees': [REVIEWERS, AREA_CHAIRS, AUTHORS],
+    'noninvitees': [REVIEWERS, AREA_CHAIRS, AUTHORS, PROGRAM_CHAIRS],
     'signatures': [CONF],
     'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js'),
     'reply': {
@@ -540,8 +555,7 @@ assignments_params = {
         },
         'writers': {
             'values-regex': CONF
-        },
-        'content': {}
+        }
     }
 }
 
