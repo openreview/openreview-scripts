@@ -27,6 +27,16 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 message = """
 
+Dear Reviewer,
+
+We are writing to invite you to be a reviewer for the 6th International Conference on Learning Representations (ICLR 2018); see call for papers at: www.iclr.cc. As a recognized researcher by the ICLR community, we hope you can contribute to the review process of ICLR 2018.
+
+The reviewing period will start around October 27th for conference submissions. Workshop submissions on the other hand will only be received in early 2018 and reviewed a few months before the conference.
+
+This year, the review process will not include a pre-review question period like last year. Instead, reviewers will submit a full review, followed by a rebuttal and discussion period. We will be using OpenReview throughout the review process, which we hope will make the review process more engaging and allow us to more effectively leverage the whole ICLR community.
+
+The success of ICLR depends on the quality of the reviewing process and ultimately on the quality and dedication of the reviewers. We hope you can accept our invitation and help make ICLR thrive.
+
 To ACCEPT the invitation, please click on the following link:
 
 {0}
@@ -34,6 +44,36 @@ To ACCEPT the invitation, please click on the following link:
 To DECLINE the invitation, please click on the following link:
 
 {1}
+
+We'd appreciate an answer within 10 days.
+
+If you accept, please make sure to either update your Toronto Paper Matching System (TPMS) account, or create one if you do not have one already: <link>. We will be using TPMS to assign reviewers to papers, and having an account that reflects your expertise will be crucial for you to receive papers for which you are suited. Also please make sure your OpenReview account lists the email you are using for your TPMS account.
+
+Here’s a tentative timeline for the ICLR reviewing process:
+
+Aug/Sept: reviewer recruitment
+Oct 27: conference submission deadline
+Nov 27: full review deadline
+Nov 27 - Jan 5: rebuttal and discussion period
+Jan 5 - Jan 12: discussion among reviewers and area chairs
+Jan 12 - Jan 22: area chairs finalize their decisions
+Jan 29: final decisions for conference papers sent to authors
+
+If you have any question, please contact the program chairs at iclr2018.programchairs@gmail.com .
+
+We are looking forward to your reply, and are grateful if you accept this invitation and help make ICLR 2018 a success!
+
+Cheers!
+
+Tara Sainath, Senior Program Chair
+Iain Murray, Program Chair
+Marc’Aurelio Ranzato, Program Chair
+Oriol Vinyals, Program Chair
+Hugo Larochelle, Steering Committee
+Aaron Courville, Steering Committee
+Yoshua Bengio, General Chair
+Yann Lecun, General Chair
+
 
 """
 
@@ -64,8 +104,8 @@ if client.exists(config.REVIEWERS_INVITED) and client.exists(config.REVIEWERS_EM
                 client.add_members_to_group(reviewers_emailed, reviewer)
 
 else:
-    print "Error while retrieving auai.org/UAI/2017/reviewers-invited; group may not exist"
-    print client.exists(config.REVIEWERS_INVITED)
-    print client.exists(config.REVIEWERS_EMAILED)
+    print "Error while retrieving groups"
+    print config.REVIEWERS_INVITED, "exists:", client.exists(config.REVIEWERS_INVITED)
+    print config.REVIEWERS_EMAILED, "exists:", client.exists(config.REVIEWERS_EMAILED)
 
 
