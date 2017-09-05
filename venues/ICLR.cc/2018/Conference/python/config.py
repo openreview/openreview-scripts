@@ -33,6 +33,9 @@ REVIEWERS_INVITED = REVIEWERS + '/Invited'
 REVIEWERS_DECLINED = REVIEWERS + '/Declined'
 REVIEWERS_EMAILED = REVIEWERS + '/Emailed'
 
+REVIEWERS_PLUS = REVIEWERS + '_and_Higher'
+AREA_CHAIRS_PLUS = AREA_CHAIRS + '_and_Higher'
+
 DUE_TIMESTAMP = 1509163199000 # 23:59:59 EST on October 27, 2017
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.html')
 
@@ -67,6 +70,13 @@ Example:
 
 group_params = {
     'readers': [CONF, PROGRAM_CHAIRS],
+    'writers': [CONF],
+    'signatories': [CONF],
+    'signatures': [CONF]
+}
+
+public_group_params = {
+    'readers': ['everyone'],
     'writers': [CONF],
     'signatories': [CONF],
     'signatures': [CONF]
@@ -239,11 +249,11 @@ public_comment_params = {
         'invitation': BLIND_SUBMISSION,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
+            'values-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': '~.*'
+            'values-regex': '~.*|\\(anonymous\\)'
         },
         'writers': {
             'values-regex': '~.*'
@@ -285,7 +295,7 @@ official_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
+            'values-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',

@@ -9,7 +9,7 @@ function(){
     var conference = list.join(' ');
 
 
-    var programchairs = ['ICLR.cc/2017/pcs'];
+    var programchairs = ['ICLR.cc/2018/Conference/Program_Chairs'];
 
     origNote.then(function(result){
       var forum = result.notes[0];

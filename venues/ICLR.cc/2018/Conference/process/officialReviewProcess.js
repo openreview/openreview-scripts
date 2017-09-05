@@ -12,13 +12,13 @@ function(){
       var forum = result.notes[0];
       var note_number = forum.number;
 
-      var reviewers = ['ICLR.cc/2017/conference/paper' + note_number + '/reviewers'];
-      var areachairs = ['ICLR.cc/2017/conference/paper' + note_number + '/areachairs'];
+      var reviewers = ['ICLR.cc/2018/Conference/Paper' + note_number + '/Reviewers'];
+      var areachairs = ['ICLR.cc/2018/Conference/Paper' + note_number + '/Area_Chair'];
       var authors = forum.content.authorids;
 
       var author_mail = {
         "groups": authors,
-        "subject": "Review of your submission to ICLR 2017: \"" + forum.content.title + "\"",
+        "subject": "Review of your submission to ICLR 2018: \"" + forum.content.title + "\"",
         "message": "Your submission to " + conference + " has received an official review.\n\nTitle: " + note.content.title + "\n\nReview: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl+"/forum?id=" + note.forum
       };
 
