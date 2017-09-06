@@ -22,9 +22,6 @@ import requests
 import config
 import pprint
 
-pp = pprint.PrettyPrinter(indent=4)
-
-
 maskAuthorsGroup = config.CONF + "/Paper[PAPER_NUMBER]/Authors"
 maskReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers"
 maskAreaChairGroup = config.CONF + "/Paper[PAPER_NUMBER]/Area_Chair"
@@ -33,7 +30,10 @@ maskAnonReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/AnonReviewer[0-9]+"
 invitation_configurations = {
     'Add_Revision': {
         'byPaper': True,
-        'invitees': [maskAuthorsGroup]
+        'invitees': [maskAuthorsGroup],
+        'params': config.add_revision_params,
+        'byForum': True,
+        'reference': True
     },
     'Public_Comment': {
         'byPaper': False,
@@ -67,13 +67,43 @@ invitation_configurations = {
         'byPaper': False,
         'invitees': [config.REVIEWERS],
         'params': config.add_bid_params
+    },
+    'Withdraw_Paper': {
+        'byPaper': True,
+        'invitees': [maskAuthorsGroup],
+        'byForum': True,
+        'reference': True,
+        'params': config.withdraw_paper_params
     }
 }
+
+## Argument handling
+parser = argparse.ArgumentParser()
+parser.add_argument('invitations', nargs='*', help="invitation id: " + ", ".join(invitation_configurations.keys()))
+parser.add_argument('--enable', action='store_true', help="if present, enables the given invitation")
+parser.add_argument('--disable', action='store_true', help='if present, disables the given invitation')
+parser.add_argument('--overwrite', action='store_true')
+parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--username')
+parser.add_argument('--password')
+args = parser.parse_args()
+
+if args.invitations == ['all']:
+    invitations_to_process = invitation_configurations.keys()
+else:
+    invitations_to_process = args.invitations
+
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+
+pp = pprint.PrettyPrinter(indent=4)
+
+
+papers = client.get_notes(invitation = config.BLIND_SUBMISSION)
 
 def get_or_create_invitations(invitationId, overwrite):
     invitation_config = invitation_configurations[invitationId]
     if invitation_config['byPaper']:
-        papers = client.get_notes(invitation = config.BLIND_SUBMISSION)
+
         invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/' + invitationId, tags = invitation_config.get('tags'))
         if invitations and len(invitations) == len(papers) and not overwrite:
             # TODO: why is this here? why not just return invitations?
@@ -83,10 +113,13 @@ def get_or_create_invitations(invitationId, overwrite):
             for n in papers:
                 new_invitation = openreview.Invitation(config.CONF + '/-/Paper{0}/'.format(n.number) + invitationId, **invitation_config['params'])
 
-                if 'byForum' in invitation_config:
+                if 'byForum' in invitation_config and invitation_config['byForum']:
                     new_invitation.reply['forum'] = n.forum
 
-                if 'byReplyTo' in invitation_config:
+                if 'reference' in invitation_config and invitation_config['reference']:
+                    new_invitation.reply['referent'] = n.forum
+
+                if 'byReplyTo' in invitation_config and invitation_config['byReplyTo']:
                     new_invitation.reply['replyto'] = n.forum
 
                 if 'signatures' in invitation_config:
@@ -124,29 +157,11 @@ def prepare_regex(invitationId, members):
     else:
         return members
 
-## Argument handling
-parser = argparse.ArgumentParser()
-parser.add_argument('invitations', nargs='*', help="invitation id: " + ", ".join(invitation_configurations.keys()))
-parser.add_argument('--enable', action='store_true', help="if present, enables the given invitation")
-parser.add_argument('--disable', action='store_true', help='if present, disables the given invitation')
-parser.add_argument('--overwrite', action='store_true')
-parser.add_argument('--baseurl', help="base url")
-parser.add_argument('--username')
-parser.add_argument('--password')
-args = parser.parse_args()
-
-if args.invitations == ['all']:
-    invitations_to_process = invitation_configurations.keys()
-else:
-    invitations_to_process = args.invitations
-
 for invitationId in invitations_to_process:
     print "processing invitation ", invitationId
     if invitationId in invitation_configurations:
         if args.enable or args.disable:
             enable = args.enable and not args.disable
-
-            client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
             invitations = get_or_create_invitations(invitationId, args.overwrite)
             updated = 0

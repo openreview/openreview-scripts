@@ -457,6 +457,63 @@ meta_review_params = {
     }
 };
 
+"""
+/-/Paper[0-9]+/Withdraw_Paper
+
+This is the invitation for paper withdrawals.
+"""
+
+withdraw_paper_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': [],
+    'signatures': [CONF],
+    'reply': {
+        'referent': None, # replaced in invitations.py
+        'forum': None, # replaced in invitations.py
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['everyone']
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': '~.*'
+        },
+        'writers': {
+            'values-regex': '~.*'
+        },
+        'content':{
+            'withdrawal': {
+                'description': 'Confirm your withdrawal',
+                'order': 1,
+                'value-radio': ['Confirmed'],
+                'required':True
+            }
+        }
+    }
+}
+
+"""
+/-/Paper[0-9]+/Add_Revision
+
+This is the invitation for paper revisions
+"""
+
+add_revision_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': [], # set during submission process function; replaced in invitations.py
+    'signatures': [CONF],
+    'reply': {
+        'forum': None,
+        'referent': None,
+        'signatures': submission_params['reply']['signatures'],
+        'writers': submission_params['reply']['writers'],
+        'readers': submission_params['reply']['readers'],
+        'content': submission_params['reply']['content']
+    }
+}
+
 
 """
 /-/Add_Bid

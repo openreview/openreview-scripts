@@ -60,7 +60,7 @@ if args.metadata:
     ]
 
     print "getting data..."
-    papers = client.get_notes(invitation = config.BLIND_SUBMISSION)
+    papers = [n for n in client.get_notes(invitation = config.BLIND_SUBMISSION) if (not 'withdrawal' in n.content)]
     groups = [client.get_group(g) for g in group_ids]
     bids = client.get_tags(invitation = config.CONF + '/-/Add_Bid')
 
@@ -99,8 +99,8 @@ if args.assignments:
         "metadata": config.METADATA,
         "minusers": 0,
         "maxusers": 1,
-        "minpapers": 1,
-        "maxpapers": 1,
+        "minpapers": 0,
+        "maxpapers": 5,
         "weights": {
             "bid_score": 1
         }
