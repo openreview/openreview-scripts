@@ -340,8 +340,8 @@ official_review_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
-        },
+            'values': [AREA_CHAIRS, PROGRAM_CHAIRS]
+        }
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
             'values-regex': CONF + '.*'
