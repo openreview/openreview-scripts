@@ -256,7 +256,7 @@ public_comment_params = {
             'values-regex': '~.*|\\(anonymous\\)'
         },
         'writers': {
-            'values-regex': '~.*'
+            'values-regex': '~.*|\\(anonymous\\)'
         },
         'content':{
             'title': {

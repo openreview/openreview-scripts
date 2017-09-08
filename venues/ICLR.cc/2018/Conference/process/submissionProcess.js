@@ -166,8 +166,8 @@ function() {
         }
 
         var groupPromises = Promise.all([
-          or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
           or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
+          or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
           or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
           or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token),
           or3client.or3request(or3client.grpUrl, anonReviewer1Group, 'POST', token),
