@@ -141,8 +141,33 @@ function() {
           signatories: [areachairGroupId]
         };
 
+        var withdrawPaperInvitation = {
+          id: CONF + '/-/Paper' + savedNote.number + '/Withdraw_Paper',
+          signatures: [CONF],
+          writers: [CONF],
+          invitees: note.content.authorids.concat(note.signatures),
+          noninvitees: [],
+          readers: ['everyone'],
+          reply: {
+            forum: savedNote.id,
+            referent: savedNote.id,
+            signatures: invitation.reply.signatures,
+            writers: invitation.reply.writers,
+            readers: invitation.reply.readers,
+            content: {
+              withdrawal: {
+                description: 'Confirm your withdrawal',
+                order: 1,
+                'value-radio': ['Confirmed'],
+                required: true
+              }
+            }
+          }
+        }
+
         var groupPromises = Promise.all([
           or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
+          or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
           or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
           or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token),
           or3client.or3request(or3client.grpUrl, anonReviewer1Group, 'POST', token),

@@ -142,8 +142,12 @@ $(function() {
       { link: '/group?id=' + CONFERENCE, text: view.prettyId(CONFERENCE) }
     ]);
 
+    var validNotes = notes.filter(function(note){
+      return !note.content.hasOwnProperty('withdrawal');
+    });
+
     sm.update('notes', {
-      notes: notes
+      notes: validNotes
     });
 
     sm.addHandler('conference', {

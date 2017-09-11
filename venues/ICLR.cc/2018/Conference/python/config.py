@@ -33,6 +33,9 @@ REVIEWERS_INVITED = REVIEWERS + '/Invited'
 REVIEWERS_DECLINED = REVIEWERS + '/Declined'
 REVIEWERS_EMAILED = REVIEWERS + '/Emailed'
 
+REVIEWERS_PLUS = REVIEWERS + '_and_Higher'
+AREA_CHAIRS_PLUS = AREA_CHAIRS + '_and_Higher'
+
 DUE_TIMESTAMP = 1509163199000 # 23:59:59 EST on October 27, 2017
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.html')
 
@@ -67,6 +70,13 @@ Example:
 
 group_params = {
     'readers': [CONF, PROGRAM_CHAIRS],
+    'writers': [CONF],
+    'signatories': [CONF],
+    'signatures': [CONF]
+}
+
+public_group_params = {
+    'readers': ['everyone'],
     'writers': [CONF],
     'signatories': [CONF],
     'signatures': [CONF]
@@ -239,14 +249,14 @@ public_comment_params = {
         'invitation': BLIND_SUBMISSION,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
+            'values-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': '~.*'
+            'values-regex': '~.*|\\(anonymous\\)'
         },
         'writers': {
-            'values-regex': '~.*'
+            'values-regex': '~.*|\\(anonymous\\)'
         },
         'content':{
             'title': {
@@ -285,7 +295,7 @@ official_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
+            'values-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -330,7 +340,7 @@ official_review_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
+            'values': [AREA_CHAIRS_PLUS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -446,6 +456,63 @@ meta_review_params = {
         }
     }
 };
+
+"""
+/-/Paper[0-9]+/Withdraw_Paper
+
+This is the invitation for paper withdrawals.
+"""
+
+withdraw_paper_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': [],
+    'signatures': [CONF],
+    'reply': {
+        'referent': None, # replaced in invitations.py
+        'forum': None, # replaced in invitations.py
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['everyone']
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': '~.*'
+        },
+        'writers': {
+            'values-regex': '~.*'
+        },
+        'content':{
+            'withdrawal': {
+                'description': 'Confirm your withdrawal',
+                'order': 1,
+                'value-radio': ['Confirmed'],
+                'required':True
+            }
+        }
+    }
+}
+
+"""
+/-/Paper[0-9]+/Add_Revision
+
+This is the invitation for paper revisions
+"""
+
+add_revision_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': [], # set during submission process function; replaced in invitations.py
+    'signatures': [CONF],
+    'reply': {
+        'forum': None,
+        'referent': None,
+        'signatures': submission_params['reply']['signatures'],
+        'writers': submission_params['reply']['writers'],
+        'readers': submission_params['reply']['readers'],
+        'content': submission_params['reply']['content']
+    }
+}
 
 
 """
