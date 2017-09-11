@@ -1,6 +1,3 @@
-<!-- ICLR 2018 Homepage -->
-<script type="text/javascript">
-$(function() {
 // ------------------------------------
 // Advanced venue homepage template
 //
@@ -232,7 +229,3 @@ function getAuthorPaperNumbersfromGroups(groups) {
 
 // Go!
 main();
-
-});
-</script>
-
