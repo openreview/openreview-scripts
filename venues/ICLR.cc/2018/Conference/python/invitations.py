@@ -36,20 +36,23 @@ invitation_configurations = {
         'reference': True
     },
     'Public_Comment': {
-        'byPaper': False,
+        'byPaper': True,
+        'byForum': True,
         'invitees': ['~'],
+        'noninvitees': [maskAuthorsGroup, maskReviewerGroup, maskAreaChairGroup],
         'params': config.public_comment_params
     },
     'Official_Comment': {
         'byPaper': True,
+        'byForum': True,
         'invitees': [maskReviewerGroup, maskAuthorsGroup, maskAreaChairGroup, config.PROGRAM_CHAIRS],
         'signatures': [maskAnonReviewerGroup, maskAuthorsGroup, maskAreaChairGroup, config.PROGRAM_CHAIRS],
-        'byForum': True,
         'params': config.official_comment_params
     },
     'Official_Review': {
         'byPaper': True,
         'invitees': [maskReviewerGroup],
+        'signatures': [maskAnonReviewerGroup],
         'byForum': True,
         'byReplyTo': True,
         'params': config.official_review_params
@@ -124,6 +127,7 @@ def get_or_create_invitations(invitationId, overwrite):
 
                 if 'signatures' in invitation_config:
                     new_invitation.reply['signatures']['values-regex'] = prepare_regex(new_invitation.id, invitation_config['signatures'])
+                    new_invitation.reply['writers']['values-regex'] = prepare_regex(new_invitation.id, invitation_config['signatures'])
 
                 invitations.append(client.post_invitation(new_invitation))
             return invitations
@@ -170,7 +174,8 @@ for invitationId in invitations_to_process:
                 for i in invitations:
 
                     i.invitees = prepare_invitees(i.id, invitation_configurations[invitationId]['invitees']) if enable else []
-
+                    if 'noninvitees' in invitation_configurations[invitationId]:
+                        i.noninvitees = prepare_invitees(i.id, invitation_configurations[invitationId]['noninvitees'])
                     result = client.post_invitation(i)
 
                     pp.pprint({'Invitation ID ..': result.id, 'Invitees .......': i.invitees})
