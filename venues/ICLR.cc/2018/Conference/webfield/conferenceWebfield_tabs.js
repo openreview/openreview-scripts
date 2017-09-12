@@ -123,7 +123,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, submittedNotes, userGroups) {
+function renderContent(allNotes, submittedNotes, userGroups) {
   var data, commentNotes;
 
   // if (_.isEmpty(userGroups)) {
@@ -140,6 +140,8 @@ function renderContent(notes, submittedNotes, userGroups) {
       commentNotes.push(note);
     }
   });
+
+  var notes = _.filter(allNotes, function(n) { return n.content['withdrawal'] != 'Confirmed' });
 
   var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
   assignedNotes = _.filter(notes, function(n) { return _.includes(assignedPaperNumbers, n.number); });
