@@ -11,6 +11,7 @@ var INVITATION = CONFERENCE + '/-/Submission';
 var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
+
 var AC_GROUPS = [
   CONFERENCE + '/Reviewers',
   CONFERENCE + '/Area_Chairs',
@@ -20,6 +21,7 @@ var COMMENT_EXCLUSION = [
   INVITATION,
   RECRUIT_REVIEWERS
 ];
+var SUBJECT_AREAS_LIST = [];
 
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 50;
@@ -52,8 +54,15 @@ function main() {
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-  var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {pageSize: PAGE_SIZE});
-  var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {pageSize: PAGE_SIZE, tauthor: true});
+  var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {
+    pageSize: PAGE_SIZE
+  });
+
+  var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+    pageSize: PAGE_SIZE,
+    tauthor: true
+  });
+
   var userGroupsP;
   if (!user || _.startsWith(user.id, 'guest_')) {
     userGroupsP = Promise.resolve([]);
@@ -66,7 +75,9 @@ function load() {
     });
   }
 
-  return $.when(notesP, submittedNotesP, userGroupsP);
+  var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_INVITATION);
+
+  return $.when(notesP, submittedNotesP, userGroupsP, tagInvitationsP);
 }
 
 
@@ -123,7 +134,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(allNotes, submittedNotes, userGroups) {
+function renderContent(allNotes, submittedNotes, userGroups, tagInvitations) {
   var data, commentNotes;
 
   // if (_.isEmpty(userGroups)) {
@@ -133,32 +144,48 @@ function renderContent(allNotes, submittedNotes, userGroups) {
   // }
 
   commentNotes = [];
-
   _.forEach(submittedNotes, function(note) {
-    if (_.startsWith(note.invitation, CONFERENCE) && !COMMENT_EXCLUSION.includes(note.invitation) && _.isNil(note.ddate)) {
+    if (_.startsWith(note.invitation, CONFERENCE) &&
+        !COMMENT_EXCLUSION.includes(note.invitation) &&
+        _.isNil(note.ddate)) {
       // TODO: remove this client side filtering when DB query is fixed
       commentNotes.push(note);
     }
   });
 
-  var notes = _.filter(allNotes, function(n) { return n.content['withdrawal'] != 'Confirmed' });
+  var notes = _.filter(allNotes, function(n) {
+    // ICLR specific
+    return n.content.withdrawal !== 'Confirmed';
+  });
+
+  // Filter out all tags that belong to other users
+  notes = _.map(notes, function(n) {
+    n.tags = _.filter(n.tags, function(t) { return !_.includes(t.signatures, user.id); });
+    return n;
+  });
 
   var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
-  assignedNotes = _.filter(notes, function(n) { return _.includes(assignedPaperNumbers, n.number); });
+  assignedNotes = _.filter(notes, function(n) {
+    return _.includes(assignedPaperNumbers, n.number);
+  });
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-  submittedNotes = _.filter(notes, function(n) { return _.includes(authorPaperNumbers, n.number); });
+  submittedNotes = _.filter(notes, function(n) {
+    return _.includes(authorPaperNumbers, n.number);
+  });
 
-  // All Submitted Papers tab (only show for admins)
-  var submissionListOptions = _.assign(
-    {}, paperDisplayOptions, {container: '#all-submitted-papers'}
-  );
+  // All Submitted Papers tab
+  var submissionListOptions = _.assign({}, paperDisplayOptions, {
+    showTags: true,
+    tagInvitations: tagInvitations,
+    container: '#all-submitted-papers'
+  });
   Webfield.ui.submissionList(notes, {
     heading: null,
     container: '#all-submitted-papers',
     search: {
       enabled: false,
-      //subjectAreas: SUBJECT_AREAS_LIST,
+      subjectAreas: SUBJECT_AREAS_LIST,
       onResults: function(searchResults) {
         Webfield.ui.searchResults(searchResults, submissionListOptions);
         Webfield.disableAutoLoading();
@@ -170,7 +197,7 @@ function renderContent(allNotes, submittedNotes, userGroups) {
         }
       }
     },
-    displayOptions: paperDisplayOptions,
+    displayOptions: submissionListOptions,
     fadeIn: false
   });
 
