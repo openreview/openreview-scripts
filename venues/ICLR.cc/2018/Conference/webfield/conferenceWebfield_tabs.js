@@ -63,6 +63,12 @@ function load() {
     tauthor: true
   });
 
+  var assignedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+    pageSize: 100,
+    invitee: true,
+    duedate: true
+  });
+
   var userGroupsP;
   if (!user || _.startsWith(user.id, 'guest_')) {
     userGroupsP = Promise.resolve([]);
@@ -77,7 +83,7 @@ function load() {
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_INVITATION);
 
-  return $.when(notesP, submittedNotesP, userGroupsP, tagInvitationsP);
+  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP);
 }
 
 
@@ -111,8 +117,8 @@ function renderSubmissionButton() {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'All Submitted Papers',
-      id: 'all-submitted-papers',
+      heading: 'My Tasks',
+      id: 'my-tasks',
     },
     {
       heading: 'My Submitted Papers',
@@ -125,6 +131,10 @@ function renderConferenceTabs() {
     {
       heading: 'My Comments & Reviews',
       id: 'my-comments-reviews',
+    },
+    {
+      heading: 'All Submitted Papers',
+      id: 'all-submitted-papers',
     }
   ];
 
@@ -134,7 +144,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(allNotes, submittedNotes, userGroups, tagInvitations) {
+function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, tagInvitations) {
   var data, commentNotes;
 
   // if (_.isEmpty(userGroups)) {
@@ -153,14 +163,16 @@ function renderContent(allNotes, submittedNotes, userGroups, tagInvitations) {
     }
   });
 
+  // ICLR specific
   var notes = _.filter(allNotes, function(n) {
-    // ICLR specific
     return n.content.withdrawal !== 'Confirmed';
   });
 
-  // Filter out all tags that belong to other users
+  // Filter out all tags that belong to other users (important for bid tags)
   notes = _.map(notes, function(n) {
-    n.tags = _.filter(n.tags, function(t) { return !_.includes(t.signatures, user.id); });
+    n.tags = _.filter(n.tags, function(t) {
+      return !_.includes(t.signatures, user.id);
+    });
     return n;
   });
 
@@ -174,6 +186,13 @@ function renderContent(allNotes, submittedNotes, userGroups, tagInvitations) {
     return _.includes(authorPaperNumbers, n.number);
   });
 
+  // My Tasks tab
+  if (userGroups.length) {
+    renderTasks(assignedNotePairs, userGroups, tagInvitations, '#my-tasks');
+  } else {
+    $('.tabs-container a[href="#my-tasks"]').parent().hide();
+  }
+
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: true,
@@ -184,7 +203,7 @@ function renderContent(allNotes, submittedNotes, userGroups, tagInvitations) {
     heading: null,
     container: '#all-submitted-papers',
     search: {
-      enabled: false,
+      enabled: true,
       subjectAreas: SUBJECT_AREAS_LIST,
       onResults: function(searchResults) {
         Webfield.ui.searchResults(searchResults, submissionListOptions);
@@ -207,27 +226,33 @@ function renderContent(allNotes, submittedNotes, userGroups, tagInvitations) {
 
   // My Submitted Papers tab
   if (submittedNotes.length) {
-    Webfield.ui.searchResults(submittedNotes, _.assign(
-      {}, paperDisplayOptions, {container: '#my-submitted-papers'}
-    ));
+    Webfield.ui.searchResults(
+      submittedNotes,
+      _.assign({}, paperDisplayOptions, {container: '#my-submitted-papers'})
+    );
   } else {
     $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
   }
 
   // My Assigned Papers tab (only show if not empty)
   if (assignedNotes.length) {
-    Webfield.ui.searchResults(assignedNotes, _.assign(
-      {}, paperDisplayOptions, {container: '#my-assigned-papers'}
-    ));
+    Webfield.ui.searchResults(
+      assignedNotes,
+      _.assign({}, paperDisplayOptions, {container: '#my-assigned-papers'})
+    );
   } else {
     $('.tabs-container a[href="#my-assigned-papers"]').parent().hide();
   }
 
   // My Comments & Reviews tab (only show if not empty)
   if (commentNotes.length) {
-    Webfield.ui.searchResults(commentNotes, _.assign(
-      {}, commentDisplayOptions, {container: '#my-comments-reviews', emptyMessage: 'No comments or reviews to display'}
-    ));
+    Webfield.ui.searchResults(
+      commentNotes,
+      _.assign({}, commentDisplayOptions, {
+        container: '#my-comments-reviews',
+        emptyMessage: 'No comments or reviews to display'
+      })
+    );
   } else {
     $('.tabs-container a[href="#my-comments-reviews"]').parent().hide();
   }
@@ -235,6 +260,81 @@ function renderContent(allNotes, submittedNotes, userGroups, tagInvitations) {
   // Show first available tab
   $('.tabs-container ul.nav-tabs li a').eq(0).click();
 }
+
+var renderTasks = function(assignedNotes, userGroups, tagInvitations, container) {
+  var $rows = [];
+  var consoleLink;
+
+  $('.submissions-list', container).remove();
+
+  var $listContainer = $('<ul class="list-unstyled submissions-list">');
+  $(container).append($listContainer);
+
+  var pcId = CONFERENCE + '/Program_Co-Chairs';
+  if (_.includes(userGroups, pcId)) {
+    consoleLink = '<li class="note invitation-link"><a href="/reviewers?id=' + CONFERENCE +
+      '" class="console-link">ICLR 2018 Matching Browser</a></li>';
+    $listContainer.append(consoleLink);
+
+    // consoleLink = '<li class="note invitation-link"><a href="/group?id=' + pcId +
+    //   '" class="console-link">ICLR 2018 Program Co-Chairs Console</a></li>';
+    // $listContainer.append(consoleLink);
+  }
+
+  // var spcId = CONFERENCE + '/Senior_Program_Committee';
+  // if (_.includes(userGroups, spcId)) {
+  //   consoleLink = '<li class="note invitation-link"><a href="/group?id=' + spcId +
+  //     '" class="console-link">ICLR 2018 Senior Program Committee Console</a></li>';
+  //   $listContainer.append(consoleLink);
+  // }
+
+  _.forEach(tagInvitations, function(inv) {
+    var duedate = new Date(inv.duedate);
+    var duedateStr = duedate.toLocaleDateString('en-GB', {
+      hour: 'numeric', minute: 'numeric', day: '2-digit', month: 'short', year: 'numeric'
+    });
+
+    if (inv.web) {
+      $rows.push($('<li class="note invitation-link">').append(
+        $('<a>', {text: view.prettyId(inv.id), href: '/invitation?id=' + inv.id}),
+        $('<span>', {text: 'Due: ' + duedateStr, class: 'invitation-duedate ' + getDueDateStatus(duedate)})
+      ));
+    }
+  });
+
+  _.forEach(assignedNotes, function(pair) {
+    var inv = pair.invitation;
+    var replytoNote = pair.replytoNote;
+    var duedate = new Date(inv.duedate);
+    var duedateStr = duedate.toLocaleDateString('en-GB', {
+      hour: 'numeric', minute: 'numeric', day: '2-digit', month: 'short', year: 'numeric'
+    });
+
+    $rows.push(
+      $('<li class="note">').append(
+        view.mkNotePanel(replytoNote, {
+          invitation: inv,
+          titleLink: 'HREF',
+          withReplyCount: true
+        }),
+        $('<div class="invitation-link">').append(
+          $('<a href="#">' + view.prettyInvitationId(inv.id) + '</a>').click(function() {
+            controller.removeHandler('tasks');
+            pushForum(inv.reply.forum, inv.reply.replyto, inv.id);
+            return false;
+          }),
+          '<span class="invitation-duedate ' + getDueDateStatus(duedate) + '">Due: ' + duedateStr + '</span>'
+        )
+      )
+    );
+  });
+
+  if ($rows.length) {
+    $listContainer.append($rows);
+  } else {
+    $listContainer.append('<li><p class="empty-message">No outstanding tasks for ICLR 2018</p></li>');
+  }
+};
 
 
 // Helper functions
@@ -254,6 +354,21 @@ function getAuthorPaperNumbersfromGroups(groups) {
     _.filter(groups, function(gid) { return re.test(gid); }),
     function(fgid) { return parseInt(fgid.match(re)[1], 10); }
   );
+}
+
+function getDueDateStatus(date) {
+  var day = 24 * 60 * 60 * 1000;
+  var diff = Date.now() - date.getTime();
+
+  if (diff > 0) {
+    return 'expired';
+  }
+
+  if (diff > (-1 * 3 * day)) {
+    return 'warning';
+  }
+
+  return '';
 }
 
 // Go!
