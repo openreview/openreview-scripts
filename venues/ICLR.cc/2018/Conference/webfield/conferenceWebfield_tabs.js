@@ -140,7 +140,7 @@ function renderConferenceTabs() {
 
   Webfield.ui.tabPanel(sections, {
     container: '#notes',
-    overwrite: true
+    hidden: true
   });
 }
 
@@ -281,6 +281,9 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   } else {
     $('.tabs-container a[href="#my-comments-reviews"]').parent().hide();
   }
+
+  $('#notes .spinner-container').remove();
+  $('.tabs-container').show();
 
   // Show first available tab
   $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
