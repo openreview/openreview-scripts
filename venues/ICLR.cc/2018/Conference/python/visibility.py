@@ -37,14 +37,16 @@ if args.type == 'submissions':
         print "{0} note {1}".format('Revealing' if args.show and not args.hide else 'Hiding', overwriting_note.id)
         client.post_note(overwriting_note)
 
-elif args.type == 'reviews':
-
-    official_review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Official_Review')
-
+if args.type == 'reviews':
+    review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Official_Review')
     reviews = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review')
 
+if args.type == 'metareviews':
+    review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Meta_Review')
+    reviews = client.get_notes(invitation = config.CONF + '/-/Paper.*/Meta_Review')
 
-    for inv in official_review_invitations:
+if args.type == 'reviews' or args.type == 'metareviews':
+    for inv in review_invitations:
         forum_reviews = [r for r in reviews if r.forum == inv.reply['forum']]
 
         if args.show and not args.hide:
@@ -67,4 +69,3 @@ elif args.type == 'reviews':
                 inv.noninvitees += review.signatures
                 client.post_note(review)
             client.post_invitation(inv)
-
