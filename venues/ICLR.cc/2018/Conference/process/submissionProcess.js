@@ -283,9 +283,10 @@ function() {
         .then(savedGroups => {
           var authorGroup = savedGroups[0];
           savedNote.content = {
+            authors: ['Anonymous'],
             authorids: [authorGroup.id],
-            authors: ['Anonymous']
-          };
+            _bibtex: getBibtex(note)
+          }
           return or3client.or3request(or3client.notesUrl, savedNote, 'POST', token);
         });
       });

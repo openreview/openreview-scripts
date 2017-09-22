@@ -38,21 +38,33 @@ if args.type == 'submissions':
         client.post_note(overwriting_note)
 
 elif args.type == 'reviews':
+
     official_review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Official_Review')
 
     reviews = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review')
 
 
     for inv in official_review_invitations:
+        forum_reviews = [r for r in reviews if r.forum == inv.reply['forum']]
+
         if args.show and not args.hide:
             inv.reply['readers']['values'] = ['everyone']
-            inv.reply['writers']['values-regex'] = ''
-            client.post_invitation(inv)
-
-            forum_reviews = [r for r in reviews if r.forum == inv.reply['forum']]
+            inv.invitees = []
+            inv = client.post_invitation(inv)
+            print "updating invitation ", inv.id
 
             for review in forum_reviews:
+                print "updating review: ",review.id
                 review.readers = ['everyone']
-                review.writers = []
                 client.post_note(review)
+
+        if args.hide and not args.show:
+            inv.noninvitees = []
+            for review in forum_reviews:
+                print "updating review: ",review.id
+                review.readers = [config.AREA_CHAIRS_PLUS]
+                review.writers = review.signatures
+                inv.noninvitees += review.signatures
+                client.post_note(review)
+            client.post_invitation(inv)
 
