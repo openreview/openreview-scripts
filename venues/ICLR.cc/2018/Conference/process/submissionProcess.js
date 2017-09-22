@@ -201,7 +201,7 @@ function() {
             replyto: null,
             readers: {
               description: 'The users who will be allowed to read the above content.',
-              'values-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
+              'value-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
             },
             signatures: {
               description: 'How your identity will be displayed with the above content.',
@@ -238,7 +238,7 @@ function() {
             replyto: null,
             readers: {
               description: 'The users who will be allowed to read the above content.',
-              'values-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
+              'value-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
             },
             signatures: {
               description: 'How your identity will be displayed with the above content.',
