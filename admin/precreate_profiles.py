@@ -2,15 +2,21 @@ import openreview
 import requests
 import csv
 import argparse
-import re
 
+"""
+Create user profiles -  the groups and profile are created, but not activated.
+The first time the user logs in they will have to fill in their information.
+"""
 def get_or_create_profile(client, email, first, last, allow_duplicates=False, verbose=False):
 
     profile_by_email_response = requests.get(client.baseurl+"/user/profile?email=%s" % email)
 
+    # check if email is already in use
     if 'error' in profile_by_email_response.json() or 'errors' in profile_by_email_response.json(): #if the email address doesn't belong to any tilde group
+        # new user, check if this is first ~name for this name
         tilderesponse = requests.get(client.baseurl+'/tildeusername?first=%s&last=%s' %(first,last) )
 
+        # if either first user or if duplicate and duplicates are allowed, create new profile
         if '1' in tilderesponse.json()['username'] or allow_duplicates:
 
             tilde = tilderesponse.json()['username']
@@ -112,6 +118,7 @@ if __name__ == '__main__':
     else:
         client = openreview.Client(baseurl=args.baseurl)
 
+    ## Read in file to user_info
     user_info = []
     with open(args.file) as f:
         reader = csv.reader(f)
@@ -119,6 +126,7 @@ if __name__ == '__main__':
         for row in reader:
             user_info.append((row[0],row[1],row[2]))
 
+    ## split user_info line into parts to create profile
     profiles = []
     for u in user_info:
         email = u[0].strip()
@@ -129,6 +137,7 @@ if __name__ == '__main__':
             profileId = get_or_create_profile(client, email.lower(), first, last, verbose=True)
             profiles.append(profileId)
 
+    ## check if add all profiles from file to a group
     add_to_group = 'y' if args.group else raw_input("Would you like to add these profiles to a group? (y/N): ")
 
     if add_to_group.lower() == 'y' or add_to_group.lower() == 'yes':
