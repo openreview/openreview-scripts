@@ -48,7 +48,7 @@ if args.output!=None:
             for n in notes:
                 json.dump(n.to_json(), outfile, indent=4, sort_keys=True)
 
-    if ext.lower()=='csv':
+    elif ext.lower()=='csv':
         with open(args.output, 'wb') as outfile:
             csvwriter = csv.writer(outfile, delimiter=',')
             fieldnames = ['id', 'number', 'date', 'title', 'abstract','keywords','authors','authorids']
@@ -65,6 +65,10 @@ if args.output!=None:
                 row.append(', '.join(note.content['authors']).encode('UTF-8'))
                 row.append(', '.join(note.content['authorids']).encode('UTF-8'))
                 csvwriter.writerow(row)
+
+    else:
+        print "Unrecognized file extension: "+ext
+
 else:
     for n in notes:
         print json.dumps(n.to_json(), indent=4, sort_keys=True)

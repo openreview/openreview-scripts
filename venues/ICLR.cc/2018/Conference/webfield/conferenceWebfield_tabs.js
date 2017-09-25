@@ -140,7 +140,7 @@ function renderConferenceTabs() {
 
   Webfield.ui.tabPanel(sections, {
     container: '#notes',
-    overwrite: true
+    hidden: true
   });
 }
 
@@ -188,7 +188,32 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
 
   // My Tasks tab
   if (userGroups.length) {
-    renderTasks(assignedNotePairs, userGroups, tagInvitations, '#my-tasks');
+    var tasksOptions = {
+      container: '#my-tasks',
+      emptyMessage: 'No outstanding tasks for ICLR 2018'
+    }
+    Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
+
+    // Custom links for ICLR
+    var acId = CONFERENCE + '/Area_Chairs';
+    if (_.includes(userGroups, acId)) {
+      $('.submission-list', container).prepend([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + acId + '">ICLR 2018 Area Chair Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    var pcId = CONFERENCE + '/Program_Chairs';
+    if (_.includes(userGroups, pcId)) {
+      $('.submission-list', container).prepend([
+        '<li class="note invitation-link">',
+          '<a href="/reviewers?invitation=' + CONFERENCE + '/-/Paper_Assignments&label=reviewers">',
+            'ICLR 2018 Reviewer Assignments Browser',
+          '</a>',
+        '</li>'
+      ].join(''));
+    }
   } else {
     $('.tabs-container a[href="#my-tasks"]').parent().hide();
   }
@@ -257,85 +282,12 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     $('.tabs-container a[href="#my-comments-reviews"]').parent().hide();
   }
 
+  $('#notes .spinner-container').remove();
+  $('.tabs-container').show();
+
   // Show first available tab
-  $('.tabs-container ul.nav-tabs li a').eq(0).click();
+  $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
 }
-
-var renderTasks = function(assignedNotes, userGroups, tagInvitations, container) {
-  var $rows = [];
-  var consoleLink;
-
-  $('.submissions-list', container).remove();
-
-  var $listContainer = $('<ul class="list-unstyled submissions-list">');
-  $(container).append($listContainer);
-
-  var pcId = CONFERENCE + '/Program_Co-Chairs';
-  if (_.includes(userGroups, pcId)) {
-    consoleLink = '<li class="note invitation-link"><a href="/reviewers?id=' + CONFERENCE +
-      '" class="console-link">ICLR 2018 Matching Browser</a></li>';
-    $listContainer.append(consoleLink);
-
-    // consoleLink = '<li class="note invitation-link"><a href="/group?id=' + pcId +
-    //   '" class="console-link">ICLR 2018 Program Co-Chairs Console</a></li>';
-    // $listContainer.append(consoleLink);
-  }
-
-  // var spcId = CONFERENCE + '/Senior_Program_Committee';
-  // if (_.includes(userGroups, spcId)) {
-  //   consoleLink = '<li class="note invitation-link"><a href="/group?id=' + spcId +
-  //     '" class="console-link">ICLR 2018 Senior Program Committee Console</a></li>';
-  //   $listContainer.append(consoleLink);
-  // }
-
-  _.forEach(tagInvitations, function(inv) {
-    var duedate = new Date(inv.duedate);
-    var duedateStr = duedate.toLocaleDateString('en-GB', {
-      hour: 'numeric', minute: 'numeric', day: '2-digit', month: 'short', year: 'numeric'
-    });
-
-    if (inv.web) {
-      $rows.push($('<li class="note invitation-link">').append(
-        $('<a>', {text: view.prettyId(inv.id), href: '/invitation?id=' + inv.id}),
-        $('<span>', {text: 'Due: ' + duedateStr, class: 'invitation-duedate ' + getDueDateStatus(duedate)})
-      ));
-    }
-  });
-
-  _.forEach(assignedNotes, function(pair) {
-    var inv = pair.invitation;
-    var replytoNote = pair.replytoNote;
-    var duedate = new Date(inv.duedate);
-    var duedateStr = duedate.toLocaleDateString('en-GB', {
-      hour: 'numeric', minute: 'numeric', day: '2-digit', month: 'short', year: 'numeric'
-    });
-
-    $rows.push(
-      $('<li class="note">').append(
-        view.mkNotePanel(replytoNote, {
-          invitation: inv,
-          titleLink: 'HREF',
-          withReplyCount: true
-        }),
-        $('<div class="invitation-link">').append(
-          $('<a href="#">' + view.prettyInvitationId(inv.id) + '</a>').click(function() {
-            controller.removeHandler('tasks');
-            pushForum(inv.reply.forum, inv.reply.replyto, inv.id);
-            return false;
-          }),
-          '<span class="invitation-duedate ' + getDueDateStatus(duedate) + '">Due: ' + duedateStr + '</span>'
-        )
-      )
-    );
-  });
-
-  if ($rows.length) {
-    $listContainer.append($rows);
-  } else {
-    $listContainer.append('<li><p class="empty-message">No outstanding tasks for ICLR 2018</p></li>');
-  }
-};
-
 
 // Helper functions
 function getPaperNumbersfromGroups(groups) {
@@ -363,11 +315,9 @@ function getDueDateStatus(date) {
   if (diff > 0) {
     return 'expired';
   }
-
-  if (diff > (-1 * 3 * day)) {
+  if (diff > -3 * day) {
     return 'warning';
   }
-
   return '';
 }
 

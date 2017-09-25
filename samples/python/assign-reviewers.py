@@ -39,8 +39,8 @@ submissions = client.get_notes(invitation=config.SUBMISSION)
 ## full checks for valid paper numbers and email addresses done in assign reviewer
 def parse_single_assigment(s):
     try:    
-        email_addr = s.split(',')[0]
-        paper_number = s.split(',')[1]
+        email_addr = s.split(',')[0].strip()
+        paper_number = s.split(',')[1].strip()
 
         try: 
             int(paper_number)
@@ -169,13 +169,13 @@ def assign_reviewer(reviewer_email, paper_num):
 
     # reviewer not in current group
     # create new group for this new reviewer with Anon name
-    new_reviewer_id = paper_group + '/AnonReviewer' + str(N + 1)
+    anon_reviewer_id = paper_group + '/AnonReviewer' + str(N + 1)
 
     # add that to the existing reviewers group and the NonReaders group
-    new_reviewer = create_reviewer_group(new_reviewer_id, reviewer_email, conflict_list)
-    client.add_members_to_group(reviewers, new_reviewer_id)
+    new_reviewer = create_reviewer_group(anon_reviewer_id, reviewer_email, conflict_list)
+    client.add_members_to_group(reviewers, anon_reviewer_id)
     ## reviewers are blocked from other reviews until complete
-    client.add_members_to_group(client.get_group(paper_group + '/Reviewers/NonReaders'), new_reviewer_id)
+    client.add_members_to_group(client.get_group(paper_group + '/Reviewers/NonReaders'), anon_reviewer_id)
 
 
 ##################################################################

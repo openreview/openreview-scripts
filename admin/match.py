@@ -10,7 +10,7 @@ import openreview_matcher
 
 # Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('-c','--config', help='the ID of the configuration note to use', required=True)
+parser.add_argument('config', help='the ID of the configuration note to use')
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--baseurl', help="base URL")

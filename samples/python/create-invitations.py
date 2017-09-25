@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ###############################################################################
-# ex. python create-invitations.py --cpath MyConf.org/2017 --baseurl http://localhost:3000
+# ex. python create-invitations.py --conf MyConf.org/2017 --baseurl http://localhost:3000
 #       --username admin --password admin_pw
 #
 # To be run after submission due date to create review invitations for all the papers.
@@ -20,7 +20,7 @@ from openreview import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('--cpath', required=True, help="conference path ex. MyConf.org/2017")
+parser.add_argument('-c','--conf', help = "the full path of the conference group ex. MyConf.org/2017", required=True)
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -31,7 +31,7 @@ args = parser.parse_args()
 client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 ## check conference directory exists
-base_path = "../../venues/"+args.cpath
+base_path = "../../venues/"+args.conf
 config_path = base_path+"/python/"
 if os.path.isfile(config_path+"config.py") is False:
     print "Cannot locate config.py in:"+config_path
@@ -49,11 +49,11 @@ if os.path.isfile(review_path) is False:
 submissions = client.get_notes(invitation=config.SUBMISSION)
 for paper in submissions:
     paper_num = str(paper.number)
-    paperinv = config.CONF + '/-/Paper' + paper_num;
+    paperinv = config.CONF + '/-/Paper' + paper_num
     print("Adding groups for Paper"+ paper_num)
 
     ## Paper Group
-    paperGroup = config.CONF + '/Paper' + paper_num;
+    paperGroup = config.CONF + '/Paper' + paper_num
     client.post_group(openreview.Group(
         id=paperGroup,
         signatures=[config.CONF],
@@ -68,7 +68,7 @@ for paper in submissions:
         id=authorGroup,
         signatures=[config.CONF],
         writers=[config.CONF],
-        members=[paper.content['authorids']],
+        members=paper.content['authorids'],
         readers=[config.CONF, config.PROGRAM_CHAIRS, authorGroup],
         signatories=[]))
 
@@ -93,7 +93,6 @@ for paper in submissions:
         members=[],
         readers=[config.CONF, config.PROGRAM_CHAIRS],
         signatories=[]))
-
     ## review invitation
     review_reply = {
         'forum':paper.id,
@@ -115,5 +114,5 @@ for paper in submissions:
                                                  noninvitees=[],
                                                  readers=['everyone'],
                                                  process=review_path,
-                                                 duedate=config.REVIEW_DUE,
+                                                 duedate=config.REVIEW_DUE_TIMESTAMP,
                                                  reply=review_reply))
