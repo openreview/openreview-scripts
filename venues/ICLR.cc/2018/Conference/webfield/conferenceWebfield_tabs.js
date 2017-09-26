@@ -197,7 +197,7 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     // Custom links for ICLR
     var acId = CONFERENCE + '/Area_Chairs';
     if (_.includes(userGroups, acId)) {
-      $('.submission-list', container).prepend([
+      $('#my-tasks .submissions-list').prepend([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + acId + '">ICLR 2018 Area Chair Console</a>',
         '</li>'
@@ -206,7 +206,7 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
 
     var pcId = CONFERENCE + '/Program_Chairs';
     if (_.includes(userGroups, pcId)) {
-      $('.submission-list', container).prepend([
+      $('#my-tasks .submissions-list').prepend([
         '<li class="note invitation-link">',
           '<a href="/reviewers?invitation=' + CONFERENCE + '/-/Paper_Assignments&label=reviewers">',
             'ICLR 2018 Reviewer Assignments Browser',
