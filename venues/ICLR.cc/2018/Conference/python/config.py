@@ -117,7 +117,7 @@ SUBMISSION = CONF + '/-/Submission'
 submission_params = {
     'readers': ['everyone'],
     'writers': [CONF],
-    'invitees': [CONF],
+    'invitees': ['~'],
     'signatures': [CONF],
     'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js'),
     'reply': {
@@ -194,7 +194,7 @@ BLIND_SUBMISSION = CONF + '/-/Blind_Submission'
 blind_submission_params = {
     'readers': ['everyone'],
     'writers': [CONF],
-    'invitees': ['~'],
+    'invitees': [CONF],
     'signatures': [CONF],
     'reply': {
         'forum': None,
@@ -246,10 +246,9 @@ public_comment_params = {
     'reply': {
         'forum': None,
         'replyto': None,
-        'invitation': BLIND_SUBMISSION,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
+            'value-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -295,14 +294,14 @@ official_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
+            'value-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': CONF + '.*'
+            'values-regex': ''
         },
         'writers': {
-            'values-regex': '~.*'
+            'values-regex': ''
         },
         'content':{
             'title': {
@@ -344,10 +343,10 @@ official_review_params = {
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': CONF + '.*'
+            'values-regex': ''
         },
         'writers': {
-            'values-regex': CONF + '.*'
+            'values-regex': ''
         },
         'content':{
             'title': {
@@ -406,6 +405,7 @@ meta_review_params = {
     'invitees': [],
     'signatures': [CONF],
     'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),
+    'duedate': 1517270399000, # 23:59:59 EST on January 1, 2018
     'reply': {
         'forum': None,
         'replyto': None,
@@ -416,7 +416,7 @@ meta_review_params = {
             'values-regex': CONF + '.*'
         },
         'readers': {
-            'values': ['everyone'],
+            'values': [AREA_CHAIRS_PLUS],
             'description': 'The users who will be allowed to read the above content.'
         },
         'content': {
@@ -690,9 +690,9 @@ recruit_reviewers_params = {
     'reply': {
         'content': {
             'username': {
-                'description': 'OpenReview username (e.g. ~Alan_Turing1)',
+                'description': 'OpenReview username or email address (e.g. ~Alan_Turing1)',
                 'order': 1,
-                'value-regex': '~.*'
+                'value-regex': '.*'
             },
             'key': {
                 'description': 'Email key hash',

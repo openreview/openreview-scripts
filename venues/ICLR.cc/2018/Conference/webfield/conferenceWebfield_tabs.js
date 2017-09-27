@@ -289,7 +289,6 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
 }
 
-
 // Helper functions
 function getPaperNumbersfromGroups(groups) {
   // Should be customized for the conference

@@ -60,7 +60,9 @@ if args.metadata:
     ]
 
     print "getting data..."
-    papers = [n for n in client.get_notes(invitation = config.BLIND_SUBMISSION) if (not 'withdrawal' in n.content)]
+    all_papers = client.get_notes(invitation = config.BLIND_SUBMISSION)
+    withdrawn_papers = [n for n in all_papers if ('withdrawal' in n.content)]
+    papers = [n for n in all_papers if (not 'withdrawal' in n.content)]
     groups = [client.get_group(g) for g in group_ids]
     bids = client.get_tags(invitation = config.CONF + '/-/Add_Bid')
 
@@ -96,10 +98,11 @@ if args.assignments:
         "label": 'reviewers',
         "group": config.REVIEWERS,
         "submission": config.BLIND_SUBMISSION,
+        "exclude": [n.forum for n in withdrawn_papers],
         "metadata": config.METADATA,
-        "minusers": 0,
-        "maxusers": 1,
-        "minpapers": 0,
+        "minusers": 1,
+        "maxusers": 3,
+        "minpapers": 2,
         "maxpapers": 5,
         "weights": {
             "bid_score": 1
@@ -110,9 +113,10 @@ if args.assignments:
         "label": 'areachairs',
         "group": config.AREA_CHAIRS,
         "submission": config.BLIND_SUBMISSION,
+        "exclude": [n.forum for n in withdrawn_papers],
         "metadata": config.METADATA,
-        "minusers": 0,
-        "maxusers": 5,
+        "minusers": 1,
+        "maxusers": 1,
         "minpapers": 1,
         "maxpapers": 10,
         "weights": {
