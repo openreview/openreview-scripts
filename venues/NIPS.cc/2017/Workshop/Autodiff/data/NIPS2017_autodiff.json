@@ -1,0 +1,13 @@
+{
+	"conference_title": "NIPS 2017 Autodiff Workshop",
+	"conference_subtitle": "The future of gradient-based machine learning software and techniques",
+	"conference_location": "Long Beach, California",
+	"conference_date": "December 9, 2017",
+	"human_duedate": "October 14, 2017 at midnight UTC",
+	"conference_phrase": "NIPS 2017 Autodiff Workshop",
+	"submission_name": "",
+	"duedate_input": "14/10/2017",
+	"duetime_input": "19:59",
+	"reviewduedate_input": "03/11/2017",
+	"url": "https://autodiff-workshop.github.io/"
+}
