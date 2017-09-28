@@ -1,5 +1,6 @@
 function() {
-
+    // email authors, create revision, withdraw and comment invites
+    // create blind submission and author group
     var or3client = lib.or3client;
 
     var CONF = 'ICLR.cc/2018/Conference';
@@ -88,83 +89,6 @@ function() {
           signatories: [authorGroupId]
         };
 
-        var reviewerGroupId = savedPaperGroup.id + '/Reviewers';
-        var reviewerGroup = {
-          id: reviewerGroupId,
-          signatures: [CONF],
-          writers: [CONF],
-          members: [],
-          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS],
-          nonreaders: [authorGroupId],
-          signatories: []
-        };
-
-        var anonReviewer1GroupId = savedPaperGroup.id + '/AnonReviewer1';
-        var anonReviewer1Group = {
-          id: anonReviewer1GroupId,
-          signatures: [CONF],
-          writers: [CONF],
-          members: [],
-          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS, anonReviewer1GroupId],
-          nonreaders: [authorGroupId],
-          signatories: [anonReviewer1GroupId]
-        };
-
-        var anonReviewer2GroupId = savedPaperGroup.id + '/AnonReviewer2';
-        var anonReviewer2Group = {
-          id: anonReviewer2GroupId,
-          signatures: [CONF],
-          writers: [CONF],
-          members: [],
-          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS, anonReviewer2GroupId],
-          nonreaders: [authorGroupId],
-          signatories: [anonReviewer2GroupId]
-        };
-
-        var anonReviewer3GroupId = savedPaperGroup.id + '/AnonReviewer3';
-        var anonReviewer3Group = {
-          id: anonReviewer3GroupId,
-          signatures: [CONF],
-          writers: [CONF],
-          members: [],
-          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS, anonReviewer3GroupId],
-          nonreaders: [authorGroupId],
-          signatories: [anonReviewer3GroupId]
-        };
-
-        var anonReviewer4GroupId = savedPaperGroup.id + '/AnonReviewer4';
-        var anonReviewer4Group = {
-          id: anonReviewer4GroupId,
-          signatures: [CONF],
-          writers: [CONF],
-          members: [],
-          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS, anonReviewer4GroupId],
-          nonreaders: [authorGroupId],
-          signatories: [anonReviewer4GroupId]
-        };
-
-        var anonReviewer5GroupId = savedPaperGroup.id + '/AnonReviewer5';
-        var anonReviewer5Group = {
-          id: anonReviewer5GroupId,
-          signatures: [CONF],
-          writers: [CONF],
-          members: [],
-          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS, anonReviewer5GroupId],
-          nonreaders: [authorGroupId],
-          signatories: [anonReviewer5GroupId]
-        };
-
-        var areachairGroupId = savedPaperGroup.id + '/Area_Chair';
-        var areachairGroup = {
-          id: areachairGroupId,
-          signatures: [CONF],
-          writers: [CONF],
-          members: [],
-          readers: [CONF, PROGRAM_CHAIRS, AREA_CHAIRS, areachairGroupId],
-          nonreaders: [authorGroupId],
-          signatories: [areachairGroupId]
-        };
-
         var withdrawPaperInvitation = {
           id: CONF + '/-/Paper' + savedNote.number + '/Withdraw_Paper',
           signatures: [CONF],
@@ -194,7 +118,7 @@ function() {
           signatures: [CONF],
           writers: [CONF],
           invitees: ['~'],
-          noninvitees: [authorGroupId, reviewerGroupId, areachairGroupId],
+          noninvitees: [authorGroupId],
           readers: ['everyone'],
           reply: {
             forum: savedNote.id,
@@ -231,7 +155,7 @@ function() {
           id: CONF + '/-/Paper' + savedNote.number + '/Official_Comment',
           signatures: [CONF],
           writers: [CONF],
-          invitees: [reviewerGroupId, authorGroupId, areachairGroupId, PROGRAM_CHAIRS],
+          invitees: [authorGroupId, PROGRAM_CHAIRS],
           readers: ['everyone'],
           reply: {
             forum: savedNote.id,
@@ -242,10 +166,10 @@ function() {
             },
             signatures: {
               description: 'How your identity will be displayed with the above content.',
-              'values-regex': [reviewerGroupId, authorGroupId, areachairGroupId, PROGRAM_CHAIRS].join('|')
+              'values-regex': [authorGroupId, PROGRAM_CHAIRS].join('|')
             },
             writers: {
-              'values-regex': [reviewerGroupId, authorGroupId, areachairGroupId, PROGRAM_CHAIRS].join('|')
+              'values-regex': [authorGroupId, PROGRAM_CHAIRS].join('|')
             },
             content:{
               title: {
@@ -266,13 +190,6 @@ function() {
 
         var groupPromises = Promise.all([
           or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
-          or3client.or3request(or3client.grpUrl, reviewerGroup, 'POST', token),
-          or3client.or3request(or3client.grpUrl, areachairGroup, 'POST', token),
-          or3client.or3request(or3client.grpUrl, anonReviewer1Group, 'POST', token),
-          or3client.or3request(or3client.grpUrl, anonReviewer2Group, 'POST', token),
-          or3client.or3request(or3client.grpUrl, anonReviewer3Group, 'POST', token),
-          or3client.or3request(or3client.grpUrl, anonReviewer4Group, 'POST', token),
-          or3client.or3request(or3client.grpUrl, anonReviewer5Group, 'POST', token),
           or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
           or3client.or3request(or3client.inviteUrl, publicCommentInvitation, 'POST', token),
           or3client.or3request(or3client.inviteUrl, officialCommentInvitation, 'POST', token),
