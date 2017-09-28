@@ -46,56 +46,6 @@ for paper in submissions:
         readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS],
         signatories=[]))
 
-    anonReviewer1GroupId = paperGroup + '/AnonReviewer1'
-    client.post_group(openreview.Group(
-        id=anonReviewer1GroupId,
-        signatures=[config.CONF],
-        writers=[config.CONF],
-        members=[],
-        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS, anonReviewer1GroupId],
-        nonreaders=[authorGroup],
-        signatories=[anonReviewer1GroupId]))
-
-    anonReviewer2GroupId = paperGroup + '/AnonReviewer2'
-    client.post_group(openreview.Group(
-        id=anonReviewer2GroupId,
-        signatures=[config.CONF],
-        writers=[config.CONF],
-        members=[],
-        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS, anonReviewer2GroupId],
-        nonreaders=[authorGroup],
-        signatories=[anonReviewer2GroupId]))
-
-    anonReviewer3GroupId = paperGroup + '/AnonReviewer3'
-    client.post_group(openreview.Group(
-        id=anonReviewer3GroupId,
-        signatures=[config.CONF],
-        writers=[config.CONF],
-        members=[],
-        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS, anonReviewer3GroupId],
-        nonreaders=[authorGroup],
-        signatories=[anonReviewer3GroupId]))
-
-    anonReviewer4GroupId = paperGroup + '/AnonReviewer4'
-    client.post_group(openreview.Group(
-        id=anonReviewer4GroupId,
-        signatures=[config.CONF],
-        writers=[config.CONF],
-        members=[],
-        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS, anonReviewer4GroupId],
-        nonreaders=[authorGroup],
-        signatories=[anonReviewer4GroupId]))
-
-    anonReviewer5GroupId = paperGroup + '/AnonReviewer5'
-    client.post_group(openreview.Group(
-        id=anonReviewer5GroupId,
-        signatures=[config.CONF],
-        writers=[config.CONF],
-        members=[],
-        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS, anonReviewer5GroupId],
-        nonreaders=[authorGroup],
-        signatories=[anonReviewer5GroupId]))
-
     ## Area Chair group -
     areachairGroup = paperGroup + '/Area_Chair'
     client.post_group(openreview.Group(
@@ -113,7 +63,7 @@ for paper in submissions:
 
     official_comment_inv = client.get_invitation(paperinv + '/Official_Comment')
     official_comment_inv.invitees =  [authorGroup, reviewerGroup, areachairGroup, config.PROGRAM_CHAIRS]
-    official_comment_inv.reply['signatures']['values-regex'] = '{}|{}|{}|{}'.format(paperGroup+'/AnonReviewer[0-9]+', authorGroup, areachairGroup, config.PROGRAM_CHAIRS)
-    official_comment_inv.reply['writers']['values-regex'] = '{}|{}|{}|{}'.format(paperGroup+'/AnonReviewer[0-9]+', authorGroup, areachairGroup, config.PROGRAM_CHAIRS)
+    official_comment_inv.reply['signatures']['values-regex'] = '{}|{}|{}|{}'.format(reviewerGroup, authorGroup, areachairGroup, config.PROGRAM_CHAIRS)
+    official_comment_inv.reply['writers']['values-regex'] = '{}|{}|{}|{}'.format(reviewerGroup, authorGroup, areachairGroup, config.PROGRAM_CHAIRS)
     client.post_invitation(official_comment_inv)
 
