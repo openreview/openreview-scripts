@@ -119,7 +119,7 @@ submission_params = {
     'writers': [CONF],
     'invitees': ['~'],
     'signatures': [CONF],
-    'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js'),
+    'process': os.path.join(os.path.dirname(__file__), '../process/submissionFastProcess.js'),
     'reply': {
         'forum': None,
         'replyto': None,
