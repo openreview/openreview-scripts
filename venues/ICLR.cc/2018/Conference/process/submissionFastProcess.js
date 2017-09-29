@@ -53,17 +53,16 @@ function() {
       }
     }
 
-    //Send an email to the author of the submitted note, confirming its receipt
-    var mail = {
-        "groups": note.content.authorids,
-        "subject": "Confirmation of your submission to ICLR 2018: \"" + note.content.title + "\".",
-        "message": `Your submission to ICLR 2018 has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
-    };
-
-
-    or3client.or3request(or3client.inviteUrl, addRevisionInvitation, 'POST', token)
-    .then(result => or3client.or3request(or3client.notesUrl, blindSubmission, 'POST', token))
+    or3client.or3request(or3client.notesUrl, blindSubmission, 'POST', token)
     .then(savedNote => {
+
+      //Send an email to the author of the submitted note, confirming its receipt
+      var mail = {
+          "groups": note.content.authorids,
+          "subject": "Confirmation of your submission to ICLR 2018: \"" + note.content.title + "\".",
+          "message": `Your submission to ICLR 2018 has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + savedNote.forum
+      };
+
       var paperGroup = {
         id: CONF + '/Paper' + savedNote.number,
         signatures: [CONF],
@@ -109,13 +108,15 @@ function() {
           }
         }
 
-        var groupPromises = Promise.all([
+        var batchPromises = Promise.all([
           or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
           or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
-          or3client.addGroupMember(AUTHORS, note.content.authorids.concat(note.signatures), token)
+          or3client.addGroupMember(AUTHORS, note.content.authorids.concat(note.signatures), token),
+          or3client.or3request(or3client.inviteUrl, addRevisionInvitation, 'POST', token),
+          or3client.or3request(or3client.mailUrl, mail, 'POST', token)
         ]);
 
-        return groupPromises
+        return batchPromises
         .then(savedGroups => {
           var authorGroup = savedGroups[0];
           savedNote.content = {
@@ -127,7 +128,6 @@ function() {
         });
       });
     })
-    .then(result => or3client.or3request(or3client.mailUrl, mail, 'POST', token))
     .then(result => done())
     .catch(error => done(error));
 
