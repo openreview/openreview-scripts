@@ -36,7 +36,7 @@ REVIEWERS_EMAILED = REVIEWERS + '/Emailed'
 REVIEWERS_PLUS = REVIEWERS + '_and_Higher'
 AREA_CHAIRS_PLUS = AREA_CHAIRS + '_and_Higher'
 
-DUE_TIMESTAMP = 1509163199000 # 23:59:59 EST on October 27, 2017
+DUE_TIMESTAMP = 1509138000000 # 17:00:00 EST on October 27, 2017
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield_tabs.js')
 
 """
