@@ -28,10 +28,7 @@ if args.type == 'submissions':
             'signatures': [config.CONF],
             'writers': [config.CONF],
             'readers': ['everyone'],
-            'content': {
-                'authors': original_note.content['authors'] if args.show and not args.hide else ['Anonymous'],
-                'authorids': original_note.content['authorids'] if args.show and not args.hide else [config.CONF + '/Paper{0}/Authors'.format(b.number)]
-            }
+            'content': {}
         })
 
         print "{0} note {1}".format('Revealing' if args.show and not args.hide else 'Hiding', overwriting_note.id)
