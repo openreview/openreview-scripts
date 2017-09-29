@@ -111,7 +111,6 @@ function() {
         var batchPromises = Promise.all([
           or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
           or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
-          or3client.addGroupMember(AUTHORS, note.content.authorids.concat(note.signatures), token),
           or3client.or3request(or3client.inviteUrl, addRevisionInvitation, 'POST', token),
           or3client.or3request(or3client.mailUrl, mail, 'POST', token)
         ]);

@@ -197,7 +197,6 @@ function() {
           or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
           or3client.or3request(or3client.inviteUrl, publicCommentInvitation, 'POST', token),
           or3client.or3request(or3client.inviteUrl, officialCommentInvitation, 'POST', token),
-          or3client.addGroupMember(AUTHORS, note.content.authorids.concat(note.signatures), token),
           or3client.or3request(or3client.mailUrl, mail, 'POST', token)
         ]);
 
