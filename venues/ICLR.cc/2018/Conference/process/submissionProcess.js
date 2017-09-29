@@ -57,17 +57,18 @@ function() {
       }
     }
 
-    //Send an email to the author of the submitted note, confirming its receipt
-    var mail = {
-        "groups": note.content.authorids,
-        "subject": "Confirmation of your submission to ICLR 2018: \"" + note.content.title + "\".",
-        "message": `Your submission to ICLR 2018 has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + note.forum
-    };
 
 
     or3client.or3request(or3client.inviteUrl, addRevisionInvitation, 'POST', token)
     .then(result => or3client.or3request(or3client.notesUrl, blindSubmission, 'POST', token))
     .then(savedNote => {
+      //Send an email to the author of the submitted note, confirming its receipt
+      var mail = {
+          "groups": note.content.authorids,
+          "subject": "Confirmation of your submission to ICLR 2018: \"" + note.content.title + "\".",
+          "message": `Your submission to ICLR 2018 has been posted.\n\nTitle: `+note.content.title+`\n\nAbstract: `+note.content.abstract+`\n\nTo view the note, click here: `+baseUrl+`/forum?id=` + savedNote.forum
+      };
+
       var paperGroup = {
         id: CONF + '/Paper' + savedNote.number,
         signatures: [CONF],
@@ -78,6 +79,9 @@ function() {
       };
       return or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
       .then(savedPaperGroup => {
+
+        var reviewerGroupId = savedPaperGroup.id + '/Reviewers';
+        var areachairGroupId = savedPaperGroup.id + '/Area_Chair';
 
         var authorGroupId = savedPaperGroup.id + '/Authors';
         var authorGroup = {
@@ -118,7 +122,7 @@ function() {
           signatures: [CONF],
           writers: [CONF],
           invitees: ['~'],
-          noninvitees: [authorGroupId],
+          noninvitees: [authorGroupId, reviewerGroupId, areachairGroupId],
           readers: ['everyone'],
           reply: {
             forum: savedNote.id,
@@ -155,7 +159,7 @@ function() {
           id: CONF + '/-/Paper' + savedNote.number + '/Official_Comment',
           signatures: [CONF],
           writers: [CONF],
-          invitees: [authorGroupId, PROGRAM_CHAIRS],
+          invitees: [reviewerGroupId, authorGroupId, areachairGroupId, PROGRAM_CHAIRS],
           readers: ['everyone'],
           reply: {
             forum: savedNote.id,
@@ -166,10 +170,10 @@ function() {
             },
             signatures: {
               description: 'How your identity will be displayed with the above content.',
-              'values-regex': [authorGroupId, PROGRAM_CHAIRS].join('|')
+              'values-regex': [reviewerGroupId, authorGroupId, areachairGroupId, PROGRAM_CHAIRS].join('|')
             },
             writers: {
-              'values-regex': [authorGroupId, PROGRAM_CHAIRS].join('|')
+              'values-regex': [reviewerGroupId, authorGroupId, areachairGroupId, PROGRAM_CHAIRS].join('|')
             },
             content:{
               title: {
@@ -188,15 +192,16 @@ function() {
           }
         }
 
-        var groupPromises = Promise.all([
+        var batchPromises = Promise.all([
           or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
           or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
           or3client.or3request(or3client.inviteUrl, publicCommentInvitation, 'POST', token),
           or3client.or3request(or3client.inviteUrl, officialCommentInvitation, 'POST', token),
-          or3client.addGroupMember(AUTHORS, note.content.authorids.concat(note.signatures), token)
+          or3client.addGroupMember(AUTHORS, note.content.authorids.concat(note.signatures), token),
+          or3client.or3request(or3client.mailUrl, mail, 'POST', token)
         ]);
 
-        return groupPromises
+        return batchPromises
         .then(savedGroups => {
           var authorGroup = savedGroups[0];
           savedNote.content = {
@@ -208,7 +213,6 @@ function() {
         });
       });
     })
-    .then(result => or3client.or3request(or3client.mailUrl, mail, 'POST', token))
     .then(result => done())
     .catch(error => done(error));
 
