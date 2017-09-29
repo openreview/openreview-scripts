@@ -215,13 +215,13 @@ blind_submission_params = {
                 'description': 'Comma separated list of author names, as they appear in the paper.',
                 'order': 1,
                 'values-regex': '.*',
-                'required': True
+                'required': False
             },
             'authorids': {
                 'description': 'Comma separated list of author email addresses, in the same order as above.',
                 'order': 2,
                 'values-regex': '.*',
-                'required': True
+                'required': False
             }
         }
     }
