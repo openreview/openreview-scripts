@@ -14,9 +14,28 @@ args = parser.parse_args()
 
 client = openreview.Client(username=args.username, password=args.password, baseurl=args.baseurl)
 
+def get_bibtex(note, anonymous=True):
+    first_word = note.content['title'].split(' ')[0].lower()
+
+    if anonymous:
+        first_author_last_name = 'anonymous'
+        authors = 'Anonymous'
+    else:
+        first_author_last_name = note.content['authors'][0].split(' ')[1].lower()
+        authors = ', '.join(note.content['authors'])
+
+    return '@article{\
+        \n' + first_author_last_name + '2017' + first_word + ',\
+        \ntitle={' + note.content['title'] + '},\
+        \nauthor={' + authors + '},\
+        \njournal={International Conference on Learning Representations},\
+        \nyear={2017}\
+    \n}'
+
+
 if args.type == 'submissions':
     blind_submissions = client.get_notes(invitation=config.BLIND_SUBMISSION)
-    original_submissions_by_id = {i.id: i for i in client.get_notes(invitation=config.SUBMISSION)}
+
     for b in blind_submissions:
         original_note = client.get_note(b.original)
 
@@ -28,7 +47,7 @@ if args.type == 'submissions':
             'signatures': [config.CONF],
             'writers': [config.CONF],
             'readers': ['everyone'],
-            'content': {}
+            'content': {'_bibtex': get_bibtex(original_note, (args.hide and not args.show))}
         })
 
         print "{0} note {1}".format('Revealing' if args.show and not args.hide else 'Hiding', overwriting_note.id)
