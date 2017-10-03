@@ -3,6 +3,8 @@
 """
 Sends an email to the members of the group of your choice.
 
+Can also send emails to specific email addresses.
+
 """
 
 ## Import statements
