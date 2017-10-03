@@ -86,7 +86,8 @@ program_chairs_params = {
     'readers': [CONF, PROGRAM_CHAIRS],
     'writers': [CONF],
     'signatories': [CONF, PROGRAM_CHAIRS],
-    'signatures': [CONF]
+    'signatures': [CONF],
+    'web': os.path.join(os.path.dirname(__file__), '../webfield/programchairWebfield.js'),
 }
 
 area_chairs_params = {
