@@ -103,9 +103,10 @@ function renderConferenceHeader() {
     Please read these instructions carefully.\n
     When you post a submission to ICLR 2018, please provide your real name and email address in the submission form below.
     An anonymous copy of your paper will appear in the "All Submitted Papers" tab below.
-    An <em>original</em> version of your paper will be available in your Tasks page.
+    An <em>original</em> version of your paper will be available in the "My Original Papers" tab.
     You can also access the original version of your paper by clicking the "Modifiable Original"
-    link in the discussion forum page of your paper.`,  // Add any custom instructions here. Accepts HTML
+    link in the discussion forum page of your paper. You may only add revisions to the originals.
+    Revisions on originals propagate to anonymous copies.`,  // Add any custom instructions here. Accepts HTML
     deadline: "Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017"
   });
 
