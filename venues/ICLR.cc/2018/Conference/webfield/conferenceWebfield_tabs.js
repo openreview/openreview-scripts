@@ -99,14 +99,18 @@ function renderConferenceHeader() {
     location: "Vancouver Convention Center, Vancouver, BC, Canada",
     date: "April 30 - May 3, 2018",
     website: "http://www.iclr.cc",
-    instructions: `<b>Important Information about Anonymity:\n</b>
-    Please read these instructions carefully.\n
-    When you post a submission to ICLR 2018, please provide your real name and email address in the submission form below.
-    An anonymous copy of your paper will appear in the "All Submitted Papers" tab below.
-    An <em>original</em> version of your paper will be available in the "My Original Papers" tab.
-    You can also access the original version of your paper by clicking the "Modifiable Original"
-    link in the discussion forum page of your paper. You may only add revisions to the originals.
-    Revisions on originals propagate to anonymous copies.`,  // Add any custom instructions here. Accepts HTML
+    instructions: '<p><strong>Important Information about Anonymity:</strong><br />\
+    When you post a submission to ICLR 2018, please provide your real name and email address in the submission form below.\
+    An anonymous copy of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
+    The <em>original</em> version of your paper will be private, and will contain your real name(s); \
+    originals can be found in your OpenReview <a href=/tasks>Tasks page</a>.\
+    You can also access the original version of your paper by clicking the "Modifiable Original" \
+    link in the discussion forum page of your paper. <br /><br /> \
+    <strong>Posting Revisions to Submissions:</strong><br />\
+    To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
+    Revisions are not allowed during the formal review process.\
+    Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity. <br /><br /> \
+    Please contact the OpenReview support team at <a href=mailto:info@openreview.net>info@openreview.net</a> with any questions or concerns.</p>',  // Add any custom instructions here. Accepts HTML
     deadline: "Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017"
   });
 
@@ -136,10 +140,6 @@ function renderConferenceTabs() {
       id: 'my-submitted-papers',
     },
     {
-      heading: 'My Original Papers',
-      id: 'my-original-papers',
-    },
-    {
       heading: 'My Assigned Papers',
       id: 'my-assigned-papers',
     },
@@ -159,7 +159,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, tagInvitations, originalNotes) {
+function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, tagInvitations) {
   var data, commentNotes;
 
   // if (_.isEmpty(userGroups)) {
@@ -272,16 +272,6 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     );
   } else {
     $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
-  }
-
-  // My Originals tab
-  if (originalNotes.length) {
-    Webfield.ui.searchResults(
-      originalNotes,
-      _.assign({}, paperDisplayOptions, {container: '#my-original-papers'})
-    );
-  } else {
-    $('.tabs-container a[href="#my-original-papers"]').parent().hide();
   }
 
   // My Assigned Papers tab (only show if not empty)
