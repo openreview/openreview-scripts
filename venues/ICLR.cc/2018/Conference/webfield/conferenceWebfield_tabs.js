@@ -54,6 +54,10 @@ function main() {
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
+  var originalsP = Webfield.api.getSubmissions(INVITATION, {
+    pageSize: PAGE_SIZE
+  });
+
   var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {
     pageSize: PAGE_SIZE
   });
@@ -83,7 +87,7 @@ function load() {
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_INVITATION);
 
-  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP);
+  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP, originalsP);
 }
 
 
@@ -95,7 +99,13 @@ function renderConferenceHeader() {
     location: "Vancouver Convention Center, Vancouver, BC, Canada",
     date: "April 30 - May 3, 2018",
     website: "http://www.iclr.cc",
-    instructions: null,  // Add any custom instructions here. Accepts HTML
+    instructions: `<b>Important Information about Anonymity:\n</b>
+    Please read these instructions carefully.\n
+    When you post a submission to ICLR 2018, please provide your real name and email address in the submission form below.
+    An anonymous copy of your paper will appear in the "All Submitted Papers" tab below.
+    An <em>original</em> version of your paper will be available in your Tasks page.
+    You can also access the original version of your paper by clicking the "Modifiable Original"
+    link in the discussion forum page of your paper.`,  // Add any custom instructions here. Accepts HTML
     deadline: "Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017"
   });
 
@@ -125,6 +135,10 @@ function renderConferenceTabs() {
       id: 'my-submitted-papers',
     },
     {
+      heading: 'My Original Papers',
+      id: 'my-original-papers',
+    },
+    {
       heading: 'My Assigned Papers',
       id: 'my-assigned-papers',
     },
@@ -144,7 +158,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, tagInvitations) {
+function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, tagInvitations, originalNotes) {
   var data, commentNotes;
 
   // if (_.isEmpty(userGroups)) {
@@ -257,6 +271,16 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     );
   } else {
     $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
+  }
+
+  // My Originals tab
+  if (originalNotes.length) {
+    Webfield.ui.searchResults(
+      originalNotes,
+      _.assign({}, paperDisplayOptions, {container: '#my-original-papers'})
+    );
+  } else {
+    $('.tabs-container a[href="#my-original-papers"]').parent().hide();
   }
 
   // My Assigned Papers tab (only show if not empty)
