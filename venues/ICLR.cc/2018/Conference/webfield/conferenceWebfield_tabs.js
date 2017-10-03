@@ -54,9 +54,6 @@ function main() {
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-  var originalsP = Webfield.api.getSubmissions(INVITATION, {
-    pageSize: PAGE_SIZE
-  });
 
   var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {
     pageSize: PAGE_SIZE
@@ -87,7 +84,7 @@ function load() {
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_INVITATION);
 
-  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP, originalsP);
+  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP);
 }
 
 
