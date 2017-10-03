@@ -96,7 +96,7 @@ function renderConferenceHeader() {
     date: "April 30 - May 3, 2018",
     website: "http://www.iclr.cc",
     instructions: '<p><strong>Important Information about Anonymity:</strong><br />\
-    When you post a submission to ICLR 2018, please provide your real name and email address in the submission form below.\
+    When you post a submission to ICLR 2018, please provide the real names and email addresses of authors in the submission form below.\
     An anonymous copy of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
     The <em>original</em> version of your paper will be private, and will contain your real name(s); \
     originals can be found in your OpenReview <a href=/tasks>Tasks page</a>.\
