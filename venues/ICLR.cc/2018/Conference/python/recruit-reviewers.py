@@ -14,7 +14,7 @@ import config
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--file', help="a csv file containing the email addresses of the reviewers")
+parser.add_argument('-f', '--file', help="a csv file containing the email addresses of the reviewers")
 parser.add_argument('-e', '--email', metavar='N', type=str, nargs='+', help="emails separated by space")
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
