@@ -54,7 +54,6 @@ function main() {
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-
   var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {
     pageSize: PAGE_SIZE
   });
