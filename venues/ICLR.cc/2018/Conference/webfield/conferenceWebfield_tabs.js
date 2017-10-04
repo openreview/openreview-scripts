@@ -37,6 +37,7 @@ var commentDisplayOptions = {
   showContents: false,
   showParent: true
 };
+var initialPageLoad = true;
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -235,6 +236,7 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     tagInvitations: tagInvitations,
     container: '#all-submitted-papers'
   });
+
   Webfield.ui.submissionList(notes, {
     heading: null,
     container: '#all-submitted-papers',
@@ -297,7 +299,10 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   $('.tabs-container').show();
 
   // Show first available tab
-  $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
+  if (initialPageLoad) {
+    $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
+    initialPageLoad = false;
+  }
 }
 
 // Helper functions
