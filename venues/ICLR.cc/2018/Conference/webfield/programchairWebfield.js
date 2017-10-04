@@ -1,14 +1,30 @@
 
+// Assumes the following pattern for meta reviews and official reviews:
+// CONFERENCE + '/-/Paper' + number + '/Meta_Review'
+// CONFERENCE + '/-/Paper' + number + '/Official_Review'
+
 // Constants
+var HEADER_TEXT = 'ICLR 2018 Program Chairs Console';
+
 var CONFERENCE = 'ICLR.cc/2018/Conference';
 var INVITATION = CONFERENCE + '/-/Submission';
 var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
+var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official_Review';
+var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
+
+
+var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
+var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair';
+
+var ANONREVIEWER_REGEX = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+var AREACHAIR_REGEX = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/Area_Chair/;
+
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {
-  var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/Area_Chair/;
+  var re = AREACHAIR_REGEX;
   return _.map(
     _.filter(groups, function(g) { return re.test(g.id); }),
     function(fg) { return parseInt(fg.id.match(re)[1], 10); }
@@ -23,11 +39,11 @@ var getBlindedNotes = function() {
 };
 
 var getAllReviews = function(callback) {
-  var invitationId = WILDCARD_INVITATION + '/Official_Review';
+  var invitationId = OFFICIAL_REVIEW_INVITATION;
   var allNotes = [];
 
   function getPromise(offset, limit) {
-    return $.getJSON('notes', { invitation: WILDCARD_INVITATION + '/Official_Review', offset: offset, limit: limit })
+    return $.getJSON('notes', { invitation: OFFICIAL_REVIEW_INVITATION, offset: offset, limit: limit })
     .then(function(result) {
       allNotes = _.union(allNotes, result.notes);
       if (result.notes.length == limit) {
@@ -49,7 +65,7 @@ var getOfficialReviews = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
 
   getAllReviews(function(notes) {
-    var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+    var re = ANONREVIEWER_REGEX;
     var ratingExp = /^(\d+): .*/;
 
     notes.forEach(function(n) {
@@ -82,9 +98,9 @@ var getReviewerGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var reviewerMap = {};
 
-  return $.getJSON('groups', { regex: CONFERENCE + '/Paper.*/AnonReviewer.*' })
+  return $.getJSON('groups', { regex: ANONREVIEWER_WILDCARD })
     .then(function(result) {
-      var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+      var re = ANONREVIEWER_REGEX;
 
       result.groups.forEach(function(g) {
         var matches = g.id.match(re);
@@ -123,9 +139,9 @@ var getAreaChairGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var areaChairMap = {};
 
-  return $.getJSON('groups', { regex: CONFERENCE + '/Paper.*/Area_Chair' })
+  return $.getJSON('groups', { regex: AREACHAIR_WILDCARD })
     .then(function(result) {
-      var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/Area_Chair/;
+      var re = AREACHAIR_REGEX;
 
       result.groups.forEach(function(g) {
         var matches = g.id.match(re);
@@ -180,7 +196,7 @@ var getUserProfiles = function(userIds) {
 };
 
 var getMetaReviews = function() {
-  return $.getJSON('notes', { invitation: WILDCARD_INVITATION + '/Meta_Review' })
+  return $.getJSON('notes', { invitation: METAREVIEW_INVITATION })
     .then(function(result) {
       return result.notes;
     }).fail(function(error) {
@@ -196,7 +212,7 @@ var displayHeader = function(headerP) {
   $panel.hide('fast', function() {
     $panel.empty().append(
       '<div id="header" class="panel">' +
-        '<h1>ICLR 2018 Program Chairs Console</h1>' +
+        '<h1>' + HEADER_TEXT + '</h1>' +
       '</div>' +
       '<div id="notes"><div class="tabs-container"></div></div>'
     );
@@ -318,7 +334,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     var tableHTML = Handlebars.templates['components/table']({
       headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
       rows: rowData,
-      extraClasses: 'uai-console-table paper-table'
+      extraClasses: 'console-table paper-table'
     });
 
     $(container).find('.table-responsive').remove();
@@ -395,7 +411,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
     var tableHTML = Handlebars.templates['components/table']({
       headings: ['#', 'Area Chair', 'Review Progress', 'Status'],
       rows: rowData,
-      extraClasses: 'uai-console-table'
+      extraClasses: 'console-table'
     });
 
     $(container).find('.table-responsive').remove();
@@ -484,7 +500,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
     var tableHTML = Handlebars.templates['components/table']({
       headings: ['#', 'Reviewer', 'Review Progress', 'Status'],
       rows: rowData,
-      extraClasses: 'uai-console-table'
+      extraClasses: 'console-table'
     });
 
     $(container).find('.table-responsive').remove();
