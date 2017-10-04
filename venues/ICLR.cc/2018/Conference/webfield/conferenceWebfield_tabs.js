@@ -91,24 +91,25 @@ function load() {
 // Render functions
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
-    title: "ICLR 2018 Conference Track",
-    subtitle: "6th International Conference on Learning Representations",
-    location: "Vancouver Convention Center, Vancouver, BC, Canada",
-    date: "April 30 - May 3, 2018",
-    website: "http://www.iclr.cc",
+    title: 'ICLR 2018 Conference Track',
+    subtitle: '6th International Conference on Learning Representations',
+    location: 'Vancouver Convention Center, Vancouver, BC, Canada',
+    date: 'April 30 - May 3, 2018',
+    website: 'http://www.iclr.cc',
     instructions: '<p><strong>Important Information about Anonymity:</strong><br>\
-    When you post a submission to ICLR 2018, please provide the real names and email addresses of authors in the submission form below.\
-    An anonymous copy of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
-    The <em>original</em> version of your paper will be private, and will contain your real name(s); \
-    originals can be found in your OpenReview <a href="/tasks">Tasks page</a>.\
-    You can also access the original version of your paper by clicking the "Modifiable Original" \
-    link in the discussion forum page of your paper. </p>\
-    <p><strong>Posting Revisions to Submissions:</strong><br>\
-    To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
-    Revisions are not allowed during the formal review process.\
-    Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
-    <p><strong>Please contact the OpenReview support team at <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns.</strong></p>',  // Add any custom instructions here. Accepts HTML
-    deadline: "Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017"
+      When you post a submission to ICLR 2018, please provide the real names and email addresses of authors in the submission form below.\
+      An anonymous copy of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
+      The <em>original</em> version of your paper will be private, and will contain your real name(s); \
+      originals can be found in your OpenReview <a href="/tasks">Tasks page</a>.\
+      You can also access the original version of your paper by clicking the "Modifiable Original" \
+      link in the discussion forum page of your paper. </p>\
+      <p><strong>Posting Revisions to Submissions:</strong><br>\
+      To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
+      Revisions are not allowed during the formal review process.\
+      Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
+      <p><strong>Please contact the OpenReview support team at \
+      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns. \</strong></p>',
+    deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
   });
 
   Webfield.ui.spinner('#notes');
