@@ -25,11 +25,11 @@ def get_bibtex(note, anonymous=True):
         authors = ', '.join(note.content['authors'])
 
     return '@article{\
-        \n' + first_author_last_name + '2017' + first_word + ',\
+        \n' + first_author_last_name + '2018' + first_word + ',\
         \ntitle={' + note.content['title'] + '},\
         \nauthor={' + authors + '},\
         \njournal={International Conference on Learning Representations},\
-        \nyear={2017}\
+        \nyear={2018}\
     \n}'
 
 

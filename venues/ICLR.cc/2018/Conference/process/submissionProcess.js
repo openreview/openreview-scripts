@@ -16,11 +16,11 @@ function() {
       var firstWord = note.content.title.split(' ')[0].toLowerCase();
 
       return '@article{\
-          \nanonymous2017' + firstWord + ',\
+          \nanonymous2018' + firstWord + ',\
           \ntitle={' + note.content.title + '},\
           \nauthor={Anonymous},\
           \njournal={International Conference on Learning Representations},\
-          \nyear={2017}\
+          \nyear={2018}\
       \n}'
     };
 
