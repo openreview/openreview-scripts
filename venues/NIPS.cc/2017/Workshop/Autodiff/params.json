@@ -5,10 +5,10 @@
     "submission_name": "Submission", 
     "url": "https://autodiff-workshop.github.io/", 
     "conference_phrase": "NIPS 2017 Autodiff Workshop", 
-    "reviewduedate_input": "03/11/2017", 
+    "reviewduedate_input": "10/11/2017",
     "duetime_input": "23:59", 
-    "human_duedate": "October 14, 2017 at midnight UTC", 
+    "human_duedate": "October 28, 2017 at midnight UTC",
     "conference_date": "December 9, 2017", 
-    "duedate_input": "14/10/2017", 
+    "duedate_input": "28/10/2017",
     "conference_location": "Long Beach, California"
 }
