@@ -226,6 +226,14 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
           '</a>',
         '</li>'
       ].join(''));
+
+      $('#my-tasks .submissions-list').prepend([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + CONFERENCE + '/Program_Chairs">',
+            'ICLR 2018 Program Chair Console',
+          '</a>',
+        '</li>'
+      ].join(''));
     }
   } else {
     $('.tabs-container a[href="#my-tasks"]').parent().hide();
