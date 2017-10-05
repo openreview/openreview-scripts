@@ -27,6 +27,11 @@ OPTIONAL ARGUMENTS
 
 """
 
+def parse_json(file):
+    json_string = open(os.path.join(os.path.dirname(__file__), file), 'r').read()
+    json_parsed = re.sub('\/\*[^*]+\*\/|\s|\n', '', json_string)
+    return json.loads(json_parsed)
+
 def build_directory(directory_path):
 
     # create the subdirectories if they don't exist
@@ -124,23 +129,24 @@ def build_groups(conference_group_id):
 
         client.register_user(email = username, password=password,first=firstname,last=lastname)
 
-        manual_activation = raw_input("Would you like to enter the activation token now? (y/[n]): ")
-        manual_activation = manual_activation.lower() == 'y'
+        admin_activated = False
+        while not admin_activated:
+            manual_activation = raw_input("Would you like to enter the activation token now? (y/[n]): ")
+            manual_activation = manual_activation.lower() == 'y'
 
-        if manual_activation:
-            valid_token = False
-            while not valid_token:
+            if manual_activation:
                 try:
                     token = raw_input("Please provide the confirmation token: ")
                     activation = client.activate_user(token = token)
                     print "Admin account activated."
                     print "UserID: ", activation['user']['profile']['id']
                     print "Login: ", username
-                    valid_token = True
+                    admin_activated = True
                 except:
                     print "Invalid token."
-        else:
-            print "Admin account not activated. Please respond to the email confirmation sent to %s" % username
+            else:
+                print "Admin account not activated. Please respond to the email confirmation sent to %s" % username
+                admin_activated = True
         client.add_members_to_group(admin_group, [username])
         print "Added %s to %s" % (username, args.conf)
 
@@ -157,12 +163,6 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 directory_path = os.path.join(os.path.dirname(__file__), '../venues/{0}'.format(args.conf))
 conference_group_id = args.conf
-
-def parse_json(file):
-    json_string = open(os.path.join(os.path.dirname(__file__), file), 'r').read()
-
-    json_stripped = re.sub('\/\*[^*]+\*\/|\s', '', json_string.replace('\n',''))
-    return json.loads(json_stripped)
 
 # load data
 data = parse_json(args.data)
