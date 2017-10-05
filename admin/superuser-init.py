@@ -8,7 +8,13 @@ import openreview
 import datetime
 
 """
-REQUIRED ARGUMENTS
+This script should be used by OpenReview administrators to automatically build
+the basic infrastructure for a new conference. It will create (or fill in as
+needed) a directory under openreview-scripts/venues with the necessary
+subdirectories, and will generate the scripts, webfields, and process functions
+needed to run a simple conference.
+
+REQUIRED KEYWORD ARGUMENTS
     conf - the full path of the conference group you would like to create.
         e.g. auai.org/UAI/2017
         A directory with path exactly equal to the conference group ID
@@ -17,7 +23,7 @@ REQUIRED ARGUMENTS
     data - a file containing parameters of the conference.
         See openreview-scripts/admin/conference-template/params.data
 
-OPTIONAL ARGUMENTS
+OPTIONAL KEYWORD ARGUMENTS
     overwrite - if present, overwrites the conference directory.
     baseurl -  the URL of the OpenReview server to connect to (live site:
         https://openreview.net)
@@ -35,7 +41,7 @@ def parse_json(file):
 def build_directory(directory_path):
 
     # create the subdirectories if they don't exist
-    for subpath in ['/python','/webfield','/process','/data']:
+    for subpath in ['','/python','/webfield','/process','/data']:
         path = '{0}/{1}'.format(directory_path, subpath)
         if not os.path.exists(path):
             print "Creating directory {0}".format(path)
@@ -65,96 +71,27 @@ def build_groups(conference_group_id):
     path_components = conference_group_id.split('/')
     paths = ['/'.join(path_components[0:index+1]) for index, path in enumerate(path_components)]
 
-    # We need to check if ancestor groups of the conference exist.
-    # If they don't, they must be created before continuing.
-    for p in paths:
-        if not client.exists(p) and p != conference_group_id:
-            group = client.post_group(openreview.Group(
-                p,
-                readers = ['everyone'],
-                writers = [],
-                signatures = [],
-                signatories = [],
-                members = []
-            ))
-            print "Posting group: ", p
+    empty_params = {
+        'readers': ['everyone'],
+        'writers': [],
+        'signatures': [],
+        'signatories': [],
+        'members': []
+    }
 
-    # create conference group
-    if not client.exists(conference_group_id):
-        print "Posting group: ", conference_group_id
-        conf_group = client.post_group(openreview.Group(
-            conference_group_id,
-            readers = ['everyone'],
-            writers = [conference_group_id],
-            signatories = [conference_group_id]
-        ))
-    else:
-        print "Group %s already exists" % conference_group_id
-        conf_group = client.get_group(conference_group_id)
+    groups = {p: openreview.Group(p, **empty_params) for p in paths}
+    groups[conference_group_id].writers = groups[conference_group_id].signatories = [conference_group_id]
 
-    # create admin group
-    admin = conference_group_id + '/Admin'
-    if not client.exists(admin):
-        admin_group = client.post_group(openreview.Group(
-            admin,
-            readers = [admin],
-            signatories = [admin]
-        ))
-        print "Posting group: ", admin
-    else:
-        print "Group %s already exists" % admin
-        admin_group = client.get_group(admin)
+    admin_id = conference_group_id + '/Admin'
+    groups[admin_id] = openreview.Group(admin_id, readers=[admin_id], signatories=[admin_id])
 
-
-    # add admin group to the conference members
-    client.add_members_to_group(conf_group, [admin])
-
-    # create admin user
-    create_admin = raw_input("Create administrator login? (y/[n]): ").lower()
-    if create_admin == 'y' or create_admin == 'yes':
-        default_username = conference_group_id.split('/')[-1].lower()+'_admin'
-        username = raw_input("Please provide administrator login, in lowercase, with no spaces (default: {0}): ".format(default_username))
-        if not username.strip(): username = default_username
-        firstname = raw_input("Please provide administrator first name: ")
-        lastname = raw_input("Please provide administrator last name: ")
-
-        passwords_match = False
-        while not passwords_match:
-            password = getpass.getpass("Please provide a new administrator password: ")
-            passwordconfirm = getpass.getpass("Please confirm the new password: ")
-
-            passwords_match = password == passwordconfirm
-            if not passwords_match:
-                print "Passwords do not match."
-
-        client.register_user(email = username, password=password,first=firstname,last=lastname)
-
-        admin_activated = False
-        while not admin_activated:
-            manual_activation = raw_input("Would you like to enter the activation token now? (y/[n]): ")
-            manual_activation = manual_activation.lower() == 'y'
-
-            if manual_activation:
-                try:
-                    token = raw_input("Please provide the confirmation token: ")
-                    activation = client.activate_user(token = token)
-                    print "Admin account activated."
-                    print "UserID: ", activation['user']['profile']['id']
-                    print "Login: ", username
-                    admin_activated = True
-                except:
-                    print "Invalid token."
-            else:
-                print "Admin account not activated. Please respond to the email confirmation sent to %s" % username
-                admin_activated = True
-        client.add_members_to_group(admin_group, [username])
-        print "Added %s to %s" % (username, args.conf)
+    return groups
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--conf', required=True, help = "the full path of the conference group to create")
-parser.add_argument('-d', '--data', required=True, help = "a .json file containing parameters. For each parameter present, the corresponding user prompt will be skipped and replaced with that value.")
-parser.add_argument('--overwrite', action='store_true', help="if true, overwrites the conference directory")
+parser.add_argument('-c', '--conf', required=True, help = "the full path of the conference group to create.")
+parser.add_argument('-d', '--data', required=True, help = "a .data file containing parameters.")
+parser.add_argument('--overwrite', action='store_true', help="if true, overwrites the conference directory.")
 parser.add_argument('--baseurl')
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -184,9 +121,21 @@ templates = [
 for file in templates:
     generate_file(file, directory_path, data, overwrite = args.overwrite)
 
-build_groups(conference_group_id)
+groups = build_groups(conference_group_id)
 
+print "created the following groups:"
+for g in groups: print g
 
+post_groups = raw_input("Post groups? (y/[n]): ").lower()
+
+if post_groups == 'y' or 'yes':
+    for g in groups:
+        try:
+            client.post_group(groups[g])
+        except:
+            print groups[g]
+    # add admin group to the conference members
+    client.add_members_to_group(groups[conference_group_id], conference_group_id + '/Admin')
 
 
 
