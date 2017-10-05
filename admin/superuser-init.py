@@ -126,12 +126,12 @@ groups = build_groups(conference_group_id)
 print "created the following groups:"
 for g in groups: print g
 
-post_groups = raw_input("Post groups? (y/[n]): ").lower()
+post_groups = raw_input("Post groups to {0}? (y/[n]): ".format(client.baseurl)).lower()
 
-if post_groups == 'y' or 'yes':
-    for g in groups:
+if post_groups == 'y':
+    for g in sorted([g for g in groups]):
+        print "posting group {0}".format(g)
         client.post_group(groups[g])
-        print groups[g]
     # add admin group to the conference members
     client.add_members_to_group(groups[conference_group_id], conference_group_id + '/Admin')
 
