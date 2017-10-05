@@ -130,10 +130,8 @@ post_groups = raw_input("Post groups? (y/[n]): ").lower()
 
 if post_groups == 'y' or 'yes':
     for g in groups:
-        try:
-            client.post_group(groups[g])
-        except:
-            print groups[g]
+        client.post_group(groups[g])
+        print groups[g]
     # add admin group to the conference members
     client.add_members_to_group(groups[conference_group_id], conference_group_id + '/Admin')
 
