@@ -6,9 +6,9 @@ function () {
 
     // send author a confirmation email
   var author_mail = {
-    "groups": note.content.authorids,
-    "subject": "Your submission to " + SHORT_PHRASE + " has been received: \"" + note.content.title + "\"",
-    "message": "Your submission to " + SHORT_PHRASE + " has been posted.\n\nTitle: " + note.content.title + "\n\nAbstract: " + note.content.abstract + "\n\nTo view your submission, click here: " + baseUrl + "/forum?id=" + note.forum
+    'groups': note.content.authorids,
+    'subject': 'Your submission to ' + SHORT_PHRASE + ' has been received: \"' + note.content.title + '\"',
+    'message': 'Your submission to ' + SHORT_PHRASE + ' has been posted.\n\nTitle: ' + note.content.title + '\n\nAbstract: ' + note.content.abstract + '\n\nTo view your submission, click here: ' + baseUrl + '/forum?id=' + note.forum
   };
 
     // create revision invitation
