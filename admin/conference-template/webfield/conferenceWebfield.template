@@ -7,8 +7,8 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE = <<CONF>>;
-var INVITATION = CONFERENCE + '/-/<<SUBMISSION_NAME>>';
+var CONFERENCE_ID = '<<CONFERENCE_ID>>';
+var INVITATION = CONFERENCE_ID + '/-/<<SUBMISSION_NAME>>';
 var SUBJECT_AREAS = [
   // Add conference specific subject areas here
 ];
@@ -23,7 +23,7 @@ var paperDisplayOptions = {
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
-  Webfield.ui.setup('#group-container', CONFERENCE);  // required
+  Webfield.ui.setup('#group-container', CONFERENCE_ID);  // required
 
   renderConferenceHeader();
 
@@ -36,13 +36,13 @@ function main() {
 // never changes, put it in its own function
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
-    title: <<TITLE>>,
-    subtitle: <<SUBTITLE>>,
-    location: <<LOCATION>>,
-    date: <<CONF_DATE>>,
-    website: <<URL>>,
+    title: '<<TITLE>>',
+    subtitle: '<<SUBTITLE>>',
+    location: '<<LOCATION>>',
+    date: '<<EVENT_DATE>>',
+    website: '<<URL>>',
     instructions: null,  // Add any custom instructions here. Accepts HTML
-    deadline: "Submission Deadline: <<DATE>>"
+    deadline: "<<DEADLINE>>"
   });
 
   Webfield.ui.spinner('#notes');

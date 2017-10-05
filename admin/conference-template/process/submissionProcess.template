@@ -1,23 +1,23 @@
 function () {
   var or3client = lib.or3client;
 
-  var CONFERENCEPHRASE = <<PHRASE>>;
-  var CONF = <<CONF>>;
+  var SHORT_PHRASE = '<<SHORT_PHRASE>>';
+  var CONFERENCE_ID = '<<CONFERENCE_ID>>';
 
     // send author a confirmation email
   var author_mail = {
     "groups": note.content.authorids,
-    "subject": "Your submission to "+ CONFERENCEPHRASE +" has been received: \"" + note.content.title + "\"",
-    "message": "Your submission to "+ CONFERENCEPHRASE + " has been posted.\n\nTitle: " + note.content.title + "\n\nAbstract: " + note.content.abstract + "\n\nTo view your submission, click here: " + baseUrl+"/forum?id=" + note.forum
+    "subject": "Your submission to " + SHORT_PHRASE + " has been received: \"" + note.content.title + "\"",
+    "message": "Your submission to " + SHORT_PHRASE + " has been posted.\n\nTitle: " + note.content.title + "\n\nAbstract: " + note.content.abstract + "\n\nTo view your submission, click here: " + baseUrl + "/forum?id=" + note.forum
   };
 
     // create revision invitation
   var revisionInvitation = {
-        id: CONF + '/-/Paper'+note.number+'/Add/Revision',
+        id: CONFERENCE_ID + '/-/Paper'+note.number+'/Add/Revision',
         readers: ['everyone'],
-        writers: [CONF],
+        writers: [CONFERENCE_ID],
         invitees: note.content['authorids'],
-        signatures: [CONF],
+        signatures: [CONFERENCE_ID],
         duedate: invitation.duedate,
         reply: {
             referent: note.id,
