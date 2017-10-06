@@ -125,7 +125,6 @@ templates = [
     'python/config.template',
     'python/admin-init.template',
     'webfield/conferenceWebfield.template',
-    'webfield/programchairWebfield.template',
     'process/submissionProcess.template',
     'process/commentProcess.template',
     'process/officialReviewProcess.template',
