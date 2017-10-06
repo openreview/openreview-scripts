@@ -6,6 +6,7 @@ import argparse
 import getpass
 import openreview
 import datetime
+import ConfigParser
 
 """
 This script should be used by OpenReview administrators to automatically build
@@ -33,15 +34,20 @@ OPTIONAL KEYWORD ARGUMENTS
 
 """
 
-def parse_json(file):
-    json_string = open(os.path.join(os.path.dirname(__file__), file), 'r').read()
-    json_parsed = re.sub('\/\*[^*]+\*\/|\s|\n', '', json_string)
-    return json.loads(json_parsed)
+def parse_properties(file):
+    config = ConfigParser.RawConfigParser()
+    config.read(file)
+    return {key.upper(): value for key, value in config.items('properties')}
 
-def build_directory(directory_path):
+def build_directories(paths, directory_path):
+
+    # create main directory if it doesn't exist
+    if not os.path.exists(directory_path):
+        print "Creating directory {0}".format(directory_path)
+        os.makedirs(directory_path)
 
     # create the subdirectories if they don't exist
-    for subpath in ['','/python','/webfield','/process','/data']:
+    for subpath in paths:
         path = '{0}/{1}'.format(directory_path, subpath)
         if not os.path.exists(path):
             print "Creating directory {0}".format(path)
@@ -54,13 +60,13 @@ def generate_file(template_path, directory_path, data, overwrite = False):
     ext = '.py' if 'python' in template_path else '.js'
     newfile_path = directory_path + '/' + template_path.replace('.template', ext)
 
-    with open(os.path.join(os.path.dirname(__file__), './conference-template/{0}'.format(template_path))) as template:
-        template_string = template.read()
-
-    for replacement in data:
-        template_string = template_string.replace(replacement, data[replacement])
-
     if not os.path.exists(newfile_path) or overwrite:
+        with open(os.path.join(os.path.dirname(__file__), './conference-template/{0}'.format(template_path))) as template:
+            template_string = template.read()
+
+        for replacement in data:
+            template_string = template_string.replace('<<{0}>>'.format(replacement), data[replacement])
+
         with open(newfile_path, 'w') as newfile:
             print "writing {0}".format(newfile_path)
             newfile.write(template_string)
@@ -90,7 +96,7 @@ def build_groups(conference_group_id):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--conf', required=True, help = "the full path of the conference group to create.")
-parser.add_argument('-d', '--data', required=True, help = "a .data file containing parameters.")
+parser.add_argument('-d', '--data', help = "a .properties file containing parameters.")
 parser.add_argument('--overwrite', action='store_true', help="if true, overwrites the conference directory.")
 parser.add_argument('--baseurl')
 parser.add_argument('--username')
@@ -102,10 +108,18 @@ directory_path = os.path.join(os.path.dirname(__file__), '../venues/{0}'.format(
 conference_group_id = args.conf
 
 # load data
-data = parse_json(args.data)
+data = parse_properties(args.data if args.data else directory_path + '/.properties')
+
+
+subdirectories = [
+    '/python',
+    '/webfield',
+    '/process',
+    '/data'
+]
 
 # build the directory structure
-build_directory(directory_path)
+build_directories(subdirectories, directory_path)
 
 templates = [
     'python/config.template',
@@ -123,17 +137,11 @@ for file in templates:
 
 groups = build_groups(conference_group_id)
 
-print "created the following groups:"
-for g in groups: print g
-
-post_groups = raw_input("Post groups to {0}? (y/[n]): ".format(client.baseurl)).lower()
-
-if post_groups == 'y':
-    for g in sorted([g for g in groups]):
-        print "posting group {0}".format(g)
-        client.post_group(groups[g])
-    # add admin group to the conference members
-    client.add_members_to_group(groups[conference_group_id], conference_group_id + '/Admin')
+for g in sorted([g for g in groups]):
+    print "posting group {0}".format(g)
+    client.post_group(groups[g])
+# add admin group to the conference members
+client.add_members_to_group(groups[conference_group_id], conference_group_id + '/Admin')
 
 
 
