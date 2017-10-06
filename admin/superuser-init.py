@@ -96,7 +96,7 @@ def build_groups(conference_group_id):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--venue', required=True, help = "the full path of the conference group to create.")
-parser.add_argument('-d', '--data', help = "a .properties file containing parameters. This script will automatically look for a file called config.properties in the directory specified by the `--venue` argument.")
+parser.add_argument('-d', '--config', help = "a .properties file containing configuration parameters. This script will automatically look for a file called config.properties in the directory specified by the `--venue` argument.")
 parser.add_argument('--overwrite', action='store_true', help="if true, overwrites the conference directory.")
 parser.add_argument('--baseurl')
 parser.add_argument('--username')
@@ -108,7 +108,7 @@ directory_path = os.path.join(os.path.dirname(__file__), '../venues/{0}'.format(
 conference_group_id = args.venue
 
 # load data
-data = parse_properties(args.data if args.data else directory_path + '/config.properties')
+data = parse_properties(args.config if args.config else directory_path + '/config.properties')
 
 
 subdirectories = [

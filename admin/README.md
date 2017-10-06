@@ -10,6 +10,6 @@ Example:
 >> superuser-init.py --venue myconf.org/MYCONF/2017
 ```
 
-`superuser-init.py` will automatically look for a file called config.properties in the directory specified by the `--venue` argument. You can specify a .properties file by passing it into the `--data` argument.
+`superuser-init.py` will automatically look for a file called config.properties in the directory specified by the `--venue` argument. You can specify a .properties file by passing it into the `--config` argument.
 
 The script will generate a python script called `python/admin-init.py` in the conference's directory. This is used to initiate the conference.
