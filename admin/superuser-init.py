@@ -95,7 +95,7 @@ def build_groups(conference_group_id):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--conf', required=True, help = "the full path of the conference group to create.")
+parser.add_argument('-v', '--venue', required=True, help = "the full path of the conference group to create.")
 parser.add_argument('-d', '--data', help = "a .properties file containing parameters.")
 parser.add_argument('--overwrite', action='store_true', help="if true, overwrites the conference directory.")
 parser.add_argument('--baseurl')
@@ -104,8 +104,8 @@ parser.add_argument('--password')
 args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-directory_path = os.path.join(os.path.dirname(__file__), '../venues/{0}'.format(args.conf))
-conference_group_id = args.conf
+directory_path = os.path.join(os.path.dirname(__file__), '../venues/{0}'.format(args.venue))
+conference_group_id = args.venue
 
 # load data
 data = parse_properties(args.data if args.data else directory_path + '/.properties')
