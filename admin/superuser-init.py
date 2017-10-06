@@ -37,7 +37,7 @@ OPTIONAL KEYWORD ARGUMENTS
 def parse_properties(file):
     config = ConfigParser.RawConfigParser()
     config.read(file)
-    return {key.upper(): value for key, value in config.items('properties')}
+    return {key.upper(): value for key, value in config.items('config')}
 
 def build_directories(paths, directory_path):
 
@@ -108,7 +108,7 @@ directory_path = os.path.join(os.path.dirname(__file__), '../venues/{0}'.format(
 conference_group_id = args.venue
 
 # load data
-data = parse_properties(args.data if args.data else directory_path + '/.properties')
+data = parse_properties(args.data if args.data else directory_path + '/config.properties')
 
 
 subdirectories = [
