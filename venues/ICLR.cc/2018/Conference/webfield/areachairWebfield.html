@@ -188,7 +188,7 @@ $(function() {
     var tableHTML = Handlebars.templates['components/table']({
       headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
       rows: rowData,
-      extraClasses: 'uai-console-table' //TODO: this shouldn't be conference specific
+      extraClasses: 'console-table'
     });
 
     $(container).empty().append(tableHTML);
