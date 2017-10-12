@@ -38,43 +38,42 @@ import config
 
 ### update authors lists
 all_authors = []
-submissions = client.get_notes(invitation=config.SUBMISSION)
+submissions_by_forum = {n.forum: n for n in client.get_notes(invitation=config.SUBMISSION)}
 blinded = client.get_notes(invitation=config.BLIND_SUBMISSION)
+
 for blind_note in blinded:
     #find associated note in Submissions to get true authors
     parent_forum = blind_note.original
+    num_str = str(blind_note.number)
     note_authors = []
     found_profile = False
-    #for parent_notes = submissions[].forum == note.original
-    for note in submissions:
-        if note.forum == parent_forum:
-            # found parent note
-            num_str = str(note.number)
-            paper_id = config.CONF + "/-/Paper"+num_str
-            # convert email ids to twiddle ids where possible
-            for email in note.content['authorids']:
-                email = email.lower()
-                try:
-                    profile = client.get_profile(email)
-                    note_authors.append(profile.id)
-                    found_profile = True
-                    #print "found profile "+email
-                except openreview.OpenReviewException as e:
-                    # no ~id, use the email
-                    note_authors.append(email)
-                    #print "no profile "+email
+    note = submissions_by_forum[blind_note.original]
 
-            # if we don't have any profiles for the authorids,
-            # add the ID of the person who submitted the paper.
-            if found_profile == False:
-                note_authors.append(note.signatures[0])
+    # convert email ids to twiddle ids where possible
+    for email in note.content['authorids']:
+        email = email.lower()
+        try:
+            profile = client.get_profile(email)
+            note_authors.append(profile.id)
+            found_profile = True
+            #print "found profile "+email
+        except openreview.OpenReviewException as e:
+            if e[0][0] == 'Profile not found':
+                # no ~id, use the email
+                note_authors.append(email)
+            else:
+                print "OpenReviewException: {0}".format(e)
 
-            # update paper author group
-            author_group = client.get_group(config.CONF+"/Paper"+num_str+"/Authors")
-            author_group.members = note_authors
-            client.post_group(author_group)
-            ## There should only be one parent
-            break
+    # if we don't have any profiles for the authorids,
+    # add the ID of the person who submitted the paper.
+    if found_profile == False:
+        note_authors.append(note.signatures[0])
+
+    # update paper author group
+    author_group = client.get_group(config.CONF+"/Paper"+num_str+"/Authors")
+    author_group.members = note_authors
+    client.post_group(author_group)
+
     ## check for withdrawal
     if "withdrawal" not in blind_note.content or blind_note.content['withdrawal'] != "Confirmed":
         # Not withdrawn, therefore add to all_authors
