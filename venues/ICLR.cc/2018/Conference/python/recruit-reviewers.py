@@ -14,7 +14,8 @@ import config
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('file', help="a csv file containing the email addresses of the reviewers")
+parser.add_argument('-f', '--file', help="a csv file containing the email addresses of the reviewers")
+parser.add_argument('-e', '--email', metavar='N', type=str, nargs='+', help="emails separated by space")
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -90,17 +91,24 @@ if client.exists(config.REVIEWERS_INVITED) and client.exists(config.REVIEWERS_EM
     reviewers_invited = client.get_group(config.REVIEWERS_INVITED)
     reviewers_emailed = client.get_group(config.REVIEWERS_EMAILED)
 
-    with open(args.file, 'rb') as csvfile:
-        for row in csv.reader(csvfile):
+    if args.file:
+        with open(args.file, 'rb') as csvfile:
             # This assumes a csv file with rows formatted as follows:
             # email_address,~tilde_name1
-            reviewer = row[0]
-            print 'reviewer:', reviewer
-            client.add_members_to_group(reviewers_invited, reviewer)
+            reviewer_list = [row[0] for row in csv.reader(csvfile)]
 
-            if reviewer not in reviewers_emailed.members:
-                sendMail(reviewer)
-                client.add_members_to_group(reviewers_emailed, reviewer)
+    if args.email:
+        reviewer_list = args.email
+
+    for reviewer in reviewer_list:
+        print 'reviewer:', reviewer
+        client.add_members_to_group(reviewers_invited, reviewer)
+
+        if reviewer not in reviewers_emailed.members:
+            sendMail(reviewer)
+            client.add_members_to_group(reviewers_emailed, reviewer)
+        else:
+            print "{0} found in {1}".format(reviewer, config.REVIEWERS_EMAILED)
 
 else:
     print "Error while retrieving groups"
