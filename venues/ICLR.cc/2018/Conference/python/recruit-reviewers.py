@@ -26,9 +26,7 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 
-message = """
-
-Dear Reviewer,
+message = """Dear Reviewer,
 
 We are writing to invite you to be a reviewer for the 6th International Conference on Learning Representations (ICLR 2018); see call for papers at: www.iclr.cc. As a recognized researcher by the ICLR community, we hope you can contribute to the review process of ICLR 2018.
 
@@ -72,8 +70,6 @@ Hugo Larochelle, Steering Committee
 Aaron Courville, Steering Committee
 Yoshua Bengio, General Chair
 Yann Lecun, General Chair
-
-
 
 """
 
