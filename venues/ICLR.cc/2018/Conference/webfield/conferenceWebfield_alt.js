@@ -55,7 +55,10 @@ function main() {
     return false;
   });
   $('#notes').append(
-    $('<p>').text('To view the list of ICLR 2018 Conference submissions, click here: ').append($btn)
+    $('<p>', {
+      class: 'lazy-load-message',
+      text: 'To view the list of ICLR 2018 Conference submissions, click here: '
+    }).append($btn)
   );
 }
 
@@ -128,7 +131,14 @@ function renderSubmissionButton() {
       Webfield.ui.submissionButton(invitation, user, {
         onNoteCreated: function() {
           // Callback funtion to be run when a paper has successfully been submitted (required)
-          load().then(renderContent);
+          $('#notes .lazy-load-message').remove();
+          load().then(renderContent).then(function() {
+            $('.tabs-container a[href="#all-submitted-papers"]').click();
+            // Scroll so tabs container is in view, with submission at the top
+            // 51 is the height of the nav bar, 14 is extra padding
+            var scrollPos = $('#invitation').offset().top - 51 - 14;
+            $('html, body').animate({scrollTop: scrollPos}, 600);
+          });
         }
       });
     });
