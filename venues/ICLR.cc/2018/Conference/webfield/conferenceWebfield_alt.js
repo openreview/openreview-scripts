@@ -122,7 +122,7 @@ function renderConferenceHeader() {
     deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
   });
 
-  //Webfield.ui.spinner('#notes');
+  // Webfield.ui.spinner('#notes');
 }
 
 function renderSubmissionButton() {
@@ -207,14 +207,19 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   });
 
   var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
-  assignedNotes = _.filter(notes, function(n) {
-    return _.includes(assignedPaperNumbers, n.number);
+  assignedNotes = _.filter(assignedNotePairs, function(pair) {
+    return pair.replyToNote;
   });
+  if (assignedPaperNumbers.length !== assignedNotes.length) {
+    console.warn('WARNING: The number of assigned notes returned by API does not ' +
+      'match the number of assigned note groups the user is a member of.');
+  }
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-  submittedNotes = _.filter(notes, function(n) {
-    return _.includes(authorPaperNumbers, n.number);
-  });
+  if (authorPaperNumbers.length !== submittedNotes.length) {
+    console.warn('WARNING: The number of submitted notes returned by API does not ' +
+      'match the number of submitted note groups the user is a member of.');
+  }
 
   // My Tasks tab
   if (userGroups.length) {
