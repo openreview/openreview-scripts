@@ -184,11 +184,16 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   // }
 
   commentNotes = [];
+  submittedPapers = [];
   _.forEach(submittedNotes, function(note) {
-    if (_.startsWith(note.invitation, CONFERENCE) &&
-        !COMMENT_EXCLUSION.includes(note.invitation) &&
-        _.isNil(note.ddate)) {
-      // TODO: remove this client side filtering when DB query is fixed
+    if (_.isNil(note.ddate)) {
+      return;
+    }
+
+    if (note.invitation === INVITATION) {
+      submittedPapers.push(note);
+    } else if (note.invitation !== RECRUIT_REVIEWERS) {
+      // ICLR specific: Not all conferences will have this invitation
       commentNotes.push(note);
     }
   });
@@ -216,7 +221,7 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   }
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-  if (authorPaperNumbers.length !== submittedNotes.length) {
+  if (authorPaperNumbers.length !== submittedPapers.length) {
     console.warn('WARNING: The number of submitted notes returned by API does not ' +
       'match the number of submitted note groups the user is a member of.');
   }
@@ -297,9 +302,9 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   }
 
   // My Submitted Papers tab
-  if (submittedNotes.length) {
+  if (submittedPapers.length) {
     Webfield.ui.searchResults(
-      submittedNotes,
+      submittedPapers,
       _.assign({}, paperDisplayOptions, {container: '#my-submitted-papers'})
     );
   } else {
