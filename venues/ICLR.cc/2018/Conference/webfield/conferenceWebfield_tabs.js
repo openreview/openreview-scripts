@@ -107,8 +107,11 @@ function renderConferenceHeader() {
       To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
       Revisions are not allowed during the formal review process.\
       Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
-      <p><strong>Please contact the OpenReview support team at \
-      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns. \</strong></p>',
+      <p><strong>Questions or Concerns:</strong></p> \
+      <p>Please contact the OpenReview support team at \
+      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</p> \
+      <p>Please contact the ICLR 2018 Program Chairs at \
+      <a href="mailto:iclr2018.programchairs@gmail.com">iclr2018.programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
     deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
   });
 
