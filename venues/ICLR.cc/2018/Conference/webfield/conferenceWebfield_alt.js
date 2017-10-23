@@ -275,7 +275,10 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
       enabled: true,
       subjectAreas: SUBJECT_AREAS_LIST,
       onResults: function(searchResults) {
-        Webfield.ui.searchResults(searchResults, submissionListOptions);
+        var blindedSearchResults = searchResults.filter(function(note) {
+          return note.invitation === BLIND_INVITATION;
+        });
+        Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
         Webfield.disableAutoLoading();
       },
       onReset: function() {
