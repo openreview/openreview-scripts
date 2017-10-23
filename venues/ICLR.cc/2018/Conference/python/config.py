@@ -129,7 +129,7 @@ submission_params = {
             'values-copied': [CONF, PROGRAM_CHAIRS, '{content.authorids}', '{signatures}']
         },
         'signatures': {
-            'description': 'How your identity will be displayed with the above content.',
+            'description': 'Your authorized identity to be associated with the above content.',
             'values-regex': '~.*'
         },
         'writers': {
