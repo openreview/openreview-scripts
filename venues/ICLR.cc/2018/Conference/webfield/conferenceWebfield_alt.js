@@ -211,7 +211,7 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   });
 
   var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
-  assignedNotes = _.filter(assignedNotePairs, function(pair) {
+  assignedNotes = assignedNotePairs.map(function(pair) {
     return pair.replyToNote;
   });
   if (assignedPaperNumbers.length !== assignedNotes.length) {
