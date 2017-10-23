@@ -186,10 +186,9 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   commentNotes = [];
   submittedPapers = [];
   _.forEach(submittedNotes, function(note) {
-    if (_.isNil(note.ddate)) {
+    if (!_.isNil(note.ddate)) {
       return;
     }
-
     if (note.invitation === INVITATION) {
       submittedPapers.push(note);
     } else if (note.invitation !== RECRUIT_REVIEWERS) {
