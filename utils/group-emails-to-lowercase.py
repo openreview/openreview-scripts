@@ -58,21 +58,24 @@ def has_uppercase(value):
 # locate emails w/ uppercase letters
 #   replace with lowercase email
 def upper_to_lower(group_name):
-    target_group = client.get_group(group_name)
+    target_group = get_group(group_name)
     upper_emails = []
     lower_emails = []
-    for email in target_group.members:
-        if '@' in email:
-            ### find emails with uppercase
-            if has_uppercase(email):
-                ## has uppercase chars, convert to lowercase
+    if target_group == None:
+        print "ERROR: invalid group id {0}".format(group_name)
+    else:
+        for email in target_group.members:
+            if '@' in email and has_uppercase(email):
+                # find emails with uppercase
+                # has uppercase chars, convert to lowercase
                 print email
                 lower = email.lower()
                 upper_emails.append(email)
                 lower_emails.append(lower)
-    ### replace uppercase w/ lowercase emails
-    client.remove_members_from_group(target_group,upper_emails)
-    client.add_members_to_group(target_group, lower_emails)
+        ### replace uppercase w/ lowercase emails
+        print "Replace emails with lowercase: {0}".format(upper_emails)
+        client.remove_members_from_group(target_group,upper_emails)
+        client.add_members_to_group(target_group, lower_emails)
     return upper_emails
 
 # print uppercase profiles and groups found
@@ -85,11 +88,11 @@ def find_upper_email_references(upper_emails):
             print "ERROR: Uppercase profile for {0} with id {1}".format(email, profile.id)
         group = get_group(email)
         if group != None:
-            print "ERROR: Uppercase group {0} exists. Members:{1}".format(email, group.members)
-            lower = email.lower()
-            lower_group = get_group(lower)
-            if lower_group != None:
-                print "Lowercase group {0} exists. Members:{1}".format(lower, group.members)
+            if len(group.members) > 0:
+                print "ERROR: Uppercase group {0} has edges. Members:{1}".format(email, group.members)
+            else:
+                print "ERROR: Uppercase group {0} exists with no members.".format(email)
+
 
 emails = upper_to_lower(args.group)
 find_upper_email_references(emails)
