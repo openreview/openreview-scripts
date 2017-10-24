@@ -134,14 +134,22 @@ function renderSubmissionButton() {
       Webfield.ui.submissionButton(invitation, user, {
         onNoteCreated: function() {
           // Callback funtion to be run when a paper has successfully been submitted (required)
-          $('#notes .lazy-load-message').remove();
-          load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#all-submitted-papers"]').click();
-            // Scroll so tabs container is in view, with submission at the top
-            // 51 is the height of the nav bar, 14 is extra padding
-            var scrollPos = $('#invitation').offset().top - 51 - 14;
-            $('html, body').animate({scrollTop: scrollPos}, 600);
-          });
+          promptMessage(
+            '<span class="important_message">' +
+              'Your submission to ICLR 2018 is complete. To view the list of ' +
+              'all current submissions click <strong>Load Submissions</strong> below.' +
+            '</span>',
+            {html: true, noTimeout: true}
+          );
+
+          // $('#notes .lazy-load-message').remove();
+          // load().then(renderContent).then(function() {
+          //   $('.tabs-container a[href="#all-submitted-papers"]').click();
+          //   // Scroll so tabs container is in view, with submission at the top
+          //   // 51 is the height of the nav bar, 14 is extra padding
+          //   var scrollPos = $('#invitation').offset().top - 51 - 14;
+          //   $('html, body').animate({scrollTop: scrollPos}, 600);
+          // });
         }
       });
     });
