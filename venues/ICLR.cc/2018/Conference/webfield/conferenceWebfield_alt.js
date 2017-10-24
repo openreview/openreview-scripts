@@ -296,7 +296,7 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     fadeIn: false
   });
 
-  if (notes.length === PAGE_SIZE) {
+  if (allNotes.length === PAGE_SIZE) {
     Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
   }
 
