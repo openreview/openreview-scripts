@@ -108,17 +108,20 @@ function renderConferenceHeader() {
     website: 'http://www.iclr.cc',
     instructions: '<p><strong>Important Information about Anonymity:</strong><br>\
       When you post a submission to ICLR 2018, please provide the real names and email addresses of authors in the submission form below.\
-      An anonymous copy of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
-      The <em>original</em> version of your paper will be private, and will contain your real name(s); \
+      An anonymous record of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
+      The <em>original</em> record of your submission will be private, and will contain your real name(s); \
       originals can be found in your OpenReview <a href="/tasks">Tasks page</a>.\
-      You can also access the original version of your paper by clicking the "Modifiable Original" \
-      link in the discussion forum page of your paper. </p>\
+      You can also access the original record of your paper by clicking the "Modifiable Original" \
+      link in the discussion forum page of your paper. The PDF in your submission should not contain the names of the authors. </p>\
       <p><strong>Posting Revisions to Submissions:</strong><br>\
       To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
       Revisions are not allowed during the formal review process.\
       Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
-      <p><strong>Please contact the OpenReview support team at \
-      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns. \</strong></p>',
+      <p><strong>Questions or Concerns:</strong><br> \
+      Please contact the OpenReview support team at \
+      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
+      Please contact the ICLR 2018 Program Chairs at \
+      <a href="mailto:iclr2018.programchairs@gmail.com">iclr2018.programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
     deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
   });
 
