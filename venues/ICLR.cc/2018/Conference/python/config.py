@@ -228,6 +228,39 @@ blind_submission_params = {
     }
 }
 
+"""
+/-/Withdrawn_Submission
+
+This is an invitation that gets fulfilled when a user withdraws a submission
+after the submission deadline. Setting withdrawals up this way allows us to
+easily put all withdrawn notes in a single tab.
+
+"""
+WITHDRAWN_SUBMISSION = CONF + '/-/Withdrawn_Submission'
+
+withdrawn_submission_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': [CONF],
+    'signatures': [CONF],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['everyone']
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values': [CONF]
+        },
+        'writers': {
+            'values': [CONF]
+        },
+        'content': {}
+    }
+}
+
 
 """
 /-/Public_Comment
@@ -469,6 +502,7 @@ withdraw_paper_params = {
     'writers': [CONF],
     'invitees': [],
     'signatures': [CONF],
+    'process': os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/withdrawProcess_reveal.js')),
     'reply': {
         'referent': None, # replaced in invitations.py
         'forum': None, # replaced in invitations.py
@@ -485,7 +519,10 @@ withdraw_paper_params = {
         },
         'content':{
             'withdrawal': {
-                'description': 'Confirm your withdrawal',
+                # For withdrawProcess_delete.js:
+                #'description': 'Confirm your withdrawal. The blind record of your paper will be deleted. Your identity will NOT be revealed. This cannot be undone.',
+                # For withdrawProcess_reveal.js:
+                'description': 'Confirm your withdrawal. Your identity will be revealed to the public. This cannot be undone.',
                 'order': 1,
                 'value-radio': ['Confirmed'],
                 'required':True

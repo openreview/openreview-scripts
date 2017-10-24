@@ -8,6 +8,29 @@ function() {
     var AUTHORS = CONF + '/Authors';
     var BLIND_SUBMISSION = CONF + '/-/Blind_Submission';
 
+
+    var withdrawProcess = `function() {
+      var or3client = lib.or3client;
+
+      var CONF = 'ICLR.cc/2018/Conference';
+      var BLIND_INVITATION = CONF + '/-/Blind_Submission';
+
+      or3client.or3request(or3client.notesUrl + '?id=' + note.referent, {}, 'GET', token)
+      .then(result => {
+        var blindedNote = result.notes[0];
+
+        var milliseconds = (new Date).getTime();
+        blindedNote.ddate = milliseconds
+        console.log('blindedNotes ' + JSON.stringify(blindedNote))
+        return blindedNote;
+      })
+      .then(blindedNote => or3client.or3request(or3client.notesUrl, blindedNote, 'POST', token))
+      .then(result => done())
+      .catch(error => done(error));
+      return true;
+    }`
+
+
     var getBibtex = function(note) {
       var firstWord = note.content.title.split(' ')[0].toLowerCase();
 
@@ -91,6 +114,7 @@ function() {
           invitees: [authorGroupId],
           noninvitees: [],
           readers: ['everyone'],
+          process: withdrawProcess,
           reply: {
             forum: savedNote.id,
             referent: savedNote.id,
@@ -99,7 +123,7 @@ function() {
             readers: invitation.reply.readers,
             content: {
               withdrawal: {
-                description: 'Confirm your withdrawal',
+                description: 'Confirm your withdrawal. The blind record of your paper will be deleted. Your identity will NOT be revealed. This cannot be undone.',
                 order: 1,
                 'value-radio': ['Confirmed'],
                 required: true
