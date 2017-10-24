@@ -122,7 +122,7 @@ function renderConferenceHeader() {
     deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
   });
 
-  //Webfield.ui.spinner('#notes');
+  // Webfield.ui.spinner('#notes');
 }
 
 function renderSubmissionButton() {
@@ -184,11 +184,15 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   // }
 
   commentNotes = [];
+  submittedPapers = [];
   _.forEach(submittedNotes, function(note) {
-    if (_.startsWith(note.invitation, CONFERENCE) &&
-        !COMMENT_EXCLUSION.includes(note.invitation) &&
-        _.isNil(note.ddate)) {
-      // TODO: remove this client side filtering when DB query is fixed
+    if (!_.isNil(note.ddate)) {
+      return;
+    }
+    if (note.invitation === INVITATION) {
+      submittedPapers.push(note);
+    } else if (note.invitation !== RECRUIT_REVIEWERS) {
+      // ICLR specific: Not all conferences will have this invitation
       commentNotes.push(note);
     }
   });
@@ -207,14 +211,19 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   });
 
   var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
-  assignedNotes = _.filter(notes, function(n) {
-    return _.includes(assignedPaperNumbers, n.number);
+  assignedNotes = assignedNotePairs.map(function(pair) {
+    return pair.replyToNote;
   });
+  if (assignedPaperNumbers.length !== assignedNotes.length) {
+    console.warn('WARNING: The number of assigned notes returned by API does not ' +
+      'match the number of assigned note groups the user is a member of.');
+  }
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-  submittedNotes = _.filter(notes, function(n) {
-    return _.includes(authorPaperNumbers, n.number);
-  });
+  if (authorPaperNumbers.length !== submittedPapers.length) {
+    console.warn('WARNING: The number of submitted notes returned by API does not ' +
+      'match the number of submitted note groups the user is a member of.');
+  }
 
   // My Tasks tab
   if (userGroups.length) {
@@ -270,7 +279,10 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
       enabled: true,
       subjectAreas: SUBJECT_AREAS_LIST,
       onResults: function(searchResults) {
-        Webfield.ui.searchResults(searchResults, submissionListOptions);
+        var blindedSearchResults = searchResults.filter(function(note) {
+          return note.invitation === BLIND_INVITATION;
+        });
+        Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
         Webfield.disableAutoLoading();
       },
       onReset: function() {
@@ -289,9 +301,9 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   }
 
   // My Submitted Papers tab
-  if (submittedNotes.length) {
+  if (submittedPapers.length) {
     Webfield.ui.searchResults(
-      submittedNotes,
+      submittedPapers,
       _.assign({}, paperDisplayOptions, {container: '#my-submitted-papers'})
     );
   } else {
