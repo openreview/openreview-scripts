@@ -324,7 +324,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
   if (withdrawnNotes.length) {
     Webfield.ui.searchResults(
       withdrawnNotes,
-      _.assign({}, paperDisplayOptions, {container: '#withdrawn-papers'})
+      withdrawnListOptions,
     );
   } else {
     $('.tabs-container a[href="#withdrawn-papers"]').parent().hide();
