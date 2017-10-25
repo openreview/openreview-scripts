@@ -27,7 +27,7 @@ function() {
                 blindedNote.ddate = milliseconds
                 return blindedNote;
             } else {
-                console.log('No notes with the referent ' + note.referent + ' were found');
+                return Promise.reject('No notes with the referent ' + note.referent + ' were found');
             }
         })
         .then(blindedNote => or3client.or3request(or3client.notesUrl, blindedNote, 'POST', token))

@@ -14,7 +14,7 @@ function() {
             blindedNote.ddate = milliseconds
             return blindedNote;
         } else {
-            console.log('No notes with the referent ' + note.referent + ' were found');
+            return Promise.reject('No notes with the referent ' + note.referent + ' were found');
         }
     })
     .catch(error => done(error))
