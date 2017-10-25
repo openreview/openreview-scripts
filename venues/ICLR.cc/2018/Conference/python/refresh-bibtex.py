@@ -37,4 +37,5 @@ for n in submissions:
     prime_ref = [x for x in refs if x.id == x.referent][0]
 
     prime_ref.content['_bibtex'] = get_bibtex(n)
-    client.post_note(prime_ref)
+    new_ref = client.post_note(prime_ref)
+    print "updated {0}".format(new_ref.id)
