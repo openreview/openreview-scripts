@@ -7,15 +7,20 @@ function() {
 
     or3client.or3request(or3client.notesUrl + '?id=' + note.referent, {}, 'GET', token)
     .then(result => {
-        var blindedNote = result.notes[0];
+        if(result.notes.length > 0){
+            var blindedNote = result.notes[0];
 
-        var milliseconds = (new Date).getTime();
-        blindedNote.ddate = milliseconds
-        return blindedNote;
+            var milliseconds = (new Date).getTime();
+            blindedNote.ddate = milliseconds
+            return blindedNote;
+        } else {
+            console.log('No notes with the referent ' + note.referent + ' were found');
+        }
     })
+    .catch(error => done(error))
     .then(blindedNote => or3client.or3request(or3client.notesUrl, blindedNote, 'POST', token))
     .then(result => {
-        console.log('result: ' + JSON.stringify(result));
+        console.log('Withdrawing note: ' + JSON.stringify(result));
         var withdrawn_submission = {
             original: result.original,
             invitation: WITHDRAWN_INVITATION,
