@@ -119,7 +119,7 @@ function renderConferenceHeader() {
       Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
       <p><strong>Withdrawing Submissions:</strong><br>\
       To withdraw your paper, navigate to the anonymous record of your submission and click on the "Withdraw" button. You will be asked to confirm your withdrawal. \
-      Withdrawn submissions before the submission deadline will be removed from public view entirely (but please note that the original will still appear in your "My Submissions" tab). \
+      Withdrawn submissions before the submission deadline will be removed from public view entirely. \
       Withdrawn submissions after the submission deadline will be de-anonymized and moved to the "Withdrawn Papers" tab.</p> \
       <p><strong>Questions or Concerns:</strong><br> \
       Please contact the OpenReview support team at \
