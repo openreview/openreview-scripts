@@ -110,13 +110,17 @@ function renderConferenceHeader() {
       When you post a submission to ICLR 2018, please provide the real names and email addresses of authors in the submission form below.\
       An anonymous record of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
       The <em>original</em> record of your submission will be private, and will contain your real name(s); \
-      originals can be found in your OpenReview <a href="/tasks">Tasks page</a>.\
+      originals can be found in the My Submissions tab, or your OpenReview <a href="/tasks">Tasks page</a>.\
       You can also access the original record of your paper by clicking the "Modifiable Original" \
       link in the discussion forum page of your paper. The PDF in your submission should not contain the names of the authors. </p>\
       <p><strong>Posting Revisions to Submissions:</strong><br>\
       To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
       Revisions are not allowed during the formal review process.\
       Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
+      <p><strong>Withdrawing Submissions:</strong><br>\
+      To withdraw your paper, navigate to the anonymous record of your submission and click on the "Withdraw" button. You will be asked to confirm your withdrawal. \
+      Withdrawn submissions before the submission deadline will be removed from public view entirely (but please note that the original will still appear in your "My Submissions" tab). \
+      Withdrawn submissions after the submission deadline will be de-anonymized and moved to the "Withdrawn Papers" tab.</p> \
       <p><strong>Questions or Concerns:</strong><br> \
       Please contact the OpenReview support team at \
       <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
