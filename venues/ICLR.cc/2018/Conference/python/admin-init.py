@@ -53,6 +53,9 @@ invitations[config.SUBMISSION] = openreview.Invitation(
 invitations[config.BLIND_SUBMISSION] = openreview.Invitation(
 	config.BLIND_SUBMISSION, **config.blind_submission_params)
 
+invitations[config.WITHDRAWN_SUBMISSION] = openreview.Invitation(
+	config.WITHDRAWN_SUBMISSION, **config.withdrawn_submission_params)
+
 invitations[config.PUBLIC_COMMENT] = openreview.Invitation(
 	config.PUBLIC_COMMENT, **config.public_comment_params)
 

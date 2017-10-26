@@ -9,6 +9,7 @@
 var CONFERENCE = 'ICLR.cc/2018/Conference';
 var INVITATION = CONFERENCE + '/-/Submission';
 var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
+var WITHDRAWN_INVITATION = CONFERENCE + '/-/Withdrawn_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 
@@ -69,6 +70,10 @@ function load() {
     pageSize: PAGE_SIZE
   });
 
+  var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_INVITATION, {
+    pageSize: PAGE_SIZE
+  });
+
   var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
     pageSize: PAGE_SIZE,
     tauthor: true
@@ -94,7 +99,7 @@ function load() {
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_INVITATION);
 
-  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP);
+  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP, withdrawnNotesP);
 }
 
 
@@ -180,6 +185,10 @@ function renderConferenceTabs() {
     {
       heading: 'All Submitted Papers',
       id: 'all-submitted-papers',
+    },
+    {
+      heading: 'Withdrawn Papers',
+      id: 'withdrawn-papers',
     }
   ];
 
@@ -189,7 +198,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, tagInvitations) {
+function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tagInvitations, withdrawnNotes) {
   var data, commentNotes;
 
   // if (_.isEmpty(userGroups)) {
@@ -206,15 +215,10 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     }
     if (note.invitation === INVITATION) {
       submittedPapers.push(note);
-    } else if (note.invitation !== RECRUIT_REVIEWERS) {
+    } else if (note.invitation !== RECRUIT_REVIEWERS && note.invitation !== WITHDRAWN_INVITATION) {
       // ICLR specific: Not all conferences will have this invitation
       commentNotes.push(note);
     }
-  });
-
-  // ICLR specific
-  var notes = _.filter(allNotes, function(n) {
-    return n.content.withdrawal !== 'Confirmed';
   });
 
   // Filter out all tags that belong to other users (important for bid tags)
@@ -311,8 +315,23 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     fadeIn: false
   });
 
-  if (allNotes.length === PAGE_SIZE) {
+  if (notes.length === PAGE_SIZE) {
     Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
+  }
+
+  // Withdrawn Papers tab
+  var withdrawnListOptions = _.assign({}, paperDisplayOptions, {
+    showTags: false,
+    container: '#withdrawn-papers'
+  });
+
+  if (withdrawnNotes.length) {
+    Webfield.ui.searchResults(
+      withdrawnNotes,
+      withdrawnListOptions,
+    );
+  } else {
+    $('.tabs-container a[href="#withdrawn-papers"]').parent().hide();
   }
 
   // My Submitted Papers tab
