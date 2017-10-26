@@ -130,10 +130,10 @@ submission_params = {
         },
         'signatures': {
             'description': 'Your authorized identity to be associated with the above content.',
-            'values-regex': '~.*'
+            'values-regex': '~.*|' + CONF
         },
         'writers': {
-            'values': []
+            'values': [CONF]
         },
         'content':{
             'title': {
