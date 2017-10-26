@@ -21,8 +21,6 @@ client.post_invitation(openreview.Invitation(config.WITHDRAWN_SUBMISSION, **conf
 # find all the improperly withdrawn notes
 blinded = client.get_notes(invitation=config.BLIND_SUBMISSION)
 withdrawn_blinded = [n for n in blinded if 'withdrawal' in n.content]
-for w in withdrawn_blinded:
-    print w.id, w.content['title']
 
 # for all blinded notes, update the withdraw paper invitation
 for n in blinded:
@@ -37,9 +35,14 @@ for n in withdrawn_blinded:
     rev = client.get_revisions(n.id)
     withdrawals = [r for r in rev if 'Withdraw_Paper' in r.invitation]
     ddate = sorted([w.cdate for w in withdrawals])[0]
-    print ddate
     n.ddate = ddate
     client.post_note(n)
+    print "deleted ", n.id, n.content['title']
+    # delete the original, too
+    orig_note = client.get_note(n.original)
+    orig_note.ddate = ddate
+    client.post_note(orig_note)
+    print "deleted ", orig_note.id, orig_note.content['title']
 
 # update webfield
 conference = client.get_group(config.CONF)
