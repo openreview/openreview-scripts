@@ -10,6 +10,7 @@ import csv
 client = openreview.Client()
 print client.baseurl
 
+
 # set up the new withdrawal procedure
 
 # re-post the submission invitation (slow)
@@ -19,8 +20,15 @@ client.post_invitation(openreview.Invitation(config.SUBMISSION, duedate=config.D
 client.post_invitation(openreview.Invitation(config.WITHDRAWN_SUBMISSION, **config.withdrawn_submission_params))
 
 # find all the improperly withdrawn notes
+originals = client.get_notes(invitation=config.SUBMISSION)
 blinded = client.get_notes(invitation=config.BLIND_SUBMISSION)
 withdrawn_blinded = [n for n in blinded if 'withdrawal' in n.content]
+
+# update the writers field of all original notes to include the conference (so that the conference can modify things)
+for n in originals:
+    n.writers = [config.CONF]
+    altered_original = client.post_note(n)
+    print "altered note ", altered_original.id
 
 # for all blinded notes, update the withdraw paper invitation
 for n in blinded:
@@ -39,10 +47,11 @@ for n in withdrawn_blinded:
     client.post_note(n)
     print "deleted ", n.id, n.content['title']
     # delete the original, too
-    orig_note = client.get_note(n.original)
+    orig_note = [o for o in originals if o.id == n.original][0]
     orig_note.ddate = ddate
     client.post_note(orig_note)
     print "deleted ", orig_note.id, orig_note.content['title']
+
 
 # update webfield
 conference = client.get_group(config.CONF)
