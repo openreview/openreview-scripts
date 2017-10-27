@@ -274,9 +274,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
 
       $('#my-tasks .submissions-list').prepend([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + CONFERENCE + '/Program_Chairs">',
-            'ICLR 2018 Program Chair Console',
-          '</a>',
+          '<a href="/group?id=' + pcId + '">ICLR 2018 Program Chair Console</a>',
         '</li>'
       ].join(''));
     }
@@ -326,10 +324,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
   });
 
   if (withdrawnNotes.length) {
-    Webfield.ui.searchResults(
-      withdrawnNotes,
-      withdrawnListOptions,
-    );
+    Webfield.ui.searchResults(withdrawnNotes, withdrawnListOptions);
   } else {
     $('.tabs-container a[href="#withdrawn-papers"]').parent().hide();
   }
