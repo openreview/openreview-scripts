@@ -61,7 +61,7 @@ function main() {
     $('<p>', {
       class: 'lazy-load-message',
       text: disabledMsg
-    }).append($btn)
+    }) //.append($btn)
   );
 }
 
