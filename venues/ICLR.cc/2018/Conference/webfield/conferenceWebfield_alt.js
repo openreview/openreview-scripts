@@ -55,11 +55,13 @@ function main() {
     load().then(renderContent);
     return false;
   });
+  var origMsg = 'To view the list of ICLR 2018 Conference submissions, click here: ';
+  var disabledMsg = 'Viewing of submissions is currently disabled due to heavy load. Please check back soon.';
   $('#notes').append(
     $('<p>', {
       class: 'lazy-load-message',
-      text: 'To view the list of ICLR 2018 Conference submissions, click here: '
-    }).append($btn)
+      text: disabledMsg
+    }) //.append($btn)
   );
 }
 
