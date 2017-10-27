@@ -9,6 +9,7 @@
 var CONFERENCE = 'ICLR.cc/2018/Conference';
 var INVITATION = CONFERENCE + '/-/Submission';
 var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
+var WITHDRAWN_INVITATION = CONFERENCE + '/-/Withdrawn_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 
@@ -59,6 +60,10 @@ function load() {
     pageSize: PAGE_SIZE
   });
 
+  var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_INVITATION, {
+    pageSize: PAGE_SIZE
+  });
+
   var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
     pageSize: PAGE_SIZE,
     tauthor: true
@@ -84,7 +89,7 @@ function load() {
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_INVITATION);
 
-  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP);
+  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP, withdrawnNotesP);
 }
 
 
@@ -100,13 +105,17 @@ function renderConferenceHeader() {
       When you post a submission to ICLR 2018, please provide the real names and email addresses of authors in the submission form below.\
       An anonymous record of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
       The <em>original</em> record of your submission will be private, and will contain your real name(s); \
-      originals can be found in your OpenReview <a href="/tasks">Tasks page</a>.\
+      originals can be found in the My Submissions tab, or your OpenReview <a href="/tasks">Tasks page</a>.\
       You can also access the original record of your paper by clicking the "Modifiable Original" \
       link in the discussion forum page of your paper. The PDF in your submission should not contain the names of the authors. </p>\
       <p><strong>Posting Revisions to Submissions:</strong><br>\
       To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
       Revisions are not allowed during the formal review process.\
       Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
+      <p><strong>Withdrawing Submissions:</strong><br>\
+      To withdraw your paper, navigate to the anonymous record of your submission and click on the "Withdraw" button. You will be asked to confirm your withdrawal. \
+      Withdrawn submissions before the submission deadline will be removed from public view entirely. \
+      Withdrawn submissions after the submission deadline will be de-anonymized and moved to the "Withdrawn Papers" tab.</p> \
       <p><strong>Questions or Concerns:</strong><br> \
       Please contact the OpenReview support team at \
       <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
@@ -124,7 +133,11 @@ function renderSubmissionButton() {
       Webfield.ui.submissionButton(invitation, user, {
         onNoteCreated: function() {
           // Callback funtion to be run when a paper has successfully been submitted (required)
-          load().then(renderContent);
+          promptMessage('Your submission to ICLR 2018 is complete. The list of all current submissions is shown below.');
+
+          load().then(renderContent).then(function() {
+            $('.tabs-container a[href="#all-submitted-papers"]').click();
+          });
         }
       });
     });
@@ -151,6 +164,10 @@ function renderConferenceTabs() {
     {
       heading: 'All Submitted Papers',
       id: 'all-submitted-papers',
+    },
+    {
+      heading: 'Withdrawn Papers',
+      id: 'withdrawn-papers',
     }
   ];
 
@@ -160,7 +177,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, tagInvitations) {
+function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tagInvitations, withdrawnNotes) {
   var data, commentNotes;
 
   // if (_.isEmpty(userGroups)) {
@@ -170,18 +187,17 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   // }
 
   commentNotes = [];
+  submittedPapers = [];
   _.forEach(submittedNotes, function(note) {
-    if (_.startsWith(note.invitation, CONFERENCE) &&
-        !COMMENT_EXCLUSION.includes(note.invitation) &&
-        _.isNil(note.ddate)) {
-      // TODO: remove this client side filtering when DB query is fixed
+    if (!_.isNil(note.ddate)) {
+      return;
+    }
+    if (note.invitation === INVITATION) {
+      submittedPapers.push(note);
+    } else if (note.invitation !== RECRUIT_REVIEWERS && note.invitation !== WITHDRAWN_INVITATION) {
+      // ICLR specific: Not all conferences will have this invitation
       commentNotes.push(note);
     }
-  });
-
-  // ICLR specific
-  var notes = _.filter(allNotes, function(n) {
-    return n.content.withdrawal !== 'Confirmed';
   });
 
   // Filter out all tags that belong to other users (important for bid tags)
@@ -193,14 +209,19 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
   });
 
   var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
-  assignedNotes = _.filter(notes, function(n) {
-    return _.includes(assignedPaperNumbers, n.number);
+  assignedNotes = assignedNotePairs.map(function(pair) {
+    return pair.replyToNote;
   });
+  if (assignedPaperNumbers.length !== assignedNotes.length) {
+    console.warn('WARNING: The number of assigned notes returned by API does not ' +
+      'match the number of assigned note groups the user is a member of.');
+  }
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-  submittedNotes = _.filter(notes, function(n) {
-    return _.includes(authorPaperNumbers, n.number);
-  });
+  if (authorPaperNumbers.length !== submittedPapers.length) {
+    console.warn('WARNING: The number of submitted notes returned by API does not ' +
+      'match the number of submitted note groups the user is a member of.');
+  }
 
   // My Tasks tab
   if (userGroups.length) {
@@ -232,9 +253,7 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
 
       $('#my-tasks .submissions-list').prepend([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + CONFERENCE + '/Program_Chairs">',
-            'ICLR 2018 Program Chair Console',
-          '</a>',
+          '<a href="/group?id=' + pcId + '">ICLR 2018 Program Chair Console</a>',
         '</li>'
       ].join(''));
     }
@@ -256,7 +275,10 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
       enabled: true,
       subjectAreas: SUBJECT_AREAS_LIST,
       onResults: function(searchResults) {
-        Webfield.ui.searchResults(searchResults, submissionListOptions);
+        var blindedSearchResults = searchResults.filter(function(note) {
+          return note.invitation === BLIND_INVITATION;
+        });
+        Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
         Webfield.disableAutoLoading();
       },
       onReset: function() {
@@ -274,10 +296,22 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
     Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
   }
 
+  // Withdrawn Papers tab
+  var withdrawnListOptions = _.assign({}, paperDisplayOptions, {
+    showTags: false,
+    container: '#withdrawn-papers'
+  });
+
+  if (withdrawnNotes.length) {
+    Webfield.ui.searchResults(withdrawnNotes, withdrawnListOptions);
+  } else {
+    $('.tabs-container a[href="#withdrawn-papers"]').parent().hide();
+  }
+
   // My Submitted Papers tab
-  if (submittedNotes.length) {
+  if (submittedPapers.length) {
     Webfield.ui.searchResults(
-      submittedNotes,
+      submittedPapers,
       _.assign({}, paperDisplayOptions, {container: '#my-submitted-papers'})
     );
   } else {
@@ -319,7 +353,7 @@ function renderContent(allNotes, submittedNotes, assignedNotePairs, userGroups, 
 
 // Helper functions
 function getPaperNumbersfromGroups(groups) {
-  // Should be customized for the conference
+  // ICLR specific
   var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair)/;
   return _.map(
     _.filter(groups, function(gid) { return re.test(gid); }),
@@ -328,7 +362,7 @@ function getPaperNumbersfromGroups(groups) {
 }
 
 function getAuthorPaperNumbersfromGroups(groups) {
-  // Should be customized for the conference
+  // ICLR specific
   var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/Authors/;
   return _.map(
     _.filter(groups, function(gid) { return re.test(gid); }),
