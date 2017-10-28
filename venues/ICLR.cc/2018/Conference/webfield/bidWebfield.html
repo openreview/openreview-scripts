@@ -299,7 +299,6 @@ $(function() {
     $('#invitation-container').on('submit', 'form.search-form', filterPapers);
     $('#invitation-container').on('keyup', 'form.search-form .search-content input', _.debounce(filterPapers, 300));
 
-
   }).fail(function() {
     displayError();
   });
