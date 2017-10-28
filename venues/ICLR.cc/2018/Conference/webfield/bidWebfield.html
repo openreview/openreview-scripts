@@ -40,6 +40,8 @@ $(function() {
     return false;
   }
 
+  Webfield.ui.spinner('#invitation-container');
+
   $.when(notesP, tagInvitationsP).done(function(notes, tagInvitations) {
     var sm = mkStateManager();
     var allNotes = [];
@@ -296,6 +298,7 @@ $(function() {
 
     $('#invitation-container').on('submit', 'form.search-form', filterPapers);
     $('#invitation-container').on('keyup', 'form.search-form .search-content input', _.debounce(filterPapers, 300));
+
 
   }).fail(function() {
     displayError();
