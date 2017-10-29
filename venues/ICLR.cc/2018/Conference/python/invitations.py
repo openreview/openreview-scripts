@@ -30,10 +30,12 @@ maskAnonReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/AnonReviewer[0-9]+"
 invitation_configurations = {
     'Add_Revision': {
         'byPaper': True,
-        'invitees': [maskAuthorsGroup],
+        #'invitees': [maskAuthorsGroup],
+        'invitees': ['~Super_User1'],
         'params': config.add_revision_params,
         'byForum': True,
-        'reference': True
+        'reference': True,
+        'original': True
     },
     'Public_Comment': {
         'byPaper': True,
@@ -116,14 +118,19 @@ def get_or_create_invitations(invitationId, overwrite):
             for n in papers:
                 new_invitation = openreview.Invitation(config.CONF + '/-/Paper{0}/'.format(n.number) + invitationId, **invitation_config['params'])
 
+                if 'original' in invitation_config and invitation_config['original']:
+                    forum = n.original
+                else:
+                    forum = n.forum
+
                 if 'byForum' in invitation_config and invitation_config['byForum']:
-                    new_invitation.reply['forum'] = n.forum
+                    new_invitation.reply['forum'] = forum
 
                 if 'reference' in invitation_config and invitation_config['reference']:
-                    new_invitation.reply['referent'] = n.forum
+                    new_invitation.reply['referent'] = forum
 
                 if 'byReplyTo' in invitation_config and invitation_config['byReplyTo']:
-                    new_invitation.reply['replyto'] = n.forum
+                    new_invitation.reply['replyto'] = forum
 
                 if 'signatures' in invitation_config:
                     new_invitation.reply['signatures']['values-regex'] = prepare_regex(new_invitation.id, invitation_config['signatures'])
