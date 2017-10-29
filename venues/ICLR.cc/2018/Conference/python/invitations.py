@@ -30,7 +30,8 @@ maskAnonReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/AnonReviewer[0-9]+"
 invitation_configurations = {
     'Add_Revision': {
         'byPaper': True,
-        'invitees': [maskAuthorsGroup],
+        #'invitees': [maskAuthorsGroup],
+        'invitees': ['~Super_User1'],
         'params': config.add_revision_params,
         'byForum': True,
         'reference': True,
