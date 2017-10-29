@@ -69,7 +69,7 @@ invitation_configurations = {
     'Add_Bid': {
         'tags': True,
         'byPaper': False,
-        'invitees': [config.REVIEWERS],
+        'invitees': [config.REVIEWERS, config.AREA_CHAIRS],
         'params': config.add_bid_params
     },
     'Withdraw_Paper': {
