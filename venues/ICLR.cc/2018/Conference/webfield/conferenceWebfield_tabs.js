@@ -89,7 +89,9 @@ function load() {
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_INVITATION);
 
-  return $.when(notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP, withdrawnNotesP);
+  return $.when(
+    notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP, withdrawnNotesP
+  );
 }
 
 
@@ -210,7 +212,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
 
   var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
   assignedNotes = assignedNotePairs.map(function(pair) {
-    return pair.replyToNote;
+    return pair.replytoNote;
   });
   if (assignedPaperNumbers.length !== assignedNotes.length) {
     console.warn('WARNING: The number of assigned notes returned by API does not ' +
@@ -297,13 +299,11 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
   }
 
   // Withdrawn Papers tab
-  var withdrawnListOptions = _.assign({}, paperDisplayOptions, {
-    showTags: false,
-    container: '#withdrawn-papers'
-  });
-
   if (withdrawnNotes.length) {
-    Webfield.ui.searchResults(withdrawnNotes, withdrawnListOptions);
+    Webfield.ui.searchResults(
+      withdrawnNotes,
+      _.assign({}, paperDisplayOptions, {showTags: false, container: '#withdrawn-papers'})
+    );
   } else {
     $('.tabs-container a[href="#withdrawn-papers"]').parent().hide();
   }
