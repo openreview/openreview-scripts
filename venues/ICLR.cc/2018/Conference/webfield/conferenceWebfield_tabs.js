@@ -146,6 +146,10 @@ function renderSubmissionButton() {
 function renderConferenceTabs() {
   var sections = [
     {
+      heading: 'All Submitted Papers',
+      id: 'all-submitted-papers',
+    },
+    {
       heading: 'My Tasks',
       id: 'my-tasks',
     },
@@ -160,10 +164,6 @@ function renderConferenceTabs() {
     {
       heading: 'My Comments & Reviews',
       id: 'my-comments-reviews',
-    },
-    {
-      heading: 'All Submitted Papers',
-      id: 'all-submitted-papers',
     },
     {
       heading: 'Withdrawn Papers',
