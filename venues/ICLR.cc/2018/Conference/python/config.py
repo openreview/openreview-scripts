@@ -568,7 +568,7 @@ add_bid_params = {
     'writers': [CONF],
     'invitees': [],
     'signatures': [CONF],
-    'duedate': 1511845199000, # 23:59:59 EST on November 27, 2017
+    'duedate': 1509595199000, # 23:59:59 EST on November 1, 2017
     'web': os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/bidWebfield.html')),
     'taskCompletionCount': 50,
     'multiReply': False,
