@@ -63,8 +63,30 @@ function renderContent(allNotes, tagInvitations) {
     if (!updatedNote) {
       return;
     }
+    var prevVal = _.has(updatedNote, 'tags[0].tag') ? updatedNote.tags[0].tag : 'No bid';
     updatedNote.tags[0] = tagObj;
-    updateNotes(validNotes);
+
+    var tagToElemId = {
+      'I want to review': '#wantToReview',
+      'I can review': '#canReview',
+      'I can probably review but am not an expert': '#probablyReview',
+      'I cannot review': '#canNotReview',
+      'No bid': '#noBid'
+    };
+
+    var $sourceContainer = $(tagToElemId[prevVal] + ' .submissions-list');
+    var $note = $sourceContainer.find('li.note[data-id="' + tagObj.forum + '"]').detach();
+    if (!$sourceContainer.children().length) {
+      $sourceContainer.append('<li><p class="empty-message">No papers to display at this time</p></li>');
+    }
+
+    var $destContainer = $(tagToElemId[tagObj.tag] + ' .submissions-list');
+    if ($destContainer.find('p.empty-message').length) {
+      $destContainer.empty();
+    }
+    $destContainer.prepend($note);
+
+    updateCounts();
   });
 
   function updateNotes(notes) {
@@ -74,7 +96,7 @@ function renderContent(allNotes, tagInvitations) {
     var probablyReview = [];
     var canNotReview = [];
     var noBid = [];
-    _.forEach(notes, function(n) {
+    notes.forEach(function(n) {
       if (n.tags.length) {
         if (n.tags[0].tag === 'I want to review') {
           wantToReview.push(n);
@@ -204,6 +226,33 @@ function renderContent(allNotes, tagInvitations) {
 
     $('#notes .spinner-container').remove();
     $('#notes .tabs-container').show();
+  }
+
+  function updateCounts() {
+    var containers = [
+      '#noBid',
+      '#wantToReview',
+      '#canReview',
+      '#probablyReview',
+      '#canNotReview'
+    ];
+    var totalCount = 0;
+
+    containers.forEach(function(containerId) {
+      var numPapers = $(containerId).find('li.note').length;
+      if (containerId !== '#noBid') {
+        totalCount += numPapers;
+      }
+
+      $tab = $('ul.nav-tabs li a[href="' + containerId + '"]');
+      $tab.find('span.badge').remove();
+      if (numPapers) {
+        $tab.append('<span class="badge">' + numPapers + '</span>');
+      }
+    });
+
+    $('#header h3').remove();
+    $('#header').append('<h3>You have completed ' + totalCount + ' bids</h3>');
   }
 
   updateNotes(validNotes);
