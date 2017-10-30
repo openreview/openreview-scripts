@@ -4,7 +4,7 @@
 
 // Constants
 var CONFERENCE = 'ICLR.cc/2018/Conference';
-var BLIND_SUBMISSION = CONFERENCE + '/-/Blind_Submission';
+var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
 var ADD_BID = CONFERENCE + '/-/Add_Bid'
 var SUBJECT_AREAS_LIST = [];
 var PAGE_SIZE = 1000;
@@ -39,12 +39,10 @@ function load() {
   return $.when(notesP, tagInvitationsP);
 }
 
-function renderContent(notes, tagInvitations) {
-
-  var allNotes = [];
+function renderContent(allNotes, tagInvitations) {
   var activeTab = 0;
 
-  var validNotes = notes.filter(function(note){
+  var validNotes = allNotes.filter(function(note) {
     return !note.content.hasOwnProperty('withdrawal');
   });
 
@@ -56,8 +54,17 @@ function renderContent(notes, tagInvitations) {
     tagInvitations: tagInvitations
   };
 
-  $('#invitation-container').on('shown.bs.tab', 'ul.nav-tabs li a', function (e) {
+  $('#invitation-container').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
     activeTab = $(e.target).data('tabIndex');
+  });
+
+  $('#invitation-container').on('bidUpdated', '.tag-widget', function(e, tagObj) {
+    var updatedNote = _.find(validNotes, ['id', tagObj.forum]);
+    if (!updatedNote) {
+      return;
+    }
+    updatedNote.tags[0] = tagObj;
+    updateNotes(validNotes);
   });
 
   function updateNotes(notes) {
@@ -87,6 +94,7 @@ function renderContent(notes, tagInvitations) {
 
     var bidCount = wantToReview.length + canReview.length + probablyReview.length + canNotReview.length;
 
+    $('#header h3').remove();
     $('#header').append('<h3>You have completed ' + bidCount + ' bids</h3>');
 
     var sections = [
@@ -127,31 +135,52 @@ function renderContent(notes, tagInvitations) {
       }
     ];
     sections[activeTab].active = true;
+    $('#notes .tabs-container').remove();
     Webfield.ui.tabPanel(sections, {
       container: '#notes',
       hidden: true
     });
 
-    Webfield.ui.searchResults(
-      wantToReview,
-      _.assign({}, paperDisplayOptions, {container: '#wantToReview'})
-    );
-    Webfield.ui.searchResults(
-      canReview,
-      _.assign({}, paperDisplayOptions, {container: '#canReview'})
-    );
-    Webfield.ui.searchResults(
-      probablyReview,
-      _.assign({}, paperDisplayOptions, {container: '#probablyReview'})
-    );
-    Webfield.ui.searchResults(
-      canNotReview,
-      _.assign({}, paperDisplayOptions, {container: '#canNotReview'})
-    );
-    Webfield.ui.searchResults(
-      noBid,
-      _.assign({}, paperDisplayOptions, {container: '#noBid'})
-    );
+    Webfield.ui.submissionList(wantToReview, {
+      heading: null,
+      container: '#wantToReview',
+      search: { enabled: false },
+      displayOptions: paperDisplayOptions,
+      fadeIn: false
+    });
+
+    Webfield.ui.submissionList(canReview, {
+      heading: null,
+      container: '#canReview',
+      search: { enabled: false },
+      displayOptions: paperDisplayOptions,
+      fadeIn: false
+    });
+
+    Webfield.ui.submissionList(probablyReview, {
+      heading: null,
+      container: '#probablyReview',
+      search: { enabled: false },
+      displayOptions: paperDisplayOptions,
+      fadeIn: false
+    });
+
+    Webfield.ui.submissionList(canNotReview, {
+      heading: null,
+      container: '#canNotReview',
+      search: { enabled: false },
+      displayOptions: paperDisplayOptions,
+      fadeIn: false
+    });
+
+    Webfield.ui.submissionList(noBid, {
+      heading: null,
+      container: '#noBid',
+      search: { enabled: false },
+      displayOptions: paperDisplayOptions,
+      fadeIn: false
+    });
+
     var submissionListOptions = _.assign({}, paperDisplayOptions, {container: '#allPapers'});
     Webfield.ui.submissionList(notes, {
       heading: null,
@@ -174,10 +203,10 @@ function renderContent(notes, tagInvitations) {
     });
 
     $('#notes .spinner-container').remove();
-    $('.tabs-container').show();
+    $('#notes .tabs-container').show();
   }
 
-  updateNotes();
+  updateNotes(validNotes);
 }
 
 // Go!
