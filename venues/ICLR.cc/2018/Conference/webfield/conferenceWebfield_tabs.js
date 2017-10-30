@@ -299,13 +299,11 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
   }
 
   // Withdrawn Papers tab
-  var withdrawnListOptions = _.assign({}, paperDisplayOptions, {
-    showTags: false,
-    container: '#withdrawn-papers'
-  });
-
   if (withdrawnNotes.length) {
-    Webfield.ui.searchResults(withdrawnNotes, withdrawnListOptions);
+    Webfield.ui.searchResults(
+      withdrawnNotes,
+      _.assign({}, paperDisplayOptions, {showTags: false, container: '#withdrawn-papers'})
+    );
   } else {
     $('.tabs-container a[href="#withdrawn-papers"]').parent().hide();
   }
