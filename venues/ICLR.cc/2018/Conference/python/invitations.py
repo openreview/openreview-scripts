@@ -33,7 +33,8 @@ invitation_configurations = {
         'invitees': [maskAuthorsGroup],
         'params': config.add_revision_params,
         'byForum': True,
-        'reference': True
+        'reference': True,
+        'original': True
     },
     'Public_Comment': {
         'byPaper': True,
@@ -68,7 +69,7 @@ invitation_configurations = {
     'Add_Bid': {
         'tags': True,
         'byPaper': False,
-        'invitees': [config.REVIEWERS],
+        'invitees': [config.REVIEWERS, config.AREA_CHAIRS],
         'params': config.add_bid_params
     },
     'Withdraw_Paper': {
@@ -116,14 +117,19 @@ def get_or_create_invitations(invitationId, overwrite):
             for n in papers:
                 new_invitation = openreview.Invitation(config.CONF + '/-/Paper{0}/'.format(n.number) + invitationId, **invitation_config['params'])
 
+                if 'original' in invitation_config and invitation_config['original']:
+                    forum = n.original
+                else:
+                    forum = n.forum
+
                 if 'byForum' in invitation_config and invitation_config['byForum']:
-                    new_invitation.reply['forum'] = n.forum
+                    new_invitation.reply['forum'] = forum
 
                 if 'reference' in invitation_config and invitation_config['reference']:
-                    new_invitation.reply['referent'] = n.forum
+                    new_invitation.reply['referent'] = forum
 
                 if 'byReplyTo' in invitation_config and invitation_config['byReplyTo']:
-                    new_invitation.reply['replyto'] = n.forum
+                    new_invitation.reply['replyto'] = forum
 
                 if 'signatures' in invitation_config:
                     new_invitation.reply['signatures']['values-regex'] = prepare_regex(new_invitation.id, invitation_config['signatures'])
