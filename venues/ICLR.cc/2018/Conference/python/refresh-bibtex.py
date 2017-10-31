@@ -32,7 +32,11 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 submissions = client.get_notes(invitation=config.BLIND_SUBMISSION)
 
 for n in submissions:
+    # a submission potentially has many references, but we want to change only
+    # the "prime" reference, which has an ID equal to its referent.
+    refs = client.get_revisions(referent=n.id)
+    prime_ref = [x for x in refs if x.id == x.referent][0]
 
-    n.content['_bibtex'] = get_bibtex(n)
-    updated_note = client.post_note(n)
-    print "updated {0}".format(updated_note.id)
+    prime_ref.content['_bibtex'] = get_bibtex(n)
+    new_ref = client.post_note(prime_ref)
+    print "updated {0}".format(new_ref.id)
