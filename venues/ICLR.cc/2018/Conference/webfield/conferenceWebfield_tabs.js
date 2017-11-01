@@ -118,6 +118,10 @@ function renderConferenceHeader() {
       To withdraw your paper, navigate to the anonymous record of your submission and click on the "Withdraw" button. You will be asked to confirm your withdrawal. \
       Withdrawn submissions before the submission deadline will be removed from public view entirely. \
       Withdrawn submissions after the submission deadline will be de-anonymized and moved to the "Withdrawn Papers" tab.</p> \
+      <p><strong>A Note to Reviewers about Bidding:</strong> \
+      To access the bidding interface, please ensure that your profile is linked to the email address where you received your initial reviewer invitation email. \
+      To do this, click on your name at the top right corner of the page, go to your Profile, enter "edit mode," and add your email address. \
+      You will also need to confirm your address by pressing the "Confirm" button. This will involve a round-trip email verification.</p>\
       <p><strong>Questions or Concerns:</strong><br> \
       Please contact the OpenReview support team at \
       <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
