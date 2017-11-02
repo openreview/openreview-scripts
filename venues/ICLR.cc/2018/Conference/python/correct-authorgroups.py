@@ -15,8 +15,7 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print client.baseurl
 
-response = requests.get(client.baseurl + '/groups?id=ICLR.cc/2018/Conference/Paper.*/Authors', {}, headers = client.headers)
-authorgroups = [openreview.Group.from_json(g) for g in response.json()]
+authorgroups = client.get_groups(regex='ICLR.cc/2018/Conference/Paper.*/Authors')
 
 print "retrieved {0} authorgroups".format(len(authorgroups))
 # strip all the author groups of their members
