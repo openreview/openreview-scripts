@@ -34,7 +34,7 @@ submissions = client.get_notes(invitation=config.BLIND_SUBMISSION)
 for n in submissions:
     # a submission potentially has many references, but we want to change only
     # the "prime" reference, which has an ID equal to its referent.
-    refs = client.get_revisions(referent=n.id)
+    refs = client.get_references(referent=n.id)
     prime_ref = [x for x in refs if x.id == x.referent][0]
 
     prime_ref.content['_bibtex'] = get_bibtex(n)
