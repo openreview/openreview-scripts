@@ -2,6 +2,7 @@ import openreview
 import config
 import csv
 import argparse
+import requests
 from collections import defaultdict
 
 ## Argument handling
@@ -14,20 +15,10 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print client.baseurl
 
-# get all the authorgroups.
-# where does 1176 come from?
-# 1176 is the value on the counter for ICLR.cc/2018/Conference/-/Submission
-authorgroups = []
-print "finding valid authorgroups ..."
-for i in range(1, 1176):
-    groupid = 'ICLR.cc/2018/Conference/Paper{0}/Authors'.format(i)
-    try:
-        authorgroup = client.get_group(groupid)
-        authorgroups.append(authorgroup)
-    except:
-        pass
+response = requests.get(client.baseurl + '/groups?id=ICLR.cc/2018/Conference/Paper.*/Authors', {}, headers = client.headers)
+authorgroups = [openreview.Group.from_json(g) for g in response.json()]
 
-
+print "retrieved {0} authorgroups".format(len(authorgroups))
 # strip all the author groups of their members
 print "remove all members from all authorgroups ..."
 for authorgroup in authorgroups:
@@ -38,8 +29,9 @@ for authorgroup in authorgroups:
 print "iterating through blind submissions, updating them ..."
 blind_submissions = client.get_notes(invitation=config.BLIND_SUBMISSION)
 for n in blind_submissions:
-    n.content['authorids'] = ['ICLR.cc/2018/Conference/Paper{0}/Authors'.format(n.number)]
-    client.post_note(n)
+    if n.content['authorids'] != ['ICLR.cc/2018/Conference/Paper{0}/Authors'.format(n.number)]:
+        n.content['authorids'] = ['ICLR.cc/2018/Conference/Paper{0}/Authors'.format(n.number)]
+        client.post_note(n)
 
 # collect all the official comments by replyforum
 # official comments are the only ones that should be made by authors
