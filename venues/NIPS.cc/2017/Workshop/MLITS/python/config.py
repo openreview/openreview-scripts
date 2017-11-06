@@ -24,8 +24,8 @@ AREA_CHAIRS = CONF + '/Area_Chairs'
 REVIEWERS = CONF + '/Reviewers'
 ### Duedate Oct 21, 23:59 UTC
 DUE_TIMESTAMP = 1508630350000
-## Nov 3 23:59 GMT
-REVIEW_DUE_TIMESTAMP = 1509767940000
+## Nov 10 23:59 GMT
+REVIEW_DUE_TIMESTAMP = 1510358399000
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conf.html')
 
 """
