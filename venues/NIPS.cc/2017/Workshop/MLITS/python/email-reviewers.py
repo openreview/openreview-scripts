@@ -33,7 +33,7 @@ else:
 
 
 subjectline = "NIPS 2017: MLITS Workshop paper review assignment"
-def send_reviewer_email(email_addr, paper_id):
+def reviewer_email_message(paper_id):
     message = """Dear Reviewer,
 
     The linked paper https://openreview.net/pdf?id={0} has been submitted for possible presentation at our upcoming workshop (https://nips.cc/Conferences/2017/Schedule?showEvent=8755). We would greatly appreciate your help in evaluating the submission by November 10th.
@@ -51,7 +51,8 @@ def send_reviewer_email(email_addr, paper_id):
     Anca Dragan
     Juan Carlos Niebles
     Silvio Savarese""".format(paper_id)
-    response = client.send_mail(subjectline, [email_addr], message)
+    return message
+
 #################################################
 #                                               #
 #               END OF MESSAGE                  #
@@ -66,6 +67,7 @@ for note in notes:
     paper_number = str(note.number)
     group_id = config.CONF + '/Paper' + paper_number+"/Reviewers"
     anon_group = client.get_group(group_id)
+    msg = reviewer_email_message(note.id)
     for anon in anon_group.members:
         reviewers = client.get_group(anon)
         for reviewer in reviewers.members:
@@ -75,4 +77,5 @@ for note in notes:
                 profile = client.get_profile(reviewer)
                 email_addr = profile.content['preferred_email']
                 print "Email from profile is:"+email_addr
-            send_reviewer_email(email_addr, note.id)
+
+            response = client.send_mail(subjectline, [email_addr], msg)
