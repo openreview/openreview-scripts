@@ -50,7 +50,7 @@ for paper in submissions:
         signatures=[config.CONF],
         writers=[config.CONF],
         members=[],
-        readers=[config.CONF, config.PROGRAM_CHAIRS, areachairGroup],
+        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS, areachairGroup],
         nonreaders=[authorGroup],
         signatories=[areachairGroup]))
 
