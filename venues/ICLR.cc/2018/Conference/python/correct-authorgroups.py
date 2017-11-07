@@ -23,14 +23,24 @@ print "remove all members from all authorgroups ..."
 for authorgroup in authorgroups:
     client.remove_members_from_group(authorgroup, authorgroup.members)
 
+# collecting all the references
+print "collecting references ..."
+blind_submissions = client.get_notes(invitation=config.BLIND_SUBMISSION)
+references_by_number = {}
+for n in blind_submissions:
+    # a submission potentially has many references, but we want to change only
+    # the "prime" reference, which has an ID equal to its referent.
+    refs = client.get_references(referent=n.id)
+    prime_ref = [x for x in refs if x.id == x.referent][0]
+    references_by_number[n.number] = prime_ref
 
 # iterate through all the blind submissions and set the authorids to the right number authorgroup
 print "iterating through blind submissions, updating them ..."
-blind_submissions = client.get_notes(invitation=config.BLIND_SUBMISSION)
-for n in blind_submissions:
-    if n.content['authorids'] != ['ICLR.cc/2018/Conference/Paper{0}/Authors'.format(n.number)]:
-        n.content['authorids'] = ['ICLR.cc/2018/Conference/Paper{0}/Authors'.format(n.number)]
-        client.post_note(n)
+for submission in blind_submissions:
+    reference = references_by_number[submission.number]
+    if reference.content['authorids'] != ['ICLR.cc/2018/Conference/Paper{0}/Authors'.format(submission.number)]:
+        reference.content['authorids'] = ['ICLR.cc/2018/Conference/Paper{0}/Authors'.format(submission.number)]
+        client.post_note(reference)
 
 # collect all the official comments by replyforum
 # official comments are the only ones that should be made by authors
