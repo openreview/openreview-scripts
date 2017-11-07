@@ -22,6 +22,7 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 submissions = client.get_notes(invitation=config.BLIND_SUBMISSION)
+reviewergroup_by_number = {}
 for paper in submissions:
     paper_num = str(paper.number)
     paperinv = config.CONF + '/-/Paper' + paper_num
@@ -31,13 +32,15 @@ for paper in submissions:
 
     ## Reviewer group - people that can see the review invitation
     reviewerGroup = paperGroup + '/Reviewers'
-    client.post_group(openreview.Group(
+    reviewerGroup_posted = client.post_group(openreview.Group(
         id=reviewerGroup,
         signatures=[config.CONF],
         writers=[config.CONF],
         members=[],
         readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS],
         signatories=[]))
+
+    reviewergroup_by_number['Paper{0}'.format(paper_num)] = reviewerGroup_posted
 
     ## Area Chair group -
     areachairGroup = paperGroup + '/Area_Chair'
@@ -59,11 +62,19 @@ def tpms_assignment(configuration_note):
         reader = csv.reader(f)
         headers = reader.next()
         print headers
+        assignment_id_by_email = {}
         for paper_number, email, _ in reader:
+            if email not in assignment_id_by_email:
+                try:
+                    profile = client.get_profile(email)
+                    assignment_id_by_email[email] = profile.id
+                except openreview.OpenReviewException as e:
+                    assignment_id_by_email[email] = email
+
             paper_id = 'Paper{0}'.format(paper_number)
             if paper_id in configuration_note.content['assignments']:
                 assignment_entry = configuration_note.content['assignments'][paper_id]
-                assignment_entry['assigned'].append(email)
+                assignment_entry['assigned'].append(assignment_id_by_email[email])
 
     return configuration_note
 
@@ -76,8 +87,7 @@ assignment_note = tpms_assignment(configuration_note)
 for paper_number, assignment in assignment_note.content['assignments'].iteritems():
     print paper_number
     if assignment_note.content['configuration']['group'] == config.REVIEWERS:
-        paper_reviewer_group = client.get_group('{0}/{1}/Reviewers'.format(config.CONF, paper_number))
-
+        paper_reviewer_group = reviewergroup_by_number[paper_number]
         for reviewer_number, reviewer in enumerate(assignment['assigned']):
             anon_id = '{0}/{1}/AnonReviewer{2}'.format(config.CONF, paper_number, reviewer_number+1)
             anonymous_reviewer_group = openreview.Group(anon_id, **config.reviewer_group_params)
