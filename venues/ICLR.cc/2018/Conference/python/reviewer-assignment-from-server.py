@@ -36,7 +36,7 @@ for paper in submissions:
         signatures=[config.CONF],
         writers=[config.CONF],
         members=[],
-        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS, reviewerGroup],
+        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS],
         signatories=[]))
 
     ## Area Chair group -
@@ -54,8 +54,7 @@ for paper in submissions:
 configuration_note = client.get_note(args.noteid)
 
 def tpms_assignment(configuration_note):
-    papers = client.get_notes(invitation=config.BLIND_SUBMISSION)
-    configuration_note.content['assignments'] = { 'Paper{0}'.format(n.number): {'assigned':[], 'forum':n.forum, 'title':n.content['title']} for n in papers}
+    configuration_note.content['assignments'] = { 'Paper{0}'.format(n.number): {'assigned':[], 'forum':n.forum, 'title':n.content['title']} for n in submissions}
     with open(args.tpms_file) as f:
         reader = csv.reader(f)
         headers = reader.next()
