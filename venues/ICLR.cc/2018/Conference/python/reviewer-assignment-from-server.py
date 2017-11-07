@@ -92,10 +92,12 @@ for paper_number, assignment in assignment_note.content['assignments'].iteritems
         paper_reviewer_group = reviewergroup_by_number[paper_number]
         for reviewer_number, reviewer in enumerate(assignment['assigned']):
             anon_id = '{0}/{1}/AnonReviewer{2}'.format(config.CONF, paper_number, reviewer_number+1)
+            paper_authors = '{0}/{1}/Authors'.format(config.CONF, paper_number)
 
             anonymous_reviewer_group = openreview.Group(
                 id = anon_id,
                 readers = [config.CONF, config.AREA_CHAIRS, config.PROGRAM_CHAIRS, anon_id],
+                nonreaders = [paper_authors],
                 writers = [config.CONF],
                 signatories = [anon_id],
                 signatures = [config.CONF],
