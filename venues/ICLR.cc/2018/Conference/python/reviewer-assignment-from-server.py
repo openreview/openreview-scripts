@@ -38,6 +38,7 @@ for paper in submissions:
         writers=[config.CONF],
         members=[],
         readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS],
+        nonreaders=[authorGroup],
         signatories=[]))
 
     reviewergroup_by_number['Paper{0}'.format(paper_num)] = reviewerGroup_posted
@@ -49,7 +50,8 @@ for paper in submissions:
         signatures=[config.CONF],
         writers=[config.CONF],
         members=[],
-        readers=[config.CONF, config.PROGRAM_CHAIRS, config.AREA_CHAIRS, areachairGroup],
+        readers=[config.CONF, config.PROGRAM_CHAIRS, areachairGroup],
+        nonreaders=[authorGroup],
         signatories=[areachairGroup]))
 
 
