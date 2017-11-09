@@ -121,6 +121,11 @@ function renderContent(allNotes, tagInvitations) {
 
     var sections = [
       {
+        heading: 'All Papers &nbsp;<span class="glyphicon glyphicon-search"></span>',
+        id: 'allPapers',
+        content: null
+      },
+      {
         heading: 'No bid',
         headingCount: noBid.length,
         id: 'noBid',
@@ -148,11 +153,6 @@ function renderContent(allNotes, tagInvitations) {
         heading: 'I cannot review',
         headingCount: canNotReview.length,
         id: 'canNotReview',
-        content: null
-      },
-      {
-        heading: 'All Papers &nbsp;<span class="glyphicon glyphicon-search"></span>',
-        id: 'allPapers',
         content: null
       }
     ];

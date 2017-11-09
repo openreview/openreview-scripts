@@ -569,7 +569,7 @@ add_bid_params = {
     'invitees': [],
     'signatures': [CONF],
     'duedate': 1509595199000, # 23:59:59 EST on November 1, 2017
-    'web': os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/bidWebfield.html')),
+    'web': os.path.abspath(os.path.join(os.path.dirname(__file__), '../webfield/bidWebfield.js')),
     'taskCompletionCount': 50,
     'multiReply': False,
     'reply': {
@@ -754,4 +754,3 @@ recruit_reviewers_params = {
         }
     }
 }
-
