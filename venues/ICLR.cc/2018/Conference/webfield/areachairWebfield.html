@@ -342,12 +342,14 @@ $(function() {
   });
 
   var renderTable = function() {
-    displayStatusTable(fetchedData.profiles,
+    displayStatusTable(
+      fetchedData.profiles,
       fetchedData.blindedNotes,
       fetchedData.officialReviews,
       fetchedData.metaReviews,
-      _.cloneDeep(fetchedData.noteToReviewerIds), //I need to clone this dictionary because some values are missing after the first refresh
-      '#reviewer-status');
+      _.cloneDeep(fetchedData.noteToReviewerIds), // Need to clone this dictionary because some values are missing after the first refresh
+      '#reviewer-status'
+    );
   }
 
   $('#group-container').on('click', 'a.note-contents-toggle', function(e) {

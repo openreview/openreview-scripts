@@ -76,8 +76,11 @@ function load() {
   });
 
   var userGroupsP;
+  var authorNotesP;
   if (!user || _.startsWith(user.id, 'guest_')) {
     userGroupsP = Promise.resolve([]);
+    authorNotesP = Promise.resolve([]);
+
   } else {
     userGroupsP = Webfield.get('/groups', {member: user.id}).then(function(result) {
       return _.filter(
@@ -85,12 +88,22 @@ function load() {
         function(id) { return _.startsWith(id, CONFERENCE); }
       );
     });
+
+    authorNotesP = Webfield.get('/notes/search', {
+      term: user.id,
+      group: CONFERENCE,
+      content: 'authors',
+      source: 'forum'
+    }).then(function(result) {
+      return result.notes;
+    });
   }
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_INVITATION);
 
   return $.when(
-    notesP, submittedNotesP, assignedNotesP, userGroupsP, tagInvitationsP, withdrawnNotesP
+    notesP, submittedNotesP, assignedNotesP, userGroupsP,
+    authorNotesP, tagInvitationsP, withdrawnNotesP
   );
 }
 
@@ -183,7 +196,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tagInvitations, withdrawnNotes) {
+function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, authorNotes, tagInvitations, withdrawnNotes) {
   var data, commentNotes;
 
   // if (_.isEmpty(userGroups)) {
@@ -193,15 +206,12 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
   // }
 
   commentNotes = [];
-  submittedPapers = [];
   _.forEach(submittedNotes, function(note) {
     if (!_.isNil(note.ddate)) {
       return;
     }
-    if (note.invitation === INVITATION) {
-      submittedPapers.push(note);
-    } else if (note.invitation !== RECRUIT_REVIEWERS && note.invitation !== WITHDRAWN_INVITATION) {
-      // ICLR specific: Not all conferences will have this invitation
+    if (!_.includes([INVITATION, RECRUIT_REVIEWERS, WITHDRAWN_INVITATION], note.invitation)) {
+      // ICLR specific: Not all conferences will have the withdrawn invitation
       commentNotes.push(note);
     }
   });
@@ -224,7 +234,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
   }
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-  if (authorPaperNumbers.length !== submittedPapers.length) {
+  if (authorPaperNumbers.length !== authorNotes.length) {
     console.warn('WARNING: The number of submitted notes returned by API does not ' +
       'match the number of submitted note groups the user is a member of.');
   }
@@ -313,9 +323,9 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, tag
   }
 
   // My Submitted Papers tab
-  if (submittedPapers.length) {
+  if (authorNotes.length) {
     Webfield.ui.searchResults(
-      submittedPapers,
+      authorNotes,
       _.assign({}, paperDisplayOptions, {container: '#my-submitted-papers'})
     );
   } else {
