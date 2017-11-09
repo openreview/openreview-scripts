@@ -5,10 +5,39 @@ import csv
 import openreview
 
 '''
+
+Requirements:
+
+openreview-py (version 0.6.0)
+
 Usage:
 
-python assign-reviewer.py --paper 1123 --add ~Michael_Spector1 --remove ~Melisa_Bok1
-python assign-reviewer.py --paper 1123
+Use the --paper (-p) flag to specify the paper number.
+Use the --add (-a) flag to specify a username or email address to assign.
+Use the --remove (-r) flag to specify a username or email address to remove.
+
+The script processes removals before additions, and assigns the user to the
+lowest AnonReviewer# group that is empty.
+
+For example, after running the following:
+
+python assign-reviewer.py --paper 123 --remove ~Oriol_Vinyals1 --add ~MarcAurelio_Ranzato1
+
+
+Paper123/Reviewers = {
+    AnonReviewer1: ~Tara_Sainath1
+    AnonReviewer2: ~Oriol_Vinyals1
+    AnonReviewer3: ~Iain_Murray1
+}
+
+becomes
+
+Paper123/Reviewers = {
+    AnonReviewer1: ~Tara_Sainath1
+    AnonReviewer2: ~MarcAurelio_Ranzato1
+    AnonReviewer3: ~Iain_Murray1
+}
+
 
 '''
 
