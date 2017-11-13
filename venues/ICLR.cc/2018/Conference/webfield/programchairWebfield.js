@@ -195,6 +195,19 @@ var getUserProfiles = function(userIds) {
   });
 };
 
+var findProfile = function(profiles, id) {
+  var profile = profiles[id];
+  if (profile) {
+    return profile;
+  } else {
+    return {
+      id: id,
+      name: '',
+      email: id
+    }
+  }
+}
+
 var getMetaReviews = function() {
   return $.getJSON('notes', { invitation: METAREVIEW_INVITATION })
     .then(function(result) {
@@ -275,15 +288,16 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
     for (var revNumber in revIds) {
-      var profile = profiles[revIds[revNumber]];
-      revIds[revNumber] = profile;
+      var id = revIds[revNumber];
+      revIds[revNumber] = findProfile(profiles, id);
+
     }
 
     var areachairId = areachairIds[note.number][0];
     var areachairProfile = {}
 
     if (areachairId) {
-      areachairProfile = profiles[areachairId];
+      areachairProfile = findProfile(profiles, areachairId);
     } else {
       areachairProfile.name = view.prettyId(CONFERENCE + '/-/Paper' + note.number + '/Area_Chair');
       areachairProfile.email = '-';
@@ -373,7 +387,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
 
     });
 
-    var areaChairProfile = profiles[areaChair];
+    var areaChairProfile = findProfile(profiles, areaChair);
     rowData.push(buildSPCTableRow(index, areaChairProfile, papers));
     index++;
   });
@@ -425,7 +439,6 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
 };
 
 var displayPCStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerByNote, reviewerById, container, options) {
-
   var rowData = [];
   var index = 1;
   var sortedReviewerIds = _.sortBy(_.keys(reviewerById));
@@ -463,7 +476,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
 
     });
 
-    var reviewerProfile = profiles[reviewer];
+    var reviewerProfile = findProfile(profiles, reviewer);
     rowData.push(buildPCTableRow(index, reviewerProfile, papers));
     index++;
   });
