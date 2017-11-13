@@ -320,6 +320,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     Average_Confidence: function(row) { return toNumber(row.reviewProgressData.averageConfidence); },
     Max_Confidence: function(row) { return toNumber(row.reviewProgressData.maxConfidence); },
     Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
+    Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
     Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
     Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
     Meta_Review_Missing: function(row) { return row.areachairProgressData.numMetaReview; }
@@ -395,6 +396,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
   var order = 'asc';
   var sortOptions = {
     Area_Chair: function(row) { return row.summary.name; },
+    Papers_Assigned: function(row) { return row.reviewProgressData.numPapers; },
     Papers_with_Completed_Review_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedReviews; },
     Papers_with_Completed_Review: function(row) { return row.reviewProgressData.numCompletedReviews; },
     Papers_with_Completed_MetaReview_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedMetaReviews; },
@@ -484,6 +486,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
   var order = 'asc';
   var sortOptions = {
     Reviewer: function(row) { return row.summary.name; },
+    Papers_Assigned: function(row) { return row.reviewProgressData.numPapers; },
     Papers_with_Reviews_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedReviews; },
     Papers_with_Reviews_Submitted: function(row) { return row.reviewProgressData.numCompletedReviews; },
     Papers_with_Completed_Reviews_Missing: function(row) { return row.reviewStatusData.numPapers - row.reviewStatusData.numCompletedReviews; },
