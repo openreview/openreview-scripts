@@ -58,6 +58,12 @@ paper_number = args.paper
 reviewer_to_remove = args.remove
 reviewer_to_add = args.add
 
+if reviewer_to_remove and '@' in reviewer_to_remove:
+    reviewer_to_remove = reviewer_to_remove.lower()
+
+if reviewer_to_add and '@' in reviewer_to_add:
+    reviewer_to_add = reviewer_to_add.lower()
+
 reviewers_group = client.get_group('ICLR.cc/2018/Conference/Paper{0}/Reviewers'.format(paper_number))
 anonreviewer_groups = client.get_groups(id = 'ICLR.cc/2018/Conference/Paper{0}/AnonReviewer.*'.format(paper_number))
 empty_anonreviewer_groups = sorted([ a for a in anonreviewer_groups if a.members == [] ], key=lambda x: x.id)
@@ -95,8 +101,7 @@ def get_user_conflicts(profile_or_email):
         return (domain_conflicts, relation_conflicts)
 
     except openreview.OpenReviewException as e:
-        print "could not find profile {0}".format(profile_or_email)
-        return (None, None)
+        return (set(), set())
 
 def get_paper_conflicts(n):
     authorids = n.content['authorids']
@@ -160,9 +165,11 @@ if reviewer_to_add:
         print 'Relation conflicts detected: {0}'.format(relation_conflicts)
 
     if domain_conflicts or relation_conflicts:
-        user_continue = raw_input('continue with assignment? y/[n]: ')
+        user_continue = raw_input('continue with assignment? y/[n]: ').lower() == 'y'
+    else:
+        user_continue = True
 
-    if user_continue.lower()=='y':
+    if user_continue:
         anonreviewer_id = next_anonreviewer_id(empty_anonreviewer_groups)
         paper_authors = 'ICLR.cc/2018/Conference/Paper{0}/Authors'.format(paper_number)
 
