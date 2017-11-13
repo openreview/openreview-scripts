@@ -69,22 +69,6 @@ def get_domains(email):
     valid_domains = [d for d in domains if '.' in d]
     return valid_domains
 
-def get_paper_conflicts(n):
-    authorids = n.content['authorids']
-    domain_conflicts = set()
-    relation_conflicts = set()
-    for e in authorids:
-        if '@' in e:
-            domain_conflicts.update(get_domains(e))
-
-    relation_conflicts = set([e for e in authorids if '@' in e])
-
-    # remove the domain "gmail.com"
-    if 'gmail.com' in domain_conflicts:
-        domain_conflicts.remove('gmail.com')
-
-    return (domain_conflicts, relation_conflicts)
-
 def get_user_conflicts(profile_or_email):
 
     domain_conflicts = set()
@@ -114,6 +98,26 @@ def get_user_conflicts(profile_or_email):
         print "could not find profile {0}".format(profile_or_email)
         return (None, None)
 
+def get_paper_conflicts(n):
+    authorids = n.content['authorids']
+    domain_conflicts = set()
+    relation_conflicts = set()
+    for e in authorids:
+        author_domain_conflicts, author_relation_conflicts = get_user_conflicts(e)
+        if author_domain_conflicts:
+            domain_conflicts.update(author_domain_conflicts)
+        if author_relation_conflicts:
+            relation_conflicts.update(author_relation_conflicts)
+        if '@' in e:
+            domain_conflicts.update(get_domains(e))
+
+    relation_conflicts = set([e for e in authorids if '@' in e])
+
+    # remove the domain "gmail.com"
+    if 'gmail.com' in domain_conflicts:
+        domain_conflicts.remove('gmail.com')
+
+    return (domain_conflicts, relation_conflicts)
 
 def next_anonreviewer_id(empty_anonreviewer_groups):
     if len(empty_anonreviewer_groups) > 0:
