@@ -62,6 +62,63 @@ reviewers_group = client.get_group('ICLR.cc/2018/Conference/Paper{0}/Reviewers'.
 anonreviewer_groups = client.get_groups(id = 'ICLR.cc/2018/Conference/Paper{0}/AnonReviewer.*'.format(paper_number))
 empty_anonreviewer_groups = sorted([ a for a in anonreviewer_groups if a.members == [] ], key=lambda x: x.id)
 
+def get_domains(email):
+    full_domain = email.split('@')[1]
+    domain_components = full_domain.split('.')
+    domains = ['.'.join(domain_components[index:len(domain_components)]) for index, path in enumerate(domain_components)]
+    valid_domains = [d for d in domains if '.' in d]
+    return valid_domains
+
+def get_user_conflicts(profile_or_email):
+
+    domain_conflicts = set()
+    relation_conflicts = set()
+    relation_conflicts.update([profile_or_email])
+    try:
+        profile = client.get_profile(profile_or_email)
+
+        profile_domains = []
+        for e in profile.content['emails']:
+            profile_domains += get_domains(e)
+
+        domain_conflicts.update(profile_domains)
+
+        institution_domains = [h['institution']['domain'] for h in profile.content['history']]
+        domain_conflicts.update(institution_domains)
+
+        if 'relations' in profile.content:
+            relation_conflicts.update([r['email'] for r in profile.content['relations']])
+
+        if 'gmail.com' in domain_conflicts:
+            domain_conflicts.remove('gmail.com')
+
+        return (domain_conflicts, relation_conflicts)
+
+    except openreview.OpenReviewException as e:
+        print "could not find profile {0}".format(profile_or_email)
+        return (None, None)
+
+def get_paper_conflicts(n):
+    authorids = n.content['authorids']
+    domain_conflicts = set()
+    relation_conflicts = set()
+    for e in authorids:
+        author_domain_conflicts, author_relation_conflicts = get_user_conflicts(e)
+        if author_domain_conflicts:
+            domain_conflicts.update(author_domain_conflicts)
+        if author_relation_conflicts:
+            relation_conflicts.update(author_relation_conflicts)
+        if '@' in e:
+            domain_conflicts.update(get_domains(e))
+
+    relation_conflicts = set([e for e in authorids if '@' in e])
+
+    # remove the domain "gmail.com"
+    if 'gmail.com' in domain_conflicts:
+        domain_conflicts.remove('gmail.com')
+
+    return (domain_conflicts, relation_conflicts)
+
 def next_anonreviewer_id(empty_anonreviewer_groups):
     if len(empty_anonreviewer_groups) > 0:
         anonreviewer_group = empty_anonreviewer_groups[0]
@@ -89,26 +146,45 @@ if reviewer_to_remove:
     client.remove_members_from_group(reviewers_group, reviewer_to_remove)
 
 if reviewer_to_add:
-    anonreviewer_id = next_anonreviewer_id(empty_anonreviewer_groups)
-    paper_authors = 'ICLR.cc/2018/Conference/Paper{0}/Authors'.format(paper_number)
+    paper = client.get_notes(invitation='ICLR.cc/2018/Conference/-/Submission', number=paper_number)[0]
+    user_domain_conflicts, user_relation_conflicts = get_user_conflicts(reviewer_to_add)
+    paper_domain_conflicts, paper_relation_conflicts = get_paper_conflicts(paper)
 
-    anonymous_reviewer_group = openreview.Group(
-        id = anonreviewer_id,
-        readers = [
-            'ICLR.cc/2018/Conference',
-            'ICLR.cc/2018/Conference/Area_Chairs',
-            'ICLR.cc/2018/Conference/Program_Chairs',
-            anonreviewer_id
-            ],
-        nonreaders = [
-            paper_authors
-            ],
-        writers = ['ICLR.cc/2018/Conference'],
-        signatories = [anonreviewer_id],
-        signatures = ['ICLR.cc/2018/Conference'],
-        members = [reviewer_to_add])
+    domain_conflicts = paper_domain_conflicts.intersection(user_domain_conflicts)
+    relation_conflicts = paper_relation_conflicts.intersection(user_relation_conflicts)
 
-    print "adding {0} to {1}".format(reviewer_to_add, anonymous_reviewer_group.id)
-    client.post_group(anonymous_reviewer_group)
-    print "adding {0} to {1}".format(reviewer_to_add, reviewers_group.id)
-    client.add_members_to_group(reviewers_group, reviewer_to_add)
+    if domain_conflicts:
+        print 'Domain conflicts detected: {0}'.format(domain_conflicts)
+
+    if relation_conflicts:
+        print 'Relation conflicts detected: {0}'.format(relation_conflicts)
+
+    if domain_conflicts or relation_conflicts:
+        user_continue = raw_input('continue with assignment? y/[n]: ')
+
+    if user_continue.lower()=='y':
+        anonreviewer_id = next_anonreviewer_id(empty_anonreviewer_groups)
+        paper_authors = 'ICLR.cc/2018/Conference/Paper{0}/Authors'.format(paper_number)
+
+        anonymous_reviewer_group = openreview.Group(
+            id = anonreviewer_id,
+            readers = [
+                'ICLR.cc/2018/Conference',
+                'ICLR.cc/2018/Conference/Area_Chairs',
+                'ICLR.cc/2018/Conference/Program_Chairs',
+                anonreviewer_id
+                ],
+            nonreaders = [
+                paper_authors
+                ],
+            writers = ['ICLR.cc/2018/Conference'],
+            signatories = [anonreviewer_id],
+            signatures = ['ICLR.cc/2018/Conference'],
+            members = [reviewer_to_add])
+
+        print "adding {0} to {1}".format(reviewer_to_add, anonymous_reviewer_group.id)
+        client.post_group(anonymous_reviewer_group)
+        print "adding {0} to {1}".format(reviewer_to_add, reviewers_group.id)
+        client.add_members_to_group(reviewers_group, reviewer_to_add)
+    else:
+        print "aborting assignment."
