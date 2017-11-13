@@ -81,7 +81,7 @@ def get_paper_conflicts(n):
 
     # remove the domain "gmail.com"
     if 'gmail.com' in domain_conflicts:
-        conflicts_by_paper[n.number]['domains'].remove('gmail.com')
+        domain_conflicts.remove('gmail.com')
 
     return (domain_conflicts, relation_conflicts)
 
@@ -89,7 +89,7 @@ def get_user_conflicts(profile_or_email):
 
     domain_conflicts = set()
     relation_conflicts = set()
-
+    relation_conflicts.update([profile_or_email])
     try:
         profile = client.get_profile(profile_or_email)
 
