@@ -136,7 +136,6 @@ if args.reviewers:
         for reviewer in all_reviewers.members:
             if reviewer not in papers_by_reviewer:
                 papers_by_reviewer[reviewer] = []
-                print reviewer
 
         for a in assignments:
             paper_number = a.id.split('Paper')[1].split('/Reviewers')[0]
