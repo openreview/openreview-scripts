@@ -130,8 +130,14 @@ if args.reviewers:
 
         notes = openreview.get_notes(invitation='ICLR.cc/2018/Conference/-/Blind_Submission')
         assignments = openreview.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Reviewers')
+        all_reviewers = openreview.get_group(id = 'ICLR.cc/2018/Conference/Reviewers')
 
         papers_by_reviewer = {}
+        for reviewer in all_reviewers.members:
+            if reviewer not in papers_by_reviewer:
+                papers_by_reviewer[reviewer] = []
+                print reviewer
+
         for a in assignments:
             paper_number = a.id.split('Paper')[1].split('/Reviewers')[0]
             for reviewer in a.members:
