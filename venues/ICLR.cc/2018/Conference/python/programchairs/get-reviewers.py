@@ -25,10 +25,7 @@ parser.add_argument('--password')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
-if args.username!=None and args.password!=None:
-    openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
-else:
-    openreview = Client(baseurl=args.baseurl)
+openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 baseurl = openreview.baseurl
 
 
