@@ -98,7 +98,7 @@ var getReviewerGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var reviewerMap = {};
 
-  return $.getJSON('groups', { regex: ANONREVIEWER_WILDCARD })
+  return $.getJSON('groups', { id: ANONREVIEWER_WILDCARD })
     .then(function(result) {
       var re = ANONREVIEWER_REGEX;
 
@@ -139,7 +139,7 @@ var getAreaChairGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var areaChairMap = {};
 
-  return $.getJSON('groups', { regex: AREACHAIR_WILDCARD })
+  return $.getJSON('groups', { id: AREACHAIR_WILDCARD })
     .then(function(result) {
       var re = AREACHAIR_REGEX;
 
