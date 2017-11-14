@@ -80,7 +80,7 @@ $(function() {
   var getReviewerGroups = function(noteNumbers) {
     var noteMap = buildNoteMap(noteNumbers);
 
-    return $.getJSON('groups', { regex: CONFERENCE + '/Paper.*/AnonReviewer.*' })
+    return $.getJSON('groups', { id: CONFERENCE + '/Paper.*/AnonReviewer.*' })
       .then(function(result) {
         var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 
@@ -125,6 +125,19 @@ $(function() {
       return null;
     });
   };
+
+  var findProfile = function(profiles, id) {
+    var profile = profiles[id];
+    if (profile) {
+      return profile;
+    } else {
+      return {
+        id: id,
+        name: '',
+        email: id
+      }
+    }
+  }
 
   var getMetaReviews = function() {
     return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Meta_Review' })
@@ -177,7 +190,7 @@ $(function() {
     var rowData = _.map(notes, function(note) {
       var revIds = reviewerIds[note.number];
       for (var revNumber in revIds) {
-        var profile = profiles[revIds[revNumber]];
+        var profile = findProfile(profiles, revIds[revNumber]);
         revIds[revNumber] = profile;
       }
 

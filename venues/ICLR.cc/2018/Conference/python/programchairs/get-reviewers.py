@@ -17,6 +17,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-n', '--paper_number', help="the number of the paper to assign this reviewer to")
 parser.add_argument('-u', '--user',help="the user whose reviewing assignments you would like to see")
 parser.add_argument('-a', '--all',help="specify an output file to save all the reviewer assignments")
+parser.add_argument('-p', '--papers',help="specify an output file to save all paper numbers and assigned reviewers for each")
+parser.add_argument('-r', '--reviewers',help="specify an output file to save all reviewers and his/her paper assignments")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -61,17 +63,16 @@ if args.user != None:
 
 
 if args.all != None:
-
+    # print paper number and reviewer id on each line
     with open(args.all, 'wb') as outfile:
 
         csvwriter = csv.writer(outfile, delimiter=',')
 
         notes = openreview.get_notes(invitation = 'ICLR.cc/2018/Conference/-/Blind_Submission')
         assignments = openreview.get_groups(id = 'ICLR.cc/2018/Conference/Paper.*/Reviewers')
+
         assignments_by_paper = {}
-
         for a in assignments:
-
             paper_number = a.id.split('Paper')[1].split('/Reviewers')[0]
             assignments_by_paper[paper_number] = a.members
 
@@ -89,6 +90,69 @@ if args.all != None:
                 row.append(n.number)
                 row.append('None')
                 csvwriter.writerow(row)
+
+if args.papers:
+    # print paper number, number of reviewers and lists reviewers
+    with open(args.papers, 'wb') as outfile:
+
+        csvwriter = csv.writer(outfile, delimiter=',')
+
+        notes = openreview.get_notes(invitation='ICLR.cc/2018/Conference/-/Blind_Submission')
+        assignments = openreview.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Reviewers')
+
+        assignments_by_paper = {}
+        for a in assignments:
+            paper_number = a.id.split('Paper')[1].split('/Reviewers')[0]
+            assignments_by_paper[paper_number] = a.members
+
+        # print paper, number of reviewers, reviewer ids
+        row = ['Paper #','Number of Reviewers','Reviewer1', 'Reviewer2', 'Reviewer3']
+        csvwriter.writerow(row)
+        for n in notes:
+            key = str(n.number)
+            row = []
+            row.append(key)
+            if key in assignments_by_paper.keys():
+                reviewers = assignments_by_paper[key]
+                row.append(len(reviewers))
+                for reviewer in reviewers:
+                    row.append(reviewer.encode('utf-8'))
+            else:
+                row.append('0')
+
+            csvwriter.writerow(row)
+
+if args.reviewers:
+    # print to file reviewer, number of papers assigned and list of paper numbers
+    with open(args.reviewers, 'wb') as outfile:
+
+        csvwriter = csv.writer(outfile, delimiter=',')
+
+        notes = openreview.get_notes(invitation='ICLR.cc/2018/Conference/-/Blind_Submission')
+        assignments = openreview.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Reviewers')
+        all_reviewers = openreview.get_group(id = 'ICLR.cc/2018/Conference/Reviewers')
+
+        papers_by_reviewer = {}
+        for reviewer in all_reviewers.members:
+            if reviewer not in papers_by_reviewer:
+                papers_by_reviewer[reviewer] = []
+
+        for a in assignments:
+            paper_number = a.id.split('Paper')[1].split('/Reviewers')[0]
+            for reviewer in a.members:
+                if reviewer not in papers_by_reviewer:
+                    papers_by_reviewer[reviewer] = []
+                papers_by_reviewer[reviewer].append(paper_number)
+
+        # print reviewer, number of papers
+        row = ['Reviewer','Number of Papers', 'Paper #']
+        csvwriter.writerow(row)
+        for key in papers_by_reviewer.keys():
+            row = []
+            row.append(key.encode('utf-8'))
+            row.append(len(papers_by_reviewer[key]))
+            row.extend(papers_by_reviewer[key])
+            csvwriter.writerow(row)
 
 
 
