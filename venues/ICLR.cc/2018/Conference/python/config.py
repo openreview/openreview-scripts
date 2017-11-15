@@ -439,7 +439,7 @@ meta_review_params = {
     'invitees': [],
     'signatures': [CONF],
     'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),
-    'duedate': 1517270399000, # 23:59:59 EST on January 1, 2018
+    'duedate': 1516424399000, # 23:59:59 EST on January 19, 2018
     'reply': {
         'forum': None,
         'replyto': None,
