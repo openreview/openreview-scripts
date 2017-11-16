@@ -301,7 +301,7 @@ public_comment_params = {
             'comment': {
                 'order': 1,
                 'value-regex': '[\\S\\s]{1,5000}',
-                'description': 'your comment or reply (max 5000 characters).',
+                'description': 'Your comment or reply (max 5000 characters).',
                 'required': True
             }
         }
@@ -347,7 +347,7 @@ official_comment_params = {
             'comment': {
                 'order': 1,
                 'value-regex': '[\\S\\s]{1,5000}',
-                'description': 'your comment or reply (max 5000 characters).',
+                'description': 'Your comment or reply (max 5000 characters).',
                 'required': True
             }
         }
