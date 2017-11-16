@@ -392,7 +392,7 @@ official_review_params = {
             'review': {
                 'order': 2,
                 'value-regex': '[\\S\\s]{1,200000}',
-                'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons. (Max 200,000 characters)',
+                'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (max 200000 characters).',
                 'required': True
             },
             'rating': {
