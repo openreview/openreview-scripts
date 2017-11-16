@@ -301,7 +301,7 @@ public_comment_params = {
             'comment': {
                 'order': 1,
                 'value-regex': '[\\S\\s]{1,5000}',
-                'description': 'Your comment or reply.',
+                'description': 'your comment or reply (max 5000 characters).',
                 'required': True
             }
         }
@@ -347,7 +347,7 @@ official_comment_params = {
             'comment': {
                 'order': 1,
                 'value-regex': '[\\S\\s]{1,5000}',
-                'description': 'Your comment or reply.',
+                'description': 'your comment or reply (max 5000 characters).',
                 'required': True
             }
         }
@@ -392,7 +392,7 @@ official_review_params = {
             'review': {
                 'order': 2,
                 'value-regex': '[\\S\\s]{1,200000}',
-                'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+                'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons. (Max 200,000 characters)',
                 'required': True
             },
             'rating': {
