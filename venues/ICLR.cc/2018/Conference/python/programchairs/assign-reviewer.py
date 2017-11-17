@@ -169,7 +169,7 @@ if reviewer_to_add:
     else:
         user_continue = True
 
-    if user_continue:
+    if user_continue and reviewer_to_add not in reviewers_group.members:
         anonreviewer_id = next_anonreviewer_id(empty_anonreviewer_groups)
         paper_authors = 'ICLR.cc/2018/Conference/Paper{0}/Authors'.format(paper_number)
 
@@ -193,5 +193,7 @@ if reviewer_to_add:
         client.post_group(anonymous_reviewer_group)
         print "adding {0} to {1}".format(reviewer_to_add, reviewers_group.id)
         client.add_members_to_group(reviewers_group, reviewer_to_add)
+    elif reviewer_to_add in reviewers_group.members:
+        print "{0} already in {1}".format(reviewer_to_add, reviewers_group.id)
     else:
         print "aborting assignment."
