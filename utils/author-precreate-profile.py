@@ -95,14 +95,12 @@ while True:
                     # if the id is in the form of an email, try to get the profile
                     id = id.strip()
                     id = id.encode('utf-8')
-                    id = id.replace('\u200b', '')
                     email_profile = get_profile(id)
                     if email_profile == None:
                         # author profile doesn't exist with this email address
                         # look up profile using author's ~id
                         name = name.strip()
                         name = name.encode('utf-8')
-                        name = name.replace('\u200b', '')
                         name = name.replace(' ', '_')
                         tildename = "~" + name + "1"
                         # print tildename
@@ -115,11 +113,10 @@ while True:
                             # if name_profile doesn't exists create profile
                             first = name.split('_')[0]
                             last = name.split('_')[-1]
-                            print note.id
                             try:
                                 create_profile(id, first, last, tildename, True)
                             except openreview.OpenReviewException as e:
-                                print "ERROR OpenReviewException: {0}".format(e)
+                                print "ERROR note: {0} OpenReviewException: {1}".format(note.id, e)
 
     ## run out of notes
     if len(notes) < limit:
