@@ -16,11 +16,11 @@ function() {
       or3client.removeGroupMember('auai.org/UAI/2018/Senior_Program_Committee', note.content.email, token)
       or3client.addGroupMember('auai.org/UAI/2018/Senior_Program_Committee/Declined', note.content.email, token)
       .then(result => done())
-      .catch(error => console.log(error));
+      .catch(error => done(error));
     }
     return true;
   } else {
-    console.log('Invalid key', note.content.key);
+    done('Invalid key', note.content.key);
     return false;
   }
 }
