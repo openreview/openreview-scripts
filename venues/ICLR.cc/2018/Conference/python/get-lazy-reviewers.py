@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Sends an email to the members of the group of your choice.
+Lists all reviewers that have not submitted official reviews.
 
 """
 
@@ -22,32 +22,7 @@ args = parser.parse_args()
 ## Initialize the client library with username and password
 client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-
-#################################################
-#                                               #
-#   EDIT YOUR MESSAGE AND SUBJECT LINE BELOW    #
-#                                               #
-#################################################
-
-
-subjectline = "<Insert your subject line here>"
-
-message = """
-
-<Insert your multi-line email message here>
-
-"""
-
-
-#################################################
-#                                               #
-#               END OF MESSAGE                  #
-#                                               #
-#################################################
-
 headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + client.token}
-total_missing = 0
-total_complete = 0
 email_reviewers = {}
 
 # return reviewer email for given id, or None if profile doesn't exist
