@@ -66,14 +66,18 @@ if args.type == 'reviews' or args.type == 'metareviews':
         forum_reviews = [r for r in reviews if r.forum == inv.reply['forum']]
 
         if args.show and not args.hide:
-            inv.reply['readers']['values'] = ['everyone']
-            inv.invitees = []
-            inv = client.post_invitation(inv)
-            print "updating invitation ", inv.id
+            if forum_reviews:
+                inv.reply['readers']['values'] = ['everyone']
+                inv.invitees = []
+                inv.reply['writers']['values'] = []
+                inv = client.post_invitation(inv)
+                print "updating invitation ", inv.id
 
             for review in forum_reviews:
                 print "updating review: ",review.id
                 review.readers = ['everyone']
+                review.nonreaders = []
+                review.writers = []
                 client.post_note(review)
 
         if args.hide and not args.show:
