@@ -22,37 +22,6 @@ args = parser.parse_args()
 ## Initialize the client library with username and password
 client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + client.token}
-email_reviewers = {}
-
-# return reviewer email for given id, or None if profile doesn't exist
-def get_reviewer_email(id):
-
-    if id not in email_reviewers:
-
-        if '@' in id:
-            email_reviewers[id] = id
-        else:
-            profile = requests.get(client.baseurl + '/user/profile?id=' + id, headers = headers)
-
-            if profile:
-                email_reviewers[id] = profile.json()['profile']['content']['preferred_email']
-            else:
-                print 'No profile found for', id
-                email_reviewers[id] = 'Not found'
-
-    return email_reviewers.get(id, None)
-
-# return specified paper if not deleted
-def get_paper(paper_number):
-
-    notes = client.get_notes(invitation=config.SUBMISSION, number = paper_number)
-
-    if notes and not notes[0].ddate:
-        return notes[0]
-
-    return None
-
 # create dictionary for reviewers_by_paper[paper_number][reviewer_tilde_id] = review note id
 def get_data(invitation):
 
@@ -103,8 +72,8 @@ print "Collecting users that did not submit their %s" % invitation
 
 total_complete = 0
 total_missing = 0
+reviewer_set = set()
 for paper_number in reviewers_by_paper:
-
 
     reviewers = reviewers_by_paper[paper_number]
 
@@ -115,20 +84,20 @@ for paper_number in reviewers_by_paper:
         else:
             total_missing += 1
             if paper_number not in late_reviewers:
-                late_reviewers[paper_number] = {}
-            late_reviewers[paper_number][reviewer] = get_reviewer_email(reviewer)
+                late_reviewers[paper_number] = []
+            late_reviewers[paper_number].append(reviewer.encode('UTF-8'))
+            reviewer_set.add(reviewer.encode('UTF-8'))
 
 ##print results
+
+print "All late reviewers by paper"
 for paper_number in sorted(late_reviewers):
+    print "{0} {1}".format(paper_number, ','.join(late_reviewers[paper_number]))
 
-    paper = get_paper(paper_number)
-    if paper:
-        reviewers = late_reviewers[paper_number]
-        for reviewer, email in reviewers.iteritems():
-            print str(paper_number) + "," + reviewer + ',' + email
-    else:
-        print 'Submission not found', paper_number
-
+print ""
+print "All late reviewers {0}".format(len(reviewer_set))
+print ','.join(reviewer_set)
+print ""
 print "%s: %s missing" % (invitation,total_missing)
 print "%s: %s complete" % (invitation,total_complete)
 
