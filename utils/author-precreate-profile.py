@@ -76,7 +76,6 @@ def create_profile(email, first, last, tilde_id, verbose=False):
         }
     })
 
-    # Why doesn't  "client.post_note(profile)" work? throws OpenReviewException: [u'note does not exist']
     response = requests.put(client.baseurl+"/user/profile", json=profile.to_json(), headers=client.headers)
 
 
@@ -84,9 +83,9 @@ def create_profile(email, first, last, tilde_id, verbose=False):
 # if profile doesn't exist, create one
 offset = 0
 limit = 200
-while True:
+notes = client.get_notes(offset=offset, limit=limit)
+while len(notes) > 0:
     # go through all notes, count as submission if it has authorids
-    notes = client.get_notes(offset=offset, limit=limit)
     for note in notes:
         if 'authorids' in note.content:
             # iterate through authorids and authors at the same time
@@ -118,7 +117,5 @@ while True:
                             except openreview.OpenReviewException as e:
                                 print "ERROR note: {0} OpenReviewException: {1}".format(note.id, e)
 
-    ## run out of notes
-    if len(notes) < limit:
-        break
     offset += limit
+    notes = client.get_notes(offset=offset, limit=limit)
