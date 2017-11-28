@@ -34,10 +34,8 @@ def get_data(invitation):
     while not notes_call_finished:
         notes_batch = client.get_notes(invitation=config.CONF+'/-/Paper.*/' + invitation, offset=offset)
         notes += notes_batch
-        print "notes batch size: ", len(notes_batch)
         offset += 2000
         if len(notes_batch) < 2000:
-            print "last call"
             notes_call_finished = True
 
     reviews = {}
