@@ -1,15 +1,17 @@
 #!/usr/bin/python
 
 ###############################################################################
-#
+# get-reviewers.py
+# -n print reviewers for specified paper
+# -u print papers assigned to specified reviewer
+# -a print all papers and reviewers to specified file (one paper/reviewer pair per line)
+# -p print all papers and reviewers to specified file (one paper, all reviewers per line)
+# -r print all reviewers and paper numbers to specified file (one review, all paper numbers per line)
 ###############################################################################
 
 ## Import statements
 import argparse
 import csv
-import getpass
-import sys
-import re
 from openreview import *
 
 ## Argument handling
@@ -37,8 +39,9 @@ if args.paper_number != None:
     if len(notes) > 0:
         note = notes[0]
         reviewers = openreview.get_group('ICLR.cc/2018/Conference/Paper' + str(note.number) + '/Reviewers');
-
-        print reviewers.members
+        area_chairs = openreview.get_groups('ICLR.cc/2018/Conference/Paper' + str(note.number) + '/Area_Chair')
+        print "Area Chair: {0}".format(area_chairs[0].members[0])
+        print "Reviewers: {0}".format(reviewers.members)
 
     else:
         print "Paper number not found", paper_number
@@ -96,24 +99,38 @@ if args.papers:
 
         notes = openreview.get_notes(invitation='ICLR.cc/2018/Conference/-/Blind_Submission')
         assignments = openreview.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Reviewers')
+        area_chairs = openreview.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Area_Chair')
 
         assignments_by_paper = {}
         for a in assignments:
             paper_number = a.id.split('Paper')[1].split('/Reviewers')[0]
-            assignments_by_paper[paper_number] = a.members
+            assignments_by_paper[paper_number] = {}
+            assignments_by_paper[paper_number]['reviewers'] = a.members
+            assignments_by_paper[paper_number]['AC'] = ""
 
-        # print paper, number of reviewers, reviewer ids
-        row = ['Paper #','Number of Reviewers','Reviewer1', 'Reviewer2', 'Reviewer3']
+        for ac in area_chairs:
+            paper_number = ac.id.split('Paper')[1].split('/Area_Chair')[0]
+            if paper_number in assignments_by_paper:
+                if ac.members:
+                    assignments_by_paper[paper_number]['AC'] = ac.members[0]
+                else:
+                    print "Empty members "+ac.id
+            else:
+                print "Papernum missing "+ str(paper_number)
+                # print paper, number of reviewers, reviewer ids
+        row = ['Paper #', 'Area Chair','Number of Reviewers','Reviewer1', 'Reviewer2', 'Reviewer3']
         csvwriter.writerow(row)
         for n in notes:
             key = str(n.number)
             row = []
             row.append(key)
             if key in assignments_by_paper.keys():
-                reviewers = assignments_by_paper[key]
+                reviewers = assignments_by_paper[key]['reviewers']
+                row.append(assignments_by_paper[key]['AC'].encode('utf-8'))
                 row.append(len(reviewers))
                 for reviewer in reviewers:
                     row.append(reviewer.encode('utf-8'))
+
             else:
                 row.append('0')
 
