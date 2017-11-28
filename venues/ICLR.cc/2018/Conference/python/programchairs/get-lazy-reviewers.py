@@ -8,7 +8,7 @@ Lists all reviewers that have not submitted official reviews.
 ## Import statements
 import argparse
 from openreview import *
-import requests
+
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -27,6 +27,8 @@ def get_data(invitation):
     paper_inv = 'ICLR.cc/2018/Conference/Paper.*'
     anon_reviewers = client.get_groups(id = paper_inv+'/AnonReviewer.*')
     current_reviewers = client.get_groups(id =paper_inv+'/Reviewers')
+
+    # can download max of 2k notes at a time
     notes = []
     offset = 0
     notes_call_finished = False
@@ -41,10 +43,12 @@ def get_data(invitation):
     reviewers = {}
     reviewers_by_paper = {}
 
+    # reviews[reviewer name] = review note id
     for n in notes:
         signature = n.signatures[0]
         reviews[signature] = n.id
 
+    # reviewers[paper_num+reviewer_name] = anonymous reviewer name
     for r in anon_reviewers:
         reviewer_id = r.id
         paper_number = reviewer_id.split('Paper')[1].split('/AnonReviewer')[0]
@@ -53,6 +57,7 @@ def get_data(invitation):
             reviewers[paper_number+ '_' + members[0]] = reviewer_id
         # otherwise the reviewer was removed
 
+    # reviewers_by_paper[paper_number][reviewer name]=review id
     for r in current_reviewers:
         reviewer_id = r.id
         members = r.members
@@ -95,11 +100,21 @@ for paper_number in reviewers_by_paper:
             late_reviewers[paper_number].append(reviewer.encode('UTF-8'))
             reviewer_set.add(reviewer.encode('UTF-8'))
 
+# associate area chairs with paper number
+area_chairs_group = client.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Area_Chair')
+# area_chairs[paper_num] = area chair id
+area_chairs = {}
+for ac in area_chairs_group:
+    paper_number = int(ac.id.split('Paper')[1].split('/Area_Chair')[0])
+    if ac.members:
+        area_chairs[paper_number] = ac.members[0].encode('UTF-8')
+
 ##print results
 
 print "All late reviewers by paper"
+print "Paper Number, AC, Reviewers"
 for paper_number in sorted(late_reviewers):
-    print "{0} {1}".format(paper_number, ','.join(late_reviewers[paper_number]))
+    print "{0}, {1}, {2}".format(paper_number, area_chairs.get(paper_number, ''),','.join(late_reviewers[paper_number]))
 
 print ""
 print "All late reviewers {0}".format(len(reviewer_set))
