@@ -28,7 +28,17 @@ def get_data(invitation):
     paper_inv = config.CONF+'/Paper.*'
     anon_reviewers = client.get_groups(id = paper_inv+'/AnonReviewer.*')
     current_reviewers = client.get_groups(id =paper_inv+'/Reviewers')
-    notes = client.get_notes(invitation=config.CONF+'/-/Paper.*/' + invitation)
+    notes = []
+    offset = 0
+    notes_call_finished = False
+    while not notes_call_finished:
+        notes_batch = client.get_notes(invitation=config.CONF+'/-/Paper.*/' + invitation, offset=offset)
+        notes += notes_batch
+        print "notes batch size: ", len(notes_batch)
+        offset += 2000
+        if len(notes_batch) < 2000:
+            print "last call"
+            notes_call_finished = True
 
     reviews = {}
     reviewers = {}
