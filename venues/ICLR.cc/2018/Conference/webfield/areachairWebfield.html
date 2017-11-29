@@ -113,12 +113,9 @@ $(function() {
 
         _.forEach(result.groups, function(g) {
           var matches = g.id.match(re);
-          if (matches) {
-            var num = parseInt(matches[0], 10);
-
-            if (g.members.length) {
-              noteMap[num] = g.members;
-            }
+          if (matches && g.members.length) {
+            var num = parseInt(matches[1], 10);
+            noteMap[num] = g.members;
           }
         });
         return noteMap;
