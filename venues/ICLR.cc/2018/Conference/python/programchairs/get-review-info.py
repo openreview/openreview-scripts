@@ -31,7 +31,7 @@ client = Client(baseurl=args.baseurl, username=args.username, password=args.pass
 reviews_total =0
 reviews_complete = 0
 # paper_data[paper_num]['title'] = title
-# paper_data[paper_num]['reviewers']['rating'/'confidence'] = rating
+# paper_data[paper_num]['reviewers'][reviewer]['rating'/'confidence'] = rating
 # paper_data[paper_num]['AC']= Area Chair id
 # paper_data[paper_num]['reviewer_count']= # of assigned reviewers
 # paper_data[paper_num]['review_count']= # of reviews complete
@@ -112,7 +112,7 @@ with open(args.file, 'wb') as outfile:
 
     csvwriter = csv.writer(outfile, delimiter=',')
     # write header row
-    row = ['Paper Num', 'Title', 'Area Chair', 'reviews complete/total', 'Reviewer1', 'rating', 'confidence', 'Reviewer2', 'rating', 'confidence', 'Reviewer3', 'rating', 'confidence']
+    row = ['Paper Num', 'Title', 'Area Chair', 'reviews complete','total reviews', 'Reviewer1', 'rating', 'confidence', 'Reviewer2', 'rating', 'confidence', 'Reviewer3', 'rating', 'confidence']
     csvwriter.writerow(row)
 
     for number in paper_data:
@@ -121,7 +121,8 @@ with open(args.file, 'wb') as outfile:
             row.append(number)
             row.append(paper_data[number]['title'].encode('UTF-8'))
             row.append(paper_data[number]['AC'].encode('UTF-8'))
-            row.append("'{0}/{1}'".format(paper_data[number]['review_count'], paper_data[number]['reviewer_count']))
+            row.append(paper_data[number]['review_count'])
+            row.append(paper_data[number]['reviewer_count'])
             for reviewer in paper_data[number]['reviewers']:
                 row.append(reviewer.encode('UTF-8'))
                 if paper_data[number]['reviewers'][reviewer]['rating'] >=0:
