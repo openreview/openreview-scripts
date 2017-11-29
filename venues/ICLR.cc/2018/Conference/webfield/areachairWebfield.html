@@ -51,7 +51,7 @@ $(function() {
       var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
       var ratingExp = /^(\d+): .*/;
 
-      notes.forEach(function(n) {
+      _.forEach(notes, function(n) {
         var matches = n.signatures[0].match(re);
         var num, index, ratingMatch;
         if (matches) {
@@ -84,7 +84,7 @@ $(function() {
       .then(function(result) {
         var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 
-        result.groups.forEach(function(g) {
+        _.forEach(result.groups, function(g) {
           var matches = g.id.match(re);
           var num, index;
           if (matches) {
@@ -101,6 +101,26 @@ $(function() {
       .fail(function(error) {
         displayError();
         return null;
+      });
+  };
+
+  var getAuthorDomains = function() {
+    var noteMap = Object.create(null);
+
+    return $.getJSON('groups', { id: CONFERENCE + '/Paper.*/Authors/Domains' })
+      .then(function(result) {
+        var re = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/Authors\/Domains/;
+
+        _.forEach(result.groups, function(g) {
+          var matches = g.id.match(re);
+          if (matches && g.members.length) {
+            var num = parseInt(matches[1], 10);
+            noteMap[num] = g.members;
+          }
+        });
+        return noteMap;
+      }, function(error) {
+        return noteMap;
       });
   };
 
@@ -185,7 +205,7 @@ $(function() {
     });
   };
 
-  var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container, options) {
+  var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, authorDomains, container, options) {
 
     var rowData = _.map(notes, function(note) {
       var revIds = reviewerIds[note.number];
@@ -195,7 +215,9 @@ $(function() {
       }
 
       var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
-      return buildTableRow(note, revIds, completedReviews[note.number], metaReview);
+      return buildTableRow(
+        note, revIds, completedReviews[note.number], metaReview, authorDomains[note.number]
+      );
     });
 
     var tableHTML = Handlebars.templates['components/table']({
@@ -214,11 +236,12 @@ $(function() {
 
 
   // Helper functions
-  var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
+  var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, domains) {
     var number = '<strong class="note-number">' + note.number + '</strong>';
 
     // Build Note Summary Cell
-    note.content.authors = null;  // Don't display 'Blinded Authors'
+    note.content.authors = null;  // Don't display 'Blinded Authors' ICLR Specific
+    note.content.authorDomains = domains;
     var summaryHtml = Handlebars.templates.noteSummary(note);
 
     // Build Review Progress Cell
@@ -326,10 +349,11 @@ $(function() {
             getOfficialReviews(noteNumbers),
             getMetaReviews(),
             getReviewerGroups(noteNumbers),
+            getAuthorDomains(),
             headerLoaded
           );
         })
-        .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, loaded) {
+        .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, authorDomains, loaded) {
 
           var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
             return result.concat(_.values(idsObj));
@@ -342,7 +366,8 @@ $(function() {
               blindedNotes: blindedNotes,
               officialReviews: officialReviews,
               metaReviews: metaReviews,
-              noteToReviewerIds: noteToReviewerIds
+              noteToReviewerIds: noteToReviewerIds,
+              authorDomains: authorDomains
             }
             renderTable();
           });
@@ -361,6 +386,7 @@ $(function() {
       fetchedData.officialReviews,
       fetchedData.metaReviews,
       _.cloneDeep(fetchedData.noteToReviewerIds), // Need to clone this dictionary because some values are missing after the first refresh
+      fetchedData.authorDomains,
       '#reviewer-status'
     );
   }
