@@ -172,13 +172,13 @@ if reviewer_to_add:
     if user_continue and reviewer_to_add not in reviewers_group.members:
         anonreviewer_id = next_anonreviewer_id(empty_anonreviewer_groups)
         paper_authors = 'ICLR.cc/2018/Conference/Paper{0}/Authors'.format(paper_number)
-
+        area_chair_id = 'ICLR.cc/2018/Conference/Paper{0}/Area_Chair'.format(paper_number)
         anonymous_reviewer_group = openreview.Group(
             id = anonreviewer_id,
             readers = [
                 'ICLR.cc/2018/Conference',
-                'ICLR.cc/2018/Conference/Area_Chairs',
                 'ICLR.cc/2018/Conference/Program_Chairs',
+                area_chair_id,
                 anonreviewer_id
                 ],
             nonreaders = [
