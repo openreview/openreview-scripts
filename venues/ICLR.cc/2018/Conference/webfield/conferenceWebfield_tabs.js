@@ -89,11 +89,15 @@ function load() {
       );
     });
 
-    authorNotesP = Webfield.get('/notes/search', {
-      term: user.id,
-      group: CONFERENCE,
-      content: 'authors',
-      source: 'forum'
+    authorNotesP = Webfield.get('/user/profile', {
+      email: user.id
+    }).then(function(result){
+      return Webfield.get('/notes/search', {
+        term: result.profile.id,
+        group: 'all',
+        content: 'authors',
+        source: 'forum'
+      })
     }).then(function(result) {
       return result.notes;
     });
