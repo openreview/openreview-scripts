@@ -235,17 +235,12 @@ function renderContent(notes, submittedNotes, assignedNotePairs, userGroups, aut
   if (assignedPaperNumbers.length !== assignedNotes.length) {
     console.warn('WARNING: The number of assigned notes returned by API does not ' +
       'match the number of assigned note groups the user is a member of.');
-
-    console.log(assignedPaperNumbers);
-    console.log(assignedNotes);
   }
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
   if (authorPaperNumbers.length !== authorNotes.length) {
     console.warn('WARNING: The number of submitted notes returned by API does not ' +
       'match the number of submitted note groups the user is a member of.');
-    console.log(authorPaperNumbers);
-    console.log(authorNotes);
   }
 
   // My Tasks tab
