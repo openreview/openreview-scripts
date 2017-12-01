@@ -24,12 +24,13 @@ def get_bibtex(note, anonymous=True):
         first_author_last_name = note.content['authors'][0].split(' ')[1].lower()
         authors = ', '.join(note.content['authors'])
 
-    return '@article{\
+    return '@unpublished{\
         \n' + first_author_last_name + '2018' + first_word + ',\
         \ntitle={' + note.content['title'] + '},\
         \nauthor={' + authors + '},\
         \njournal={International Conference on Learning Representations},\
-        \nyear={2018}\
+        \nyear={2018},\
+        \nnote={under review}\
     \n}'
 
 

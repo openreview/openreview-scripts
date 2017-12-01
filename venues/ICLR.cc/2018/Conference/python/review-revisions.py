@@ -1,6 +1,7 @@
 import openreview
 import argparse
 import config
+import sys, os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--username')
@@ -16,6 +17,7 @@ def create_revision_invitation(forum, referent, signature):
         'signatures': [config.CONF],
         'readers': ['everyone'],
         'invitees': [signature],
+        'process': os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/reviewRevisionProcess.js')),
         'reply': {
             'forum': forum,
             'referent': referent,
