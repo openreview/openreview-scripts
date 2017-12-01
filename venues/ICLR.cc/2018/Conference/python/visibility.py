@@ -75,6 +75,7 @@ if args.type == 'reviews' or args.type == 'metareviews':
             for review in forum_reviews:
                 print "updating review: ",review.id
                 review.readers = ['everyone']
+                review.writers = []
                 review.nonreaders = []
                 client.post_note(review)
 
