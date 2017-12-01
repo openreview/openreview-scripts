@@ -91,7 +91,7 @@ function load() {
 
     authorNotesP = Webfield.get('/notes/search', {
       term: user.profile.id,
-      group: 'all',
+      group: 'ICLR.cc/2018/Conference',
       content: 'authors',
       source: 'forum'
     }).then(function(result) {
