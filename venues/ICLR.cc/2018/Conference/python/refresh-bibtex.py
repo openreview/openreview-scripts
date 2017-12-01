@@ -12,13 +12,14 @@ import config
 def get_bibtex(note):
     firstWord = note.content['title'].split(' ')[0].lower()
 
-    return '''@article{
+    return '''@unpublished{
   anonymous2018''' + firstWord + ''',
   title={''' + note.content['title'] + '''},
   author={Anonymous},
   journal={International Conference on Learning Representations},
   year={2018},
-  url={https://openreview.net/forum?id=''' + note.id + '''}
+  url={https://openreview.net/forum?id=''' + note.id + '''},
+  note={under review}
 }'''
 
 parser = argparse.ArgumentParser()
