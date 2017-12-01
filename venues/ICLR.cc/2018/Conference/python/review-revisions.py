@@ -42,7 +42,16 @@ def create_revision_invitation(forum, referent, signature):
     return revise_review
 
 review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Official_Review')
-reviews = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review')
+review_call_done = False
+reviews = []
+limit = 2000
+offset = 0
+while not review_call_done:
+    review_batch = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review', offset=offset, limit=limit)
+    offset += limit
+    reviews += review_batch
+    if len(review_batch) < limit:
+        review_call_done = True
 
 for inv in review_invitations:
     forum_reviews = [r for r in reviews if r.forum == inv.reply['forum']]
