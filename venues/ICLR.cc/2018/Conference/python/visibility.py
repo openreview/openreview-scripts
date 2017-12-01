@@ -55,8 +55,8 @@ if args.type == 'submissions':
         client.post_note(overwriting_note)
 
 if args.type == 'reviews':
-    review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper1089/Official_Review')
-    reviews = client.get_notes(invitation = config.CONF + '/-/Paper1089/Official_Review')
+    review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Official_Review')
+    reviews = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review')
 
 if args.type == 'metareviews':
     review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Meta_Review')
