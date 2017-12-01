@@ -60,10 +60,10 @@ if args.type == 'reviews':
     review_call_done = False
     reviews = []
     limit = 2000
-    offset_counter = 0
+    offset = 0
     while not review_call_done:
-        review_batch = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review', offset=offset_counter, limit=limit)
-        offset_counter += limit
+        review_batch = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review', offset=offset, limit=limit)
+        offset += limit
         reviews += review_batch
         if len(review_batch) < limit:
             review_call_done = True
