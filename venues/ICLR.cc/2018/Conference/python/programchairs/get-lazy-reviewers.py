@@ -27,6 +27,7 @@ def get_data(invitation):
     paper_inv = 'ICLR.cc/2018/Conference/Paper.*'
     anon_reviewers = client.get_groups(id = paper_inv+'/AnonReviewer.*')
     current_reviewers = client.get_groups(id =paper_inv+'/Reviewers')
+    submissions = client.get_notes(invitation = 'ICLR.cc/2018/Conference/-/Blind_Submission')
 
     # can download max of 2k notes at a time
     notes = []
@@ -39,9 +40,13 @@ def get_data(invitation):
         if len(notes_batch) < 2000:
             notes_call_finished = True
 
+    papers = {}
     reviews = {}
     reviewers = {}
     reviewers_by_paper = {}
+
+    for paper in submissions:
+        papers[paper.number] = paper.id
 
     # reviews[reviewer name] = review note id
     for n in notes:
@@ -63,12 +68,13 @@ def get_data(invitation):
         members = r.members
         if members:
             paper_number = int(reviewer_id.split('Paper')[1].split('/Reviewers')[0])
-            if paper_number not in reviewers_by_paper:
-                reviewers_by_paper[paper_number] = {}
-
-            for m in members:
-                reviewer_id = reviewers.get(str(paper_number) + '_' + m, m)
-                reviewers_by_paper[paper_number][m] = reviews.get(reviewer_id, None)
+            # check if paper is current
+            if paper_number in papers:
+                if paper_number not in reviewers_by_paper:
+                    reviewers_by_paper[paper_number] = {}
+                for m in members:
+                    reviewer_id = reviewers.get(str(paper_number) + '_' + m, m)
+                    reviewers_by_paper[paper_number][m] = reviews.get(reviewer_id, None)
 
     return reviewers_by_paper
 
