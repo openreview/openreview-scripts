@@ -56,7 +56,16 @@ if args.type == 'submissions':
 
 if args.type == 'reviews':
     review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Official_Review')
-    reviews = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review')
+
+    review_call_done = False
+    reviews = []
+    offset = 0
+    while not review_call_done:
+        review_batch = client.get_notes(invitation = config.CONF + '/-/Paper.*/Official_Review', offset=offset)
+        offset += 2000
+        reviews += review_batch
+        if len(review_batch) < 2000:
+            review_call_done = True
 
 if args.type == 'metareviews':
     review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Meta_Review')
