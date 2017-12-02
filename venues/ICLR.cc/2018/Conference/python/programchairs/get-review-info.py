@@ -58,13 +58,13 @@ area_chairs = client.get_groups(config.CONF+'/Paper.*/Area_Chair')
 for ac in area_chairs:
     paper_number = int(ac.id.split('Paper')[1].split('/Area_Chair')[0])
     if paper_number in paper_data and ac.members:
-        paper_data[paper_number]['AC'] = ac.members[0]    
+        paper_data[paper_number]['AC'] = ac.members[0]
 
 
 # fill in reviewers per paper
 print "Filling in reviewers"
 reviewers = client.get_groups(config.CONF+'/Paper.*/Reviewers')
-for paper_reviewers in reviewers:  
+for paper_reviewers in reviewers:
     paper_number = int(paper_reviewers.id.split('Paper')[1].split('/Reviewers')[0])
     if paper_number in paper_data:
         for reviewer in paper_reviewers.members:
@@ -100,9 +100,9 @@ while not notes_call_finished:
 
 for review in reviews:
     paper_number = int(review.invitation.split('Paper')[1].split('/Official_Review')[0])
-    # check for review.writers in reviewers for odd case where there was a review submitted before the reviewer was removed.
-    if paper_number in paper_data and review.writers[0] in reviewers:
-        reviewer = reviewers[review.writers[0]]
+    # check for review.signatures in reviewers for odd case where there was a review submitted before the reviewer was removed.
+    if paper_number in paper_data and review.signatures[0] in reviewers:
+        reviewer = reviewers[review.signatures[0]]
         if reviewer in paper_data[paper_number]['reviewers']:
             paper_data[paper_number]['reviewers'][reviewer]['rating'] = review.content['rating'].split(':')[0]
             paper_data[paper_number]['reviewers'][reviewer]['confidence'] = review.content['confidence'].split(':')[0]
