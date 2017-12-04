@@ -88,5 +88,21 @@ def send_mail(email, first):
 
     print "Mail response: ", response
 
-print "sending message to {0} at {1}".format(args.first, args.email)
-send_mail(args.email, args.first)
+spc_invited = client.get_group('auai.org/UAI/2018/Senior_Program_Committee/Invited')
+
+
+# check to make sure that the user hasn't already been invited
+send_mail_valid = True
+if args.email in spc_invited.members:
+    user_input = raw_input("{0} has already been invited. Would you like to send the message anyway? y/[n]: ".format(args.email))
+    if user_input.lower() != 'y':
+        send_mail_valid = False
+else:
+    spc_invited = client.add_members_to_group(spc_invited, args.email)
+
+# if everything checks out, send the message
+if send_mail_valid:
+    print "sending message to {0} at {1}".format(args.first, args.email)
+    send_mail(args.email, args.first)
+else:
+    print "no message was sent."
