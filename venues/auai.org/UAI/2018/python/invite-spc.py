@@ -3,7 +3,7 @@ This file demonstrates how to send an SPC recruitment message.
 
 """
 
-subject = 'UAI 2018 Reminder: Invitation to serve on the Senior Program Committee'
+subject = 'UAI 2018: Invitation to serve on the Senior Program Committee'
 
 message = '''Dear {0},
 
