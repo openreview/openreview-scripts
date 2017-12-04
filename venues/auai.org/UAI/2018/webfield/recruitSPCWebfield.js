@@ -1,21 +1,10 @@
-
-// ------------------------------------
-// Basic venue homepage template
-//
-// This webfield displays the conference header (#header), the submit button (#invitation),
-// and a list of all submitted papers (#notes).
-// ------------------------------------
-
 // Constants
 var CONFERENCE_ID = 'auai.org/UAI/2018';
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
   Webfield.ui.setup('#invitation-container', CONFERENCE_ID);  // required
-
   renderConferenceHeader();
-
-  // Webfield.get('/notes', {id: args.noteId}).then(render);
   render();
 }
 
