@@ -72,7 +72,7 @@ spc_invitation = openreview.Invitation(**{
         'writers': ['auai.org/UAI/2018'],
         'signatures': ['auai.org/UAI/2018'],
         'process': '../process/recruitSPCProcess.js',
-        'web': '../webfield/recruitSPCWebfield.html'
+        'web': '../webfield/recruitSPCWebfield.js'
     })
 
 spc_invitation.reply = {
