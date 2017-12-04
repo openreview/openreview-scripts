@@ -11,11 +11,12 @@ var CONFERENCE_ID = 'auai.org/UAI/2018';
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
-  Webfield.ui.setup('#group-container', CONFERENCE_ID);  // required
+  Webfield.ui.setup('#invitation-container', CONFERENCE_ID);  // required
 
   renderConferenceHeader();
 
-  Webfield.get('/notes', {id: args.noteId}).then(render);
+  // Webfield.get('/notes', {id: args.noteId}).then(render);
+  render();
 }
 
 // RenderConferenceHeader renders the static info at the top of the page. Since that content
@@ -27,18 +28,14 @@ function renderConferenceHeader() {
     location: 'San Francisco, USA',
     date: 'August 2018',
     website: 'http://auai.org',
-    instructions: null,  // Add any custom instructions here. Accepts HTML
+    instructions: null,
   });
 
   Webfield.ui.spinner('#notes');
 }
 
-// Render is called when all the data is finished being loaded from the server
-// It should also be called when the page needs to be refreshed, for example after a user
-// submits a new paper.
-function render(result) {
-  // Display submission button and form (if invitation is readable)
-  var accepted = result.notes[0].content.response === 'Yes';
+function render() {
+  var accepted = args.response === 'Yes';
   var message = accepted ?
     'Thank you for accepting the invitation!' :
     'You have declined the invitation.';
@@ -52,9 +49,6 @@ function render(result) {
       '<div class="panel">',
         '<div class="row">',
           '<p>If you do not already have an OpenReview account, please sign up <a href="/signup">here</a>.</p>',
-        '</div>',
-
-        '<div class="row">',
           '<p>If you have an existing OpenReview account, please ensure that the email address that received this invitation is linked to your <a href="/profile?mode=edit">profile page</a> and has been confirmed.</p>',
         '</div>',
       '</div>'
