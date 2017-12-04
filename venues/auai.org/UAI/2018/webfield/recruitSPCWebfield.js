@@ -1,57 +1,66 @@
-var httpGetP = function(url, queryOrBody) {
-  var df = $.Deferred();
-  httpGet(url, queryOrBody, function(result) {
-    df.resolve(result);
-  }, function(err) {
-    df.reject(result);
-  });
-  return df.promise();
-};
 
-$attach('#header', 'mkHostHeader', [
-  "UAI 2018 Conference",
-  "Uncertainty in Artificial Intelligence",
-  "San Francisco, USA, August 2018",
-  "http://auai.org"
-], true);
+// ------------------------------------
+// Basic venue homepage template
+//
+// This webfield displays the conference header (#header), the submit button (#invitation),
+// and a list of all submitted papers (#notes).
+// ------------------------------------
 
-var $header = $('#header');
+// Constants
+var CONFERENCE_ID = 'auai.org/UAI/2018';
 
-if (args && args.noteId) {
+// Main is the entry point to the webfield code and runs everything
+function main() {
+  Webfield.ui.setup('#group-container', CONFERENCE_ID);  // required
 
+  renderConferenceHeader();
 
-  httpGetP('notes', { id: args.noteId }).then(function(result) {
-    accepted = (result.notes[0].content.response == 'Yes')
-    var message = accepted ? `Thank you for accepting the invitation!` : 'You have declined the invitation.';
-    var $response = $('#response');
-    $response.append(
-      $('<div>', {class: 'panel'})
-      .append($('<div>', {class: 'row'}).text(message))
-    );
-
-    if(accepted){
-      $response.append(
-        $('<div>',{class:'panel'}).append(
-          $('<div>',{class:'row'}).append(
-            $('<span>').text("If you do not already have an OpenReview account, please sign up "),
-            $('<a>',{
-              href: '/signup',
-              text: 'here'
-            }),
-            $('<span>').text(".")
-          ),
-          $('<div>',{class:'row'}).append(
-            $('<span>').text("If you have an existing OpenReview account, please ensure that the email address that received this invitation is linked to your "),
-            $('<a>',{
-              href:'/profile?mode=edit',
-              text:'profile page'
-            }),
-            $('<span>').text(" and has been confirmed.")
-          )
-        )
-      )
-    }
-
-  });
+  Webfield.get('/notes', {id: args.noteId}).then(render);
 }
 
+// RenderConferenceHeader renders the static info at the top of the page. Since that content
+// never changes, put it in its own function
+function renderConferenceHeader() {
+  Webfield.ui.venueHeader({
+    title: 'UAI 2018 Conference',
+    subtitle: 'Uncertainty in Artificial Intelligence',
+    location: 'San Francisco, USA',
+    date: 'August 2018',
+    website: 'http://auai.org',
+    instructions: null,  // Add any custom instructions here. Accepts HTML
+  });
+
+  Webfield.ui.spinner('#notes');
+}
+
+// Render is called when all the data is finished being loaded from the server
+// It should also be called when the page needs to be refreshed, for example after a user
+// submits a new paper.
+function render(result) {
+  // Display submission button and form (if invitation is readable)
+  var accepted = result.notes[0].content.response === 'Yes';
+  var message = accepted ?
+    'Thank you for accepting the invitation!' :
+    'You have declined the invitation.';
+
+  var $response = $('#notes');
+  $response.empty().append('<div class="panel"><div class="row"><strong>' + message + '</strong></div></div>');
+
+  if (accepted) {
+    // Display response text
+    $response.append([
+      '<div class="panel">',
+        '<div class="row">',
+          '<p>If you do not already have an OpenReview account, please sign up <a href="/signup">here</a>.</p>',
+        '</div>',
+
+        '<div class="row">',
+          '<p>If you have an existing OpenReview account, please ensure that the email address that received this invitation is linked to your <a href="/profile?mode=edit">profile page</a> and has been confirmed.</p>',
+        '</div>',
+      '</div>'
+    ].join('\n'));
+  }
+}
+
+// Go!
+main();
