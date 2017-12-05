@@ -18,7 +18,7 @@ function() {
       .then(result => done())
       .catch(error => done(error));
     } else {
-      done('Response invalid');
+      done('Invalid response', note.content.response);
     }
     return true;
   } else {
