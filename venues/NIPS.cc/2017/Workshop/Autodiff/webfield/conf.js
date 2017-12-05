@@ -1,4 +1,3 @@
-
 // ------------------------------------
 // Basic venue homepage template
 //
@@ -9,17 +8,13 @@
 // Constants
 var CONFERENCE = "NIPS.cc/2017/Workshop/Autodiff";
 var INVITATION = CONFERENCE + '/-/Submission';
+var TAG_INVITATION = CONFERENCE + '/-/Decision';
 var SUBJECT_AREAS = [
   // Add conference specific subject areas here
 ];
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 50;
 
-var paperDisplayOptions = {
-  pdfLink: true,
-  replyCount: true,
-  showContents: true
-};
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -27,9 +22,7 @@ function main() {
 
   renderConferenceHeader();
 
-  load().then(render).then(function() {
-    Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
-  });
+  load().then(render);
 }
 
 // RenderConferenceHeader renders the static info at the top of the page. Since that content
@@ -53,14 +46,18 @@ function renderConferenceHeader() {
 function load() {
   var invitationP = Webfield.api.getSubmissionInvitation(INVITATION, {deadlineBuffer: BUFFER});
   var notesP = Webfield.api.getSubmissions(INVITATION, {pageSize: PAGE_SIZE});
+  var tagInvitationsP = Webfield.get('/invitations', {id: TAG_INVITATION, tags: true})
+    .then(function(result) {
+      return result.invitations;
+    });
 
-  return $.when(invitationP, notesP);
+  return $.when(invitationP, notesP, tagInvitationsP);
 }
 
 // Render is called when all the data is finished being loaded from the server
 // It should also be called when the page needs to be refreshed, for example after a user
 // submits a new paper.
-function render(invitation, notes) {
+function render(invitation, notes, tagInvitations) {
   // Display submission button and form (if invitation is readable)
   $('#invitation').empty();
   if (invitation) {
@@ -74,11 +71,21 @@ function render(invitation, notes) {
     });
   }
 
+  var paperDisplayOptions = {
+    pdfLink: true,
+    replyCount: true,
+    showContents: true,
+    showTags: true,
+    tagInvitations: tagInvitations
+  };
+
   // Display the list of all submitted papers
   $('#notes').empty();
   Webfield.ui.submissionList(notes, {
     heading: 'Submitted Papers',
+    container: '#notes',
     displayOptions: paperDisplayOptions,
+    fadeIn: true,
     search: {
       enabled: true,
       subjectAreas: SUBJECT_AREAS,
@@ -92,6 +99,8 @@ function render(invitation, notes) {
       }
     }
   });
+
+  Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
 }
 
 // Go!
