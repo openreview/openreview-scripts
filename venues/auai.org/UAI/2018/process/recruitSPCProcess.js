@@ -17,6 +17,8 @@ function() {
       or3client.addGroupMember('auai.org/UAI/2018/Senior_Program_Committee/Declined', note.content.email, token)
       .then(result => done())
       .catch(error => done(error));
+    } else {
+      done('Response invalid');
     }
     return true;
   } else {
