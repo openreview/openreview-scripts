@@ -1,11 +1,6 @@
 ## Import statements
 import argparse
 from openreview import *
-import csv
-import sys
-sys.path.insert(0, "./..")
-import config
-import time
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()

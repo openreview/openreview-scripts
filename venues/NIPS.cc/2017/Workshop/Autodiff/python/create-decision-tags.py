@@ -1,10 +1,6 @@
 ## Import statements
 import argparse
 from openreview import *
-import csv
-import sys
-sys.path.insert(0, "./..")
-import config
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
