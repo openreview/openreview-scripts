@@ -33,6 +33,7 @@ REVIEWERS_INVITED = REVIEWERS + '/Invited'
 REVIEWERS_DECLINED = REVIEWERS + '/Declined'
 REVIEWERS_EMAILED = REVIEWERS + '/Emailed'
 
+AUTHORS_PLUS = AUTHORS + '_and_Higher'
 REVIEWERS_PLUS = REVIEWERS + '_and_Higher'
 AREA_CHAIRS_PLUS = AREA_CHAIRS + '_and_Higher'
 
@@ -282,7 +283,7 @@ public_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'value-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
+            'value-dropdown': ['everyone', AUTHORS_PLUS, REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -328,7 +329,7 @@ official_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'value-dropdown': ['everyone', REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
+            'value-dropdown': ['everyone', AUTHORS_PLUS, REVIEWERS_PLUS, AREA_CHAIRS_PLUS, PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
