@@ -91,20 +91,24 @@ print "Collecting users that did not submit their %s" % invitation
 total_complete = 0
 total_missing = 0
 reviewer_set = set()
+complete_per_paper ={}
+num_required_reviewers = 3
 for paper_number in reviewers_by_paper:
 
     reviewers = reviewers_by_paper[paper_number]
-
+    complete_per_paper[paper_number] = 0
     for reviewer, note_id in reviewers.iteritems():
 
         if note_id:
             total_complete += 1
+            complete_per_paper[paper_number] += 1
         else:
             total_missing += 1
             if paper_number not in late_reviewers:
                 late_reviewers[paper_number] = []
             late_reviewers[paper_number].append(reviewer.encode('UTF-8'))
             reviewer_set.add(reviewer.encode('UTF-8'))
+
 
 # associate area chairs with paper number
 area_chairs_group = client.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Area_Chair')
@@ -128,5 +132,15 @@ print ','.join(reviewer_set)
 print ""
 print "%s: %s missing" % (invitation,total_missing)
 print "%s: %s complete" % (invitation,total_complete)
+print ""
+print "Papers with less than three reviews"
+print "Paper Number, AC, Late Reviewers"
+late_required_reviews = 0
+for paper_number in sorted(complete_per_paper):
+    if complete_per_paper[paper_number] < num_required_reviewers:
+        print "{0}, {1}, {2}".format(paper_number, area_chairs.get(paper_number, ''),','.join(late_reviewers[paper_number]))
+        late_required_reviews += 1
+print ""
+print "%s: %s papers missing at least one review" % (invitation, late_required_reviews)
 
 
