@@ -72,11 +72,9 @@ def get_data(invitation):
             if paper_number in papers:
                 if paper_number not in reviewers_by_paper:
                     reviewers_by_paper[paper_number] = {}
-                    reviewers_by_paper[paper_number]['count']=0
                 for m in members:
                     reviewer_id = reviewers.get(str(paper_number) + '_' + m, m)
                     reviewers_by_paper[paper_number][m] = reviews.get(reviewer_id, None)
-                    reviewers_by_paper[paper_number]['count'] += 1
 
     return reviewers_by_paper
 
@@ -93,9 +91,7 @@ print "Collecting users that did not submit their %s" % invitation
 total_complete = 0
 total_missing = 0
 reviewer_set = set()
-missing_per_paper = {}
 complete_per_paper ={}
-total_required_missing = 0
 num_required_reviewers = 3
 late_required_reviewers = {}
 for paper_number in reviewers_by_paper:
@@ -114,15 +110,6 @@ for paper_number in reviewers_by_paper:
             late_reviewers[paper_number].append(reviewer.encode('UTF-8'))
             reviewer_set.add(reviewer.encode('UTF-8'))
 
-    if complete_per_paper[paper_number] >= num_required_reviewers:
-        missing_per_paper[paper_number] = 0
-    else:
-        missing_per_paper[paper_number] = num_required_reviewers-complete_per_paper[paper_number]
-        late_required_reviewers[paper_number] = []
-        for reviewer, note_id in reviewers.iteritems():
-            if not note_id:
-                late_required_reviewers[paper_number].append(reviewer.encode('UTF-8'))
-    total_required_missing += missing_per_paper[paper_number]
 
 # associate area chairs with paper number
 area_chairs_group = client.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Area_Chair')
@@ -149,8 +136,12 @@ print "%s: %s complete" % (invitation,total_complete)
 print ""
 print "Papers with less than three reviews"
 print "Paper Number, AC, Late Reviewers"
-for paper_number in sorted(late_required_reviewers):
-    print "{0}, {1}, {2}".format(paper_number, area_chairs.get(paper_number, ''),','.join(late_required_reviewers[paper_number]))
-print "%s: %s missing" % (invitation, total_required_missing)
+late_required_reviews = 0
+for paper_number in sorted(complete_per_paper):
+    if complete_per_paper[paper_number] < num_required_reviewers:
+        print "{0}, {1}, {2}".format(paper_number, area_chairs.get(paper_number, ''),','.join(late_reviewers[paper_number]))
+        late_required_reviews += 1
+print ""
+print "%s: %s papers missing at least one review" % (invitation, late_required_reviews)
 
 
