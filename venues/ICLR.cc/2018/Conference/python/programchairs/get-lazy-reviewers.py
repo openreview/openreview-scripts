@@ -93,7 +93,6 @@ total_missing = 0
 reviewer_set = set()
 complete_per_paper ={}
 num_required_reviewers = 3
-late_required_reviewers = {}
 for paper_number in reviewers_by_paper:
 
     reviewers = reviewers_by_paper[paper_number]
