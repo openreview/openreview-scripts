@@ -39,6 +39,7 @@ groups[config.REVIEWERS_INVITED] = openreview.Group(config.REVIEWERS_INVITED, **
 groups[config.REVIEWERS_DECLINED] = openreview.Group(config.REVIEWERS_DECLINED, **config.reviewer_group_params)
 groups[config.REVIEWERS_EMAILED] = openreview.Group(config.REVIEWERS_EMAILED, **config.reviewer_group_params)
 
+groups[config.AUTHORS_PLUS] = openreview.Group(config.AUTHORS_PLUS, members = [config.AUTHORS, config.REVIEWERS_PLUS], **config.public_group_params)
 groups[config.REVIEWERS_PLUS] = openreview.Group(config.REVIEWERS_PLUS, members = [config.CONF, config.REVIEWERS, config.AREA_CHAIRS, config.PROGRAM_CHAIRS], **config.public_group_params)
 groups[config.AREA_CHAIRS_PLUS] = openreview.Group(config.AREA_CHAIRS_PLUS, members = [config.CONF, config.AREA_CHAIRS, config.PROGRAM_CHAIRS], **config.public_group_params)
 
