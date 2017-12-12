@@ -8,7 +8,7 @@ function() {
     or3client.or3request(or3client.notesUrl + '?forum=' + note.forum, {}, 'GET', token)
     .then(result => result.notes.filter(n => n.forum === n.id)[0])
     .then(originalNote => originalNote.overwriting[0])
-    .then(overwritingId =>
+    .then(overwritingId => {
       var reviewerMail = {
         "groups": ['ICLR.cc/2018/Conference/Paper' + number + '/Reviewers'],
         "subject": "Revision posted to a paper that you reviewed",
