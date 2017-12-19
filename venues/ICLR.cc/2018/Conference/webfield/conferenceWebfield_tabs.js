@@ -78,8 +78,8 @@ function load() {
   var userGroupsP;
   var authorNotesP;
   if (!user || _.startsWith(user.id, 'guest_')) {
-    userGroupsP = Promise.resolve([]);
-    authorNotesP = Promise.resolve([]);
+    userGroupsP = $.Deferred().resolve([]);
+    authorNotesP = $.Deferred().resolve([]);
 
   } else {
     userGroupsP = Webfield.get('/groups', {member: user.id}).then(function(result) {
