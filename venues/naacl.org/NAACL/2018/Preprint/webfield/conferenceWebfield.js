@@ -37,7 +37,7 @@ function main() {
 // never changes, put it in its own function
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
-    title: "NAACL 2018 Preprint Server",
+    title: "NAACL 2018 Preprint Server (Unofficial)",
     subtitle: "Anonymous Preprint Server for the 16th Annual Conference of the North American Chapter of the Association for Computational Linguistics",
     location: "New Orleans, Louisiana, USA",
     date: "June 1 to June 6, 2018",
@@ -55,6 +55,10 @@ function renderConferenceHeader() {
           <p><strong>Withdrawing Submissions:</strong><br>\
           To withdraw your paper, navigate to the anonymous record of your submission and click on the "Withdraw" button. You will be asked to confirm your withdrawal. \
           Withdrawn submissions will be removed from the system entirely. \
+          <p><strong>Disclaimer:</strong><br>\
+          Although this preprint service is not officially affiliated with the Association for Computational Linguistics, \
+          submission of anonymous preprints on OpenReview is allowed under <a href="https://www.aclweb.org/adminwiki/index.php?title=ACL_Policies_for_Submission,_Review_and_Citation">the new ACL submission guidelines</a>. \
+          See also <a href="http://naacl2018.org/invited%20post/2017/11/27/acl-submission-policies.html">this blog post by Joakim Nivre</a>, president of the ACL. \
           <p><strong>Questions or Concerns:</strong><br> \
           Please contact the OpenReview support team at \
           <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns. \</br>\</p>',
