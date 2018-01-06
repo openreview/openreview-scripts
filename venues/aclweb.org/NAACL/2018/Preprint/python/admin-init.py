@@ -28,7 +28,10 @@ groups = []
 
 groups.append(openreview.Group(config.AUTHORS, **config.group_params))
 
-conf_group = client.get_group(config.CONF)
+
+naacl_groups = openreview.tools.build_groups(config.CONF)
+
+conf_group = [n for n in naacl_groups if n.id == config.CONF][0]
 conf_group.signatures = [client.signature]
 conf_group.add_webfield(config.WEBPATH)
 
