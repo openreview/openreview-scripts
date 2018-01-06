@@ -26,16 +26,14 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 groups = []
 
-groups.append(openreview.Group(config.AUTHORS, **config.group_params))
-
-
 naacl_groups = openreview.tools.build_groups(config.CONF)
+groups += naacl_groups
+
+groups.append(openreview.Group(config.AUTHORS, **config.group_params))
 
 conf_group = [n for n in naacl_groups if n.id == config.CONF][0]
 conf_group.signatures = [client.signature]
 conf_group.add_webfield(config.WEBPATH)
-
-groups.append(conf_group)
 
 invitations = []
 invitations.append(openreview.Invitation(
