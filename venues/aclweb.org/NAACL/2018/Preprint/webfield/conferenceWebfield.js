@@ -7,7 +7,7 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE = "naacl.org/NAACL/2018/Preprint";
+var CONFERENCE = "aclweb.org/NAACL/2018/Preprint";
 var SUBMISSION = CONFERENCE + '/-/Submission';
 var BLIND_SUBMISSION = CONFERENCE + '/-/Blind_Submission';
 var SUBJECT_AREAS = [

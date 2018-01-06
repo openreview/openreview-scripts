@@ -3,7 +3,7 @@ function() {
     // create blind submission and author group
     var or3client = lib.or3client;
 
-    var CONF = 'naacl.org/NAACL/2018/Preprint';
+    var CONF = 'aclweb.org/NAACL/2018/Preprint';
 
     var AUTHORS = CONF + '/Authors';
     var BLIND_SUBMISSION = CONF + '/-/Blind_Submission';
@@ -11,7 +11,7 @@ function() {
     var withdrawProcess = `function() {
         var or3client = lib.or3client;
 
-        var CONF = 'naacl.org/NAACL/2018/Preprint';
+        var CONF = 'aclweb.org/NAACL/2018/Preprint';
         var BLIND_INVITATION = CONF + '/-/Blind_Submission';
 
         or3client.or3request(or3client.notesUrl + '?id=' + note.referent, {}, 'GET', token)

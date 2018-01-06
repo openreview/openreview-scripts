@@ -17,7 +17,7 @@ Example:
 
 """
 
-CONF = "naacl.org/NAACL/2018/Preprint"
+CONF = "aclweb.org/NAACL/2018/Preprint"
 ADMIN = CONF + '/Admin'
 
 AUTHORS = CONF + '/Authors'
