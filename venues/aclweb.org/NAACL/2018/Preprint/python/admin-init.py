@@ -24,27 +24,29 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-groups = {}
+groups = []
 
-groups[config.AUTHORS] = openreview.Group(config.AUTHORS, **config.group_params)
+groups.append(openreview.Group(config.AUTHORS, **config.group_params))
 
-groups[config.CONF] = client.get_group(config.CONF)
-groups[config.CONF].signatures = [client.signature]
-groups[config.CONF].add_webfield(config.WEBPATH)
+conf_group = client.get_group(config.CONF)
+conf_group.signatures = [client.signature]
+conf_group.add_webfield(config.WEBPATH)
 
-invitations = {}
-invitations[config.SUBMISSION] = openreview.Invitation(
-    config.SUBMISSION, duedate=config.DUE_TIMESTAMP, **config.submission_params)
+groups.append(conf_group)
 
-invitations[config.BLIND_SUBMISSION] = openreview.Invitation(
-    config.BLIND_SUBMISSION, **config.blind_submission_params)
+invitations = []
+invitations.append(openreview.Invitation(
+    config.SUBMISSION, duedate=config.DUE_TIMESTAMP, **config.submission_params))
+
+invitations.append(openreview.Invitation(
+    config.BLIND_SUBMISSION, **config.blind_submission_params))
 
 # public comments are disabled for now
 
-for g in groups.values():
+for g in groups:
     print "Posting group: ", g.id
     client.post_group(g)
 
-for i in invitations.values():
+for i in invitations:
     print "Posting invitation: ", i.id
     client.post_invitation(i)
