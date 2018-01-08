@@ -51,10 +51,9 @@ for n in official_comments:
     except KeyError as e:
         print n.id
         raise(e)
-    if (("ICLR.cc/2018/Conference/Reviewers_and_Higher" in n.readers or
+    if ("ICLR.cc/2018/Conference/Reviewers_and_Higher" in n.readers or
         "ICLR.cc/2018/Conference/Area_Chairs_and_Higher" in n.readers or
-        "ICLR.cc/2018/Conference/Program_Chairs" in n.readers)
-        and 'ICLR.cc/2018/Conference/Paper{number}/Authors' not in n.writers):
+        "ICLR.cc/2018/Conference/Program_Chairs" in n.readers):
 
         n.nonreaders += submission.content['authorids']
         posted_n = client.post_note(n)
