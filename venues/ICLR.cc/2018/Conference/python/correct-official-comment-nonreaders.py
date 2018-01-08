@@ -25,7 +25,7 @@ finished = False
 offset = 0
 while not finished:
     batch = client.get_notes(invitation='ICLR.cc/2018/Conference/-/Paper.*/Official_Comment',
-                                    offset=offset)
+                                    offset=offset, limit=2000)
     official_comments += batch
     if len(batch) < 2000:
         print "len batch: ", len(batch)
@@ -56,7 +56,7 @@ for n in official_comments:
         "ICLR.cc/2018/Conference/Program_Chairs" in n.readers)
         and 'ICLR.cc/2018/Conference/Paper{number}/Authors' not in n.writers):
 
-        n.nonreaders.append('ICLR.cc/2018/Conference/Paper{number}/Authors'.format(number=submission.number))
+        n.nonreaders += submission.content['authorids']
         posted_n = client.post_note(n)
         modified_notes.append(posted_n)
 
