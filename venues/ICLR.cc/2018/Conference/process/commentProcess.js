@@ -17,6 +17,9 @@ function(){
       var author_mail;
 
       var selfComment = replytoNoteSignatures.indexOf(note.signatures[0]) > -1;
+      if(selfComment){
+        console.log('self comment detected');
+      }
 
       var readableComment = true;
 
@@ -28,7 +31,36 @@ function(){
         }
       };
 
-      console.log('self comment detected');
+      var ac_mail = {
+        'groups': ['ICLR.cc/2018/Conference/Paper' + origNote.number + '/Area_Chair'],
+        'subject': 'Comment posted to a paper in your area',
+        'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+      };
+
+      var reviewer_mail = {
+        'groups': ['ICLR.cc/2018/Conference/Paper' + origNote.number + '/Reviewers'],
+        'subject': 'Comment posted to a paper you are reviewing',
+        'message': 'A comment was posted to a paper for which you are serving as reviewer.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+      };
+
+      var pc_mail = {
+        'groups': ['ICLR.cc/2018/Conference/Program_Chairs'],
+        'subject': 'A Program Chair-only comment was posted',
+        'message': 'A comment was posted to a paper with readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+      };
+
+      var promises = [];
+
+      if(note.readers.indexOf('ICLR.cc/2018/Conference/Reviewers_and_Higher') > -1 ||
+        note.readers.indexOf('ICLR.cc/2018/Conference/Authors_and_Higher') > -1 ||
+        note.readers.indexOf('everyone') > -1){
+        promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token));
+        promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token));
+      } else if(note.readers.indexOf('ICLR.cc/2018/Conference/Area_Chairs_and_Higher') > -1){
+        promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token));
+      } else if(note.readers.indexOf('ICLR.cc/2018/Conference/Program_Chairs') > -1){
+        promises.push(or3client.or3request(or3client.mailUrl, pc_mail, 'POST', token));
+      }
 
       if(!selfComment && readableComment){
         if(replytoNote.id == origNote.id){
@@ -44,9 +76,7 @@ function(){
             "message": "Your comment titled \"" + replytoNote.content.title + "\" has received a response.\n\nComment title: " + note.content.title + "\n\nComment: " + note.content.comment + "\n\nTo view the comment, click here: " + baseUrl + "/forum?id=" + note.forum + '&noteId=' + note.id
           };
         }
-        promises = [or3client.or3request(or3client.mailUrl, author_mail, 'POST', token)];
-      } else {
-        promises = []
+        promises.push(or3client.or3request(or3client.mailUrl, author_mail, 'POST', token));
       }
 
       return Promise.all(promises);
