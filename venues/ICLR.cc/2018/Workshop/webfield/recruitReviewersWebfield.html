@@ -1,0 +1,65 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id='main'>
+      <div id='header'></div>
+      <div id='note'></div>
+      <div id='response'></div>
+    </div>
+    <script type="text/javascript">
+    $(function() {
+
+      var httpGetP = function(url, queryOrBody) {
+        var df = $.Deferred();
+        httpGet(url, queryOrBody, function(result) {
+          df.resolve(result);
+        }, function(err) {
+          df.reject(result);
+        });
+        return df.promise();
+      };
+
+      $attach('#header', 'mkHostHeader', [
+        "ICLR 2018 Workshop Track",
+        "6th International Conference on Learning Representations",
+        "Vancouver Convention Center, Vancouver, BC, Canada, April 30 - May 3, 2018",
+        "http://www.iclr.cc"
+      ], true);
+
+      var $header = $('#header');
+
+      if (args && args.noteId) {
+
+
+        httpGetP('notes', { id: args.noteId }).then(function(result) {
+          accepted = (result.notes[0].content.response == 'Yes')
+          var message = accepted ? `Thank you for accepting the invitation!` : 'You have declined the invitation.';
+          var $response = $('#response');
+          $response.append(
+            $('<div>', {class: 'panel'})
+            .append($('<div>', {class: 'row'}).text(message))
+          );
+
+          if(accepted){
+            $response.append(
+              $('<div>',{class:'panel'}).append(
+                $('<div>',{class:'row'}).append(
+                  $('<span>').text("If you do not already have an OpenReview account, please sign up or claim your pre-created account "),
+                  $('<a>',{
+                    href: '/signup',
+                    text: 'here'
+                  }),
+                  $('<span>').text(".")
+                )
+              )
+            )
+          }
+
+        });
+      }
+
+    });
+    </script>
+ </body>
+</html>
