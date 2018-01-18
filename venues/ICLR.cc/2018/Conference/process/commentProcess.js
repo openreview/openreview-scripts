@@ -33,13 +33,13 @@ function(){
 
       var ac_mail = {
         'groups': ['ICLR.cc/2018/Conference/Paper' + origNote.number + '/Area_Chair'],
-        'subject': 'Comment posted to a paper in your area',
+        'subject': 'Comment posted to a paper in your area. Title: ' + origNote.content.title,
         'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var reviewer_mail = {
         'groups': ['ICLR.cc/2018/Conference/Paper' + origNote.number + '/Reviewers'],
-        'subject': 'Comment posted to a paper you are reviewing',
+        'subject': 'Comment posted to a paper you are reviewing. Title: ' + origNote.content.title,
         'message': 'A comment was posted to a paper for which you are serving as reviewer.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 

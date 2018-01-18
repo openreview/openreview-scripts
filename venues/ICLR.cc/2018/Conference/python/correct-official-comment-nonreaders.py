@@ -55,7 +55,7 @@ for n in official_comments:
         "ICLR.cc/2018/Conference/Area_Chairs_and_Higher" in n.readers or
         "ICLR.cc/2018/Conference/Program_Chairs" in n.readers):
 
-        n.nonreaders += submission.content['authorids']
+        n.nonreaders = submission.content['authorids']
         posted_n = client.post_note(n)
         modified_notes.append(posted_n)
 
