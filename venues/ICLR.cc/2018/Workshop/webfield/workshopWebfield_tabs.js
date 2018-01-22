@@ -7,7 +7,7 @@
 
 // Constants
 var CONFERENCE = 'ICLR.cc/2018/Workshop';
-var PROGRAM_CHAIRS = CONFERENCE + 'Program_Chairs'
+var PROGRAM_CHAIRS = CONFERENCE + '/Program_Chairs'
 var INVITATION = CONFERENCE + '/-/Submission';
 var WITHDRAWN_INVITATION = CONFERENCE + '/-/Withdrawn_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
