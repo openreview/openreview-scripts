@@ -70,18 +70,6 @@ function() {
   .then(result => {
     return or3client.or3request(or3client.inviteUrl, addRevisionInvitation, 'POST', token);
   })
-  // .then(result => {
-  //   var bibtexRevision = {
-  //     referent: note.id,
-  //     signatures: [CONF],
-  //     writers: [CONF],
-  //     readers: ['everyone'],
-  //     content: {
-  //       '_bibtex': getBibtex(note)
-  //     }
-  //   }
-  //   return or3client.or3request(or3client.notesUrl)
-  // })
   .then(result => done())
   .catch(error => done(error));
 
