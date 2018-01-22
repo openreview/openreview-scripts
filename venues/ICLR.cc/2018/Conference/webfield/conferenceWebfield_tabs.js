@@ -105,11 +105,15 @@ function load() {
   .then(function(userGroups) {
 
     var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
+    var assignedNotesP = $.Deferred().resolve([]);
 
-    var assignedNotesP = Webfield.api.getSubmissions(BLIND_INVITATION, {
-      pageSize: PAGE_SIZE,
-      number: assignedPaperNumbers.join()
-    });
+    if (assignedPaperNumbers.length) {
+        assignedNotesP = Webfield.api.getSubmissions(BLIND_INVITATION, {
+        pageSize: PAGE_SIZE,
+        number: assignedPaperNumbers.join()
+      });
+    }
+
 
     return $.when(
       notesP, submittedNotesP, assignedNotePairsP, assignedNotesP, userGroups,
