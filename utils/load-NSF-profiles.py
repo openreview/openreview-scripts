@@ -26,6 +26,7 @@ def load_xml_investigators(client, dirpath):
     num_profiles = 0
     for filename in file_names:
         if filename.endswith('.xml'):
+            print "Processing {0}".format(filename)
             f = open(dirpath+filename, 'r')
             contents = ET.parse(f)
             root = contents.getroot()
@@ -35,13 +36,20 @@ def load_xml_investigators(client, dirpath):
                 if email != None:
                     email = email.strip()
                     email = email.lower()
-                    try:
-                        create_profile(client, email, person.find('FirstName').text, person.find('LastName').text)
-                        num_profiles += 1
-                    except openreview.OpenReviewException as e:
-                        # throw an error if it is something other than profile already exists
-                        if not (type(e[0]) == str and e[0].startswith("There is already a profile")):
-                            print "OpenReviewException: {0}".format(e)
+                    profile_tries = 0
+                    while profile_tries < 3:
+                        try:
+                            create_profile(client, email, person.find('FirstName').text, person.find('LastName').text)
+                            num_profiles += 1
+                            profile_tries = 3
+                        except openreview.OpenReviewException as e:
+                            # print the error if it is something other than profile already exists
+                            if not (type(e[0]) == str and e[0].startswith("There is already a profile")):
+                                print "OpenReviewException: {0}".format(e)
+                            profile_tries = 3
+                        except ValueError as e:
+                            print "ValueError: {0}".format(e)
+                            profile_tries += 1
 
             f.closed
     print "Added {0} profiles.".format(num_profiles)
