@@ -32,7 +32,7 @@ var getPaperNumbersfromGroups = function(groups) {
 };
 
 var getBlindedNotes = function() {
-  return $.getJSON('notes', { invitation: BLIND_INVITATION })
+  return $.getJSON('notes', { invitation: BLIND_INVITATION, noDetails: true })
     .then(function(result) {
       return result.notes;
     });
@@ -43,7 +43,7 @@ var getAllReviews = function(callback) {
   var allNotes = [];
 
   function getPromise(offset, limit) {
-    return $.getJSON('notes', { invitation: OFFICIAL_REVIEW_INVITATION, offset: offset, limit: limit })
+    return $.getJSON('notes', { invitation: OFFICIAL_REVIEW_INVITATION, offset: offset, limit: limit, noDetails: true })
     .then(function(result) {
       allNotes = _.union(allNotes, result.notes);
       if (result.notes.length == limit) {
@@ -209,7 +209,7 @@ var findProfile = function(profiles, id) {
 }
 
 var getMetaReviews = function() {
-  return $.getJSON('notes', { invitation: METAREVIEW_INVITATION })
+  return $.getJSON('notes', { invitation: METAREVIEW_INVITATION, noDetails: true })
     .then(function(result) {
       return result.notes;
     }).fail(function(error) {
