@@ -421,11 +421,11 @@ meta_review_params = {
             'confidence': {
                 'order': 4,
                 'value-radio': [
-                    '5: The area chair is absolutely certain',
-                    '4: The area chair is confident but not absolutely certain',
-                    '3: The area chair is somewhat confident',
-                    '2: The area chair is not sure',
-                    '1: The area chair\'s evaluation is an educated guess'
+                    '5: The reviewer is absolutely certain',
+                    '4: The reviewer is confident but not absolutely certain',
+                    '3: The reviewer is somewhat confident',
+                    '2: The reviewer is not sure',
+                    '1: The reviewer\'s evaluation is an educated guess'
                 ],
                 'required': True
             }
