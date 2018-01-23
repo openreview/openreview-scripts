@@ -66,6 +66,13 @@ def get_activity(client, paper_info):
                         paper_info[paper_number]['reviews'].append({'rating':n.content['rating'].split(':')[0],
                                                                 'conf':n.content['confidence'].split(':')[0]})
 
+    # get the AC name if the Meta_Review hasn't been submitted
+    for n in paper_info:
+        if paper_info[n]['AC_name'] == "":
+            group = client.get_group("ICLR.cc/2018/Conference/Paper{0}/Area_Chair".format(n))
+            if len(group.members) > 0:
+                paper_info[n]['AC_name'] = group.members[0]
+
     return paper_info
 
 
@@ -98,7 +105,7 @@ def output_paper_info(file_name, paper_info):
                 row.append('')
                 row.append('')
             row.append(paper_info[n]['AC_meta'].encode('utf-8'))
-            row.append(paper_info[n]['AC_name'])
+            row.append(paper_info[n]['AC_name'].encode('utf-8'))
             csvwriter.writerow(row)
 
 
