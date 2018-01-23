@@ -81,9 +81,8 @@ def output_paper_info(file_name, paper_info):
     print "writing to file "+file_name
     with open(file_name, 'wb') as outfile:
         csvwriter = csv.writer(outfile, delimiter=',')
-        row = ['Paper #', 'Paper Title', 'AC Recommendation', 'AC Confidence', 'Ave Scores', 'R1 Score',
-               'R1 Confidence', 'R2 Score', 'R2 Confidence', 'R3 Score', 'R3 Confidence', 'R4 Scores', 'R4 Confidence',
-               'AC MetaReview', 'AC', 'Final Decision']
+        row = ['Paper ID', 'Paper title', 'AC recommendation', 'AC confidence', 'Ave review scores', 'Reviewer scores',
+               'Reviewer Confidence', 'AC MetaReview', 'AC name','DONE?', 'PC decision', 'PC notes', 'PC Metareview']
         csvwriter.writerow(row)
 
         for n in paper_info:
@@ -92,18 +91,24 @@ def output_paper_info(file_name, paper_info):
             row.append(paper_info[n]['title'].encode('utf-8'))
             row.append(paper_info[n]['AC_rec'])
             row.append(paper_info[n]['AC_conf'])
+
+            # average review score
             score = 0.0
             if paper_info[n]['num_review'] > 0:
                 for rev in paper_info[n]['reviews']:
                     score += int(rev['rating'])
                 score = score / paper_info[n]['num_review']
             row.append('%.2f' % score)
+
+            # reviewer ratings and confidence
+            rating = ""
+            conf = ""
             for rev in paper_info[n]['reviews']:
-                row.append(rev['rating'])
-                row.append(rev['conf'])
-            for index in range(paper_info[n]['num_review'], 4):
-                row.append('')
-                row.append('')
+                rating = rating+str(rev['rating'])+';'
+                conf = conf + str(rev['conf']) + ';'
+            row.append(rating[:-1])
+            row.append(conf[:-1])
+
             row.append(paper_info[n]['AC_meta'].encode('utf-8'))
             row.append(paper_info[n]['AC_name'].encode('utf-8'))
             csvwriter.writerow(row)
