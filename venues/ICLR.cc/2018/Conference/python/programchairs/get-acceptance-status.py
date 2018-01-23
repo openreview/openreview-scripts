@@ -33,38 +33,45 @@ def init_paper_info(client):
 
 def get_activity(client, paper_info):
     # load in all notes from conference
-    print "loading reviews"
+    print "loading official reviews"
     limit = 1000
     offset = 0
     notes = []
-    batch = client.get_notes(invitation="ICLR.cc/2018/Conference/-/.*", limit=limit, offset=offset)
+    batch = client.get_notes(invitation="ICLR.cc/2018/Conference/-/.*/Official_Review", limit=limit, offset=offset)
     notes += batch
     while len(batch) == limit:
         offset += limit
-        batch = client.get_notes(invitation="ICLR.cc/2018/Conference/-/.*", limit=limit, offset=offset)
+        batch = client.get_notes(invitation="ICLR.cc/2018/Conference/-/.*/Official_Review", limit=limit, offset=offset)
         notes += batch
-
     # grab necessary data from notes
     for n in notes:
-        split = n.invitation.split('Paper')
-        if len(split) > 1:
-            split = split[1].split('/')
-            if len(split) > 1:
-                paper_number = int(split[0])
-                event = split[1]
-                if paper_number in paper_info:
-                    if event == 'Meta_Review':
-                        #fill in meta data
-                        paper_info[paper_number]['AC_rec'] = n.content['recommendation']
-                        paper_info[paper_number]['AC_conf'] = n.content['confidence'].split(':')[0]
-                        paper_info[paper_number]['AC_meta'] = n.content['metareview']
-                        profile = client.get_profile(n.tauthor)
-                        paper_info[paper_number]['AC_name'] = profile.id
-                    elif event == 'Official_Review':
-                        #add review data
-                        paper_info[paper_number]['num_review'] += 1
-                        paper_info[paper_number]['reviews'].append({'rating':n.content['rating'].split(':')[0],
-                                                                'conf':n.content['confidence'].split(':')[0]})
+        paper_number = int(n.invitation.split('Paper')[1].split('/')[0])
+        if paper_number in paper_info:
+            # add review data
+            paper_info[paper_number]['num_review'] += 1
+            paper_info[paper_number]['reviews'].append({'rating': n.content['rating'].split(':')[0],
+                                                        'conf': n.content['confidence'].split(':')[0]})
+
+
+    print "loading meta reviews"
+    offset = 0
+    notes = client.get_notes(invitation="ICLR.cc/2018/Conference/-/.*/Meta_Review", limit=limit, offset=offset)
+
+    profile_info = {}
+    # grab necessary data from notes
+    for n in notes:
+        paper_number = int(n.invitation.split('Paper')[1].split('/')[0])
+        if paper_number in paper_info:
+            #fill in meta data
+            paper_info[paper_number]['AC_rec'] = n.content['recommendation']
+            paper_info[paper_number]['AC_conf'] = n.content['confidence'].split(':')[0]
+            paper_info[paper_number]['AC_meta'] = n.content['metareview']
+            if n.tauthor in profile_info:
+                paper_info[paper_number]['AC_name'] = profile_info[n.tauthor]
+            else:
+                profile = client.get_profile(n.tauthor)
+                profile_info[n.tauthor]=profile.id
+                paper_info[paper_number]['AC_name'] = profile.id
 
     # get the AC name if the Meta_Review hasn't been submitted
     for n in paper_info:
