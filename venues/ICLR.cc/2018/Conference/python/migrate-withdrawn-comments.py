@@ -24,32 +24,53 @@ print "# of blind notes, without trash: ",len(blind_notes)
 
 blind_by_original = {n.original: n for n in all_blind_notes}
 
-for withdrawn_note in withdrawn_notes:
-    original_note = [n for n in client.get_notes(forum=withdrawn_note.original) if n.forum == n.id][0]
-    blind_note = blind_by_original[original_note.id]
-    forum_notes = client.get_notes(forum=blind_note.forum)
-    forum_invitations = client.get_invitations(replyForum=blind_note.forum)
+def get_migrated_note(old_note, withdrawn_forum_notes):
+    migrated_notes = [n for n in withdrawn_forum_notes if old_note.content == n.content and old_note.tauthor == n.tauthor]
+    if len(migrated_notes) > 0:
+        return migrated_notes[0]
+    else:
+        return None
+
+def migrate(old_note, blind_forum_notes, withdrawn_forum_notes, new_replyto_id):
+    withdrawn_forum_root = [n for n in withdrawn_forum_notes if n.id == n.forum][0]
+
+    migrated_note = get_migrated_note(old_note, withdrawn_forum_notes)
+
+    if not migrated_note:
+        note_json = old_note.to_json()
+        note_id = note_json.pop('id')
+        migrated_note = openreview.Note.from_json(note_json)
+
+        migrated_note.replyto = new_replyto_id
+        migrated_note.forum = withdrawn_forum_root.id
+        migrated_note.tauthor = note.tauthor
+
+        migrated_note = client.post_note(migrated_note)
+
+        note.ddate = int(round(time.time() * 1000))
+        deleted_note = client.post_note(note)
+        print "deleting '{0}', created '{1}' with forum {2}),".format(deleted_note.id, migrated_note.id, migrated_note.forum)
+
+    replies_to_migrate = [n for n in blind_forum_notes if n.replyto == old_note.id]
+    for reply in replies_to_migrate:
+        migrate(reply, blind_forum_notes, withdrawn_forum_notes, migrated_note.id)
+
+for withdrawn_forum_root in withdrawn_notes:
+    original_forum_root = client.get_note(withdrawn_forum_root.original)
+    blind_forum_root = blind_by_original[original_forum_root.id]
+    blind_forum_notes = client.get_notes(forum = blind_forum_root.forum, includeTrash=True)
+    withdrawn_forum_notes = client.get_notes(forum = withdrawn_forum_root.forum)
+    forum_invitations = client.get_invitations(replyForum = blind_forum_root.forum)
 
     for inv in forum_invitations:
         if 'replyto' in inv.reply and inv.reply['replyto'] == inv.reply['forum']:
-            inv.reply['replyto'] = withdrawn_note.forum
-        inv.reply['forum'] = withdrawn_note.forum
+            inv.reply['replyto'] = withdrawn_forum_root.forum
+        inv.reply['forum'] = withdrawn_forum_root.forum
         inv.invitees = []
         inv.process = ''
         inv = client.post_invitation(inv)
-        inv_notes = [n for n in forum_notes if n.invitation == inv.id]
+        inv_notes = [n for n in blind_forum_notes if n.invitation == inv.id]
 
-        for note in inv_notes:
-            note_json = note.to_json()
-            note_id = note_json.pop('id')
-            new_note = openreview.Note.from_json(note_json)
-
-
-            if new_note.replyto == new_note.forum:
-                new_note.replyto = withdrawn_note.forum
-            new_note.forum = withdrawn_note.forum
-            new_note.tauthor = note.tauthor
-            new_note = client.post_note(new_note)
-            note.ddate = int(round(time.time() * 1000))
-            deleted_note = client.post_note(note)
-            print "deleting '{0}', created '{1}'),".format(deleted_note.id, new_note.id)
+    for note in blind_forum_notes:
+        if note.forum == note.replyto and note.forum != note.id and not note.ddate:
+            migrate(note, blind_forum_notes, withdrawn_forum_notes, withdrawn_forum_root.id)
