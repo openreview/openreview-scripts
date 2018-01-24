@@ -454,6 +454,7 @@ meta_review_params = {
             'values': [AREA_CHAIRS_PLUS],
             'description': 'The users who will be allowed to read the above content.'
         },
+        'nonreaders': {},
         'content': {
             'title': {
                 'order': 1,

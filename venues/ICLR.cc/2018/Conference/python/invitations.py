@@ -26,6 +26,9 @@ maskAuthorsGroup = config.CONF + "/Paper[PAPER_NUMBER]/Authors"
 maskReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers"
 maskAreaChairGroup = config.CONF + "/Paper[PAPER_NUMBER]/Area_Chair"
 maskAnonReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/AnonReviewer[0-9]+"
+maskAuthorsPlusGroup = config.CONF + "/Paper[PAPER_NUMBER]/Authors_and_Higher"
+maskReviewersPlusGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers_and_Higher"
+maskACPlusGroup = config.CONF + "/Paper[PAPER_NUMBER]/Area_Chairs_and_Higher"
 
 invitation_configurations = {
     'Add_Revision': {
@@ -41,14 +44,16 @@ invitation_configurations = {
         'byForum': True,
         'invitees': ['~'],
         'noninvitees': [maskAuthorsGroup, maskReviewerGroup, maskAreaChairGroup],
-        'params': config.public_comment_params
+        'params': config.public_comment_params,
+        'readers': ['everyone', maskAuthorsPlusGroup, maskReviewersPlusGroup, maskACPlusGroup, config.PROGRAM_CHAIRS]
     },
     'Official_Comment': {
         'byPaper': True,
         'byForum': True,
         'invitees': [maskReviewerGroup, maskAuthorsGroup, maskAreaChairGroup, config.PROGRAM_CHAIRS],
         'signatures': [maskAnonReviewerGroup, maskAuthorsGroup, maskAreaChairGroup, config.PROGRAM_CHAIRS],
-        'params': config.official_comment_params
+        'params': config.official_comment_params,
+        'readers': ['everyone', maskAuthorsPlusGroup, maskReviewersPlusGroup, maskACPlusGroup, config.PROGRAM_CHAIRS]
     },
     'Official_Review': {
         'byPaper': True,
@@ -64,7 +69,8 @@ invitation_configurations = {
         'byReplyTo': True,
         'invitees': [maskAreaChairGroup],
         'signatures': [maskAreaChairGroup],
-        'params': config.meta_review_params
+        'params': config.meta_review_params,
+        'nonreaders': [maskAuthorsGroup]
     },
     'Add_Bid': {
         'tags': True,
@@ -134,6 +140,12 @@ def get_or_create_invitations(invitationId, overwrite):
                 if 'signatures' in invitation_config:
                     new_invitation.reply['signatures']['values-regex'] = prepare_regex(new_invitation.id, invitation_config['signatures'])
                     new_invitation.reply['writers']['values-regex'] = prepare_regex(new_invitation.id, invitation_config['signatures'])
+
+                if 'readers' in invitation_config:
+                    new_invitation.reply['readers']['value-dropdown'] = prepare_invitees(new_invitation.id, invitation_config['readers'])
+
+                if 'nonreaders' in invitation_config:
+                    new_invitation.reply['nonreaders']['values'] = prepare_invitees(new_invitation.id, invitation_config['nonreaders'])
 
                 invitations.append(client.post_invitation(new_invitation))
             return invitations
