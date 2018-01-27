@@ -31,7 +31,7 @@ REVIEWERS_EMAILED = REVIEWERS + '/Emailed'
 AUTHORS_PLUS = AUTHORS + '_and_Higher'
 REVIEWERS_PLUS = REVIEWERS + '_and_Higher'
 
-DUE_TIMESTAMP = 1518213600000 # Feb 9th, 2018, 5:00pm EST
+DUE_TIMESTAMP = 1518472800000 # Feb 12th, 2018, 5:00pm EST / 2:00pm PST / 10:00pm GMT
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/workshopWebfield_tabs.js')
 
 """
