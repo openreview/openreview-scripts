@@ -18,31 +18,24 @@ import csv
 import argparse
 import os
 import json
+import re
 
-## Handle the arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('--baseurl', help='openreview base URL')
-parser.add_argument('--username')
-parser.add_argument('--password')
-parser.add_argument('--directory','-d')
-parser.add_argument('--filename','-f')
-
-args = parser.parse_args()
-
-## Initialize the client library with username and password
-client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-
-def suggest_username(first, middle, last):
-    suggested_username = requests.get(
+def suggest_username(first, middle, last, client):
+    response = requests.get(
         client.baseurl + '/tildeusername?first={first}&middle={middle}&last={last}'.format(
-            first=first, middle=middle, last=last)).json()['username']
-    return suggested_username
+            first=first, middle=middle, last=last))
 
-def get_profile(email, imported_profile_content):
+    if response.json().get('username'):
+        suggested_username = response.json()['username']
+        return suggested_username
+    else:
+        return None
+
+def get_profile(email, name, imported_profile_content, client):
+    exists = True
     try:
         profile = client.get_profile(email)
         profile = client.get_note(profile.id)
-
     except openreview.OpenReviewException as e:
         if 'Profile not found' in e[0]:
             profile = openreview.Note(**{
@@ -59,11 +52,13 @@ def get_profile(email, imported_profile_content):
             raise(e)
 
     if not profile.id:
-        name = imported_profile_content['names'][0] # is it ok to just grab the first name in the list?
-        profile.id = suggest_username(name['first'], name['middle'], name['last'])
+        exists = False
+        # get the first name that has at least a first and a last name
+
+        profile.id = suggest_username(name['first'].encode('utf-8'), name['middle'].encode('utf-8'), name['last'].encode('utf-8'), client)
         profile.readers.append(profile.id)
 
-    return profile
+    return profile, exists
 
 def update_dblp(existing_content, imported_content):
     if not existing_content.get('dblp', None):
@@ -77,15 +72,15 @@ def update_names(existing_content, imported_content):
     if 'names' in existing_content:
         existing_names = [
             '{}_{}_{}'.format(
-                n['first'],
-                n['middle'],
-                n['last']) for n in existing_content['names']]
+                n['first'].encode('utf-8'),
+                n['middle'].encode('utf-8'),
+                n['last'].encode('utf-8')) for n in existing_content['names']]
 
         for name_entry in imported_content['names']:
             name_id = '{}_{}_{}'.format(
-                name_entry['first'],
-                name_entry['middle'],
-                name_entry['last'])
+                name_entry['first'].encode('utf-8'),
+                name_entry['middle'].encode('utf-8'),
+                name_entry['last'].encode('utf-8'))
 
             if name_id not in existing_names:
                 existing_content['names'].append(name_entry)
@@ -101,16 +96,18 @@ def update_dated_field(imported_content, fieldname):
                 entry[key] = None
 
 def update_relations(existing_content, imported_content):
+    email_regex = re.compile('^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$')
 
     if not 'relations' in existing_content:
         existing_content['relations'] = imported_content['relations']
     else:
-        existing_relations = ['{}_{}'.format(n['name'], n['email']) for n in existing_content['relations']]
+        existing_relations = ['{}_{}'.format(n['name'].encode('utf-8'), n['email']) for n in existing_content['relations']]
 
         for relation_entry in imported_content['relations']:
-            relation_id = '{}_{}'.format(relation_entry['name'], relation_entry['email'])
-            if relation_id not in existing_relations:
-                existing_content['relations'].append(relation_entry)
+            if email_regex.match(relation_entry['email']):
+                relation_id = '{}_{}'.format(relation_entry['name'].encode('utf-8'), relation_entry['email'])
+                if relation_id not in existing_relations:
+                    existing_content['relations'].append(relation_entry)
 
 def update_history(existing_content, imported_content):
     if not 'history' in existing_content:
@@ -119,17 +116,17 @@ def update_history(existing_content, imported_content):
         existing_histories = ['{}_{}_{}_{}_{}'.format(
             h['start'],
             h['end'],
-            h['position'],
-            h['institution']['name'],
+            h['position'].encode('utf-8'),
+            h['institution']['name'].encode('utf-8'),
             h['institution']['domain']) for h in existing_content['history']]
 
         for history_entry in imported_content['history']:
             history_id = '{}_{}_{}_{}_{}'.format(
                 history_entry['start'],
                 history_entry['end'],
-                history_entry['position'],
-                history_entry['institution']['name'],
-                history_entry['institution']['domain'])
+                history_entry['position'].encode('utf-8'),
+                history_entry['institution']['name'].encode('utf-8'),
+                history_entry['institution']['domain'].encode('utf-8'))
             if history_id not in existing_histories:
                 existing_content['history'].append(history_entry)
 
@@ -142,15 +139,17 @@ def process_content(existing_content, imported_content):
 
     return existing_content
 
-def post_profile(profile):
-    response = requests.put(client.baseurl + '/user/profile',
+def post_profile(profile, exists, client):
+    put_or_post = requests.post if exists else requests.put
+
+    response = put_or_post(client.baseurl + '/user/profile',
         json = profile.to_json(),
         headers = client.headers)
 
-    print "profile response: ", response.json()['id']
+    return response.json()['id']
 
 
-def update_user_groups(profile):
+def update_user_groups(profile, client):
     email_groups = []
     for email in profile.content['emails']:
         try:
@@ -173,7 +172,7 @@ def update_user_groups(profile):
         if 'username' in name_entry and name_entry['username']:
             name_group = client.get_group(name_entry['username'])
         else:
-            name_id = suggest_username(name_entry['first'], name_entry['middle'], name_entry['last'])
+            name_id = suggest_username(name_entry['first'].encode('utf-8'), name_entry['middle'].encode('utf-8'), name_entry['last'].encode('utf-8'), client)
 
             name_group = openreview.Group(**{
                 'id': name_id,
@@ -201,30 +200,49 @@ def update_user_groups(profile):
 #filename = '../data/researcher-json/william.l.spector@gmail.com.json'
 #filename = '../data/researcher-json/akobren@cs.umass.edu.json'
 
-def import_user(filename):
+def import_user(filename, client):
     main_email = filename.split('/')[-1].replace('.json','').strip()
+    email_regex = re.compile('^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$')
+
+    error_type = None
+    name = None
     with open(filename) as infile:
-        imported_profile_content = json.load(infile)
+        try:
+            imported_profile_content = json.load(infile)
+            for name_entry in imported_profile_content['names']:
+                if name_entry.get('first') and name_entry.get('last'):
+                    name = name_entry
+                    break
+            if not name:
+                error_type = 'missing_name'
+            else:
+                if not suggest_username(name['first'].encode('utf-8'),
+                    name['middle'].encode('utf-8'),
+                    name['last'].encode('utf-8'),
+                    client):
+                    error_type = 'invalid_name'
 
-    profile = get_profile(main_email, imported_profile_content)
+        except ValueError as e:
+            error_type = 'bad_json'
 
-    process_content(profile.content, imported_profile_content)
+    if not email_regex.match(main_email):
+        error_type = 'bad_filename'
 
-    groups = update_user_groups(profile)
+    if not error_type:
+        profile, exists = get_profile(main_email, name, imported_profile_content, client)
 
-    for g in groups:
-        new_group = client.post_group(g)
+        process_content(profile.content, imported_profile_content)
 
-    post_profile(profile)
+        groups = update_user_groups(profile, client)
 
-if args.directory:
-    for filename in os.listdir(args.directory):
-        if filename.endswith('.json'):
-            filename = os.path.join(args.directory, filename)
-            import_user(filename)
+        for g in groups:
+            new_group = client.post_group(g)
 
-elif args.filename:
-    import_user(args.filename)
+        return post_profile(profile, exists, client), None
+
+    else:
+        return filename, error_type
+
 
 
 
