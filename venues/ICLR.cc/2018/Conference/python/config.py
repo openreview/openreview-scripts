@@ -499,7 +499,7 @@ meta_review_params = {
 acceptance_decision_params = {
     'readers': ['everyone'],
     'writers': [CONF],
-    'invitees': [PROGRAM_CHAIRS],
+    'invitees': [],
     'signatures': [CONF],
     'reply': {
         'forum': None,
@@ -507,7 +507,7 @@ acceptance_decision_params = {
         'invitation': BLIND_SUBMISSION,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
+            'value-dropdown': ['ICLR.cc/2018/Conference/Program_Chairs', 'everyone']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -523,7 +523,7 @@ acceptance_decision_params = {
                 'required': True
             },
             'decision': {
-                'order': 3,
+                'order': 2,
                 'value-dropdown': [
                     'Accept (Oral)',
                     'Accept (Poster)',
@@ -531,7 +531,13 @@ acceptance_decision_params = {
                     'Invite to Workshop Track'
                 ],
                 'required': True
-            }
+            },
+            'comment': {
+                'order': 3,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'description': '(optional) Comment on this decision.',
+                'required': False
+            },
         }
     }
 }
