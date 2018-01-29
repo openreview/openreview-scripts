@@ -8,14 +8,13 @@ Email decisions to paper authors
 import argparse
 import csv
 import openreview
-import config
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
-
+parser.add_argument('--ifile')
 args = parser.parse_args()
 
 ## Initialize the client library with username and password
@@ -28,6 +27,16 @@ def load_decisions(client):
     for decision in decisions:
         dec_info[decision.forum] =decision.content['decision']
     return dec_info
+
+def load_file():
+    csv_info = []
+    if args.ifile:
+        with open(args.ifile) as f:
+            reader = csv.reader(f)
+            csv_info = [r[0] for r in reader]
+    print csv_info
+    return csv_info
+
 
 
 subjects = {}
@@ -130,11 +139,14 @@ Tara, Marc’Aurelio, Iain and Oriol -- the ICLR 2018 program committee
 
 submissions = client.get_notes(invitation='ICLR.cc/2018/Conference/-/Blind_Submission')
 decision_info = load_decisions(client)
+csv_info = load_file()
 subject = "ICLR decision"
 for note in submissions:
-    if note.forum in decision_info:
+    if note.forum in decision_info and note.forum not in csv_info:
         if decision_info[note.forum] in messages:
-            message = messages[decision_info[note.forum]].format(note.number, note.content['title'])
+            message = messages[decision_info[note.forum]].format(note.number, note.content['title'].encode('utf-8'))
             client.send_mail(subjects[decision_info[note.forum]], note.content['authorids'], message)
+
+            print note.forum
         else:
             print "ERROR Decision: <" + {0} + "> for paper {1}".format(decision_info[note.forum], note.number)
