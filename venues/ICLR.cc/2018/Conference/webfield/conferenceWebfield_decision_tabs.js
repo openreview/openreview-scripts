@@ -97,13 +97,13 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
 
   _.forEach(decisionsNotes, function(d) {
 
-    if (d.content.decision == 'Accept (Oral)') {
+    if (d.content.decision === 'Accept (Oral)') {
       oralDecisions.push(notesDict[d.forum]);
-    } else if (d.content.decision == 'Accept (Poster)') {
+    } else if (d.content.decision === 'Accept (Poster)') {
       posterDecisions.push(notesDict[d.forum]);
-    } else if (d.content.decision == 'Reject') {
+    } else if (d.content.decision === 'Reject') {
       rejectDecisions.push(notesDict[d.forum]);
-    } else if (d.content.decision == 'Invite to Workshop Track') {
+    } else if (d.content.decision === 'Invite to Workshop Track') {
       workshopDecisions.push(notesDict[d.forum]);
     }
   });
