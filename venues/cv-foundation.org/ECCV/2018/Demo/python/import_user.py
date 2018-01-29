@@ -118,7 +118,7 @@ def update_history(existing_content, imported_content):
             h['end'],
             h['position'].encode('utf-8'),
             h['institution']['name'].encode('utf-8'),
-            h['institution']['domain']) for h in existing_content['history']]
+            h['institution']['domain'].encode('utf-8')) for h in existing_content['history']]
 
         for history_entry in imported_content['history']:
             history_id = '{}_{}_{}_{}_{}'.format(
@@ -194,11 +194,6 @@ def update_user_groups(profile, client):
     all_groups = name_groups + email_groups
 
     return all_groups
-
-
-
-#filename = '../data/researcher-json/william.l.spector@gmail.com.json'
-#filename = '../data/researcher-json/akobren@cs.umass.edu.json'
 
 def import_user(filename, client):
     main_email = filename.split('/')[-1].replace('.json','').strip()
