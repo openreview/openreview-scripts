@@ -30,33 +30,40 @@ def get_author(client, author, profile_info):
     if author not in profile_info:
         profile_info[author] = {}
         profile_info[author]['institute'] =""
-        try:
-            profile = client.get_profile(author)
-            profile_info[author]['first'] = profile.content['names'][0]['first']
-            if len(profile.content['names'][0]['middle'])>0:
-                profile_info[author]['mi']= profile.content['names'][0]['middle'][0]
-            else:
-                profile_info[author]['mi']= " "
+        tries = 0
+        while tries < 3:
+            try:
+                profile = client.get_profile(author)
+                profile_info[author]['first'] = profile.content['names'][0]['first']
+                if len(profile.content['names'][0]['middle'])>0:
+                    profile_info[author]['mi']= profile.content['names'][0]['middle'][0]
+                else:
+                    profile_info[author]['mi']= " "
 
-            profile_info[author]['last'] = profile.content['names'][0]['last']
-            profile_info[author]['email'] = profile.content['preferred_email']
-            # check for most recent entry in history
-            end_date = 0
-            for entry in profile.content['history']:
-                if entry['end'] > end_date:
-                    end_date = entry['end']
-                    profile_info[author]['institute'] = entry['institution']['name']
-        except openreview.OpenReviewException as e:
-            # throw an error if it is something other than "not found"
-            if e[0][0] != 'Profile not found':
-                print "OpenReviewException: {0} {1}".format(author.encode('utf-8'), e)
-                raise e
-            else:
-                # fill in email
-                profile_info[author]['first'] =''
-                profile_info[author]['mi']=''
-                profile_info[author]['last']=''
-                profile_info[author]['email'] = author
+                profile_info[author]['last'] = profile.content['names'][0]['last']
+                profile_info[author]['email'] = profile.content['preferred_email']
+                # check for most recent entry in history
+                end_date = 0
+                for entry in profile.content['history']:
+                    if entry['end'] > end_date:
+                        end_date = entry['end']
+                        profile_info[author]['institute'] = entry['institution']['name']
+                tries = 3
+            except openreview.OpenReviewException as e:
+                # throw an error if it is something other than "not found"
+                if e[0][0] != 'Profile not found':
+                    print "OpenReviewException: {0} {1}".format(author.encode('utf-8'), e)
+                    raise e
+                else:
+                    # fill in email
+                    profile_info[author]['first'] =''
+                    profile_info[author]['mi']=''
+                    profile_info[author]['last']=''
+                    profile_info[author]['email'] = author
+                tries = 3
+            except ValueError as e:
+                print "ValueError: {0}".format(e)
+                tries += 1
     return profile_info
 
 
@@ -89,6 +96,7 @@ def main():
     profile_info = {}
     for note in submissions:
         if note.forum in decision_info:
+            print note.number
             # paper data
             col = 0
             worksheet.write(row, col, note.forum)
@@ -104,7 +112,16 @@ def main():
             # skipping PosterID, Location
             col += 3
             # author data
-            group = client.get_group(id=note.content['authorids'])
+            tries = 0
+            while tries < 3:
+                try:
+                    group = client.get_group(id=note.content['authorids'])
+                    tries = 3
+                except ValueError as e:
+                    print "ValueError: {0}".format(e)
+                    tries += 1
+
+
             worksheet.write(row, col, len(group.members))
             col += 1
             for author in group.members:
