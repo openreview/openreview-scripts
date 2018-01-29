@@ -38,7 +38,7 @@ def get_bibtex(note, forum, decision_note=None, anonymous=True):
     if decision_note:
         decision = decision_note.content['decision']
         if 'Reject' in decision:
-            bibtext.insert(-1, 'note={rejected}')
+            bibtex.insert(-1, 'note={rejected}')
 
         if 'Accept (Oral)' in decision:
             bibtex.insert(-1, 'note={accepted as oral presentation},')
@@ -75,6 +75,17 @@ if args.type == 'submissions':
 
         print "{0} note {1}".format('Revealing' if args.show and not args.hide else 'Hiding', overwriting_note.id)
         client.post_note(overwriting_note)
+
+if args.type == 'decisions':
+    decisions = client.get_notes(invitation='ICLR.cc/2018/Conference/-/Acceptance_Decision')
+
+    for n in decisions:
+        if args.show and not args.hide:
+            n.readers = ['everyone']
+        else:
+            n.readers = ['ICLR.cc/2018/Conference']
+        client.post_note(n)
+        print "{0} note {1}".format('Revealing' if args.show and not args.hide else 'Hiding', n.id)
 
 if args.type == 'reviews':
     review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Official_Review')
