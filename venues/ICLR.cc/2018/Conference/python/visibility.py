@@ -38,7 +38,7 @@ def get_bibtex(note, forum, decision_note=None, anonymous=True):
     if decision_note:
         decision = decision_note.content['decision']
         if 'Reject' in decision:
-            bibtext.insert(-1, 'note={rejected}')
+            bibtex.insert(-1, 'note={rejected}')
 
         if 'Accept (Oral)' in decision:
             bibtex.insert(-1, 'note={accepted as oral presentation},')
