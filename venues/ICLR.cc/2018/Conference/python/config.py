@@ -534,7 +534,7 @@ acceptance_decision_params = {
             },
             'comment': {
                 'order': 3,
-                'value-regex': '[\\S\\s]{1,5000}',
+                'value-regex': '[\\S\\s]{0,5000}',
                 'description': '(optional) Comment on this decision.',
                 'required': False
             },
