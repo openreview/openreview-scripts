@@ -6,6 +6,7 @@ Dump csv file of meta-review information to make final decision.
 import argparse
 import openreview
 import xlsxwriter
+import requests
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -24,47 +25,6 @@ def load_decisions(client):
         if decision.content['decision'].startswith('Accept'):
             dec_info[decision.forum] = decision.content['decision']
     return dec_info
-
-# load all authorid information in from their profiles
-def get_author(client, author, profile_info):
-    if author not in profile_info:
-        profile_info[author] = {}
-        profile_info[author]['institute'] =""
-        tries = 0
-        while tries < 3:
-            try:
-                profile = client.get_profile(author)
-                profile_info[author]['first'] = profile.content['names'][0]['first']
-                if len(profile.content['names'][0]['middle'])>0:
-                    profile_info[author]['mi']= profile.content['names'][0]['middle'][0]
-                else:
-                    profile_info[author]['mi']= " "
-
-                profile_info[author]['last'] = profile.content['names'][0]['last']
-                profile_info[author]['email'] = profile.content['preferred_email']
-                # check for most recent entry in history
-                end_date = 0
-                for entry in profile.content['history']:
-                    if entry['end'] > end_date:
-                        end_date = entry['end']
-                        profile_info[author]['institute'] = entry['institution']['name']
-                tries = 3
-            except openreview.OpenReviewException as e:
-                # throw an error if it is something other than "not found"
-                if e[0][0] != 'Profile not found':
-                    print "OpenReviewException: {0} {1}".format(author.encode('utf-8'), e)
-                    raise e
-                else:
-                    # fill in email
-                    profile_info[author]['first'] =''
-                    profile_info[author]['mi']=''
-                    profile_info[author]['last']=''
-                    profile_info[author]['email'] = author
-                tries = 3
-            except ValueError as e:
-                print "ValueError: {0}".format(e)
-                tries += 1
-    return profile_info
 
 
 def main():
@@ -94,6 +54,41 @@ def main():
     submissions = client.get_notes(invitation='ICLR.cc/2018/Conference/-/Blind_Submission')
     decision_info = load_decisions(client)
     profile_info = {}
+
+    # get all profile information ahead by first listing all authors needed
+    authors = []
+    for note in submissions:
+        if note.forum in decision_info:
+            authors.extend(note.content['authorids'])
+    # remove duplicates
+    authors = list(set(authors))
+
+    # get all associated profiles
+    response = requests.post(client.baseurl + '/user/profiles', json={'emails': authors})
+
+    profiles = response.json()
+    profiles = profiles['profiles']
+    for item in profiles:
+        author = item['email']
+        profile = item['profile']
+        if author not in profile_info:
+            profile_info[author] = {}
+            profile_info[author]['first'] = profile['content']['names'][0]['first']
+            if len(profile['content']['names'][0]['middle']) > 0:
+                profile_info[author]['mi'] = profile['content']['names'][0]['middle'][0]
+            else:
+                profile_info[author]['mi'] = " "
+
+            profile_info[author]['last'] = profile['content']['names'][0]['last']
+            profile_info[author]['email'] = profile['content']['preferred_email']
+            # check for most recent entry in history
+            end_date = 0
+            profile_info[author]['institute'] = ""
+            for entry in profile['content']['history']:
+                if entry['end'] > end_date:
+                    end_date = entry['end']
+                    profile_info[author]['institute'] = entry['institution']['name']
+
     for note in submissions:
         if note.forum in decision_info:
             print note.number
@@ -112,32 +107,29 @@ def main():
             # skipping PosterID, Location
             col += 3
             # author data
-            tries = 0
-            while tries < 3:
-                try:
-                    group = client.get_group(id=note.content['authorids'])
-                    tries = 3
-                except ValueError as e:
-                    print "ValueError: {0}".format(e)
-                    tries += 1
-
-
-            worksheet.write(row, col, len(group.members))
+            worksheet.write(row, col, len(note.content['authorids']))
             col += 1
-            for author in group.members:
-                profile_info = get_author(client, author, profile_info)
-                worksheet.write(row, col, profile_info[author]['last'])
-                col += 1
-                worksheet.write(row, col, profile_info[author]['mi'])
-                col += 1
-                worksheet.write(row, col, profile_info[author]['first'])
-                col += 1
-                worksheet.write(row, col, profile_info[author]['email'])
-                col += 1
-                worksheet.write(row, col, profile_info[author]['institute'])
-                # skipping department
-                col += 2
+            for author in note.content['authorids']:
+                if author in profile_info:
+                    worksheet.write(row, col, profile_info[author]['last'])
+                    col += 1
+                    worksheet.write(row, col, profile_info[author]['mi'])
+                    col += 1
+                    worksheet.write(row, col, profile_info[author]['first'])
+                    col += 1
+                    worksheet.write(row, col, profile_info[author]['email'])
+                    col += 1
+                    worksheet.write(row, col, profile_info[author]['institute'])
+                    # skipping department
+                    col += 2
+                else:
+                    # skip names
+                    col += 3
+                    worksheet.write(row, col, author)
+                    # skipping institute and department
+                    col += 3
             row += 1
+
     workbook.close()
 
 
