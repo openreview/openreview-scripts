@@ -157,12 +157,18 @@ def merge_researcher_data(profile_note, researcher_data):
 
     return profile_note
 
-def import_user(client, filename):
+def import_user(client, filename, id=None):
+    '''
+    the @id argument should be a user ID.
+    if @id != None, do a forced update of that profile.
+    '''
+
     emails, first, middle, last, researcher_data = signup_details(filename)
     # the goal here is to get a profile note, or to determine that the record is unresolvable.
 
     profile_note = None
     email_profile = None
+    resolved = False # resolved is True if a profile was successfully created or updated
 
     for email in emails:
         try:
@@ -182,15 +188,17 @@ def import_user(client, filename):
             # then the record is unresolvable, because we have already checked the
             # email addresses in this record for existing profiles.
 
-            if 'There is already a profile with this first' in error[0]:
-                return researcher_data, False
+            if not id and 'There is already a profile with this first' in error[0]:
+                return researcher_data, resolved
+            elif id:
+                profile_note = client.get_note(id)
 
     else:
         profile_note = client.get_note(email_profile.id)
 
     if profile_note:
-
+        resolved = True
         profile_note = merge_researcher_data(profile_note, researcher_data)
-        return profile_note.to_json(), True
+        return profile_note.to_json(), resolved
 
 
