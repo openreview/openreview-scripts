@@ -201,4 +201,4 @@ def import_user(client, filename, id=None):
         profile_note = merge_researcher_data(profile_note, researcher_data)
         return profile_note.to_json(), resolved
 
-
+    return profile_note, resolved
