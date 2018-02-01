@@ -20,224 +20,177 @@ import os
 import json
 import re
 
-def suggest_username(first, middle, last, client):
-    response = requests.get(
-        client.baseurl + '/tildeusername?first={first}&middle={middle}&last={last}'.format(
-            first=first, middle=middle, last=last))
+def load_researcher_data(filename):
+    with open(filename) as infile:
+        return repair_dates(json.load(infile))
+def repair_dates(imported_content):
+    for fieldname in ['history', 'relations', 'expertise']:
+        if fieldname in imported_content:
+            for entry in imported_content[fieldname]:
+                for key in entry.keys():
+                    if entry[key] == '-1':
+                        entry[key] = None
+    return imported_content
 
-    if response.json().get('username'):
-        suggested_username = response.json()['username']
-        return suggested_username
-    else:
-        return None
+def signup_details(filename):
+    main_email = filename.split('/')[-1].replace('.json','').strip()
 
-def get_profile(email, name, imported_profile_content, client):
-    exists = True
-    try:
-        profile = client.get_profile(email)
-        profile = client.get_note(profile.id)
-    except openreview.OpenReviewException as e:
-        if 'Profile not found' in e[0]:
-            profile = openreview.Note(**{
-                    'invitation': '~/-/profiles',
-                    'writers': ['OpenReview.net'],
-                    'signatures': ['OpenReview.net'],
-                    'readers': ['OpenReview.net'],
-                    'content': {
-                        'emails': [email],
-                        'preferred_email': email
-                    }
-                })
+    imported_profile_content = load_researcher_data(filename)
+
+    for name_entry in imported_profile_content['names']:
+        if name_entry.get('first') and name_entry.get('last'):
+            name = name_entry
+            break
+
+    other_emails = imported_profile_content.get('emails', [])
+    emails = [main_email] + other_emails
+
+    return emails, name['first'].encode('utf-8'), name['middle'].encode('utf-8'), name['last'].encode('utf-8'), imported_profile_content
+
+def merge_relations(old_relations, new_relations):
+    updated_relations = []
+    existing_keys = []
+
+    def get_relation_key(relation_entry):
+        if relation_entry.get('name', None):
+            return '{}_{}'.format(
+                re.sub('\s+','-', relation_entry['name'].encode('utf-8')),
+                relation_entry['relation']
+            )
         else:
-            raise(e)
+            return False
 
-    if not profile.id:
-        exists = False
-        # get the first name that has at least a first and a last name
+    for new_entry in new_relations + old_relations:
+        '''
+        If the new entry has a name and a unique key, add it.
+        If the new entry matches the key of an old entry,
+            but the time range falls *outside* of the old one, add it.
+        '''
 
-        profile.id = suggest_username(name['first'].encode('utf-8'), name['middle'].encode('utf-8'), name['last'].encode('utf-8'), client)
-        profile.readers.append(profile.id)
+        new_entry_key = get_relation_key(new_entry)
+        if new_entry_key not in existing_keys:
+            updated_relations.append(new_entry)
+            existing_keys.append(get_relation_key(new_entry))
+        else:
+            old_entry = [e for e in updated_relations if get_relation_key(e) == new_entry_key][0]
+            merged_entry = {k:v for k,v in old_entry.iteritems()} # copy the old entry
 
-    return profile, exists
+            merged_entry['start'] = min(new_entry.get('start'), old_entry.get('start'))
+            merged_entry['end'] = max(new_entry.get('end'), old_entry.get('end'))
 
-def update_dblp(existing_content, imported_content):
-    if not existing_content.get('dblp', None):
-        existing_content['dblp'] = imported_content['dblp']
+            updated_relations.remove(old_entry)
+            updated_relations.append(merged_entry)
 
-def update_names(existing_content, imported_content):
-    for n in imported_content['names']:
-        if 'preferred' in n and n['preferred']:
-            n['preferred'] = False
+    updated_relations.sort(key=lambda x: x['name'].encode('utf-8'), reverse=True)
+    updated_relations = sorted(updated_relations, key=lambda x: int(x['end']) if x['end']!=None else float('inf'), reverse=True)
 
-    if 'names' in existing_content:
-        existing_names = [
-            '{}_{}_{}'.format(
-                n['first'].encode('utf-8'),
-                n['middle'].encode('utf-8'),
-                n['last'].encode('utf-8')) for n in existing_content['names']]
+    return updated_relations
 
-        for name_entry in imported_content['names']:
-            name_id = '{}_{}_{}'.format(
+def merge_names(old_names, new_names):
+    updated_names = []
+    existing_keys = []
+
+    def get_name_key(name_entry):
+        if 'first' in name_entry and 'last' in name_entry and 'middle' in name_entry:
+            return '{}_{}_{}'.format(
                 name_entry['first'].encode('utf-8'),
                 name_entry['middle'].encode('utf-8'),
-                name_entry['last'].encode('utf-8'))
-
-            if name_id not in existing_names:
-                existing_content['names'].append(name_entry)
-    else:
-        existing_content['names'] = imported_content['names']
-        # if there are no existing preferred names, set the first name as preferred.
-        existing_content['names'][0]['preferred'] = True
-
-def update_dated_field(imported_content, fieldname):
-    for entry in imported_content[fieldname]:
-        for key in entry.keys():
-            if entry[key] == '-1':
-                entry[key] = None
-
-def update_relations(existing_content, imported_content):
-    email_regex = re.compile('^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$')
-
-    if not 'relations' in existing_content:
-        existing_content['relations'] = imported_content['relations']
-    else:
-        existing_relations = ['{}_{}'.format(n['name'].encode('utf-8'), n['email']) for n in existing_content['relations']]
-
-        for relation_entry in imported_content['relations']:
-            if email_regex.match(relation_entry['email']):
-                relation_id = '{}_{}'.format(relation_entry['name'].encode('utf-8'), relation_entry['email'])
-                if relation_id not in existing_relations:
-                    existing_content['relations'].append(relation_entry)
-
-def update_history(existing_content, imported_content):
-    if not 'history' in existing_content:
-        existing_content['history'] = imported_content['history']
-    else:
-        existing_histories = ['{}_{}_{}_{}_{}'.format(
-            h['start'],
-            h['end'],
-            h['position'].encode('utf-8'),
-            h['institution']['name'].encode('utf-8'),
-            h['institution']['domain'].encode('utf-8')) for h in existing_content['history']]
-
-        for history_entry in imported_content['history']:
-            history_id = '{}_{}_{}_{}_{}'.format(
-                history_entry['start'],
-                history_entry['end'],
-                history_entry['position'].encode('utf-8'),
-                history_entry['institution']['name'].encode('utf-8'),
-                history_entry['institution']['domain'].encode('utf-8'))
-            if history_id not in existing_histories:
-                existing_content['history'].append(history_entry)
-
-def process_content(existing_content, imported_content):
-    update_dated_field(imported_content, 'history')
-    update_dated_field(imported_content, 'relations')
-
-    for update in [update_dblp, update_names, update_history, update_relations]:
-        update(existing_content, imported_content)
-
-    return existing_content
-
-def post_profile(profile, exists, client):
-    put_or_post = requests.post if exists else requests.put
-
-    response = put_or_post(client.baseurl + '/user/profile',
-        json = profile.to_json(),
-        headers = client.headers)
-
-    return response.json()['id']
-
-
-def update_user_groups(profile, client):
-    email_groups = []
-    for email in profile.content['emails']:
-        try:
-            email_group = client.get_group(email)
-        except openreview.OpenReviewException as e:
-            if e[0][0]['type'] == 'Not Found':
-                email_group = openreview.Group(**{
-                    'id': email,
-                    'signatures': ['OpenReview.net'],
-                    'signatories': [email],
-                    'readers': [email],
-                    'writers': [email]
-                    })
-            else:
-                raise e
-        email_groups.append(email_group)
-
-    name_groups = []
-    for name_entry in profile.content['names']:
-        if 'username' in name_entry and name_entry['username']:
-            name_group = client.get_group(name_entry['username'])
+                name_entry['last'].encode('utf-8')
+            )
         else:
-            name_id = suggest_username(name_entry['first'].encode('utf-8'), name_entry['middle'].encode('utf-8'), name_entry['last'].encode('utf-8'), client)
+            return False
 
-            name_group = openreview.Group(**{
-                'id': name_id,
-                'signatures': ['OpenReview.net'],
-                'signatories': [name_id],
-                'readers': [name_id],
-                'writers': [name_id]
-                })
+    for new_entry in old_names + new_names:
+        new_entry_key = get_name_key(new_entry)
 
-            name_entry['username'] = name_id
-        name_groups.append(name_group)
+        if new_entry_key not in existing_keys:
+            updated_names.append(new_entry)
+            existing_keys.append(new_entry_key)
 
-        for email_group in email_groups:
-            if email_group.id not in name_group.members:
-                name_group.members.append(email_group.id)
-            if name_group.id not in email_group.members:
-                email_group.members.append(name_group.id)
+    return updated_names
 
-    all_groups = name_groups + email_groups
+def merge_history(old_history, new_history):
+    updated_history = []
+    existing_keys = []
 
-    return all_groups
+    def get_history_key(history_entry):
+        if 'institution' in history_entry and 'position' in history_entry:
+            return '{}_{}'.format(history_entry['institution']['name'].encode('utf-8'), history_entry['position'].encode('utf-8'))
+        else:
+            return False
 
-def import_user(filename, client):
-    main_email = filename.split('/')[-1].replace('.json','').strip()
-    email_regex = re.compile('^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$')
+    for new_entry in old_history + new_history:
+        new_entry_key = get_history_key(new_entry)
+        if new_entry_key not in existing_keys:
+            updated_history.append(new_entry)
+            existing_keys.append(get_history_key(new_entry))
+        else:
+            old_entry = [e for e in updated_history if get_history_key(e) == new_entry_key][0]
+            merged_entry = {k:v for k,v in old_entry.iteritems()} # copy the old entry
 
-    error_type = None
-    name = None
-    with open(filename) as infile:
+            merged_entry['start'] = min(new_entry.get('start'), old_entry.get('start'))
+            merged_entry['end'] = max(new_entry.get('end'), old_entry.get('end'))
+
+            updated_history.remove(old_entry)
+            updated_history.append(merged_entry)
+
+    updated_history = sorted(updated_history, key=lambda x: int(x['end']) if x['end']!=None else float('inf'), reverse=True)
+    return updated_history
+
+def merge_researcher_data(profile_note, researcher_data):
+    new_names = researcher_data['names']
+    new_relations = researcher_data['relations']
+    new_history = researcher_data['history']
+
+    for fieldname in ['dblp', 'gscholar', 'wikipedia', 'linkedin', 'homepage']:
+        if profile_note.content.get(fieldname, None) and researcher_data.get(fieldname, None):
+            profile_note.content[fieldname] = researcher_data.get(fieldname)
+
+    email_set = set(profile_note.content['emails'])
+    email_set.update(set(researcher_data.get('emails', [])))
+    updated_email_list = list(email_set)
+    profile_note.content['emails'] = updated_email_list
+
+    profile_note.content['names'] = merge_names(profile_note.content.get('names',[]), new_names)
+    profile_note.content['relations'] = merge_relations(profile_note.content.get('relations',[]), new_relations)
+    profile_note.content['history'] = merge_history(profile_note.content.get('history',[]), new_history)
+
+    return profile_note
+
+def import_user(client, filename):
+    emails, first, middle, last, researcher_data = signup_details(filename)
+    # the goal here is to get a profile note, or to determine that the record is unresolvable.
+
+    profile_note = None
+    email_profile = None
+
+    for email in emails:
         try:
-            imported_profile_content = json.load(infile)
-            for name_entry in imported_profile_content['names']:
-                if name_entry.get('first') and name_entry.get('last'):
-                    name = name_entry
-                    break
-            if not name:
-                error_type = 'missing_name'
+            email_profile = client.get_profile(email)
+            break
+        except openreview.OpenReviewException as error:
+            if 'Profile not found' in error[0][0]:
+                pass
             else:
-                if not suggest_username(name['first'].encode('utf-8'),
-                    name['middle'].encode('utf-8'),
-                    name['last'].encode('utf-8'),
-                    client):
-                    error_type = 'invalid_name'
+                raise error
 
-        except ValueError as e:
-            error_type = 'bad_json'
+    if not email_profile:
+        try:
+            profile_note = openreview.tools.create_profile(client, emails[0], first, last, middle=middle)
+        except openreview.OpenReviewException as error:
+            # If, at this point, there is someone with the same name as this user,
+            # then the record is unresolvable, because we have already checked the
+            # email addresses in this record for existing profiles.
 
-    if not email_regex.match(main_email):
-        error_type = 'bad_filename'
-
-    if not error_type:
-        profile, exists = get_profile(main_email, name, imported_profile_content, client)
-
-        process_content(profile.content, imported_profile_content)
-
-        groups = update_user_groups(profile, client)
-
-        for g in groups:
-            new_group = client.post_group(g)
-
-        return post_profile(profile, exists, client), None
+            if 'There is already a profile with this first' in error[0]:
+                return researcher_data, False
 
     else:
-        return filename, error_type
+        profile_note = client.get_note(email_profile.id)
 
+    if profile_note:
 
+        profile_note = merge_researcher_data(profile_note, researcher_data)
+        return profile_note.to_json(), True
 
 

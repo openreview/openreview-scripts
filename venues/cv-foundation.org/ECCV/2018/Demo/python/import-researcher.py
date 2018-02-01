@@ -3,38 +3,39 @@ import requests
 import os
 import json
 import re
+import csv
 from import_user import *
 client = openreview.Client()
 print client.baseurl
 
-def files(directory):
+def Files(directory):
     for filename in os.listdir(directory):
         if filename.endswith('.json'):
-            yield filename
+            yield os.path.join(directory, filename)
 
-directory = '../data/researcher'
+directory = '../data/researcher/processed'
 
-f = files(os.path.join(directory,'json'))
+files = Files(directory)
 
-errors = {
-    'bad_json': [],
-    'bad_filename': [],
-    'missing_name': []
-}
+for filename in files:
+    resolved_filename = filename.replace('/processed/','/resolved/')
+    unresolved_filename = filename.replace('/processed/','/unresolved/')
 
-def move(filename, error_type):
-	current = os.path.join(directory, 'json', filename)
-	new = os.path.join(directory, error_type, filename)
-	os.rename(current, new)
+    if not os.path.isfile(resolved_filename) and not os.path.isfile(unresolved_filename):
+        profile_data, resolved = import_user(client, filename)
 
-for filename in f:
-    file_or_id, error_type = import_user(os.path.join(directory, 'json', filename), client)
+        if resolved:
+            profile_note = openreview.Note(**profile_data)
+            p = client.update_profile(profile_note.id, profile_note.content)
 
-    if error_type:
-        print "FAIL: ", file_or_id
-        move(filename, error_type)
+            resolved_filename = filename.replace('/processed/','/resolved/')
+            print "  resolved: ", filename
+            with open(resolved_filename, 'wb') as f:
+                f.write(json.dumps(p.to_json()))
+        else:
+            print "unresolved: ", filename
+            with open(unresolved_filename, 'wb') as f, open(filename) as o:
+                f.write(o.read())
     else:
-        print "OK: ", file_or_id, filename
-        move(filename, 'processed')
-
+        pass
 
