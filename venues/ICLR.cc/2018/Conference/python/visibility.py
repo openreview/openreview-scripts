@@ -1,6 +1,7 @@
 import argparse
 import openreview
 import config
+import re
 
 # Argument handling
 parser = argparse.ArgumentParser()
@@ -15,7 +16,8 @@ args = parser.parse_args()
 client = openreview.Client(username=args.username, password=args.password, baseurl=args.baseurl)
 
 def get_bibtex(note, forum, decision_note=None, anonymous=True):
-    first_word = note.content['title'].split(' ')[0].lower()
+    regex = re.compile('[^a-zA-Z]')
+    first_word = regex.sub('', note.content['title'].split(' ')[0].lower())
 
     if anonymous:
         first_author_last_name = 'anonymous'
