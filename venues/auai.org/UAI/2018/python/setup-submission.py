@@ -154,17 +154,13 @@ blind_inv = invitations.Submission(
     },
     reply_params = {
         'signatures': {'values': ['auai.org/UAI/2018']},
-        'readers': {'values-regex':'|'.join([
-            'auai.org/UAI/2018',
-            'auai.org/UAI/2018/Program_Committee',
-            'auai.org/UAI/2018/Senior_Program_Committee',
-            'auai.org/UAI/2018/Program_Chairs',
-            'auai.org/UAI/2018/Paper.*/Authors'
-            ])}
+        'readers': {'values-regex': 'auai.org/UAI/2018.*'}
     }
 )
 
-submission_process = process.MaskSubmissionProcess(js_constants, mask = blind_inv)
+submission_process = process.MaskSubmissionProcess(
+    '../process/submissionProcess.js', js_constants, mask = blind_inv)
+
 submission_inv.add_process(submission_process)
 
 # post both the submissions
@@ -184,7 +180,7 @@ bid_invitation = invitations.AddBid(
     completion_count = 50,
     inv_params = {
         'readers': ['auai.org/UAI/2018','auai.org/UAI/2018/Program_Committee'],
-         'invitees': ['auai.org/UAI/2018/Program_Committee']}
+        'invitees': ['auai.org/UAI/2018/Program_Committee']}
     )
 
 bid_webfield = webfield.BidWebfield(
@@ -233,6 +229,7 @@ instructions = ' '.join([
 js_constants['INSTRUCTIONS'] = instructions
 
 homepage = webfield.TabbedHomepage(
+    '../webfield/homepage.js',
     group_id = 'auai.org/UAI/2018',
     js_constants = js_constants,
     subject_areas = subject_areas
