@@ -172,13 +172,15 @@ function renderConferenceTabs() {
 }
 
 function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, userGroups, authorNotes, tagInvitations) {
+  console.log('userGroups', userGroups);
+
   var data, commentNotes;
 
-  if (_.isEmpty(userGroups)) {
-    // If the user isn't part of the conference don't render tabs
-    $('.tabs-container').hide();
-    return;
-  }
+  // if (_.isEmpty(userGroups)) {
+  //   // If the user isn't part of the conference don't render tabs
+  //   $('.tabs-container').hide();
+  //   return;
+  // }
 
   commentNotes = [];
   _.forEach(submittedNotes, function(note) {
@@ -197,6 +199,17 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     });
     return n;
   });
+
+  var authorNoteIds = _.map(authorNotes, function(n){
+    return n.id;
+  });
+  console.log('authorNoteIds', authorNoteIds);
+
+  var blindNotes = _.filter(notes, function(n){
+    return authorNoteIds.includes(n.original)
+  });
+
+  console.log('blindNotes', blindNotes);
 
   var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
   if (assignedPaperNumbers.length !== assignedNotes.length) {
@@ -231,40 +244,50 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     $('.tabs-container a[href="#my-tasks"]').parent().hide();
   }
 
-  //All Submitted Papers tab
-  Webfield.ui.submissionList(notes, {
-    heading: null,
-    container: '#my-papers-under-review',
-    search: {
-      enabled: false,
-      subjectAreas: SUBJECT_AREAS_LIST,
-      onResults: function(searchResults) {
-        var blindedSearchResults = searchResults.filter(function(note) {
-          return note.invitation === BLIND_INVITATION;
-        });
-        Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
-        Webfield.disableAutoLoading();
-      },
-      onReset: function() {
-        Webfield.ui.searchResults(notes, submissionListOptions);
-        if (notes.length === PAGE_SIZE) {
-          Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
-        }
-      }
-    },
-    displayOptions: submissionListOptions,
-    fadeIn: false
-  });
+  // All Submitted Papers tab
+  // Webfield.ui.submissionList(notes, {
+  //   heading: null,
+  //   container: '#my-papers-under-review',
+  //   search: {
+  //     enabled: false,
+  //     subjectAreas: SUBJECT_AREAS_LIST,
+  //     onResults: function(searchResults) {
+  //       var blindedSearchResults = searchResults.filter(function(note) {
+  //         return note.invitation === BLIND_INVITATION;
+  //       });
+  //       Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
+  //       Webfield.disableAutoLoading();
+  //     },
+  //     onReset: function() {
+  //       Webfield.ui.searchResults(notes, submissionListOptions);
+  //       if (notes.length === PAGE_SIZE) {
+  //         Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
+  //       }
+  //     }
+  //   },
+  //   displayOptions: submissionListOptions,
+  //   fadeIn: false
+  // });
+
+  // My Papers Under Review tab
+  Webfield.ui.searchResults(
+    blindNotes,
+    _.assign({}, paperDisplayOptions, {
+      container: '#my-papers-under-review',
+      emptyMessage: 'You have no papers currently under review.'
+    })
+  );
 
   // My Submitted Papers tab
-  if (authorNotes.length) {
-    Webfield.ui.searchResults(
-      authorNotes,
-      _.assign({}, paperDisplayOptions, {container: '#my-submitted-papers'})
-    );
-  } else {
-    $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
-  }
+
+  Webfield.ui.searchResults(
+    authorNotes,
+    _.assign({}, paperDisplayOptions, {
+      container: '#my-submitted-papers',
+      emptyMessage: 'You have not submitted any papers.'
+    })
+  );
+
 
   // My Assigned Papers tab (only show if not empty)
   if (assignedNotes.length) {
