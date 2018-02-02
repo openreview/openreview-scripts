@@ -183,8 +183,12 @@ bid_invitation = invitations.AddBid(
         'invitees': ['auai.org/UAI/2018/Program_Committee']}
     )
 
-bid_webfield = webfield.BidWebfield(
-    js_constants, group_id = 'auai.org/UAI/2018', subject_areas = subject_areas)
+bid_webfield = webfield.Webfield(
+    '../webfield/bidWebfield.js',
+    group_id = 'auai.org/UAI/2018',
+    js_constants = js_constants,
+    subject_areas = subject_areas
+    )
 
 bid_invitation.web = bid_webfield.render()
 
@@ -228,7 +232,7 @@ instructions = ' '.join([
 
 js_constants['INSTRUCTIONS'] = instructions
 
-homepage = webfield.TabbedHomepage(
+homepage = webfield.Webfield(
     '../webfield/homepage.js',
     group_id = 'auai.org/UAI/2018',
     js_constants = js_constants,
