@@ -80,7 +80,11 @@ def main():
                 profile_info[author]['mi'] = " "
 
             profile_info[author]['last'] = profile['content']['names'][0]['last']
-            profile_info[author]['email'] = profile['content']['preferred_email']
+            # if preferred email isn't set, use email from form
+            if profile['content']['preferred_email'] != "":
+                profile_info[author]['email'] = profile['content']['preferred_email']
+            else:
+                profile_info[author]['email'] = author
             # check for most recent entry in history
             end_date = 0
             profile_info[author]['institute'] = ""
