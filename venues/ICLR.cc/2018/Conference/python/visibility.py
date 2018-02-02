@@ -24,7 +24,17 @@ def get_bibtex(note, forum, decision_note=None, anonymous=True):
         first_author_last_name = note.content['authors'][0].split(' ')[1].lower()
         authors = ', '.join(note.content['authors'])
 
-    bibtex = [
+    rejected_bibtex = [
+        '@misc{',
+        first_author_last_name + '2018' + first_word + ',',
+        'title={' + note.content['title'] + '},',
+        'author={' + authors + '},',
+        'year={2018},',
+        'url={https://openreview.net/forum?id=' + forum + '},',
+        '}'
+    ]
+
+    accepted_bibtex = [
         '@article{',
         first_author_last_name + '2018' + first_word + ',',
         'title={' + note.content['title'] + '},',
@@ -38,16 +48,17 @@ def get_bibtex(note, forum, decision_note=None, anonymous=True):
     if decision_note:
         decision = decision_note.content['decision']
         if 'Reject' in decision:
-            bibtex.insert(-1, 'note={rejected}')
-
-        if 'Accept (Oral)' in decision:
-            bibtex.insert(-1, 'note={accepted as oral presentation},')
-
-        if 'Accept (Poster)' in decision:
-            bibtex.insert(-1, 'note={accepted as poster},')
+            bibtex = rejected_bibtex
 
         if 'Invite to Workshop Track' in decision:
-            bibtex.insert(-1, 'note={rejected: invited to workshop track},')
+            bibtex = rejected_bibtex
+
+        if 'Accept (Oral)' in decision:
+            bibtex = accepted_bibtex
+
+        if 'Accept (Poster)' in decision:
+            bibtex = accepted_bibtex
+
 
     return '\n'.join(bibtex)
 
