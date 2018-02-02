@@ -1,6 +1,7 @@
 import argparse
 import openreview
 import config
+import re
 
 # Argument handling
 parser = argparse.ArgumentParser()
@@ -14,8 +15,19 @@ args = parser.parse_args()
 
 client = openreview.Client(username=args.username, password=args.password, baseurl=args.baseurl)
 
+def capitalize(title):
+    capitalization_regex = re.compile('[A-Z]{2,}')
+    words = re.split('(\W)', title)
+    for idx, word in enumerate(words):
+        #print idx, word
+        m = capitalization_regex.search(word)
+        if m:
+            new_word = '{' + word[m.start():m.end()] + '}'
+            words[idx] = words[idx].replace(word[m.start():m.end()], new_word)
+    return ''.join(words)
+
 def get_bibtex(note, forum, decision_note=None, anonymous=True):
-    first_word = note.content['title'].split(' ')[0].lower()
+    first_word = re.sub('[^a-zA-Z]', '', note.content['title'].split(' ')[0].lower())
 
     if anonymous:
         first_author_last_name = 'anonymous'
@@ -24,10 +36,22 @@ def get_bibtex(note, forum, decision_note=None, anonymous=True):
         first_author_last_name = note.content['authors'][0].split(' ')[1].lower()
         authors = ', '.join(note.content['authors'])
 
-    bibtex = [
+    bibtex_title = capitalize(note.content['title'])
+
+    rejected_bibtex = [
+        '@misc{',
+        first_author_last_name + '2018' + first_word + ',',
+        'title={' + bibtex_title + '},',
+        'author={' + authors + '},',
+        'year={2018},',
+        'url={https://openreview.net/forum?id=' + forum + '},',
+        '}'
+    ]
+
+    accepted_bibtex = [
         '@article{',
         first_author_last_name + '2018' + first_word + ',',
-        'title={' + note.content['title'] + '},',
+        'title={' + bibtex_title + '},',
         'author={' + authors + '},',
         'journal={International Conference on Learning Representations},',
         'year={2018},',
@@ -38,17 +62,18 @@ def get_bibtex(note, forum, decision_note=None, anonymous=True):
     if decision_note:
         decision = decision_note.content['decision']
         if 'Reject' in decision:
-            bibtex.insert(-1, 'note={rejected}')
-
-        if 'Accept (Oral)' in decision:
-            bibtex.insert(-1, 'note={accepted as oral presentation},')
-
-        if 'Accept (Poster)' in decision:
-            bibtex.insert(-1, 'note={accepted as poster},')
+            bibtex = rejected_bibtex
 
         if 'Invite to Workshop Track' in decision:
-            bibtex.insert(-1, 'note={rejected: invited to workshop track},')
+            bibtex = rejected_bibtex
 
+        if 'Accept (Oral)' in decision:
+            bibtex = accepted_bibtex
+
+        if 'Accept (Poster)' in decision:
+            bibtex = accepted_bibtex
+
+    print bibtex_title
     return '\n'.join(bibtex)
 
 if args.type == 'submissions':
