@@ -7,11 +7,13 @@
 # -a print all papers and reviewers to specified file (one paper/reviewer pair per line)
 # -p print all papers and reviewers to specified file (one paper, all reviewers per line)
 # -r print all reviewers and paper numbers to specified file (one review, all paper numbers per line)
+# -i print all reviewers: email, firstname, lastname, middleinitial, institution
 ###############################################################################
 
 ## Import statements
 import argparse
 import csv
+import re
 from openreview import *
 
 ## Argument handling
@@ -21,6 +23,7 @@ parser.add_argument('-u', '--user',help="the user whose reviewing assignments yo
 parser.add_argument('-a', '--all',help="specify an output file to save all the reviewer assignments")
 parser.add_argument('-p', '--papers',help="specify an output file to save all paper numbers and assigned reviewers for each")
 parser.add_argument('-r', '--reviewers',help="specify an output file to save all reviewers and his/her paper assignments")
+parser.add_argument('-i', '--info',help="specify a CSV output file to save all reviewers: email, firstname, lastname, middleinitial, institution")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -29,6 +32,35 @@ args = parser.parse_args()
 ## Initialize the client library with username and password
 openreview = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 baseurl = openreview.baseurl
+
+# pull information out of profile and store it in profile_info
+def load_profile_info(profile, profile_info):
+    # if this id isn't in profile_info
+    if not any(d['id'] == profile['id'] for d in profile_info):
+        info = {}
+        info['id']=profile['id']
+        info['first'] = profile['content']['names'][0]['first']
+        if len(profile['content']['names'][0]['middle']) > 0:
+            info['mi'] = profile['content']['names'][0]['middle'][0]
+        else:
+            info['mi'] = " "
+        info['last'] = profile['content']['names'][0]['last']
+
+        # if preferred email isn't set, use email from form
+        if profile['content']['preferred_email'] != "":
+            info['email'] = profile['content']['preferred_email']
+        else:
+            info['email'] = profile['content']['emails'][0]
+
+        # check for most recent entry in history
+        end_date = 0
+        info['institute'] = ""
+        for entry in profile['content']['history']:
+            if entry['end'] > end_date:
+                end_date = entry['end']
+                info['institute'] = entry['institution']['name']
+        profile_info.append(info)
+    return profile_info
 
 
 if args.paper_number != None:
@@ -168,6 +200,54 @@ if args.reviewers:
             row.extend(papers_by_reviewer[key])
             csvwriter.writerow(row)
 
+if args.info:
 
+    # get list of all reviewers
+    reviewer_groups = openreview.get_groups(id='ICLR.cc/2018/Conference/-/Paper.*/Reviewers')
+    reviewers = []
+    for group in reviewer_groups:
+        reviewers.extend(group.members)
+    # remove duplicates
+    reviewers = list(set(reviewers))
 
+    # separate into emails and tilde_ids
+    emails = []
+    tilde_ids = []
+    tildematch = re.compile('~.+')
+    for reviewer in reviewers:
+        if tildematch.match(reviewer):
+            tilde_ids.append(reviewer)
+        else:
+            emails.append(reviewer)
+
+    # get tilde_id profiles
+    profile_info = []
+    tilde_response = openreview.get_profiles(tilde_ids)
+    for profile in tilde_response:
+        profile_info = load_profile_info(profile, profile_info)
+
+    # get email profiles
+    email_response = openreview.get_profiles(emails)
+    for profile in email_response:
+        profile_info = load_profile_info(profile['profile'], profile_info)
+
+    # sort on last name, first name
+    profile_info = sorted(profile_info, key=lambda k:k['first'])
+    profile_info = sorted(profile_info, key=lambda k:k['last'])
+
+    with open(args.info, 'wb') as outfile:
+        csvwriter = csv.writer(outfile, delimiter=',')
+
+        # write the header
+        header = ['Email', 'First Name','Last Name', 'Middle Initial','Institution']
+        csvwriter.writerow(header)
+        # print results
+        for profile in profile_info:
+            row = []
+            row.append(profile['email'])
+            row.append(profile['first'].encode('utf-8'))
+            row.append(profile['last'].encode('utf-8'))
+            row.append(profile['mi'].encode('utf-8'))
+            row.append(profile['institute'].encode('utf-8'))
+            csvwriter.writerow(row)
 
