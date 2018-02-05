@@ -4,7 +4,16 @@ from openreview import invitations
 from openreview import process
 from openreview import webfield
 
-client = openreview.Client()
+parser = argparse.ArgumentParser()
+parser.add_argument('--email', required=True, help='The email address of the person you would like to send a SPC recruitment message to.')
+parser.add_argument('--first', required=True, help='The first name of the person you would like to send a SPC recruitment message to.')
+parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--username')
+parser.add_argument('--password')
+
+args = parser.parse_args()
+
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print 'connecting to {0}'.format(client.baseurl)
 
 subject_areas = [
