@@ -5,8 +5,6 @@ from openreview import process
 from openreview import webfield
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--email', required=True, help='The email address of the person you would like to send a SPC recruitment message to.')
-parser.add_argument('--first', required=True, help='The first name of the person you would like to send a SPC recruitment message to.')
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
