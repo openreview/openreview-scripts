@@ -144,7 +144,7 @@ submission_inv = invitations.Submission(
         'readers': {'values-copied': [
                 'auai.org/UAI/2018', '{content.authorids}', '{signatures}']},
         'signatures': {'values-regex': '~.*|auai.org/UAI/2018'},
-        'writers': {'values': ['auai.org/UAI/2018']}
+        'writers': {'values-regex': '~.*|auai.org/UAI/2018'}
     },
     content_params = {
         'subject areas': {'required': True, 'values-dropdown': subject_areas}
