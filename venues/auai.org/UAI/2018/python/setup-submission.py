@@ -209,14 +209,15 @@ Create the homepage and add it to the conference group.
 '''
 instructions = ' '.join([
     '<p><strong>Important Information about Anonymity:</strong><br>',
-    'When you post a submission to this anonymous preprint server,',
+    'When you post a submission to UAI 2018,',
     'please provide the real names and email addresses of authors',
     'in the submission form below (but NOT in the manuscript).',
     'The <em>original</em> record of your submission will be private,',
     'and will contain your real name(s).',
-    'Originals can be found in your OpenReview <a href="/tasks">Tasks page</a>.',
+    'Originals can be found in the "My Submitted Papers" tab below.',
     'You can also access the original record of your paper',
     'by clicking the "Modifiable Original" link in the discussion forum page of your paper.',
+    'Discussion forum pages for the anonymous versions of your paper can be found in the "My Papers Under Review" tab.',
     'The PDF in your submission should not contain the names of the authors. </p>',
     '',
     '<p><strong>Conflict of Interest:</strong><br>',
