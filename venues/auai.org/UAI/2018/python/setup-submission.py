@@ -113,10 +113,10 @@ Set the variable names that will be used in various pieces of executable javascr
 js_constants = {
     'TITLE': "UAI 2018",
     'SUBTITLE': "Conference on Uncertainty in Artificial Intelligence",
-    'LOCATION': "TBD",
-    'DATE': "TBD",
+    'LOCATION': "Monterey, California, USA",
+    'DATE': "August 6 - 10, 2018",
     'WEBSITE': "http://auai.org/uai2018/index.php",
-    'DEADLINE': "Submission Deadline: TBD",
+    'DEADLINE': "Submission Deadline: March 9th, 2018, 11:59 pm SST (Samoa Standard Time)",
     'CONFERENCE': 'auai.org/UAI/2018',
     'PROGRAM_CHAIRS': 'auai.org/UAI/2018/Program_Chairs',
     'REVIEWERS': 'auai.org/UAI/2018/Program_Committee',
@@ -139,7 +139,7 @@ this copy is defined by the blind submission invitation.
 submission_inv = invitations.Submission(
     name = 'Submission',
     conference_id = 'auai.org/UAI/2018',
-    duedate = 1527757200000, # 17:00:00 EST on May 1, 2018
+    duedate = 1520589599000, #  (GMT): Friday, 9 March 2018 09:59:59
     reply_params = {
         'readers': {'values-copied': [
                 'auai.org/UAI/2018', '{content.authorids}', '{signatures}']},
@@ -154,7 +154,7 @@ submission_inv = invitations.Submission(
 blind_inv = invitations.Submission(
     name = 'Blind_Submission',
     conference_id = 'auai.org/UAI/2018',
-    duedate = 1527757200000, # 17:00:00 EST on May 1, 2018
+    duedate = 1520589599000, #  (GMT): Friday, 9 March 2018 09:59:59
     mask = {
         'authors': {'values': ['Anonymous']},
         'authorids': {'values-regex': '.*'}
@@ -186,8 +186,10 @@ bid_invitation = invitations.AddBid(
     duedate = 1527757200000, # 17:00:00 EST on May 1, 2018
     completion_count = 50,
     inv_params = {
-        'readers': ['auai.org/UAI/2018','auai.org/UAI/2018/Program_Committee'],
-        'invitees': ['auai.org/UAI/2018/Program_Committee']}
+        'readers': ['auai.org/UAI/2018','auai.org/UAI/2018/Program_Chairs'],
+        'invitees': ['auai.org/UAI/2018/Program_Chairs']}
+        #'readers': ['auai.org/UAI/2018','auai.org/UAI/2018/Program_Committee'],
+        #'invitees': ['auai.org/UAI/2018/Program_Committee']}
     )
 
 bid_webfield = webfield.Webfield(
@@ -209,9 +211,7 @@ instructions = ' '.join([
     '<p><strong>Important Information about Anonymity:</strong><br>',
     'When you post a submission to this anonymous preprint server,',
     'please provide the real names and email addresses of authors',
-    'in the submission form below.',
-    'An anonymous record of your paper will appear in the list below,',
-    'and will be visible to the public.',
+    'in the submission form below (but NOT in the manuscript).',
     'The <em>original</em> record of your submission will be private,',
     'and will contain your real name(s).',
     'Originals can be found in your OpenReview <a href="/tasks">Tasks page</a>.',
@@ -219,17 +219,23 @@ instructions = ' '.join([
     'by clicking the "Modifiable Original" link in the discussion forum page of your paper.',
     'The PDF in your submission should not contain the names of the authors. </p>',
     '',
-    '<p><strong>Posting Revisions to Submissions:</strong><br>',
-    'To post a revision to your paper, navigate to the original version,'
-    'and click on the "Add Revision" button.',
-    'Revisions on originals propagate all changes to anonymous copies,',
-    'while maintaining anonymity.</p>',
-    ''
+    '<p><strong>Conflict of Interest:</strong><br>',
+    'Please make sure that your current and previous affiliations listed on your',
+    'OpenReview <a href="/profile">profile page</a> is up-to-date to avoid conflict of interest.</p>',
+    '',
+    #'<p><strong>Posting Revisions to Submissions:</strong><br>',
+    #'To post a revision to your paper, navigate to the original version,'
+    #'and click on the "Add Revision" button.',
+    #'Revisions on originals propagate all changes to anonymous copies,',
+    #'while maintaining anonymity.',
+    #'Adding revision will not be possible after the submission deadline.</p>',
+    #''
     '<p><strong>Bidding on Papers (for reviewers)</strong><br>',
     'If you are serving as a member of the Program Committee (as a reviewer), you can',
     'bid on papers in the list below. You can also use the ',
     '<a href="invitation?id=auai.org/UAI/2018/-/Add_Bid">Bidding Console</a> for better',
-    'navigational features. </p>',
+    'navigational features.',
+    'These features will be made available once the bidding period starts. </p>',
     '',
     '<p><strong>Questions or Concerns:</strong><br>',
     'Please contact the OpenReview support team at',
