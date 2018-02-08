@@ -9,6 +9,7 @@
 var CONFERENCE = 'ICLR.cc/2018/Workshop';
 var PROGRAM_CHAIRS = CONFERENCE + '/Program_Chairs'
 var INVITATION = CONFERENCE + '/-/Submission';
+var TRANSFER_FROM_CONFERENCE = CONFERENCE + '/-/Transfer_from_Conference';
 var WITHDRAWN_INVITATION = CONFERENCE + '/-/Withdrawn_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
@@ -37,6 +38,7 @@ function main() {
 
   renderConferenceHeader();
 
+  renderTransferButton();
   renderSubmissionButton();
 
   renderConferenceTabs();
@@ -133,7 +135,7 @@ function renderConferenceHeader() {
       <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
       Please contact the ICLR 2018 Program Chairs at \
       <a href="mailto:iclr2018.programchairs@gmail.com">iclr2018.programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
-    deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
+    deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, Feb 12, 2018'
   });
 
   Webfield.ui.spinner('#notes');
@@ -153,6 +155,22 @@ function renderSubmissionButton() {
         }
       });
     });
+}
+
+function renderTransferButton(){
+  Webfield.api.getSubmissionInvitation(TRANSFER_FROM_CONFERENCE, {deadlineBuffer: BUFFER})
+  .then(function(invitation) {
+    Webfield.ui.submissionButton(invitation, user, {
+      onNoteCreated: function() {
+        // Callback funtion to be run when a paper has successfully been submitted (required)
+        promptMessage('Your submission to ICLR 2018 Workshop Track is complete. The list of all current submissions is shown below.');
+
+        load().then(renderContent).then(function() {
+          $('.tabs-container a[href="#all-submitted-papers"]').click();
+        });
+      }
+    });
+  });
 }
 
 function renderConferenceTabs() {
