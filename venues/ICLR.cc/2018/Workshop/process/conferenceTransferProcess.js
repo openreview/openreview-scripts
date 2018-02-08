@@ -9,18 +9,6 @@ function() {
   .then(result => {
     console.log('result: ');
     console.log(JSON.stringify(result));
-    var submittedNote = result.notes[0];
-    if (submittedNote.hasOwnProperty('original')) {
-      console.log('BLIND NOTE SUBMITTED; getting original');
-      return or3client.or3request(or3client.notesUrl + '?id=' + submittedNote.original, {}, 'GET', token);
-    } else {
-      console.log('ORIGINAL NOTE SUBMITTED');
-      return submittedNote;
-    }
-  })
-  .then(result => {
-    console.log('result: ');
-    console.log(JSON.stringify(result));
     var originalNote = result.notes[0];
     console.log('original note retrieved: ')
     console.log(originalNote);
@@ -28,11 +16,20 @@ function() {
       writers: [CONF],
       signatures: [CONF],
       readers: ['everyone'],
-      content: {},
+      content: originalNote.content,
       original: originalNote.id,
       invitation: CONF + '/-/Submission'
     }
     return or3client.or3request(or3client.notesUrl, workshopSubmission, 'POST', token);
+  })
+  .catch(error => {
+    var mail = {
+        "groups": note.signatures,
+        "subject": "ICLR 2018: Error during transfer (invalid ID)",
+        "message": 'You recently tried to transfer a paper submission from the ICLR 2018 Conference Track to the Workshop Track, but something went wrong with the ID (' + note.content['paper id'] + ') that you provided. Please double check the ID of your paper and try again. If you have questions, please contact the OpenReview team at info@openreview.net'
+    };
+    or3client.or3request(or3client.mailUrl, mail, 'POST', token);
+    done(error)
   })
   .then(result => done())
   .catch(error => done(error));
