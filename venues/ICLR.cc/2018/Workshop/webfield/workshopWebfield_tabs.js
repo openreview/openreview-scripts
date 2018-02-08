@@ -221,7 +221,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     if (!_.isNil(note.ddate)) {
       return;
     }
-    if (!_.includes([INVITATION, RECRUIT_REVIEWERS, WITHDRAWN_INVITATION], note.invitation)) {
+    if (!_.includes([INVITATION, RECRUIT_REVIEWERS, WITHDRAWN_INVITATION, TRANSFER_FROM_CONFERENCE], note.invitation)) {
       // ICLR specific: Not all conferences will have the withdrawn invitation
       commentNotes.push(note);
     }
