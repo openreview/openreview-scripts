@@ -201,7 +201,7 @@ transfer_from_conference_params = {
         },
         'content':{
             'paper id': {
-                'description': 'The 8-10 character ID of your ICLR 2018 Conference submission. This ID can be found in the URL of your paper\'s discussion page (e.g. /forum?id=<paper_id>)',
+                'description': 'The 8-10 character ID of your ICLR 2018 Conference Track paper. This ID can be found in the URL of your paper\'s discussion page (e.g. /forum?id=<paper_id>). IMPORTANT: Please make sure that the ID corresponds to the page that contains your reviews and comments.',
                 'order': 1,
                 'value-regex': '.{1,10}',
                 'required':True
