@@ -151,7 +151,7 @@ submission_params = {
             'TL;DR': {
                 'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
                 'order': 7,
-                'value-regex': '[^\\n]{0,1000}',
+                'value-regex': '[^\\n]{0,500}',
                 'required':False
             },
             'abstract': {
