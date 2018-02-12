@@ -24,6 +24,9 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
+# add the workshop group as a member of the conference group so that it can access the "invited to workshop" papers
+client.add_members_to_group(client.get_group('ICLR.cc/2018/Conference'), 'ICLR.cc/2018/Workshop')
+
 conference = client.post_group(
 	openreview.Group(
 		config.CONF,
