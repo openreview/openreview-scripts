@@ -70,6 +70,12 @@ submission_invitation = client.post_invitation(
 		duedate=config.DUE_TIMESTAMP,
 		**config.submission_params))
 
+transfer_invitation = client.post_invitation(
+    openreview.Invitation(
+        config.TRANSFER_FROM_CONFERENCE,
+        duedate=config.DUE_TIMESTAMP,
+        **config.transfer_from_conference_params))
+
 withdrawn_submission = client.post_invitation(
 	openreview.Invitation(
 		config.WITHDRAWN_SUBMISSION,
