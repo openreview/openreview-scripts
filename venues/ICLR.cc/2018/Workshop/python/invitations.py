@@ -65,6 +65,12 @@ invitation_configurations = {
         'signatures': [config.PROGRAM_CHAIRS],
         'params': config.meta_review_params
     },
+    'Acceptance_Decision': {
+        'byPaper': False,
+        'byForum': False,
+        'params': config.acceptance_decision_params,
+        'invitees': []
+    },
     'Add_Bid': {
         'tags': True,
         'byPaper': False,
