@@ -171,6 +171,46 @@ submission_params = {
 }
 
 """
+/-/Transfer_from_Conference
+
+This is the invitation that users submit to. These are un-blinded notes. The process
+function generates a /-/Blind_Submission note.
+
+"""
+TRANSFER_FROM_CONFERENCE = CONF + '/-/Transfer_from_Conference'
+
+transfer_from_conference_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': ['~'],
+    'signatures': [CONF],
+    'process': os.path.join(os.path.dirname(__file__), '../process/conferenceTransferProcess.js'),
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['everyone']
+        },
+        'signatures': {
+            'description': 'Your authorized identity to be associated with the above content.',
+            'values-regex': '~.*|' + CONF
+        },
+        'writers': {
+            'values': [CONF]
+        },
+        'content':{
+            'paper id': {
+                'description': 'The 8-10 character ID of your ICLR 2018 Conference Track paper. This ID can be found in the URL of your paper\'s discussion page (e.g. /forum?id=<paper_id>). IMPORTANT: Please make sure that the ID corresponds to the page that contains your reviews and comments.',
+                'order': 1,
+                'value-regex': '.{1,10}',
+                'required':True
+            }
+        }
+    }
+}
+
+"""
 /-/Withdrawn_Submission
 
 This is an invitation that gets fulfilled when a user withdraws a submission
