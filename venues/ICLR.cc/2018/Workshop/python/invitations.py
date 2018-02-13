@@ -69,7 +69,7 @@ invitation_configurations = {
         'byPaper': False,
         'byForum': False,
         'params': config.acceptance_decision_params,
-        'invitees': []
+        'invitees': [config.PROGRAM_CHAIRS]
     },
     'Add_Bid': {
         'tags': True,
