@@ -64,7 +64,7 @@ function renderConferenceTabs() {
       id: 'accepted-poster-papers',
     },
     {
-      heading: 'Workshop Papers',
+      heading: 'Invited to submit to Workshop',
       id: 'workshop-papers',
     },
     {
