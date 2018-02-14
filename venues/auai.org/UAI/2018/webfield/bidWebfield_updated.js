@@ -2,25 +2,115 @@
 // Add Bid Interface
 // ------------------------------------
 
-//<CONFERENCE>
-//<AREA_CHAIRS>
-//<SUBTITLE>
-//<TITLE>
-//<RECRUIT_REVIEWERS>
-//<PROGRAM_CHAIRS>
-//<DEADLINE>
-//<DATE>
-//<BLIND_INVITATION>
+var CONFERENCE = 'auai.org/UAI/2018';
+var AREA_CHAIRS = 'auai.org/UAI/2018/Senior_Program_Committee';
+var SUBTITLE = 'Conference on Uncertainty in Artificial Intelligence';
+var TITLE = 'UAI 2018';
+var RECRUIT_REVIEWERS = 'auai.org/UAI/2018/-/PC_Invitation';
+var PROGRAM_CHAIRS = 'auai.org/UAI/2018/Program_Chairs';
+var DEADLINE = 'Submission Deadline: March 9th, 2018, 11:59 pm SST (Samoa Standard Time)';
+var DATE = 'August 6 - 10, 2018';
+var BLIND_INVITATION = 'auai.org/UAI/2018/-/Blind_Submission';
+var METADATA_INVITATION = 'auai.org/UAI/2018/-/Paper_Metadata';
 //<INSTRUCTIONS>
-//<WEBSITE>
-//<REVIEWERS>
-//<LOCATION>
-//<SUBMISSION_INVITATION>
+var WEBSITE = 'http://auai.org/uai2018/index.php';
+var REVIEWERS = 'auai.org/UAI/2018/Program_Committee';
+var LOCATION = 'Monterey, California, USA';
+var SUBMISSION_INVITATION = 'auai.org/UAI/2018/-/Submission';
 //<CONFERENCE_REGEX>
 //<WILDCARD_INVITATION>
-//<SUBJECT_AREAS>
+var SUBJECT_AREAS = [
+  'Algorithms: Approximate Inference',
+  'Algorithms: Belief Propagation',
+  'Algorithms: Distributed and Parallel',
+  'Algorithms: Exact Inference',
+  'Algorithms: Graph Theory',
+  'Algorithms: Heuristics',
+  'Algorithms: Lifted Inference',
+  'Algorithms: MCMC methods',
+  'Algorithms: Optimization',
+  'Algorithms: Other',
+  'Algorithms: Software and Tools',
+  'Applications: Biology',
+  'Applications: Databases',
+  'Applications: Decision Support',
+  'Applications: Diagnosis and Reliability',
+  'Applications: Economics',
+  'Applications: Education',
+  'Applications: General',
+  'Applications: Medicine',
+  'Applications: Planning and Control',
+  'Applications: Privacy and Security',
+  'Applications: Robotics',
+  'Applications: Sensor Data',
+  'Applications: Social Network Analysis',
+  'Applications: Speech',
+  'Applications: Sustainability and Climate',
+  'Applications: Text and Web Data',
+  'Applications: User Models',
+  'Applications: Vision',
+  'Data: Big Data',
+  'Data: Multivariate',
+  'Data: Other',
+  'Data: Relational',
+  'Data: Spatial',
+  'Data: Temporal or Sequential',
+  'Learning: Active Learning',
+  'Learning: Classification',
+  'Learning: Clustering',
+  'Learning: Deep Learning',
+  'Learning: General',
+  'Learning: Nonparametric Bayes',
+  'Learning: Online and Anytime Learning',
+  'Learning: Other',
+  'Learning: Parameter Estimation',
+  'Learning: Probabilistic Generative Models',
+  'Learning: Ranking',
+  'Learning: Recommender Systems',
+  'Learning: Regression',
+  'Learning: Reinforcement Learning',
+  'Learning: Relational Learning',
+  'Learning: Relational Models',
+  'Learning: Scalability',
+  'Learning: Semi-Supervised Learning',
+  'Learning: Structure Learning',
+  'Learning: Structured Prediction',
+  'Learning: Theory',
+  'Learning: Unsupervised',
+  'Methodology: Bayesian Methods',
+  'Methodology: Calibration',
+  'Methodology: Elicitation',
+  'Methodology: Evaluation',
+  'Methodology: Human Expertise and Judgement',
+  'Methodology: Other',
+  'Methodology: Probabilistic Programming',
+  'Models: Bayesian Networks',
+  'Models: Directed Graphical Models',
+  'Models: Dynamic Bayesian Networks',
+  'Models: Markov Decision Processes',
+  'Models: Mixed Graphical Models',
+  'Models: Other',
+  'Models: Relational Models',
+  'Models: Topic Models',
+  'Models: Undirected Graphical Models',
+  'None of the above',
+  'Principles: Causality',
+  'Principles: Cognitive Models',
+  'Principles: Decision Theory',
+  'Principles: Game Theory',
+  'Principles: Information Theory',
+  'Principles: Other',
+  'Principles: Probability Theory',
+  'Principles: Statistical Theory',
+  'Representation: Constraints',
+  'Representation: Dempster-Shafer',
+  'Representation: Fuzzy Logic',
+  'Representation: Influence Diagrams',
+  'Representation: Non-Probabilistic Frameworks',
+  'Representation: Probabilistic'
+];
 
-var ADD_BID = CONFERENCE + '/-/Add_Bid'
+var ADD_BID = CONFERENCE + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
 
 // Main is the entry point to the webfield code and runs everything
