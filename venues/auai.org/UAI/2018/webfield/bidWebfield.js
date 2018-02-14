@@ -242,7 +242,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       compareProp: function(n) {
         // Sort in descending order
         return -1 * n.metadata.affinityScore;
-      }
+      },
+      default: true
     }];
     Webfield.ui.submissionList(notes, {
       heading: null,
