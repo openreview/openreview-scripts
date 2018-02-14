@@ -127,9 +127,8 @@ function renderConferenceHeader() {
       To post a revision to your paper, navigate to the paper version, and click on the "Add Revision" button if available. \
       Revisions are not allowed during the formal review process.</p>\
       <p><strong>A Note to Reviewers about Bidding:</strong><br> \
-      To access the bidding interface, please ensure that your profile is linked to the email address where you received your initial reviewer invitation email. \
-      To do this, click on your name at the top right corner of the page, go to your Profile, enter "edit mode," and add your email address. \
-      You will also need to confirm your address by pressing the "Confirm" button. This will involve a round-trip email verification.</p>\
+      UPDATE: The ICLR 2018 Workshop track will not be asking reviewers to bid on papers.\
+      Assignments will be made with scores TPMS. Please ensure that your TPMS account is up-to-date.</p>\
       <p><strong>Questions or Concerns:</strong><br> \
       Please contact the OpenReview support team at \
       <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
