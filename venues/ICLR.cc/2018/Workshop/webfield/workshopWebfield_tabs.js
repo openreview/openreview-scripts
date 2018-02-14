@@ -38,8 +38,8 @@ function main() {
 
   renderConferenceHeader();
 
-  renderTransferButton();
-  renderSubmissionButton();
+  // renderTransferButton();
+  // renderSubmissionButton();
 
   renderConferenceTabs();
 
@@ -126,8 +126,8 @@ function renderConferenceHeader() {
       <p><strong>Posting Revisions to Submissions:</strong><br>\
       To post a revision to your paper, navigate to the paper version, and click on the "Add Revision" button if available. \
       Revisions are not allowed during the formal review process.</p>\
-      <p><strong>A Note to Reviewers about Bidding:</strong><br> \
-      UPDATE: The ICLR 2018 Workshop track will not be asking reviewers to bid on papers.\
+      <p><strong>UPDATED: A Note to Reviewers about Bidding:</strong><br> \
+      The ICLR 2018 Workshop track will not be asking reviewers to bid on papers.\
       Assignments will be made with scores TPMS. Please ensure that your TPMS account is up-to-date.</p>\
       <p><strong>Questions or Concerns:</strong><br> \
       Please contact the OpenReview support team at \
