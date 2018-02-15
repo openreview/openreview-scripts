@@ -47,7 +47,12 @@ if args.type == 'submissions':
             'readers': ['everyone'],
             'content': {
                 '_bibtex': openreview.tools.get_bibtex(
-                    original_note, url_forum=b.forum, accepted=accepted, anonymous=(args.hide and not args.show))
+                    original_note,
+                    'International Conference on Learning Representations',
+                    '2018',
+                    url_forum=b.forum,
+                    accepted=accepted,
+                    anonymous=(args.hide and not args.show))
                 }
         })
 
