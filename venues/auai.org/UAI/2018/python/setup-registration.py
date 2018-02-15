@@ -111,8 +111,7 @@ consent_response_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
-    #'invitees': ['auai.org/UAI/2018/Program_Committee'],
-    'invitees': ['auai.org/UAI/2018'],
+    'invitees': ['auai.org/UAI/2018/Program_Committee'],
     'duedate': 0,
     'process': '../process/registrationProcess.js',
     'reply': {
@@ -142,8 +141,7 @@ subj_response_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
-    # 'invitees': ['auai.org/UAI/2018/Program_Committee'],
-    'invitees': ['auai.org/UAI/2018'],
+    'invitees': ['auai.org/UAI/2018/Program_Committee'],
     'duedate': 0,
     'process': '../process/registrationProcess.js',
     'reply': {
@@ -167,8 +165,7 @@ profile_confirmed_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
-    # 'invitees': ['auai.org/UAI/2018/Program_Committee'],
-    'invitees': ['auai.org/UAI/2018'],
+    'invitees': ['auai.org/UAI/2018/Program_Committee'],
     'duedate': 0,
     'process': '../process/registrationProcess.js',
     'reply': {
@@ -192,8 +189,7 @@ tpms_confirmed_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
-    # 'invitees': ['auai.org/UAI/2018/Program_Committee'],
-    'invitees': ['auai.org/UAI/2018'],
+    'invitees': ['auai.org/UAI/2018/Program_Committee'],
     'duedate': 0,
     'process': '../process/registrationProcess.js',
     'reply': {
