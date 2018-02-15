@@ -39,7 +39,8 @@ if args.output:
     decision_notes = client.get_notes(invitation='ICLR.cc/2018/Conference/-/Acceptance_Decision')
     decisions = {}
     for note in decision_notes:
-        decisions[note.forumContent['paperhash']] = {'decision': note.content['decision'], 'comment': ''}
+        if note.content['decision'] =="Invite to Workshop Track":
+            decisions[note.forumContent['paperhash']] = {'decision': "Accept", 'comment': ''}
 
     # let Workshop acceptance overwrite Conference acceptance
     decision_notes = client.get_notes(invitation='ICLR.cc/2018/Workshop/-/Acceptance_Decision')
@@ -52,7 +53,7 @@ if args.output:
     notes = client.get_notes(invitation='ICLR.cc/2018/Workshop/-/Submission')
     with open(args.file, 'wb') as outfile:
         csvwriter = csv.writer(outfile, delimiter=',')
-        row = ['Paper #', 'Paper Title', 'Decision', 'Comment']
+        row = ['Paper #','Paper Forum', 'Paper Title',  'Decision', 'Comment']
         csvwriter.writerow(row)
 
         for note in notes:
@@ -60,14 +61,11 @@ if args.output:
             comment = ""
             # Check if paper already reviewed in Conference or Workshop
             if note.content['paperhash'] in decisions:
-                conf_decision = decisions[note.content['paperhash']]['decision']
-                if conf_decision == "Accept" or conf_decision == "Invite to Workshop Track":
-                    decision = "Accept"
-                elif conf_decision == "Reject":
-                    decision = "Reject"
+                decision = decisions[note.content['paperhash']]['decision']
                 comment = decisions[note.content['paperhash']]['comment']
             row = []
             row.append(note.number)
+            row.append(note.forum)
             row.append(note.content['title'])
             row.append(decision)
             row.append(comment)
@@ -75,9 +73,6 @@ if args.output:
 
 else:
     # input file, post new acceptances
-    submission_by_number = {n.number: n for n in client.get_notes(
-        invitation='ICLR.cc/2018/Workshop/-/Submission')}
-
     decision_by_forum = {n.forum: n for n in client.get_notes(
         invitation='ICLR.cc/2018/Workshop/-/Acceptance_Decision')}
 
@@ -87,14 +82,13 @@ else:
         print reader.next()
         for row in reader:
             paper_number = int(row[0])
-            title = row[1]
-            pc_decision = row[2]
-            pc_comment = row[3]
+            forum = row[1]
+            title = row[2]
+            pc_decision = row[3]
+            pc_comment = row[4]
 
             if pc_decision:
                 try:
-                    forum = submission_by_number[paper_number].forum
-
                     if forum not in decision_by_forum:
                         print "post "+forum
                         decision_note = get_decision_note(pc_decision, pc_comment, forum)
