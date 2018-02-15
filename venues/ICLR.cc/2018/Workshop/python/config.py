@@ -256,7 +256,7 @@ public_comment_params = {
     'readers': ['everyone'],
     'writers': [CONF],
     'invitees': [],
-    'noninvitees': [REVIEWERS, AUTHORS, PROGRAM_CHAIRS],
+    'noninvitees': [REVIEWERS, PROGRAM_CHAIRS],
     'signatures': [CONF],
     'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js'),
     'reply': {
@@ -264,7 +264,8 @@ public_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'value-dropdown': ['everyone', AUTHORS_PLUS, REVIEWERS_PLUS, PROGRAM_CHAIRS]
+            #'value-dropdown': ['everyone', AUTHORS_PLUS, REVIEWERS_PLUS, PROGRAM_CHAIRS],
+            'value-dropdown': ['everyone']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
