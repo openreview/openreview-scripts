@@ -350,7 +350,7 @@ official_review_params = {
     'invitees': [],
     'signatures': [CONF],
     'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
-    'duedate': 1511845199000, # 23:59:59 EST on November 27, 2017
+    'duedate': 1520657999000, # 23:59:59 EST on March 9, 2018
     'reply': {
         'forum': None,
         'replyto': None,
