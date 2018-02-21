@@ -311,7 +311,7 @@ official_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'value-dropdown': ['everyone', AUTHORS_PLUS, REVIEWERS_PLUS, PROGRAM_CHAIRS]
+            'value-dropdown': ['everyone', PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
