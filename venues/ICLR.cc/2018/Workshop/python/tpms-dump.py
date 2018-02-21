@@ -16,26 +16,6 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print "connecting to ", client.baseurl
 datestring = args.datestring
 
-# create mapping from email --> first,last
-names_by_email = {}
-
-with open(args.csv) as f:
-    for email, first, last in csv.reader(f):
-        names_by_email[email] = (first, last)
-
-print "retrieving profiles where available ..."
-email_by_signature = {}
-profile_by_email = {}
-for email, names in names_by_email.iteritems():
-    try:
-        # TODO - why does profile differ from client.get_note()
-        profile = client.get_profile(email)
-        profile_by_email[email] = client.get_note(profile.id)
-        email_by_signature[profile.id] = email
-    except openreview.OpenReviewException as e:
-        profile_by_email[email] = None
-        email_by_signature[profile.id] = None
-
 
 '''
 dump conflicts of interest.
@@ -59,58 +39,31 @@ Generated conflicts from the intersection.
 Important note: removes conflicts from the domain "@gmail.com"
 '''
 
-# return list of domains associated with the given email
-def get_domains(email):
-    full_domain = email.split('@')[1]
-    domain_components = full_domain.split('.')
-    domains = ['.'.join(domain_components[index:len(domain_components)]) for index, path in enumerate(domain_components)]
-    valid_domains = [d for d in domains if '.' in d]
-    return valid_domains
 
-# fill in conflicts_by_email using profile email domains, history data, and relations
+# user conflicts
+names_by_email = {}
+with open(args.csv) as f:
+    for email, first, last in csv.reader(f):
+        names_by_email[email] = (first, last)
+
 conflicts_by_email = {}
 for email in names_by_email:
-    conflicts_by_email[email] = {}
-    conflicts_by_email[email]['domains'] = set()
-    conflicts_by_email[email]['domains'].update(get_domains(email))
+    conflicts_by_email[email] = {'domains': set(), 'relations': set()}
 
-    conflicts_by_email[email]['relations'] = set()
-    conflicts_by_email[email]['relations'].update([email])
-    profile = profile_by_email[email]
-    if profile != None:
-        profile_domains = []
-        for e in profile.content['emails']:
-            profile_domains += get_domains(e)
+    domain_conflicts, relation_conflicts = openreview.tools.get_profile_conflicts(client, email)
 
-        conflicts_by_email[email]['domains'].update(profile_domains)
+    conflicts_by_email[email]['domains'].update(domain_conflicts)
+    conflicts_by_email[email]['relations'].update(relation_conflicts)
 
-        institution_domains = [h['institution']['domain'] for h in profile.content['history']]
-        conflicts_by_email[email]['domains'].update(institution_domains)
-
-        if 'relations' in profile.content:
-            conflicts_by_email[email]['relations'].update([r['email'] for r in profile.content['relations']])
-
-    # remove the domain "gmail.com"
-    if 'gmail.com' in conflicts_by_email[email]['domains']:
-        conflicts_by_email[email]['domains'].remove('gmail.com')
-
+# paper conflicts
 submissions = client.get_notes(invitation=config.SUBMISSION)
 conflicts_by_paper = {}
-
 for n in submissions:
-    authorids = n.content['authorids']
-    conflicts_by_paper[n.number] = {}
-    conflicts_by_paper[n.number]['domains'] = set()
+    conflicts_by_paper[n.number] = {'domains': set(), 'relations': set()}
+    domain_conflicts, relation_conflicts = openreview.tools.get_paper_conflicts(client, n)
 
-    for e in authorids:
-        if '@' in e:
-            conflicts_by_paper[n.number]['domains'].update(get_domains(e))
-
-    conflicts_by_paper[n.number]['relations'] = set([e for e in authorids if '@' in e])
-
-    # remove the domain "gmail.com"
-    if 'gmail.com' in conflicts_by_paper[n.number]['domains']:
-        conflicts_by_paper[n.number]['domains'].remove('gmail.com')
+    conflicts_by_paper[n.number]['domains'].update(domain_conflicts)
+    conflicts_by_paper[n.number]['relations'].update(relation_conflicts)
 
 # write the conflicts
 f = open('../data/tpms/conflicts-{0}.csv'.format(datestring), 'w')
