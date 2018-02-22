@@ -26,14 +26,24 @@ groups = [client.get_group(g) for g in group_ids]
 
 metadata_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'auai.org/UAI/2018/-/Paper_Metadata',
-    'readers': ['auai.org/UAI/2018','auai.org/UAI/2018/Program_Committee','auai.org/UAI/2018/Senior_Program_Committee'],
+    'readers': [
+        'auai.org/UAI/2018',
+        'auai.org/UAI/2018/Program_Chairs',
+        'auai.org/UAI/2018/Program_Committee',
+        'auai.org/UAI/2018/Senior_Program_Committee'
+    ],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
     'reply': {
         'forum': None,
         'replyto': None,
         'invitation': 'auai.org/UAI/2018/-/Blind_Submission',
-        'readers': {'values': ['auai.org/UAI/2018','auai.org/UAI/2018/Program_Committee','auai.org/UAI/2018/Senior_Program_Committee']},
+        'readers': {'values': [
+            'auai.org/UAI/2018',
+            'auai.org/UAI/2018/Program_Chairs',
+            'auai.org/UAI/2018/Program_Committee',
+            'auai.org/UAI/2018/Senior_Program_Committee'
+            ]},
         'writers': {'values': ['auai.org/UAI/2018']},
         'signatures': {'values': ['auai.org/UAI/2018']},
         'content': {}
@@ -65,11 +75,16 @@ This is how metadata generation *would* work, if we had any of the backend data 
 Instead, we'll use this workaround
 '''
 
-def metadata(forum):
+def metadata(forum, groups):
     metadata_note = openreview.Note(**{
         'forum': forum,
         'invitation': 'auai.org/UAI/2018/-/Paper_Metadata',
-        'readers': ['auai.org/UAI/2018'],
+        'readers': [
+            'auai.org/UAI/2018',
+            'auai.org/UAI/2018/Program_Chairs',
+            'auai.org/UAI/2018/Program_Committee',
+            'auai.org/UAI/2018/Senior_Program_Committee'
+        ],
         'writers': ['auai.org/UAI/2018'],
         'signatures': ['auai.org/UAI/2018'],
         'content': {
@@ -94,7 +109,7 @@ for p in papers:
     if p.forum in existing_notes_by_forum:
         metadata_note = existing_notes_by_forum[p.forum]
     else:
-        metadata_note = metadata(note.forum)
+        metadata_note = metadata(p.forum, groups)
     client.post_note(metadata_note)
 
 print "posting assignment invitation..."
@@ -102,6 +117,7 @@ assignment_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'auai.org/UAI/2018/-/Paper_Assignment',
     'readers': [
         'auai.org/UAI/2018',
+        'auai.org/UAI/2018/Program_Chairs',
         'auai.org/UAI/2018/Program_Committee',
         'auai.org/UAI/2018/Senior_Program_Committee'
     ],
@@ -113,6 +129,7 @@ assignment_inv = client.post_invitation(openreview.Invitation(**{
         'invitation': 'auai.org/UAI/2018/-/Blind_Submission',
         'readers': {'values': [
             'auai.org/UAI/2018',
+            'auai.org/UAI/2018/Program_Chairs',
             'auai.org/UAI/2018/Program_Committee',
             'auai.org/UAI/2018/Senior_Program_Committee']
         },
@@ -123,5 +140,40 @@ assignment_inv = client.post_invitation(openreview.Invitation(**{
             # label
         }
     }
+}))
+
+
+print "posting configuration invitation..."
+config_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'auai.org/UAI/2018/-/Assignment_Configuration',
+    'readers': [
+        'auai.org/UAI/2018',
+        'auai.org/UAI/2018/Program_Chairs'
+    ],
+    'writers': [
+        'auai.org/UAI/2018'
+    ],
+    'signatures': ['auai.org/UAI/2018'],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': None,
+        'readers': {'values': [
+            'auai.org/UAI/2018',
+            'auai.org/UAI/2018/Program_Chairs'
+        ]},
+        'writers': {'values': ['auai.org/UAI/2018']},
+        'signatures': {'values': ['auai.org/UAI/2018']},
+        'content': {
+            # label = label
+            # configuration = configuration
+            # paper_invitation = 'auai.org/UAI/2018/-/Blind_Submission'
+            # metadata_invitation = 'auai.org/UAI/2018/-/Paper_Metadata'
+            # assignment_invitation = 'auai.org/UAI/2018/-/Paper_Assignment'
+            # match_group = 'auai.org/UAI/2018/Program_Committee'
+            # statistics = {fill in later}
+        }
+    }
+
 }))
 
