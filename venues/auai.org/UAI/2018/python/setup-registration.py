@@ -39,6 +39,14 @@ data_consent_desc = ''.join([
     '\n\n'
     ])
 
+tpms_desc = ''.join([
+    'In addition to subject areas, we will be using the Toronto Paper Matching System (TPMS) to compute paper-reviewer affinity scores. ',
+    'Please take a moment to sign up for TPMS and/or update your TPMS account with your latest papers. ',
+    'Then, please ensure that the email address that is affiliated with your TPMS account is linked to your OpenReview profile. ',
+    'After you have done this, please confirm that your TPMS account is up-to-date by clicking the "TPMS Account Confirmed" button below. ',
+    '\n\n'
+    ])
+
 registration_parent_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'auai.org/UAI/2018/-/Registration',
     'readers': ['everyone'],
@@ -64,6 +72,10 @@ registration_parent_invitation = client.post_invitation(openreview.Invitation(**
             'data consent': {
                 'value': data_consent_desc,
                 'order': 9
+            },
+            'tpms confirmation': {
+                'value': tpms_desc,
+                'order': 3
             }
         }
     }
@@ -87,7 +99,8 @@ registration_parent_json.update({
             'title': registration_parent_invitation.reply['content']['title']['value'],
             'subject areas': registration_parent_invitation.reply['content']['subject areas']['value'],
             'conflicts of interest': registration_parent_invitation.reply['content']['conflicts of interest']['value'],
-            'data consent': registration_parent_invitation.reply['content']['data consent']['value']
+            'data consent': registration_parent_invitation.reply['content']['data consent']['value'],
+            'tpms confirmation': registration_parent_invitation.reply['content']['tpms confirmation']['value'],
         }
     })
 
@@ -165,6 +178,30 @@ profile_confirmed_invitation = client.post_invitation(openreview.Invitation(**{
             'title': {'value': 'Profile Confirmed Response'},
             'confirmation': {
                 'value': 'I confirm that I have updated my profile sufficiently to capture my conflicts of interest.',
+                'required': True,
+            }
+        }
+    }
+}))
+
+tpms_confirmed_invitation = client.post_invitation(openreview.Invitation(**{
+    'id': 'auai.org/UAI/2018/-/Registration/TPMS_Account/Confirmed',
+    'readers': ['everyone'],
+    'writers': ['auai.org/UAI/2018'],
+    'signatures': ['auai.org/UAI/2018'],
+    'invitees': ['auai.org/UAI/2018/Program_Committee'],
+    'duedate': 0,
+    'process': '../process/registrationProcess.js',
+    'reply': {
+        'forum': registration_parent.id,
+        'replyto': registration_parent.id,
+        'readers': {'values': ['auai.org/UAI/2018']},
+        'writers': {'values-regex': '~.*'},
+        'signatures': {'values-regex': '~.*'},
+        'content': {
+            'title': {'value': 'TPMS Account Confirmed Response'},
+            'confirmation': {
+                'value': 'I confirm that I have signed up and/or updated my TPMS account with my latest publications, and that I have linked the email affiliated with my TPMS account to my OpenReview profile.',
                 'required': True,
             }
         }
