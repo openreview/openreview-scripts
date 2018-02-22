@@ -109,6 +109,20 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     }
     $destContainer.prepend($note);
 
+    // For radio button widgets, we need to update the selected value of the widget
+    // that wasn't clicked (since there are 2 on the page)
+    if ($(this).data('type') === 'radio') {
+      var $noteToUpdate;
+      var newVal = updatedNote.tags[0].tag;
+
+      if ($(this).closest('.tab-pane').is('#allPapers')) {
+        $noteToUpdate = $note;
+      } else {
+        $noteToUpdate = $('#allPapers').find('li.note[data-id="' + tagObj.forum + '"]');
+      }
+      $noteToUpdate.find('.tag-widget .radio-toggle[data-value="' + newVal + '"]').button('toggle');
+    }
+
     updateCounts();
   });
 
