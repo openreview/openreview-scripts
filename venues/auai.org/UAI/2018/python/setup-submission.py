@@ -36,6 +36,7 @@ js_constants = {
     'SUBMISSION_INVITATION': 'auai.org/UAI/2018/-/Submission',
     'BLIND_INVITATION': 'auai.org/UAI/2018/-/Blind_Submission',
     'RECRUIT_REVIEWERS': 'auai.org/UAI/2018/-/PC_Invitation',
+    'METADATA_INVITATION': 'auai.org/UAI/2018/-/Paper_Metadata'
 }
 
 '''
