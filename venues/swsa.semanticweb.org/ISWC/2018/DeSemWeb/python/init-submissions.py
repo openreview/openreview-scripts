@@ -50,7 +50,7 @@ js_constants = {
     'LOCATION': "Monterey, California, USA",
     'DATE': "October 8-12, 2018",
     'WEBSITE': "http://iswc2018.desemweb.org/",
-    'DEADLINE': "Submission Deadline: May 15th, 2018, 11:59 pm SST (Samoa Standard Time)",
+    'DEADLINE': "Submission Deadline: May 15th, 2018, 11:59 pm (Hawaii)",
     'CONFERENCE': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb',
     'PROGRAM_CHAIRS': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb/Program_Chairs',
     'SUBMISSION_INVITATION': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb/-/Submission',
@@ -58,7 +58,7 @@ js_constants = {
 }
 
 SUBJECT_AREAS = ['Research Article','Intelligent Client Challenge / Demo', 'Vision Statement']
-# 5/15/18 11:59 pm SST (Samoa Standard Time) = 5/16/18 5:59 here
+# 5/15/18 11:59 pm Hawaii time = 5/16/18 9:59am GMT
 DUE_DATE =  1526464799000
 
 '''
