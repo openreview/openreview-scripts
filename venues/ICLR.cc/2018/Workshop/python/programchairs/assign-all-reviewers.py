@@ -23,7 +23,8 @@ if __name__ == "__main__":
         reader = csv.reader(f)
         reader.next()
         for row in reader:
-            paper_number, email, _ = row
+            paper_number = row[0]
+            email = row[1]
             status = assign(client, paper_number, reviewer_to_add=email)
             if status == False:
                 failed_assignments.append((paper_number, email))

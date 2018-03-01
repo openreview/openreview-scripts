@@ -70,6 +70,35 @@ assignment_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
+print "posting constraints invitation..."
+constraints_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'auai.org/UAI/2018/-/Assignment_Constraints',
+    'readers': [
+        'auai.org/UAI/2018',
+        'auai.org/UAI/2018/Program_Chairs'
+    ],
+    'writers': ['auai.org/UAI/2018'],
+    'signatures': ['auai.org/UAI/2018'],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': 'auai.org/UAI/2018/-/Blind_Submission',
+        'readers': {'values': [
+            'auai.org/UAI/2018',
+            'auai.org/UAI/2018/Program_Chairs',
+            'auai.org/UAI/2018/Program_Committee',
+            'auai.org/UAI/2018/Senior_Program_Committee']
+        },
+        'writers': {'values': ['auai.org/UAI/2018']},
+        'signatures': {'values': ['auai.org/UAI/2018']},
+        'content': {
+            'constraints': {
+                #'~John_Doe1': '-inf',
+                #'~Mary_Sue1': '+inf'
+            }
+        }
+    }
+}))
 
 print "posting configuration invitation..."
 config_inv = client.post_invitation(openreview.Invitation(**{
@@ -105,11 +134,13 @@ config_inv = client.post_invitation(openreview.Invitation(**{
 
 }))
 
+
+
 program_committee = client.get_group('auai.org/UAI/2018/Program_Committee')
 senior_program_committee = client.get_group('auai.org/UAI/2018/Senior_Program_Committee')
 
-for suffix, group in [('Program_Committee/IDs', program_committee), ('Senior_Program_Committee/IDs', senior_program_committee)]:
-    print "creating {} group".format(suffix)
+for group in [program_committee, senior_program_committee]:
+    print "updating {} group".format(group.id)
     ids = []
     for email in group.members:
         try:
@@ -121,11 +152,5 @@ for suffix, group in [('Program_Committee/IDs', program_committee), ('Senior_Pro
             else:
                 raise e
 
-    new_group = client.post_group(openreview.Group(**{
-        'id': 'auai.org/UAI/2018/{}'.format(suffix),
-        'readers': ['auai.org/UAI/2018','auai.org/UAI/2018/Program_Chairs','auai.org/UAI/2018/Senior_Program_Committee'],
-        'writers': ['auai.org/UAI/2018'],
-        'signatures': ['auai.org/UAI/2018'],
-        'signatories': [],
-        'members': ids
-    }))
+    group.members = ids
+    client.post_group(group)
