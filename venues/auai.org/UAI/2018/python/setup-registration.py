@@ -5,6 +5,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
+parser.add_argument('--invitees', nargs='*', default=['auai.org/UAI/2018'])
 
 args = parser.parse_args()
 
@@ -61,19 +62,19 @@ registration_parent_invitation = client.post_invitation(openreview.Invitation(**
         'signatures': {'values': ['auai.org/UAI/2018']},
         'content': {
             'title': {'value': 'UAI 2018 Registration'},
-            'subject areas': {
+            'Subject Areas': {
                 'value': subj_desc,
                 'order': 1
             },
-            'conflicts of interest': {
+            'Profile Confirmed': {
                 'value': coi_desc,
                 'order': 2
             },
-            'data consent': {
+            'Consent Response': {
                 'value': data_consent_desc,
                 'order': 9
             },
-            'tpms confirmation': {
+            'TPMS Account Confirmed': {
                 'value': tpms_desc,
                 'order': 3
             }
@@ -97,10 +98,10 @@ registration_parent_json.update({
         'forum': None,
         'content': {
             'title': registration_parent_invitation.reply['content']['title']['value'],
-            'subject areas': registration_parent_invitation.reply['content']['subject areas']['value'],
-            'conflicts of interest': registration_parent_invitation.reply['content']['conflicts of interest']['value'],
-            'data consent': registration_parent_invitation.reply['content']['data consent']['value'],
-            'tpms confirmation': registration_parent_invitation.reply['content']['tpms confirmation']['value'],
+            'Subject Areas': registration_parent_invitation.reply['content']['Subject Areas']['value'],
+            'Profile Confirmed': registration_parent_invitation.reply['content']['Profile Confirmed']['value'],
+            'Consent Response': registration_parent_invitation.reply['content']['Consent Response']['value'],
+            'TPMS Account Confirmed': registration_parent_invitation.reply['content']['TPMS Account Confirmed']['value'],
         }
     })
 
@@ -111,8 +112,8 @@ consent_response_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
-    'invitees': ['auai.org/UAI/2018/Program_Committee'],
-    'duedate': 0,
+    'invitees': args.invitees,
+    'duedate': 1520639999000, # March 9, 2018
     'process': '../process/registrationProcess.js',
     'reply': {
         'forum': registration_parent.id,
@@ -141,8 +142,8 @@ subj_response_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
-    'invitees': ['auai.org/UAI/2018/Program_Committee'],
-    'duedate': 0,
+    'invitees': args.invitees,
+    'duedate': 1520639999000, # March 9, 2018,
     'process': '../process/registrationProcess.js',
     'reply': {
         'forum': registration_parent.id,
@@ -165,8 +166,8 @@ profile_confirmed_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
-    'invitees': ['auai.org/UAI/2018/Program_Committee'],
-    'duedate': 0,
+    'invitees': args.invitees,
+    'duedate': 1520639999000, # March 9, 2018,
     'process': '../process/registrationProcess.js',
     'reply': {
         'forum': registration_parent.id,
@@ -189,8 +190,8 @@ tpms_confirmed_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['auai.org/UAI/2018'],
     'signatures': ['auai.org/UAI/2018'],
-    'invitees': ['auai.org/UAI/2018/Program_Committee'],
-    'duedate': 0,
+    'invitees': args.invitees,
+    'duedate': 1520639999000, # March 9, 2018,
     'process': '../process/registrationProcess.js',
     'reply': {
         'forum': registration_parent.id,
