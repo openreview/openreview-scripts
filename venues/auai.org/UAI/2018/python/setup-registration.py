@@ -2,10 +2,15 @@ import openreview
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--baseurl')
 parser.add_argument('--username')
 parser.add_argument('--password')
-parser.add_argument('--invitees', nargs='*', default=['auai.org/UAI/2018'])
+parser.add_argument('--invitees',
+    nargs='*',
+    default=['auai.org/UAI/2018'],
+    help='enter all the group IDs that should be invited to complete the registration. \
+    e.g. \'python setup-registration.py --invitees auai.org/UAI/2018/Program_Committee auai.org/UAI/2018/Senior_Program_Committee\'.\
+    Defaults to auai.org/UAI/2018 (the admin account)')
 
 args = parser.parse_args()
 
