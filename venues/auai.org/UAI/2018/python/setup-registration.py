@@ -62,7 +62,7 @@ registration_parent_invitation = client.post_invitation(openreview.Invitation(**
     'reply': {
         'forum': None,
         'replyto': None,
-        'readers': {'values': ['auai.org/UAI/2018/Program_Committee']},
+        'readers': {'values': args.invitees},
         'writers': {'values': ['auai.org/UAI/2018']},
         'signatures': {'values': ['auai.org/UAI/2018']},
         'content': {
