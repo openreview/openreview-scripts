@@ -240,6 +240,15 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       emptyMessage: 'No outstanding tasks for ' + TITLE
     }
     Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
+
+    var pcId = CONFERENCE + '/Program_Chairs';
+    if (_.includes(userGroups, pcId)) {
+      $('#my-tasks .submissions-list').prepend([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + pcId + '">Program Chair Console</a>',
+        '</li>'
+      ].join(''));
+    }
   } else {
     $('.tabs-container a[href="#my-tasks"]').parent().hide();
   }
