@@ -341,14 +341,22 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     });
 
     var submissionListOptions = _.assign({}, paperDisplayOptions, {container: '#allPapers'});
-    var sortOptionsList = [{
-      label: 'Affinity Score',
-      compareProp: function(n) {
-        // Sort in descending order
-        return -1 * n.metadata.affinityScore;
+    var sortOptionsList = [
+      {
+        label: 'Affinity Score',
+        compareProp: function(n) {
+          // Sort in descending order
+          return -1 * n.metadata.affinityScore;
+        },
+        default: true
       },
-      default: true
-    }];
+      {
+        label: 'TPMS Score',
+        compareProp: function(n) {
+          return -1 * n.metadata.tpmsScore;
+        }
+      }
+    ];
     Webfield.ui.submissionList(notes, {
       heading: null,
       container: '#allPapers',
@@ -428,7 +436,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
 // Add affinity data from metadata notes to note objects
 function addMetadataToNotes(validNotes, metadataNotesMap) {
-  var userEmail = user.profile.email;
+  var currUserId = user.profile.id;
 
   for (var i = 0; i < validNotes.length; i++) {
     var note = validNotes[i];
@@ -437,19 +445,24 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
       continue;
     }
 
+    var userMetadataObj;
     var groups = Object.keys(metadataNoteGroups);
     var affinityScore = 0;
+    var tpmsScore = 0;
     var hasConflict = false;
     for (var j = 0; j < groups.length; j++) {
-      if (metadataNoteGroups[groups[j]][userEmail]) {
-        affinityScore = _.get(metadataNoteGroups, [groups[j], userEmail, 'affinity_score'], 0);
-        hasConflict = _.has(metadataNoteGroups, [groups[j], userEmail, 'conflict_score']);
+      userMetadataObj = _.find(metadataNoteGroups[groups[j]], ['userId', currUserId])
+      if (userMetadataObj) {
+        affinityScore = _.get(userMetadataObj, 'scores.affinity_score', 0);
+        tpmsScore = _.get(userMetadataObj, 'scores.tpms_score', 0);
+        hasConflict = _.has(userMetadataObj, 'scores.conflict_score');
         break;
       }
     }
 
     note.metadata = {
       affinityScore: affinityScore,
+      tpmsScore: tpmsScore,
       conflict: hasConflict
     };
   }
