@@ -47,6 +47,7 @@ configuration_note_params.update({
                 'recommendation_score': 1
             }
         },
+        'constraints': {},
         'paper_invitation': 'auai.org/UAI/2018/-/Blind_Submission',
         'metadata_invitation': 'auai.org/UAI/2018/-/Paper_Metadata',
         'assignment_invitation': 'auai.org/UAI/2018/-/Paper_Assignment',
@@ -65,9 +66,10 @@ papers = client.get_notes(invitation = configuration_note_params['content']['pap
 paper_metadata = client.get_notes(invitation = configuration_note_params['content']['metadata_invitation'])
 match_group = client.get_group(id = configuration_note_params['content']['match_group'])
 reviewer_configuration = configuration_note_params['content']['configuration']
+user_constraints = configuration_note_params['content']['constraints']
 
 new_assignments_by_forum = openreview_matcher.match(reviewer_configuration,
-    papers = papers, metadata = paper_metadata, group = match_group)
+    papers = papers, metadata = paper_metadata, group = match_group, constraints = user_constraints)
 
 def create_assignment_note(forum, label):
     return openreview.Note(**{

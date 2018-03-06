@@ -95,20 +95,21 @@ def metadata(forum, groups):
     }
     for g in groups:
 
-        group_entry = {}
+        group_entry = []
         for user_id in g.members:
-            user_entry = {}
+            user_entry = {'userId': user_id, 'scores': {}}
             affinity_score = affinity(forum, user_id)
             tpms_score = tpms(forum, user_id)
             conflict_score = conflict(forum, user_id)
 
             if affinity_score > 0:
-                user_entry['affinity_score'] = affinity_score
+                user_entry['scores']['affinity_score'] = affinity_score
             if conflict_score == '-inf':
-                user_entry['conflict_score'] = conflict_score
+                user_entry['scores']['conflict_score'] = conflict_score
             if tpms_score > 0:
-                user_entry['tpms_score'] = tpms_score
-            group_entry[user_id] = user_entry
+                user_entry['scores']['tpms_score'] = tpms_score
+
+            group_entry.append(user_entry)
 
         metadata_params['content']['groups'][g.id] = group_entry
 
