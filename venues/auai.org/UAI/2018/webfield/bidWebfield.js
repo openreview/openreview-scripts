@@ -11,6 +11,7 @@
 //<DEADLINE>
 //<DATE>
 //<BLIND_INVITATION>
+//<METADATA_INVITATION>
 //<INSTRUCTIONS>
 //<WEBSITE>
 //<REVIEWERS>
@@ -20,7 +21,7 @@
 //<WILDCARD_INVITATION>
 //<SUBJECT_AREAS>
 
-var ADD_BID = CONFERENCE + '/-/Add_Bid'
+var ADD_BID = CONFERENCE + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
 
 // Main is the entry point to the webfield code and runs everything

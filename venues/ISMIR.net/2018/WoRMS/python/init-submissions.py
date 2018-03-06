@@ -36,30 +36,30 @@ def build_groups(conference_group_id):
 
     return groups
 
-groups = build_groups('swsa.semanticweb.org/ISWC/2018/DeSemWeb')
-for g in sorted([g for g in groups]):
-    print "posting group {0}".format(g)
-    client.post_group(groups[g])
 
 '''
 Set the variable names that will be used in various pieces of executable javascript.
 '''
 js_constants = {
-    'TITLE': "DeSemWeb 2018",
-    'SUBTITLE': "ISWC2018 workshop on Decentralizing the Semantic Web",
-    'LOCATION': "Monterey, California, USA",
-    'DATE': "October 8-12, 2018",
-    'WEBSITE': "http://iswc2018.desemweb.org/",
-    'DEADLINE': "Submission Deadline: May 15th, 2018, 11:59 pm (Hawaii)",
-    'CONFERENCE': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb',
-    'PROGRAM_CHAIRS': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb/Program_Chairs',
-    'SUBMISSION_INVITATION': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb/-/Submission',
+    'TITLE': "WoRMS 2018",
+    'SUBTITLE': "1st International Workshop on Reading Music Systems",
+    'LOCATION': "Paris, France",
+    'DATE': "20th September 2018",
+    'WEBSITE': "https://sites.google.com/view/worms2018",
+    'DEADLINE': "Submission Deadline: 7th of August, 2018, 11:59 pm (AoE)",
+    'CONFERENCE': 'ISMIR.net/2018/WoRMS',
+    'PROGRAM_CHAIRS': 'ISMIR.net/2018/WoRMS/Program_Chairs',
+    'SUBMISSION_INVITATION': 'ISMIR.net/2018/WoRMS/-/Submission',
     'INSTRUCTIONS': ''
 }
 
-SUBJECT_AREAS = ['Research Article','Intelligent Client Challenge / Demo', 'Vision Statement']
-# 5/15/18 11:59 pm Hawaii time = 5/16/18 9:59am GMT
-DUE_DATE =  1526464799000
+# Aug 7, 2018 11:59 pm AoE = 8/8/18 11:59am GMT
+DUE_DATE =  1533729599000
+
+groups = build_groups(js_constants['CONFERENCE'])
+for g in sorted([g for g in groups]):
+    print "posting group {0}".format(g)
+    client.post_group(groups[g])
 
 '''
 Create a submission invitation (a call for papers).
@@ -69,30 +69,6 @@ submission_inv = invitations.Submission(
     name = 'Submission',
     conference_id = js_constants['CONFERENCE'],
     duedate = DUE_DATE,
-    content_params = {
-        "submission category": {
-            "required": True,
-            "order": 4,
-            "description": "Select a submission category",
-            "value-radio": [
-                "Research Article",
-                "Intelligent Client Challenge / Demo",
-                "Vision Statement"
-            ]
-        },
-        "pdf": {
-            "required": False,
-            "order": 9,
-            "description": "Upload a PDF file or submit a PDF URL (PDF URLs must begin with \"http\" or \"https\" and end with \".pdf\"). Submit all other formats in the \"url\" field below.",
-            "value-regex": "upload|http(s)?:\\/\\/.+\\.pdf"
-        },
-        "url": {
-            "required": False,
-            "order": 10,
-            "description": "Submit a non-PDF URL (e.g. HTML submissions). URLs must begin with \"http\" or \"https\".",
-            "value-regex": "http(s)?:\\/\\/.+"
-        }
-    }
 )
 
 submission_process = process.MaskSubmissionProcess('../process/submissionProcess.js', js_constants, None)
@@ -111,7 +87,6 @@ homepage = webfield.Webfield(
     '../webfield/conferenceWebfield.js',
     group_id = js_constants['CONFERENCE'],
     js_constants = js_constants,
-    subject_areas = SUBJECT_AREAS
 )
 
 this_conference = client.get_group(js_constants['CONFERENCE'])
