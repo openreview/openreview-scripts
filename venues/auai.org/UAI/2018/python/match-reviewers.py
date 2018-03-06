@@ -46,6 +46,7 @@ configuration_note_params.update({
                 'recommendation_score': 1
             }
         },
+        'constraints': {},
         'paper_invitation': 'auai.org/UAI/2018/-/Blind_Submission',
         'metadata_invitation': 'auai.org/UAI/2018/-/Paper_Metadata',
         'assignment_invitation': 'auai.org/UAI/2018/-/Paper_Assignment',
@@ -54,17 +55,6 @@ configuration_note_params.update({
         'status': 'queued' # 'queued', 'processing', 'complete' or 'error'
     }
 })
-
-# add some user constraints. in the future, this will be added by the user through the GUI.
-configuration_note_params['content']['constraints'] = {
-    '~Benjamin_Guedj1': {
-        'SkWNNgtvUz': '-inf'
-    },
-    '~David_Jensen1': {
-        'Bkv4lKPLf': '+inf'
-    }
-}
-
 
 # ultimately, we'll set up a process function that executes the following code
 # automatically when the configuration note is posted. for now, we will do this
@@ -108,5 +98,7 @@ for forum, assignment in new_assignments_by_forum.iteritems():
     print('Paper{0: <6}'.format(assignment_note.number), ', '.join(assignment))
 
 configuration_note_params['content']['status'] = 'complete'
-client.post_note(openreview.Note(**configuration_note_params))
+configuration_note = client.post_note(openreview.Note(**configuration_note_params))
+
+print('assignmentId={}'.format(configuration_note.id))
 
