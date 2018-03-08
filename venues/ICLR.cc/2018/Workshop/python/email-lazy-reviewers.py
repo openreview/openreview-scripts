@@ -8,7 +8,6 @@ Sends an email to the members of the group of your choice.
 ## Import statements
 import argparse
 import openreview
-import requests
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
@@ -52,10 +51,7 @@ Tara, Oriol, Iain and Marc'Aurelio - ICLR 2018 program committee
 ## get all active reviewers
 ####################################
 invitation = "Official_Review"
-headers = {'User-Agent': 'test-create-script', 'Content-Type': 'application/json',
-           'Authorization': 'Bearer ' + client.token}
-anon_reviewers = requests.get(client.baseurl + '/groups?id=ICLR.cc/2018/Workshop/Paper.*/AnonReviewer.*',
-                              headers=headers)
+anon_reviewers = client.get_groups(id='ICLR.cc/2018/Workshop/Paper.*/AnonReviewer.*')
 notes = client.get_notes(invitation='ICLR.cc/2018/Workshop/-/Paper.*/' + invitation)
 
 # reviews[paper_num][reviewer_id]= note_id
@@ -65,9 +61,9 @@ reviews = {}
 reviewers = {}
 
 # convert AnonReview into ID
-for r in anon_reviewers.json()['groups']:
-    reviewer_id = r['id']
-    members = r['members']
+for r in anon_reviewers:
+    reviewer_id = r.id
+    members = r.members
     if members:
         reviewers[reviewer_id] = members[0]
         # else this AnonReviewer deleted
