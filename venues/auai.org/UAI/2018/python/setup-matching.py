@@ -103,24 +103,3 @@ config_inv = client.post_invitation(openreview.Invitation(**{
     }
 
 }))
-
-
-
-program_committee = client.get_group('auai.org/UAI/2018/Program_Committee')
-senior_program_committee = client.get_group('auai.org/UAI/2018/Senior_Program_Committee')
-
-for group in [program_committee, senior_program_committee]:
-    print "updating {} group".format(group.id)
-    ids = []
-    for email in group.members:
-        try:
-            profile = client.get_profile(email)
-            ids.append(profile.id)
-        except openreview.OpenReviewException as e:
-            if ['Profile not found'] in e:
-                pass
-            else:
-                raise e
-
-    group.members = ids
-    client.post_group(group)
