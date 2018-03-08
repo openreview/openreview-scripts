@@ -34,10 +34,20 @@ subjectline = "Reviews due by Friday for ICLR 2018 workshop track"
 message = """
 Hi,
 
-        This is a final reminder that your ICLR workshop paper reviews are due
+This is a final reminder that your ICLR workshop paper reviews are due
 by the end of Friday, 9 March. Time is tight, so we need them on time.
 
-Tara, Oriol, Iain and Marc'Aurelio - ICLR 2018 program committee
+(To those who have done their reviews: Thank you! Please ignore this email.)
+
+Reminder: log into OpenReview using the same email address as used in
+this email, and go to the "Tasks" tab at:
+https://openreview.net/group?id=ICLR.cc/2018/Workshop
+
+As usual, if you have any problems, please let us know immediately:
+iclr2018.programchairs@gmail.com
+
+Thanks,
+Tara, Oriol, Iain and Marc'Aurelio - ICLR 2018 program chairs
 
 """
 
@@ -109,9 +119,9 @@ response = client.send_mail(subjectline, list(late_users), message)
 print "Emailing the following users:"
 print response['groups']
 
-print "%s reviews missing" % (total_missing)
-print "%s reviews complete" % (total_complete)
-
+print "{} reviews missing".format(total_missing)
+print "{} reviews complete".format(total_complete)
+print "{} users emailed".format(len(response['groups']))
 
 
 
