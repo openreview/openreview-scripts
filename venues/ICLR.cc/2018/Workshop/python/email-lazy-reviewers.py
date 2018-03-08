@@ -12,7 +12,6 @@ import requests
 
 ## Handle the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-v','--verbose', help="set to true if you want late users listed per-paper")
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -22,7 +21,7 @@ args = parser.parse_args()
 ## Initialize the client library with username and password
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print 'connecting to {0}'.format(client.baseurl)
-verbose = True if args.verbose.lower()=='true' else False
+
 
 #################################################
 #                                               #
@@ -39,9 +38,9 @@ Hi,
         This is a final reminder that your ICLR workshop paper reviews are due
 by the end of Friday, 9 March. Time is tight, so we need them on time.
 
-Tara, Marc’Aurelio, Iain and Oriol -- the ICLR 2018 program committee
-"""
+Tara, Oriol, Iain and Marc'Aurelio - ICLR 2018 program committee
 
+"""
 
 #################################################
 #                                               #
@@ -112,10 +111,10 @@ for paper_number in reviews:
 ####################################
 response = client.send_mail(subjectline, list(late_users), message)
 print "Emailing the following users:"
-print response.json()['groups']
+print response['groups']
 
-print "%s  missing" % (total_missing)
-print "%s complete" % (total_complete)
+print "%s reviews missing" % (total_missing)
+print "%s reviews complete" % (total_complete)
 
 
 
