@@ -21,11 +21,10 @@ group_ids = [
 ]
 
 def get_notes(invitation, limit=1000, client=client):
-    limit = 1000
     done = False
     notes = []
     while not done:
-        batch = client.get_notes(invitation = invitation, limit=limit)
+        batch = client.get_notes(invitation=invitation, limit=limit)
         notes += batch
         if len(batch) < limit:
             done = True
