@@ -100,5 +100,5 @@ for forum, assignment in new_assignments_by_forum.iteritems():
 configuration_note_params['content']['status'] = 'complete'
 configuration_note = client.post_note(openreview.Note(**configuration_note_params))
 
-print('assignmentId={}'.format(configuration_note.id))
+print('{}/reviewers?assignmentId={}'.format(client.baseurl, configuration_note.id))
 

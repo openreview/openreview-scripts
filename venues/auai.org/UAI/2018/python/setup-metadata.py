@@ -5,7 +5,6 @@ import argparse
 import requests
 from collections import defaultdict
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
@@ -16,14 +15,23 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print 'connecting to {0}'.format(client.baseurl)
 
-submissions = client.get_notes(invitation='auai.org/UAI/2018/-/Submission')
-
 group_ids = [
     'auai.org/UAI/2018/Program_Committee',
     'auai.org/UAI/2018/Senior_Program_Committee'
 ]
 
-papers = client.get_notes(invitation = 'auai.org/UAI/2018/-/Blind_Submission')
+def get_notes(invitation, limit=1000, client=client):
+    limit = 1000
+    done = False
+    notes = []
+    while not done:
+        batch = client.get_notes(invitation = invitation, limit=limit)
+        notes += batch
+        if len(batch) < limit:
+            done = True
+    return notes
+
+papers = get_notes('auai.org/UAI/2018/-/Blind_Submission')
 groups = [client.get_group(g) for g in group_ids]
 all_users = reduce(lambda acc, g: acc.members + g.members, groups)
 
@@ -39,8 +47,6 @@ def conflict(forum, user_id):
         return '-inf'
     else:
         return None
-
-
 
 tpms_scores = {}
 for n in papers:
@@ -115,7 +121,7 @@ def metadata(forum, groups):
 
     return metadata_params
 
-existing_notes_by_forum = {n.forum: n for n in client.get_notes(invitation = 'auai.org/UAI/2018/-/Paper_Metadata')}
+existing_notes_by_forum = {n.forum: n for n in get_notes(invitation = 'auai.org/UAI/2018/-/Paper_Metadata')}
 
 print "posting paper metadata..."
 for p in papers:
