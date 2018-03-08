@@ -20,17 +20,7 @@ group_ids = [
     'auai.org/UAI/2018/Senior_Program_Committee'
 ]
 
-def get_notes(invitation, limit=1000, client=client):
-    done = False
-    notes = []
-    while not done:
-        batch = client.get_notes(invitation=invitation, limit=limit)
-        notes += batch
-        if len(batch) < limit:
-            done = True
-    return notes
-
-papers = get_notes('auai.org/UAI/2018/-/Blind_Submission')
+papers = openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Blind_Submission')
 groups = [client.get_group(g) for g in group_ids]
 all_users = reduce(lambda acc, g: acc.members + g.members, groups)
 
@@ -120,7 +110,7 @@ def metadata(forum, groups):
 
     return metadata_params
 
-existing_notes_by_forum = {n.forum: n for n in get_notes(invitation = 'auai.org/UAI/2018/-/Paper_Metadata')}
+existing_notes_by_forum = {n.forum: n for n in openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Paper_Metadata')}
 
 print "posting paper metadata..."
 for p in papers:
