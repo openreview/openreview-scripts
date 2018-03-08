@@ -62,8 +62,8 @@ configuration_note_params.update({
 
 # get the already-posted configuration note
 
-papers = client.get_notes(invitation = configuration_note_params['content']['paper_invitation'])
-paper_metadata = client.get_notes(invitation = configuration_note_params['content']['metadata_invitation'])
+papers = openreview.tools.get_all_notes(client, configuration_note_params['content']['paper_invitation'])
+paper_metadata = openreview.tools.get_all_notes(client, configuration_note_params['content']['metadata_invitation'])
 match_group = client.get_group(id = configuration_note_params['content']['match_group'])
 reviewer_configuration = configuration_note_params['content']['configuration']
 user_constraints = configuration_note_params['content']['constraints']
@@ -88,7 +88,7 @@ def create_assignment_note(forum, label):
         }
     })
 
-existing_assignments = client.get_notes(invitation='auai.org/UAI/2018/-/Paper_Assignment')
+existing_assignments = openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Paper_Assignment')
 existing_reviewer_assignments = {n.forum: n for n in existing_assignments if n.content['label'] == label}
 
 for forum, assignment in new_assignments_by_forum.iteritems():
@@ -100,5 +100,5 @@ for forum, assignment in new_assignments_by_forum.iteritems():
 configuration_note_params['content']['status'] = 'complete'
 configuration_note = client.post_note(openreview.Note(**configuration_note_params))
 
-print('assignmentId={}'.format(configuration_note.id))
+print('{}/reviewers?assignmentId={}'.format(client.baseurl, configuration_note.id))
 
