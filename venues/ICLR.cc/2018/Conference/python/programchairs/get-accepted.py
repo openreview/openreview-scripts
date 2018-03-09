@@ -47,7 +47,7 @@ def main():
     col = 0
 
     # write the header
-    header = ['Unique Id','Paper Number','Title', 'Keywords', 'Type', 'Date', 'Start Time', 'End Time','Abstract', 'External URL','Poster ID','Location','Author Count','Last Name', 'Middle Initial', 'First Name', 'Email','Institution', 'Department','Last Name', 'Middle Initial', 'First Name', 'Email','Institution', 'Department']
+    header = ['Unique Id','Paper Number','Title', 'Keywords', 'Type', 'Date', 'Start Time', 'End Time', 'PosterDate AMPM', 'Session','Abstract', 'External URL','Poster ID','Location','Author Count','Last Name', 'Middle Initial', 'First Name', 'Email','Institution', 'Department','Last Name', 'Middle Initial', 'First Name', 'Email','Institution', 'Department']
     for item in header:
         worksheet.write(row, col, item)
         col += 1
