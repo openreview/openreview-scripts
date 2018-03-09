@@ -229,9 +229,10 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     container: '#my-submitted-papers'
   });
 
-  if (notes.length === PAGE_SIZE) {
-    Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
-  }
+  // MLS: Removing this because there won't be any users that submit more than a couple papers.
+  // if (notes.length === PAGE_SIZE) {
+  //   Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
+  // }
 
   // My Tasks tab
   if (userGroups.length) {

@@ -46,6 +46,7 @@ configuration_note_params.update({
                 'recommendation_score': 1
             }
         },
+        'constraints': {},
         'paper_invitation': 'auai.org/UAI/2018/-/Blind_Submission',
         'metadata_invitation': 'auai.org/UAI/2018/-/Paper_Metadata',
         'assignment_invitation': 'auai.org/UAI/2018/-/Paper_Assignment',
@@ -55,25 +56,14 @@ configuration_note_params.update({
     }
 })
 
-# add some user constraints. in the future, this will be added by the user through the GUI.
-configuration_note_params['content']['constraints'] = {
-    '~Benjamin_Guedj1': {
-        'SkWNNgtvUz': '-inf'
-    },
-    '~David_Jensen1': {
-        'Bkv4lKPLf': '+inf'
-    }
-}
-
-
 # ultimately, we'll set up a process function that executes the following code
 # automatically when the configuration note is posted. for now, we will do this
 # manually.
 
 # get the already-posted configuration note
 
-papers = client.get_notes(invitation = configuration_note_params['content']['paper_invitation'])
-paper_metadata = client.get_notes(invitation = configuration_note_params['content']['metadata_invitation'])
+papers = openreview.tools.get_all_notes(client, configuration_note_params['content']['paper_invitation'])
+paper_metadata = openreview.tools.get_all_notes(client, configuration_note_params['content']['metadata_invitation'])
 match_group = client.get_group(id = configuration_note_params['content']['match_group'])
 reviewer_configuration = configuration_note_params['content']['configuration']
 user_constraints = configuration_note_params['content']['constraints']
@@ -98,7 +88,7 @@ def create_assignment_note(forum, label):
         }
     })
 
-existing_assignments = client.get_notes(invitation='auai.org/UAI/2018/-/Paper_Assignment')
+existing_assignments = openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Paper_Assignment')
 existing_reviewer_assignments = {n.forum: n for n in existing_assignments if n.content['label'] == label}
 
 for forum, assignment in new_assignments_by_forum.iteritems():
@@ -108,5 +98,7 @@ for forum, assignment in new_assignments_by_forum.iteritems():
     print('Paper{0: <6}'.format(assignment_note.number), ', '.join(assignment))
 
 configuration_note_params['content']['status'] = 'complete'
-client.post_note(openreview.Note(**configuration_note_params))
+configuration_note = client.post_note(openreview.Note(**configuration_note_params))
+
+print('{}/reviewers?assignmentId={}'.format(client.baseurl, configuration_note.id))
 

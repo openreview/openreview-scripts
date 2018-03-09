@@ -52,7 +52,7 @@ this copy is defined by the blind submission invitation.
 submission_inv = invitations.Submission(
     name = 'Submission',
     conference_id = 'auai.org/UAI/2018',
-    duedate = 1520589599000, #  (GMT): Friday, 9 March 2018 09:59:59
+    duedate = 1520679599000, #  (GMT): Saturday, 10 March 2018 10:59:59
     reply_params = {
         'readers': {'values-copied': [
                 'auai.org/UAI/2018', '{content.authorids}', '{signatures}']},
@@ -67,7 +67,7 @@ submission_inv = invitations.Submission(
 blind_inv = invitations.Submission(
     name = 'Blind_Submission',
     conference_id = 'auai.org/UAI/2018',
-    duedate = 1520589599000, #  (GMT): Friday, 9 March 2018 09:59:59
+    duedate = 1520679599000, #  (GMT): Saturday, 10 March 2018 10:59:59
     mask = {
         'authors': {'values': ['Anonymous']},
         'authorids': {'values-regex': '.*'}

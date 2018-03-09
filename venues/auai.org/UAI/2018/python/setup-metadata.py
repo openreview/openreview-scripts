@@ -5,7 +5,6 @@ import argparse
 import requests
 from collections import defaultdict
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
@@ -16,14 +15,12 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print 'connecting to {0}'.format(client.baseurl)
 
-submissions = client.get_notes(invitation='auai.org/UAI/2018/-/Submission')
-
 group_ids = [
     'auai.org/UAI/2018/Program_Committee',
     'auai.org/UAI/2018/Senior_Program_Committee'
 ]
 
-papers = client.get_notes(invitation = 'auai.org/UAI/2018/-/Blind_Submission')
+papers = openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Blind_Submission')
 groups = [client.get_group(g) for g in group_ids]
 all_users = reduce(lambda acc, g: acc.members + g.members, groups)
 
@@ -39,8 +36,6 @@ def conflict(forum, user_id):
         return '-inf'
     else:
         return None
-
-
 
 tpms_scores = {}
 for n in papers:
@@ -95,26 +90,27 @@ def metadata(forum, groups):
     }
     for g in groups:
 
-        group_entry = {}
+        group_entry = []
         for user_id in g.members:
-            user_entry = {}
+            user_entry = {'userId': user_id, 'scores': {}}
             affinity_score = affinity(forum, user_id)
             tpms_score = tpms(forum, user_id)
             conflict_score = conflict(forum, user_id)
 
             if affinity_score > 0:
-                user_entry['affinity_score'] = affinity_score
+                user_entry['scores']['affinity_score'] = affinity_score
             if conflict_score == '-inf':
-                user_entry['conflict_score'] = conflict_score
+                user_entry['scores']['conflict_score'] = conflict_score
             if tpms_score > 0:
-                user_entry['tpms_score'] = tpms_score
-            group_entry[user_id] = user_entry
+                user_entry['scores']['tpms_score'] = tpms_score
+
+            group_entry.append(user_entry)
 
         metadata_params['content']['groups'][g.id] = group_entry
 
     return metadata_params
 
-existing_notes_by_forum = {n.forum: n for n in client.get_notes(invitation = 'auai.org/UAI/2018/-/Paper_Metadata')}
+existing_notes_by_forum = {n.forum: n for n in openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Paper_Metadata')}
 
 print "posting paper metadata..."
 for p in papers:
