@@ -19,7 +19,7 @@ if not os.path.exists('../pdfs'):
     os.makedirs('../pdfs')
 
 for n in submissions:
-    pdf_url = 'https://openreview.net{0}'.format(n.content['pdf'])
+    pdf_url = '{0}/{1}'.format(client.baseurl, n.content['pdf'])
     paper_id = n.number
     print "retrieving Paper{0} at {1}".format(paper_id, pdf_url)
     pdf_response = requests.get(pdf_url, stream=True)
