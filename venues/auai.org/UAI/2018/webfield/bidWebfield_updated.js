@@ -391,7 +391,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
             }
             Webfield.ui.searchResults(sortedNotes, submissionListOptions);
           } else {
-            Webfield.ui.searchResults(notes, submissionListOptions);
+            Webfield.ui.searchResults(_.sortBy(notes, n => n.content.title.toLowerCase()), submissionListOptions);
           }
         },
       },
