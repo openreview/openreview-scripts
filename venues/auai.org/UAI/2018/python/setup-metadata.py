@@ -21,27 +21,43 @@ group_ids = [
 ]
 
 papers = openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Blind_Submission')
+papers_by_forum = {n.forum: n for n in papers}
+originals_by_forum = {n.forum: n for n in openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Submission')}
 groups = [client.get_group(g) for g in group_ids]
-all_users = reduce(lambda acc, g: acc.members + g.members, groups)
+all_users = [u for u in reduce(lambda acc, g: acc.members + g.members, groups) if '~' in u]
+profiles_by_id = {uid: client.get_note(uid) for uid in all_users}
 
 '''
 The functions below are "dummy" feature functions for building up a test dataset.
 '''
 
 def affinity(forum, user_id):
-    return random.random()*10
+    return 1.0
 
 def conflict(forum, user_id):
-    if random.random() > 0.9:
-        return '-inf'
-    else:
-        return None
+    try:
+        paper = papers_by_forum[forum]
+        original = originals_by_forum[paper.original]
+        profile = profiles_by_id[user_id]
+        paper_domain_conflicts, paper_relation_conflicts = openreview.tools.get_paper_conflicts(client, original)
+        profile_domain_conflicts, profile_relation_conflicts = openreview.tools.profile_conflicts(profile)
+        if paper_domain_conflicts.intersection(profile_domain_conflicts):
+            return '-inf'
+        if paper_relation_conflicts.intersection(profile_relation_conflicts):
+            return '-inf'
+        else:
+            return 0.0
+    except KeyError as e:
+        print "conflict error!"
+        print 'original: ', paper.original
+        print 'forum: ', forum
+        return 0.0
 
 tpms_scores = {}
 for n in papers:
     tpms_scores[n.forum] = {}
     for user_id in all_users:
-        tpms_scores[n.forum][user_id] = random.random()*10
+        tpms_scores[n.forum][user_id] = 1.0 #random.random()*10
 
 # with open(<tpms file>) as f:
 #   read file
@@ -92,19 +108,20 @@ def metadata(forum, groups):
 
         group_entry = []
         for user_id in g.members:
-            user_entry = {'userId': user_id, 'scores': {}}
-            affinity_score = affinity(forum, user_id)
-            tpms_score = tpms(forum, user_id)
-            conflict_score = conflict(forum, user_id)
+            if '~' in user_id:
+                user_entry = {'userId': user_id, 'scores': {}}
+                affinity_score = affinity(forum, user_id)
+                tpms_score = tpms(forum, user_id)
+                conflict_score = conflict(forum, user_id)
 
-            if affinity_score > 0:
-                user_entry['scores']['affinity_score'] = affinity_score
-            if conflict_score == '-inf':
-                user_entry['scores']['conflict_score'] = conflict_score
-            if tpms_score > 0:
-                user_entry['scores']['tpms_score'] = tpms_score
+                if affinity_score > 0:
+                    user_entry['scores']['affinity_score'] = affinity_score
+                if conflict_score == '-inf':
+                    user_entry['scores']['conflict_score'] = conflict_score
+                if tpms_score > 0:
+                    user_entry['scores']['tpms_score'] = tpms_score
 
-            group_entry.append(user_entry)
+                group_entry.append(user_entry)
 
         metadata_params['content']['groups'][g.id] = group_entry
 
@@ -113,6 +130,7 @@ def metadata(forum, groups):
 existing_notes_by_forum = {n.forum: n for n in openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Paper_Metadata')}
 
 print "posting paper metadata..."
+
 for p in papers:
     if p.forum in existing_notes_by_forum:
         metadata_params = existing_notes_by_forum[p.forum].to_json()
