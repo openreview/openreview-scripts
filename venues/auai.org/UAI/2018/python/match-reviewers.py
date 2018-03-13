@@ -35,7 +35,7 @@ configuration_note_params.update({
     'content': {
         'label': label,
         'configuration': {
-            'minusers': 3,
+            'minusers': 0,
             'maxusers': 3,
             'minpapers': 0,
             'maxpapers': 5,
@@ -88,12 +88,23 @@ def create_assignment_note(forum, label):
         }
     })
 
+def get_metatada_scores(forum_id, assignment):
+    papers = [p for p in paper_metadata if p.forum == forum_id]
+
+    if papers:
+        groups = papers[0].content['groups'][configuration_note_params['content']['match_group']]
+        scores = [s for s in groups if s['userId'] in assignment]
+        return scores
+    else:
+        return {}
+
 existing_assignments = openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Paper_Assignment')
 existing_reviewer_assignments = {n.forum: n for n in existing_assignments if n.content['label'] == label}
 
 for forum, assignment in new_assignments_by_forum.iteritems():
     assignment_note = existing_reviewer_assignments.get(forum, create_assignment_note(forum, label))
     assignment_note.content['assignment'] = assignment
+    assignment_note.content['test'] = get_metatada_scores(forum, assignment)
     assignment_note = client.post_note(assignment_note)
     print('Paper{0: <6}'.format(assignment_note.number), ', '.join(assignment))
 
