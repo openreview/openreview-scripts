@@ -38,13 +38,12 @@ configuration_note_params.update({
         'configuration': {
             'minusers': 1,
             'maxusers': 1,
-            'minpapers': 0,
-            'maxpapers': 5,
+            'minpapers': 1,
+            'maxpapers': 15,
             'weights': {
-                'bid_score': 1,
-                'affinity_score': 1,
+                'tpms_score': 1,
                 'conflict_score': 1,
-                'recommendation_score': 1
+                'bid_score': 1
             }
         },
         'constraints': {},
