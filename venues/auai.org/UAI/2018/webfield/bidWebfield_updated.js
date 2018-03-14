@@ -132,10 +132,11 @@ function main() {
 
 // Perform all the required API calls
 function load() {
-  var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {pageSize: PAGE_SIZE}).then(function(allNotes) {
-    return allNotes.filter(function(note) {
-      return !note.content.hasOwnProperty('withdrawal');
-    });
+  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION}).then(function(allNotes) {
+    return _.sortBy(
+      allNotes.filter(function(note) { return !note.content.hasOwnProperty('withdrawal'); }),
+      function(n) { return n.content.title.toLowerCase(); }
+    );
   });
 
   var tagInvitationsP = Webfield.get('/invitations', {id: ADD_BID}).then(function(result) {
@@ -144,15 +145,10 @@ function load() {
     });
   });
 
-  var metadataNotesP = Webfield.get('/notes', {invitation: METADATA_INVITATION}).then(function(result) {
-    if (_.isEmpty(result.notes)) {
-      return {};
-    }
-
+  var metadataNotesP = Webfield.getAll('/notes', {invitation: METADATA_INVITATION}).then(function(allNotes) {
     var metadataMap = {};
-    for (var i = 0; i < result.notes.length; i++) {
-      var note = result.notes[i];
-      metadataMap[note.forum] = note.content.groups;
+    for (var i = 0; i < allNotes.length; i++) {
+      metadataMap[allNotes[i].forum] = allNotes[i].content.groups;
     }
     return metadataMap;
   });
@@ -362,23 +358,21 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#allPapers',
       search: {
         enabled: true,
+        localSearch: true,
         subjectAreas: SUBJECT_AREAS,
         sort: sortOptionsList,
         onResults: function(searchResults) {
-          var blindedSearchResults = searchResults.filter(function(note) {
-            return note.invitation === BLIND_INVITATION;
-          });
-          addMetadataToNotes(blindedSearchResults, metadataNotesMap);
+          addMetadataToNotes(searchResults, metadataNotesMap);
 
           // Only include this code if there is a sort dropdown in the search form
           var selectedVal = $('.notes-search-form .sort-dropdown').val();
           if (selectedVal !== 'Default') {
             var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
             if (sortOption) {
-              blindedSearchResults = _.sortBy(blindedSearchResults, sortOption.compareProp);
+              searchResults = _.sortBy(searchResults, sortOption.compareProp);
             }
           }
-          Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
+          Webfield.ui.searchResults(searchResults, submissionListOptions);
         },
         onReset: function() {
           // Only include this code if there is a sort dropdown in the search form
@@ -391,7 +385,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
             }
             Webfield.ui.searchResults(sortedNotes, submissionListOptions);
           } else {
-            Webfield.ui.searchResults(_.sortBy(notes, n => n.content.title.toLowerCase()), submissionListOptions);
+            Webfield.ui.searchResults(notes, submissionListOptions);
           }
         },
       },
