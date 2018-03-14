@@ -35,10 +35,10 @@ configuration_note_params.update({
     'content': {
         'label': label,
         'configuration': {
-            'minusers': 0,
-            'maxusers': 3,
-            'minpapers': 0,
-            'maxpapers': 5,
+            'minusers': 2,
+            'maxusers': 5,
+            'minpapers': 3,
+            'maxpapers': 6,
             'weights': {
                 'bid_score': 1,
                 'affinity_score': 1,
@@ -88,15 +88,27 @@ def create_assignment_note(forum, label):
         }
     })
 
-def get_metatada_scores(forum_id, assignment):
+
+def get_paper_scores(forum_id):
     papers = [p for p in paper_metadata if p.forum == forum_id]
 
     if papers:
-        groups = papers[0].content['groups'][configuration_note_params['content']['match_group']]
-        scores = [s for s in groups if s['userId'] in assignment]
-        return scores
+        return papers[0].content['groups'][configuration_note_params['content']['match_group']]
     else:
-        return {}
+        return []
+
+def get_assigned_groups(scores, assignment):
+    return [s for s in scores if s['userId'] in assignment]
+
+def get_alternate_groups(scores, assignment, alternate_count):
+
+    def getKey(item):
+        return item['scores']['tpms_score']
+
+    alternates = [s for s in scores if s['userId'] not in assignment and s['scores'].get('conflict_score', 0) != '-inf']
+    sorted_alternates = sorted(alternates, key=getKey, reverse=True)
+    return sorted_alternates[:alternate_count]
+
 
 existing_assignments = openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Paper_Assignment')
 existing_reviewer_assignments = {n.forum: n for n in existing_assignments if n.content['label'] == label}
@@ -104,9 +116,13 @@ existing_reviewer_assignments = {n.forum: n for n in existing_assignments if n.c
 for forum, assignment in new_assignments_by_forum.iteritems():
     assignment_note = existing_reviewer_assignments.get(forum, create_assignment_note(forum, label))
     assignment_note.content['assignment'] = assignment
-    assignment_note.content['test'] = get_metatada_scores(forum, assignment)
+
+    scores = get_paper_scores(forum)
+    assignment_note.content['assignedGroups'] = get_assigned_groups(scores, assignment)
+    assignment_note.content['alternateGroups'] = get_alternate_groups(scores, assignment, 5) # 5 could be in the configuration
+
     assignment_note = client.post_note(assignment_note)
-    print('Paper{0: <6}'.format(assignment_note.number), ', '.join(assignment))
+    print('Paper{0: <6}'.format(assignment_note.number), ', '.join(assignment).encode('utf-8'))
 
 configuration_note_params['content']['status'] = 'complete'
 configuration_note = client.post_note(openreview.Note(**configuration_note_params))
