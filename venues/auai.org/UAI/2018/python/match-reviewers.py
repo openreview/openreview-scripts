@@ -97,7 +97,7 @@ def get_paper_scores(forum_id):
     else:
         return []
 
-def weigth_scores(group_scores, weigths):
+def weight_scores(group_scores, weigths):
     group_weighted_scores = []
 
     for g in group_scores:
@@ -121,7 +121,7 @@ def weigth_scores(group_scores, weigths):
 
 def get_assigned_groups(scores, weigths, assignment):
     group_scores = [s for s in scores if s['userId'] in assignment]
-    return weigth_scores(group_scores, weigths)
+    return weight_scores(group_scores, weigths)
 
 
 def get_alternate_groups(scores, weigths, assignment, alternate_count):
@@ -130,7 +130,7 @@ def get_alternate_groups(scores, weigths, assignment, alternate_count):
         return item.get('finalScore', 0)
 
     alternates = [s for s in scores if s['userId'] not in assignment and s['scores'].get('conflict_score', 0) != '-inf']
-    sorted_alternates = sorted(weigth_scores(alternates, weigths), key=getKey, reverse=True)
+    sorted_alternates = sorted(weight_scores(alternates, weigths), key=getKey, reverse=True)
     return sorted_alternates[:alternate_count]
 
 
