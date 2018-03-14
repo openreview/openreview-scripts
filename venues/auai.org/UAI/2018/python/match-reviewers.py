@@ -97,16 +97,40 @@ def get_paper_scores(forum_id):
     else:
         return []
 
-def get_assigned_groups(scores, assignment):
-    return [s for s in scores if s['userId'] in assignment]
+def weigth_scores(group_scores, weigths):
+    group_weighted_scores = []
 
-def get_alternate_groups(scores, assignment, alternate_count):
+    for g in group_scores:
+        weighted_scores = {}
+        final_score = 0
+        count = 0
+        for name, value in g['scores'].iteritems():
+            weighted_score = value * weigths.get(name, 0)
+            weighted_scores[name] = weighted_score
+
+            final_score += weighted_score
+            count += 1
+
+        group_weighted_scores.append({
+            'userId': g['userId'],
+            'finalScore': final_score / count if count > 0 else 0,
+            'scores': weighted_scores
+        })
+
+    return group_weighted_scores
+
+def get_assigned_groups(scores, weigths, assignment):
+    group_scores = [s for s in scores if s['userId'] in assignment]
+    return weigth_scores(group_scores, weigths)
+
+
+def get_alternate_groups(scores, weigths, assignment, alternate_count):
 
     def getKey(item):
-        return item['scores']['tpms_score']
+        return item.get('finalScore', 0)
 
     alternates = [s for s in scores if s['userId'] not in assignment and s['scores'].get('conflict_score', 0) != '-inf']
-    sorted_alternates = sorted(alternates, key=getKey, reverse=True)
+    sorted_alternates = sorted(weigth_scores(alternates, weigths), key=getKey, reverse=True)
     return sorted_alternates[:alternate_count]
 
 
@@ -117,11 +141,13 @@ for forum, assignment in new_assignments_by_forum.iteritems():
     assignment_note = existing_reviewer_assignments.get(forum, create_assignment_note(forum, label))
 
     new_content = {}
+    new_content['label'] = label
     new_content['assignment'] = assignment
 
     scores = get_paper_scores(forum)
-    new_content['assignedGroups'] = get_assigned_groups(scores, assignment)
-    new_content['alternateGroups'] = get_alternate_groups(scores, assignment, 5) # 5 could be in the configuration
+    weigths = configuration_note_params['content']['configuration']['weights']
+    new_content['assignedGroups'] = get_assigned_groups(scores, weigths, assignment)
+    new_content['alternateGroups'] = get_alternate_groups(scores, weigths, assignment, 5) # 5 could be in the configuration
 
     assignment_note.content = new_content
     assignment_note = client.post_note(assignment_note)
