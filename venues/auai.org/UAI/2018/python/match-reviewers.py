@@ -35,10 +35,10 @@ configuration_note_params.update({
     'content': {
         'label': label,
         'configuration': {
-            'minusers': 2,
-            'maxusers': 5,
-            'minpapers': 3,
-            'maxpapers': 6,
+            'minusers': 3,
+            'maxusers': 3,
+            'minpapers': 0,
+            'maxpapers': 5,
             'weights': {
                 'bid_score': 1,
                 'affinity_score': 1,
@@ -115,12 +115,15 @@ existing_reviewer_assignments = {n.forum: n for n in existing_assignments if n.c
 
 for forum, assignment in new_assignments_by_forum.iteritems():
     assignment_note = existing_reviewer_assignments.get(forum, create_assignment_note(forum, label))
-    assignment_note.content['assignment'] = assignment
+
+    new_content = {}
+    new_content['assignment'] = assignment
 
     scores = get_paper_scores(forum)
-    assignment_note.content['assignedGroups'] = get_assigned_groups(scores, assignment)
-    assignment_note.content['alternateGroups'] = get_alternate_groups(scores, assignment, 5) # 5 could be in the configuration
+    new_content['assignedGroups'] = get_assigned_groups(scores, assignment)
+    new_content['alternateGroups'] = get_alternate_groups(scores, assignment, 5) # 5 could be in the configuration
 
+    assignment_note.content = new_content
     assignment_note = client.post_note(assignment_note)
     print('Paper{0: <6}'.format(assignment_note.number), ', '.join(assignment).encode('utf-8'))
 
