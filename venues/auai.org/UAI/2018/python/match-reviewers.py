@@ -41,7 +41,7 @@ configuration_note_params.update({
             'maxpapers': 5,
             'weights': {
                 'bid_score': 1,
-                'affinity_score': 1,
+                'tpms_score': 1,
                 'conflict_score': 1,
                 'recommendation_score': 1
             }
