@@ -19,20 +19,20 @@ print 'connecting to {0}'.format(client.baseurl)
 Set the variable names that will be used in various pieces of executable javascript.
 '''
 js_constants = {
-    'TITLE': "ITS 2018",
-    'SUBTITLE': "The 21st IEEE International Conference on Intelligent Transportation Systems",
+    'TITLE': "IEEE ITSC 2018",
+    'SUBTITLE': "Workshop on Reinforcement Learning for Transportation",
     'LOCATION': "Maui, Hawaii, USA",
     'DATE': "November 4-7, 2018",
     'WEBSITE': "https://sites.google.com/view/itsc18-rl",
     'DEADLINE': "Submission Deadline: April 15, 2018, 11:59 pm (AoE)",
-    'CONFERENCE': 'IEEE.org/2018/ITS',
-    'PROGRAM_CHAIRS': 'IEEE.org/2018/ITS/Program_Chairs',
-    'REVIEWERS': 'IEEE.org/2018/ITS/Reviewers',
-    'SUBMISSION_INVITATION': 'IEEE.org/2018/ITS/-/Submission',
-    'BLIND_INVITATION': 'IEEE.org/2018/ITS/-/Blind_Submission'
+    'CONFERENCE': 'IEEE.org/2018/ITSC',
+    'PROGRAM_CHAIRS': 'IEEE.org/2018/ITSC/Program_Chairs',
+    'REVIEWERS': 'IEEE.org/2018/ITSC/Reviewers',
+    'SUBMISSION_INVITATION': 'IEEE.org/2018/ITSC/-/Submission',
+    'BLIND_INVITATION': 'IEEE.org/2018/ITSC/-/Blind_Submission'
 }
 
-# TODO PAM April 15, 2018, 11:59 pm (AoE) = 4/16/18 11:59am GMT
+# April 15, 2018, 11:59 pm (AoE) = 4/16/18 11:59am GMT
 DUE_DATE =  1523879999000
 
 groups = tools.build_groups(js_constants['CONFERENCE'])
