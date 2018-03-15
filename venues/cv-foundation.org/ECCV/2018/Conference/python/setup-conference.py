@@ -73,6 +73,12 @@ submission_invitation = client.post_invitation(openreview.Invitation(id='cv-foun
                 'order': 5,
                 'values-regex': ".*",
                 'required':False
+            },
+            'paperId': {
+                'description': 'ECCV paper Id',
+                'order': 6,
+                'value-regex': ".*",
+                'required':True
             }
         }
     }
