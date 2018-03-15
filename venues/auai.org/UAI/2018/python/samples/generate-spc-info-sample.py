@@ -21,7 +21,7 @@ metadata = client.get_notes(invitation='auai.org/UAI/2018/-/Paper_Metadata', for
 
 reviewer_entries = metadata.content['groups']['auai.org/UAI/2018/Program_Committee']
 
-with open('./{}.csv'.format(openreview.tools.get_paperhash('anonymous', paper.content['title'])), 'w') as f:
+with open('./{}.csv'.format(openreview.tools.get_paperhash(str(paper_number), paper.content['title'])), 'w') as f:
     writer = csv.writer(f, delimiter='\t')
     writer.writerow([paper.content['title']])
     writer.writerow(['Paper {}'.format(paper.number)])
