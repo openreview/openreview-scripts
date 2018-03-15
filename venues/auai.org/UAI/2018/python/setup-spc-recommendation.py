@@ -40,7 +40,7 @@ for n in blind_notes:
             },
             'content': {
                 'tag': {
-                    'description': 'SPC Recommendation',
+                    'description': 'Veto a reviewer from reviewing this paper',
                     'order': 1,
                     'required': True,
                     'values-url': '/groups?id=auai.org/UAI/2018/Program_Committee'
@@ -68,7 +68,7 @@ for n in blind_notes:
             },
             'content': {
                 'tag': {
-                    'description': 'SPC Recommendation',
+                    'description': 'Recommend a reviewer to review this paper',
                     'order': 1,
                     'required': True,
                     'values-url': '/groups?id=auai.org/UAI/2018/Program_Committee'
