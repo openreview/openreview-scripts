@@ -15,7 +15,6 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print 'connecting to {0}'.format(client.baseurl)
 
-# assign areachairs
 blind_notes = client.get_notes(invitation='auai.org/UAI/2018/-/Blind_Submission')
 
 for n in blind_notes:
