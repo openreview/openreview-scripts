@@ -22,7 +22,7 @@ ADMIN = CONF + '/Admin'
 
 AUTHORS = CONF + '/Authors'
 
-DUE_TIMESTAMP = 1527757200000 # 17:00:00 EST on May 1, 2018
+DUE_TIMESTAMP = 2556143999000 # Saturday, December 31, 2050 11:59:59 PM
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
 """
