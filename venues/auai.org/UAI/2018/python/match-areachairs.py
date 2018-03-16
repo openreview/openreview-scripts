@@ -23,6 +23,8 @@ config_by_label = {n.content['label']: n.to_json() for n in client.get_notes(inv
 
 configuration_note_params = config_by_label.get(label, {})
 
+user_constraints = configuration_note_params.get('content', {}).get('constraints', {})
+
 # post the configuration note. in the future, this note will be posted through the UI.
 
 configuration_note_params.update({
@@ -55,6 +57,8 @@ configuration_note_params.update({
     }
 })
 
+configuration_note_params['content']['constraints'] = user_constraints
+
 # ultimately, we'll set up a process function that executes the following code
 # automatically when the configuration note is posted. for now, we will do this
 # manually.
@@ -65,7 +69,6 @@ papers = openreview.tools.get_all_notes(client, configuration_note_params['conte
 paper_metadata = openreview.tools.get_all_notes(client, configuration_note_params['content']['metadata_invitation'])
 match_group = client.get_group(id = configuration_note_params['content']['match_group'])
 reviewer_configuration = configuration_note_params['content']['configuration']
-user_constraints = configuration_note_params['content']['constraints']
 
 new_assignments_by_forum = openreview_matcher.match(reviewer_configuration,
     papers = papers, metadata = paper_metadata, group = match_group, constraints = user_constraints)
