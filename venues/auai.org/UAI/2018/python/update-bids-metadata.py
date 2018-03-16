@@ -32,7 +32,7 @@ for a in tags:
     bids[a.forum][a.signatures[0]] = bid_score_map.get(a.tag, 0)
 
 
-metadata_notes = openreview.get_notes(invitation='auai.org/UAI/2018/-/Paper_Metadata')
+metadata_notes = client.get_notes(invitation='auai.org/UAI/2018/-/Paper_Metadata')
 
 
 def update_bid_score(user_scores):
@@ -54,6 +54,6 @@ for m in metadata_notes:
     r_scores = m.content['groups']['auai.org/UAI/2018/Program_Committee']
     m.content['groups']['auai.org/UAI/2018/Program_Committee'] = update_bid_score(r_scores)
 
-    openreview.post_note(m)
+    client.post_note(m)
 
-    print 'Done.'
+print 'Done.'
