@@ -39,7 +39,7 @@ configuration_note_params.update({
             'minusers': 1,
             'maxusers': 1,
             'minpapers': 1,
-            'maxpapers': 15,
+            'maxpapers': 10,
             'weights': {
                 'tpms_score': 1,
                 'conflict_score': 1,
@@ -97,5 +97,6 @@ for forum, assignment in new_assignments_by_forum.iteritems():
     print('Paper{0: <6}'.format(assignment_note.number), ', '.join(assignment))
 
 configuration_note_params['content']['status'] = 'complete'
-client.post_note(openreview.Note(**configuration_note_params))
+config_note = client.post_note(openreview.Note(**configuration_note_params))
+print('{}/reviewers?assignmentId={}'.format(client.baseurl, config_note.id))
 
