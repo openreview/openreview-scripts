@@ -29,8 +29,8 @@ groups = []
 openreview_groups = [openreview.Group(**{
 	'id': 'OpenReview.net/Anonymous_Preprint',
 	'readers': ['everyone'],
-	'writers': ['~Super_User1'],
-	'signatures': ['~Super_User1'],
+	'writers': ['OpenReview.net/Anonymous_Preprint'],
+	'signatures': ['OpenReview.net/Anonymous_Preprint'],
 	'signatories': ['OpenReview.net/Anonymous_Preprint'],
 	'members': []
 	})]
