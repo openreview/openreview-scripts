@@ -7,8 +7,6 @@ import argparse
 import openreview
 import xlsxwriter
 import requests
-import json
-from pdb import set_trace as debug
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -47,7 +45,7 @@ def main():
     col = 0
 
     # write the header
-    header = ['Unique Id','Paper Number','Title', 'Keywords', 'Type', 'Date', 'Start Time', 'End Time', 'PosterDate AMPM', 'Session','Abstract', 'External URL','Poster ID','Location','Author Count','Last Name', 'Middle Initial', 'First Name', 'Email','Institution', 'Department','Last Name', 'Middle Initial', 'First Name', 'Email','Institution', 'Department']
+    header = ['Unique Id', 'Paper Number', 'Title', 'Keywords', 'Type', 'Date', 'Start Time', 'End Time','Abstract', 'External URL','Poster ID','Location','Author Count','Last Name', 'Middle Initial', 'First Name', 'Email','Institution', 'Department','Last Name', 'Middle Initial', 'First Name', 'Email','Institution', 'Department']
     for item in header:
         worksheet.write(row, col, item)
         col += 1
@@ -101,17 +99,12 @@ def main():
             # paper data
             col = 0
             worksheet.write(row, col, note.forum)
-            col += 1
-            worksheet.write(row, col, note.number)
-            col += 1
+            col += 2 # Paper Number
             worksheet.write(row, col, note.content['title'])
-            col += 1
-            worksheet.write(row, col, json.dumps(note.content['keywords']))
-            col += 1
-            worksheet.write(row, col, decision_info[note.forum].replace(u"Accept (", u"" ).replace(u")", u""))
-            # skipping Date, StartTime, EndTime, PosterAMPM and session
-            #['uniqueid', "sourceid", "title", "keywords", "type", "date", "startime", 'endtime', "PosterDate_AMPM", "session", "abstract", "pdfuri", "location"]
-            col += 6
+            col += 2 #Keywords
+            worksheet.write(row, col, decision_info[note.forum])
+            # skipping Date, StartTime, EndTime
+            col += 4
             worksheet.write(row, col, note.content['abstract'])
             col += 1
             worksheet.write(row, col, note.content['pdf'])
