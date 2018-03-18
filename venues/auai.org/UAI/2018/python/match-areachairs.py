@@ -112,8 +112,6 @@ def weight_scores(group_scores, weights):
 
                 final_score += weighted_score
                 count += 1
-            else:
-                print(value)
 
         group_weighted_scores.append({
             'userId': g['userId'],
