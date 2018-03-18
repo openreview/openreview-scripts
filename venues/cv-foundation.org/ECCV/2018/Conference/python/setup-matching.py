@@ -56,8 +56,6 @@ assignment_inv = client.post_invitation(openreview.Invitation(**{
         'writers': {'values': ['cv-foundation.org/ECCV/2018/Conference']},
         'signatures': {'values': ['cv-foundation.org/ECCV/2018/Conference']},
         'content': {
-            # assignment
-            # label
         }
     }
 }))
@@ -84,13 +82,6 @@ config_inv = client.post_invitation(openreview.Invitation(**{
         'writers': {'values': ['cv-foundation.org/ECCV/2018/Conference']},
         'signatures': {'values': ['cv-foundation.org/ECCV/2018/Conference']},
         'content': {
-            # label = label
-            # configuration = configuration
-            # paper_invitation = 'cv-foundation.org/ECCV/2018/Conference/-/Blind_Submission'
-            # metadata_invitation = 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Metadata'
-            # assignment_invitation = 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment'
-            # match_group = 'cv-foundation.org/ECCV/2018/Conference/Reviewers'
-            # statistics = {fill in later}
         }
     }
 
