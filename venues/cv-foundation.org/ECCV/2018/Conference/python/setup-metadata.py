@@ -65,14 +65,10 @@ def conflict(forum, user_id):
     try:
         paper = papers_by_forum[forum]
         profile = profiles_by_id[user_id]
-        paper_domain_conflicts, paper_relation_conflicts = openreview.tools.get_paper_conflicts(client, paper)
-        profile_domain_conflicts, profile_relation_conflicts = openreview.tools.profile_conflicts(profile)
-        if paper_domain_conflicts.intersection(profile_domain_conflicts):
+        conflicts = openreview.matching.get_conflicts(client.get_profiles(paper.content['authorids']), profile)
+        if conflicts:
             return '-inf'
-        if paper_relation_conflicts.intersection(profile_relation_conflicts):
-            return '-inf'
-        else:
-            return 0.0
+        return 0
     except KeyError as e:
         print "conflict error!"
         print 'forum: ', forum
@@ -109,6 +105,8 @@ def metadata(forum, groups):
                     user_entry['scores']['conflict_score'] = conflict_score
                 if tpms_score > 0:
                     user_entry['scores']['tpms_score'] = tpms_score
+                else:
+                    print('zero', forum, user_id)
 
                 group_entry.append(user_entry)
 
