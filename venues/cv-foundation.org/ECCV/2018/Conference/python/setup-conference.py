@@ -34,7 +34,7 @@ submission_invitation = client.post_invitation(openreview.Invitation(id='cv-foun
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
+            'values': ['cv-foundation.org/ECCV/2018/Conference/Program_Chairs']
         },
         'signatures': {
             'description': 'Your authorized identity to be associated with the above content.',
