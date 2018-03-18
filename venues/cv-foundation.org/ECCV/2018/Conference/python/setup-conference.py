@@ -22,6 +22,15 @@ reviewers_group = client.post_group(openreview.Group(**{
     'members': []
 }))
 
+areachairs_group = client.post_group(openreview.Group(**{
+    'id': 'cv-foundation.org/ECCV/2018/Conference/Area_Chairs',
+    'readers': ['everyone'],
+    'writers': [],
+    'signatures': ['~Super_User1'],
+    'signatories': [],
+    'members': []
+}))
+
 submission_invitation = client.post_invitation(openreview.Invitation(id='cv-foundation.org/ECCV/2018/Conference/-/Submission',
     **{
     'duedate': 2515811930000,
