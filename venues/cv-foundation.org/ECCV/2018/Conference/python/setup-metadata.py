@@ -50,7 +50,7 @@ with open(os.path.join(os.path.dirname(__file__),'../data/areachairs_scores.csv'
 
         forum = forum_by_paperId.get(paperId, 0)
 
-        scores_by_email[email][forum] = score
+        scores_by_email[email][forum] = float(score)
         all_emails.add(email)
 
     #translate emails to ids
