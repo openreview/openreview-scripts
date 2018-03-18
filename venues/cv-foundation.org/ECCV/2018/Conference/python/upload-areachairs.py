@@ -16,10 +16,10 @@ with open(os.path.join(os.path.dirname(__file__),'../data/areachairs.csv')) as f
     reader.next()
     members = []
     for line in reader:
-        first = line[0]
-        middle = line[1]
-        last = line[2]
-        email = line[3]
+        first = line[0].strip()
+        middle = line[1].strip()
+        last = line[2].strip()
+        email = line[3].lower().strip()
         try:
             profile = openreview.tools.create_profile(client, first = first, middle = middle, last = last, email = email)
             members.append(profile.id)
