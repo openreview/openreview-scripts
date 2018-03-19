@@ -53,11 +53,11 @@ with open(os.path.join(os.path.dirname(__file__),'../data/areachairs_scores.csv'
 
     #translate emails to ids
     for k,v in scores_by_email.iteritems():
-        try:
-            profile = client.get_profile(k)
-            tpms_scores[profile.id] = v
-        except Exception as e:
-            print 'Profile not found', k
+        profiles = client.get_profiles([k])
+        if profiles:
+            tpms_scores[profiles[k].id] = v
+        else:
+            'Profile not found', k
 
 def conflict(forum, user_id):
     try:

@@ -27,9 +27,13 @@ with open(os.path.join(os.path.dirname(__file__),'../data/areachairs.csv')) as f
         last = line[2].strip()
         email = line[3].lower().strip()
         conflicts = [c.strip() for c in line[5].lower().strip().split(';')]
-        try:
-            profile = client.get_profile(email)
-            history = profile.content.get('history', [])
+
+        profiles = client.get_profiles([email])
+
+        if profiles:
+            profile_note = client.get_note(id = profiles[email].id)
+
+            history = profile_note.content.get('history', [])
 
             for c in conflicts:
                 exists = search_institution(history, c)
@@ -43,12 +47,12 @@ with open(os.path.join(os.path.dirname(__file__),'../data/areachairs.csv')) as f
                             'domain': c
                         }
                     })
-            profile.content['history'] = history
+            profile_note.content['history'] = history
 
-            saved_profile = client.update_profile(profile.id, profile.content)
+            saved_profile = client.update_profile(profile_note.id, profile_note.content)
             members.append(saved_profile.id)
-        except Exception as error:
-            print(error, email)
+        else:
+            print 'Not Found', email
 
 areachairs_group = client.post_group(openreview.Group(**{
     'id': 'cv-foundation.org/ECCV/2018/Conference/Area_Chairs',
