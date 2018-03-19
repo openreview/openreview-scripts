@@ -27,8 +27,6 @@ def load_decisions(client):
     return dec_info
 
 def load_profile(profile_info, author, profile):
-    if type(profile) is openreview.openreview.Note:
-        return profile_info
     profile_info[author] = {}
 
     profile_info[author]['first'] = profile['content']['names'][0]['first']
@@ -126,12 +124,12 @@ def main():
                 if author not in profile_info:
                     ## A hack to get profiles that are missed by get_profiles
                     try:
-                        profile = client.get_profile(author)
-                        print type(profile)
+                        note = client.get_profile(author)
+                        profile = {'content': note.content}
                         profile_info = load_profile(profile_info, author, profile)
                     except openreview.OpenReviewException as e:
+                        # cannot find author_id in profile notes
                         e =1
-                        #print "Cannot locate profile for "+author
                 if author in profile_info:
                     worksheet.write(row, col, profile_info[author]['last'])
                     col += 1
