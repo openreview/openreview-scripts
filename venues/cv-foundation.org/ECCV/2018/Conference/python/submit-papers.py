@@ -38,6 +38,7 @@ with open(os.path.join(os.path.dirname(__file__),'../data/papers.csv')) as f:
         authorids = [l.strip() for l in line[6].split(';')]
         subject_areas = [l.strip().replace('*','') for l in line[8].split(';')]
 
+        # Filter withdrawn and invalid papers
         if number not in ['497', '592', '2388', '3200']:
             note = create_cv_note(title, abstract, authors, authorids, subject_areas, number)
             posted_n = client.post_note(note)
