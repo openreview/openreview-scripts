@@ -38,7 +38,7 @@ function(){
       };
 
       var pc_mail = {
-        'groups': ['ICLR.cc/2018/Conference/Program_Chairs'],
+        'groups': ['ICLR.cc/2018/Workshop/Program_Chairs'],
         'subject': 'A Program Chair-only comment was posted',
         'message': 'A comment was posted to a paper with readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
@@ -49,7 +49,7 @@ function(){
         note.readers.indexOf('ICLR.cc/2018/Conference/Authors_and_Higher') > -1 ||
         note.readers.indexOf('everyone') > -1){
         promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token));
-      } else if(note.readers.indexOf('ICLR.cc/2018/Conference/Program_Chairs') > -1){
+      } else if(note.readers.indexOf('ICLR.cc/2018/Workshop/Program_Chairs') > -1){
         promises.push(or3client.or3request(or3client.mailUrl, pc_mail, 'POST', token));
       }
 

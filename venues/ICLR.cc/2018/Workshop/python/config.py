@@ -31,7 +31,7 @@ REVIEWERS_EMAILED = REVIEWERS + '/Emailed'
 AUTHORS_PLUS = AUTHORS + '_and_Higher'
 REVIEWERS_PLUS = REVIEWERS + '_and_Higher'
 
-DUE_TIMESTAMP = 1518213600000 # Feb 9th, 2018, 5:00pm EST
+DUE_TIMESTAMP = 1518472800000 # Feb 12th, 2018, 5:00pm EST / 2:00pm PST / 10:00pm GMT
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/workshopWebfield_tabs.js')
 
 """
@@ -151,7 +151,7 @@ submission_params = {
             'TL;DR': {
                 'description': '\"Too Long; Didn\'t Read\": a short sentence describing your paper',
                 'order': 7,
-                'value-regex': '[^\\n]{0,250}',
+                'value-regex': '[^\\n]{0,500}',
                 'required':False
             },
             'abstract': {
@@ -164,6 +164,46 @@ submission_params = {
                 'description': 'Upload a PDF file that ends with .pdf',
                 'order': 9,
                 'value-regex': 'upload',
+                'required':True
+            }
+        }
+    }
+}
+
+"""
+/-/Transfer_from_Conference
+
+This is the invitation that users submit to. These are un-blinded notes. The process
+function generates a /-/Blind_Submission note.
+
+"""
+TRANSFER_FROM_CONFERENCE = CONF + '/-/Transfer_from_Conference'
+
+transfer_from_conference_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': ['~'],
+    'signatures': [CONF],
+    'process': os.path.join(os.path.dirname(__file__), '../process/conferenceTransferProcess.js'),
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['everyone']
+        },
+        'signatures': {
+            'description': 'Your authorized identity to be associated with the above content.',
+            'values-regex': '~.*|' + CONF
+        },
+        'writers': {
+            'values': [CONF]
+        },
+        'content':{
+            'paper id': {
+                'description': 'The 8-10 character ID of your ICLR 2018 Conference Track paper. This ID can be found in the URL of your paper\'s discussion page (e.g. /forum?id=<paper_id>). IMPORTANT: Please make sure that the ID corresponds to the page that contains your reviews and comments.',
+                'order': 1,
+                'value-regex': '.{1,10}',
                 'required':True
             }
         }
@@ -216,7 +256,7 @@ public_comment_params = {
     'readers': ['everyone'],
     'writers': [CONF],
     'invitees': [],
-    'noninvitees': [REVIEWERS, AUTHORS, PROGRAM_CHAIRS],
+    'noninvitees': [REVIEWERS, PROGRAM_CHAIRS],
     'signatures': [CONF],
     'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js'),
     'reply': {
@@ -224,7 +264,8 @@ public_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'value-dropdown': ['everyone', AUTHORS_PLUS, REVIEWERS_PLUS, PROGRAM_CHAIRS]
+            #'value-dropdown': ['everyone', AUTHORS_PLUS, REVIEWERS_PLUS, PROGRAM_CHAIRS],
+            'value-dropdown': ['everyone']
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -270,7 +311,7 @@ official_comment_params = {
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'value-dropdown': ['everyone', AUTHORS_PLUS, REVIEWERS_PLUS, PROGRAM_CHAIRS]
+            'value-dropdown': ['everyone', PROGRAM_CHAIRS]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
@@ -309,7 +350,7 @@ official_review_params = {
     'invitees': [],
     'signatures': [CONF],
     'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
-    'duedate': 1511845199000, # 23:59:59 EST on November 27, 2017
+    'duedate': 1520657999000, # 23:59:59 EST on March 9, 2018
     'reply': {
         'forum': None,
         'replyto': None,
@@ -432,6 +473,53 @@ meta_review_params = {
         }
     }
 };
+
+"""
+/-/Acceptance_Decision
+"""
+acceptance_decision_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': [],
+    'signatures': [CONF],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': SUBMISSION,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'value-dropdown': [PROGRAM_CHAIRS, 'everyone']
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values': [PROGRAM_CHAIRS]
+        },
+        'writers': {
+            'values': [PROGRAM_CHAIRS]
+        },
+        'content': {
+            'title': {
+                'order': 1,
+                'value': 'ICLR 2018 Workshop Acceptance Decision',
+                'required': True
+            },
+            'decision': {
+                'order': 2,
+                'value-dropdown': [
+                    'Accept',
+                    'Reject'
+                ],
+                'required': True
+            },
+            'comment': {
+                'order': 3,
+                'value-regex': '[\\S\\s]{0,5000}',
+                'description': '(optional) Comment on this decision.',
+                'required': False
+            },
+        }
+    }
+}
 
 """
 /-/Paper[0-9]+/Withdraw_Paper
@@ -650,3 +738,4 @@ recruit_reviewers_params = {
         }
     }
 }
+

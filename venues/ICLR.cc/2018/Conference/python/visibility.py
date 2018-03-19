@@ -1,6 +1,7 @@
 import argparse
 import openreview
 import config
+import re
 
 # Argument handling
 parser = argparse.ArgumentParser()
@@ -14,31 +15,27 @@ args = parser.parse_args()
 
 client = openreview.Client(username=args.username, password=args.password, baseurl=args.baseurl)
 
-def get_bibtex(note, anonymous=True):
-    first_word = note.content['title'].split(' ')[0].lower()
-
-    if anonymous:
-        first_author_last_name = 'anonymous'
-        authors = 'Anonymous'
-    else:
-        first_author_last_name = note.content['authors'][0].split(' ')[1].lower()
-        authors = ', '.join(note.content['authors'])
-
-    return '@unpublished{\
-        \n' + first_author_last_name + '2018' + first_word + ',\
-        \ntitle={' + note.content['title'] + '},\
-        \nauthor={' + authors + '},\
-        \njournal={International Conference on Learning Representations},\
-        \nyear={2018},\
-        \nnote={under review}\
-    \n}'
-
-
 if args.type == 'submissions':
     blind_submissions = client.get_notes(invitation=config.BLIND_SUBMISSION)
 
+    decisions_by_forum = {n.forum: n for n in client.get_notes(
+            invitation='ICLR.cc/2018/Conference/-/Acceptance_Decision')}
+
     for b in blind_submissions:
+        print "{0} note {1}".format('Revealing' if args.show and not args.hide else 'Hiding', b.id)
+
         original_note = client.get_note(b.original)
+
+        decision_note = decisions_by_forum.get(b.forum, None)
+
+        if 'Reject' in decision_note.content['decision']:
+            accepted = False
+
+        if 'Invite to Workshop Track' in decision_note.content['decision']:
+            accepted = False
+
+        if 'Accept' in decision_note.content['decision']:
+            accepted = True
 
         overwriting_note = openreview.Note(**{
             'id': b.id,
@@ -48,11 +45,29 @@ if args.type == 'submissions':
             'signatures': [config.CONF],
             'writers': [config.CONF],
             'readers': ['everyone'],
-            'content': {'_bibtex': get_bibtex(original_note, (args.hide and not args.show))}
+            'content': {
+                '_bibtex': openreview.tools.get_bibtex(
+                    original_note,
+                    'International Conference on Learning Representations',
+                    '2018',
+                    url_forum=b.forum,
+                    accepted=accepted,
+                    anonymous=(args.hide and not args.show))
+                }
         })
 
-        print "{0} note {1}".format('Revealing' if args.show and not args.hide else 'Hiding', overwriting_note.id)
         client.post_note(overwriting_note)
+
+if args.type == 'decisions':
+    decisions = client.get_notes(invitation='ICLR.cc/2018/Conference/-/Acceptance_Decision')
+
+    for n in decisions:
+        if args.show and not args.hide:
+            n.readers = ['everyone']
+        else:
+            n.readers = ['ICLR.cc/2018/Conference']
+        client.post_note(n)
+        print "{0} note {1}".format('Revealing' if args.show and not args.hide else 'Hiding', n.id)
 
 if args.type == 'reviews':
     review_invitations = client.get_invitations(regex = config.CONF + '/-/Paper.*/Official_Review')

@@ -66,13 +66,11 @@ def load_profile_info(profile, profile_info):
 if args.paper_number != None:
 
     paper_number = args.paper_number
-    notes = openreview.get_notes(invitation = 'ICLR.cc/2018/Conference/-/Blind_Submission', number = paper_number)
+    notes = openreview.get_notes(invitation = 'ICLR.cc/2018/Workshop/-/Submission', number = paper_number)
 
     if len(notes) > 0:
         note = notes[0]
-        reviewers = openreview.get_group('ICLR.cc/2018/Conference/Paper' + str(note.number) + '/Reviewers');
-        area_chairs = openreview.get_groups('ICLR.cc/2018/Conference/Paper' + str(note.number) + '/Area_Chair')
-        print "Area Chair: {0}".format(area_chairs[0].members[0])
+        reviewers = openreview.get_group('ICLR.cc/2018/Workshop/Paper' + str(note.number) + '/Reviewers');
         print "Reviewers: {0}".format(reviewers.members)
 
     else:
@@ -82,7 +80,7 @@ if args.user != None:
 
     user = args.user
     try:
-        reviewers = openreview.get_groups(member = user, regex = 'ICLR.cc/2018/Conference/Paper[0-9]+/Reviewers')
+        reviewers = openreview.get_groups(member = user, regex = 'ICLR.cc/2018/Workshop/Paper[0-9]+/Reviewers')
 
         if len(reviewers):
             for reviewer in reviewers:
@@ -100,8 +98,8 @@ if args.all != None:
 
         csvwriter = csv.writer(outfile, delimiter=',')
 
-        notes = openreview.get_notes(invitation = 'ICLR.cc/2018/Conference/-/Blind_Submission')
-        assignments = openreview.get_groups(id = 'ICLR.cc/2018/Conference/Paper.*/Reviewers')
+        notes = openreview.get_notes(invitation = 'ICLR.cc/2018/Workshop/-/Submission')
+        assignments = openreview.get_groups(id = 'ICLR.cc/2018/Workshop/Paper.*/Reviewers')
 
         assignments_by_paper = {}
         for a in assignments:
@@ -129,9 +127,9 @@ if args.papers:
 
         csvwriter = csv.writer(outfile, delimiter=',')
 
-        notes = openreview.get_notes(invitation='ICLR.cc/2018/Conference/-/Blind_Submission')
-        assignments = openreview.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Reviewers')
-        area_chairs = openreview.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Area_Chair')
+        notes = openreview.get_notes(invitation='ICLR.cc/2018/Workshop/-/Submission')
+        assignments = openreview.get_groups(id='ICLR.cc/2018/Workshop/Paper.*/Reviewers')
+        area_chairs = openreview.get_groups(id='ICLR.cc/2018/Workshop/Paper.*/Area_Chair')
 
         assignments_by_paper = {}
         for a in assignments:
@@ -174,9 +172,9 @@ if args.reviewers:
 
         csvwriter = csv.writer(outfile, delimiter=',')
 
-        notes = openreview.get_notes(invitation='ICLR.cc/2018/Conference/-/Blind_Submission')
-        assignments = openreview.get_groups(id='ICLR.cc/2018/Conference/Paper.*/Reviewers')
-        all_reviewers = openreview.get_group(id = 'ICLR.cc/2018/Conference/Reviewers')
+        notes = openreview.get_notes(invitation='ICLR.cc/2018/Workshop/-/Submission')
+        assignments = openreview.get_groups(id='ICLR.cc/2018/Workshop/Paper.*/Reviewers')
+        all_reviewers = openreview.get_group(id = 'ICLR.cc/2018/Workshop/Reviewers')
 
         papers_by_reviewer = {}
         for reviewer in all_reviewers.members:
@@ -203,7 +201,7 @@ if args.reviewers:
 if args.info:
 
     # get list of all reviewers
-    reviewer_groups = openreview.get_groups(id='ICLR.cc/2018/Conference/-/Paper.*/Reviewers')
+    reviewer_groups = openreview.get_groups(id='ICLR.cc/2018/Workshop/-/Paper.*/Reviewers')
     reviewers = []
     for group in reviewer_groups:
         reviewers.extend(group.members)

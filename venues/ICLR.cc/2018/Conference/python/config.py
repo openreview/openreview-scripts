@@ -494,6 +494,56 @@ meta_review_params = {
 };
 
 """
+/-/Acceptance_Decision
+"""
+acceptance_decision_params = {
+    'readers': ['everyone'],
+    'writers': [CONF],
+    'invitees': [],
+    'signatures': [CONF],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': BLIND_SUBMISSION,
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'value-dropdown': ['ICLR.cc/2018/Conference/Program_Chairs', 'everyone']
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values': [PROGRAM_CHAIRS]
+        },
+        'writers': {
+            'values': [PROGRAM_CHAIRS]
+        },
+        'content': {
+            'title': {
+                'order': 1,
+                'value': 'ICLR 2018 Conference Acceptance Decision',
+                'required': True
+            },
+            'decision': {
+                'order': 2,
+                'value-dropdown': [
+                    'Accept (Oral)',
+                    'Accept (Poster)',
+                    'Reject',
+                    'Invite to Workshop Track'
+                ],
+                'required': True
+            },
+            'comment': {
+                'order': 3,
+                'value-regex': '[\\S\\s]{0,5000}',
+                'description': '(optional) Comment on this decision.',
+                'required': False
+            },
+        }
+    }
+}
+
+
+"""
 /-/Paper[0-9]+/Withdraw_Paper
 
 This is the invitation for paper withdrawals.

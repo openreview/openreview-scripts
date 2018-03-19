@@ -39,7 +39,7 @@ invitation_configurations = {
         'byPaper': True,
         'byForum': True,
         'invitees': ['~'],
-        'noninvitees': [maskAuthorsGroup, maskReviewerGroup],
+        'noninvitees': [maskReviewerGroup],
         'params': config.public_comment_params
     },
     'Official_Comment': {
@@ -64,6 +64,12 @@ invitation_configurations = {
         'invitees': [config.PROGRAM_CHAIRS],
         'signatures': [config.PROGRAM_CHAIRS],
         'params': config.meta_review_params
+    },
+    'Acceptance_Decision': {
+        'byPaper': False,
+        'byForum': False,
+        'params': config.acceptance_decision_params,
+        'invitees': [config.PROGRAM_CHAIRS]
     },
     'Add_Bid': {
         'tags': True,

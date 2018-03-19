@@ -9,6 +9,7 @@
 var CONFERENCE = 'ICLR.cc/2018/Workshop';
 var PROGRAM_CHAIRS = CONFERENCE + '/Program_Chairs'
 var INVITATION = CONFERENCE + '/-/Submission';
+var TRANSFER_FROM_CONFERENCE = CONFERENCE + '/-/Transfer_from_Conference';
 var WITHDRAWN_INVITATION = CONFERENCE + '/-/Withdrawn_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
@@ -37,7 +38,8 @@ function main() {
 
   renderConferenceHeader();
 
-  renderSubmissionButton();
+  // renderTransferButton();
+  // renderSubmissionButton();
 
   renderConferenceTabs();
 
@@ -124,16 +126,15 @@ function renderConferenceHeader() {
       <p><strong>Posting Revisions to Submissions:</strong><br>\
       To post a revision to your paper, navigate to the paper version, and click on the "Add Revision" button if available. \
       Revisions are not allowed during the formal review process.</p>\
-      <p><strong>A Note to Reviewers about Bidding:</strong><br> \
-      To access the bidding interface, please ensure that your profile is linked to the email address where you received your initial reviewer invitation email. \
-      To do this, click on your name at the top right corner of the page, go to your Profile, enter "edit mode," and add your email address. \
-      You will also need to confirm your address by pressing the "Confirm" button. This will involve a round-trip email verification.</p>\
+      <p><strong>UPDATED: A Note to Reviewers about Bidding:</strong><br> \
+      The ICLR 2018 Workshop track will not be asking reviewers to bid on papers.\
+      Assignments will be made with scores TPMS. Please ensure that your TPMS account is up-to-date.</p>\
       <p><strong>Questions or Concerns:</strong><br> \
       Please contact the OpenReview support team at \
       <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
       Please contact the ICLR 2018 Program Chairs at \
       <a href="mailto:iclr2018.programchairs@gmail.com">iclr2018.programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
-    deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
+    deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, Feb 12, 2018'
   });
 
   Webfield.ui.spinner('#notes');
@@ -153,6 +154,22 @@ function renderSubmissionButton() {
         }
       });
     });
+}
+
+function renderTransferButton(){
+  Webfield.api.getSubmissionInvitation(TRANSFER_FROM_CONFERENCE, {deadlineBuffer: BUFFER})
+  .then(function(invitation) {
+    Webfield.ui.submissionButton(invitation, user, {
+      onNoteCreated: function() {
+        // Callback funtion to be run when a paper has successfully been submitted (required)
+        promptMessage('Your submission to ICLR 2018 Workshop Track is complete. The list of all current submissions is shown below.');
+
+        load().then(renderContent).then(function() {
+          $('.tabs-container a[href="#all-submitted-papers"]').click();
+        });
+      }
+    });
+  });
 }
 
 function renderConferenceTabs() {
@@ -203,7 +220,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     if (!_.isNil(note.ddate)) {
       return;
     }
-    if (!_.includes([INVITATION, RECRUIT_REVIEWERS, WITHDRAWN_INVITATION], note.invitation)) {
+    if (!_.includes([INVITATION, RECRUIT_REVIEWERS, WITHDRAWN_INVITATION, TRANSFER_FROM_CONFERENCE], note.invitation)) {
       // ICLR specific: Not all conferences will have the withdrawn invitation
       commentNotes.push(note);
     }

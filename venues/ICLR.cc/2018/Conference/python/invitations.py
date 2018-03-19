@@ -72,6 +72,12 @@ invitation_configurations = {
         'params': config.meta_review_params,
         'nonreaders': [maskAuthorsGroup]
     },
+    'Acceptance_Decision': {
+        'byPaper': False,
+        'byForum': False,
+        'params': config.acceptance_decision_params,
+        'invitees': []
+    },
     'Add_Bid': {
         'tags': True,
         'byPaper': False,
