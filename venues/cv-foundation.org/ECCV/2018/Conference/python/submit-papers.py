@@ -12,7 +12,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 def create_cv_note(title, abstract, authors, authorids, subject_areas, paper_id):
     return openreview.Note(**{
-            'readers': ['everyone'],
+            'readers': ['cv-foundation.org/ECCV/2018/Conference/Program_Chairs'],
             'writers': [],
             'signatures': ['~Super_User1'],
             'nonreaders': [],
