@@ -63,7 +63,9 @@ def conflict(forum, user_id):
     try:
         paper = papers_by_forum[forum]
         profile = profiles_by_id[user_id]
-        return openreview.matching.get_conflicts(client.get_profiles(paper.content['authorids']), profile)
+        author_profiles = {authorid: None for authorid in paper.content['authorids']}
+        author_profiles.update(client.get_profiles(paper.content['authorids']))
+        return openreview.matching.get_conflicts(author_profiles, profile)
     except KeyError as e:
         print "conflict error!"
         print 'forum: ', forum
