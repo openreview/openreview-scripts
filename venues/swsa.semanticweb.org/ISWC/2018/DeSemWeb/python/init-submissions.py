@@ -88,7 +88,7 @@ submission_inv = invitations.Submission(
             "description": "Select a submission category",
             "value-radio": [
                 "Research Article",
-                "Intelligent Client Challenge / Demo",
+                "Decentralized Application",
                 "Vision Statement"
             ]
         },
