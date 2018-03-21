@@ -10,6 +10,9 @@ import openreview_matcher
 
 # Argument handling
 parser = argparse.ArgumentParser()
+parser.add_argument('--label', required=True)
+parser.add_argument('-p', '--paperlimits', nargs=2, required=True, help='Enter two integers: the first should be the minimum number of papers per user, and the second should be the maximum.')
+parser.add_argument('-u', '--userlimits', nargs=2, required=True, help='Enter two integers: the first should be the minimum number of users per paper, and the second should be the maximum.')
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--baseurl', help="base URL")
@@ -17,7 +20,15 @@ args = parser.parse_args()
 
 client = openreview.Client(username=args.username, password=args.password, baseurl=args.baseurl)
 
-label = 'areachairs'
+print("connecting to {}".format(client.baseurl))
+
+label = args.label
+minusers, maxusers = [int(limitstring) for limitstring in args.userlimits]
+minpapers, maxpapers = [int(limitstring) for limitstring in args.paperlimits]
+
+print("matching with the following parameters: ")
+print("Min/Max users: {}/{}".format(minusers, maxusers))
+print("Min/Max papers: {}/{}".format(minpapers, maxpapers))
 
 config_by_label = {n.content['label']: n.to_json() for n in client.get_notes(invitation='cv-foundation.org/ECCV/2018/Conference/-/Assignment_Configuration')}
 
@@ -38,10 +49,10 @@ configuration_note_params.update({
     'content': {
         'label': label,
         'configuration': {
-            'minusers': 1,
-            'maxusers': 1,
-            'minpapers': 1,
-            'maxpapers': 30,
+            'minusers': minusers,
+            'maxusers': maxusers,
+            'minpapers': minpapers,
+            'maxpapers': maxpapers,
             'weights': {
                 'tpms_score': 1,
                 'conflict_score': 1
@@ -151,5 +162,4 @@ for forum, assignment in new_assignments_by_forum.iteritems():
 
 configuration_note_params['content']['status'] = 'complete'
 config_note = client.post_note(openreview.Note(**configuration_note_params))
-print('{}/reviewers?assignmentId={}'.format(client.baseurl, config_note.id))
-
+print('{}/assignments/browse?id={}'.format(client.baseurl, config_note.id))
