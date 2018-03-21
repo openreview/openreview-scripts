@@ -40,6 +40,17 @@ for g in groups:
     print "posting group {0}".format(g.id)
     client.post_group(g)
 
+
+
+pc_params = {
+    'readers': [js_constants['CONFERENCE'], js_constants['PROGRAM_CHAIRS']],
+    'writers': [js_constants['CONFERENCE']],
+    'signatures': [u'~Super_User1'],
+    'signatories': [js_constants['CONFERENCE'], js_constants['PROGRAM_CHAIRS']],
+    'members': []
+}
+client.post_group(openreview.Group(js_constants['PROGRAM_CHAIRS'], **pc_params))
+
 '''
 Create a submission invitation (a call for papers).
 '''
@@ -85,22 +96,18 @@ print "posted invitation", blind_inv.id
 Create the homepage and add it to the conference group.
 '''
 instructions = ' '.join([
-    '<p><strong>Important Information about Anonymity:</strong><br>',
-    'When you post a submission to Intelligent Transportation Systems 2018,',
-    'please provide the real names and email addresses of authors',
-    'in the submission form below (but NOT in the manuscript).',
+
+    '<p>When you post your submission, the pdf should <strong>not</strong> contain the names of the authors. ',
+    'Please provide real names and email addresses of authors in the form.',
+    'An anonymous record of your paper will be visible to the public.<br>',
     'The <em>original</em> record of your submission will be private,',
     'and will contain your real name(s).',
-    'Originals can be found in the "My Submitted Papers" tab below.',
-    'Discussion forum pages for the anonymous versions of your paper can be found in the "My Papers Under Review" tab.',
-    'You can also access the original record of your paper',
-    'by clicking the "Modifiable Original" link in the discussion forum page of your paper.',
-    'The PDF in your submission should not contain the names of the authors. </p>',
-    '',
-    '<p><strong>Conflict of Interest:</strong><br>',
-    'Please make sure that your current and previous affiliations listed on your',
-    'OpenReview <a href="/profile">profile page</a> is up-to-date to avoid conflict of interest.</p>',
-    '',
+    'Originals can be found in your OpenReview Tasks page or through the "Original" link',
+    'in the discussion forum page of your paper.<br></p>',
+    '<p><strong>To Edit Submissions:</strong><br>',
+    'To edit your paper, navigate to the original version, and click on the edit button if available. ',
+    'Edits are not allowed during the formal review process.',
+    'Edits to the originals propagate all changes to anonymous copies, while maintaining anonymity.</p>',
     '<p><strong>Questions or Concerns:</strong><br>',
     'Please contact the OpenReview support team at',
     '<a href="mailto:info@openreview.net">info@openreview.net</a>',
