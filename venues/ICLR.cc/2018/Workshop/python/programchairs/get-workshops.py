@@ -92,6 +92,9 @@ def main():
             worksheet.append(row)
 
     workbook.save('ICLR_workshops.xlsx')
+    from pdb import set_trace as debug
+    for email, info in profile_info.iteritems(): 
+        print u"{0} {1} <{2}>".format(info.get("firstname"), info.get("lastname"), email) if info else email
 
 if __name__ == "__main__":
     main()
