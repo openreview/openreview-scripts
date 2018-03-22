@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Dump xlsx file of accepted workshop papers
+Dump xlsx file of accepted workshop papers. Delete profile_info.pickle to force script to re-pull profile information. 
 """
 
 __author__  = "Lee Campbell <leetncamp@gmail.com>, <lee@salk.edu>"
@@ -9,12 +9,11 @@ __author__  = "Lee Campbell <leetncamp@gmail.com>, <lee@salk.edu>"
 import argparse
 import openreview
 import openpyxl
+from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 import requests
 import datetime
 import pickle
 import os
-from pdb import set_trace as debug
-import traceback
 
 year = datetime.datetime.now().year
 
@@ -23,6 +22,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
+parser.add_argument('--no-profile', action="store_true", help="load profile_information from a stored previous run of this script.  Makes the script faster when debugging.")
 args = parser.parse_args()
 
 # load in all acceptance decisions
@@ -41,7 +41,7 @@ def main():
     authors = set()
     [authors.update(note.content.get("authorids")) for note in submissions if note.forum in decision_info]
 
-    if os.path.exists('profile_info.pickle'):
+    if os.path.exists('profile_info.pickle') and args.no_profile:
         profile_info = pickle.load(open("profile_info.pickle"))
     else:
         profile_info = {}
@@ -76,24 +76,21 @@ def main():
 
     for note in submissions:
         if note.forum in decision_info:
-            try:
-                row = [note.forum, note.number, note.content['title'], None, "Accept(Workshop)", None, None, None, note.content['abstract'],
-                    note.content['pdf'], None, None, len(note.content['authorids'])]
-        
-                for author in note.content['authorids']:
-                    profile = profile_info.get(author)
-                    if profile:
-                        row.extend([profile.get('lastname'), profile.get('middleinitial'), profile.get('firstname'), profile.get('email'), 
-                            profile.get('institution'), None])
-                    else:
-                        # skip names
-                        row.extend([None, None, None, author, None, None])
-                worksheet.append(row)
-            except Exception as e:
-                print traceback.format_exc()
-                print row
-                row[8]=row[8].replace("\x02", "")  #One 2018 paper has an illegal character and openpyxl requires that it be removed. 
-                worksheet.append(row)
+
+            row = [note.forum, note.number, note.content['title'], None, "Accept(Workshop)", None, None, None, note.content['abstract'],
+                note.content['pdf'], None, None, len(note.content['authorids'])]
+    
+            for author in note.content['authorids']:
+                profile = profile_info.get(author)
+                if profile:
+                    row.extend([profile.get('lastname'), profile.get('middleinitial'), profile.get('firstname'), profile.get('email'), 
+                        profile.get('institution'), None])
+                else:
+                    # skip names
+                    row.extend([None, None, None, author, None, None])
+            #remove characters that Excel deems illegal.  
+            row = [ILLEGAL_CHARACTERS_RE.sub("", item) if type(item) == type(u"") else item for item in row ]
+            worksheet.append(row)
 
     workbook.save('ICLR_workshops.xlsx')
 
