@@ -17,7 +17,6 @@ import os
 
 year = datetime.datetime.now().year
 
-## Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
@@ -25,14 +24,15 @@ parser.add_argument('--password')
 parser.add_argument('--no-profile', action="store_true", help="load profile_information from a stored previous run of this script.  Makes the script faster when debugging.")
 args = parser.parse_args()
 
-# load in all acceptance decisions
+
 def load_decisions(client):
+    """Load in all acceptance decisions"""
     decisions = client.get_notes(invitation='ICLR.cc/{0}/Workshop/-/Acceptance_Decision'.format(year))
     dec_info = {decision.forum if decision.content['decision'].startswith('Accept') else None: decision.content['decision'] for decision in decisions}
     return dec_info
 
 def main():
-    ## Initialize the client library with username and password
+    """Initialize the client library with username and password"""
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     submissions = client.get_notes(invitation='ICLR.cc/{0}/Workshop/-/Submission'.format(year))
     decision_info = load_decisions(client)
@@ -41,7 +41,7 @@ def main():
     authors = set()
     [authors.update(note.content.get("authorids")) for note in submissions if note.forum in decision_info]
 
-    if os.path.exists('profile_info.pickle') and args.no_profile:
+    if os.path.exists('profile_info.pickle') and args.no_profile:  #get profile_info either from a previously written pickle or not.
         profile_info = pickle.load(open("profile_info.pickle"))
     else:
         profile_info = {}
@@ -65,7 +65,6 @@ def main():
             print
         pickle.dump(profile_info, file("profile_info.pickle", 'wb'))
 
-    # Create a workbook and add a worksheet.
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
 
