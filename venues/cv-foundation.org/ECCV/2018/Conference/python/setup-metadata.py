@@ -35,7 +35,6 @@ profiles_by_id = {profile.id: profile for profile in client.get_profiles(all_use
 
 #Load scores
 tpms_scores = {}
-all_emails = set()
 with open(os.path.join(os.path.dirname(__file__),'../data/areachairs_scores.csv')) as f:
     reader = csv.reader(f)
     reader.next()
@@ -51,31 +50,32 @@ with open(os.path.join(os.path.dirname(__file__),'../data/areachairs_scores.csv'
         forum = forum_by_paperId.get(paperId, 0)
 
         scores_by_email[email][forum] = float(score)
-        all_emails.add(email)
 
     #translate emails to ids
-    profiles_by_email = client.get_profiles(list(all_emails))
-
     for k,v in scores_by_email.iteritems():
-
-        if k in profiles_by_email:
-            tpms_scores[profiles_by_email[k].id] = v
+        profiles = client.get_profiles([k])
+        if profiles:
+            tpms_scores[profiles[k].id] = v
+        else:
+            'Profile not found', k
 
 def conflict(forum, user_id):
     try:
         paper = papers_by_forum[forum]
         profile = profiles_by_id[user_id]
-        conflicts = openreview.matching.get_conflicts(client.get_profiles(paper.content['authorids']), profile)
-        if conflicts:
-            return '-inf'
-        return 0
+        author_profiles = {authorid: None for authorid in paper.content['authorids']}
+        author_profiles.update(client.get_profiles(paper.content['authorids']))
+        return openreview.matching.get_conflicts(author_profiles, profile)
     except KeyError as e:
         print "conflict error!"
         print 'forum: ', forum
-        return 0.0
+        return []
 
 def tpms(forum, user_id):
-    return tpms_scores.get(user_id, {}).get(forum, 0)
+    if forum in tpms_scores[user_id]:
+        return tpms_scores[user_id][forum]
+    else:
+        print 'Score not found', forum, user_id
 
 
 def metadata(forum, groups):
@@ -99,14 +99,13 @@ def metadata(forum, groups):
             if '~' in user_id:
                 user_entry = {'userId': user_id, 'scores': {}}
                 tpms_score = tpms(forum, user_id)
-                conflict_score = conflict(forum, user_id)
+                conflicts = conflict(forum, user_id)
 
-                if conflict_score == '-inf':
-                    user_entry['scores']['conflict_score'] = conflict_score
+                if conflicts:
+                    user_entry['scores']['conflict_score'] = '-inf'
+                    user_entry['conflicts'] = conflicts
                 if tpms_score > 0:
                     user_entry['scores']['tpms_score'] = tpms_score
-                else:
-                    print('zero', forum, user_id)
 
                 group_entry.append(user_entry)
 

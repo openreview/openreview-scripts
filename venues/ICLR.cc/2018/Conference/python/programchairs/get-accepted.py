@@ -130,6 +130,7 @@ def main():
                     except openreview.OpenReviewException as e:
                         # cannot find author_id in profile notes
                         e =1
+
                 if author in profile_info:
                     worksheet.write(row, col, profile_info[author]['last'])
                     col += 1

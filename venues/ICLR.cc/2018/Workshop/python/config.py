@@ -572,7 +572,6 @@ add_revision_params = {
     'writers': [CONF],
     'invitees': [], # set during submission process function; replaced in invitations.py
     'signatures': [CONF],
-    'process': os.path.abspath(os.path.join(os.path.dirname(__file__), '../process/addRevisionProcess.js')),
     'reply': {
         'forum': None,
         'referent': None,
