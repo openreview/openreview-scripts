@@ -28,9 +28,9 @@ metadata_notes = client.get_notes(invitation='auai.org/UAI/2018/-/Paper_Metadata
 def update_recommendation_score(metadata_note):
 
     user_scores = metadata_note.content['groups']['auai.org/UAI/2018/Program_Committee']
-    recommendations = recommendations_by_forum.get(metadata_note.forum, [])
+    recommendations = [e.tag for e in recommendations_by_forum.get(metadata_note.forum, [])]
 
-    rank_score_map = [ 50.0*(1.0 - i/len(recommendations)) for i in range(len(recommendations)) ]
+    rank_score_map = [ 50.0 for i in range(len(recommendations)) ]
     '''
     rank_score_map
 
@@ -38,19 +38,16 @@ def update_recommendation_score(metadata_note):
     list (its "rank") and a "recommendation score" for the reviewer and that paper.
     '''
 
-    for rank, entry in enumerate(recommendations):
-        userid = entry.tag
-        for entry in user_scores:
-            if entry['userId'] == userid:
-                print entry['userId'], userid
-                entry['scores']['recommendation-score'] = float(rank_score_map[rank])
+    for rank, userid in enumerate(recommendations):
+        for metadata_entry in user_scores:
+            if metadata_entry['userId'] in recommendations:
+                metadata_entry['scores']['recommendation_score'] = float(rank_score_map[rank])
             else:
-                entry['scores'].pop('recommendation_score', None)
+                metadata_entry['scores'].pop('recommendation_score', None)
 
     return metadata_note
 
 for m in metadata_notes:
-    #Area chairs
     m = update_recommendation_score(m)
     client.post_note(m)
 
