@@ -26,8 +26,6 @@ if __name__ == "__main__":
         paper = papers_by_forum[assignment.forum]
 
         for entry in assignment_entries:
-            entry['userId']
-
             openreview.tools.assign(client, paper.number, 'auai.org/UAI/2018',
                 parent_group_params = {},
                 reviewer_to_add = entry['userId'].encode('utf-8'),
