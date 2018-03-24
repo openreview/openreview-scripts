@@ -98,7 +98,7 @@ def get_paper_scores(forum_id):
     else:
         return []
 
-def weight_scores(group_scores, weigths):
+def weight_scores(group_scores, weights):
     group_weighted_scores = []
 
     for g in group_scores:
@@ -106,11 +106,12 @@ def weight_scores(group_scores, weigths):
         final_score = 0
         count = 0
         for name, value in g['scores'].iteritems():
-            weighted_score = value * weigths.get(name, 0)
-            weighted_scores[name] = weighted_score
+            if value != '-inf' and value != '+inf':
+                weighted_score = value * weights.get(name, 0)
+                weighted_scores[name] = weighted_score
 
-            final_score += weighted_score
-            count += 1
+                final_score += weighted_score
+                count += 1
 
         group_weighted_scores.append({
             'userId': g['userId'],
@@ -120,18 +121,18 @@ def weight_scores(group_scores, weigths):
 
     return group_weighted_scores
 
-def get_assigned_groups(scores, weigths, assignment):
+def get_assigned_groups(scores, weights, assignment):
     group_scores = [s for s in scores if s['userId'] in assignment]
-    return weight_scores(group_scores, weigths)
+    return weight_scores(group_scores, weights)
 
 
-def get_alternate_groups(scores, weigths, assignment, alternate_count):
+def get_alternate_groups(scores, weights, assignment, alternate_count):
 
     def getKey(item):
         return item.get('finalScore', 0)
 
     alternates = [s for s in scores if s['userId'] not in assignment and s['scores'].get('conflict_score', 0) != '-inf']
-    sorted_alternates = sorted(weight_scores(alternates, weigths), key=getKey, reverse=True)
+    sorted_alternates = sorted(weight_scores(alternates, weights), key=getKey, reverse=True)
     return sorted_alternates[:alternate_count]
 
 existing_assignments = openreview.tools.get_all_notes(client, 'auai.org/UAI/2018/-/Paper_Assignment')
@@ -144,9 +145,9 @@ for forum, assignment in new_assignments_by_forum.iteritems():
     new_content['assignment'] = assignment
 
     scores = get_paper_scores(forum)
-    weigths = configuration_note_params['content']['configuration']['weights']
-    new_content['assignedGroups'] = get_assigned_groups(scores, weigths, assignment)
-    new_content['alternateGroups'] = get_alternate_groups(scores, weigths, assignment, 5) # 5 could be in the configuration
+    weights = configuration_note_params['content']['configuration']['weights']
+    new_content['assignedGroups'] = get_assigned_groups(scores, weights, assignment)
+    new_content['alternateGroups'] = get_alternate_groups(scores, weights, assignment, 5) # 5 could be in the configuration
 
     assignment_note.content = new_content
     assignment_note = client.post_note(assignment_note)
