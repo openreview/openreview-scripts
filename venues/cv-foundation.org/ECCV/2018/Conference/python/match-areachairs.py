@@ -11,6 +11,7 @@ import openreview_matcher
 # Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('--label', required=True)
+parser.add_argument('--number')
 parser.add_argument('-p', '--paperlimits', nargs=2, required=True, help='Enter two integers: the first should be the minimum number of papers per user, and the second should be the maximum.')
 parser.add_argument('-u', '--userlimits', nargs=2, required=True, help='Enter two integers: the first should be the minimum number of users per paper, and the second should be the maximum.')
 parser.add_argument('--username')
@@ -30,15 +31,19 @@ print("matching with the following parameters: ")
 print("Min/Max users: {}/{}".format(minusers, maxusers))
 print("Min/Max papers: {}/{}".format(minpapers, maxpapers))
 
-config_by_label = {n.content['label']: n.to_json() for n in client.get_notes(invitation='cv-foundation.org/ECCV/2018/Conference/-/Assignment_Configuration')}
+if args.number:
+    config_notes = client.get_notes(
+        invitation='cv-foundation.org/ECCV/2018/Conference/-/Assignment_Configuration',
+        number=args.number)
+else:
+    config_notes = client.get_notes(
+        invitation='cv-foundation.org/ECCV/2018/Conference/-/Assignment_Configuration')
 
-configuration_note_params = config_by_label.get(label, {})
-
-user_constraints = configuration_note_params.get('content', {}).get('constraints', {})
+config_by_label = {n.content['label']: n.to_json() for n in config_notes}
 
 # post the configuration note. in the future, this note will be posted through the UI.
 
-configuration_note_params.update({
+configuration_note_params = {
     'invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Assignment_Configuration',
     'readers': [
         'cv-foundation.org/ECCV/2018/Conference',
@@ -53,6 +58,7 @@ configuration_note_params.update({
             'maxusers': maxusers,
             'minpapers': minpapers,
             'maxpapers': maxpapers,
+            'alternates': 5,
             'weights': {
                 'tpms_score': 1,
                 'conflict_score': 1
@@ -63,103 +69,24 @@ configuration_note_params.update({
         'metadata_invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Metadata',
         'assignment_invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment',
         'match_group': 'cv-foundation.org/ECCV/2018/Conference/Area_Chairs',
-        'status': 'queued' # 'queued', 'processing', 'complete' or 'error'
+        'status': 'complete' # 'queued', 'processing', 'complete' or 'error'
     }
-})
+}
 
-configuration_note_params['content']['constraints'] = user_constraints
+if args.number:
+    config_note = openreview.matching.create_or_update_config(client, label, configuration_note_params, number=args.number)
+else:
+    config_note = openreview.matching.create_or_update_config(client, label, configuration_note_params, number=args.number)
 
-# ultimately, we'll set up a process function that executes the following code
-# automatically when the configuration note is posted. for now, we will do this
-# manually.
+print(config_note.id)
+print("config note constraints")
+for k,v in config_note.content['constraints'].iteritems():
+    print(k,v)
 
-# get the already-posted configuration note
+posted_config = client.post_note(config_note)
 
-papers = openreview.tools.get_all_notes(client, configuration_note_params['content']['paper_invitation'])
-paper_metadata = openreview.tools.get_all_notes(client, configuration_note_params['content']['metadata_invitation'])
-match_group = client.get_group(id = configuration_note_params['content']['match_group'])
-reviewer_configuration = configuration_note_params['content']['configuration']
+assignments = openreview.matching.match(client, posted_config, openreview_matcher.Solver)
 
-new_assignments_by_forum = openreview_matcher.match(reviewer_configuration,
-    papers = papers, metadata = paper_metadata, group = match_group, constraints = user_constraints)
-
-def create_assignment_note(forum, label):
-    return openreview.Note(**{
-        'forum': forum,
-        'invitation': configuration_note_params['content']['assignment_invitation'],
-        'readers': [
-            'cv-foundation.org/ECCV/2018/Conference',
-            'cv-foundation.org/ECCV/2018/Conference/Program_Chairs'
-        ],
-        'writers': ['cv-foundation.org/ECCV/2018/Conference'],
-        'signatures': ['cv-foundation.org/ECCV/2018/Conference'],
-        'content': {
-            'label': label
-        }
-    })
-
-def get_paper_scores(forum_id):
-    papers = [p for p in paper_metadata if p.forum == forum_id]
-
-    if papers:
-        return papers[0].content['groups'][configuration_note_params['content']['match_group']]
-    else:
-        return []
-
-def weight_scores(group_scores, weigths):
-    group_weighted_scores = []
-
-    for g in group_scores:
-        weighted_scores = {}
-        final_score = 0
-        count = 0
-        for name, value in g['scores'].iteritems():
-            weighted_score = value * weigths.get(name, 0)
-            weighted_scores[name] = weighted_score
-
-            final_score += weighted_score
-            count += 1
-
-        group_weighted_scores.append({
-            'userId': g['userId'],
-            'finalScore': final_score / count if count > 0 else 0,
-            'scores': weighted_scores
-        })
-
-    return group_weighted_scores
-
-def get_assigned_groups(scores, weigths, assignment):
-    group_scores = [s for s in scores if s['userId'] in assignment]
-    return weight_scores(group_scores, weigths)
-
-
-def get_alternate_groups(scores, weigths, assignment, alternate_count):
-
-    def getKey(item):
-        return item.get('finalScore', 0)
-
-    alternates = [s for s in scores if s['userId'] not in assignment and s['scores'].get('conflict_score', 0) != '-inf']
-    sorted_alternates = sorted(weight_scores(alternates, weigths), key=getKey, reverse=True)
-    return sorted_alternates[:alternate_count]
-
-existing_assignments = openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment')
-existing_reviewer_assignments = {n.forum: n for n in existing_assignments if n.content['label'] == label}
-
-for forum, assignment in new_assignments_by_forum.iteritems():
-    assignment_note = existing_reviewer_assignments.get(forum, create_assignment_note(forum, label))
-    new_content = {}
-    new_content['label'] = label
-    new_content['assignment'] = assignment
-
-    scores = get_paper_scores(forum)
-    weigths = configuration_note_params['content']['configuration']['weights']
-    new_content['assignedGroups'] = get_assigned_groups(scores, weigths, assignment)
-    new_content['alternateGroups'] = get_alternate_groups(scores, weigths, assignment, 5) # 5 could be in the configuration
-
-    assignment_note.content = new_content
-    assignment_note = client.post_note(assignment_note)
-    print('Paper{0: <6}'.format(assignment_note.number), ', '.join(assignment))
-
-configuration_note_params['content']['status'] = 'complete'
-config_note = client.post_note(openreview.Note(**configuration_note_params))
-print('{}/assignments/browse?id={}'.format(client.baseurl, config_note.id))
+for n in assignments:
+    print("posting assignment for ", n.forum, label)
+    client.post_note(n)

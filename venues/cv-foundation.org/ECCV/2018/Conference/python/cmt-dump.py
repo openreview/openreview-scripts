@@ -65,4 +65,10 @@ for paper in papers:
 indent(root)
 tree = ET.ElementTree(root)
 print "writing {}".format(args.outfile)
-tree.write(args.outfile)
+
+with open(args.outfile, 'w') as f:
+    f.write('<?xml version="1.0"?>\n')
+    f.write(ET.tostring(root))
+
+#tree.write(args.outfile)
+
