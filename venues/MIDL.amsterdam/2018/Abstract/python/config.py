@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, os
-
+import datetime
 """
 GROUPS
 
@@ -16,6 +16,8 @@ Example:
     --> my.conference/2017/Program_Chairs
 
 """
+def timestamp_GMT(year, month, day, hour=0, minute=0, second=0):
+    return int((datetime.datetime(year, month, day, hour, minute, second) - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
 
 CONFERENCE_ID = 'MIDL.amsterdam/2018/Abstract'
 ADMIN = CONFERENCE_ID + '/Admin'
@@ -23,7 +25,7 @@ PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
 AREA_CHAIRS = CONFERENCE_ID + '/Area_Chairs'
 REVIEWERS = CONFERENCE_ID + '/Reviewers'
 SUBMISSION_TIMESTAMP = 1523483999000
-REVIEW_TIMESTAMP = 1523483999000
+REVIEW_TIMESTAMP = timestamp_GMT(2018,5, 9, 23, 0, 0)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
 """
@@ -97,7 +99,8 @@ review_params = {
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js')
+    'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
+    'duedate': REVIEW_TIMESTAMP
 }
 
 
@@ -161,7 +164,7 @@ submission_reply = {
         'author affiliation': {
             'description': 'Institution name(s) of the author(s)',
             'order': 10,
-            'value-regex': '.{0,250}',
+            'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
             'required': False
         }
     }
