@@ -1,6 +1,6 @@
 var SUBJECT_AREAS_LIST = [];
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
-var PAGE_SIZE = 50;
+var PAGE_SIZE = 400;
 var paperDisplayOptions = {
   pdfLink: true,
   replyCount: true,
