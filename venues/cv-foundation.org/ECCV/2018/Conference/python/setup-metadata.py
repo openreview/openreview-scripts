@@ -128,7 +128,7 @@ def metadata(forum, groups):
 print "getting existing metadata notes..."
 existing_notes_by_forum = {n.forum: n for n in openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Metadata')}
 
-print "posting paper metadata..."
+print "updating paper metadata..."
 for p in papers:
     if p.forum in existing_notes_by_forum:
         metadata_params = existing_notes_by_forum[p.forum].to_json()
