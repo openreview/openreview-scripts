@@ -5,6 +5,8 @@ import requests
 from collections import defaultdict
 import csv
 import os
+import json
+import pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
@@ -21,6 +23,7 @@ group_ids = [
 ]
 
 #Load Papers
+print "getting all submissions..."
 papers = openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Submission')
 papers_by_forum = {}
 forum_by_paperId = {}
@@ -28,12 +31,14 @@ for p in papers:
     papers_by_forum[p.forum] = p
     forum_by_paperId[p.content['paperId']] = p.forum
 
-#Load users
+#Load group profiles
+print "getting groups..."
 groups = [client.get_group(g) for g in group_ids]
 all_users = groups[0].members
 profiles_by_id = {profile.id: profile for profile in client.get_profiles(all_users)}
 
-#Load scores
+#Load TPMS scores
+print "loading tpms scores from file..."
 tpms_scores = {}
 with open(os.path.join(os.path.dirname(__file__),'../data/areachairs_scores.csv')) as f:
     reader = csv.reader(f)
@@ -59,12 +64,19 @@ with open(os.path.join(os.path.dirname(__file__),'../data/areachairs_scores.csv'
         else:
             'Profile not found', k
 
+#Load author profiles
+print "loading author profiles from file..."
+author_profiles_by_email = {}
+with open('../data/profiles.pkl', 'rb') as f:
+    author_profiles_by_email = pickle.load(f)
+
 def conflict(forum, user_id):
     try:
         paper = papers_by_forum[forum]
         profile = profiles_by_id[user_id]
-        author_profiles = {authorid: None for authorid in paper.content['authorids']}
-        author_profiles.update(client.get_profiles(paper.content['authorids']))
+        author_profiles = {}
+        for authorid in paper.content['authorids']:
+            author_profiles[authorid] = author_profiles_by_email.get(authorid, None)
         return openreview.matching.get_conflicts(author_profiles, profile)
     except KeyError as e:
         print "conflict error!"
@@ -113,10 +125,10 @@ def metadata(forum, groups):
 
     return metadata_params
 
+print "getting existing metadata notes..."
 existing_notes_by_forum = {n.forum: n for n in openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Metadata')}
 
-print "posting paper metadata..."
-
+print "updating paper metadata..."
 for p in papers:
     if p.forum in existing_notes_by_forum:
         metadata_params = existing_notes_by_forum[p.forum].to_json()
