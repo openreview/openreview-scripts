@@ -13,6 +13,7 @@ function(){
       var reviewers = ['auai.org/UAI/2018/Paper' + note_number + '/Reviewers'];
       var areachairs = ['auai.org/UAI/2018/Paper' + note_number + '/Area_Chairs'];
       var reviewersUnsubmittedId = 'auai.org/UAI/2018/Paper' + note_number + '/Reviewers/Unsubmitted';
+      var reviewersSubmittedId = 'auai.org/UAI/2018/Paper' + note_number + '/Reviewers/Submitted';
       var authors = forum.content.authorids;
 
       var author_mail = {
@@ -38,8 +39,8 @@ function(){
       var areachairMailP = or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
 
       var removeFromUnsubmittedP = or3client.removeGroupMember(reviewersUnsubmittedId, note.signatures[0], token);
-
-      return Promise.all([areachairMailP, authorMailP, removeFromUnsubmittedP]);
+      var addToSubmittedP = or3client.addGroupMember(reviewersSubmittedId, note.signatures[0], token)
+      return Promise.all([areachairMailP, authorMailP, removeFromUnsubmittedP, addToSubmittedP]);
     })
     .then(result => or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token))
     .then(result => or3client.or3request(or3client.inviteUrl+'?id='+note.invitation, {}, 'GET', token))
@@ -48,7 +49,7 @@ function(){
       var signatureComponents = note.signatures[0].split('/');
       console.log('signature components: ' + signatureComponents);
       var revisionInvitation = {
-        'id': 'auai.org/UAI/2018/-/'+signatureComponents[4]+'/'+signatureComponents[3]+'/Revise_Review',
+        'id': 'auai.org/UAI/2018/-/' + signatureComponents[4] + '/' + signatureComponents[3] + '/Revise_Review',
         'writers': reviewInvitation.writers,
         'signatures': reviewInvitation.signatures,
         'readers': reviewInvitation.readers,

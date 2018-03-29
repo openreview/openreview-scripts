@@ -28,6 +28,8 @@ maskReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers"
 maskAreaChairGroup = config.CONF + "/Paper[PAPER_NUMBER]/Area_Chairs"
 maskAnonReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/AnonReviewer[0-9]+"
 maskAllUsersGroup = config.CONF + "/Paper[PAPER_NUMBER]/All_Users"
+maskUnsubmittedGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers/Unsubmitted"
+maskSubmittedGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers/Submitted"
 PROGRAM_CHAIRS = 'auai.org/UAI/2018/Program_Chairs'
 BLIND_SUBMISSION_INV = 'auai.org/UAI/2018/-/Blind_Submission'
 
@@ -36,6 +38,7 @@ invitation_configurations = {
         'byPaper': True,
         'byForum': True,
         'invitees': [maskReviewerGroup, maskAuthorsGroup, maskAreaChairGroup, PROGRAM_CHAIRS],
+        'noninvitees': [maskUnsubmittedGroup],
         'params': config.official_comment_template,
         'signatures': {
             'description': '',
@@ -60,11 +63,15 @@ invitation_configurations = {
                 maskAreaChairGroup,
                 PROGRAM_CHAIRS
             ]
+        },
+        'nonreaders': {
+            'values': [maskUnsubmittedGroup]
         }
     },
     'Official_Review': {
         'byPaper': True,
         'invitees': [maskReviewerGroup],
+        'noninvitees': [maskSubmittedGroup],
         'byForum': True,
         'byReplyTo': True,
         'params': config.official_review_template,
@@ -79,6 +86,9 @@ invitation_configurations = {
         'readers': {
             'description': 'The users who will be allowed to read the reply content.',
             'values': [config.CONF, maskAuthorsGroup, maskReviewerGroup, maskAreaChairGroup, PROGRAM_CHAIRS]
+        },
+        'nonreaders': {
+            'values': [maskUnsubmittedGroup]
         }
     }
 }
@@ -134,7 +144,8 @@ def get_or_create_invitations(invitationId, overwrite):
 
                 for field_type in ['signatures', 'readers', 'writers', 'nonreaders']:
                     if field_type in invitation_config:
-                        new_invitation.reply[field_type]['description'] = invitation_config[field_type]['description']
+                        new_invitation.reply[field_type] = {}
+                        new_invitation.reply[field_type]['description'] = invitation_config[field_type].get('description', '')
                         for input_type, field_values in invitation_config[field_type].iteritems():
                             if input_type != 'description':
                                 new_invitation.reply[field_type][input_type] = prepare_input(new_invitation.id, input_type, field_values)
