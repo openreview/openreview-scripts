@@ -59,7 +59,7 @@ config_note = [c for c in config_notes if c.content['label'] == label][0]
 config_note = openreview.Note(**dict(config_note.to_json(), **configuration_note_params))
 posted_config = client.post_note(config_note)
 
-assignments = openreview.matching.match(client, posted_config, openreview_matcher.Solver)
+assignments = openreview_matcher.match(client, posted_config, openreview_matcher.Solver)
 
 for n in assignments:
     print("posting assignment for ", n.forum)
