@@ -70,35 +70,6 @@ function(){
 
       return Promise.all(promises);
     })
-    // .then(result => {
-    //   var commentInvitationP = or3client.or3request(or3client.inviteUrl + '?id=' + note.invitation, {}, 'GET', token);
-    //   return commentInvitationP;
-    // })
-    // .then(result => {
-
-    //   var commentInvitation = result.invitations[0];
-    //   var signatureComponents = note.signatures[0].split('/');
-    //   console.log('signature components: ' + signatureComponents);
-
-    //   var revisionInvitation = {
-    //     'id': 'auai.org/UAI/2018/-/'+signatureComponents[4]+'/'+signatureComponents[3]+'/Revise_Comment',
-    //     'writers': commentInvitation.writers,
-    //     'signatures': commentInvitation.signatures,
-    //     'readers': commentInvitation.readers,
-    //     'invitees': note.signatures,
-    //     'reply': {
-    //         'forum': note.forum,
-    //         'referent': note.id,
-    //         'writers': commentInvitation.reply.writers,
-    //         'signatures': commentInvitation.reply.signatures,
-    //         'readers': {
-    //           'values': note.readers
-    //         },
-    //         'content': commentInvitation.reply.content
-    //     }
-    //   };
-    //   return or3client.or3request(or3client.inviteUrl, revisionInvitation, 'POST', token);
-    // })
     .then(result => done())
     .catch(error => done(error));
 
