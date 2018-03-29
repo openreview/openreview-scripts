@@ -12,6 +12,7 @@ function(){
 
       var reviewers = ['auai.org/UAI/2018/Paper' + note_number + '/Reviewers'];
       var areachairs = ['auai.org/UAI/2018/Paper' + note_number + '/Area_Chairs'];
+      var reviewersUnsubmittedId = 'auai.org/UAI/2018/Paper' + note_number + '/Reviewers/Unsubmitted';
       var authors = forum.content.authorids;
 
       var author_mail = {
@@ -32,12 +33,13 @@ function(){
         "message": "A submission to " + conference + ", for which you are an official area chair, has received a review. \n\nTitle: " + note.content.title + "\n\nReview: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl + "/forum?id=" + note.forum
       };
 
-
       var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
       var reviewerMailP = or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
       var areachairMailP = or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
 
-      return Promise.all([areachairMailP, authorMailP]);
+      var removeFromUnsubmittedP = or3client.removeGroupMember(reviewersUnsubmittedId, note.signatures[0], token);
+
+      return Promise.all([areachairMailP, authorMailP, removeFromUnsubmittedP]);
     })
     .then(result => or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token))
     .then(result => or3client.or3request(or3client.inviteUrl+'?id='+note.invitation, {}, 'GET', token))
