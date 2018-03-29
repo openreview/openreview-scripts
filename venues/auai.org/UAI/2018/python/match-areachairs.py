@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import print_function
 import argparse
 import openreview
 import openreview_matcher
@@ -32,6 +31,7 @@ configuration_note_params = {
             'maxusers': 1,
             'minpapers': 1,
             'maxpapers': 10,
+            'alternates': 5,
             'weights': {
                 'tpms_score': 1,
                 'conflict_score': 1,
@@ -47,10 +47,12 @@ configuration_note_params = {
     }
 }
 
-config_note = openreview.matching.create_or_update_config(client, label, configuration_note_params)
+config_notes = client.get_notes(invitation='auai.org/UAI/2018/-/Assignment_Configuration')
+config_note = [c for c in config_notes if c.content['label'] == label][0]
+config_note = openreview.Note(**dict(config_note.to_json(), **configuration_note_params))
 posted_config = client.post_note(config_note)
 
-assignments = openreview.matching.match(client, posted_config, openreview_matcher.Solver)
+assignments = openreview_matcher.match(client, posted_config)
 
 for n in assignments:
     print "posting assignment for ", n.forum
