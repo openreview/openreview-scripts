@@ -37,7 +37,9 @@ def update_recommendation_score(metadata_note):
     this is a linear mapping between the recommended reviewer's position in the recommendation
     list (its "rank") and a "recommendation score" for the reviewer and that paper.
     '''
-
+    for metadata_entry in user_scores:
+        metadata_entry['scores'].pop('recommendation_score', None)
+    
     for rank, userid in enumerate(recommendations):
         for metadata_entry in user_scores:
             if metadata_entry['userId'] in recommendations:
