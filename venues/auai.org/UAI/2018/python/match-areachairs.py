@@ -47,12 +47,9 @@ configuration_note_params = {
     }
 }
 
-config_notes = client.get_notes(invitation='auai.org/UAI/2018/-/Assignment_Configuration')
-config_note = [c for c in config_notes if c.content['label'] == label][0]
-config_note = openreview.Note(**dict(config_note.to_json(), **configuration_note_params))
-posted_config = client.post_note(config_note)
+configuration_note, assignments = openreview_matcher.match(client, configuration_note_params)
 
-assignments = openreview_matcher.match(client, posted_config)
+posted_config = client.post_note(configuration_note)
 
 for n in assignments:
     print "posting assignment for ", n.forum
