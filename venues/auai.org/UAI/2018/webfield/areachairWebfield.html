@@ -5,7 +5,7 @@ $(function() {
 
   // Ajax functions
   var getPaperNumbersfromGroups = function(groups) {
-    var re = /^auai\.org\/UAI\/2018\/Paper(\d+)\/Area_Chair1/;
+    var re = /^auai\.org\/UAI\/2018\/Paper(\d+)\/Area_Chair(\d+)/;
     return _.map(
       _.filter(groups, function(g) { return re.test(g.id); }),
       function(fg) { return parseInt(fg.id.match(re)[1], 10); }
@@ -355,7 +355,7 @@ $(function() {
       var pl = model.tokenPayload(token);
       var user = pl.user;
 
-      var userAreachairGroupsP = $.getJSON('groups', { member: user.id, regex: CONFERENCE + '/Paper.*/Area_Chair1' })
+      var userAreachairGroupsP = $.getJSON('groups', { member: user.id, regex: CONFERENCE + '/Paper.*/Area_Chair.*' })
         .then(function(result) {
           var noteNumbers = getPaperNumbersfromGroups(result.groups);
           return $.when(
