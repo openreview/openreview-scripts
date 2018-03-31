@@ -25,7 +25,8 @@ import os
 
 maskAuthorsGroup = config.CONF + "/Paper[PAPER_NUMBER]/Authors"
 maskReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers"
-maskAreaChairGroup = config.CONF + "/Paper[PAPER_NUMBER]/Area_Chairs"
+maskAreaChair1Group = config.CONF + "/Paper[PAPER_NUMBER]/Area_Chair[0-9]"
+maskAreaChairsGroup = config.CONF + "/Paper[PAPER_NUMBER]/Area_Chairs"
 maskAnonReviewerGroup = config.CONF + "/Paper[PAPER_NUMBER]/AnonReviewer[0-9]+"
 maskAllUsersGroup = config.CONF + "/Paper[PAPER_NUMBER]/All_Users"
 maskUnsubmittedGroup = config.CONF + "/Paper[PAPER_NUMBER]/Reviewers/Unsubmitted"
@@ -37,7 +38,7 @@ invitation_configurations = {
     'Official_Comment': {
         'byPaper': True,
         'byForum': True,
-        'invitees': [maskReviewerGroup, maskAuthorsGroup, maskAreaChairGroup, PROGRAM_CHAIRS],
+        'invitees': [maskReviewerGroup, maskAuthorsGroup, maskAreaChairsGroup, PROGRAM_CHAIRS],
         'noninvitees': [maskUnsubmittedGroup],
         'params': config.official_comment_template,
         'signatures': {
@@ -45,7 +46,7 @@ invitation_configurations = {
             'values-regex': [
                 maskAnonReviewerGroup,
                 maskAuthorsGroup,
-                maskAreaChairGroup,
+                maskAreaChair1Group,
                 PROGRAM_CHAIRS,
                 config.CONF
             ],
@@ -60,7 +61,7 @@ invitation_configurations = {
                 maskAllUsersGroup,
                 maskAuthorsGroup,
                 maskReviewerGroup,
-                maskAreaChairGroup,
+                maskAreaChairsGroup,
                 PROGRAM_CHAIRS
             ]
         },
@@ -85,7 +86,7 @@ invitation_configurations = {
         },
         'readers': {
             'description': 'The users who will be allowed to read the reply content.',
-            'values': [config.CONF, maskAuthorsGroup, maskReviewerGroup, maskAreaChairGroup, PROGRAM_CHAIRS]
+            'values': [config.CONF, maskAuthorsGroup, maskReviewerGroup, maskAreaChairsGroup, PROGRAM_CHAIRS]
         },
         'nonreaders': {
             'values': [maskUnsubmittedGroup]
