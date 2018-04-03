@@ -36,7 +36,7 @@ for paper in submissions:
     paper_num = str(paper.number)
     paperinv = config.CONFERENCE_ID + '/-/Paper' + paper_num
     print("Adding groups for Paper"+ paper_num)
-    print paper
+
     ## Paper Group
     paperGroup = config.CONFERENCE_ID + '/Paper' + paper_num
     client.post_group(openreview.Group(
@@ -64,7 +64,7 @@ for paper in submissions:
         signatures=[config.CONFERENCE_ID],
         writers=[config.CONFERENCE_ID],
         members=[],
-        readers=[config.CONFERENCE_ID, config.PROGRAM_CHAIRS, reviewerGroup],
+        readers=[config.CONFERENCE_ID, config.PROGRAM_CHAIRS],
         signatories=[]))
 
     ## NonReviewers - people that aren't allowed to see the reviews.

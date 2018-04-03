@@ -67,21 +67,6 @@ def reviewer_conflicts(reviewer_email, paper_number, conflict_list):
 
     return False
 
-def create_reviewer_group(new_reviewer_id, reviewer_email, conflict_list):
-    print 'Creating reviewer: ', new_reviewer_id
-    new_reviewer = Group(
-        new_reviewer_id,
-        signatures=[config.CONFERENCE_ID],
-        writers=[config.CONFERENCE_ID],
-        members=[reviewer_email],
-        readers=[config.CONFERENCE_ID,config.PROGRAM_CHAIRS,new_reviewer_id],
-        # in case an author or conflict is also a Program Chair, add nonreaders
-        nonreaders=conflict_list,
-        signatories=[new_reviewer_id])
-    client.post_group(new_reviewer)
-    print "assigned user %s to group %s" % (reviewer_email, new_reviewer_id)
-    return new_reviewer
-
 # does some parameter checking, checks for conflicts
 # check if reviewer already assigned to paper
 # if not then create Anonymous group for the reviewer and add to reviewer group
@@ -93,7 +78,7 @@ def assign_reviewer(reviewer_email, paper_number):
     notes = [note for note in submissions if str(note.number) == paper_number]
     if not notes:
         print "Error: Paper number " + paper_number + " does not exist"
-        return False
+        return True
     note = notes[0]
 
     # create list of conflicts emails and add paper author to it
@@ -107,50 +92,17 @@ def assign_reviewer(reviewer_email, paper_number):
         conflict_list += note.content['authorids']
 
     if reviewer_conflicts(reviewer_email, paper_number, conflict_list):
-        return False
+        return True
 
-    # adds the given reviewer to the conference reviewers if not already there
-    conference_reviewers = client.get_group(config.CONFERENCE_ID + '/Reviewers')
-    if not (reviewer_email in conference_reviewers.members):
-        client.add_members_to_group(conference_reviewers, reviewer_email)
-
-    # gets reviewers for given paper
-    paper_group = config.CONFERENCE_ID + '/Paper' + paper_number
-    reviewers = client.get_group(paper_group + '/Reviewers')
-    existing_reviewers = reviewers.members
-    # Each reviewer gets its own AnonReviewer Group.
-    # The Anon group gets added to Paper#/Reviewers.
-    # Determine what number AnonReviewer this new reviewer should be
-    # by searching for largest AnonReviewer so far
-    N = 0;
-    for anon_name in existing_reviewers:
-        existing_reviewer = client.get_group(anon_name)
-
-        # check if reviewer is already in the group by looking for given reviewer email, or associated ~name
-        if hasattr(existing_reviewer, 'members'):
-            if reviewer_email in existing_reviewer.members:
-                print "Reviewer " + reviewer_email + " found in " + existing_reviewer.id
-                return True
-            profile = tools.get_profile(client, reviewer_email)
-            if profile is not None:
-                if profile.id in existing_reviewer.members:
-                    print "Reviewer " + profile.id + " found in " + existing_reviewer.id
-                    return True
-
-        # anon_name isn't the given reviewer - check for the Anon number
-        reviewer_number = int(anon_name.split('AnonReviewer')[1])
-        if reviewer_number > N:
-            N = reviewer_number
-
-    # reviewer not in current group
-    # create new group for this new reviewer with Anon name
-    anon_reviewer_id = paper_group + '/AnonReviewer' + str(N + 1)
-
-    # add that to the existing reviewers group and the NonReaders group
-    new_reviewer = create_reviewer_group(anon_reviewer_id, reviewer_email, conflict_list)
-    client.add_members_to_group(reviewers, anon_reviewer_id)
+    reviewer_id = tools.get_profile(client, reviewer_email)
+    if reviewer_id is None:
+        reviewer_id = reviewer_email
+    else:
+        reviewer_id = reviewer_id.id
+    tools.assign(client, paper_number, config.CONFERENCE_ID, reviewer_to_add = reviewer_id)
     ## reviewers are blocked from other reviews until complete
-    client.add_members_to_group(client.get_group(paper_group + '/Reviewers/NonReaders'), anon_reviewer_id)
+    paper_group = config.CONFERENCE_ID + '/Paper' + paper_number
+    client.add_members_to_group(client.get_group(paper_group + '/Reviewers/NonReaders'), reviewer_id)
     return True
 
 ##################################################################
