@@ -68,7 +68,7 @@ for paper in submissions:
         signatures=[CONFERENCE_ID],
         writers=[CONFERENCE_ID],
         members=[],
-        readers=[CONFERENCE_ID, PROGRAM_CHAIRS, reviewerGroup],
+        readers=[CONFERENCE_ID, PROGRAM_CHAIRS],
         signatories=[]))
 
     ## NonReviewers - people that aren't allowed to see the reviews.
