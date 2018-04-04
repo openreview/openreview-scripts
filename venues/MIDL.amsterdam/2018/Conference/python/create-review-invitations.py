@@ -92,7 +92,7 @@ for paper in submissions:
             'values': [nonReviewerGroup]},
         'content':config.review_content
     }
-    invite = openreview.Invitation(paperinv + '/Official/Review',**config.comment_params)
+    invite = openreview.Invitation(paperinv + '/Official/Review',**config.review_params)
     invite.reply= review_reply
     invite.invitees = [paperGroup + '/Reviewers']
     invite.noninvitees = []
