@@ -64,7 +64,7 @@ for paper in submissions:
         signatures=[config.CONFERENCE_ID],
         writers=[config.CONFERENCE_ID],
         members=[],
-        readers=[config.CONFERENCE_ID, config.PROGRAM_CHAIRS, reviewerGroup],
+        readers=[config.CONFERENCE_ID, config.PROGRAM_CHAIRS],
         signatories=[]))
 
     ## NonReviewers - people that aren't allowed to see the reviews.
@@ -92,7 +92,7 @@ for paper in submissions:
             'values': [nonReviewerGroup]},
         'content':config.review_content
     }
-    invite = openreview.Invitation(paperinv + '/Official/Review',**config.comment_params)
+    invite = openreview.Invitation(paperinv + '/Official/Review',**config.review_params)
     invite.reply= review_reply
     invite.invitees = [paperGroup + '/Reviewers']
     invite.noninvitees = []
