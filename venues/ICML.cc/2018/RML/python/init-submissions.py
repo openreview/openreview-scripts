@@ -29,7 +29,7 @@ js_constants = {
     'PROGRAM_CHAIRS': 'ICML.cc/2018/RML/Program_Chairs',
     'REVIEWERS': 'ICML.cc/2018/RML/Reviewers',
     'SUBMISSION_INVITATION': 'ICML.cc/2018/RML/-/Submission',
-    'INSTRUCTIONS': ''
+    'INSTRUCTIONS': "<a href =\"https://sites.google.com/view/icml-reproducibility-workshop/home\">https://sites.google.com/view/icml-reproducibility-workshop/home</a>",
 }
 
 # May 15th, 10am EST = 5/15/18 2pm GMT
