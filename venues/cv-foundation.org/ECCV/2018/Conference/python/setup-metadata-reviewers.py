@@ -44,8 +44,8 @@ for g in groups:
 print "loading tpms scores from file..."
 tpms_scores = defaultdict(list)
 scores_by_email = {}
-file = '../data/reviewers_scores.csv'
-with open(os.path.join(os.path.dirname(__file__), file)) as f:
+
+with open(os.path.join(os.path.dirname(__file__), '../data/reviewers_scores.csv')) as f:
     reader = csv.reader(f)
     reader.next()
     for line in reader:
@@ -75,24 +75,10 @@ with open('../data/profiles.pkl', 'rb') as f:
     author_profiles_by_email = pickle.load(f)
 
 #Load CMT conflicts
-cmt_conflicts = defaultdict(list)
-with open('../data/reviewer-conflicts.csv') as f:
-    reader = csv.reader(f)
-    reader.next()
-    for line in reader:
-        email = line[2].strip().lower()
-        paperid = line[3].strip().lower()
-        if paperid in forum_by_paperId:
-            conflicted_forum = forum_by_paperId[paperid]
-            profiles = client.get_profiles([email])
-            if profiles:
-                userid = profiles[email].id
-            else:
-                print "no profile found while updating CMT conflicts: ", email
-            if userid:
-                cmt_conflicts[conflicted_forum].append(userid)
-        else:
-            print "couldn't find paper with id ", paperid
+print "loading CMT conflicts"
+cmt_conflicts = {}
+with open('../data/cmt_conflicts.pkl','rb') as f:
+    cmt_conflicts = pickle.load(f)
 
 def conflict(forum, user_id):
     try:
