@@ -22,7 +22,7 @@ group_ids = [
     'cv-foundation.org/ECCV/2018/Conference/Reviewers'
 ]
 
-metadata_invitation = 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Metadata/Reviewers'
+metadata_invitation = 'cv-foundation.org/ECCV/2018/Conference/Reviewers/-/Paper_Metadata'
 
 #Load Papers
 print "getting all submissions..."

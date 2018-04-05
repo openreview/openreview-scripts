@@ -39,7 +39,7 @@ config_note = openreview.Note(**{
         },
         #'constraints': {}, # manually-added constraints are not supported yet
         'paper_invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Submission',
-        'metadata_invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Metadata/Reviewers',
+        'metadata_invitation': 'cv-foundation.org/ECCV/2018/Conference/Reviewers/-/Paper_Metadata',
         'assignment_invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment',
         'match_group': 'cv-foundation.org/ECCV/2018/Conference/Reviewers',
         'status': 'complete' # 'queued', 'processing', 'complete' or 'error'

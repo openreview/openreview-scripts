@@ -36,7 +36,7 @@ metadata_inv = client.post_invitation(openreview.Invitation(**{
 }))
 
 metadata_reviewers_inv = client.post_invitation(openreview.Invitation(**{
-    'id': 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Metadata/Reviewers',
+    'id': 'cv-foundation.org/ECCV/2018/Conference/Reviewers/-/Paper_Metadata',
     'readers': [
         'cv-foundation.org/ECCV/2018/Conference',
         'cv-foundation.org/ECCV/2018/Conference/Program_Chairs'
