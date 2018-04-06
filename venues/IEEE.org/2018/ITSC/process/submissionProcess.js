@@ -23,7 +23,7 @@ function () {
     id: CONFERENCE + '/-/Paper' + note.number + '/Add_Revision',
     readers: ['everyone'],
     writers: [CONFERENCE],
-    invitees: [],
+    invitees: note.content['authorids'],
     signatures: [CONFERENCE],
     duedate: invitation.duedate,
     reply: {
