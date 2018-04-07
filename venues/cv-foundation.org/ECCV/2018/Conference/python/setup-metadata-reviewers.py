@@ -25,28 +25,27 @@ group_ids = [
 metadata_invitation = 'cv-foundation.org/ECCV/2018/Conference/Reviewers/-/Paper_Metadata'
 
 #Load Papers
-print "getting all submissions...",
+print "getting all submissions..."
 papers = openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Submission')
 papers_by_forum = {}
 forum_by_paperId = {}
 for p in papers:
     papers_by_forum[p.forum] = p
     forum_by_paperId[p.content['paperId']] = p.forum
-print "done."
 
 #Load group profiles
-print "getting groups...",
+print "getting groups..."
 groups = [client.get_group(g) for g in group_ids]
 profiles_by_id = {}
 for g in groups:
     profiles_by_id.update({profile.id: profile for profile in client.get_profiles(g.members)})
-print "done."
 
 #Load TPMS scores
-print "loading tpms scores from file...",
-scores_by_forum = {}
-ids_by_email = {}
-with open('../data/reviewers_scores.csv') as f:
+print "loading tpms scores from file..."
+tpms_scores = defaultdict(list)
+scores_by_email = {}
+
+with open(os.path.join(os.path.dirname(__file__), '../data/reviewers_scores.csv')) as f:
     reader = csv.reader(f)
     reader.next()
     for line in reader:
@@ -54,94 +53,110 @@ with open('../data/reviewers_scores.csv') as f:
         email = line[1].strip().lower()
         score = line[2].strip()
 
-        forum = forum_by_paperId.get(paperId, '')
+        if email not in scores_by_email:
+            scores_by_email[email] = {}
 
-        if forum not in scores_by_forum:
-            scores_by_forum[forum] = {}
+        forum = forum_by_paperId.get(paperId, 0)
 
-        if email not in ids_by_email:
-            profiles = client.get_profiles([email])
-            if profiles:
-                userid = profiles[email].id
-            else:
-                userid = None
-            ids_by_email[email] = userid
+        scores_by_email[email][forum] = float(score)
+
+    #translate emails to ids
+    for k,v in scores_by_email.iteritems():
+        profiles = client.get_profiles([k])
+        if profiles:
+            tpms_scores[profiles[k].id] = v
         else:
-            userid = ids_by_email[email]
-
-        if userid:
-            scores_by_forum[forum][userid] = float(score)
-print "done."
+            'Profile not found', k
 
 #Load author profiles
-print "loading author profiles from file...",
+print "loading author profiles from file..."
 author_profiles_by_email = {}
 with open('../data/profiles.pkl', 'rb') as f:
     author_profiles_by_email = pickle.load(f)
-print "done."
 
 #Load CMT conflicts
-print "loading CMT conflicts...",
+print "loading CMT conflicts"
 cmt_conflicts = {}
-profiles_by_email = {}
-with open('../data/reviewer-conflicts.csv') as f:
-    reader = csv.reader(f)
-    reader.next()
-    for line in reader:
-        email = line[2].strip().lower()
-        paperid = line[3].strip().lower()
-        if paperid in forum_by_paperId:
-            conflicted_forum = forum_by_paperId[paperid]
-            if not email in profiles_by_email:
-                #print "getting profile: ", email
-                new_profiles = client.get_profiles([email])
-                if not new_profiles:
-                    profiles_by_email.update({email: None})
-                else:
-                    profiles_by_email.update(new_profiles)
+with open('../data/cmt_conflicts.pkl','rb') as f:
+    cmt_conflicts = pickle.load(f)
 
-            if email in profiles_by_email and profiles_by_email[email]:
-                userid = profiles_by_email[email].id
-            else:
-                #print "no profile found while updating CMT conflicts: ", email
-                pass
-            if userid:
-                cmt_conflicts[conflicted_forum] = cmt_conflicts.get(conflicted_forum, {})
-                cmt_conflicts[conflicted_forum][userid] = '-inf'
-print "done."
+def conflict(forum, user_id):
+    try:
+        paper = papers_by_forum[forum]
+        profile = profiles_by_id[user_id]
+        author_profiles = {}
+        for authorid in paper.content['authorids']:
+            author_profiles[authorid] = author_profiles_by_email.get(authorid, None)
+        return openreview.matching.get_conflicts(author_profiles, profile)
+    except KeyError as e:
+        print "conflict error!"
+        print 'forum: ', forum
+        return []
 
-# load openreview conflicts
-print "loading openreview conflicts...",
-openreview_conflicts = {}
-for forum, paper in papers_by_forum.iteritems():
-    forum_conflicts = {}
-    for g in groups:
-        for user_id in g.members:
-            profile = profiles_by_id[user_id]
-            author_profiles = {}
-            for authorid in paper.content['authorids']:
-                author_profiles[authorid] = author_profiles_by_email.get(authorid, None)
-            conflicts = openreview.matching.get_conflicts(author_profiles, profile)
-            if conflicts:
-                forum_conflicts[user_id] = '-inf'
+def tpms(forum, user_id):
+    if forum in tpms_scores[user_id]:
+        return tpms_scores[user_id][forum]
+    else:
+        print 'Score not found', forum, user_id
+        return 0.0
 
-    openreview_conflicts[forum] = forum_conflicts
-print "done."
 
-new_metadata_notes = openreview_matcher.metadata.generate_metadata_notes(client, config_note,
-    score_maps = {
-        'tpmsScore': scores_by_forum,
-    },
-    constraint_maps = {
-        'cmtConflict': cmt_conflicts,
-        'openreviewConflict': openreview_conflicts
+def metadata(forum, groups):
+    metadata_params = {
+        'forum': forum,
+        'invitation': metadata_invitation,
+        'readers': [
+            'cv-foundation.org/ECCV/2018/Conference',
+            'cv-foundation.org/ECCV/2018/Conference/Program_Chairs'
+        ],
+        'writers': ['cv-foundation.org/ECCV/2018/Conference'],
+        'signatures': ['cv-foundation.org/ECCV/2018/Conference'],
+        'content': {
+            'groups': {}
+        }
     }
-)
 
-for m in new_metadata_notes:
-    new_m = client.post_note(m)
-    print new_m.id
+    forum_cmt_conflicts = cmt_conflicts[forum]
+
+    for g in groups:
+
+        group_entry = []
+        for user_id in g.members:
+            if '~' in user_id:
+                user_entry = {'userId': user_id, 'scores': {}}
+                tpms_score = tpms(forum, user_id)
+                conflicts = conflict(forum, user_id)
 
 
+                if conflicts:
+                    user_entry['scores']['conflict_score'] = '-inf'
+                    user_entry['conflicts'] = conflicts
+                if tpms_score > 0:
+                    user_entry['scores']['tpms_score'] = tpms_score
 
+                if user_id in forum_cmt_conflicts:
+                    user_entry['scores']['conflict_score'] = '-inf'
+                    if 'conflicts' not in user_entry:
+                        user_entry['conflicts'] = ['CMT_conflict']
+                    else:
+                        user_entry['conflicts'].append('CMT_conflict')
 
+                group_entry.append(user_entry)
+
+        metadata_params['content']['groups'][g.id] = group_entry
+
+    return metadata_params
+
+print "getting existing metadata notes..."
+existing_notes_by_forum = {n.forum: n for n in openreview.tools.get_all_notes(client, metadata_invitation)}
+
+print "updating paper metadata..."
+for p in papers:
+    if p.forum in existing_notes_by_forum:
+        metadata_params = existing_notes_by_forum[p.forum].to_json()
+    else:
+        metadata_params = {}
+
+    metadata_params.update(metadata(p.forum, groups))
+    metadata_note = client.post_note(openreview.Note(**metadata_params))
+    print metadata_note.id
