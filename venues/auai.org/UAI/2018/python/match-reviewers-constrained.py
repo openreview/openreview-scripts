@@ -54,8 +54,6 @@ configuration_note_params = {
     }
 }
 
-config_note = openreview.matching.create_or_update_config(client, label, configuration_note_params)
-
 '''
 Add some manual constraints based on the first matching
 '''
@@ -69,11 +67,16 @@ for forum, assignment in r1_assignments_by_forum.iteritems():
     for entry in assignment.content['assignedGroups']:
         new_constraints[forum][entry['userId']] = 10.0
 
-config_note.content['constraints'] = new_constraints
 
+config_notes = [c for c in client.get_notes(invitation='auai.org/UAI/2018/-/Assignment_Configuration') if c.content['label'] == label]
+if config_notes:
+    config_note = openreview.Note(**dict(config_note[0].to_json(), **configuration_note_params))
+else:
+    config_note = openreview.Note(**configuration_note_params)
+config_note.content['constraints'] = new_constraints
 posted_config = client.post_note(config_note)
 
-assignments = openreview.matching.match(client, posted_config, openreview_matcher.Solver)
+assignments = openreview_matcher.match(client, posted_config, openreview_matcher.Solver)
 
 for n in assignments:
     print("posting assignment for ", n.forum)

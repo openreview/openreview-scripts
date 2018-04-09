@@ -27,7 +27,11 @@ if __name__ == "__main__":
 
         for entry in assignment_entries:
             openreview.tools.assign(client, paper.number, 'auai.org/UAI/2018',
-                parent_group_params = {},
+                individual_group_params = {'readers': [
+                    'auai.org/UAI/2018',
+                    'auai.org/UAI/2018/Program_Chairs',
+                    'auai.org/UAI/2018/Paper{}/Area_Chairs'.format(paper_number)
+                    ]},
                 reviewer_to_add = entry['userId'].encode('utf-8'),
                 check_conflicts_invitation = None,
                 parent_label = 'Reviewers',
