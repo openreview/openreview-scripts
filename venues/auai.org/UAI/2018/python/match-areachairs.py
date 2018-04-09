@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import argparse
 import openreview
 import openreview_matcher
@@ -31,7 +32,6 @@ configuration_note_params = {
             'maxusers': 1,
             'minpapers': 1,
             'maxpapers': 10,
-            'alternates': 5,
             'weights': {
                 'tpms_score': 1,
                 'conflict_score': 1,
@@ -47,9 +47,10 @@ configuration_note_params = {
     }
 }
 
-configuration_note, assignments = openreview_matcher.match(client, configuration_note_params)
+config_note = openreview.matching.create_or_update_config(client, label, configuration_note_params)
+posted_config = client.post_note(config_note)
 
-posted_config = client.post_note(configuration_note)
+assignments = openreview.matching.match(client, posted_config, openreview_matcher.Solver)
 
 for n in assignments:
     print "posting assignment for ", n.forum
