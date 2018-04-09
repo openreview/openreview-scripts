@@ -35,6 +35,28 @@ metadata_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
+metadata_reviewers_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'cv-foundation.org/ECCV/2018/Conference/Reviewers/-/Paper_Metadata',
+    'readers': [
+        'cv-foundation.org/ECCV/2018/Conference',
+        'cv-foundation.org/ECCV/2018/Conference/Program_Chairs'
+    ],
+    'writers': ['cv-foundation.org/ECCV/2018/Conference'],
+    'signatures': ['cv-foundation.org/ECCV/2018/Conference'],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Submission',
+        'readers': {'values': [
+            'cv-foundation.org/ECCV/2018/Conference',
+            'cv-foundation.org/ECCV/2018/Conference/Program_Chairs'
+            ]},
+        'writers': {'values': ['cv-foundation.org/ECCV/2018/Conference']},
+        'signatures': {'values': ['cv-foundation.org/ECCV/2018/Conference']},
+        'content': {}
+    }
+}))
+
 
 print "posting assignment invitation..."
 assignment_inv = client.post_invitation(openreview.Invitation(**{
