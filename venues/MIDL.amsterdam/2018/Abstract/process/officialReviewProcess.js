@@ -1,5 +1,5 @@
 function(){
-    var SHORT_PHRASE = 'MIDL 2018';
+    var SHORT_PHRASE = 'MIDL 2018 Abstract';
     var CONFERENCE_ID = 'MIDL.amsterdam/2018/Abstract';
     var or3client = lib.or3client;
 

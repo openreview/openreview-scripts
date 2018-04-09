@@ -1,4 +1,3 @@
-import os
 import openreview
 import argparse
 from openreview import invitations
@@ -20,22 +19,21 @@ print 'connecting to {0}'.format(client.baseurl)
 Set the variable names that will be used in various pieces of executable javascript.
 '''
 js_constants = {
-    'TITLE': "DeSemWeb 2018",
-    'SUBTITLE': "ISWC2018 workshop on Decentralizing the Semantic Web",
-    'LOCATION': "Monterey, California, USA",
-    'DATE': "October 8-12, 2018",
-    'WEBSITE': "http://iswc2018.desemweb.org/",
-    'DEADLINE': "Submission Deadline: May 15th, 2018, 11:59 pm (Hawaii)",
-    'CONFERENCE': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb',
-    'PROGRAM_CHAIRS': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb/Program_Chairs',
-    'REVIEWERS': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb/Reviewers',
-    'SUBMISSION_INVITATION': 'swsa.semanticweb.org/ISWC/2018/DeSemWeb/-/Submission',
-    'INSTRUCTIONS': ''
+    'TITLE': "ICML 2018 - RML Workshop",
+    'SUBTITLE': "Reproducibility in Machine Learning",
+    'LOCATION': "Stockholm, Sweden",
+    'DATE': "July 15, 2018",
+    'WEBSITE': "https://mltrain.cc/events/enabling-reproducibility-in-machine-learning-mltrainrml-icml-2018/",
+    'DEADLINE': "Submission Deadline: May 15th, 10am EST",
+    'CONFERENCE': 'ICML.cc/2018/RML',
+    'PROGRAM_CHAIRS': 'ICML.cc/2018/RML/Program_Chairs',
+    'REVIEWERS': 'ICML.cc/2018/RML/Reviewers',
+    'SUBMISSION_INVITATION': 'ICML.cc/2018/RML/-/Submission',
+    'INSTRUCTIONS': "<a href =\"https://sites.google.com/view/icml-reproducibility-workshop/home\">https://sites.google.com/view/icml-reproducibility-workshop/home</a>"
 }
 
-SUBJECT_AREAS = ['Research Article','Intelligent Client Challenge / Demo', 'Vision Statement']
-# 5/15/18 11:59 pm Hawaii time = 5/16/18 9:59am GMT
-DUE_DATE =  tools.timestamp_GMT(2018,5, 16,10)
+# May 15th, 10am EST = 5/15/18 2pm GMT
+DUE_DATE =  tools.timestamp_GMT(2018, 5, 15, 14)
 
 groups = tools.build_groups(js_constants['CONFERENCE'])
 for g in groups:
@@ -62,28 +60,6 @@ submission_inv = invitations.Submission(
             'order': 3,
             'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
             'required': True
-        },
-        "submission category": {
-            "required": True,
-            "order": 4,
-            "description": "Select a submission category",
-            "value-radio": [
-                "Research Article",
-                "Decentralized Application",
-                "Vision Statement"
-            ]
-        },
-        "pdf": {
-            "required": False,
-            "order": 9,
-            "description": "Upload a PDF file or submit a PDF URL (PDF URLs must begin with \"http\" or \"https\" and end with \".pdf\"). Submit all other formats in the \"url\" field below.",
-            "value-regex": "upload|http(s)?:\\/\\/.+\\.pdf"
-        },
-        "url": {
-            "required": False,
-            "order": 10,
-            "description": "Submit a non-PDF URL (e.g. HTML submissions). URLs must begin with \"http\" or \"https\".",
-            "value-regex": "http(s)?:\\/\\/.+"
         }
     }
 )
@@ -91,18 +67,19 @@ submission_inv = invitations.Submission(
 submission_process = process.MaskSubmissionProcess('../process/submissionProcess.js', js_constants, None)
 submission_inv.add_process(submission_process)
 
-# post both the submissions
+# post the submission
 submission_inv = client.post_invitation(submission_inv)
 print "posted invitation", submission_inv.id
 
+# create and post the comment invitation
 comment_inv = invitations.Comment(
     name = 'Comment',
     conference_id = js_constants['CONFERENCE'],
-    process = os.path.join(os.path.dirname(__file__),'../process/commentProcess.js'),
     invitation = js_constants['SUBMISSION_INVITATION'],
 )
+comment_process = process.MaskSubmissionProcess('../process/commentProcess.js', js_constants, None)
+comment_inv.add_process(comment_process)
 client.post_invitation(comment_inv)
-
 print "posted invitation", comment_inv.id
 
 '''
@@ -112,8 +89,8 @@ homepage = webfield.Webfield(
     '../webfield/conferenceWebfield.js',
     group_id = js_constants['CONFERENCE'],
     js_constants = js_constants,
-    subject_areas = SUBJECT_AREAS
 )
+
 this_conference = client.get_group(js_constants['CONFERENCE'])
 this_conference.web = homepage.render()
 this_conference = client.post_group(this_conference)

@@ -67,7 +67,11 @@ if __name__ == "__main__":
         reviewer_to_add = reviewer_to_add.lower()
 
     openreview.tools.assign(client, paper_number, 'auai.org/UAI/2018',
-        parent_group_params = {},
+        individual_group_params = {'readers': [
+            'auai.org/UAI/2018',
+            'auai.org/UAI/2018/Program_Chairs',
+            'auai.org/UAI/2018/Paper{}/Area_Chairs'.format(paper_number)
+            ]},
         reviewer_to_add = reviewer_to_add,
         reviewer_to_remove = reviewer_to_remove,
         check_conflicts_invitation = None,

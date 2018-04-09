@@ -1,6 +1,6 @@
 function(){
-    var SHORT_PHRASE = 'MIDL 2018 Conference';
-    var CONFERENCE_ID = 'MIDL.amsterdam/2018/Conference';
+    var SHORT_PHRASE = 'IEEE ITSC 2018';
+    var CONFERENCE_ID = 'IEEE.org/2018/ITSC';
     var or3client = lib.or3client;
 
     // send email to author of paper submission

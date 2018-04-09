@@ -241,6 +241,17 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       emptyMessage: 'No outstanding tasks for ' + TITLE
     }
     Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
+
+    // Custom links for UAI
+    var acId = CONFERENCE + '/Senior_Program_Committee';
+    if (_.includes(userGroups, acId)) {
+      $('#my-tasks .submissions-list').prepend([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + acId + '">UAI 2018 Area Chair Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
   } else {
     $('.tabs-container a[href="#my-tasks"]').parent().hide();
   }

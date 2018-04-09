@@ -115,6 +115,7 @@ for forum, paper in papers_by_forum.iteritems():
         author_profiles = {}
         for authorid in paper.content['authorids']:
             author_profiles[authorid] = author_profiles_by_email.get(authorid, None)
+
         conflicts = openreview.matching.get_conflicts(author_profiles, profile)
         if conflicts:
             forum_conflicts[user_id] = '-inf'
@@ -138,7 +139,3 @@ new_metadata_notes = openreview_matcher.metadata.generate_metadata_notes(client,
 for m in new_metadata_notes:
     new_m = client.post_note(m)
     print new_m.id
-
-
-
-
