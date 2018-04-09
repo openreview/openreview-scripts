@@ -33,11 +33,10 @@ config_note = openreview.Note(**{
             'maxpapers': 8,
             'alternates': 5,
             'weights': {
-                'tpms_score': 1,
-                'conflict_score': 1
+                'tpmsScore': 1
             }
         },
-        #'constraints': {}, # manually-added constraints are not supported yet
+        'constraints': {}, # manually-added constraints are not supported yet
         'paper_invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Submission',
         'metadata_invitation': 'cv-foundation.org/ECCV/2018/Conference/Reviewers/-/Paper_Metadata',
         'assignment_invitation': 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment',
