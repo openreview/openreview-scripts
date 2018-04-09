@@ -63,6 +63,7 @@ def signup_details(filename):
         other_emails = imported_profile_content.get('emails', [])
         emails += other_emails
         emails = [repair_email(e) for e in emails]
+        imported_profile_content['emails'] = emails
 
     return emails, name.get('first','').encode('utf-8'), name.get('middle','').encode('utf-8'), name.get('last','').encode('utf-8'), imported_profile_content
 
@@ -168,6 +169,7 @@ def merge_researcher_data(profile_note, researcher_data):
     email_set = set(profile_note.content['emails'])
     email_set.update(set(researcher_data.get('emails', [])))
     updated_email_list = list(email_set)
+
     profile_note.content['emails'] = updated_email_list
 
     profile_note.content['names'] = merge_names(profile_note.content.get('names',[]), new_names)
@@ -184,27 +186,22 @@ def import_user(client, filename, id=None):
 
     emails, first, middle, last, researcher_data = signup_details(filename)
     # the goal here is to get a profile note, or to determine that the record is unresolvable.
-    print 'emails', emails
     profile_note = None
     email_profile = None
     resolved = False # resolved is True if a profile was successfully created or updated
-
-    if emails:
+    if emails and researcher_data and first and last:
         for email in emails:
             try:
                 email_profile = client.get_profile(email)
-                print "email profile found: ", email_profile.id
                 break
             except openreview.OpenReviewException as error:
                 if 'Profile not found' in error[0][0]:
-                    print "profile note found"
                     pass
                 else:
                     raise error
 
         if not email_profile:
             try:
-                print "trying to create profile note"
                 profile_note = openreview.tools.create_profile(client, emails[0], first, last, middle=middle, allow_duplicates=True)
             except openreview.OpenReviewException as error:
                 # If, at this point, there is someone with the same name as this user,
@@ -212,7 +209,6 @@ def import_user(client, filename, id=None):
                 # email addresses in this record for existing profiles.
 
                 if not id and 'There is already a profile with this first' in error[0]:
-                    print "there is already a profile with this first and last name"
                     return researcher_data, resolved
                 elif id:
                     profile_note = client.get_note(id)
