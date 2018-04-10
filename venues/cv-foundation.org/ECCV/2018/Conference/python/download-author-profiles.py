@@ -26,7 +26,7 @@ for paper in papers:
     paper_profiles = client.get_profiles(authorids)
     profiles_by_email.update(paper_profiles)
 
-with open('../data/profiles.pkl', 'wb') as f:
+with open('../data/author-profiles.pkl', 'wb') as f:
     pickle.dump(profiles_by_email, f)
 
 

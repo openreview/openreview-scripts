@@ -27,7 +27,7 @@ for p in papers:
 profiles_by_email = {}
 
 #Load CMT conflicts
-with open('../data/reviewers.csv') as f:
+with open('../data/areachairs.csv') as f:
     reader = csv.reader(f)
     reader.next()
     for line in reader:
@@ -44,5 +44,5 @@ with open('../data/reviewers.csv') as f:
             else:
                 profiles_by_email.update(new_profiles)
 
-with open('../data/reviewer-profiles.pkl', 'wb') as f:
+with open('../data/areachair-profiles.pkl', 'wb') as f:
     pickle.dump(profiles_by_email, f)
