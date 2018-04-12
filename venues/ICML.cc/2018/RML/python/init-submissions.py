@@ -24,7 +24,7 @@ js_constants = {
     'LOCATION': "Stockholm, Sweden",
     'DATE': "July 15, 2018",
     'WEBSITE': "https://mltrain.cc/events/enabling-reproducibility-in-machine-learning-mltrainrml-icml-2018/",
-    'DEADLINE': "Submission Deadline: May 15th, 10am EST",
+    'DEADLINE': "Submission Deadline: June 5th, 10am EST",
     'CONFERENCE': 'ICML.cc/2018/RML',
     'PROGRAM_CHAIRS': 'ICML.cc/2018/RML/Program_Chairs',
     'REVIEWERS': 'ICML.cc/2018/RML/Reviewers',
@@ -33,7 +33,7 @@ js_constants = {
 }
 
 # May 15th, 10am EST = 5/15/18 2pm GMT
-DUE_DATE =  tools.timestamp_GMT(2018, 5, 15, 14)
+DUE_DATE =  tools.timestamp_GMT(2018, 6, 5, 14)
 
 groups = tools.build_groups(js_constants['CONFERENCE'])
 for g in groups:
