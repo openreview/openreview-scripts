@@ -42,7 +42,9 @@ with open('../data/reviewers.csv') as f:
             if not new_profiles:
                 profiles_by_email.update({email: None})
             else:
-                profiles_by_email.update(new_profiles)
+                profile = new_profiles[email]
+                new_email_entries = {e: profile for e in profile.content['emails']}
+                profiles_by_email.update(new_email_entries)
 
 with open('../data/reviewer-profiles.pkl', 'wb') as f:
     pickle.dump(profiles_by_email, f)

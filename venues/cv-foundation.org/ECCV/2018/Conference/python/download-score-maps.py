@@ -71,7 +71,7 @@ with open('../data/reviewers_scores.csv') as f:
 print "loading ac ranks from file..."
 ac_rank_by_forum = {}
 max_rank = 0
-with open('../data/ac-recommendations-2018-04-07.csv') as f:
+with open('../data/ac-recommendations-2018-04-10.csv') as f:
     reader = csv.reader(f)
     for row in reader:
         ac_email = row[0].lower().strip()
@@ -109,7 +109,6 @@ print "loading CMT conflicts...",
 cmt_conflicts = {}
 with open('../data/reviewer-conflicts.csv') as f:
     reader = csv.reader(f)
-    reader.next()
     for line in reader:
         email = line[2].strip().lower()
         paperid = line[3].strip().lower()
