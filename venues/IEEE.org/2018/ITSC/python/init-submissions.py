@@ -25,7 +25,7 @@ js_constants = {
     'LOCATION': "Maui, Hawaii, USA",
     'DATE': "November 4-7, 2018",
     'WEBSITE': "https://sites.google.com/view/itsc18-rl",
-    'DEADLINE': "Submission Deadline: April 15, 2018, 11:59 pm (AoE)",
+    'DEADLINE': "Submission Deadline: May 1, 2018, 11:59 pm (AoE)",
     'CONFERENCE': 'IEEE.org/2018/ITSC',
     'PROGRAM_CHAIRS': 'IEEE.org/2018/ITSC/Program_Chairs',
     'REVIEWERS': 'IEEE.org/2018/ITSC/Reviewers',
@@ -34,8 +34,8 @@ js_constants = {
     'COMMENT_INVITATION': 'IEEE.org/2018/ITSC/-/Comments'
 }
 
-# April 15, 2018, 11:59 pm (AoE) = 4/16/18 noon GMT
-DUE_DATE =  tools.timestamp_GMT(2018,4,16,12)
+# May 1, 2018, 11:59 pm (AoE) = 5/2/18 noon GMT
+DUE_DATE =  tools.timestamp_GMT(2018,5,2,12)
 
 groups = tools.build_groups(js_constants['CONFERENCE'])
 for g in groups:
