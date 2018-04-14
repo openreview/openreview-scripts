@@ -46,7 +46,10 @@ if args.output!=None:
                 row.append(', '.join(note.content['keywords']).encode('UTF-8'))
                 row.append(', '.join(note.content['authors']).encode('UTF-8'))
                 row.append(', '.join(note.content['authorids']).encode('UTF-8'))
-                row.append(', '.join(note.content['author affiliation']).encode('UTF-8'))
+                if 'author affliliation' in note.content:
+                    row.append(', '.join(note.content['author affiliation']).encode('UTF-8'))
+                else:
+                    row.append(', ')
                 csvwriter.writerow(row)
 
     else:
