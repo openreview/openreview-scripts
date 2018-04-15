@@ -1,5 +1,5 @@
 function(){
-    var SHORT_PHRASE = 'MIDL 2018';
+    var SHORT_PHRASE = 'MIDL 2018 Abstract';
     var CONFERENCE_ID = 'MIDL.amsterdam/2018/Abstract';
     var or3client = lib.or3client;
 
@@ -17,13 +17,8 @@ function(){
 
       var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
 
-      // allow this reviewer to see other reviews
-      var non_reviewer_group = CONFERENCE_ID + '/Paper' + note_number + '/Reviewers/NonReaders';
-      var reviewReader = or3client.removeGroupMember(non_reviewer_group, note.signatures[0], token);
-
       return Promise.all([
         authorMailP,
-        reviewReader
       ]);
     })
     // do not allow reviewer to post another review for this paper

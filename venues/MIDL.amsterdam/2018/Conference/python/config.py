@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, os
-
+from openreview import tools
 """
 GROUPS
 
@@ -22,8 +22,9 @@ ADMIN = CONFERENCE_ID + '/Admin'
 PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
 AREA_CHAIRS = CONFERENCE_ID + '/Area_Chairs'
 REVIEWERS = CONFERENCE_ID + '/Reviewers'
-SUBMISSION_TIMESTAMP = 1523483999000
-REVIEW_TIMESTAMP = 1523483999000
+# midnight CET = 11pm GMT
+SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, 4, 11, 23, 0, 0)
+REVIEW_TIMESTAMP = tools.timestamp_GMT(2018,5, 9, 23, 0, 0)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
 """
@@ -97,7 +98,8 @@ review_params = {
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js')
+    'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
+    'duedate': REVIEW_TIMESTAMP
 }
 
 
@@ -161,7 +163,7 @@ submission_reply = {
         'author affiliation': {
             'description': 'Institution name(s) of the author(s)',
             'order': 10,
-            'value-regex': '.{0,250}',
+            'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
             'required': False
         }
     }
@@ -211,8 +213,18 @@ review_content = {
         'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (up to 5000 chars).',
         'required': True
     },
-    'rating': {
+    'special_issue': {
         'order': 3,
+        'description': 'Is this paper suited for the Medical Image Analysis Special Issue?',
+        'value-radio': [
+            'Definitely',
+            'Yes',
+            'No'
+        ],
+        'required': True
+    },
+    'rating': {
+        'order': 4,
         'value-dropdown': [
             '5: Top 15% of accepted papers, strong accept',
             '4: Top 50% of accepted papers, clear accept',
@@ -223,7 +235,7 @@ review_content = {
         'required': True
     },
     'confidence': {
-        'order': 4,
+        'order': 5,
         'value-radio': [
             '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
             '2: The reviewer is fairly confident that the evaluation is correct',

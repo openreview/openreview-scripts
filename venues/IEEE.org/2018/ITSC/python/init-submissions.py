@@ -1,5 +1,6 @@
 import openreview
 import argparse
+import os
 from openreview import invitations
 from openreview import process
 from openreview import tools
@@ -24,16 +25,17 @@ js_constants = {
     'LOCATION': "Maui, Hawaii, USA",
     'DATE': "November 4-7, 2018",
     'WEBSITE': "https://sites.google.com/view/itsc18-rl",
-    'DEADLINE': "Submission Deadline: April 15, 2018, 11:59 pm (AoE)",
+    'DEADLINE': "Submission Deadline: May 1, 2018, 11:59 pm (AoE)",
     'CONFERENCE': 'IEEE.org/2018/ITSC',
     'PROGRAM_CHAIRS': 'IEEE.org/2018/ITSC/Program_Chairs',
     'REVIEWERS': 'IEEE.org/2018/ITSC/Reviewers',
     'SUBMISSION_INVITATION': 'IEEE.org/2018/ITSC/-/Submission',
-    'BLIND_INVITATION': 'IEEE.org/2018/ITSC/-/Blind_Submission'
+    'BLIND_INVITATION': 'IEEE.org/2018/ITSC/-/Blind_Submission',
+    'COMMENT_INVITATION': 'IEEE.org/2018/ITSC/-/Comments'
 }
 
-# April 15, 2018, 11:59 pm (AoE) = 4/16/18 11:59am GMT
-DUE_DATE =  1523879999000
+# May 1, 2018, 11:59 pm (AoE) = 5/2/18 noon GMT
+DUE_DATE =  tools.timestamp_GMT(2018,5,2,12)
 
 groups = tools.build_groups(js_constants['CONFERENCE'])
 for g in groups:
@@ -92,6 +94,16 @@ blind_inv = client.post_invitation(blind_inv)
 print "posted invitation", submission_inv.id
 print "posted invitation", blind_inv.id
 
+
+comment_inv = invitations.Comment(
+    name = 'Comment',
+    conference_id = js_constants['CONFERENCE'],
+    process = os.path.join(os.path.dirname(__file__),'../process/commentProcess.js'),
+    invitation = js_constants['BLIND_INVITATION'],
+)
+client.post_invitation(comment_inv)
+
+print "posted invitation", comment_inv.id
 '''
 Create the homepage and add it to the conference group.
 '''
@@ -126,3 +138,23 @@ this_conference = client.get_group(js_constants['CONFERENCE'])
 this_conference.web = homepage.render()
 this_conference = client.post_group(this_conference)
 print "adding webfield to", this_conference.id
+
+pcs = openreview.Group(js_constants['PROGRAM_CHAIRS'],
+    readers=[js_constants['CONFERENCE'], js_constants['PROGRAM_CHAIRS']],
+    writers=[js_constants['CONFERENCE']],
+    signatories= [js_constants['CONFERENCE'], js_constants['PROGRAM_CHAIRS']],
+    signatures= [js_constants['CONFERENCE']]
+    #'web': os.path.join(os.path.dirname(__file__), '../webfield/programchairWebfield.js'),
+)
+client.post_group(pcs)
+print "posted group",pcs.id
+
+reviewers = openreview.Group(js_constants['REVIEWERS'],
+    readers=[js_constants['CONFERENCE']],
+    writers=[js_constants['CONFERENCE']],
+    signatories= [js_constants['CONFERENCE']],
+    signatures= [js_constants['CONFERENCE']]
+    #'web': os.path.join(os.path.dirname(__file__), '../webfield/programchairWebfield.js'),
+)
+client.post_group(reviewers)
+print "posted group",reviewers.id

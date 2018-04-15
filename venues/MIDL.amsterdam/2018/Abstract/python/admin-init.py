@@ -50,6 +50,15 @@ groups = build_groups(config.CONFERENCE_ID)
 for g in sorted([g for g in groups]):
     print "posting group {0}".format(g)
     client.post_group(groups[g])
+
+# Add webfield for parent MIDL group
+group = client.get_group('MIDL.amsterdam/2018')
+print group.id
+with open('../../midl18-landing-webfield.html') as f:
+    group.web = f.read()
+group.signatures = [client.signature]
+updated_group = client.post_group(group)
+
 # add admin group to the conference members
 client.add_members_to_group(groups[config.CONFERENCE_ID], config.CONFERENCE_ID + '/Admin')
 

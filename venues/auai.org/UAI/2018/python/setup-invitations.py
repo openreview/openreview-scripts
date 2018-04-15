@@ -137,5 +137,3 @@ for paper in papers:
 
         client.post_invitation(new_inv)
 
-
-
