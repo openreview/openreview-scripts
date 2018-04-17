@@ -35,7 +35,7 @@ function(){
       };
 
       var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
-      var reviewerMailP = or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
+      //var reviewerMailP = or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
       var areachairMailP = or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
 
       var removeFromUnsubmittedP = or3client.removeGroupMember(reviewersUnsubmittedId, note.signatures[0], token);
