@@ -33,7 +33,8 @@ config_note = openreview.Note(**{
             'maxpapers': 8,
             'alternates': 5,
             'weights': {
-                'tpmsScore': 1
+                'tpmsScore': 1.0,
+                'acRecommendation': 3.0
             }
         },
         'constraints': {},
