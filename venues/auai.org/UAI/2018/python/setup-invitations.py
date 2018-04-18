@@ -129,7 +129,7 @@ if args.invitations == ['all']:
 else:
     invitations_to_process = args.invitations
 
-assert all(args.invitations) in invitation_templates.keys(), "Invalid invitation. You must choose from the following: {}".format(invitation_templates.keys())
+assert all(id in invitation_templates.keys() for id in args.invitations), "Invalid invitation. You must choose from the following: {}".format(invitation_templates.keys())
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
