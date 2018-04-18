@@ -35,7 +35,7 @@ mask_submitted_group = conference + "/Paper<number>/Reviewers/Submitted"
 program_chairs_id = conference + '/Program_Chairs'
 blind_submission_inv_id = conference + '/-/Blind_Submission'
 
-invitation_templates = invitation_templates = {
+invitation_templates = {
     'Official_Comment': {
         'id': conference + '/-/Paper<number>/Official_Comment',
         'readers': ['everyone'],
@@ -104,10 +104,16 @@ invitation_templates = invitation_templates = {
                 'description': 'Users that may modify this record.',
                 'values': ['auai.org/UAI/2018']
             },
-            'content': invitations.content.submission
+            'content': invitations.content.review
         }
     }
 }
+
+def get_invitation_template(template_id, disable=False):
+    invitation_template = invitation_templates[template_id]
+    if disable:
+        invitation_template['invitees'] = []
+    return invitation_template
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -123,17 +129,15 @@ if args.invitations == ['all']:
 else:
     invitations_to_process = args.invitations
 
+assert all(id in invitation_templates.keys() for id in args.invitations), "Invalid invitation. You must choose from the following: {}".format(invitation_templates.keys())
+
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 papers = client.get_notes(invitation = 'auai.org/UAI/2018/-/Blind_Submission')
 
 for paper in papers:
     for template_id in invitations_to_process:
-        invitation_template = invitation_templates[template_id]
-        new_inv = invitations.generate_invitation(invitation_template, paper)
-
-        if args.disable:
-            new_inv.invitees = []
-
+        invitation_template = get_invitation_template(template_id, disable=args.disable)
+        new_inv = invitations.from_template(invitation_template, paper)
         client.post_invitation(new_inv)
 
