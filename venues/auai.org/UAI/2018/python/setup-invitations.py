@@ -23,6 +23,7 @@ import requests
 import config
 import pprint
 import os
+import copy
 
 conference = 'auai.org/UAI/2018'
 mask_authors_group = conference + "/Paper<number>/Authors"
@@ -104,10 +105,16 @@ invitation_templates = invitation_templates = {
                 'description': 'Users that may modify this record.',
                 'values': ['auai.org/UAI/2018']
             },
-            'content': invitations.content.submission
+            'content': invitations.content.review
         }
     }
 }
+
+def get_invitation_template(template_id, disable=False):
+    invitation_template = copy.deepcopy(invitation_templates[template_id])
+    if disable:
+        invitation_template['invitees'] = []
+    return invitation_template
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -129,11 +136,7 @@ papers = client.get_notes(invitation = 'auai.org/UAI/2018/-/Blind_Submission')
 
 for paper in papers:
     for template_id in invitations_to_process:
-        invitation_template = invitation_templates[template_id]
+        invitation_template = get_invitation_template(template_id, disable=args.disable)
         new_inv = invitations.generate_invitation(invitation_template, paper)
-
-        if args.disable:
-            new_inv.invitees = []
-
         client.post_invitation(new_inv)
 
