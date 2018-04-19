@@ -11,6 +11,7 @@ datestring = '{:0>4}-{:0>2}-{:0>2}'.format(now.year, now.month, now.day)
 
 # Argument handling
 parser = argparse.ArgumentParser()
+parser.add_argument('--label', required=True)
 parser.add_argument('-o','--outfile', default = '../data/{}-cmt-dump.xml'.format(datestring))
 parser.add_argument('-i','--infile', default='../data/areachairs.csv')
 parser.add_argument('--username')
@@ -37,7 +38,8 @@ def indent(elem, level=0):
 
 print "collecting data from {}".format(client.baseurl)
 papers = openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Submission')
-assignments = openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment')
+all_assignments = openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment')
+assignments = [a for a in all_assignments if a.content['label'] == args.label]
 assignment_by_forum = {n.forum: n for n in assignments}
 
 print "reading emails from {}".format(args.infile)
