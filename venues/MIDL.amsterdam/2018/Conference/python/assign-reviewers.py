@@ -27,6 +27,7 @@ from openreview import tools
 ## Argument handling
 parser = argparse.ArgumentParser()
 parser.add_argument('assignments', help="either (1) a csv file containing reviewer assignments or (2) a string of the format '<email_address>,<paper#>' e.g. 'reviewer@cs.umass.edu,23'")
+parser.add_argument('--remove', action='store_true', help='if present, removes the assignment')
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
@@ -99,7 +100,10 @@ def assign_reviewer(reviewer_email, paper_number):
         reviewer_id = reviewer_email
     else:
         reviewer_id = reviewer_id.id
-    tools.assign(client, paper_number, config.CONFERENCE_ID, reviewer_to_add = reviewer_id)
+
+    add_or_remove_user = {'reviewer_to_add': reviewer_id} if not args.remove else {'reviewer_to_remove': reviewer_id}
+
+    tools.assign(client, paper_number, config.CONFERENCE_ID, **add_or_remove_user)
     ## reviewers are blocked from other reviews until complete
     paper_group = config.CONFERENCE_ID + '/Paper' + paper_number
     client.add_members_to_group(client.get_group(paper_group + '/Reviewers/NonReaders'), reviewer_id)
@@ -108,7 +112,7 @@ def assign_reviewer(reviewer_email, paper_number):
 ##################################################################
 
 
-if args.assignments.endswith('.csv'):   
+if args.assignments.endswith('.csv'):
     with open(args.assignments, 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
