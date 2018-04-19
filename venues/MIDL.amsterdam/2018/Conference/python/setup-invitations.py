@@ -98,8 +98,14 @@ invitation_templates = {
         'signatures': [conference],
         'process': '../process/recruitReviewerProcess.js',
         'web': '../webfield/recruitReviewerWebfield.js',
+        'invitees': ['everyone'],
+        'noninvitees': [
+            'MIDL.amsterdam/2018/Conference/Paper<number>/Reviewers',
+            'MIDL.amsterdam/2018/Conference/Paper<number>/Authors',
+            ],
         'reply': {
             'forum': '<forum>',
+            'replyto': None,
             'content': {
                 'email': {
                     'description': 'email address',
