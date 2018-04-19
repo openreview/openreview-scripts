@@ -26,6 +26,7 @@ import os
 
 conference = 'MIDL.amsterdam/2018/Conference'
 mask_authors_group = conference + "/Paper<number>/Authors"
+program_chairs_id = conference + "/Program_Chairs"
 
 invitation_templates = {
     'Add_Revision': {
@@ -36,6 +37,96 @@ invitation_templates = {
         'noninvitees': [],
         'signatures': [conference],
         'reply': dict(config.submission_reply, **{'referent': '<forum>', 'forum': '<forum>'})
+    },
+    'Recommend_Reviewer': {
+        'id': 'MIDL.amsterdam/2018/Conference/Paper<number>/-/Recommend_Reviewer',
+        'readers': [
+            'MIDL.amsterdam/2018/Conference',
+            'MIDL.amsterdam/2018/Conference/Paper<number>/Reviewers'
+        ],
+        'writers': ['MIDL.amsterdam/2018/Conference'],
+        'signatures': ['MIDL.amsterdam/2018/Conference'],
+        'invitees': ['MIDL.amsterdam/2018/Conference/Paper<number>/Reviewers'],
+        'process': '../process/recommendReviewerProcess.js',
+        'reply': {
+            'forum': '<forum>',
+            'replyto': '<forum>',
+            'readers': {
+                'values': ['MIDL.amsterdam/2018/Conference']
+            },
+            'writers': {
+                'values-regex': '~.*'
+            },
+            'signatures': {
+                'values-regex':'~.*'
+            },
+            'content': {
+                'title': {
+                    'value': 'Reviewer Recommendation',
+                    'order': 0
+                },
+                'first': {
+                    'order': 1,
+                    'value-regex': '.{1,500}',
+                    'description': 'The first name of the reviewer you are recommending',
+                    'required': True
+                },
+                'middle': {
+                    'order': 2,
+                    'value-regex': '.{1,500}',
+                    'description': '(Optional) the middle name of the reviewer you are recommending',
+                    'required': False
+                },
+                'last': {
+                    'order':3,
+                    'value-regex': '.{1,500}',
+                    'description': 'The last name of the reviewer you are recommending',
+                    'required': True
+                },
+                'email': {
+                    'value-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+                    'description': 'The email address of the reviewer you are recommending',
+                    'required': True
+                }
+            }
+        }
+    },
+    'Reviewer_Invitation': {
+        'id': conference + '/-/Paper<number>/Reviewer_Invitation',
+        'readers': ['everyone'],
+        'writers': [conference],
+        'signatures': [conference],
+        'process': '../process/recruitReviewerProcess.js',
+        'web': '../webfield/recruitReviewerWebfield.js',
+        'reply': {
+            'forum': '<forum>',
+            'content': {
+                'email': {
+                    'description': 'email address',
+                    'order': 1,
+                    'value-regex': '.*@.*'
+                },
+                'key': {
+                    'description': 'Email key hash',
+                    'order': 2,
+                    'value-regex': '.{0,100}'
+                },
+                'response': {
+                    'description': 'Invitation response',
+                    'order': 3,
+                    'value-radio': ['Yes', 'No']
+                }
+            },
+            'readers': {
+                'values': ['MIDL.amsterdam/2018/Conference']
+            },
+            'signatures': {
+                'values-regex': '\\(anonymous\\)'
+            },
+            'writers': {
+                'values-regex': '\\(anonymous\\)'
+            }
+        }
     }
 }
 
