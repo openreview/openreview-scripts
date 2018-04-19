@@ -25,7 +25,7 @@ python assign-reviewers.py ' + note.content.email + ',' + paper.number + ' --bas
 Contact Michael with questions.';
 
         var orteamMessageBody = {
-          groups: ['michael.l.spector@gmail.com'],
+          groups: ['info@openreview.net'],
           subject: '[MIDL 2018] Recruitment Acceptance Received',
           message: orteamMessage
         };
@@ -42,7 +42,7 @@ python assign-reviewers.py ' + note.content.email + ',' + paper.number + ' --rem
 Contact Michael with questions.';
 
         var orteamMessageBody = {
-          groups: ['michael.l.spector@gmail.com'],
+          groups: ['info@openreview.net'],
           subject: '[MIDL 2018] Recruitment Acceptance Received',
           message: orteamMessage
         };
