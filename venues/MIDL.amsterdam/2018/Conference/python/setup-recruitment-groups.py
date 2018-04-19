@@ -77,7 +77,7 @@ if args.groups == ['all']:
 else:
     groups_to_process = args.groups
 
-assert all(id in group_templates.keys() for id in args.groups), "Invalid invitation. You must choose from the following: {}".format(group_templates.keys())
+assert all(id in group_templates.keys() for id in groups_to_process), "Invalid group. You must choose from the following: {}".format(group_templates.keys())
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
