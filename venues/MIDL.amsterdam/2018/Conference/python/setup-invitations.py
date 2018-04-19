@@ -26,14 +26,6 @@ import os
 
 conference = 'MIDL.amsterdam/2018/Conference'
 mask_authors_group = conference + "/Paper<number>/Authors"
-mask_reviewers_group = conference + "/Paper<number>/Reviewers"
-mask_areachair_group = conference + "/Paper<number>/Area_Chairs"
-mask_anonreviewer_group = conference + "/Paper<number>/AnonReviewer[0-9]+"
-mask_allusers_group = conference + "/Paper<number>/All_Users"
-mask_unsubmitted_group = conference + "/Paper<number>/Reviewers/Unsubmitted"
-mask_submitted_group = conference + "/Paper<number>/Reviewers/Submitted"
-program_chairs_id = conference + '/Program_Chairs'
-blind_submission_inv_id = conference + '/-/Blind_Submission'
 
 invitation_templates = {
     'Add_Revision': {
