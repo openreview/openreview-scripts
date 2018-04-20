@@ -12,11 +12,11 @@ function main() {
 // never changes, put it in its own function
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
-    title: 'UAI 2018 Conference',
-    subtitle: 'Uncertainty in Artificial Intelligence',
-    location: 'San Francisco, USA',
-    date: 'August 2018',
-    website: 'http://auai.org',
+    title: 'Medical Imaging with Deep Learning',
+    subtitle: 'Conference Track',
+    location: 'Amsterdam, The Netherlands',
+    date: '4-6th July 2018',
+    website: 'https://midl.amsterdam',
     instructions: null,
   });
 
