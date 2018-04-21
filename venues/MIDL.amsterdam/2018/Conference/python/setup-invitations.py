@@ -104,7 +104,7 @@ invitation_templates = {
             'MIDL.amsterdam/2018/Conference/Paper<number>/Authors',
             ],
         'reply': {
-            'forum': '<forum>',
+            'forum': None,
             'replyto': None,
             'content': {
                 'email': {
