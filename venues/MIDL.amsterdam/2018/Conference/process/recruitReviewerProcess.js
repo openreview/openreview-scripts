@@ -21,7 +21,7 @@ function() {
         var orteamMessage = 'MIDL 2018 Recruitment acceptance received:\n\n\
 navigate to openreview-scripts/venues/MIDL.amsterdam/2018/Conference/python\n\n\
 then run the following:\n\n\
-python approve-recommendation.py ' + note.content.email + ' ' + paper.number + ' --baseurl https://openreview.net\n\n\
+python approve-recommendation.py --baseurl https://openreview.net\n\n\
 Contact Michael with questions.';
 
         var orteamMessageBody = {
