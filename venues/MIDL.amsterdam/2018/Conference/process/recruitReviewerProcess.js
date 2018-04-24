@@ -23,26 +23,30 @@ Contact Michael with questions.';
 
 
   if (hashKey == note.content.key) {
+    var acceptP = Promise.resolve();
+    var declineP = Promise.resolve();
+    var messageP = Promise.resolve();
+
     if (note.content.response == 'Yes'){
-      var acceptP = or3client.removeGroupMember('MIDL.amsterdam/2018/Conference/' + paperNumber + '/Reviewers/Declined', note.content.email, token);
-      var declineP = or3client.addGroupMember('MIDL.amsterdam/2018/Conference/' + paperNumber + '/Reviewers/Accepted', note.content.email, token);
+      acceptP = or3client.removeGroupMember('MIDL.amsterdam/2018/Conference/' + paperNumber + '/Reviewers/Declined', note.content.email, token);
+      declineP = or3client.addGroupMember('MIDL.amsterdam/2018/Conference/' + paperNumber + '/Reviewers/Accepted', note.content.email, token);
 
       var orteamMessageBody = {
         groups: ['info@openreview.net'],
         subject: '[MIDL 2018] Recruitment Acceptance Received',
         message: orteamMessageAccept
       };
-      var messageP = or3client.or3request(or3client.mailUrl, orteamMessageBody, 'POST', token);
+      messageP = or3client.or3request(or3client.mailUrl, orteamMessageBody, 'POST', token);
     } else {
-      var acceptP = or3client.removeGroupMember('MIDL.amsterdam/2018/Conference/' + paperNumber + '/Reviewers/Accepted', note.content.email, token);
-      var declineP = or3client.addGroupMember('MIDL.amsterdam/2018/Conference/' + paperNumber + '/Reviewers/Declined', note.content.email, token);
+      acceptP = or3client.removeGroupMember('MIDL.amsterdam/2018/Conference/' + paperNumber + '/Reviewers/Accepted', note.content.email, token);
+      declineP = or3client.addGroupMember('MIDL.amsterdam/2018/Conference/' + paperNumber + '/Reviewers/Declined', note.content.email, token);
 
       var orteamMessageBody = {
         groups: ['info@openreview.net'],
         subject: '[MIDL 2018] Recruitment Acceptance Received',
         message: orteamMessageDecline
       };
-      var messageP = or3client.or3request(or3client.mailUrl, orteamMessageBody, 'POST', token);
+      messageP = or3client.or3request(or3client.mailUrl, orteamMessageBody, 'POST', token);
 
     }
 
