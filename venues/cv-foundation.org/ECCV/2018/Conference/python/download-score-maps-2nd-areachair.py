@@ -33,7 +33,16 @@ for p in papers:
     papers_by_forum[p.forum] = p
     forum_by_paperid[p.content['paperId']] = p.forum
 
+
+'''
 # get existing assignments
+
+This section should be replaced by another that consumes the existing assignments provided
+to us by the ECCV program chairs. This is because the program chairs have made alterations
+to the assignments after they were out of our hands, so our assignments are not up-to-date
+
+in particular, the variable assigned_papers_by_ac should be build differently.
+'''
 print "getting existing assignments..."
 all_assignments = openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment')
 assignments = [a for a in all_assignments if a.content['label'] == 'areachairs']
@@ -113,33 +122,32 @@ for ac, forum_list in assigned_papers_by_ac.iteritems():
     for forum in forum_list:
         if forum not in ac_constraint_map:
             ac_constraint_map[forum] = {}
-        ac_constraint_map[forum][ac] = '+inf'
+        ac_constraint_map[forum][ac] = '-inf'
 
 constraint_maps['acConstraint'] = ac_constraint_map
 
-#
 
-# #Load CMT conflicts
-# print "loading CMT conflicts...",
-# cmt_conflicts = {}
-# with open('../data/areachair-conflicts.csv') as f:
-#     reader = csv.reader(f)
-#     for line in reader:
-#         email = line[2].strip().lower()
-#         paperid = line[3].strip().lower()
+#Load CMT conflicts
+print "loading CMT conflicts...",
+cmt_conflicts = {}
+with open('../data/areachair-conflicts.csv') as f:
+    reader = csv.reader(f)
+    for line in reader:
+        email = line[2].strip().lower()
+        paperid = line[3].strip().lower()
 
-#         if paperid in forum_by_paperid:
-#             conflicted_forum = forum_by_paperid[paperid]
+        if paperid in forum_by_paperid:
+            conflicted_forum = forum_by_paperid[paperid]
 
-#             areachair_profile = areachair_profiles_by_email.get(email)
+            areachair_profile = areachair_profiles_by_email.get(email)
 
-#             if areachair_profile:
-#                 cmt_conflicts[conflicted_forum] = cmt_conflicts.get(conflicted_forum, {})
-#                 cmt_conflicts[conflicted_forum][areachair_profile.id] = '-inf'
-#             else:
-#                 print "profile not found: ", email
-#
-# constraint_maps['cmtConflict'] = cmt_conflicts
+            if areachair_profile:
+                cmt_conflicts[conflicted_forum] = cmt_conflicts.get(conflicted_forum, {})
+                cmt_conflicts[conflicted_forum][areachair_profile.id] = '-inf'
+            else:
+                print "profile not found: ", email
+
+constraint_maps['cmtConflict'] = cmt_conflicts
 
 
 # load openreview conflicts
