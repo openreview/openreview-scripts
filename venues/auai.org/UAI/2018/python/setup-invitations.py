@@ -28,6 +28,7 @@ conference = 'auai.org/UAI/2018'
 mask_authors_group = conference + "/Paper<number>/Authors"
 mask_reviewers_group = conference + "/Paper<number>/Reviewers"
 mask_areachair_group = conference + "/Paper<number>/Area_Chairs"
+mask_anonac_group = conference + "/Paper<number>/Area_Chair[0-9]+"
 mask_anonreviewer_group = conference + "/Paper<number>/AnonReviewer[0-9]+"
 mask_allusers_group = conference + "/Paper<number>/All_Users"
 mask_unsubmitted_group = conference + "/Paper<number>/Reviewers/Unsubmitted"
@@ -65,7 +66,7 @@ invitation_templates = {
                 'values-regex': '|'.join([
                     mask_anonreviewer_group,
                     mask_authors_group,
-                    mask_areachair_group,
+                    mask_anonac_group,
                     program_chairs_id,
                     conference
                 ]),
