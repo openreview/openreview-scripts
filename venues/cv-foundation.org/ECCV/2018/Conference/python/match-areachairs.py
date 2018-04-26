@@ -61,5 +61,23 @@ config_note = openreview.Note(**{
     }
 })
 
-assignments = openreview_matcher.match(client, config_note, append=args.append)
+append_assignments = {}
+if args.append:
+    append_label = args.append
+    existing_assignments = openreview.tools.get_all_notes(client, config_note.content['assignment_invitation'])
+    append_assignments = {a.forum: a for a in existing_assignments if a.content['label'] == append_label}
+    config_note, assignments = openreview_matcher.match(client, config_note, post=False)
+    assignments_by_forum = {a.forum: a for a in assignments}
+    papers_by_forum = {n.forum: n for n in openreview.tools.get_all_notes(client, config_note.content['paper_invitation'])}
+    for forum, append_assignment in append_assignments.iteritems():
+        if forum in papers_by_forum:
+            print(forum)
+            assignment = assignments_by_forum[forum]
+            assignment.content['assignedGroups'] += append_assignment.content['assignedGroups']
+            posted_note = client.post_note(assignment)
+
+    client.post_note(config_note)
+else:
+    openreview_matcher.match(client, config_note)
+
 

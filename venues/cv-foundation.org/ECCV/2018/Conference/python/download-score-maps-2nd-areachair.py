@@ -31,27 +31,9 @@ papers_by_forum = {}
 forum_by_paperid = {}
 for p in papers:
     papers_by_forum[p.forum] = p
-    forum_by_paperid[p.content['paperId']] = p.forum
+    forum_by_paperid[int(p.content['paperId'])] = p.forum
 
 
-'''
-# get existing assignments
-
-This section should be replaced by another that consumes the existing assignments provided
-to us by the ECCV program chairs. This is because the program chairs have made alterations
-to the assignments after they were out of our hands, so our assignments are not up-to-date
-
-in particular, the variable assigned_papers_by_ac should be build differently.
-'''
-print "getting existing assignments..."
-all_assignments = openreview.tools.get_all_notes(client, 'cv-foundation.org/ECCV/2018/Conference/-/Paper_Assignment')
-assignments = [a for a in all_assignments if a.content['label'] == 'areachairs']
-assigned_papers_by_ac = {id: [] for id in areachairs.members}
-for a in assignments:
-    assignment_entry = a.content['assignedGroups'][0]
-    assigned_ac = assignment_entry['userId']
-    forum = a.forum
-    assigned_papers_by_ac[assigned_ac].append(forum)
 
 #Load saved profiles:
 print "loading author profiles from file..."
@@ -65,6 +47,20 @@ with open('../data/areachair-profiles.pkl', 'rb') as f:
     areachair_profiles_by_email = pickle.load(f)
 
 areachair_profiles_by_id = {profile.id: profile for profile in areachair_profiles_by_email.values()}
+
+'''
+# get existing assignments
+'''
+print "getting existing assignments..."
+assigned_papers_by_ac = defaultdict(list)
+
+with open('../data/ac1-assignments-from-cmt-2018-04-25.pkl') as f:
+    assigned_paperids_by_ac = pickle.load(f)
+    for ac_id, assigned_paperids in assigned_paperids_by_ac.iteritems():
+        for paperid in assigned_paperids:
+            forum = forum_by_paperid.get(paperid)
+            if forum in papers_by_forum:
+                assigned_papers_by_ac[ac_id].append(forum)
 
 #Load TPMS scores
 print "loading tpms scores from file..."
