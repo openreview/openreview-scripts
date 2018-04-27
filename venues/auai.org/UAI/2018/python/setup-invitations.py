@@ -107,6 +107,81 @@ invitation_templates = {
             },
             'content': invitations.content.review
         }
+    },
+    'Meta_Review': {
+        'id': conference + '/-/Paper<number>/Meta_Review',
+        'readers': ['everyone'],
+        'writers': [conference],
+        'invitees': [mask_areachair_group],
+        'noninvitees': [],
+        'signatures': [conference],
+        'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),
+        'reply': {
+            'forum': '<forum>',
+            'replyto': '<forum>',
+            'readers': {
+                'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
+                'values': [conference, mask_areachair_group, program_chairs_id]
+
+            },
+            'signatures': {
+                'description': 'How your identity will be displayed with the above content.',
+                'values-regex': mask_anonac_group
+            },
+            'writers': {
+                'description': 'Users that may modify this record.',
+                'values-regex': mask_anonac_group
+            },
+            'content': {
+                'title': {
+                    'order': 1,
+                    'value-regex': '.{1,500}',
+                    'description': 'Brief summary of your review.',
+                    'required': True
+                },
+                'recommendation': {
+                    'order': 2,
+                    'value-radio': [
+                        '(3) Strong accept',
+                        '(2) Weak accept',
+                        '(1) Reject'
+                      ],
+                    'required': True
+                },
+                'metareview': {
+                    'order': 3,
+                    'value-regex': '[\\S\\s]+',
+                    'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons',
+                    'required': True
+                },
+                'presentation format': {
+                    'order': 4,
+                    'value-radio': [
+                        'Oral',
+                        'Poster',
+                    ],
+                    'required': True
+                },
+                'best paper':{
+                    'order': 5,
+                    'description': 'Nominate as best paper (if student paper, nominate for best student paper)',
+                    'value-radio': [
+                        'Yes',
+                        'No'
+                    ],
+                    'required': False
+                },
+                'best student paper':{
+                    'order': 6,
+                    'description': 'Nominate as best student paper',
+                    'value-radio': [
+                        'Yes',
+                        'No'
+                    ],
+                    'required': False
+                }
+            }
+        }
     }
 }
 
