@@ -27,9 +27,9 @@ function main() {
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-  var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, { pageSize: 1000 });
+  var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, { pageSize: 1000, noDetails: true });
 
-  var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_INVITATION, { pageSize: 1000 });
+  var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_INVITATION, { pageSize: 1000 , noDetails: true});
 
   var decisionNotesP = Webfield.api.getSubmissions('ICLR.cc/2018/Conference/-/Acceptance_Decision', {
     noDetails: true,
@@ -110,7 +110,7 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
 
   var paperDisplayOptions = {
     pdfLink: true,
-    replyCount: true,
+    replyCount: false,
     showContents: true
   };
 
