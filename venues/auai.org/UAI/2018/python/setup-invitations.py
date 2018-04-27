@@ -139,18 +139,26 @@ invitation_templates = {
                     'description': 'Brief summary of your review.',
                     'required': True
                 },
+                'recommendation': {
+                    'order': 2,
+                    'value-radio': [
+                        '(3) Strong accept',
+                        '(2) Weak accept',
+                        '(1) Reject'
+                      ],
+                    'required': True
+                },
                 'metareview': {
                     'order': 3,
                     'value-regex': '[\\S\\s]+',
                     'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons',
                     'required': True
                 },
-                'recommendation': {
+                'presentation format': {
                     'order': 4,
                     'value-radio': [
-                        'Accept (Oral)',
-                        'Accept (Poster)',
-                        'Reject'
+                        'Oral',
+                        'Poster',
                     ],
                     'required': True
                 },
