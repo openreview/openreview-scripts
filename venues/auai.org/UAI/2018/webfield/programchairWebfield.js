@@ -16,10 +16,10 @@ var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
 
 
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair';
+var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chairs';
 
 var ANONREVIEWER_REGEX = /^auai\.org\/UAI\/2018\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^auai\.org\/UAI\/2018\/Paper(\d+)\/Area_Chair/;
+var AREACHAIR_REGEX = /^auai\.org\/UAI\/2018\/Paper(\d+)\/Area_Chairs/;
 
 
 // Ajax functions

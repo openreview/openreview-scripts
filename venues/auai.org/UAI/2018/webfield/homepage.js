@@ -252,6 +252,16 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       ].join(''));
     }
 
+     // Custom links for UAI
+    var pcId = 'auai.org/UAI/2018/Program_Chairs';
+    if (_.includes(userGroups, pcId)) {
+      $('#my-tasks .submissions-list').prepend([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + pcId + '">UAI 2018 Program Chairs Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
   } else {
     $('.tabs-container a[href="#my-tasks"]').parent().hide();
   }
