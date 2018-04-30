@@ -41,7 +41,11 @@ invitation_templates = {
         'id': conference + '/-/Paper<number>/Official_Comment',
         'readers': ['everyone'],
         'writers': [conference],
-        'invitees': [mask_reviewers_group, mask_authors_group, mask_areachair_group, program_chairs_id],
+        'invitees': [
+            mask_reviewers_group,
+            #mask_authors_group,
+            mask_areachair_group,
+            program_chairs_id],
         'noninvitees': [mask_unsubmitted_group],
         'signatures': [conference],
         'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js'),
@@ -51,8 +55,8 @@ invitation_templates = {
             'readers': {
                 'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
                 'values-dropdown': [
-                    mask_allusers_group,
-                    mask_authors_group,
+                    #mask_allusers_group,
+                    #mask_authors_group,
                     mask_reviewers_group,
                     mask_areachair_group,
                     program_chairs_id
@@ -65,7 +69,7 @@ invitation_templates = {
                 'description': '',
                 'values-regex': '|'.join([
                     mask_anonreviewer_group,
-                    mask_authors_group,
+                    #mask_authors_group,
                     mask_anonac_group,
                     program_chairs_id,
                     conference
