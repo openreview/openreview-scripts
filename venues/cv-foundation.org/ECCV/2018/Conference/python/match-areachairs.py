@@ -73,7 +73,7 @@ if args.append:
         if forum in papers_by_forum:
             print(forum)
             assignment = assignments_by_forum[forum]
-            assignment.content['assignedGroups'] += append_assignment.content['assignedGroups']
+            assignment.content['assignedGroups'] = append_assignment.content['assignedGroups'] + assignment.content['assignedGroups']
             posted_note = client.post_note(assignment)
 
     client.post_note(config_note)
