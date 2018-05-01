@@ -8,11 +8,16 @@ import os
 import pickle
 
 parser = argparse.ArgumentParser()
+parser.add_argument('group', help='enter either "areachairs" or "reviewers"')
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
 
 args = parser.parse_args()
+
+assert (args.group == 'areachairs' or args.group == 'reviewers'), 'Argument must be either "reviewers" or "areachairs"'
+infile = '../data/{}.csv'.format(args.group)
+outfile = '../data/{}-profiles.pkl'.format(args.group[:-1])
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print 'connecting to {0}'.format(client.baseurl)
@@ -27,7 +32,8 @@ for p in papers:
 profiles_by_email = {}
 
 #Load CMT conflicts
-with open('../data/reviewers.csv') as f:
+print "reading from ", infile
+with open(infile) as f:
     reader = csv.reader(f)
     reader.next()
     for line in reader:
@@ -46,5 +52,6 @@ with open('../data/reviewers.csv') as f:
                 new_email_entries = {e: profile for e in profile.content['emails']}
                 profiles_by_email.update(new_email_entries)
 
-with open('../data/reviewer-profiles.pkl', 'wb') as f:
+print "writing to ", outfile
+with open(outfile, 'wb') as f:
     pickle.dump(profiles_by_email, f)
