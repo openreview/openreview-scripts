@@ -8,7 +8,7 @@
 // Constants
 var CONFERENCE = 'ICLR.cc/2018/Workshop';
 var INVITATION = CONFERENCE + '/-/Submission';
-var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
+var WITHDRAWN_INVITATION = CONFERENCE + '/-/Withdraw_Submission';
 
 var initialPageLoad = true;
 
@@ -28,12 +28,14 @@ function main() {
 function load() {
   var notesP = Webfield.api.getSubmissions(INVITATION, { pageSize: 1000 });
 
+  var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_INVITATION, { pageSize: 1000 , noDetails: true});
+
   var decisionNotesP = Webfield.api.getSubmissions('ICLR.cc/2018/Workshop/-/Acceptance_Decision', {
     noDetails: true,
     pageSize: 1000
   });
 
-  return $.when(notesP, decisionNotesP);
+  return $.when(notesP, withdrawnNotesP, decisionNotesP);
 }
 
 
@@ -58,6 +60,10 @@ function renderConferenceTabs() {
     {
       heading: 'Rejected Papers',
       id: 'rejected-papers',
+    },
+    {
+      heading: 'Withdrawn Papers',
+      id: 'withdrawn-papers',
     }
   ];
 
@@ -67,7 +73,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, decisionsNotes) {
+function renderContent(notes, withdrawnNotes, decisionsNotes) {
 
   var notesDict = {};
   _.forEach(notes, function(n) {
@@ -84,6 +90,7 @@ function renderContent(notes, decisionsNotes) {
     } else if (d.content.decision === 'Reject') {
       rejectDecisions.push(notesDict[d.forum]);
     }
+
   });
 
   var paperDisplayOptions = {
@@ -100,7 +107,10 @@ function renderContent(notes, decisionsNotes) {
     rejectDecisions,
     _.assign({}, paperDisplayOptions, {showTags: false, container: '#rejected-papers'})
   );
-
+  Webfield.ui.searchResults(
+    withdrawnNotes,
+    _.assign({}, paperDisplayOptions, {showTags: false, container: '#withdrawn-papers'})
+  );
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
