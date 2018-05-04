@@ -87,7 +87,10 @@ invitation_templates = {
         'readers': ['everyone'],
         'writers': ['auai.org/UAI/2018'],
         'invitees': [mask_reviewers_group],
-        'noninvitees': [mask_submitted_group],
+        'noninvitees': [
+            mask_submitted_group,
+            mask_areachair_group
+            ],
         'signatures': ['auai.org/UAI/2018'],
         'duedate': 1524355199000, # Saturday, April 21, 2018 11:59:59 PM
         'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
