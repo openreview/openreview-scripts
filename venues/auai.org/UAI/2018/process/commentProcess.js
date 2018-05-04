@@ -62,7 +62,7 @@ function(){
         if (checkReadersMatch(/auai.org\/UAI\/2018\/Paper[0-9]+\/Reviewers/)){
           promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token));
         }
-        if (checkReadersMatch(/auai.org\/UAI\/2018\/Paper[0-9]+\/Area_Chairs/)){
+        else if (checkReadersMatch(/auai.org\/UAI\/2018\/Paper[0-9]+\/Area_Chairs/)){
           promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token));
         }
         if(note.readers.indexOf('auai.org/UAI/2018/Program_Chairs') > -1){
