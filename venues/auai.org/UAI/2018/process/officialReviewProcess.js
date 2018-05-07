@@ -14,13 +14,13 @@ function(){
       var areachairs = ['auai.org/UAI/2018/Paper' + note_number + '/Area_Chairs'];
       var reviewersUnsubmittedId = 'auai.org/UAI/2018/Paper' + note_number + '/Reviewers/Unsubmitted';
       var reviewersSubmittedId = 'auai.org/UAI/2018/Paper' + note_number + '/Reviewers/Submitted';
-      var authors = forum.content.authorids;
-
-      var author_mail = {
-        "groups" : authors,
-        "subject": "Review posted to your submitted paper: \"" + forum.content.title + "\"",
-        "message": "Your submissions to " + conference + " has received an official review. \n\nTitle: " + note.content.title + "\n\nComment: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl + "/forum?id=" + note.forum
-      };
+//      var authors = forum.content.authorids;
+//
+//      var author_mail = {
+//        "groups" : authors,
+//        "subject": "Review posted to your submitted paper: \"" + forum.content.title + "\"",
+//        "message": "Your submissions to " + conference + " has received an official review. \n\nTitle: " + note.content.title + "\n\nComment: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl + "/forum?id=" + note.forum
+//      };
 
       var reviewer_mail = {
         "groups" : reviewers,
@@ -34,13 +34,13 @@ function(){
         "message": "A submission to " + conference + ", for which you are an official area chair, has received a review. \n\nTitle: " + note.content.title + "\n\nReview: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl + "/forum?id=" + note.forum
       };
 
-      var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
+      //var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
       //var reviewerMailP = or3client.or3request( or3client.mailUrl, reviewer_mail, 'POST', token );
       var areachairMailP = or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
 
       var removeFromUnsubmittedP = or3client.removeGroupMember(reviewersUnsubmittedId, note.signatures[0], token);
       var addToSubmittedP = or3client.addGroupMember(reviewersSubmittedId, note.signatures[0], token)
-      return Promise.all([areachairMailP, authorMailP, removeFromUnsubmittedP, addToSubmittedP]);
+      return Promise.all([areachairMailP, removeFromUnsubmittedP, addToSubmittedP]);
     })
     .then(result => or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token))
     .then(result => or3client.or3request(or3client.inviteUrl+'?id='+note.invitation, {}, 'GET', token))
