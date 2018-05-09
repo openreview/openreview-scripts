@@ -3,10 +3,12 @@ import config
 
 def recruit_reviewer(client, email, first, verbose=True):
     '''
-    The hashkey is important for uniquely identifying the user,
-    without requiring them to already have an openreview account.
-    The second argument to the client.get_hash() function
-    is just a big random number that the invitation's "process function" also knows about.
+    Recruit a reviewer to NAMPI 2018
+
+    The hashkey is important for uniquely identifying the user, without
+    requiring them to already have an openreview account. The second argument
+    to the client.get_hash() function is just a big random number that the
+    invitation's "process function" also knows about.
     '''
     hashkey = client.get_hash(email.encode('utf-8'), "2810398440804348173")
 
