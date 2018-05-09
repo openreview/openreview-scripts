@@ -14,15 +14,15 @@ function() {
     if (note.content.response == 'Yes') {
       console.log("Invitation replied Yes")
       //if a user is in the declined group, remove them from that group and add them to the reviewers group
-      or3client.removeGroupMember(REVIEWERS_DECLINE_ID, note.content.email, token);
-      or3client.addGroupMember(REVIEWERS_ID, note.content.email, token)
+      or3client.removeGroupMember(REVIEWERS_DECLINE_ID, note.content.email, token)
+      .then(result => or3client.addGroupMember(REVIEWERS_ID, note.content.email, token))
       .then(result => done())
       .catch(error => done(error));
     } else if (note.content.response == 'No'){
       console.log("Invitation replied No")
       //if a user is in the reviewers group, remove them from that group and add them to the reviewers-declined group
       or3client.removeGroupMember(REVIEWERS_ID, note.content.email, token)
-      or3client.addGroupMember(REVIEWERS_DECLINE_ID, note.content.email, token)
+      .then(result => or3client.addGroupMember(REVIEWERS_DECLINE_ID, note.content.email, token))
       .then(result => done())
       .catch(error => done(error));
     } else {
