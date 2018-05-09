@@ -61,20 +61,13 @@ review_content = {
     'rating': {
         'order': 3,
         'value-dropdown': [
-            '5: Top 15% of accepted papers, strong accept',
-            '4: Top 50% of accepted papers, clear accept',
-            '3: Marginally above acceptance threshold',
-            '2: Marginally below acceptance threshold',
-            '1: Strong rejection'
-        ],
-        'required': True
-    },
-    'confidence': {
-        'order': 4,
-        'value-radio': [
-            '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
-            '2: The reviewer is fairly confident that the evaluation is correct',
-            '1: The reviewer\'s evaluation is an educated guess'
+            '-3',
+            '-2',
+            '-1',
+            '0',
+            '1',
+            '2',
+            '3'
         ],
         'required': True
     }
