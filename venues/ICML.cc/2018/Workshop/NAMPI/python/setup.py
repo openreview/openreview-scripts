@@ -17,13 +17,13 @@ print client.baseurl
 
 
 '''
-Post the reviewer groups. Warning! This will reset all members! 
+Post the reviewer groups. Warning! This will reset all members!
 
 TODO: make a function to post a group without overwriting members.
 '''
-reviewers = client.post_group(config.REVIEWERS)
-reviewers_invited = client.post_group(config.REVIEWERS_INVITED)
-reviewers_declined = client.post_group(config.REVIEWERS_DECLINED)
+reviewers = client.post_group(config.reviewers)
+reviewers_invited = client.post_group(config.reviewers_invited)
+reviewers_declined = client.post_group(config.reviewers_declined)
 
 
 # In[4]:
@@ -32,7 +32,7 @@ reviewers_declined = client.post_group(config.REVIEWERS_DECLINED)
 '''
 Post the recruitment invitation. This can be done multiple times without consequence.
 '''
-recruit_reviewers = client.post_invitation(config.RECRUIT_REVIEWERS)
+recruit_reviewers = client.post_invitation(config.recruit_reviewers)
 
 
 # In[5]:

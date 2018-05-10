@@ -20,7 +20,7 @@ REVIEWERS_DECLINED_ID = REVIEWERS_ID + '/Declined'
 '''
 Group definitions.
 '''
-CONFERENCE = openreview.Group(**{
+conference = openreview.Group(**{
     'id': CONFERENCE_ID,
     'readers':['everyone'],
     'writers': [],
@@ -30,7 +30,7 @@ CONFERENCE = openreview.Group(**{
     'web': '../webfield/homepage.js'
 })
 
-PROGRAM_CHAIRS = openreview.Group(**{
+program_chairs = openreview.Group(**{
     'id': PROGRAM_CHAIRS_ID,
     'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
     'writers': [],
@@ -39,7 +39,7 @@ PROGRAM_CHAIRS = openreview.Group(**{
     'members': [],
 })
 
-REVIEWERS = openreview.Group(**{
+reviewers = openreview.Group(**{
     'id': REVIEWERS_ID,
     'readers':[CONFERENCE_ID],
     'writers': [CONFERENCE_ID],
@@ -48,7 +48,7 @@ REVIEWERS = openreview.Group(**{
     'members': [],
 })
 
-REVIEWERS_INVITED = openreview.Group(**{
+reviewers_invited = openreview.Group(**{
     'id': REVIEWERS_INVITED_ID,
     'readers':[CONFERENCE_ID],
     'writers': [CONFERENCE_ID],
@@ -57,7 +57,7 @@ REVIEWERS_INVITED = openreview.Group(**{
     'members': [],
 })
 
-REVIEWERS_DECLINED = openreview.Group(**{
+reviewers_declined = openreview.Group(**{
     'id': REVIEWERS_DECLINED_ID,
     'readers':[CONFERENCE_ID],
     'writers': [CONFERENCE_ID],
@@ -70,7 +70,7 @@ REVIEWERS_DECLINED = openreview.Group(**{
 Invitation definitions.
 '''
 
-RECRUIT_REVIEWERS = invitations.Recruitment(
+recruit_reviewers = invitations.Recruitment(
     id = CONFERENCE_ID + '/-/Recruit_Reviewers',
     conference_id = CONFERENCE_ID,
     process = os.path.abspath('../process/recruitReviewerProcess.js'),

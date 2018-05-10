@@ -15,7 +15,7 @@ def recruit_reviewer(client, email, first, verbose=True):
     # build the URL to send in the message
     url = '{baseurl}/invitation?id={recruitment_inv}&email={email}&key={hashkey}&response='.format(
         baseurl = client.baseurl,
-        recruitment_inv = config.RECRUIT_REVIEWERS.id,
+        recruitment_inv = config.recruit_reviewers.id,
         email = email,
         hashkey = hashkey
     )
