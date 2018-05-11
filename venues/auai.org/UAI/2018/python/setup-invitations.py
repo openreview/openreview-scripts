@@ -310,24 +310,6 @@ invitation_templates = {
                         'Poster',
                     ],
                     'required': True
-                },
-                'best paper':{
-                    'order': 5,
-                    'description': 'Best paper award',
-                    'value-radio': [
-                        'Yes',
-                        'No'
-                    ],
-                    'required': False
-                },
-                'best student paper':{
-                    'order': 6,
-                    'description': 'Best student paper award',
-                    'value-radio': [
-                        'Yes',
-                        'No'
-                    ],
-                    'required': False
                 }
             }
         }
