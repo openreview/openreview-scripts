@@ -196,7 +196,8 @@ invitation_templates = {
         'writers': [conference],
         'invitees': [
             mask_areachair_group,
-            program_chairs_id
+            program_chairs_id,
+            conference
         ],
         'noninvitees': [],
         'signatures': [conference],
