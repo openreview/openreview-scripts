@@ -273,7 +273,7 @@ invitation_templates = {
             'forum': '<forum>',
             'replyto': '<forum>',
             'readers': {
-                'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
+                'description': 'The readers of this note',
                 'values': [conference, program_chairs_id]
             },
             'signatures': {
