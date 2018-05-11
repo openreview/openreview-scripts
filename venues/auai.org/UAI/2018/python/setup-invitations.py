@@ -19,6 +19,7 @@ import sys
 import re
 import openreview
 from openreview import invitations
+from openreview import tools
 import requests
 import config
 import pprint
@@ -85,13 +86,13 @@ invitation_templates = {
     'Official_Review': {
         'id': conference + '/-/Paper<number>/Official_Review',
         'readers': ['everyone'],
-        'writers': ['auai.org/UAI/2018'],
+        'writers': [conference],
         'invitees': [mask_reviewers_group],
         'noninvitees': [
             mask_submitted_group,
             mask_areachair_group
             ],
-        'signatures': ['auai.org/UAI/2018'],
+        'signatures': [conference],
         'duedate': 1524355199000, # Saturday, April 21, 2018 11:59:59 PM
         'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
         'reply': {
@@ -110,7 +111,7 @@ invitation_templates = {
             },
             'writers': {
                 'description': 'Users that may modify this record.',
-                'values': ['auai.org/UAI/2018']
+                'values': [conference]
             },
             'content': invitations.content.review
         }
@@ -129,7 +130,6 @@ invitation_templates = {
             'readers': {
                 'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
                 'values': [conference, mask_areachair_group, program_chairs_id]
-
             },
             'signatures': {
                 'description': 'How your identity will be displayed with the above content.',
@@ -187,6 +187,77 @@ invitation_templates = {
                     ],
                     'required': False
                 }
+            }
+        }
+    },
+    'Review_Rating': {
+        'id': conference + '/-/Paper<number>/Review_Rating',
+        'readers': [conference, program_chairs_id, mask_areachair_group],
+        'writers': [conference],
+        'invitees': [
+            mask_areachair_group,
+            program_chairs_id
+        ],
+        'noninvitees': [],
+        'signatures': [conference],
+        'duedate': openreview.tools.timestamp_GMT(year=2018, month=5, day=19),
+        'reply': {
+            'forum': '<forum>',
+            'replyto': '<forum>',
+            'readers': {
+                'description': 'This rating is only visible to the UAI program chairs.',
+                'values': [program_chairs_id]
+            },
+            'signatures': {
+                'description': 'How your identity will be displayed with the above content.',
+                'values-regex': '{}|{}'.format(mask_anonac_group, program_chairs_id)
+            },
+            'writers': {
+                'description': 'Users that may modify this record.',
+                'values-regex': '{}|{}'.format(mask_anonac_group, program_chairs_id)
+            },
+            'content': {
+                'title': {
+                    'value': 'Review ratings for Paper<number>',
+                    'description': 'Anonymous ratings of review quality. These will not be shared without your explicit consent.',
+                    'order': 0
+                },
+                'AnonReviewer1': {
+                    'description': 'Rating for this reviewer',
+                    'order': 7,
+                    'value-radio': [
+                        '5. Reviewer feedback was very informative, factually correct and constructive.',
+                        '4. Reviewer feedback was informative but it contained some factual errors or missing points which were later acknowledged.',
+                        '3. Reviewer feedback was mostly informative, but not entirely accurate.',
+                        '2. Reviewer feedback was not very informative.',
+                        '1. Reviewer feedback was incorrect or reviewer did not seem to have read the paper in enough detail.'
+                    ],
+                    'required': True,
+                },
+                'AnonReviewer2': {
+                    'description': 'Rating for this reviewer',
+                    'order': 8,
+                    'value-radio': [
+                        '5. Reviewer feedback was very informative, factually correct and constructive.',
+                        '4. Reviewer feedback was informative but it contained some factual errors or missing points which were later acknowledged.',
+                        '3. Reviewer feedback was mostly informative, but not entirely accurate.',
+                        '2. Reviewer feedback was not very informative.',
+                        '1. Reviewer feedback was incorrect or reviewer did not seem to have read the paper in enough detail.'
+                    ],
+                    'required': True,
+                },
+                'AnonReviewer3': {
+                    'description': 'Rating for this reviewer',
+                    'order': 9,
+                    'value-radio': [
+                        '5. Reviewer feedback was very informative, factually correct and constructive.',
+                        '4. Reviewer feedback was informative but it contained some factual errors or missing points which were later acknowledged.',
+                        '3. Reviewer feedback was mostly informative, but not entirely accurate.',
+                        '2. Reviewer feedback was not very informative.',
+                        '1. Reviewer feedback was incorrect or reviewer did not seem to have read the paper in enough detail.'
+                    ],
+                    'required': True,
+                },
             }
         }
     }
