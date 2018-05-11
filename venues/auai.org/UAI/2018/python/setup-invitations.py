@@ -260,6 +260,76 @@ invitation_templates = {
                 },
             }
         }
+    },
+    'Final_Decision': {
+        'id': conference + '/-/Paper<number>/Final_Decision',
+        'readers': ['everyone'],
+        'writers': [conference],
+        'invitees': [conference, program_chairs_id],
+        'noninvitees': [],
+        'signatures': [conference],
+        'reply': {
+            'forum': '<forum>',
+            'replyto': '<forum>',
+            'readers': {
+                'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
+                'values': [conference, program_chairs_id]
+            },
+            'signatures': {
+                'description': 'How your identity will be displayed with the above content.',
+                'values': [program_chairs_id]
+            },
+            'writers': {
+                'description': 'Users that may modify this record.',
+                'values': [conference, program_chairs_id],
+            },
+            'content': {
+                'title': {
+                    'order': 1,
+                    'value': 'Paper<number> Final Decision',
+                },
+                'decision': {
+                    'order': 2,
+                    'value-radio': [
+                        'Accept',
+                        'Reject'
+                      ],
+                    'required': True
+                },
+                'comment': {
+                    'order': 3,
+                    'value-regex': '[\\S\\s]+',
+                    'description': 'Additional commentary about the decision',
+                    'required': False
+                },
+                'presentation format': {
+                    'order': 4,
+                    'value-radio': [
+                        'Oral',
+                        'Poster',
+                    ],
+                    'required': True
+                },
+                'best paper':{
+                    'order': 5,
+                    'description': 'Best paper award',
+                    'value-radio': [
+                        'Yes',
+                        'No'
+                    ],
+                    'required': False
+                },
+                'best student paper':{
+                    'order': 6,
+                    'description': 'Best student paper award',
+                    'value-radio': [
+                        'Yes',
+                        'No'
+                    ],
+                    'required': False
+                }
+            }
+        }
     }
 }
 
