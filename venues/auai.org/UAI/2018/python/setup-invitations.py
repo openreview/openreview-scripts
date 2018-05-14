@@ -196,7 +196,8 @@ invitation_templates = {
         'writers': [conference],
         'invitees': [
             mask_areachair_group,
-            program_chairs_id
+            program_chairs_id,
+            conference
         ],
         'noninvitees': [],
         'signatures': [conference],
@@ -258,6 +259,58 @@ invitation_templates = {
                     ],
                     'required': True,
                 },
+            }
+        }
+    },
+    'Final_Decision': {
+        'id': conference + '/-/Paper<number>/Final_Decision',
+        'readers': ['everyone'],
+        'writers': [conference],
+        'invitees': [conference, program_chairs_id],
+        'noninvitees': [],
+        'signatures': [conference],
+        'reply': {
+            'forum': '<forum>',
+            'replyto': '<forum>',
+            'readers': {
+                'description': 'The readers of this note',
+                'values': [conference, program_chairs_id]
+            },
+            'signatures': {
+                'description': 'How your identity will be displayed with the above content.',
+                'values': [program_chairs_id]
+            },
+            'writers': {
+                'description': 'Users that may modify this record.',
+                'values': [conference, program_chairs_id],
+            },
+            'content': {
+                'title': {
+                    'order': 1,
+                    'value': 'Paper<number> Final Decision',
+                },
+                'decision': {
+                    'order': 2,
+                    'value-radio': [
+                        'Accept',
+                        'Reject'
+                      ],
+                    'required': True
+                },
+                'comment': {
+                    'order': 3,
+                    'value-regex': '[\\S\\s]+',
+                    'description': 'Additional commentary about the decision',
+                    'required': False
+                },
+                'presentation format': {
+                    'order': 4,
+                    'value-radio': [
+                        'Oral',
+                        'Poster',
+                    ],
+                    'required': True
+                }
             }
         }
     }
