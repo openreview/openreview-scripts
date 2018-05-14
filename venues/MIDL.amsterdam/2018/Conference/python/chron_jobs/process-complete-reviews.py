@@ -17,7 +17,7 @@ client = Client()
 print "connected to "+client.baseurl
 
 reviewer_by_anon = {}
-anon_groups = client.get_groups(id=CONFERENCE_ID+'/-/Paper.*/AnonReviewer.*')
+anon_groups = client.get_groups(id=CONFERENCE_ID+'/Paper.*/AnonReviewer.*')
 for anon_group in anon_groups:
     if len(anon_group.members) > 0:
         reviewer_by_anon[anon_group.id] = anon_group.members[0]
@@ -59,7 +59,7 @@ for paper in notes:
                     client.post_note(review)
                     print "update "+review.invitation+" "+review.signatures[0]
                 # send email
-                author_msg = 'Your submission to ' + SHORT_PHRASE + ' has been reviewed.\n\nTitle: ' + paper.content['title'] + '\n\nTo view your submission, click here: ' + client.baseurl + '/forum?id=' + paper.forum
+                author_msg = 'Your submission to ' + SHORT_PHRASE + ' has been reviewed.\n\nTitle: ' + paper.content['title'] + '\n\nTo view your submission and reviews, click here: ' + client.baseurl + '/forum?id=' + paper.forum
 
                 print "send email to "+author_group_name
                 response = client.send_mail("Your {0} submission received reviews".format(SHORT_PHRASE), [author_group_name], author_msg)
