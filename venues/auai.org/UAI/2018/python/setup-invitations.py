@@ -309,7 +309,7 @@ invitation_templates = {
                         'Oral',
                         'Poster',
                     ],
-                    'required': True
+                    'required': False
                 }
             }
         }
