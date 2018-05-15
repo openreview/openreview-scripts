@@ -274,7 +274,7 @@ invitation_templates = {
             'replyto': '<forum>',
             'readers': {
                 'description': 'The readers of this note',
-                'values': [conference, program_chairs_id]
+                'values': [conference, program_chairs_id, mask_authors_group, mask_reviewers_group, mask_areachair_group ]
             },
             'signatures': {
                 'description': 'How your identity will be displayed with the above content.',
