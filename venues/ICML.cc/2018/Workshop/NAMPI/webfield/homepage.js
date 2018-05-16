@@ -27,7 +27,7 @@ var HEADER = {
     Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
     Please contact the NAMPI 2018 Program Chairs at \
-    <a href="mailto:nampi2018programchairs@gmail.com">nampi2018programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
+    <a href="mailto:nampi@googlegroups.com">nampi@googlegroups.com</a> with any questions or concerns about conference administration or policy. \</p>',
   deadline: 'June 1, 2018'
 }
 
