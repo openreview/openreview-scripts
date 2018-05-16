@@ -101,7 +101,10 @@ submission_inv = invitations.Submission(
             'values-regex': '|'.join(['~.*', CONFERENCE_ID])
         },
         'writers': {
-            'values-regex': '|'.join(['~.*', CONFERENCE_ID])
+            'values-copied': [
+                CONFERENCE_ID,
+                '{signatures}'
+            ]
         }
     }
 )
