@@ -13,16 +13,15 @@ var HEADER = {
   website: 'https://uclmr.github.io/nampi/',
   instructions: '<p><strong>Important Information about Anonymity:</strong><br>\
     When you post a submission to NAMPI 2018, please provide the real names and email addresses of authors in the submission form below.\
-    An anonymous record of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
+    An anonymous record of your paper will appear in the "All Papers Under Review" and "My Papers Under Review" tabs. \
+    All discussion will take place on the anonymous versions of your paper(s).\
     The <em>original</em> record of your submission will be private, and will contain your real name(s); \
-    originals can be found in the My Submitted Papers tab. Anonymous copies to be reviewed can be found \
-    in the My Papers Under Review tab.\
-    You can also access the original record of your paper by clicking the "Modifiable Original" \
-    link in the discussion forum page of your paper. The PDF in your submission should not contain the names of the authors. </p>\
-    <p><strong>Posting Revisions to Submissions:</strong><br>\
-    To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
-    Revisions are not allowed during the formal review process.\
-    Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
+    originals can be found in the "My Submitted Papers" tab.\
+    Please do not include the author names in the PDF for your submission. </p>\
+    <p><strong>Editing or Revising your submission:</strong><br>\
+    Anonymous versions of papers are not directly editable. To make a change to your paper, go to the \
+    original, non-anonymous version and edit it (if editing is enabled). Changes will propagate to the \
+    anonymous version. Edit and revision policy is determined by the specific policy of this conference. \
     <p><strong>Questions or Concerns:</strong><br> \
     Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
@@ -162,7 +161,7 @@ function renderSubmissionButton() {
           promptMessage('Your submission is complete. The list of all current submissions is shown below.');
 
           load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#all-submitted-papers"]').click();
+            $('.tabs-container a[href="#all-papers-under-review"]').click();
           });
         }
       });
@@ -172,24 +171,24 @@ function renderSubmissionButton() {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'My Tasks',
-      id: 'my-tasks',
-    },
-    {
-      heading: 'My Assigned Papers',
-      id: 'my-assigned-papers',
-    },
-    {
-      heading: 'My Submitted Papers',
-      id: 'my-submitted-papers',
+      heading: 'All Papers Under Review',
+      id: 'all-papers-under-review',
     },
     {
       heading: 'My Papers Under Review',
       id: 'my-papers-under-review',
     },
     {
-      heading: 'All Papers Under Review',
-      id: 'all-submitted-papers',
+      heading: 'My Submitted Papers',
+      id: 'my-submitted-papers',
+    },
+    {
+      heading: 'My Tasks',
+      id: 'my-tasks',
+    },
+    {
+      heading: 'My Assigned Papers',
+      id: 'my-assigned-papers',
     },
     {
       heading: 'My Comments & Reviews',
@@ -282,12 +281,12 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: true,
     tagInvitations: tagInvitations,
-    container: '#all-submitted-papers'
+    container: '#all-papers-under-review'
   });
 
   Webfield.ui.submissionList(notes, {
     heading: null,
-    container: '#all-submitted-papers',
+    container: '#all-papers-under-review',
     search: {
       enabled: true,
       onResults: function(searchResults) {
@@ -343,6 +342,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
 
   } else {
     $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
+    $('.tabs-container a[href="#my-papers-under-review"]').parent().hide();
   }
 
 
