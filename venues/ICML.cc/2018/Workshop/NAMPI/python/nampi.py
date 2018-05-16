@@ -159,7 +159,7 @@ Notification of acceptance: June 15th
 Final Papers Due: June 22nd
 Deadlines are at 11:59pm PDT.
 
-We will strive to organise a double-blind review with open comments on OpenRreview.net. In case double-blind review will not be available upon time of submission, we will do a single-blind review.
+Peer reviewing will be conducted on a double-blind basis, with open comments.
 
 In case you accept the invitation, we will soon send you further instructions on how to proceed with the reviewing duties.
 
