@@ -16,6 +16,10 @@ REVIEWERS_ID = CONFERENCE_ID + '/Reviewers'
 REVIEWERS_INVITED_ID = REVIEWERS_ID + '/Invited'
 REVIEWERS_DECLINED_ID = REVIEWERS_ID + '/Declined'
 
+SUBMISSION_ID = CONFERENCE_ID + '/-/Submission'
+BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission'
+
+SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=6, day=1)
 
 '''
 Group definitions.
@@ -70,11 +74,57 @@ reviewers_declined = openreview.Group(**{
 Invitation definitions.
 '''
 
+# Recruitment
 recruit_reviewers = invitations.RecruitReviewers(
     id = CONFERENCE_ID + '/-/Recruit_Reviewers',
     conference_id = CONFERENCE_ID,
     process = os.path.abspath('../process/recruitReviewerProcess.js'),
     web = os.path.abspath('../webfield/recruitReviewerWebfield.js')
+)
+
+
+# Configure paper submissions
+submission_inv = invitations.Submission(
+    id = SUBMISSION_ID,
+    conference_id = CONFERENCE_ID,
+    duedate = SUBMISSION_DEADLINE,
+    process = os.path.abspath('../process/submissionProcess.js'),
+    reply_params = {
+        'readers': {
+            'values-copied': [
+                CONFERENCE_ID,
+                '{content.authorids}',
+                '{signatures}'
+            ]
+        },
+        'signatures': {
+            'values-regex': '|'.join(['~.*', CONFERENCE_ID])
+        },
+        'writers': {
+            'values-regex': '|'.join(['~.*', CONFERENCE_ID])
+        }
+    }
+)
+
+blind_submission_inv = invitations.Submission(
+    id = BLIND_SUBMISSION_ID,
+    conference_id = CONFERENCE_ID,
+    duedate = SUBMISSION_DEADLINE,
+    mask = {
+        'authors': {
+            'values': ['Anonymous']
+        },
+        'authorids': {
+            'values-regex': '.*'
+        }
+    },
+    reply_params = {
+        'signatures': {
+            'values': [CONFERENCE_ID]},
+        'readers': {
+            'values-regex': CONFERENCE_ID + '.*'
+        }
+    }
 )
 
 '''
