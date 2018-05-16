@@ -23,8 +23,8 @@ Group definitions.
 conference = openreview.Group(**{
     'id': CONFERENCE_ID,
     'readers':['everyone'],
-    'writers': [],
-    'signatures': [],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
     'signatories': [CONFERENCE_ID],
     'members': [],
     'web': '../webfield/homepage.js'
@@ -70,7 +70,7 @@ reviewers_declined = openreview.Group(**{
 Invitation definitions.
 '''
 
-recruit_reviewers = invitations.Recruitment(
+recruit_reviewers = invitations.RecruitReviewers(
     id = CONFERENCE_ID + '/-/Recruit_Reviewers',
     conference_id = CONFERENCE_ID,
     process = os.path.abspath('../process/recruitReviewerProcess.js'),
@@ -80,10 +80,17 @@ recruit_reviewers = invitations.Recruitment(
 '''
 Email templates.
 '''
-RECRUIT_MESSAGE_SUBJ = 'NAMPI 2018: Invitation to Review'
+RECRUIT_MESSAGE_SUBJ = 'Invitation to review for Neural Abstract Machines & Program Induction v2 (NAMPI_v2) workshop @ ICML 2018'
 RECRUIT_MESSAGE = '''Dear {name},
 
-You have been invited to serve as a reviewer for the ICML 2018 NAMPI workshop.
+We would like to invite you to serve on the Program Committee for the Neural Abstract Machines & Program Induction v2 (NAMPI_v2) workshop at ICML 2018. The workshop will broadly focus on neural approaches to computation, program induction, algorithm learning, abstract machines and data structures, and their relation to established learning and non-learning methods in the field. More details can be found here: https://uclmr.github.io/nampi/
+
+The NAMPI_v2 workshop will be held in Stockholm, Sweden on July 15th, 2018.
+
+The Program Committee will review up to 4-page (not including references) submissions, and will consist of experts in various fields of interest for the workshop. Realising your busy schedule, we will try to keep the load as low as possible. Our current estimate is 1-2 papers a person max.
+
+We would be grateful if you could confirm your acceptance or refusal of the participation in the NAMPI_v2 committee by clicking on one of the links below..
+
 
 To ACCEPT the invitation, please click on the following link:
 
@@ -93,9 +100,22 @@ To DECLINE the invitation, please click on the following link:
 
 {decline_url}
 
-We really hope you will be able to accept our invitation and help us select a high quality program for NAMPI 2018!
+Workshop deadlines:
+Paper submission: June 1st (There will be no extensions)
+Notification of acceptance: June 15th
+Final Papers Due: June 22nd
+Deadlines are at 11:59pm PDT.
 
-Best regards,
-The NAMPI 2018 Program Chairs
+We will strive to organise a double-blind review with open comments on OpenRreview.net. In case double-blind review will not be available upon time of submission, we will do a single-blind review.
+
+In case you accept the invitation, we will soon send you further instructions on how to proceed with the reviewing duties.
+
+Please confirm your participation as soon as possible. We know that we will make NAMPI_v2 a big success with your help.
+
+
+
+Kind regards,
+Dawn, Matko, Pushmeet, Rob, Sebastian, Tejas, Tim
+
 
 '''
