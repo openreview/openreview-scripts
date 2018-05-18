@@ -48,18 +48,21 @@ function main() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
   var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {
-    pageSize: PAGE_SIZE
+    pageSize: PAGE_SIZE,
+    details: 'all'
   });
 
   var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
     pageSize: PAGE_SIZE,
-    tauthor: true
+    tauthor: true,
+    details: 'all'
   });
 
   var assignedNotePairsP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
     pageSize: 100,
     invitee: true,
-    duedate: true
+    duedate: true,
+    details: 'all'
   });
 
   var userGroupsP;
