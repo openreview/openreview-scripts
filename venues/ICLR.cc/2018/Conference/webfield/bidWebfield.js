@@ -27,7 +27,8 @@ function main() {
 
 function load() {
   var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {
-    pageSize: PAGE_SIZE
+    pageSize: PAGE_SIZE,
+    details: 'tags'
   });
 
   var tagInvitationsP = Webfield.get('/invitations', {id: ADD_BID}).then(function(result) {

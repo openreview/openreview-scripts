@@ -39,14 +39,14 @@
         return error
       });
 
-      var conferenceDecisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/paper.*/acceptance'}).then(function(result) {
+      var conferenceDecisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/paper.*/acceptance'}).then(function(result) {
         return result.notes;
       },
       function(error){
         return error
       });
 
-      var workshopDecisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/workshop/paper.*/acceptance'}).then(function(result) {
+      var workshopDecisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/workshop/-/paper.*/acceptance'}).then(function(result) {
         return result.notes;
       },
       function(error){
