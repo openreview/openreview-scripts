@@ -261,6 +261,7 @@ function renderContent(notes, submittedNotes, userGroups) {
     if (notes.length === PAGE_SIZE) {
       Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
     }
+    $('.tabs-container a[href="#all-submitted-papers"]').parent().show();
   } else {
     $('.tabs-container a[href="#all-submitted-papers"]').parent().hide();
   }
@@ -275,6 +276,7 @@ function renderContent(notes, submittedNotes, userGroups) {
     Webfield.ui.searchResults(assignedNotes, _.assign(
       {}, paperDisplayOptions, {container: '#my-assigned-papers'}
     ));
+    $('.tabs-container a[href="#my-assigned-papers"]').parent().show();
   } else {
     $('.tabs-container a[href="#my-assigned-papers"]').parent().hide();
   }
@@ -284,6 +286,7 @@ function renderContent(notes, submittedNotes, userGroups) {
     Webfield.ui.searchResults(commentNotes, _.assign(
       {}, commentDisplayOptions, {container: '#my-comments-reviews', emptyMessage: 'No comments or reviews to display'}
     ));
+    $('.tabs-container a[href="#my-comments-reviews"]').parent().show();
   } else {
     $('.tabs-container a[href="#my-comments-reviews"]').parent().hide();
   }
