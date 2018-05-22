@@ -1,7 +1,7 @@
 function() {
   var or3client = lib.or3client;
 
-  var CONFERENCE_ID = 'ICML.cc/2018/Workshop/NAMPI'
+  var CONFERENCE_ID = 'ICML.cc/2019/Conference'
   var PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs'
   var REVIEWERS_ID = CONFERENCE_ID + '/Area_Chairs'
   var REVIEWERS_INVITE_ID = REVIEWERS_ID + '/Invited'

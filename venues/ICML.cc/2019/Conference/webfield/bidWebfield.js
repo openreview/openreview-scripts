@@ -233,22 +233,23 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     });
 
     var submissionListOptions = _.assign({}, paperDisplayOptions, {container: '#allPapers'});
-    var sortOptionsList = [
-      {
-        label: 'Affinity Score',
-        compareProp: function(n) {
-          // Sort in descending order
-          return -1 * n.metadata.affinityScore;
-        },
-        default: true
-      },
-      {
-        label: 'TPMS Score',
-        compareProp: function(n) {
-          return -1 * n.metadata.tpmsScore;
-        }
-      }
-    ];
+    var sortOptionsList = [];
+    // var sortOptionsList = [
+    //   {
+    //     label: 'Affinity Score',
+    //     compareProp: function(n) {
+    //       // Sort in descending order
+    //       return -1 * n.metadata.affinityScore;
+    //     },
+    //     default: true
+    //   },
+    //   {
+    //     label: 'TPMS Score',
+    //     compareProp: function(n) {
+    //       return -1 * n.metadata.tpmsScore;
+    //     }
+    //   }
+    // ];
     Webfield.ui.submissionList(notes, {
       heading: null,
       container: '#allPapers',

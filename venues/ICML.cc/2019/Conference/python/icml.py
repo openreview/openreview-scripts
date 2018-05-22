@@ -29,6 +29,8 @@ BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission'
 RECRUIT_AREA_CHAIRS_ID = CONFERENCE_ID + '/-/Recruit_Area_Chairs'
 RECRUIT_REVIEWERS_ID = CONFERENCE_ID + '/-/Recruit_Reviewers'
 
+METADATA_ID = CONFERENCE_ID + '/-/Paper_Metadata'
+
 # template strings
 PAPER_TEMPLATE_STR = CONFERENCE_ID + '/Paper<number>'
 PAPER_REVIEWERS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Reviewers'
@@ -40,13 +42,13 @@ PAPER_COMMENT_NONREADERS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Comment_Nonreader
 PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR = PAPER_REVIEWERS_TEMPLATE_STR + '/Unsubmitted'
 PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR = PAPER_REVIEWERS_TEMPLATE_STR + '/Submitted'
 
-OFFICIAL_COMMENT_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Official_Comment'
-OFFICIAL_REVIEW_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Official_Review'
+OPEN_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Open_Comment'
+OFFICIAL_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Comment'
+OFFICIAL_REVIEW_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Review'
 
 # The groups corresponding to these regexes will get automatically created upon assignment
 PAPER_AREA_CHAIRS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/Area_Chair[0-9]+'
 PAPER_ANONREVIEWERS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/AnonReviewer[0-9]+'
-
 
 # Email templates.
 
@@ -124,7 +126,7 @@ program_chairs = openreview.Group(**{
 
 area_chairs = openreview.Group(**{
     'id': AREA_CHAIRS_ID,
-    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
+    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID, AREA_CHAIRS_ID],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
     'signatories': [CONFERENCE_ID],
@@ -152,7 +154,7 @@ area_chairs_declined = openreview.Group(**{
 
 reviewers = openreview.Group(**{
     'id': REVIEWERS_ID,
-    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
+    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID, AREA_CHAIRS_ID, REVIEWERS_ID],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
     'signatories': [CONFERENCE_ID],
@@ -247,18 +249,53 @@ recruit_reviewers = invitations.RecruitReviewers(
 Configure bidding
 '''
 
-add_bid_inv = invitations.AddBid(
+add_bid = invitations.AddBid(
     conference_id = CONFERENCE_ID,
     duedate = ADD_BID_DEADLINE,
     completion_count = 50,
     inv_params = {
         'readers': [
             CONFERENCE_ID,
-            PROGRAM_CHAIRS_ID
+            PROGRAM_CHAIRS_ID,
+            REVIEWERS_ID,
+            AREA_CHAIRS_ID
         ],
-        'invitees': []
-    }
+        'invitees': [],
+        'web': os.path.abspath('../webfield/bidWebfield.js')
+    },
+
 )
+
+'''
+Metadata and matching stuff
+'''
+
+reviewer_metadata = openreview.Invitation(**{
+    'id': CONFERENCE_ID + '/-/Reviewer_Metadata',
+    'readers': [
+        CONFERENCE_ID,
+        PROGRAM_CHAIRS_ID
+    ],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': SUBMISSION_ID,
+        'readers': {
+            'values': [
+                CONFERENCE_ID,
+                PROGRAM_CHAIRS_ID
+            ]
+        },
+        'writers': {
+            'values': [CONFERENCE_ID]
+        },
+        'signatures': {
+            'values': [CONFERENCE_ID]},
+        'content': {}
+    }
+})
 
 '''
 Per-paper group template definitions
@@ -429,7 +466,10 @@ official_review_template = {
         },
         'writers': {
             'description': 'Users that may modify this record.',
-            'values': [CONFERENCE_ID]
+            'values-copied':  [
+                CONFERENCE_ID,
+                '{signatures}'
+            ]
         },
         'content': invitations.content.review
     }

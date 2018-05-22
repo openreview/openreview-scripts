@@ -64,7 +64,7 @@ function() {
       parent: null,
       signatures: [CONFERENCE_ID],
       writers: [CONFERENCE_ID],
-      readers: [PROGRAM_CHAIRS_ID, AREA_CHAIRS_ID, REVIEWERS_ID, PAPER_AUTHORS_ID],
+      readers: ['everyone'],
       content: {
         authors: ['Anonymous'],
         authorids: [CONFERENCE_ID + '/Paper' + note.number + '/Authors'],

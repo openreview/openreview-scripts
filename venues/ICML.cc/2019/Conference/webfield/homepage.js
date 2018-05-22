@@ -8,14 +8,17 @@
 // Constants
 var CONFERENCE_ID = 'ICML.cc/2019/Conference';
 var SUBMISSION_ID = CONFERENCE_ID + '/-/Submission';
+var ADD_BID_ID = CONFERENCE_ID + '/-/Add_Bid';
 var BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE_ID + '/-/Recruit_Reviewers';
+var RECRUIT_AREA_CHAIRS = CONFERENCE_ID + '/-/Recruit_Area_Chairs';
 var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
 
 var ANON_SIGNATORY_REGEX = /^ICML\.cc\/2019\/Conference\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair\d+)/;
 var AUTHORS_SIGNATORY_REGEX = /^ICML\.cc\/2019\/Conference\/Paper(\d+)\/Authors/;
 
 var AREA_CHAIRS_ID = CONFERENCE_ID + '/Area_Chairs';
+var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers';
 var PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs';
 
 var HEADER = {
@@ -24,22 +27,29 @@ var HEADER = {
     location: 'Vancouver Convention Center, Vancouver, BC, Canada',
     date: 'April 30 - May 3, 2019',
     website: 'http://www.icml.cc',
-    instructions: '<p><strong>Important Information about Anonymity:</strong><br>\
-      When you post a submission to ICML 2019, please provide the real names and email addresses of authors in the submission form below.\
-      An anonymous record of your paper will appear in the "All Submitted Papers" tab, and will be visible to the public. \
-      The <em>original</em> record of your submission will be private, and will contain your real name(s); \
-      originals can be found in the My Submissions tab, or your OpenReview <a href="/tasks">Tasks page</a>.\
-      You can also access the original record of your paper by clicking the "Modifiable Original" \
-      link in the discussion forum page of your paper. The PDF in your submission should not contain the names of the authors. </p>\
-      <p><strong>Posting Revisions to Submissions:</strong><br>\
+    instructions: '<p><strong>Important Information about Anonymity</strong><br>\
+      OpenReview maintains both anonymity and attributability of papers by storing an "original" \
+      record of the paper, complete with full author names and email addresses, as well as an anonymizing \
+      "mask" for the paper, which protects the authors\' identities. Specific policy regarding when \
+      (and to whom) original records are revealed is determined by the conference organizers, but typically, \
+      original records are visible only to the authors themselves and to the conference program chairs. \
+      Contact the conference organizers with questions about conference-specific policy. (WARNING: PDFs \
+      are not automatically masked. Authors should submit PDFs without author identities.)</p> \
+      <p><strong>"Papers Under Review" vs. "Submitted Papers"</strong><br>\
+      Original papers, complete with full author names and email addresses, are submitted to a conference,\
+      and can be seen by the authors in the "My Submitted Papers" tab. Upon submission, a mask is created \
+      and made available to reviewers and other discussion participants (these participants are determined by \
+      conference-specific policy). Masks on your submitted papers appear in the "My Papers Under Review" tab. \
+      Masks created for other submissions appear in the "All Papers Under Review" tab.</p> \
+      <p><strong>Posting Revisions to Submissions</strong><br>\
       To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
       Revisions are not allowed during the formal review process.\
       Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
-      <p><strong>A Note to Reviewers about Bidding:</strong><br> \
+      <p><strong>A Note to Reviewers about Bidding</strong><br> \
       To access the bidding interface, please ensure that your profile is linked to the email address where you received your initial reviewer invitation email. \
       To do this, click on your name at the top right corner of the page, go to your Profile, enter "edit mode," and add your email address. \
       You will also need to confirm your address by pressing the "Confirm" button. This will involve a round-trip email verification.</p>\
-      <p><strong>Questions or Concerns:</strong><br> \
+      <p><strong>Questions or Concerns</strong><br> \
       Please contact the OpenReview support team at \
       <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
       Please contact the ICML 2019 Program Chairs at \
@@ -49,7 +59,8 @@ var HEADER = {
 
 var COMMENT_EXCLUSION = [
   SUBMISSION_ID,
-  RECRUIT_REVIEWERS
+  RECRUIT_REVIEWERS,
+  RECRUIT_AREA_CHAIRS
 ];
 
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
@@ -85,7 +96,8 @@ function main() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
   var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
-    pageSize: PAGE_SIZE
+    pageSize: PAGE_SIZE,
+    details: 'all'
   });
 
   var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
@@ -208,6 +220,8 @@ function renderConferenceTabs() {
 function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, userGroups, authorNotes, tagInvitations) {
   var data, commentNotes;
 
+  console.log('userGroups',userGroups);
+
   // if (_.isEmpty(userGroups)) {
   //   // If the user isn't part of the conference don't render tabs
   //   $('.tabs-container').hide();
@@ -220,7 +234,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     if (!_.isNil(note.ddate)) {
       return;
     }
-    if (!_.includes([SUBMISSION_ID, RECRUIT_REVIEWERS], note.invitation)) {
+    if (!_.includes(COMMENT_EXCLUSION, note.invitation)) {
       commentNotes.push(note);
     }
   });
@@ -276,6 +290,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
         '</li>'
       ].join(''));
     }
+
   } else {
     $('.tabs-container a[href="#my-tasks"]').parent().hide();
   }
@@ -329,9 +344,10 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     console.log('authorNoteIds', authorNoteIds);
     // get blind papers that are authored by this user
     var myPapersUnderReview = _.filter(notes, function(note){
+      console.log('note.original', note.original);
       return _.includes(authorNoteIds, note.original);
     });
-
+    //var myPapersUnderReview = notes;
     console.log('myPapersUnderReview',myPapersUnderReview);
 
     // My Papers Under Review tab
