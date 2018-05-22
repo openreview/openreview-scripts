@@ -273,6 +273,8 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
         '</li>'
       ].join(''));
     }
+
+    $('.tabs-container a[href="#my-tasks"]').parent().show();
   } else {
     $('.tabs-container a[href="#my-tasks"]').parent().hide();
   }
@@ -339,7 +341,8 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
         emptyMessage: 'You have no papers currently under review.'
       })
     );
-
+    $('.tabs-container a[href="#my-submitted-papers"]').parent().show();
+    $('.tabs-container a[href="#my-papers-under-review"]').parent().show();
   } else {
     $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
     $('.tabs-container a[href="#my-papers-under-review"]').parent().hide();
@@ -353,6 +356,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       assignedNotes,
       _.assign({}, paperDisplayOptions, {container: '#my-assigned-papers'})
     );
+    $('.tabs-container a[href="#my-comments-reviews"]').parent().show();
   } else {
     $('.tabs-container a[href="#my-assigned-papers"]').parent().hide();
   }
@@ -366,6 +370,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
         emptyMessage: 'No comments or reviews to display'
       })
     );
+    $('.tabs-container a[href="#my-comments-reviews"]').parent().show();
   } else {
     $('.tabs-container a[href="#my-comments-reviews"]').parent().hide();
   }

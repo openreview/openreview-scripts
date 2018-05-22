@@ -39,7 +39,7 @@
         return error
       });
 
-      var decisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/paper.*/acceptance'}).then(function(result) {
+      var decisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/paper.*/acceptance'}).then(function(result) {
         return result.notes;
       },
       function(error){

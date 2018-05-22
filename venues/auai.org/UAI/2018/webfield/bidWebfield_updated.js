@@ -132,12 +132,7 @@ function main() {
 
 // Perform all the required API calls
 function load() {
-  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION}).then(function(allNotes) {
-    return _.sortBy(
-      allNotes.filter(function(note) { return !note.content.hasOwnProperty('withdrawal'); }),
-      function(n) { return n.content.title.toLowerCase(); }
-    );
-  });
+  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION, details: 'tags'});
 
   var tagInvitationsP = Webfield.get('/invitations', {id: ADD_BID}).then(function(result) {
     return _.filter(result.invitations, function(invitation) {
@@ -220,7 +215,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     var canNotReview = [];
     var noBid = [];
     notes.forEach(function(n) {
-      if (n.tags.length) {
+      if (n.tags && n.tags.length) {
         if (n.tags[0].tag === 'I want to review') {
           wantToReview.push(n);
         } else if (n.tags[0].tag === 'I can review') {
