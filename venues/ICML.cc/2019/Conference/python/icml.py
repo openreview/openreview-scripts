@@ -29,7 +29,8 @@ BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission'
 RECRUIT_AREA_CHAIRS_ID = CONFERENCE_ID + '/-/Recruit_Area_Chairs'
 RECRUIT_REVIEWERS_ID = CONFERENCE_ID + '/-/Recruit_Reviewers'
 
-METADATA_ID = CONFERENCE_ID + '/-/Paper_Metadata'
+REVIEWER_METADATA_ID = CONFERENCE_ID + '/-/Reviewer_Metadata'
+AREA_CHAIR_METADATA_ID = CONFERENCE_ID + '/-/Area_Chair_Metadata'
 
 # template strings
 PAPER_TEMPLATE_STR = CONFERENCE_ID + '/Paper<number>'
@@ -267,11 +268,45 @@ add_bid = invitations.AddBid(
 )
 
 '''
+Configure AC recommendations
+'''
+
+ac_recommendation_template = {
+        'id': CONFERENCE_ID + '/-/Paper<number>/Recommend_Reviewer',
+        'invitees': [],
+        'multiReply': True,
+        'readers': ['everyone'],
+        'writers': [CONFERENCE_ID],
+        'signatures': [CONFERENCE_ID],
+        'duedate': openreview.tools.timestamp_GMT(year=2018, month=6, day=6),
+        'reply': {
+            'forum': '<forum>',
+            'replyto': '<forum>',
+            'readers': {
+                'description': 'The users who will be allowed to read the above content.',
+                'values-copied': [CONFERENCE_ID, '{signatures}']
+            },
+            'signatures': {
+                'description': 'How your identity will be displayed with the above content.',
+                'values-regex': '~.*'
+            },
+            'content': {
+                'tag': {
+                    'description': 'Recommend a reviewer to review this paper',
+                    'order': 1,
+                    'required': True,
+                    'values-url': '/groups?id=' + REVIEWERS_ID
+                }
+            }
+        }
+    }
+
+'''
 Metadata and matching stuff
 '''
 
 reviewer_metadata = openreview.Invitation(**{
-    'id': CONFERENCE_ID + '/-/Reviewer_Metadata',
+    'id': REVIEWER_METADATA_ID,
     'readers': [
         CONFERENCE_ID,
         PROGRAM_CHAIRS_ID
@@ -281,7 +316,7 @@ reviewer_metadata = openreview.Invitation(**{
     'reply': {
         'forum': None,
         'replyto': None,
-        'invitation': SUBMISSION_ID,
+        'invitation': BLIND_SUBMISSION_ID,
         'readers': {
             'values': [
                 CONFERENCE_ID,
@@ -295,6 +330,43 @@ reviewer_metadata = openreview.Invitation(**{
             'values': [CONFERENCE_ID]},
         'content': {}
     }
+})
+
+ASSIGNMENT_INV_ID = CONFERENCE_ID + '/-/Paper_Assignment'
+
+assignment_inv = openreview.Invitation(**{
+    'id': ASSIGNMENT_INV_ID,
+    'readers': [CONFERENCE_ID],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': BLIND_SUBMISSION_ID,
+        'readers': {'values': [CONFERENCE_ID]},
+        'writers': {'values': [CONFERENCE_ID]},
+        'signatures': {'values': [CONFERENCE_ID]},
+        'content': {}
+    }
+})
+
+CONFIG_INV_ID = CONFERENCE_ID + '/-/Assignment_Configuration'
+
+config_inv = openreview.Invitation(**{
+    'id': CONFIG_INV_ID,
+    'readers': [CONFERENCE_ID],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': None,
+        'readers': {'values': [CONFERENCE_ID]},
+        'writers': {'values': [CONFERENCE_ID]},
+        'signatures': {'values': [CONFERENCE_ID]},
+        'content': {}
+    }
+
 })
 
 '''
@@ -402,8 +474,8 @@ official_comment_template = {
         PROGRAM_CHAIRS_ID
     ],
     'noninvitees': [PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
-    'signatures': [conference],
-    'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js'),
+    'signatures': [CONFERENCE_ID],
+    'process': os.path.abspath('../process/commentProcess.js'),
     'reply': {
         'forum': '<forum>',
         'replyto': None,
@@ -478,7 +550,7 @@ meta_review_template = {
     'id': CONFERENCE_ID + '/-/Paper<number>/Meta_Review',
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
-    'invitees': [PAPER_AREA_CHAIRS_TEMPLATE_REGEX],
+    'invitees': [PAPER_AREA_CHAIRS_TEMPLATE_STR],
     'noninvitees': [],
     'signatures': [CONFERENCE_ID],
     'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),

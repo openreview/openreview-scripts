@@ -4,7 +4,7 @@
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
 
 // Constants
-var HEADER_TEXT = 'Program Chairs Console';
+var HEADER_TEXT = 'Area Chair Console';
 var SHORT_PHRASE = 'ICML 2019';
 var CONFERENCE = 'ICML.cc/2019/Conference';
 
@@ -24,7 +24,7 @@ var AREACHAIR_REGEX = /^ICML\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/
 var getPaperNumbersfromGroups = function(groups) {
   return _.map(
     _.filter(groups, function(g) { return AREACHAIR_REGEX.test(g.id); }),
-    function(fg) { return parseInt(fg.id.match(re)[1], 10); }
+    function(fg) { return parseInt(fg.id.match(AREACHAIR_REGEX)[1], 10); }
   );
 };
 
@@ -170,7 +170,7 @@ var displayHeader = function(headerP) {
   $panel.hide('fast', function() {
     $panel.empty().append(
       '<div id="header" class="panel">' +
-        '<h1>Area Chair Console</h1>' +
+        '<h1>' + HEADER_TEXT + '</h1>' +
       '</div>' +
       '<div id="notes"><div class="tabs-container"></div></div>'
     );
@@ -200,7 +200,8 @@ var displayHeader = function(headerP) {
 };
 
 var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, authorDomains, container, options) {
-
+  console.log('displayStatusTable')
+  console.log('notes', notes);
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
     for (var revNumber in revIds) {
@@ -349,9 +350,10 @@ controller.addHandler('areachairs', {
     var pl = model.tokenPayload(token);
     var user = pl.user;
 
-    var userAreachairGroupsP = $.getJSON('groups', { member: user.id, regex: CONFERENCE + '/Paper.*/Area_Chair' })
+    var userAreachairGroupsP = $.getJSON('groups', { member: user.id, regex: CONFERENCE + '/Paper.*/Area_Chair.*' })
       .then(function(result) {
         var noteNumbers = getPaperNumbersfromGroups(result.groups);
+        console.log('noteNumbers', noteNumbers);
         return $.when(
           getBlindedNotes(noteNumbers),
           getOfficialReviews(noteNumbers),
@@ -361,7 +363,7 @@ controller.addHandler('areachairs', {
         );
       })
       .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, authorDomains, loaded) {
-
+        console.log('blindedNotes', blindedNotes);
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
           return result.concat(_.values(idsObj));
         }, []));
