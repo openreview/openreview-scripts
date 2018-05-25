@@ -15,11 +15,7 @@ function(){
         message: 'Your submission to ' + SHORT_PHRASE + ' has received an official review.\n\nTitle: ' + note.content.title + '\n\nReview: ' + note.content.review + '\n\nTo view the review, click here: ' + baseUrl+'/forum?id=' + note.forum
       };
 
-      var authorMailP = or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
-
-      return Promise.all([
-        authorMailP,
-      ]);
+      return or3client.or3request( or3client.mailUrl, author_mail, 'POST', token );
     })
     // do not allow reviewer to post another review for this paper
     .then(result => or3client.addInvitationNoninvitee(note.invitation, note.signatures[0], token))

@@ -32,9 +32,7 @@ function(){
             message: 'Your comment titled "'+replytoNote.content.title+'" has received a response.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl+'/forum?id=' + note.forum +'&noteId='+note.id
           };
         }
-        promises = [or3client.or3request(or3client.mailUrl, author_mail, 'POST', token)];
-      } else {
-        promises = []
+        return or3client.or3request(or3client.mailUrl, author_mail, 'POST', token);
       }
 
       return Promise.all(promises);
