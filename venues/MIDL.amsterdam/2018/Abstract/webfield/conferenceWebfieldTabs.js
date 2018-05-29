@@ -94,7 +94,9 @@ function render(notes, decisionNotes) {
     if (d.content.decision === 'Accept') {
       acceptDecisions.push(notesDict[d.forum]);
     } else if (d.content.decision === 'Reject') {
-      rejectDecisions.push(notesDict[d.forum]);
+        if(notesDict[d.forum]) {
+          rejectDecisions.push(notesDict[d.forum]);
+        }      
     }
   });
 

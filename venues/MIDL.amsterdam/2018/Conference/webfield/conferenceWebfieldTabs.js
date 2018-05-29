@@ -101,7 +101,9 @@ function render(notes, decisionNotes) {
     } else if (d.content.decision === 'Poster') {
       posterDecisions.push(notesDict[d.forum]);
     } else if (d.content.decision === 'Reject') {
-      rejectDecisions.push(notesDict[d.forum]);
+        if(notesDict[d.forum]) {
+          rejectDecisions.push(notesDict[d.forum]);
+        }
     }
   });
 
