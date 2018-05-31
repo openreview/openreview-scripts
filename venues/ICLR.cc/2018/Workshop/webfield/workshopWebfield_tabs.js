@@ -82,11 +82,9 @@ function load() {
       );
     });
 
-    authorNotesP = Webfield.get('/notes/search', {
-      term: user.profile.id,
-      group: CONFERENCE,
-      content: 'authors',
-      source: 'forum'
+    authorNotesP = Webfield.get('/notes', {
+      'content.authorids': user.profile.id,
+      invitation: BLIND_INVITATION
     }).then(function(result) {
       return result.notes;
     });
