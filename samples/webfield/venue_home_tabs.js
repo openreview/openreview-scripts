@@ -139,6 +139,7 @@ function main() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
   var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {pageSize: PAGE_SIZE});
+  var authorNotesP = Webfield.api.getSubmissions(BLIND_INVITATION, {pageSize: PAGE_SIZE, 'content.authorids': user.id});
   var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {pageSize: PAGE_SIZE, tauthor: true});
   var userGroupsP;
   if (!user || _.startsWith(user.id, 'guest_')) {
@@ -152,7 +153,7 @@ function load() {
     });
   }
 
-  return $.when(notesP, submittedNotesP, userGroupsP);
+  return $.when(notesP, authorNotesP, submittedNotesP, userGroupsP);
 }
 
 
@@ -209,7 +210,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, submittedNotes, userGroups) {
+function renderContent(notes, authorNotes, submittedNotes, userGroups) {
   var data, commentNotes;
 
   if (_.isEmpty(userGroups)) {
@@ -220,8 +221,9 @@ function renderContent(notes, submittedNotes, userGroups) {
 
   commentNotes = [];
   _.forEach(submittedNotes, function(note) {
-    if (_.startsWith(note.invitation, CONFERENCE) && note.invitation !== INVITATION && _.isNil(note.ddate)) {
-      // TODO: remove this client side filtering when DB query is fixed
+    if (_.startsWith(note.invitation, CONFERENCE) &&
+        note.invitation !== INVITATION &&
+        _.isNil(note.ddate)) {
       commentNotes.push(note);
     }
   });
@@ -267,7 +269,7 @@ function renderContent(notes, submittedNotes, userGroups) {
   }
 
   // My Submitted Papers tab
-  Webfield.ui.searchResults(submittedNotes, _.assign(
+  Webfield.ui.searchResults(authorNotes, _.assign(
     {}, paperDisplayOptions, {container: '#my-submitted-papers'}
   ));
 

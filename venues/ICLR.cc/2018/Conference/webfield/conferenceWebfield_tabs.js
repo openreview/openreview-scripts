@@ -89,11 +89,9 @@ function load() {
       );
     });
 
-    authorNotesP = Webfield.get('/notes/search', {
-      term: user.profile.id,
-      group: 'ICLR.cc/2018/Conference',
-      content: 'authors',
-      source: 'forum'
+    authorNotesP = Webfield.get('/notes', {
+      'content.authorids': user.profile.id,
+      invitation: BLIND_INVITATION
     }).then(function(result) {
       return result.notes;
     });
@@ -223,10 +221,8 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
 
   commentNotes = [];
   _.forEach(submittedNotes, function(note) {
-    if (!_.isNil(note.ddate)) {
-      return;
-    }
-    if (!_.includes([INVITATION, RECRUIT_REVIEWERS, WITHDRAWN_INVITATION], note.invitation)) {
+    if (!_.includes([INVITATION, RECRUIT_REVIEWERS, WITHDRAWN_INVITATION], note.invitation) &&
+        _.isNil(note.ddate)) {
       // ICLR specific: Not all conferences will have the withdrawn invitation
       commentNotes.push(note);
     }
