@@ -43,5 +43,7 @@ this_conference.web = homepage.render()
 this_conference = client.post_group(this_conference)
 print "adding webfield to", this_conference.id
 
-print this_conference.web
-# TODO PAM, save webfield as file ending in .js
+filename = config.HOMEPAGE_TEMPLATE.split('.template')[0]+'.js'
+f = open(filename, 'w')
+f.write(this_conference.web)
+f.close()
