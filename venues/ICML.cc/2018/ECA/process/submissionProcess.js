@@ -25,9 +25,10 @@ function () {
             content: invitation.reply.content,
             signatures: invitation.reply.signatures,
             writers: invitation.reply.writers,
-            readers: invitation.reply.readers
+            readers: { values: note.readers },
         }
    };
+
   return or3client.or3request(or3client.mailUrl, author_mail, 'POST', token)
   .then(result => or3client.or3request(or3client.inviteUrl, revisionInvitation, 'POST', token))
   .then(result => done())

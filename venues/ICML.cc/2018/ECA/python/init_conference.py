@@ -48,7 +48,10 @@ this_conference.web = homepage.render()
 this_conference = client.post_group(this_conference)
 print "adding webfield to", this_conference.id
 
-# TODO PAM, save webfield as file ending in .js
+filename = config.HOMEPAGE_TEMPLATE.split('.template')[0]+'.js'
+f = open(filename, 'w')
+f.write(this_conference.web)
+f.close()
 
 '''
 Set up the first couple groups that are needed before submission.
@@ -74,8 +77,12 @@ submission_inv = invitations.Submission(
     conference_id = config.CONFERENCE_ID,
     duedate = config.SUBMISSION_TIMESTAMP,
 	process = '../process/submissionProcess.js',
+    reply_params = {'readers' : {'description': 'The users who will be allowed to read the above content.',
+                   'value-dropdown': ['everyone', config.CONFERENCE_ID]},
+                    'writers' : {'values-copied': ['{content.authorids}', '{signatures}']}},
     content_params = config.submission_content_overwrite
 )
+
 submission_inv = client.post_invitation(submission_inv)
 print "posted invitation "+submission_inv.id
 

@@ -21,9 +21,10 @@ CONFERENCE_ID = 'ICML.cc/2018/ECA'
 PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
 AREA_CHAIRS = CONFERENCE_ID + '/Area_Chairs'
 REVIEWERS = CONFERENCE_ID + '/Reviewers'
+
 # GMT is 7 hours ahead of PST
-SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=6, day= 11, hour=6, minute=59)
-REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=6, day= 19, hour=6, minute=59)
+SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=6, day= 16, hour=3, minute=59)
+REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=6, day= 19, hour=3, minute=59)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
 
@@ -52,10 +53,10 @@ JS_CONSTANTS = {
     'REVIEWERS': REVIEWERS,
     'TITLE': 'Efficient Credit Assignment in Deep Learning and Reinforcement Learning Workshop',
     'SUBTITLE': 'ICML 2018 ECA',
-    'DEADLINE_STRING': 'June 10, 2018, 11:59 pm PST',
+    'DEADLINE_STRING': 'June 15, 2018, 11:59 pm EST',
     'CONF_DATE_STRING': 'July 14-15, 2018',
     'INSTRUCTIONS': 'https://sites.google.com/view/icml-reproducibility-workshop/home',
-    'WEBSITE': 'https://mltrain.cc/events/enabling-reproducibility-in-machine-learning-mltrainrml-icml-2018/',
+    'WEBSITE': 'https://sites.google.com/view/creditassignmentindlanddrl/home',
     'LOCATION': 'Stockhome, Sweden',
     'SUBMISSION_INVITATION': SUBMISSION,
 }

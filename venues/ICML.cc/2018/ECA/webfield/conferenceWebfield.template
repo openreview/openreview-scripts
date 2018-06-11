@@ -47,8 +47,8 @@ function renderConferenceHeader() {
     location: LOCATION,
     date: CONF_DATE_STRING,
     website: WEBSITE,
-    instructions: "<a href =\"https://sites.google.com/view/icml-reproducibility-workshop/home\">https://sites.google.com/view/icml-reproducibility-workshop/home</a>",
-    deadline: DEADLINE_STRING
+    instructions: "<a href =\"https://sites.google.com/view/creditassignmentindlanddrl/home\">https://sites.google.com/view/creditassignmentindlanddrl/home</a>",
+    deadline: "Submission Deadline: "+DEADLINE_STRING
   });
   Webfield.ui.spinner('#notes');
 }
