@@ -127,44 +127,6 @@ var getReviewerGroups = function(noteNumbers) {
     });
 };
 
-var getAreaChairGroups = function(noteNumbers) {
-  var noteMap = buildNoteMap(noteNumbers);
-  var areaChairMap = {};
-
-  return $.getJSON('groups', { id: AREACHAIR_WILDCARD })
-    .then(function(result) {
-      var re = AREACHAIR_REGEX;
-
-      result.groups.forEach(function(g) {
-        var matches = g.id.match(re);
-        var num;
-        if (matches) {
-          num = parseInt(matches[1], 10);
-
-          if (g.members.length) {
-            var areaChair = g.members[0];
-            if (num in noteMap) {
-              noteMap[num][0] = areaChair;
-            }
-
-            if (!(areaChair in areaChairMap)) {
-              areaChairMap[areaChair] = [];
-            }
-            areaChairMap[areaChair].push(num);
-          }
-        }
-      });
-      return {
-        byNotes: noteMap,
-        byAreaChairs: areaChairMap
-      };
-    })
-    .fail(function(error) {
-      displayError();
-      return null;
-    });
-};
-
 var getUserProfiles = function(userIds) {
   return $.post('/user/profiles', JSON.stringify({ids: userIds}))
   .then(function(result) {
@@ -259,7 +221,7 @@ var displaySortPanel = function(container, sortOptions, sortResults) {
   });
 };
 
-var displayPaperStatusTable = function(profiles, notes, completedReviews, reviewerIds, areachairIds, container, options) {
+var displayPaperStatusTable = function(profiles, notes, completedReviews, reviewerIds, container, options) {
 
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
@@ -268,17 +230,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, review
       revIds[revNumber] = findProfile(profiles, id);
 
     }
-
-    var areachairId = areachairIds[note.number][0];
-    var areachairProfile = {}
-
-    if (areachairId) {
-      areachairProfile = findProfile(profiles, areachairId);
-    } else {
-      areachairProfile.name = view.prettyId(CONFERENCE + '/-/Paper' + note.number + '/Area_Chair');
-      areachairProfile.email = '-';
-    }
-    return buildPaperTableRow(note, revIds, completedReviews[note.number], areachairProfile);
+    return buildPaperTableRow(note, revIds, completedReviews[note.number]);
   });
 
   var toNumber = function(value) {
@@ -428,7 +380,7 @@ var displayError = function(message) {
 
 
 // Helper functions
-var buildPaperTableRow = function(note, reviewerIds, completedReviews, areachairProfile) {
+var buildPaperTableRow = function(note, reviewerIds, completedReviews) {
 
   // Build Note Summary Cell
 
@@ -646,25 +598,18 @@ controller.addHandler('areachairs', {
         notes,
         getOfficialReviews(noteNumbers),
         getReviewerGroups(noteNumbers),
-        getAreaChairGroups(noteNumbers),
         headerLoaded
       );
     })
-    .then(function(notes, officialReviews, reviewerGroups, areaChairGroups, loaded) {
+    .then(function(notes, officialReviews, reviewerGroups, loaded) {
 
       var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj, noteNum) {
         return result.concat(_.values(idsObj));
       }, []));
 
-      var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj, noteNum) {
-        return result.concat(_.values(idsObj));
-      }, []));
-
-      var uniqueIds = _.union(uniqueReviewerIds, uniqueAreaChairIds);
-
-      return getUserProfiles(uniqueIds)
+      return getUserProfiles(uniqueReviewerIds)
       .then(function(profiles) {
-        displayPaperStatusTable(profiles, notes, officialReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
+        displayPaperStatusTable(profiles, notes, officialReviews, reviewerGroups.byNotes, '#paper-status');
         displayPCStatusTable(profiles, notes, officialReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
       })
     })
