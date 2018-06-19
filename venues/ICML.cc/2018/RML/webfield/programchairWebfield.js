@@ -9,17 +9,6 @@ var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official/Review';
 
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var ANONREVIEWER_REGEX = /^ICML\.cc\/2018\/RML\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICML\.cc\/2018\/RML\/Paper(\d+)\/Area_Chairs/;
-
-
-// Ajax functions
-var getPaperNumbersfromGroups = function(groups) {
-  var re = AREACHAIR_REGEX;
-  return _.map(
-    _.filter(groups, function(g) { return re.test(g.id); }),
-    function(fg) { return parseInt(fg.id.match(re)[1], 10); }
-  );
-};
 
 var getNotes = function() {
   return $.getJSON('notes', { invitation: INVITATION, noDetails: true })
@@ -526,7 +515,7 @@ $.ajaxSetup({
   contentType: 'application/json; charset=utf-8'
 });
 
-controller.addHandler('areachairs', {
+controller.addHandler('programChairsConsole', {
   token: function(token) {
     var pl = model.tokenPayload(token);
     var user = pl.user;
