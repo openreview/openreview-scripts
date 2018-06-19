@@ -8,8 +8,6 @@ var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official/Review';
 
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chairs';
-
 var ANONREVIEWER_REGEX = /^ICML\.cc\/2018\/RML\/Paper(\d+)\/AnonReviewer(\d+)/;
 var AREACHAIR_REGEX = /^ICML\.cc\/2018\/RML\/Paper(\d+)\/Area_Chairs/;
 
@@ -448,64 +446,6 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews) {
     reviewProgressData: reviewProgressData,
   }
 };
-
-var buildSPCTableRow = function(index, areaChair, papers) {
-
-  var summary = {
-    id: areaChair.id,
-    name: areaChair.name,
-    email: areaChair.email
-  }
-
-  var numCompletedReviews = 0;
-  var paperProgressData = _.map(papers, function(paper) {
-    var ratings = [];
-    var numOfReviewers = 0;
-
-    for (var reviewerNum in paper.reviewers) {
-      if (reviewerNum in paper.reviews) {
-        ratings.push(paper.reviews[reviewerNum].rating);
-      }
-      numOfReviewers++;
-    }
-
-    var averageRating = 'N/A';
-    var minRating = 'N/A';
-    var maxRating = 'N/A';
-    if (ratings.length) {
-      averageRating = _.round(_.sum(ratings) / ratings.length, 2);
-      minRating = _.min(ratings);
-      maxRating = _.max(ratings);
-    }
-
-    if (ratings.length == numOfReviewers) {
-      numCompletedReviews++;
-    }
-
-
-    return {
-      note: paper.note,
-      averageRating: averageRating,
-      maxRating: maxRating,
-      minRating: minRating,
-      numOfReviews: ratings.length,
-      numOfReviewers: numOfReviewers,
-   }
-  });
-
-  var reviewProgressData = {
-    numCompletedReviews: numCompletedReviews,
-    numPapers: papers.length,
-    papers: _.sortBy(paperProgressData, [function(p) { return p.note.number; }])
-  }
-
-  return {
-    summary: summary,
-    reviewProgressData: reviewProgressData
-  }
-
-};
-
 
 var buildPCTableRow = function(index, reviewer, papers) {
 
