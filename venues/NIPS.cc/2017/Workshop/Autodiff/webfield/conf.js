@@ -6,12 +6,10 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE = "NIPS.cc/2017/Workshop/Autodiff";
+var CONFERENCE = 'NIPS.cc/2017/Workshop/Autodiff';
 var INVITATION = CONFERENCE + '/-/Submission';
 var TAG_INVITATION = CONFERENCE + '/-/Decision';
-var SUBJECT_AREAS = [
-  // Add conference specific subject areas here
-];
+var SUBJECT_AREAS = [];
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 50;
 
@@ -29,13 +27,13 @@ function main() {
 // never changes, put it in its own function
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
-    title: "NIPS 2017 Autodiff Workshop",
-    subtitle: "The future of gradient-based machine learning software and techniques",
-    location: "Long Beach, California",
-    date: "December 9, 2017",
-    website: "https://autodiff-workshop.github.io/",
+    title: 'NIPS 2017 Autodiff Workshop',
+    subtitle: 'The future of gradient-based machine learning software and techniques',
+    location: 'Long Beach, California',
+    date: 'December 9, 2017',
+    website: 'https://autodiff-workshop.github.io/',
     instructions: null,  // Add any custom instructions here. Accepts HTML
-    deadline: "Submission Deadline: October 28, 2017 at midnight UTC"
+    deadline: 'Submission Deadline: October 28, 2017 at midnight UTC'
   });
 
   Webfield.ui.spinner('#notes');
@@ -46,10 +44,7 @@ function renderConferenceHeader() {
 function load() {
   var invitationP = Webfield.api.getSubmissionInvitation(INVITATION, {deadlineBuffer: BUFFER});
   var notesP = Webfield.api.getSubmissions(INVITATION, {pageSize: PAGE_SIZE});
-  var tagInvitationsP = Webfield.get('/invitations', {id: TAG_INVITATION, tags: true})
-    .then(function(result) {
-      return result.invitations;
-    });
+  var tagInvitationsP = Webfield.api.getTagInvitations(INVITATION);
 
   return $.when(invitationP, notesP, tagInvitationsP);
 }
@@ -58,19 +53,6 @@ function load() {
 // It should also be called when the page needs to be refreshed, for example after a user
 // submits a new paper.
 function render(invitation, notes, tagInvitations) {
-  // Display submission button and form (if invitation is readable)
-  $('#invitation').empty();
-  if (invitation) {
-    Webfield.ui.submissionButton(invitation, user, {
-      onNoteCreated: function() {
-        // Callback funtion to be run when a paper has successfully been submitted (required)
-        load().then(render).then(function() {
-          Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
-        });
-      }
-    });
-  }
-
   var paperDisplayOptions = {
     pdfLink: true,
     replyCount: true,
@@ -79,13 +61,22 @@ function render(invitation, notes, tagInvitations) {
     tagInvitations: tagInvitations
   };
 
+  // Display submission button and form (if invitation is readable)
+  $('#invitation').empty();
+  if (invitation) {
+    Webfield.ui.submissionButton(invitation, user, {
+      onNoteCreated: function() {
+        // Callback funtion to be run when a paper has successfully been submitted (required)
+        load().then(render);
+      }
+    });
+  }
+
   // Display the list of all submitted papers
   $('#notes').empty();
   Webfield.ui.submissionList(notes, {
     heading: 'Submitted Papers',
-    container: '#notes',
     displayOptions: paperDisplayOptions,
-    fadeIn: true,
     search: {
       enabled: true,
       subjectAreas: SUBJECT_AREAS,
@@ -100,6 +91,7 @@ function render(invitation, notes, tagInvitations) {
     }
   });
 
+  // Load more papers when the user reaches the bottom of the page
   Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
 }
 

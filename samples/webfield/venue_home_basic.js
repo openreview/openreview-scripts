@@ -27,25 +27,17 @@ var SUBJECT_AREAS = [
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 50;
 
-var paperDisplayOptions = {
-  pdfLink: true,
-  replyCount: true,
-  showContents: true
-};
-
 // Main is the entry point to the webfield code and runs everything
 function main() {
   Webfield.ui.setup('#group-container', CONFERENCE);  // required
 
   renderConferenceHeader();
 
-  load().then(render).then(function() {
-    Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
-  });
+  load().then(render);
 }
 
 // RenderConferenceHeader renders the static info at the top of the page. Since that content
-// never changes, put it in its own function
+// never changes it can be rendered first before everything else is loaded.
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
     title: 'ICLR 2017 - Conference Track',
@@ -65,23 +57,30 @@ function renderConferenceHeader() {
 function load() {
   var invitationP = Webfield.api.getSubmissionInvitation(INVITATION, {deadlineBuffer: BUFFER});
   var notesP = Webfield.api.getSubmissions(INVITATION, {pageSize: PAGE_SIZE});
+  var tagInvitationsP = Webfield.api.getTagInvitations(INVITATION);
 
-  return $.when(invitationP, notesP);
+  return $.when(invitationP, notesP, tagInvitationsP);
 }
 
 // Render is called when all the data is finished being loaded from the server
 // It should also be called when the page needs to be refreshed, for example after a user
 // submits a new paper.
-function render(invitation, notes) {
+function render(invitation, notes, tagInvitations) {
+  var paperDisplayOptions = {
+    pdfLink: true,
+    replyCount: true,
+    showContents: true,
+    showTags: true,
+    tagInvitations: tagInvitations
+  };
+
   // Display submission button and form (if invitation is readable)
   $('#invitation').empty();
   if (invitation) {
     Webfield.ui.submissionButton(invitation, user, {
       onNoteCreated: function() {
         // Callback funtion to be run when a paper has successfully been submitted (required)
-        load().then(render).then(function() {
-          Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
-        });
+        load().then(render);
       }
     });
   }
@@ -104,6 +103,9 @@ function render(invitation, notes) {
       }
     }
   });
+
+  // Load more papers when the user reaches the bottom of the page
+  Webfield.setupAutoLoading(INVITATION, PAGE_SIZE, paperDisplayOptions);
 }
 
 // Go!
