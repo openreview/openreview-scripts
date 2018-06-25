@@ -139,6 +139,7 @@ function main() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
   var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {pageSize: PAGE_SIZE});
+  var authorNotesP = Webfield.api.getSubmissions(BLIND_INVITATION, {pageSize: PAGE_SIZE, 'content.authorids': user.id});
   var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {pageSize: PAGE_SIZE, tauthor: true});
   var userGroupsP;
   if (!user || _.startsWith(user.id, 'guest_')) {
@@ -152,7 +153,7 @@ function load() {
     });
   }
 
-  return $.when(notesP, submittedNotesP, userGroupsP);
+  return $.when(notesP, authorNotesP, submittedNotesP, userGroupsP);
 }
 
 
@@ -209,7 +210,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, submittedNotes, userGroups) {
+function renderContent(notes, authorNotes, submittedNotes, userGroups) {
   var data, commentNotes;
 
   if (_.isEmpty(userGroups)) {
@@ -220,8 +221,9 @@ function renderContent(notes, submittedNotes, userGroups) {
 
   commentNotes = [];
   _.forEach(submittedNotes, function(note) {
-    if (_.startsWith(note.invitation, CONFERENCE) && note.invitation !== INVITATION && _.isNil(note.ddate)) {
-      // TODO: remove this client side filtering when DB query is fixed
+    if (_.startsWith(note.invitation, CONFERENCE) &&
+        note.invitation !== INVITATION &&
+        _.isNil(note.ddate)) {
       commentNotes.push(note);
     }
   });
@@ -261,12 +263,13 @@ function renderContent(notes, submittedNotes, userGroups) {
     if (notes.length === PAGE_SIZE) {
       Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, submissionListOptions);
     }
+    $('.tabs-container a[href="#all-submitted-papers"]').parent().show();
   } else {
     $('.tabs-container a[href="#all-submitted-papers"]').parent().hide();
   }
 
   // My Submitted Papers tab
-  Webfield.ui.searchResults(submittedNotes, _.assign(
+  Webfield.ui.searchResults(authorNotes, _.assign(
     {}, paperDisplayOptions, {container: '#my-submitted-papers'}
   ));
 
@@ -275,6 +278,7 @@ function renderContent(notes, submittedNotes, userGroups) {
     Webfield.ui.searchResults(assignedNotes, _.assign(
       {}, paperDisplayOptions, {container: '#my-assigned-papers'}
     ));
+    $('.tabs-container a[href="#my-assigned-papers"]').parent().show();
   } else {
     $('.tabs-container a[href="#my-assigned-papers"]').parent().hide();
   }
@@ -284,6 +288,7 @@ function renderContent(notes, submittedNotes, userGroups) {
     Webfield.ui.searchResults(commentNotes, _.assign(
       {}, commentDisplayOptions, {container: '#my-comments-reviews', emptyMessage: 'No comments or reviews to display'}
     ));
+    $('.tabs-container a[href="#my-comments-reviews"]').parent().show();
   } else {
     $('.tabs-container a[href="#my-comments-reviews"]').parent().hide();
   }
