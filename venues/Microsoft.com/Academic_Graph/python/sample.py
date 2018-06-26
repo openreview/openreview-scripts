@@ -1,6 +1,52 @@
 import mag_importer
 import pdf_tools
+import openreview
 
+'''
+Set up openreview infrastructure
+
+'''
+client = openreview.Client()
+
+microsoft = client.post_group(openreview.Group(**{
+    'id': 'Microsoft.com',
+    'readers': [],
+    'writers': [],
+    'signatures': [],
+    'signatories': [],
+    'members': []
+}))
+
+MAG = client.post_group(openreview.Group(**{
+    'id': 'Microsoft.com/Academic_Graph',
+    'readers': [],
+    'writers': [],
+    'signatures': [],
+    'signatories': [],
+    'members': []
+}))
+
+invitation = client.post_invitation(openreview.Invitation(**{
+    'id': 'Microsoft.com/Academic_Graph/-/Upload',
+    'readers': [],
+    'writers': [],
+    'signatures': [],
+    'reply': {
+        'readers': {'values': ['everyone']},
+        'writers': {'values': []},
+        'signatures': {'values': ['~Super_User1']},
+        'content': {
+
+        }
+    },
+    'transform': '../process/magTransform.js'
+}))
+
+
+'''
+Retrieve information from Microsoft Academic Graph
+
+'''
 # Michael's Microsoft Azure API key
 headers = {'Ocp-Apim-Subscription-Key': '77213bd18e094cc2892f149430270ba1'}
 
@@ -31,5 +77,18 @@ if emails:
 	# Complete the note content record by adding the emails
 	note_content['authorids'] = matched_emails
 
-# Display the contents of the note. You could save this as a JSON if you wanted.
-print note_content
+
+'''
+Package into a Note and post to OpenReview
+
+'''
+sample_note = openreview.Note(**{
+    'readers': ['everyone'],
+    'writers': [],
+    'signatures': [],
+    'invitation': 'Microsoft.com/Academic_Graph/-/Upload',
+    'content': note_content
+})
+
+posted_note = client.post_note(sample_note)
+print posted_note.id
