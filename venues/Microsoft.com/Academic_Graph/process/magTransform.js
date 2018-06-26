@@ -1,11 +1,12 @@
 function (note) {
-  var _ = require('lodash');
   var mag_raw = JSON.parse(note.content.MAG);
   var json = {};
 
   var processANF = function(ANF){
-    var sortedAuthors = _.sortBy(ANF, entry=>entry.S);
-    return _.map(sortedAuthors, entry=>(entry.FN + ' ' + entry.LN));
+    var sortedAuthors = ANF.sort(function(a, b){
+      return a.S - b.S;
+    });
+    return sortedAuthors.map(entry=>(entry.FN + ' ' + entry.LN));
   }
 
   var processInvertedIndex = function(InvertedIndex){
@@ -44,7 +45,7 @@ function (note) {
   }
 
   if(mag_raw.hasOwnProperty('AA')){
-    json.authors = _.map(mag_raw.AA, entry=>entry.AuN);
+    json.authors = mag_raw.AA.map(entry=>entry.AuN);
   }
 
   if(mag_raw.hasOwnProperty('E')){
