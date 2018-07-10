@@ -1,16 +1,14 @@
 '''
-NAMPI - an ICML workshop
-
-2018-05-08: setup workshop recruiting infrastructure
-
-
+ICML 2019 demo configuration
+https://icml.cc/Conferences/2019
+Monday June 10 - Saturday June 15, 2019
 '''
 
 import openreview
 from openreview import invitations
 import os
 
-# identifiers
+# group ids
 CONFERENCE_ID = 'ICML.cc/2019/Conference'
 SHORT_PHRASE = 'ICML 2019'
 
@@ -23,6 +21,7 @@ REVIEWERS_ID = CONFERENCE_ID + '/Reviewers'
 REVIEWERS_INVITED_ID = REVIEWERS_ID + '/Invited'
 REVIEWERS_DECLINED_ID = REVIEWERS_ID + '/Declined'
 
+# invitation ids
 SUBMISSION_ID = CONFERENCE_ID + '/-/Submission'
 BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission'
 
@@ -51,8 +50,7 @@ OFFICIAL_REVIEW_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Review
 PAPER_AREA_CHAIRS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/Area_Chair[0-9]+'
 PAPER_ANONREVIEWERS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/AnonReviewer[0-9]+'
 
-# Email templates.
-
+# Email templates
 HASH_SEED = "2810398440804348173"
 RECRUIT_MESSAGE_SUBJ = 'ICML 2019: Invitation to Review'
 RECRUIT_REVIEWERS_MESSAGE = '''Dear {name},
@@ -94,17 +92,14 @@ The ICML 2019 Program Chairs
 '''
 
 
-'''
-Deadlines
-'''
+# Deadlines
 SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=7, day=1)
 ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=7, day=7)
 OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=7, day=14)
 
 
-'''
-Global group definitions.
-'''
+
+# Global group definitions
 conference = openreview.Group(**{
     'id': CONFERENCE_ID,
     'readers':['everyone'],
@@ -181,9 +176,7 @@ reviewers_declined = openreview.Group(**{
 })
 
 
-'''
-Configure paper submissions
-'''
+# Configure paper submissions
 submission_inv = invitations.Submission(
     id = SUBMISSION_ID,
     conference_id = CONFERENCE_ID,
@@ -228,10 +221,7 @@ blind_submission_inv = invitations.Submission(
 )
 
 
-'''
-Configure AC and reviewer recruitment
-'''
-
+# Configure AC and reviewer recruitment
 recruit_area_chairs = invitations.RecruitReviewers(
     id = RECRUIT_AREA_CHAIRS_ID,
     conference_id = CONFERENCE_ID,
@@ -246,10 +236,8 @@ recruit_reviewers = invitations.RecruitReviewers(
     web = os.path.abspath('../webfield/recruitResponseWebfield.js')
 )
 
-'''
-Configure bidding
-'''
 
+# Configure bidding
 add_bid = invitations.AddBid(
     conference_id = CONFERENCE_ID,
     duedate = ADD_BID_DEADLINE,
@@ -267,10 +255,8 @@ add_bid = invitations.AddBid(
 
 )
 
-'''
-Configure AC recommendations
-'''
 
+# Configure AC recommendations
 ac_recommendation_template = {
         'id': CONFERENCE_ID + '/-/Paper<number>/Recommend_Reviewer',
         'invitees': [],
@@ -301,10 +287,8 @@ ac_recommendation_template = {
         }
     }
 
-'''
-Metadata and matching stuff
-'''
 
+# Metadata and matching stuff
 reviewer_metadata = openreview.Invitation(**{
     'id': REVIEWER_METADATA_ID,
     'readers': [
@@ -369,9 +353,8 @@ config_inv = openreview.Invitation(**{
 
 })
 
-'''
-Per-paper group template definitions
-'''
+
+# Per-paper group template definitions
 papergroup_template = openreview.Group(**{
     'id': PAPER_TEMPLATE_STR,
     'readers':[CONFERENCE_ID],
@@ -457,12 +440,8 @@ reviewers_submitted_template = openreview.Group(**{
 })
 
 
-'''
-Configure the invitations that will be attached on a per-paper basis
-
-These are constructed using templates.
-'''
-
+# Configure the invitations that will be attached on a per-paper basis
+# These are constructed using templates.
 official_comment_template = {
     'id': OFFICIAL_COMMENT_TEMPLATE_STR,
     'readers': ['everyone'],
@@ -546,6 +525,7 @@ official_review_template = {
         'content': invitations.content.review
     }
 }
+
 meta_review_template = {
     'id': CONFERENCE_ID + '/-/Paper<number>/Meta_Review',
     'readers': ['everyone'],
