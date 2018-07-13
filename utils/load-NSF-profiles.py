@@ -69,7 +69,7 @@ def create_nsf_profile(client, tilde_id, email, first_name, last_name, institute
     profile = openreview.Profile(tilde_id, content = profile_content, signatures=[source_id], writers=[source_id])
     client.post_group(tilde_group)
     client.post_group(email_group)
-    profile = client.post_profile(tilde_id, profile)
+    profile = client.post_profile(profile)
     return profile
 
 def update_expertise_and_institute(profile_content, expertise, institute):
@@ -99,6 +99,7 @@ def load_xml_investigators(client, dirpath):
         dirpath = dirpath[:-len(file_names[0])]
     num_new = 0
     num_updates = 0
+    coauthor_ids = {}
     for filename in file_names:
         if filename.endswith('.xml'):
             f = open(dirpath+filename, 'r')
@@ -118,7 +119,7 @@ def load_xml_investigators(client, dirpath):
                     institute = get_institute(person, root)
                     first_name = person.find('FirstName').text
                     last_name = person.find('LastName').text
-
+                    #print first_name+" "+last_name
                     # check if profile for this email already exists
                     profile = tools.get_profile(client, email)
                     content = {}
@@ -134,6 +135,7 @@ def load_xml_investigators(client, dirpath):
                         profile.content = update_expertise_and_institute(content, expertise, institute)
                         client.update_profile(profile)
                         num_updates = num_updates+1
+                        coauthor_ids[profile.id] = (first_name+' '+last_name,email)
                     else:
                         # profile for this email doesn't exist,
                         # add email if name and institute match existing profile
@@ -152,17 +154,30 @@ def load_xml_investigators(client, dirpath):
                                             profile.content = update_expertise_and_institute(profile.content, expertise, institute)
                                             profile.signatures = [source_id]
                                             profile.writers = [source_id]
-                                            print profile
                                             client.update_profile(profile)
                                             num_updates = num_updates+1
+                                            coauthor_ids[profile.id] = (first_name + ' ' + last_name, email)
                                             break
                         else:
                             # email and name/institution don't match
                             profile = create_nsf_profile(client, tilde_id, email, first_name, last_name, institute, expertise)
                             num_new = num_new + 1
+                            coauthor_ids[profile.id] = (first_name + ' ' + last_name, email)
 
 
             f.closed
+
+    # if there are multiple authors, set coauthors field for each author
+    if len(coauthor_ids) > 1:
+        for author_id in coauthor_ids.keys():
+            profile = tools.get_profile(client,author_id)
+            profile.content = {}
+            profile.content['relations'] =[]
+            for id in coauthor_ids.keys():
+                if id != author_id:
+                    profile.content['relations'].append({'name':coauthor_ids[id][0], 'email':coauthor_ids[id][1],
+                                            'relation':'Coauthor'})
+            client.update_profile(profile)
 
     print "Added {0} profiles.".format(num_new)
     print "Updated {0} profiles.".format(num_updates)
