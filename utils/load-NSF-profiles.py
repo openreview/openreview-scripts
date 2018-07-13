@@ -8,44 +8,164 @@
 
 ## Import statements
 import argparse
-import os
 import xml.etree.ElementTree as ET
 from openreview import *
 
 ## Argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('-d','--directory', required=True, help = "the full path to the XML files")
+parser.add_argument('directory', help = "the full path to the XML files")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
 
+source_entity = 'NSF.gov'
+source_id = source_entity+'/Upload'
+
+def get_institute(person, root):
+    ''' Get the name of the institute if the person is the Principal Investigator'''
+    institute = ''
+    if person.find('RoleCode').text == 'Principal Investigator':
+        institute_fields = root.iter('Institution')
+        for institute_field in institute_fields:
+            institute = institute_field.find('Name').text
+    return institute
+
+def get_expertise(root):
+    # get expertise keywords
+    expertise = []
+
+    def find_expertise(field):
+        fields = root.iter(field)
+        for field in fields:
+            expert = field.find('Text').text
+            # when it is in all caps it refers to programs, not keywords
+            if not expert.isupper():
+                expertise.append(expert)
+
+    find_expertise('ProgramElement')
+    find_expertise('ProgramReference')
+    return expertise
+
+def create_nsf_profile(client, tilde_id, email, first_name, last_name, institute, expertise):
+    # create new profile with institution name and expertise keywords
+    tilde_group = openreview.Group(id=tilde_id, signatures=[source_id],
+                                   signatories=[tilde_id], readers=[tilde_id],
+                                   writers=[source_id], members=[email])
+    email_group = openreview.Group(id=email, signatures=[source_id], signatories=[email],
+                                   readers=[email], writers=[source_id], members=[tilde_id])
+    profile_content = {
+        'emails': [email],
+        'preferredEmail': email,
+        'names': [
+            {
+                'first': first_name,
+                'middle': None,
+                'last': last_name,
+                'username': tilde_id
+            }
+        ]
+    }
+    profile_content=update_expertise_and_institute(profile_content, expertise, institute)
+    profile = openreview.Profile(tilde_id, content = profile_content, signatures=[source_id], writers=[source_id])
+    client.post_group(tilde_group)
+    client.post_group(email_group)
+    profile = client.post_profile(tilde_id, profile)
+    return profile
+
+def update_expertise_and_institute(profile_content, expertise, institute):
+    # add new information if it exists and isn't already in profile
+    if institute:
+        profile_content['history'] = [{'institution': {'name': institute}}]
+    if expertise:
+        profile_content['expertise'] = [{'keywords': expertise}]
+
+    return profile_content
+
 # load information for one or more investigators from each xml file
 def load_xml_investigators(client, dirpath):
+    source_group = openreview.Group(id=source_entity, signatures=['OpenReview.net'],
+                                   signatories=[source_entity], readers=[source_entity],
+                                   writers=['OpenReview.net'], members=[])
+    client.post_group(source_group)
+    source_id_group = openreview.Group(id=source_id, signatures=['OpenReview.net'],
+                                   signatories=[source_id], readers=[source_id],
+                                   writers=['OpenReview.net'], members=[])
+    client.post_group(source_id_group)
     # get list of files in directory
-    file_names = os.listdir(dirpath)
-    num_profiles = 0
+    if os.path.isdir(dirpath):
+        file_names = os.listdir(dirpath)
+    else:
+        file_names = [dirpath.split('/')[-1]]
+        dirpath = dirpath[:-len(file_names[0])]
+    num_new = 0
+    num_updates = 0
     for filename in file_names:
         if filename.endswith('.xml'):
             f = open(dirpath+filename, 'r')
             contents = ET.parse(f)
             root = contents.getroot()
+            expertise = get_expertise(root)
             # for each <Investigator>
             for person in root.iter('Investigator'):
-                email = person.find('EmailAddress').text
-                if email != None:
-                    email = email.strip()
-                    email = email.lower()
-                    try:
-                        create_profile(client, email, person.find('FirstName').text, person.find('LastName').text)
-                        num_profiles += 1
-                    except openreview.OpenReviewException as e:
-                        # throw an error if it is something other than profile already exists
-                        if not (type(e[0]) == str and e[0].startswith("There is already a profile")):
-                            print "OpenReviewException: {0}".format(e)
+                email = None
+                email_field = person.find('EmailAddress')
+                if email_field is not None:
+                    email = email_field.text
+                if email is not None:
+                    # pull data out of file for this investigator
+                    email = email.strip().lower()
+                    email_domain = email.split('@')[1]
+                    institute = get_institute(person, root)
+                    first_name = person.find('FirstName').text
+                    last_name = person.find('LastName').text
+
+                    # check if profile for this email already exists
+                    profile = tools.get_profile(client, email)
+                    content = {}
+                    if profile:
+                        # if email profile exists, but name is different, create new name
+                        found = False
+                        for name in profile.content['names']:
+                            if first_name == name['first'] and last_name == name['last']:
+                                found = True
+                        if not found:
+                            content['names']= [{'first':first_name, 'last':last_name}]
+
+                        profile.content = update_expertise_and_institute(content, expertise, institute)
+                        client.update_profile(profile)
+                        num_updates = num_updates+1
+                    else:
+                        # profile for this email doesn't exist,
+                        # add email if name and institute match existing profile
+                        response = client.get_tildeusername(first_name, last_name)
+                        tilde_id = response['username'].encode('utf-8')
+                        if not tilde_id.endswith(last_name + '1'):
+                            tilde_id = tilde_id[:-1] + '1'
+                            profile = tools.get_profile(client,tilde_id)
+                            if profile and profile.content['history']:
+                                for hist in profile.content['history']:
+                                    if hist['institution'] is not None:
+                                        if ('domain' in hist['institution'].keys() and email_domain== hist['institution']['domain']) or ('name' in hist['institution'].keys() and institute==hist['institution']['name']):
+                                            ## create new empty content so just sending new data
+                                            profile.content = {}
+                                            profile.content['emails']=[email]
+                                            profile.content = update_expertise_and_institute(profile.content, expertise, institute)
+                                            profile.signatures = [source_id]
+                                            profile.writers = [source_id]
+                                            print profile
+                                            client.update_profile(profile)
+                                            num_updates = num_updates+1
+                                            break
+                        else:
+                            # email and name/institution don't match
+                            profile = create_nsf_profile(client, tilde_id, email, first_name, last_name, institute, expertise)
+                            num_new = num_new + 1
+
 
             f.closed
-    print "Added {0} profiles.".format(num_profiles)
 
+    print "Added {0} profiles.".format(num_new)
+    print "Updated {0} profiles.".format(num_updates)
 
 def main():
     args = parser.parse_args()
