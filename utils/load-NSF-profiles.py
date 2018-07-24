@@ -40,7 +40,7 @@ def get_expertise(root):
         for field in fields:
             expert = field.find('Text').text
             # when it is in all caps it refers to programs, not keywords
-            if not expert.isupper():
+            if expert and not expert.isupper():
                 expertise.append(expert)
 
     find_expertise('ProgramElement')
@@ -112,7 +112,7 @@ def load_xml_investigators(client, dirpath):
     num_updates = 0
     for filename in file_names:
         if filename.endswith('.xml'):
-            f = open(dirpath+filename, 'r')
+            f = open(dirpath+'/'+filename, 'r')
             contents = ET.parse(f)
             root = contents.getroot()
             expertise = get_expertise(root)
@@ -158,14 +158,17 @@ def load_xml_investigators(client, dirpath):
                     else:
                         # profile for this email doesn't exist,
                         # add email if name and institute match existing profile
-                        response = client.get_tildeusername(first_name, last_name)
+                        try:
+                            response = client.get_tildeusername(first_name, last_name)
+                        except openreview.OpenReviewException as e:
+                            continue
                         tilde_id = response['username'].encode('utf-8')
                         if not tilde_id.endswith(last_name + '1'):
                             tilde_id = tilde_id[:-1] + '1'
                             profile = tools.get_profile(client,tilde_id)
-                            if profile and profile.content['history']:
+                            if profile and 'history' in profile.content.keys():
                                 for hist in profile.content['history']:
-                                    if hist['institution'] is not None:
+                                    if hist['institution']:
                                         if ('domain' in hist['institution'].keys() and email_domain== hist['institution']['domain']) or \
                                                 ('name' in hist['institution'].keys() and institute==hist['institution']['name']):
                                             ## create new empty content so just sending new data
