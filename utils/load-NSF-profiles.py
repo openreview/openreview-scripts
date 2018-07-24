@@ -30,6 +30,7 @@ def get_institute(person, root):
             institute = institute_field.find('Name').text
     return institute
 
+# get expertise strings from the ProgramElement and ProgramReference fields
 def get_expertise(root):
     # get expertise keywords
     expertise = []
@@ -46,6 +47,7 @@ def get_expertise(root):
     find_expertise('ProgramReference')
     return expertise
 
+# creates profile with a given tilde_id as the creator
 def create_nsf_profile(client, tilde_id, email, first_name, last_name, institute, expertise):
     # create new profile with institution name and expertise keywords
     tilde_group = openreview.Group(id=tilde_id, signatures=[source_id],
@@ -81,6 +83,15 @@ def update_expertise_and_institute(profile_content, expertise, institute):
 
     return profile_content
 
+def update_coauthors(content, coauthor_ids, email):
+    if len(coauthor_ids) > 1:
+        content['relations'] = []
+        for id in coauthor_ids:
+            if id[1] != email:
+                content['relations'].append({'name':id[0], 'email':id[1],
+                                                        'relation':'Coauthor'})
+    return content
+
 # load information for one or more investigators from each xml file
 def load_xml_investigators(client, dirpath):
     source_group = openreview.Group(id=source_entity, signatures=['OpenReview.net'],
@@ -99,13 +110,21 @@ def load_xml_investigators(client, dirpath):
         dirpath = dirpath[:-len(file_names[0])]
     num_new = 0
     num_updates = 0
-    coauthor_ids = {}
     for filename in file_names:
         if filename.endswith('.xml'):
             f = open(dirpath+filename, 'r')
             contents = ET.parse(f)
             root = contents.getroot()
             expertise = get_expertise(root)
+            coauthor_ids = []
+            for person in root.iter('Investigator'):
+                email_field = person.find('EmailAddress')
+                if email_field is not None:
+                    email = email_field.text
+                    first_name = person.find('FirstName').text
+                    last_name = person.find('LastName').text
+                    coauthor_ids.append((first_name+' '+last_name,email))
+
             # for each <Investigator>
             for person in root.iter('Investigator'):
                 email = None
@@ -119,10 +138,11 @@ def load_xml_investigators(client, dirpath):
                     institute = get_institute(person, root)
                     first_name = person.find('FirstName').text
                     last_name = person.find('LastName').text
-                    #print first_name+" "+last_name
+                    content = update_expertise_and_institute({}, expertise, institute)
+                    content = update_coauthors(content, coauthor_ids, email)
+                    # print first_name+" "+last_name
                     # check if profile for this email already exists
                     profile = tools.get_profile(client, email)
-                    content = {}
                     if profile:
                         # if email profile exists, but name is different, create new name
                         found = False
@@ -132,10 +152,9 @@ def load_xml_investigators(client, dirpath):
                         if not found:
                             content['names']= [{'first':first_name, 'last':last_name}]
 
-                        profile.content = update_expertise_and_institute(content, expertise, institute)
+                        profile.content = content
                         client.update_profile(profile)
                         num_updates = num_updates+1
-                        coauthor_ids[profile.id] = (first_name+' '+last_name,email)
                     else:
                         # profile for this email doesn't exist,
                         # add email if name and institute match existing profile
@@ -147,37 +166,23 @@ def load_xml_investigators(client, dirpath):
                             if profile and profile.content['history']:
                                 for hist in profile.content['history']:
                                     if hist['institution'] is not None:
-                                        if ('domain' in hist['institution'].keys() and email_domain== hist['institution']['domain']) or ('name' in hist['institution'].keys() and institute==hist['institution']['name']):
+                                        if ('domain' in hist['institution'].keys() and email_domain== hist['institution']['domain']) or \
+                                                ('name' in hist['institution'].keys() and institute==hist['institution']['name']):
                                             ## create new empty content so just sending new data
-                                            profile.content = {}
+                                            profile.content = content
                                             profile.content['emails']=[email]
-                                            profile.content = update_expertise_and_institute(profile.content, expertise, institute)
                                             profile.signatures = [source_id]
                                             profile.writers = [source_id]
                                             client.update_profile(profile)
-                                            num_updates = num_updates+1
-                                            coauthor_ids[profile.id] = (first_name + ' ' + last_name, email)
+                                            num_updates += 1
                                             break
                         else:
                             # email and name/institution don't match
                             profile = create_nsf_profile(client, tilde_id, email, first_name, last_name, institute, expertise)
-                            num_new = num_new + 1
-                            coauthor_ids[profile.id] = (first_name + ' ' + last_name, email)
+                            num_new += 1
 
 
             f.closed
-
-    # if there are multiple authors, set coauthors field for each author
-    if len(coauthor_ids) > 1:
-        for author_id in coauthor_ids.keys():
-            profile = tools.get_profile(client,author_id)
-            profile.content = {}
-            profile.content['relations'] =[]
-            for id in coauthor_ids.keys():
-                if id != author_id:
-                    profile.content['relations'].append({'name':coauthor_ids[id][0], 'email':coauthor_ids[id][1],
-                                            'relation':'Coauthor'})
-            client.update_profile(profile)
 
     print "Added {0} profiles.".format(num_new)
     print "Updated {0} profiles.".format(num_updates)
