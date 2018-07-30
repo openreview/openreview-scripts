@@ -33,6 +33,4 @@ print group.id
 with open(args.webfield) as f:
     group.web = f.read()
 
-group.signatures = [client.signature]
-
 updated_group = client.post_group(group)
