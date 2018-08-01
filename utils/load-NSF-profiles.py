@@ -50,11 +50,10 @@ def get_expertise(root):
 # creates profile with a given tilde_id as the creator
 def create_nsf_profile(client, tilde_id, email, first_name, last_name, institute, expertise):
     # create new profile with institution name and expertise keywords
-    tilde_group = openreview.Group(id=tilde_id, signatures=[source_id],
-                                   signatories=[tilde_id], readers=[tilde_id],
-                                   writers=[source_id], members=[email])
-    email_group = openreview.Group(id=email, signatures=[source_id], signatories=[email],
-                                   readers=[email], writers=[source_id], members=[tilde_id])
+    tilde_group = openreview.Group(id=tilde_id, signatories=[tilde_id],
+                                   readers=[tilde_id], members=[email])
+    email_group = openreview.Group(id=email, signatories=[email],
+                                   readers=[email],  members=[tilde_id])
     profile_content = {
         'emails': [email],
         'preferredEmail': email,
@@ -67,11 +66,15 @@ def create_nsf_profile(client, tilde_id, email, first_name, last_name, institute
             }
         ]
     }
-    profile_content=update_expertise_and_institute(profile_content, expertise, institute)
-    profile = openreview.Profile(tilde_id, content = profile_content, signatures=[source_id], writers=[source_id])
+    profile = openreview.Profile(tilde_id, content=profile_content)
     client.post_group(tilde_group)
     client.post_group(email_group)
     profile = client.post_profile(profile)
+
+    profile.content=update_expertise_and_institute(profile.content, expertise, institute)
+    profile.signatures = [source_id]
+    profile.writers = [source_id]
+    client.update_profile(profile)
     return profile
 
 def update_expertise_and_institute(profile_content, expertise, institute):
@@ -143,7 +146,10 @@ def load_xml_investigators(client, dirpath):
                     # print first_name+" "+last_name
                     # check if profile for this email already exists
                     profile = tools.get_profile(client, email)
+
                     if profile:
+                        profile.signatures = [source_id]
+                        profile.writers = [source_id]
                         # if email profile exists, but name is different, create new name
                         found = False
                         for name in profile.content['names']:
@@ -151,6 +157,7 @@ def load_xml_investigators(client, dirpath):
                                 found = True
                         if not found:
                             content['names']= [{'first':first_name, 'last':last_name}]
+
 
                         profile.content = content
                         client.update_profile(profile)
