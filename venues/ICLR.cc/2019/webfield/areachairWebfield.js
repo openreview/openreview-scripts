@@ -128,7 +128,7 @@ var getUserProfiles = function(userIds) {
 
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferred_email;
+      profile.email = profile.content.preferredEmail;
       profileMap[profile.id] = profile;
     })
 
@@ -201,7 +201,7 @@ var displayHeader = function(headerP) {
 
 var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, authorDomains, container, options) {
   console.log('displayStatusTable')
-  console.log('notes', notes);
+  console.log('profiles', profiles);
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
     for (var revNumber in revIds) {
@@ -295,6 +295,8 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, do
     maxConfidence = _.max(confidences);
   }
 
+  console.log('combinedObj', combinedObj);
+  console.log('reviewerIds', reviewerIds);
   var reviewProgressData = {
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
@@ -364,6 +366,7 @@ controller.addHandler('areachairs', {
       })
       .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, authorDomains, loaded) {
         console.log('blindedNotes', blindedNotes);
+        console.log('noteToReviewerIds', noteToReviewerIds);
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
           return result.concat(_.values(idsObj));
         }, []));

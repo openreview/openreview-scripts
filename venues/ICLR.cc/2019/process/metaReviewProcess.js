@@ -20,7 +20,6 @@ function() {
       return or3client.or3request( or3client.mailUrl, pc_mail, 'POST', token );
 
     })
-    .then(or3client.addInvitationNoninvitee(note.invitation, note.signatures[0],token))
     .then(result => done())
     .catch(error => done(error));
 
