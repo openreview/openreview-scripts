@@ -124,6 +124,8 @@ def load_xml_investigators(client, dirpath):
                 email_field = person.find('EmailAddress')
                 if email_field is not None:
                     email = email_field.text
+                    if email is not None:
+                        email = email.strip().lower()
                     first_name = person.find('FirstName').text
                     last_name = person.find('LastName').text
                     coauthor_ids.append((first_name+' '+last_name,email))
