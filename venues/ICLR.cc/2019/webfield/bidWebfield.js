@@ -28,14 +28,14 @@ function main() {
 
 // Perform all the required API calls
 function load() {
-  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID}).then(function(allNotes) {
+  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
     return _.sortBy(
       allNotes.filter(function(note) { return !note.content.hasOwnProperty('withdrawal'); }),
       function(n) { return n.content.title.toLowerCase(); }
     );
   });
 
-  var tagInvitationsP = Webfield.get('/invitations', {id: ADD_BID}).then(function(result) {
+  var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(result) {
     return _.filter(result.invitations, function(invitation) {
       return invitation.invitees.length;
     });
@@ -68,8 +68,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     if (!updatedNote) {
       return;
     }
-    var prevVal = _.has(updatedNote, 'tags[0].tag') ? updatedNote.tags[0].tag : 'No bid';
-    updatedNote.tags[0] = tagObj;
+    var prevVal = _.has(updatedNote.details, 'tags[0].tag') ? updatedNote.details.tags[0].tag : 'No bid';
+    updatedNote.details.tags[0] = tagObj;
 
     var tagToElemId = {
       'I want to review': '#wantToReview',
@@ -95,7 +95,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     // that wasn't clicked (since there are 2 on the page)
     if ($(this).data('type') === 'radio') {
       var $noteToUpdate;
-      var newVal = updatedNote.tags[0].tag;
+      var newVal = updatedNote.details.tags[0].tag;
 
       if ($(this).closest('.tab-pane').is('#allPapers')) {
         $noteToUpdate = $note;
@@ -116,14 +116,15 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     var canNotReview = [];
     var noBid = [];
     notes.forEach(function(n) {
-      if (n.tags.length) {
-        if (n.tags[0].tag === 'I want to review') {
+      var tags = n.details.tags;
+      if (tags.length) {
+        if (tags[0].tag === 'I want to review') {
           wantToReview.push(n);
-        } else if (n.tags[0].tag === 'I can review') {
+        } else if (tags[0].tag === 'I can review') {
           canReview.push(n);
-        } else if (n.tags[0].tag === 'I can probably review but am not an expert') {
+        } else if (tags[0].tag === 'I can probably review but am not an expert') {
           probablyReview.push(n);
-        } else if (n.tags[0].tag === 'I cannot review') {
+        } else if (tags[0].tag === 'I cannot review') {
           canNotReview.push(n);
         } else {
           noBid.push(n);

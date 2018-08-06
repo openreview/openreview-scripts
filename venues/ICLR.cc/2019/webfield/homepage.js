@@ -20,42 +20,43 @@ var AUTHORS_SIGNATORY_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Authors/
 var AREA_CHAIRS_ID = CONFERENCE_ID + '/Area_Chairs';
 var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers';
 var PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs';
+var AUTHORS_ID = CONFERENCE_ID + '/Authors';
 
 var HEADER = {
-    title: 'ICLR 2019',
-    subtitle: 'International Conference on Machine Learning',
-    location: 'Vancouver Convention Center, Vancouver, BC, Canada',
-    date: 'April 30 - May 3, 2019',
-    website: 'http://www.ICLR.cc',
-    instructions: '<p><strong>Important Information about Anonymity</strong><br>\
-      OpenReview maintains both anonymity and attributability of papers by storing an "original" \
-      record of the paper, complete with full author names and email addresses, as well as an anonymizing \
-      "mask" for the paper, which protects the authors\' identities. Specific policy regarding when \
-      (and to whom) original records are revealed is determined by the conference organizers, but typically, \
-      original records are visible only to the authors themselves and to the conference program chairs. \
-      Contact the conference organizers with questions about conference-specific policy. (WARNING: PDFs \
-      are not automatically masked. Authors should submit PDFs without author identities.)</p> \
-      <p><strong>"Papers Under Review" vs. "Submitted Papers"</strong><br>\
-      Original papers, complete with full author names and email addresses, are submitted to a conference,\
-      and can be seen by the authors in the "My Submitted Papers" tab. Upon submission, a mask is created \
-      and made available to reviewers and other discussion participants (these participants are determined by \
-      conference-specific policy). Masks on your submitted papers appear in the "My Papers Under Review" tab. \
-      Masks created for other submissions appear in the "All Papers Under Review" tab.</p> \
-      <p><strong>Posting Revisions to Submissions</strong><br>\
-      To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
-      Revisions are not allowed during the formal review process.\
-      Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
-      <p><strong>A Note to Reviewers about Bidding</strong><br> \
-      To access the bidding interface, please ensure that your profile is linked to the email address where you received your initial reviewer invitation email. \
-      To do this, click on your name at the top right corner of the page, go to your Profile, enter "edit mode," and add your email address. \
-      You will also need to confirm your address by pressing the "Confirm" button. This will involve a round-trip email verification.</p>\
-      <p><strong>Questions or Concerns</strong><br> \
-      Please contact the OpenReview support team at \
-      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
-      Please contact the ICLR 2019 Program Chairs at \
-      <a href="mailto:ICLR2019programchairs@gmail.com">ICLR2019programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
-    deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
-  }
+  title: 'ICLR 2019',
+  subtitle: 'International Conference on Machine Learning',
+  location: 'Vancouver Convention Center, Vancouver, BC, Canada',
+  date: 'April 30 - May 3, 2019',
+  website: 'http://www.ICLR.cc',
+  instructions: '<p><strong>Important Information about Anonymity</strong><br>\
+    OpenReview maintains both anonymity and attributability of papers by storing an "original" \
+    record of the paper, complete with full author names and email addresses, as well as an anonymizing \
+    "mask" for the paper, which protects the authors\' identities. Specific policy regarding when \
+    (and to whom) original records are revealed is determined by the conference organizers, but typically, \
+    original records are visible only to the authors themselves and to the conference program chairs. \
+    Contact the conference organizers with questions about conference-specific policy. (WARNING: PDFs \
+    are not automatically masked. Authors should submit PDFs without author identities.)</p> \
+    <p><strong>"Papers Under Review" vs. "Submitted Papers"</strong><br>\
+    Original papers, complete with full author names and email addresses, are submitted to a conference,\
+    and can be seen by the authors in the "My Submitted Papers" tab. Upon submission, a mask is created \
+    and made available to reviewers and other discussion participants (these participants are determined by \
+    conference-specific policy). Masks on your submitted papers appear in the "My Papers Under Review" tab. \
+    Masks created for other submissions appear in the "All Papers Under Review" tab.</p> \
+    <p><strong>Posting Revisions to Submissions</strong><br>\
+    To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
+    Revisions are not allowed during the formal review process.\
+    Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
+    <p><strong>A Note to Reviewers about Bidding</strong><br> \
+    To access the bidding interface, please ensure that your profile is linked to the email address where you received your initial reviewer invitation email. \
+    To do this, click on your name at the top right corner of the page, go to your Profile, enter "edit mode," and add your email address. \
+    You will also need to confirm your address by pressing the "Confirm" button. This will involve a round-trip email verification.</p>\
+    <p><strong>Questions or Concerns</strong><br> \
+    Please contact the OpenReview support team at \
+    <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
+    Please contact the ICLR 2019 Program Chairs at \
+    <a href="mailto:ICLR2019programchairs@gmail.com">ICLR2019programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
+  deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
+}
 
 var COMMENT_EXCLUSION = [
   SUBMISSION_ID,
@@ -111,6 +112,11 @@ function load() {
     duedate: true
   });
 
+  var activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+    pageSize: PAGE_SIZE,
+    details: 'forumContent'
+  });
+
   var userGroupsP;
   var authorNotesP;
 
@@ -151,7 +157,7 @@ function load() {
 
     return $.when(
       notesP, submittedNotesP, assignedNotePairsP, assignedNotesP, userGroups,
-      authorNotesP, tagInvitationsP
+      authorNotesP, tagInvitationsP, activityNotesP
     );
   });
 
@@ -188,24 +194,12 @@ function renderConferenceTabs() {
       id: 'all-papers-under-review',
     },
     {
-      heading: 'My Papers Under Review',
-      id: 'my-papers-under-review',
+      heading: 'Your Roles',
+      id: 'your-roles',
     },
     {
-      heading: 'My Submitted Papers',
-      id: 'my-submitted-papers',
-    },
-    {
-      heading: 'My Tasks',
-      id: 'my-tasks',
-    },
-    {
-      heading: 'My Assigned Papers',
-      id: 'my-assigned-papers',
-    },
-    {
-      heading: 'My Comments & Reviews',
-      id: 'my-comments-reviews',
+      heading: 'Recent Activity',
+      id: 'recent-activity',
     }
   ];
 
@@ -215,7 +209,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, userGroups, authorNotes, tagInvitations) {
+function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, userGroups, authorNotes, tagInvitations, activityNotes) {
   var data, commentNotes;
 
   console.log('userGroups',userGroups);
@@ -252,45 +246,62 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
   }
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
+  console.log('authorPaperNumbers',authorPaperNumbers);
   if (authorPaperNumbers.length !== authorNotes.length) {
     console.warn('WARNING: The number of submitted notes returned by API does not ' +
       'match the number of submitted note groups the user is a member of.');
   }
 
-  // My Tasks tab
+  console.log('userGroups', userGroups);
+
+  // Your Roles tab
   if (userGroups.length) {
-    var tasksOptions = {
-      container: '#my-tasks',
-      emptyMessage: 'No outstanding tasks for this conference'
+    // var tasksOptions = {
+    //   container: '#your-roles',
+    //   emptyMessage: 'This shouldn\'t be here',
+    //   showTasks: false
+    // }
+    // Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
+
+    var $container = $('#your-roles');
+    $container.append('<ul class="list-unstyled submissions-list">')
+
+    if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
+      $('#your-roles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
+        '</li>'
+      ].join(''));
     }
-    Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
 
     if (_.includes(userGroups, AREA_CHAIRS_ID)) {
-      $('#my-tasks .submissions-list').prepend([
+      $('#your-roles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + AREA_CHAIRS_ID + '">Area Chair Console</a>',
         '</li>'
       ].join(''));
     }
 
-    if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
-      $('#my-tasks .submissions-list').prepend([
+    if (_.includes(userGroups, REVIEWERS_ID)) {
+      $('#your-roles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/assignments?venue=' + CONFERENCE_ID,
-            'Assignments Browser',
-          '</a>',
-        '</li>'
-      ].join(''));
-
-      $('#my-tasks .submissions-list').prepend([
-        '<li class="note invitation-link">',
-          '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
+          '<a href="/group?id=' + REVIEWERS_ID + '">Reviewer Console</a>',
         '</li>'
       ].join(''));
     }
-    $('.tabs-container a[href="#my-tasks"]').parent().show();
+
+    if (authorPaperNumbers.length) {
+      console.log('attaching authors link');
+      $('#your-roles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    $('.tabs-container a[href="#your-roles"]').parent().show();
   } else {
-    $('.tabs-container a[href="#my-tasks"]').parent().hide();
+    $('.tabs-container a[href="#your-roles"]').parent().hide();
   }
 
   // All Submitted Papers tab
@@ -363,31 +374,23 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     $('.tabs-container a[href="#my-papers-under-review"]').parent().hide();
   }
 
+  // Activity Tab
 
-
-  // My Assigned Papers tab (only show if not empty)
-  if (assignedNotes.length) {
+  if (activityNotes.length) {
     Webfield.ui.searchResults(
-      assignedNotes,
-      _.assign({}, paperDisplayOptions, {container: '#my-assigned-papers'})
-    );
-    $('.tabs-container a[href="#my-assigned-papers"]').parent().show();
-  } else {
-    $('.tabs-container a[href="#my-assigned-papers"]').parent().hide();
-  }
-
-  // My Comments & Reviews tab (only show if not empty)
-  if (commentNotes.length) {
-    Webfield.ui.searchResults(
-      commentNotes,
+      activityNotes,
       _.assign({}, commentDisplayOptions, {
-        container: '#my-comments-reviews',
-        emptyMessage: 'No comments or reviews to display'
+        container: '#recent-activity',
+        emptyMessage: 'No comments or reviews to display',
+        showActivity: true,
+        forumContent: true,
+        pdfLink: true,
+        replyCount: false
       })
     );
-    $('.tabs-container a[href="#my-comments-reviews"]').parent().show();
+    $('.tabs-container a[href="#recent-activity"]').parent().show();
   } else {
-    $('.tabs-container a[href="#my-comments-reviews"]').parent().hide();
+    $('.tabs-container a[href="#recent-activity"]').parent().hide();
   }
 
   $('#notes .spinner-container').remove();

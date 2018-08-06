@@ -324,7 +324,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, do
     reviewStatus.recommendation = metaReview.content.recommendation;
     reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
   }
-  var statusHtml = Handlebars.templates.noteReviewStatus(reviewStatus);
+  var statusHtml = Handlebars.templates.noteMetaReviewStatus(reviewStatus);
 
   return [number, summaryHtml, reviewHtml, statusHtml];
 };

@@ -25,6 +25,8 @@ REVIEWERS_ID = CONFERENCE_ID + '/Reviewers'
 REVIEWERS_INVITED_ID = REVIEWERS_ID + '/Invited'
 REVIEWERS_DECLINED_ID = REVIEWERS_ID + '/Declined'
 
+AUTHORS_ID = CONFERENCE_ID + '/Authors'
+
 # invitation ids
 SUBMISSION_ID = CONFERENCE_ID + '/-/Submission'
 BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission'
@@ -164,6 +166,8 @@ reviewers = openreview.Group.from_json({
     'signatories': [CONFERENCE_ID],
     'members': [],
 })
+with open(os.path.abspath('../webfield/reviewerWebfield.js')) as f:
+    reviewers.web = f.read()
 
 reviewers_invited = openreview.Group.from_json({
     'id': REVIEWERS_INVITED_ID,
@@ -182,6 +186,17 @@ reviewers_declined = openreview.Group.from_json({
     'signatories': [CONFERENCE_ID],
     'members': [],
 })
+
+authors = openreview.Group.from_json({
+    'id': AUTHORS_ID,
+    'readers': [CONFERENCE_ID, PROGRAM_CHAIRS_ID, AUTHORS_ID],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'signatories': [CONFERENCE_ID],
+    'members': [],
+})
+with open(os.path.abspath('../webfield/authorWebfield.js')) as f:
+    authors.web = f.read()
 
 
 # Configure paper submissions
@@ -541,6 +556,40 @@ official_review_template = {
             ]
         },
         'content': invitations.content.review
+    }
+}
+
+review_rating_template = {
+    'id': CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
+    'readers': ['everyone'],
+    'writers': [CONFERENCE_ID],
+    'invitees': [PAPER_REVIEWERS_TEMPLATE_STR],
+    'noninvitees': [PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
+    'signatures': [CONFERENCE_ID],
+    'duedate': OFFICIAL_REVIEW_DEADLINE,
+    'process': None,
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': OFFICIAL_REVIEW_TEMPLATE_STR,
+        'readers': {
+            'description': 'The users who will be allowed to read the reply content.',
+            'values': ['everyone']
+        },
+        'nonreaders': {
+            'values': [PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': PAPER_ANONREVIEWERS_TEMPLATE_REGEX
+        },
+        'writers': {
+            'description': 'Users that may modify this record.',
+            'values-copied':  [
+                '{signatures}'
+            ]
+        },
+        'content': invitations.content.review_rating
     }
 }
 
