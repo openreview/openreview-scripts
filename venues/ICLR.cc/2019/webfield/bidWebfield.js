@@ -251,7 +251,10 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       fadeIn: false
     });
 
-    var submissionListOptions = _.assign({}, paperDisplayOptions, {container: '#allPapers'});
+    var containerToSearch = '#noBid';
+    var notesToSearch = noBid;
+
+    var submissionListOptions = _.assign({}, paperDisplayOptions, {container: containerToSearch});
     var sortOptionsList = [];
     // var sortOptionsList = [
     //   {
@@ -269,44 +272,45 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     //     }
     //   }
     // ];
-    // Webfield.ui.submissionList(notes, {
-    //   heading: null,
-    //   container: '#allPapers',
-    //   search: {
-    //     enabled: true,
-    //     localSearch: true,
-    //     sort: sortOptionsList,
-    //     onResults: function(searchResults) {
-    //       addMetadataToNotes(searchResults, metadataNotesMap);
+    Webfield.ui.submissionList(notesToSearch, {
+      heading: null,
+      container: containerToSearch,
+      search: {
+        enabled: true,
+        localSearch: true,
+        sort: sortOptionsList,
+        onResults: function(searchResults) {
+          addMetadataToNotes(searchResults, metadataNotesMap);
 
-    //       // Only include this code if there is a sort dropdown in the search form
-    //       var selectedVal = $('.notes-search-form .sort-dropdown').val();
-    //       if (selectedVal !== 'Default') {
-    //         var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
-    //         if (sortOption) {
-    //           searchResults = _.sortBy(searchResults, sortOption.compareProp);
-    //         }
-    //       }
-    //       Webfield.ui.searchResults(searchResults, submissionListOptions);
-    //     },
-    //     onReset: function() {
-    //       // Only include this code if there is a sort dropdown in the search form
-    //       var selectedVal = $('.notes-search-form .sort-dropdown').val();
-    //       var sortedNotes;
-    //       if (selectedVal !== 'Default') {
-    //         var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
-    //         if (sortOption) {
-    //           sortedNotes = _.sortBy(notes, sortOption.compareProp);
-    //         }
-    //         Webfield.ui.searchResults(sortedNotes, submissionListOptions);
-    //       } else {
-    //         Webfield.ui.searchResults(notes, submissionListOptions);
-    //       }
-    //     },
-    //   },
-    //   displayOptions: submissionListOptions,
-    //   fadeIn: false
-    // });
+          // Only include this code if there is a sort dropdown in the search form
+          var selectedVal = $('.notes-search-form .sort-dropdown').val();
+          if (selectedVal !== 'Default') {
+            var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
+            if (sortOption) {
+              searchResults = _.sortBy(searchResults, sortOption.compareProp);
+            }
+          }
+          Webfield.ui.searchResults(searchResults, submissionListOptions);
+        },
+        onReset: function() {
+          // // Only include this code if there is a sort dropdown in the search form
+          // var selectedVal = $('.notes-search-form .sort-dropdown').val();
+          // var sortedNotes;
+          // if (selectedVal !== 'Default') {
+          //   var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
+          //   if (sortOption) {
+          //     sortedNotes = _.sortBy(notesToSearch, sortOption.compareProp);
+          //   }
+          //   Webfield.ui.searchResults(sortedNotes, submissionListOptions);
+          // } else {
+          //   Webfield.ui.searchResults(notesToSearch, submissionListOptions);
+          // }
+          Webfield.ui.searchResults(notesToSearch, submissionListOptions);
+        },
+      },
+      displayOptions: submissionListOptions,
+      fadeIn: false
+    });
 
     $('#notes .spinner-container').remove();
     $('#notes .tabs-container').show();
