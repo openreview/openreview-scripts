@@ -12,13 +12,35 @@ var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Blind_Submission';
 
 var OFFICIAL_REVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Official_Review';
 var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';
-
+var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*';
 
 var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
+
+var INSTRUCTIONS =  '<p><strong>This page provides information and status updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference progresses, so please check back frequently for news and other updates.</strong></p>\
+  <br>'
+
+var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
+    <p>\
+      <em><strong>Please do the following by Friday, August 10</strong></em>:\
+      <ul>\
+        <li>Register as an Official Reviewer by <strong>(1)</strong> updating your profile to include your most up-to-date information, and <strong>(2)</strong> submitting ICLR Subject Areas and Data Collection consent forms.</li>\
+        <li><strong><a href="/forum?id=ryxFlFHvSQ">Complete Reviewer Registration</a></strong></li>\
+      </ul>\
+    </p>\
+  <br>\
+  <h4>Bidding Phase</h4>\
+    <p>\
+      <em><strong>Please do the following by Friday, August 17</strong></em>:\
+      <ul>\
+        <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
+        <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\
+      </ul>\
+    </p>\
+  <br>'
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {
@@ -171,24 +193,32 @@ var displayHeader = function(headerP) {
     $panel.empty().append(
       '<div id="header" class="panel">' +
         '<h1>' + HEADER_TEXT + '</h1>' +
-      '</div>' +
-      '<div id="notes"><div class="tabs-container"></div></div>'
+      '</div>\
+      <div class="description">' + INSTRUCTIONS + '</div>\
+      <div id="notes">\
+        <div class="tabs-container"></div>\
+      </div>'
     );
 
     var loadingMessage = '<p class="empty-message">Loading...</p>';
     var tabsData = {
       sections: [
         {
-          heading: 'Reviewer Status',
-          id: 'reviewer-status',
-          content: loadingMessage,
+          heading: 'Area Chair Schedule',
+          id: 'areachair-schedule',
+          content: SCHEDULE_HTML,
           active: true
         },
-        // {
-        //   heading: 'Your Assigned Papers',
-        //   id: 'assigned-papers',
-        //   content: loadingMessage,
-        // }
+        {
+          heading: 'Area Chair Tasks',
+          id: 'your-iclr-tasks',
+          content: loadingMessage,
+        },
+        {
+          heading: 'Assigned Papers',
+          id: 'assigned-papers',
+          content: loadingMessage
+        },
       ]
     };
     $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](tabsData));
@@ -199,7 +229,7 @@ var displayHeader = function(headerP) {
   });
 };
 
-var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, authorDomains, container, options) {
+var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container, options) {
   console.log('displayStatusTable')
   console.log('profiles', profiles);
   var rowData = _.map(notes, function(note) {
@@ -211,7 +241,7 @@ var displayStatusTable = function(profiles, notes, completedReviews, metaReviews
 
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
     return buildTableRow(
-      note, revIds, completedReviews[note.number], metaReview, authorDomains[note.number]
+      note, revIds, completedReviews[note.number], metaReview
     );
   });
 
@@ -224,6 +254,19 @@ var displayStatusTable = function(profiles, notes, completedReviews, metaReviews
   $(container).empty().append(tableHTML);
 };
 
+var displayTasks = function(assignedNotePairs, tagInvitations){
+  console.log('displayTasks');
+  //  My Tasks tab
+  var tasksOptions = {
+    container: '#your-iclr-tasks',
+    emptyMessage: 'No outstanding tasks for this conference'
+  }
+  $(tasksOptions.container).empty();
+  console.log('assignedNotePairs', assignedNotePairs);
+  Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
+  $('.tabs-container a[href="#your-iclr-tasks"]').parent().show();
+}
+
 var displayError = function(message) {
   message = message || 'The group data could not be loaded.';
   $('#notes').empty().append('<div class="alert alert-danger"><strong>Error:</strong> ' + message + '</div>');
@@ -231,12 +274,12 @@ var displayError = function(message) {
 
 
 // Helper functions
-var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, domains) {
+var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   var number = '<strong class="note-number">' + note.number + '</strong>';
 
   // Build Note Summary Cell
   note.content.authors = null;  // Don't display 'Blinded Authors'
-  note.content.authorDomains = domains;
+  //note.content.authorDomains = domains;
   var summaryHtml = Handlebars.templates.noteSummary(note);
 
   // Build Review Progress Cell
@@ -361,10 +404,18 @@ controller.addHandler('areachairs', {
           getOfficialReviews(noteNumbers),
           getMetaReviews(),
           getReviewerGroups(noteNumbers),
+          Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+            pageSize: 100,
+            invitee: true,
+            duedate: true,
+            // replyto: true,
+            details:'replytoNote,repliedNotes'
+          }),
+          Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID),
           headerLoaded
         );
       })
-      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, authorDomains, loaded) {
+      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, assignedNotePairs, tagInvitations, loaded, authorDomains) {
         console.log('blindedNotes', blindedNotes);
         console.log('noteToReviewerIds', noteToReviewerIds);
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
@@ -379,7 +430,9 @@ controller.addHandler('areachairs', {
             officialReviews: officialReviews,
             metaReviews: metaReviews,
             noteToReviewerIds: noteToReviewerIds,
-            authorDomains: authorDomains
+            authorDomains: authorDomains,
+            assignedNotePairs: assignedNotePairs,
+            tagInvitations: tagInvitations
           }
           renderTable();
         });
@@ -398,9 +451,11 @@ var renderTable = function() {
     fetchedData.officialReviews,
     fetchedData.metaReviews,
     _.cloneDeep(fetchedData.noteToReviewerIds), // Need to clone this dictionary because some values are missing after the first refresh
-    fetchedData.authorDomains,
-    '#reviewer-status'
+    //fetchedData.authorDomains,
+    '#assigned-papers'
   );
+
+  displayTasks(fetchedData.assignedNotePairs, fetchedData.tagInvitations);
 }
 
 $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
