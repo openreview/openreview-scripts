@@ -207,7 +207,7 @@ submission_inv = invitations.Submission(
     reply_params = {
         'readers': {
             'values-copied': [
-                CONFERENCE_ID,
+                # CONFERENCE_ID, //seems like we can remove this
                 '{content.authorids}',
                 '{signatures}'
             ]
@@ -468,7 +468,10 @@ ac_recommendation_template = {
             'replyto': '<forum>',
             'readers': {
                 'description': 'The users who will be allowed to read the above content.',
-                'values-copied': [CONFERENCE_ID, '{signatures}']
+                'values-copied': [
+                    # CONFERENCE_ID, //seems like we can get rid of this for now
+                    '{signatures}'
+                ]
             },
             'signatures': {
                 'description': 'How your identity will be displayed with the above content.',
@@ -490,7 +493,7 @@ ac_recommendation_template = {
 reviewer_metadata = openreview.Invitation.from_json({
     'id': REVIEWER_METADATA_ID,
     'readers': [
-        CONFERENCE_ID,
+        # CONFERENCE_ID, //seems like we can get rid of this for now
         PROGRAM_CHAIRS_ID
     ],
     'writers': [CONFERENCE_ID],
@@ -659,7 +662,7 @@ official_comment_template = {
         'forum': '<forum>',
         'replyto': None,
         'readers': {
-            'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
+            'description': 'Select all user groups that should be able to read this comment.',
             'values-dropdown': [
                 'everyone',
                 PAPER_AUTHORS_TEMPLATE_STR,
@@ -779,7 +782,10 @@ meta_review_template = {
         'replyto': '<forum>',
         'readers': {
             'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
-            'values': [CONFERENCE_ID, PAPER_AREA_CHAIRS_TEMPLATE_STR, PROGRAM_CHAIRS_ID]
+            'values': [
+                PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                PROGRAM_CHAIRS_ID
+            ]
 
         },
         'signatures': {
