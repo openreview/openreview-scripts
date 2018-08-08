@@ -198,7 +198,6 @@ authors = openreview.Group.from_json({
 with open(os.path.abspath('../webfield/authorWebfield.js')) as f:
     authors.web = f.read()
 
-
 # Configure paper submissions
 submission_inv = invitations.Submission(
     id = SUBMISSION_ID,
@@ -255,6 +254,171 @@ recruit_reviewers = invitations.RecruitReviewers(
     web = os.path.abspath('../webfield/recruitResponseWebfield.js')
 )
 
+subj_desc = ''.join([
+    'To properly assign papers to reviewers, we ask that reviewers provide their areas ',
+    'of expertise from among the provided list of subject areas. ',
+    'Please submit your areas of expertise by clicking on the "Subject Areas" button below.',
+    '\n\n'
+    ])
+
+coi_desc = ''.join([
+    'In order to avoid conflicts of interest in reviewing, we ask that all reviewers take a moment to ',
+    'update their OpenReview profiles with their latest information regarding work history and professional relationships. ',
+    'After you have updated your profile, please confirm that your profile is up-to-date by clicking on ',
+    'the "Profile Confirmed" button below.',
+    '\n\n'
+    ])
+
+data_consent_desc = ''.join([
+    'One of the missions of OpenReview is to enable the study of the scientific peer review process itself. ',
+    'In accordance with that mission, OpenReview is collecting a dataset of peer reviews and ',
+    'discussions between authors and reviewers for research purposes. ',
+    'This dataset will include the contents of peer reviews and comments between authors, reviewers, and area chairs. ',
+    'The dataset will be anonymized, and will not include your true identity, but may include non-identifiable metadata related to your profile (e.g. years of experience, field of expertise). ',
+    'The dataset may be released to the public domain ',
+    'after the final accept/reject decisions are made. ',
+    'Do you agree to having your reviews and comments included in this dataset? ',
+    'Please indicate your response by clicking on the "Consent Response" button below. ',
+    '\n\n'
+    ])
+
+tpms_desc = ''.join([
+    'In addition to subject areas, we will be using the Toronto Paper Matching System (TPMS) to compute paper-reviewer affinity scores. ',
+    'Please take a moment to sign up for TPMS and/or update your TPMS account with your latest papers. ',
+    'Then, please ensure that the email address that is affiliated with your TPMS account is linked to your OpenReview profile. ',
+    'After you have done this, please confirm that your TPMS account is up-to-date by clicking the "TPMS Account Confirmed" button below. ',
+    '\n\n'
+    ])
+
+registration_root_invitation = openreview.Invitation.from_json({
+    'id': CONFERENCE_ID + '/-/Reviewer_Registration',
+    'readers': ['everyone'],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'invitees': [CONFERENCE_ID],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'readers': {'values': [REVIEWERS_ID, AREA_CHAIRS_ID, PROGRAM_CHAIRS_ID, CONFERENCE_ID]},
+        'writers': {'values': [CONFERENCE_ID]},
+        'signatures': {'values': [CONFERENCE_ID]},
+        'content': {
+            'title': {'value': 'ICLR 2019 Reviewer Registration'},
+            'Subject Areas': {
+                'value': subj_desc,
+                'order': 1
+            },
+            'Profile Confirmed': {
+                'value': coi_desc,
+                'order': 2
+            },
+            'Consent Response': {
+                'value': data_consent_desc,
+                'order': 9
+            }
+        }
+    }
+})
+
+registration_root_note = openreview.Note.from_json({
+    'readers': registration_root_invitation.reply['readers']['values'],
+    'writers': registration_root_invitation.reply['writers']['values'],
+    'signatures': registration_root_invitation.reply['signatures']['values'],
+    'invitation': registration_root_invitation.id,
+    'content': {
+        'title': registration_root_invitation.reply['content']['title']['value'],
+        'Subject Areas': registration_root_invitation.reply['content']['Subject Areas']['value'],
+        'Profile Confirmed': registration_root_invitation.reply['content']['Profile Confirmed']['value'],
+        'Consent Response': registration_root_invitation.reply['content']['Consent Response']['value'],
+    }
+})
+
+consent_response_template = {
+    'id': CONFERENCE_ID + '/-/Registration/Consent/Response', # I would like for this to be Consent_Response, but right now the prettyId function is taking the last TWO segments. It should only take the last.
+    'readers': ['everyone'],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'invitees': [REVIEWERS_ID],
+    'duedate': 1520639999000, # March 9, 2018
+    'process': '../process/registrationProcess.js',
+    'reply': {
+        'forum': '<forum>',
+        'replyto': '<forum>',
+        'readers': {'values': [CONFERENCE_ID]},
+        'writers': {'values-regex': '~.*'},
+        'signatures': {'values-regex': '~.*'},
+        'content': {
+            'title': {
+                'value': 'Consent Form Response',
+                'order': 1
+            },
+            'consent': {
+                'value-dropdown': [
+                    'Yes, I agree to participate.',
+                    'No, I do not agree to participate.'
+                ],
+                'required': True,
+                'order': 2
+            }
+        }
+    }
+}
+
+subj_response_template = {
+    'id': CONFERENCE_ID + '/-/Registration/Subject/Areas', # same here, see comment above
+    'readers': ['everyone'],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'invitees': [REVIEWERS_ID],
+    'duedate': 1520639999000, # March 9, 2018,
+    'process': '../process/registrationProcess.js',
+    'reply': {
+        'forum': '<forum>',
+        'replyto': '<forum>',
+        'readers': {'values': [CONFERENCE_ID]},
+        'writers': {'values-regex': '~.*'},
+        'signatures': {'values-regex': '~.*'},
+        'content': {
+            'title': {
+                'value': 'Subject Area Response',
+                'order': 1
+            },
+            'subject_areas': {
+                'values-dropdown': subject_areas,
+                'required': True,
+                'order': 2
+            }
+        }
+    }
+}
+
+profile_confirmed_template = {
+    'id': CONFERENCE_ID + '/-/Registration/Profile/Confirmed',
+    'readers': ['everyone'],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'invitees': [REVIEWERS_ID],
+    'duedate': 1520639999000, # March 9, 2018,
+    'process': '../process/registrationProcess.js',
+    'reply': {
+        'forum': '<forum>',
+        'replyto': '<forum>',
+        'readers': {'values': [CONFERENCE_ID]},
+        'writers': {'values-regex': '~.*'},
+        'signatures': {'values-regex': '~.*'},
+        'content': {
+            'title': {
+                'value': 'Profile Confirmed Response',
+                'order': 1
+            },
+            'confirmation': {
+                'value': 'I confirm that I have updated my profile sufficiently to capture my conflicts of interest.',
+                'required': True,
+                'order': 2
+            }
+        }
+    }
+}
 
 # Configure bidding
 add_bid = invitations.AddBid(
@@ -489,6 +653,8 @@ official_comment_template = {
     'noninvitees': [PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
     'signatures': [CONFERENCE_ID],
     'process': os.path.abspath('../process/commentProcess.js'),
+    # 'multiReply': True,
+    'multiReply': None,
     'reply': {
         'forum': '<forum>',
         'replyto': None,
@@ -534,6 +700,8 @@ official_review_template = {
     'signatures': [CONFERENCE_ID],
     'duedate': OFFICIAL_REVIEW_DEADLINE,
     'process': os.path.abspath('../process/officialReviewProcess.js'),
+    # 'multiReply': False,
+    'multiReply': None,
     'reply': {
         'forum': '<forum>',
         'replyto': '<forum>',
@@ -568,10 +736,12 @@ review_rating_template = {
     'signatures': [CONFERENCE_ID],
     'duedate': OFFICIAL_REVIEW_DEADLINE,
     'process': None,
+    # 'multiReply': True,
+    'multiReply': None,
     'reply': {
-        'forum': None,
+        'forum': '<forum>',
         'replyto': None,
-        'invitation': OFFICIAL_REVIEW_TEMPLATE_STR,
+        # 'invitation': OFFICIAL_REVIEW_TEMPLATE_STR,
         'readers': {
             'description': 'The users who will be allowed to read the reply content.',
             'values': ['everyone']
@@ -602,6 +772,8 @@ meta_review_template = {
     'signatures': [CONFERENCE_ID],
     'duedate': META_REVIEW_DEADLINE,
     'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),
+    # 'multiReply': False,
+    'multiReply': None,
     'reply': {
         'forum': '<forum>',
         'replyto': '<forum>',
@@ -628,6 +800,8 @@ add_revision_template = {
     'writers': [CONFERENCE_ID],
     'invitees': [CONFERENCE_ID + '/Paper<number>/Authors'],
     'signatures': [CONFERENCE_ID],
+    # 'multiReply': True,
+    'multiReply': None,
     'reply': {
         'referent': '<forum>',
         'forum': '<forum>',

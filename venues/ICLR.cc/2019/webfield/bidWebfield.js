@@ -35,8 +35,8 @@ function load() {
     );
   });
 
-  var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(result) {
-    return _.filter(result.invitations, function(invitation) {
+  var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(invitations) {
+    return _.filter(invitations, function(invitation) {
       return invitation.invitees.length;
     });
   });
@@ -72,10 +72,11 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     updatedNote.details.tags[0] = tagObj;
 
     var tagToElemId = {
-      'I want to review': '#wantToReview',
-      'I can review': '#canReview',
-      'I can probably review but am not an expert': '#probablyReview',
-      'I cannot review': '#canNotReview',
+      'Very High': '#veryHigh',
+      'High': '#high',
+      'Neutral': '#neutral',
+      'Low': '#low',
+      'Very Low': '#veryLow',
       'No bid': '#noBid'
     };
 
@@ -110,22 +111,25 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
   function updateNotes(notes) {
     // Sort notes by bid
-    var wantToReview = [];
-    var canReview = [];
-    var probablyReview = [];
-    var canNotReview = [];
+    var veryHigh = [];
+    var high = [];
+    var neutral = [];
+    var low = [];
+    var veryLow = [];
     var noBid = [];
     notes.forEach(function(n) {
       var tags = n.details.tags;
       if (tags.length) {
-        if (tags[0].tag === 'I want to review') {
-          wantToReview.push(n);
-        } else if (tags[0].tag === 'I can review') {
-          canReview.push(n);
-        } else if (tags[0].tag === 'I can probably review but am not an expert') {
-          probablyReview.push(n);
-        } else if (tags[0].tag === 'I cannot review') {
-          canNotReview.push(n);
+        if (tags[0].tag === 'Very High') {
+          veryHigh.push(n);
+        } else if (tags[0].tag === 'High') {
+          high.push(n);
+        } else if (tags[0].tag === 'Neutral') {
+          neutral.push(n);
+        } else if (tags[0].tag === 'Low') {
+          low.push(n);
+        } else if (tags[0].tag === 'Very Low') {
+          veryLow.push(n);
         } else {
           noBid.push(n);
         }
@@ -134,17 +138,17 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       }
     });
 
-    var bidCount = wantToReview.length + canReview.length + probablyReview.length + canNotReview.length;
+    var bidCount = veryHigh.length + high.length + neutral.length + low.length + veryLow.length;
 
     $('#header h3').remove();
     $('#header').append('<h3>You have completed ' + bidCount + ' bids</h3>');
 
     var sections = [
-      {
-        heading: 'All Papers  <span class="glyphicon glyphicon-search"></span>',
-        id: 'allPapers',
-        content: null
-      },
+      // {
+      //   heading: 'All Papers  <span class="glyphicon glyphicon-search"></span>',
+      //   id: 'allPapers',
+      //   content: null
+      // },
       {
         heading: 'No bid',
         headingCount: noBid.length,
@@ -152,27 +156,33 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
         content: null
       },
       {
-        heading: 'I want to review',
-        headingCount: wantToReview.length,
-        id: 'wantToReview',
+        heading: 'Very High',
+        headingCount: veryHigh.length,
+        id: 'veryHigh',
         content: null
       },
       {
-        heading: 'I can review',
-        headingCount: canReview.length,
-        id: 'canReview',
+        heading: 'High',
+        headingCount: high.length,
+        id: 'high',
         content: null
       },
       {
-        heading: 'I can probably review but am not an expert',
-        headingCount: probablyReview.length,
-        id: 'probablyReview',
+        heading: 'Neutral',
+        headingCount: neutral.length,
+        id: 'neutral',
         content: null
       },
       {
-        heading: 'I cannot review',
-        headingCount: canNotReview.length,
-        id: 'canNotReview',
+        heading: 'Low',
+        headingCount: low.length,
+        id: 'low',
+        content: null
+      },
+      {
+        heading: 'Very Low',
+        headingCount: veryLow.length,
+        id: 'veryLow',
         content: null
       }
     ];
@@ -193,33 +203,41 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       tagInvitations: tagInvitations
     };
 
-    Webfield.ui.submissionList(wantToReview, {
+    Webfield.ui.submissionList(veryHigh, {
       heading: null,
-      container: '#wantToReview',
+      container: '#veryHigh',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
       fadeIn: false
     });
 
-    Webfield.ui.submissionList(canReview, {
+    Webfield.ui.submissionList(high, {
       heading: null,
-      container: '#canReview',
+      container: '#high',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
       fadeIn: false
     });
 
-    Webfield.ui.submissionList(probablyReview, {
+    Webfield.ui.submissionList(neutral, {
       heading: null,
-      container: '#probablyReview',
+      container: '#neutral',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
       fadeIn: false
     });
 
-    Webfield.ui.submissionList(canNotReview, {
+    Webfield.ui.submissionList(low, {
       heading: null,
-      container: '#canNotReview',
+      container: '#low',
+      search: { enabled: false },
+      displayOptions: paperDisplayOptions,
+      fadeIn: false
+    });
+
+    Webfield.ui.submissionList(veryLow, {
+      heading: null,
+      container: '#veryLow',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
       fadeIn: false
@@ -228,7 +246,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     Webfield.ui.submissionList(noBid, {
       heading: null,
       container: '#noBid',
-      search: { enabled: false },
+      search: { enabled: true },
       displayOptions: paperDisplayOptions,
       fadeIn: false
     });
@@ -251,44 +269,44 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     //     }
     //   }
     // ];
-    Webfield.ui.submissionList(notes, {
-      heading: null,
-      container: '#allPapers',
-      search: {
-        enabled: true,
-        localSearch: true,
-        sort: sortOptionsList,
-        onResults: function(searchResults) {
-          addMetadataToNotes(searchResults, metadataNotesMap);
+    // Webfield.ui.submissionList(notes, {
+    //   heading: null,
+    //   container: '#allPapers',
+    //   search: {
+    //     enabled: true,
+    //     localSearch: true,
+    //     sort: sortOptionsList,
+    //     onResults: function(searchResults) {
+    //       addMetadataToNotes(searchResults, metadataNotesMap);
 
-          // Only include this code if there is a sort dropdown in the search form
-          var selectedVal = $('.notes-search-form .sort-dropdown').val();
-          if (selectedVal !== 'Default') {
-            var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
-            if (sortOption) {
-              searchResults = _.sortBy(searchResults, sortOption.compareProp);
-            }
-          }
-          Webfield.ui.searchResults(searchResults, submissionListOptions);
-        },
-        onReset: function() {
-          // Only include this code if there is a sort dropdown in the search form
-          var selectedVal = $('.notes-search-form .sort-dropdown').val();
-          var sortedNotes;
-          if (selectedVal !== 'Default') {
-            var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
-            if (sortOption) {
-              sortedNotes = _.sortBy(notes, sortOption.compareProp);
-            }
-            Webfield.ui.searchResults(sortedNotes, submissionListOptions);
-          } else {
-            Webfield.ui.searchResults(notes, submissionListOptions);
-          }
-        },
-      },
-      displayOptions: submissionListOptions,
-      fadeIn: false
-    });
+    //       // Only include this code if there is a sort dropdown in the search form
+    //       var selectedVal = $('.notes-search-form .sort-dropdown').val();
+    //       if (selectedVal !== 'Default') {
+    //         var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
+    //         if (sortOption) {
+    //           searchResults = _.sortBy(searchResults, sortOption.compareProp);
+    //         }
+    //       }
+    //       Webfield.ui.searchResults(searchResults, submissionListOptions);
+    //     },
+    //     onReset: function() {
+    //       // Only include this code if there is a sort dropdown in the search form
+    //       var selectedVal = $('.notes-search-form .sort-dropdown').val();
+    //       var sortedNotes;
+    //       if (selectedVal !== 'Default') {
+    //         var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
+    //         if (sortOption) {
+    //           sortedNotes = _.sortBy(notes, sortOption.compareProp);
+    //         }
+    //         Webfield.ui.searchResults(sortedNotes, submissionListOptions);
+    //       } else {
+    //         Webfield.ui.searchResults(notes, submissionListOptions);
+    //       }
+    //     },
+    //   },
+    //   displayOptions: submissionListOptions,
+    //   fadeIn: false
+    // });
 
     $('#notes .spinner-container').remove();
     $('#notes .tabs-container').show();
@@ -297,10 +315,11 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
   function updateCounts() {
     var containers = [
       '#noBid',
-      '#wantToReview',
-      '#canReview',
-      '#probablyReview',
-      '#canNotReview'
+      '#veryHigh',
+      '#high',
+      '#neutral',
+      '#low',
+      '#veryLow'
     ];
     var totalCount = 0;
 
