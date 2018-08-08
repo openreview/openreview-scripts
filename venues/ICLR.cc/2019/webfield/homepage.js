@@ -180,7 +180,7 @@ function renderSubmissionButton() {
           promptMessage('Your submission is complete. The list of all current submissions is shown below.');
 
           load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#all-papers-under-review"]').click();
+            $('.tabs-container a[href="#all-submissions"]').click();
           });
         }
       });
@@ -190,13 +190,17 @@ function renderSubmissionButton() {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'All Papers Under Review',
-      id: 'all-papers-under-review',
+      heading: 'Your Consoles',
+      id: 'your-consoles',
     },
     {
-      heading: 'Your Roles',
-      id: 'your-roles',
+      heading: 'All Submissions',
+      id: 'all-submissions',
     },
+    // {
+    //   heading: 'Your ICLR Tasks',
+    //   id: 'your-iclr-tasks',
+    // },
     {
       heading: 'Recent Activity',
       id: 'recent-activity',
@@ -254,20 +258,56 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
 
   console.log('userGroups', userGroups);
 
+  // My Tasks tab
+  // if (userGroups.length) {
+  //   var tasksOptions = {
+  //     container: '#your-iclr-tasks',
+  //     emptyMessage: 'No outstanding tasks for this conference'
+  //   }
+  //   Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
+
+  //   if (_.includes(userGroups, AREA_CHAIRS_ID)) {
+  //     $('#your-iclr-tasks .submissions-list').prepend([
+  //       '<li class="note invitation-link">',
+  //         '<a href="/group?id=' + AREA_CHAIRS_ID + '">Area Chair Console</a>',
+  //       '</li>'
+  //     ].join(''));
+  //   }
+
+  //   if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
+  //     $('#your-iclr-tasks .submissions-list').prepend([
+  //       '<li class="note invitation-link">',
+  //         '<a href="/assignments?venue=' + CONFERENCE_ID,
+  //           'Assignments Browser',
+  //         '</a>',
+  //       '</li>'
+  //     ].join(''));
+
+  //     $('#your-iclr-tasks .submissions-list').prepend([
+  //       '<li class="note invitation-link">',
+  //         '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
+  //       '</li>'
+  //     ].join(''));
+  //   }
+  //   $('.tabs-container a[href="#your-iclr-tasks"]').parent().show();
+  // } else {
+  //   $('.tabs-container a[href="#your-iclr-tasks"]').parent().hide();
+  // }
+
   // Your Roles tab
   if (userGroups.length) {
     // var tasksOptions = {
-    //   container: '#your-roles',
+    //   container: '#your-consoles',
     //   emptyMessage: 'This shouldn\'t be here',
     //   showTasks: false
     // }
     // Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
 
-    var $container = $('#your-roles');
-    $container.append('<ul class="list-unstyled submissions-list">')
+    var $container = $('#your-consoles');
+    $container.append('<ul class="list-unstyled submissions-list">');
 
     if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
-      $('#your-roles .submissions-list').append([
+      $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
         '</li>'
@@ -275,7 +315,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     }
 
     if (_.includes(userGroups, AREA_CHAIRS_ID)) {
-      $('#your-roles .submissions-list').append([
+      $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + AREA_CHAIRS_ID + '">Area Chair Console</a>',
         '</li>'
@@ -283,7 +323,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     }
 
     if (_.includes(userGroups, REVIEWERS_ID)) {
-      $('#your-roles .submissions-list').append([
+      $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + REVIEWERS_ID + '">Reviewer Console</a>',
         '</li>'
@@ -292,28 +332,28 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
 
     if (authorPaperNumbers.length) {
       console.log('attaching authors link');
-      $('#your-roles .submissions-list').append([
+      $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
         '</li>'
       ].join(''));
     }
 
-    $('.tabs-container a[href="#your-roles"]').parent().show();
+    $('.tabs-container a[href="#your-consoles"]').parent().show();
   } else {
-    $('.tabs-container a[href="#your-roles"]').parent().hide();
+    $('.tabs-container a[href="#your-consoles"]').parent().hide();
   }
 
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: true,
     tagInvitations: tagInvitations,
-    container: '#all-papers-under-review'
+    container: '#all-submissions'
   });
 
   Webfield.ui.submissionList(notes, {
     heading: null,
-    container: '#all-papers-under-review',
+    container: '#all-submissions',
     search: {
       enabled: true,
       onResults: function(searchResults) {
@@ -333,6 +373,15 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     displayOptions: submissionListOptions,
     fadeIn: false
   });
+
+
+  if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
+    $('#all-submissions .submissions-list').prepend([
+      '<li id="bid-count" class="note invitation-link">',
+        '<em><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">View All Bids</a></em>',
+      '</li>'
+    ].join(''));
+  }
 
   if (notes.length === PAGE_SIZE) {
     Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
@@ -377,17 +426,24 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
   // Activity Tab
 
   if (activityNotes.length) {
-    Webfield.ui.searchResults(
-      activityNotes,
-      _.assign({}, commentDisplayOptions, {
-        container: '#recent-activity',
-        emptyMessage: 'No comments or reviews to display',
-        showActivity: true,
-        forumContent: true,
-        pdfLink: true,
-        replyCount: false
-      })
-    );
+    // Webfield.ui.searchResults(
+    //   activityNotes,
+    //   _.assign({}, commentDisplayOptions, {
+    //     container: '#recent-activity',
+    //     emptyMessage: 'No comments or reviews to display',
+    //     showActivity: true,
+    //     forumContent: true,
+    //     pdfLink: true,
+    //     replyCount: false
+    //   })
+    // );
+
+    var displayOptions = {
+      container: '#recent-activity'
+    };
+
+    Webfield.ui.activityList(activityNotes, displayOptions);
+
     $('.tabs-container a[href="#recent-activity"]').parent().show();
   } else {
     $('.tabs-container a[href="#recent-activity"]').parent().hide();
