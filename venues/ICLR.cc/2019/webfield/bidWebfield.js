@@ -9,6 +9,97 @@ var METADATA_INVITATION_ID = CONFERENCE_ID + '/-/Paper_Metadata';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
 
+var SUBJECT_AREAS = [
+  'Algorithms: Approximate Inference',
+  'Algorithms: Belief Propagation',
+  'Algorithms: Distributed and Parallel',
+  'Algorithms: Exact Inference',
+  'Algorithms: Graph Theory',
+  'Algorithms: Heuristics',
+  'Algorithms: Lifted Inference',
+  'Algorithms: MCMC methods',
+  'Algorithms: Optimization',
+  'Algorithms: Other',
+  'Algorithms: Software and Tools',
+  'Applications: Biology',
+  'Applications: Databases',
+  'Applications: Decision Support',
+  'Applications: Diagnosis and Reliability',
+  'Applications: Economics',
+  'Applications: Education',
+  'Applications: General',
+  'Applications: Medicine',
+  'Applications: Planning and Control',
+  'Applications: Privacy and Security',
+  'Applications: Robotics',
+  'Applications: Sensor Data',
+  'Applications: Social Network Analysis',
+  'Applications: Speech',
+  'Applications: Sustainability and Climate',
+  'Applications: Text and Web Data',
+  'Applications: User Models',
+  'Applications: Vision',
+  'Data: Big Data',
+  'Data: Multivariate',
+  'Data: Other',
+  'Data: Relational',
+  'Data: Spatial',
+  'Data: Temporal or Sequential',
+  'Learning: Active Learning',
+  'Learning: Classification',
+  'Learning: Clustering',
+  'Learning: Deep Learning',
+  'Learning: General',
+  'Learning: Nonparametric Bayes',
+  'Learning: Online and Anytime Learning',
+  'Learning: Other',
+  'Learning: Parameter Estimation',
+  'Learning: Probabilistic Generative Models',
+  'Learning: Ranking',
+  'Learning: Recommender Systems',
+  'Learning: Regression',
+  'Learning: Reinforcement Learning',
+  'Learning: Relational Learning',
+  'Learning: Relational Models',
+  'Learning: Scalability',
+  'Learning: Semi-Supervised Learning',
+  'Learning: Structure Learning',
+  'Learning: Structured Prediction',
+  'Learning: Theory',
+  'Learning: Unsupervised',
+  'Methodology: Bayesian Methods',
+  'Methodology: Calibration',
+  'Methodology: Elicitation',
+  'Methodology: Evaluation',
+  'Methodology: Human Expertise and Judgement',
+  'Methodology: Other',
+  'Methodology: Probabilistic Programming',
+  'Models: Bayesian Networks',
+  'Models: Directed Graphical Models',
+  'Models: Dynamic Bayesian Networks',
+  'Models: Markov Decision Processes',
+  'Models: Mixed Graphical Models',
+  'Models: Other',
+  'Models: Relational Models',
+  'Models: Topic Models',
+  'Models: Undirected Graphical Models',
+  'None of the above',
+  'Principles: Causality',
+  'Principles: Cognitive Models',
+  'Principles: Decision Theory',
+  'Principles: Game Theory',
+  'Principles: Information Theory',
+  'Principles: Other',
+  'Principles: Probability Theory',
+  'Principles: Statistical Theory',
+  'Representation: Constraints',
+  'Representation: Dempster-Shafer',
+  'Representation: Fuzzy Logic',
+  'Representation: Influence Diagrams',
+  'Representation: Non-Probabilistic Frameworks',
+  'Representation: Probabilistic'
+];
+
 // Main is the entry point to the webfield code and runs everything
 function main() {
   Webfield.ui.setup('#invitation-container', CONFERENCE_ID);  // required
@@ -144,11 +235,11 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     $('#header').append('<h3>You have completed ' + bidCount + ' bids</h3>');
 
     var sections = [
-      // {
-      //   heading: 'All Papers  <span class="glyphicon glyphicon-search"></span>',
-      //   id: 'allPapers',
-      //   content: null
-      // },
+      {
+        heading: 'All Papers  <span class="glyphicon glyphicon-search"></span>',
+        id: 'allPapers',
+        content: null
+      },
       {
         heading: 'No bid',
         headingCount: noBid.length,
@@ -251,10 +342,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       fadeIn: false
     });
 
-    var containerToSearch = '#noBid';
-    var notesToSearch = noBid;
-
-    var submissionListOptions = _.assign({}, paperDisplayOptions, {container: containerToSearch});
+    var submissionListOptions = _.assign({}, paperDisplayOptions, {container: '#allPapers'});
     var sortOptionsList = [];
     // var sortOptionsList = [
     //   {
@@ -272,12 +360,13 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     //     }
     //   }
     // ];
-    Webfield.ui.submissionList(notesToSearch, {
+    Webfield.ui.submissionList(notes, {
       heading: null,
-      container: containerToSearch,
+      container: '#allPapers',
       search: {
         enabled: true,
         localSearch: true,
+        subjectAreas: SUBJECT_AREAS,
         sort: sortOptionsList,
         onResults: function(searchResults) {
           addMetadataToNotes(searchResults, metadataNotesMap);
@@ -299,13 +388,14 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
           // if (selectedVal !== 'Default') {
           //   var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
           //   if (sortOption) {
-          //     sortedNotes = _.sortBy(notesToSearch, sortOption.compareProp);
+          //     sortedNotes = _.sortBy(notes, sortOption.compareProp);
           //   }
           //   Webfield.ui.searchResults(sortedNotes, submissionListOptions);
           // } else {
-          //   Webfield.ui.searchResults(notesToSearch, submissionListOptions);
+          //   Webfield.ui.searchResults(notes, submissionListOptions);
           // }
-          Webfield.ui.searchResults(notesToSearch, submissionListOptions);
+          Webfield.ui.searchResults(notes, submissionListOptions);
+
         },
       },
       displayOptions: submissionListOptions,
