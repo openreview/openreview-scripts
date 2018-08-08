@@ -100,11 +100,16 @@ var SUBJECT_AREAS = [
   'Representation: Probabilistic'
 ];
 
+var INSTRUCTIONS =  '<p><strong>This page provides information and status updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference progresses, so please check back frequently for news and other updates.</strong></p>\
+  <br>'
+
 // Main is the entry point to the webfield code and runs everything
 function main() {
   Webfield.ui.setup('#invitation-container', CONFERENCE_ID);  // required
 
-  Webfield.ui.header(SHORT_PHRASE + ' Paper Bidding');
+  Webfield.ui.header(SHORT_PHRASE + ' Bidding Console');
+
+  $('#header').append(INSTRUCTIONS)
 
   Webfield.ui.spinner('#notes');
 

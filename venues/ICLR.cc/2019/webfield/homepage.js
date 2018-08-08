@@ -294,7 +294,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
   //   $('.tabs-container a[href="#your-iclr-tasks"]').parent().hide();
   // }
 
-  // Your Roles tab
+  // Your Consoles tab
   if (userGroups.length) {
     // var tasksOptions = {
     //   container: '#your-consoles',
@@ -310,6 +310,14 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/invitation?id=' + ADD_BID_ID + '">Bidding Console</a>',
         '</li>'
       ].join(''));
     }
@@ -374,14 +382,6 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     fadeIn: false
   });
 
-
-  if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
-    $('#all-submissions .submissions-list').prepend([
-      '<li id="bid-count" class="note invitation-link">',
-        '<em><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">View All Bids</a></em>',
-      '</li>'
-    ].join(''));
-  }
 
   if (notes.length === PAGE_SIZE) {
     Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
