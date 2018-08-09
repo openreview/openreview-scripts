@@ -105,14 +105,8 @@ function main() {
   Webfield.ui.setup('#invitation-container', CONFERENCE_ID);  // required
 
   Webfield.ui.header(SHORT_PHRASE + ' Bidding Console');
-  $('#header').append('<h4><a href="/group?id=ICLR.cc/2019/Conference">\< Back to ICLR 2019 Homepage</a><h4><br>')
 
   Webfield.ui.spinner('#notes');
-
-  OpenBanner.breadcrumbs([
-    { link: '/', text: 'Venues' },
-    { link: '/group?id=' + CONFERENCE_ID, text: view.prettyId(CONFERENCE_ID) }
-  ]);
 
   load().then(renderContent);
 }

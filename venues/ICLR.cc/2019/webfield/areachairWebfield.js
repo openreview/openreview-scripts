@@ -193,7 +193,6 @@ var displayHeader = function(headerP) {
     $panel.empty().append(
       '<div id="header" class="panel"> \
         <h1>' + HEADER_TEXT + '</h1> \
-        <h4><a href="/group?id=ICLR.cc/2019/Conference">\< Back to ICLR 2019 Homepage</a><h4>\
       </div>\
       <div class="description">' + INSTRUCTIONS + '</div>\
       <div id="notes">\
