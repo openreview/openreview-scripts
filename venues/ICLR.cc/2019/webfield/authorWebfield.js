@@ -111,6 +111,8 @@ function main() {
   renderConferenceTabs();
 
   load().then(renderContent);
+
+  OpenBanner.venueHomepageLink(CONFERENCE_ID);
 }
 
 // Load makes all the API calls needed to get the data to render the page
