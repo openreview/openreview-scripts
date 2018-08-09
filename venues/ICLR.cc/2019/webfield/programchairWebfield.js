@@ -226,6 +226,7 @@ var displayHeader = function(headerP) {
     $panel.empty().append(
       '<div id="header" class="panel">' +
         '<h1>' + HEADER_TEXT + '</h1>' +
+        '<h4><a href="/group?id=ICLR.cc/2019/Conference">\< Back to ICLR 2019 Homepage</a><h4>' +
       '</div>' +
       '<div id="notes"><div class="tabs-container"></div></div>'
     );
@@ -284,6 +285,15 @@ var displaySortPanel = function(container, sortOptions, sortResults) {
 };
 
 var displayPaperStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
+  console.log('displayPaperStatusTable');
+  console.log('profiles', profiles);
+  console.log('notes', notes);
+  console.log('completedReviews', completedReviews);
+  console.log('metaReviews', metaReviews);
+  console.log('reviewerIds', reviewerIds);
+  console.log('areachairIds', areachairIds);
+  console.log('container', container);
+  console.log('options', options);
 
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
@@ -306,6 +316,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     return buildPaperTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
   });
 
+  console.log('rowData', rowData);
   var toNumber = function(value) {
     return value == 'N/A' ? 0 : value;
   }
@@ -444,6 +455,10 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
   var rowData = [];
   var index = 1;
   var sortedReviewerIds = _.sortBy(_.keys(reviewerById));
+
+  console.log('reviewerByNote', reviewerByNote);
+
+
   _.forEach(sortedReviewerIds, function(reviewer) {
     var numbers = reviewerById[reviewer];
 
@@ -536,7 +551,8 @@ var displayError = function(message) {
 
 // Helper functions
 var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
-
+  console.log('buildPaperTableRow');
+  console.log('reviewerIds', reviewerIds);
   // Build Note Summary Cell
   note.content.authors = null;  // Don't display 'Blinded Authors'
 
@@ -775,7 +791,7 @@ controller.addHandler('areachairs', {
       );
     })
     .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
-
+      console.log('reviewerGroups', reviewerGroups);
       var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj, noteNum) {
         return result.concat(_.values(idsObj));
       }, []));

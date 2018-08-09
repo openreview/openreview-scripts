@@ -94,10 +94,11 @@ function main() {
 
   var $panel = $('#group-container');
   $panel.prepend(
-    '<div id="header" class="panel">' +
-      '<h1>' + HEADER_TEXT + '</h1>' +
-      '<p>' + INSTRUCTIONS_HTML + '</p>' +
-    '</div>'
+    '<div id="header" class="panel"> \
+      <h1>' + HEADER_TEXT + '</h1> \
+      <h4><a href="/group?id=ICLR.cc/2019/Conference">\< Back to ICLR 2019 Homepage</a><h4><br>\
+      <p>' + INSTRUCTIONS_HTML + '</p>\
+    </div>'
   );
 
   renderConferenceTabs();

@@ -100,16 +100,12 @@ var SUBJECT_AREAS = [
   'Representation: Probabilistic'
 ];
 
-var INSTRUCTIONS =  '<p><strong>This page provides information and status updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference progresses, so please check back frequently for news and other updates.</strong></p>\
-  <br>'
-
 // Main is the entry point to the webfield code and runs everything
 function main() {
   Webfield.ui.setup('#invitation-container', CONFERENCE_ID);  // required
 
   Webfield.ui.header(SHORT_PHRASE + ' Bidding Console');
-
-  $('#header').append(INSTRUCTIONS)
+  $('#header').append('<h4><a href="/group?id=ICLR.cc/2019/Conference">\< Back to ICLR 2019 Homepage</a><h4><br>')
 
   Webfield.ui.spinner('#notes');
 
@@ -236,8 +232,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
     var bidCount = veryHigh.length + high.length + neutral.length + low.length + veryLow.length;
 
-    $('#header h3').remove();
-    $('#header').append('<h3>You have completed ' + bidCount + ' bids</h3>');
+    $('#header > #bidcount').remove();
+    $('#header').append('<h4 id=bidcount>You have completed ' + bidCount + ' bids</h4>');
 
     var sections = [
       {
@@ -435,8 +431,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       }
     });
 
-    $('#header h3').remove();
-    $('#header').append('<h3>You have completed ' + totalCount + ' bids</h3>');
+    $('#header > #bidcount').remove();
+    $('#header').append('<h4 id=bidcount>You have completed ' + totalCount + ' bids</h4>');
   }
 
   updateNotes(validNotes);

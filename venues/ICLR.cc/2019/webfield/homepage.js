@@ -22,6 +22,97 @@ var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers';
 var PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs';
 var AUTHORS_ID = CONFERENCE_ID + '/Authors';
 
+var SUBJECT_AREAS = [
+  'Algorithms: Approximate Inference',
+  'Algorithms: Belief Propagation',
+  'Algorithms: Distributed and Parallel',
+  'Algorithms: Exact Inference',
+  'Algorithms: Graph Theory',
+  'Algorithms: Heuristics',
+  'Algorithms: Lifted Inference',
+  'Algorithms: MCMC methods',
+  'Algorithms: Optimization',
+  'Algorithms: Other',
+  'Algorithms: Software and Tools',
+  'Applications: Biology',
+  'Applications: Databases',
+  'Applications: Decision Support',
+  'Applications: Diagnosis and Reliability',
+  'Applications: Economics',
+  'Applications: Education',
+  'Applications: General',
+  'Applications: Medicine',
+  'Applications: Planning and Control',
+  'Applications: Privacy and Security',
+  'Applications: Robotics',
+  'Applications: Sensor Data',
+  'Applications: Social Network Analysis',
+  'Applications: Speech',
+  'Applications: Sustainability and Climate',
+  'Applications: Text and Web Data',
+  'Applications: User Models',
+  'Applications: Vision',
+  'Data: Big Data',
+  'Data: Multivariate',
+  'Data: Other',
+  'Data: Relational',
+  'Data: Spatial',
+  'Data: Temporal or Sequential',
+  'Learning: Active Learning',
+  'Learning: Classification',
+  'Learning: Clustering',
+  'Learning: Deep Learning',
+  'Learning: General',
+  'Learning: Nonparametric Bayes',
+  'Learning: Online and Anytime Learning',
+  'Learning: Other',
+  'Learning: Parameter Estimation',
+  'Learning: Probabilistic Generative Models',
+  'Learning: Ranking',
+  'Learning: Recommender Systems',
+  'Learning: Regression',
+  'Learning: Reinforcement Learning',
+  'Learning: Relational Learning',
+  'Learning: Relational Models',
+  'Learning: Scalability',
+  'Learning: Semi-Supervised Learning',
+  'Learning: Structure Learning',
+  'Learning: Structured Prediction',
+  'Learning: Theory',
+  'Learning: Unsupervised',
+  'Methodology: Bayesian Methods',
+  'Methodology: Calibration',
+  'Methodology: Elicitation',
+  'Methodology: Evaluation',
+  'Methodology: Human Expertise and Judgement',
+  'Methodology: Other',
+  'Methodology: Probabilistic Programming',
+  'Models: Bayesian Networks',
+  'Models: Directed Graphical Models',
+  'Models: Dynamic Bayesian Networks',
+  'Models: Markov Decision Processes',
+  'Models: Mixed Graphical Models',
+  'Models: Other',
+  'Models: Relational Models',
+  'Models: Topic Models',
+  'Models: Undirected Graphical Models',
+  'None of the above',
+  'Principles: Causality',
+  'Principles: Cognitive Models',
+  'Principles: Decision Theory',
+  'Principles: Game Theory',
+  'Principles: Information Theory',
+  'Principles: Other',
+  'Principles: Probability Theory',
+  'Principles: Statistical Theory',
+  'Representation: Constraints',
+  'Representation: Dempster-Shafer',
+  'Representation: Fuzzy Logic',
+  'Representation: Influence Diagrams',
+  'Representation: Non-Probabilistic Frameworks',
+  'Representation: Probabilistic'
+];
+
 var HEADER = {
   title: 'ICLR 2019',
   subtitle: 'International Conference on Machine Learning',
@@ -309,7 +400,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
+          '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '" target="_blank">Program Chair Console</a>',
         '</li>'
       ].join(''));
     }
@@ -317,7 +408,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/invitation?id=' + ADD_BID_ID + '">Bidding Console</a>',
+          '<a href="/invitation?id=' + ADD_BID_ID + '" target="_blank">Bidding Console</a>',
         '</li>'
       ].join(''));
     }
@@ -325,7 +416,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     if (_.includes(userGroups, AREA_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + AREA_CHAIRS_ID + '">Area Chair Console</a>',
+          '<a href="/group?id=' + AREA_CHAIRS_ID + '" target="_blank">Area Chair Console</a>',
         '</li>'
       ].join(''));
     }
@@ -333,7 +424,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     if (_.includes(userGroups, REVIEWERS_ID)) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + REVIEWERS_ID + '">Reviewer Console</a>',
+          '<a href="/group?id=' + REVIEWERS_ID + '" target="_blank" >Reviewer Console</a>',
         '</li>'
       ].join(''));
     }
@@ -342,7 +433,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       console.log('attaching authors link');
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
+          '<a href="/group?id=' + AUTHORS_ID + '" target="_blank">Author Console</a>',
         '</li>'
       ].join(''));
     }
@@ -354,7 +445,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
 
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
-    showTags: true,
+    showTags: false,
     tagInvitations: tagInvitations,
     container: '#all-submissions'
   });
@@ -364,6 +455,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     container: '#all-submissions',
     search: {
       enabled: true,
+      subjectAreas: SUBJECT_AREAS,
       onResults: function(searchResults) {
         var blindedSearchResults = searchResults.filter(function(note) {
           return note.invitation === BLIND_SUBMISSION_ID;
