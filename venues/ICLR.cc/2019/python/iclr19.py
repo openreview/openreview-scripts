@@ -189,7 +189,7 @@ reviewers_declined = openreview.Group.from_json({
 
 authors = openreview.Group.from_json({
     'id': AUTHORS_ID,
-    'readers': [CONFERENCE_ID, PROGRAM_CHAIRS_ID, AUTHORS_ID],
+    'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
     'signatories': [CONFERENCE_ID],
