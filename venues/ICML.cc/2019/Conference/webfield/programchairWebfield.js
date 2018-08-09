@@ -825,7 +825,4 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   return false;
 });
 
-OpenBanner.breadcrumbs([
-  { link: '/', text: 'Venues' },
-  { link: '/group?id=' + CONFERENCE, text: view.prettyId(CONFERENCE) }
-]);
+OpenBanner.venueHomepageLink(CONFERENCE);

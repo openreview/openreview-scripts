@@ -17,11 +17,6 @@ function main() {
 
   Webfield.ui.spinner('#notes');
 
-  OpenBanner.breadcrumbs([
-    { link: '/', text: 'Venues' },
-    { link: '/group?id=' + CONFERENCE_ID, text: view.prettyId(CONFERENCE_ID) }
-  ]);
-
   load().then(renderContent);
 }
 
