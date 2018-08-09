@@ -13,8 +13,8 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
     <p>\
       <em><strong>Please do the following by Friday, August 10</strong></em>:\
       <ul>\
-        <li>Register as an Official Reviewer by <strong>(1)</strong> updating your profile to include your most up-to-date information, and <strong>(2)</strong> submitting ICLR Subject Areas and Data Collection consent forms.</li>\
-        <li><strong><a href="/forum?id=ryxFlFHvSQ">Complete Reviewer Registration</a></strong></li>\
+        <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
+        <li>Complete the ICLR registration form (found in your Tasks view).</li>\
       </ul>\
     </p>\
   <br>\

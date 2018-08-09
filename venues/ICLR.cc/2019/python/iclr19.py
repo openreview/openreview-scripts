@@ -291,7 +291,7 @@ tpms_desc = ''.join([
     ])
 
 registration_root_invitation = openreview.Invitation.from_json({
-    'id': CONFERENCE_ID + '/-/Reviewer_Registration',
+    'id': CONFERENCE_ID + '/-/Registration',
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
@@ -299,11 +299,11 @@ registration_root_invitation = openreview.Invitation.from_json({
     'reply': {
         'forum': None,
         'replyto': None,
-        'readers': {'values': [REVIEWERS_ID, AREA_CHAIRS_ID, PROGRAM_CHAIRS_ID, CONFERENCE_ID]},
+        'readers': {'values': [REVIEWERS_ID, AREA_CHAIRS_ID, PROGRAM_CHAIRS_ID, CONFERENCE_ID, AUTHORS_ID]},
         'writers': {'values': [CONFERENCE_ID]},
         'signatures': {'values': [CONFERENCE_ID]},
         'content': {
-            'title': {'value': 'ICLR 2019 Reviewer Registration'},
+            'title': {'value': 'ICLR 2019 Registration'},
             'Subject Areas': {
                 'value': subj_desc,
                 'order': 1
@@ -338,7 +338,7 @@ consent_response_template = {
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'invitees': [REVIEWERS_ID],
+    'invitees': [REVIEWERS_ID, AREA_CHAIRS_ID, AUTHORS_ID],
     'duedate': 1520639999000, # March 9, 2018
     'process': '../process/registrationProcess.js',
     'reply': {
@@ -369,7 +369,7 @@ subj_response_template = {
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'invitees': [REVIEWERS_ID],
+    'invitees': [REVIEWERS_ID, AREA_CHAIRS_ID, AUTHORS_ID],
     'duedate': 1520639999000, # March 9, 2018,
     'process': '../process/registrationProcess.js',
     'reply': {
@@ -397,7 +397,7 @@ profile_confirmed_template = {
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'invitees': [REVIEWERS_ID],
+    'invitees': [REVIEWERS_ID, AREA_CHAIRS_ID, AUTHORS_ID],
     'duedate': 1520639999000, # March 9, 2018,
     'process': '../process/registrationProcess.js',
     'reply': {

@@ -77,6 +77,13 @@ var SCHEDULE_HTML = '<h4>Submission Phase</h4>\
         <li>Please ensure that the email addresses of the corresponding author are up-to-date in his or her profile.</li>\
       </ul>\
     </p>\
+    <p>\
+      <em><strong>Please do the following by Friday, August 10</strong></em>:\
+      <ul>\
+        <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
+        <li>Complete the ICLR registration form (found in your Tasks view).</li>\
+      </ul>\
+    </p>\
   <br>\
   <h4>Reviewing Phase</h4>\
     <p>\

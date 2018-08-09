@@ -456,6 +456,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     search: {
       enabled: true,
       subjectAreas: SUBJECT_AREAS,
+      localSearch: false,
       onResults: function(searchResults) {
         var blindedSearchResults = searchResults.filter(function(note) {
           return note.invitation === BLIND_SUBMISSION_ID;
