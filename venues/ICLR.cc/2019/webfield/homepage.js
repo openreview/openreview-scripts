@@ -116,31 +116,11 @@ var SUBJECT_AREAS = [
 var HEADER = {
   title: 'ICLR 2019',
   subtitle: 'International Conference on Machine Learning',
-  location: 'Vancouver Convention Center, Vancouver, BC, Canada',
-  date: 'April 30 - May 3, 2019',
-  website: 'http://www.ICLR.cc',
-  instructions: '<p><strong>Important Information about Anonymity</strong><br>\
-    OpenReview maintains both anonymity and attributability of papers by storing an "original" \
-    record of the paper, complete with full author names and email addresses, as well as an anonymizing \
-    "mask" for the paper, which protects the authors\' identities. Specific policy regarding when \
-    (and to whom) original records are revealed is determined by the conference organizers, but typically, \
-    original records are visible only to the authors themselves and to the conference program chairs. \
-    Contact the conference organizers with questions about conference-specific policy. (WARNING: PDFs \
-    are not automatically masked. Authors should submit PDFs without author identities.)</p> \
-    <p><strong>"Papers Under Review" vs. "Submitted Papers"</strong><br>\
-    Original papers, complete with full author names and email addresses, are submitted to a conference,\
-    and can be seen by the authors in the "My Submitted Papers" tab. Upon submission, a mask is created \
-    and made available to reviewers and other discussion participants (these participants are determined by \
-    conference-specific policy). Masks on your submitted papers appear in the "My Papers Under Review" tab. \
-    Masks created for other submissions appear in the "All Papers Under Review" tab.</p> \
-    <p><strong>Posting Revisions to Submissions</strong><br>\
-    To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button if available. \
-    Revisions are not allowed during the formal review process.\
-    Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
-    <p><strong>A Note to Reviewers about Bidding</strong><br> \
-    To access the bidding interface, please ensure that your profile is linked to the email address where you received your initial reviewer invitation email. \
-    To do this, click on your name at the top right corner of the page, go to your Profile, enter "edit mode," and add your email address. \
-    You will also need to confirm your address by pressing the "Confirm" button. This will involve a round-trip email verification.</p>\
+  location: 'New Orleans, Louisiana, United States',
+  date: 'May 6 - May 9, 2019',
+  website: 'https://iclr.cc/Conferences/2019',
+  instructions: '<p><strong>Important Information</strong><br>\
+    Some instructions could go here.</p> \
     <p><strong>Questions or Concerns</strong><br> \
     Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
@@ -192,28 +172,15 @@ function load() {
     details: 'all'
   });
 
-  var submittedNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
-    pageSize: PAGE_SIZE,
-    tauthor: true
-  });
-
-  var assignedNotePairsP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
-    pageSize: 100,
-    invitee: true,
-    duedate: true
-  });
-
   var activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
     pageSize: PAGE_SIZE,
     details: 'forumContent'
   });
 
   var userGroupsP;
-  var authorNotesP;
 
   if (!user || _.startsWith(user.id, 'guest_')) {
     userGroupsP = $.Deferred().resolve([]);
-    authorNotesP = $.Deferred().resolve([]);
 
   } else {
     userGroupsP = Webfield.get('/groups', {member: user.id}).then(function(result) {
@@ -222,36 +189,13 @@ function load() {
         function(id) { return _.startsWith(id, CONFERENCE_ID); }
       );
     });
-    authorNotesP = Webfield.get('/notes', {
-      'content.authorids': user.profile.id,
-      invitation: SUBMISSION_ID
-    }).then(function(result) {
-      return result.notes;
-    });
   }
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID);
 
-  return userGroupsP
-  .then(function(userGroups) {
-
-    var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
-    var assignedNotesP = $.Deferred().resolve([]);
-
-    if (assignedPaperNumbers.length) {
-        assignedNotesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
-        pageSize: PAGE_SIZE,
-        number: assignedPaperNumbers.join()
-      });
-    }
-
-
-    return $.when(
-      notesP, submittedNotesP, assignedNotePairsP, assignedNotesP, userGroups,
-      authorNotesP, tagInvitationsP, activityNotesP
-    );
-  });
-
+  return $.when(
+    notesP, userGroupsP, tagInvitationsP, activityNotesP
+  );
 }
 
 
@@ -288,10 +232,6 @@ function renderConferenceTabs() {
       heading: 'All Submissions',
       id: 'all-submissions',
     },
-    // {
-    //   heading: 'Your ICLR Tasks',
-    //   id: 'your-iclr-tasks',
-    // },
     {
       heading: 'Recent Activity',
       id: 'recent-activity',
@@ -304,8 +244,8 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, userGroups, authorNotes, tagInvitations, activityNotes) {
-  var data, commentNotes;
+function renderContent(notes, userGroups, tagInvitations, activityNotes) {
+  var data
 
   console.log('userGroups',userGroups);
 
@@ -315,17 +255,6 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
   //   return;
   // }
 
-  commentNotes = [];
-
-  _.forEach(submittedNotes, function(note) {
-    if (!_.isNil(note.ddate)) {
-      return;
-    }
-    if (!_.includes(COMMENT_EXCLUSION, note.invitation)) {
-      commentNotes.push(note);
-    }
-  });
-
   // Filter out all tags that belong to other users (important for bid tags)
   notes = _.map(notes, function(n) {
     n.tags = _.filter(n.tags, function(t) {
@@ -334,65 +263,13 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     return n;
   });
 
-  var assignedPaperNumbers = getPaperNumbersfromGroups(userGroups);
-  if (assignedPaperNumbers.length !== assignedNotes.length) {
-    console.warn('WARNING: The number of assigned notes returned by API does not ' +
-      'match the number of assigned note groups the user is a member of.');
-  }
-
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
   console.log('authorPaperNumbers',authorPaperNumbers);
-  if (authorPaperNumbers.length !== authorNotes.length) {
-    console.warn('WARNING: The number of submitted notes returned by API does not ' +
-      'match the number of submitted note groups the user is a member of.');
-  }
-
   console.log('userGroups', userGroups);
 
-  // My Tasks tab
-  // if (userGroups.length) {
-  //   var tasksOptions = {
-  //     container: '#your-iclr-tasks',
-  //     emptyMessage: 'No outstanding tasks for this conference'
-  //   }
-  //   Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
-
-  //   if (_.includes(userGroups, AREA_CHAIRS_ID)) {
-  //     $('#your-iclr-tasks .submissions-list').prepend([
-  //       '<li class="note invitation-link">',
-  //         '<a href="/group?id=' + AREA_CHAIRS_ID + '">Area Chair Console</a>',
-  //       '</li>'
-  //     ].join(''));
-  //   }
-
-  //   if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
-  //     $('#your-iclr-tasks .submissions-list').prepend([
-  //       '<li class="note invitation-link">',
-  //         '<a href="/assignments?venue=' + CONFERENCE_ID,
-  //           'Assignments Browser',
-  //         '</a>',
-  //       '</li>'
-  //     ].join(''));
-
-  //     $('#your-iclr-tasks .submissions-list').prepend([
-  //       '<li class="note invitation-link">',
-  //         '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
-  //       '</li>'
-  //     ].join(''));
-  //   }
-  //   $('.tabs-container a[href="#your-iclr-tasks"]').parent().show();
-  // } else {
-  //   $('.tabs-container a[href="#your-iclr-tasks"]').parent().hide();
-  // }
 
   // Your Consoles tab
   if (userGroups.length) {
-    // var tasksOptions = {
-    //   container: '#your-consoles',
-    //   emptyMessage: 'This shouldn\'t be here',
-    //   showTasks: false
-    // }
-    // Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
 
     var $container = $('#your-consoles');
     $container.append('<ul class="list-unstyled submissions-list">');
@@ -480,57 +357,8 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
   }
 
-
-  // My Submitted Papers tab
-  if (authorNotes.length) {
-    Webfield.ui.searchResults(
-      authorNotes,
-      _.assign({}, paperDisplayOptions, {container: '#my-submitted-papers'})
-    );
-    console.log('authorNotes', authorNotes);
-    var authorNoteIds = _.map(authorNotes, function(original){
-      return original.id;
-    });
-
-    console.log('authorNoteIds', authorNoteIds);
-    // get blind papers that are authored by this user
-    var myPapersUnderReview = _.filter(notes, function(note){
-      console.log('note.original', note.original);
-      return _.includes(authorNoteIds, note.original);
-    });
-    //var myPapersUnderReview = notes;
-    console.log('myPapersUnderReview',myPapersUnderReview);
-
-    // My Papers Under Review tab
-    Webfield.ui.searchResults(
-      myPapersUnderReview,
-      _.assign({}, paperDisplayOptions, {
-        container: '#my-papers-under-review',
-        emptyMessage: 'You have no papers currently under review.'
-      })
-    );
-    $('.tabs-container a[href="#my-submitted-papers"]').parent().show();
-    $('.tabs-container a[href="#my-papers-under-review"]').parent().show();
-  } else {
-    $('.tabs-container a[href="#my-submitted-papers"]').parent().hide();
-    $('.tabs-container a[href="#my-papers-under-review"]').parent().hide();
-  }
-
   // Activity Tab
-
   if (activityNotes.length) {
-    // Webfield.ui.searchResults(
-    //   activityNotes,
-    //   _.assign({}, commentDisplayOptions, {
-    //     container: '#recent-activity',
-    //     emptyMessage: 'No comments or reviews to display',
-    //     showActivity: true,
-    //     forumContent: true,
-    //     pdfLink: true,
-    //     replyCount: false
-    //   })
-    // );
-
     var displayOptions = {
       container: '#recent-activity'
     };
