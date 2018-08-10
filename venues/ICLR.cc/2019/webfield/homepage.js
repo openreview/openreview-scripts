@@ -333,7 +333,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     search: {
       enabled: true,
       subjectAreas: SUBJECT_AREAS,
-      localSearch: false,
+      localSearch: true,
       onResults: function(searchResults) {
         var blindedSearchResults = searchResults.filter(function(note) {
           return note.invitation === BLIND_SUBMISSION_ID;
