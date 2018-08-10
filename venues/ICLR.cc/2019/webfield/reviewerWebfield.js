@@ -250,7 +250,7 @@ var displayStatusTable = function(profiles, notes, completedRatings, officialRev
   }
 };
 
-var displayTasks = function(assignedNotePairs, tagInvitations){
+var displayTasks = function(invitations, tagInvitations){
   console.log('displayTasks');
   //  My Tasks tab
   var tasksOptions = {
@@ -258,7 +258,7 @@ var displayTasks = function(assignedNotePairs, tagInvitations){
     emptyMessage: 'No outstanding tasks for this conference'
   }
   $(tasksOptions.container).empty();
-  Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
+  Webfield.ui.newTaskList(invitations, tagInvitations, tasksOptions)
   $('.tabs-container a[href="#your-iclr-tasks"]').parent().show();
 }
 
@@ -403,22 +403,23 @@ controller.addHandler('reviewers', {
           getReviewRatings(noteNumbers),
           getOfficialReviews(),
           getReviewerGroups(noteNumbers),
-          Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+          Webfield.get('/invitations', {
+            invitation: WILDCARD_INVITATION,
             pageSize: 100,
             invitee: true,
             duedate: true,
-            // replyto: true,
+            replyto: true,
             details:'replytoNote,repliedNotes'
-          }),
+          }).then(result => result.invitations),
           Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID),
           headerLoaded
         );
       })
-      .then(function(blindedNotes, reviewRatings, officialReviews, noteToReviewerIds, assignedNotePairs, tagInvitations, loaded) {
+      .then(function(blindedNotes, reviewRatings, officialReviews, noteToReviewerIds, invitations, tagInvitations, loaded) {
         console.log('blindedNotes', blindedNotes);
         console.log('reviewRatings', reviewRatings);
         console.log('noteToReviewerIds', noteToReviewerIds);
-        console.log('assignedNotePairs', assignedNotePairs);
+        console.log('invitations', invitations);
         console.log('tagInvitations', tagInvitations);
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
           return result.concat(_.values(idsObj));
@@ -432,7 +433,7 @@ controller.addHandler('reviewers', {
             reviewRatings: reviewRatings,
             officialReviews: officialReviews,
             noteToReviewerIds: noteToReviewerIds,
-            assignedNotePairs: assignedNotePairs,
+            invitations: invitations,
             tagInvitations: tagInvitations
           }
           renderTable();
@@ -455,7 +456,7 @@ var renderTable = function() {
     '#assigned-papers'
   );
 
-  displayTasks(fetchedData.assignedNotePairs, fetchedData.tagInvitations);
+  displayTasks(fetchedData.invitations, fetchedData.tagInvitations);
 }
 
 $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
