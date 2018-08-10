@@ -360,7 +360,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#allPapers',
       search: {
         enabled: true,
-        localSearch: false,
+        localSearch: true,
         subjectAreas: SUBJECT_AREAS,
         sort: sortOptionsList,
         onResults: function(searchResults) {
