@@ -333,8 +333,8 @@ registration_root_note = openreview.Note.from_json({
     }
 })
 
-consent_response_template = {
-    'id': CONFERENCE_ID + '/-/Registration/Consent/Response', # I would like for this to be Consent_Response, but right now the prettyId function is taking the last TWO segments. It should only take the last.
+data_consent_template = {
+    'id': CONFERENCE_ID + '/-/Registration/Data/Consent', # I would like for this to be Consent_Response, but right now the prettyId function is taking the last TWO segments. It should only take the last.
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
@@ -349,7 +349,7 @@ consent_response_template = {
         'signatures': {'values-regex': '~.*'},
         'content': {
             'title': {
-                'value': 'Consent Form Response',
+                'value': 'Data Consent',
                 'order': 1
             },
             'consent': {
@@ -364,7 +364,7 @@ consent_response_template = {
     }
 }
 
-subj_response_template = {
+subject_areas_template = {
     'id': CONFERENCE_ID + '/-/Registration/Subject/Areas', # same here, see comment above
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
@@ -380,7 +380,7 @@ subj_response_template = {
         'signatures': {'values-regex': '~.*'},
         'content': {
             'title': {
-                'value': 'Subject Area Response',
+                'value': 'Subject Areas',
                 'order': 1
             },
             'subject_areas': {
@@ -392,8 +392,8 @@ subj_response_template = {
     }
 }
 
-profile_confirmed_template = {
-    'id': CONFERENCE_ID + '/-/Registration/Profile/Confirmed',
+confirm_profile_template = {
+    'id': CONFERENCE_ID + '/-/Registration/Confirm/Profile',
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
@@ -408,7 +408,7 @@ profile_confirmed_template = {
         'signatures': {'values-regex': '~.*'},
         'content': {
             'title': {
-                'value': 'Profile Confirmed Response',
+                'value': 'Confirm Profile',
                 'order': 1
             },
             'confirmation': {
