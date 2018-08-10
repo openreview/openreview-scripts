@@ -254,7 +254,7 @@ var displayStatusTable = function(profiles, notes, completedReviews, metaReviews
   $(container).empty().append(tableHTML);
 };
 
-var displayTasks = function(assignedNotePairs, tagInvitations){
+var displayTasks = function(invitations, tagInvitations){
   console.log('displayTasks');
   //  My Tasks tab
   var tasksOptions = {
@@ -262,8 +262,8 @@ var displayTasks = function(assignedNotePairs, tagInvitations){
     emptyMessage: 'No outstanding tasks for this conference'
   }
   $(tasksOptions.container).empty();
-  console.log('assignedNotePairs', assignedNotePairs);
-  Webfield.ui.taskList(assignedNotePairs, tagInvitations, tasksOptions)
+  console.log('invitations', invitations);
+  Webfield.ui.newTaskList(invitations, tagInvitations, tasksOptions)
   $('.tabs-container a[href="#your-iclr-tasks"]').parent().show();
 }
 
@@ -404,18 +404,19 @@ controller.addHandler('areachairs', {
           getOfficialReviews(noteNumbers),
           getMetaReviews(),
           getReviewerGroups(noteNumbers),
-          Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+          Webfield.get('/invitations', {
+            invitation: WILDCARD_INVITATION,
             pageSize: 100,
             invitee: true,
             duedate: true,
-            // replyto: true,
+            replyto: true,
             details:'replytoNote,repliedNotes'
-          }),
+          }).then(result => result.invitations),
           Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID),
           headerLoaded
         );
       })
-      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, assignedNotePairs, tagInvitations, loaded, authorDomains) {
+      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations, loaded, authorDomains) {
         console.log('blindedNotes', blindedNotes);
         console.log('noteToReviewerIds', noteToReviewerIds);
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
@@ -431,7 +432,7 @@ controller.addHandler('areachairs', {
             metaReviews: metaReviews,
             noteToReviewerIds: noteToReviewerIds,
             authorDomains: authorDomains,
-            assignedNotePairs: assignedNotePairs,
+            invitations: invitations,
             tagInvitations: tagInvitations
           }
           renderTable();
@@ -455,7 +456,7 @@ var renderTable = function() {
     '#assigned-papers'
   );
 
-  displayTasks(fetchedData.assignedNotePairs, fetchedData.tagInvitations);
+  displayTasks(fetchedData.invitations, fetchedData.tagInvitations);
 }
 
 $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
