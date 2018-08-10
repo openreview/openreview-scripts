@@ -211,7 +211,7 @@ var displayHeader = function(headerP) {
         },
         {
           heading: 'Area Chair Tasks',
-          id: 'your-iclr-tasks',
+          id: 'areachair-tasks',
           content: loadingMessage,
         },
         {
@@ -258,13 +258,27 @@ var displayTasks = function(invitations, tagInvitations){
   console.log('displayTasks');
   //  My Tasks tab
   var tasksOptions = {
-    container: '#your-iclr-tasks',
+    container: '#areachair-tasks',
     emptyMessage: 'No outstanding tasks for this conference'
   }
   $(tasksOptions.container).empty();
   console.log('invitations', invitations);
+
+  // filter out non-areachair tasks
+  areachairInvitations = _.filter(invitations, inv => {
+    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Area_Chair')) ) {
+      return inv;
+    }
+  });
+
+  areachairTagInvitations = _.filter(tagInvitations, inv => {
+    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Area_Chair')) ) {
+      return inv;
+    }
+  });
+
   Webfield.ui.newTaskList(invitations, tagInvitations, tasksOptions)
-  $('.tabs-container a[href="#your-iclr-tasks"]').parent().show();
+  $('.tabs-container a[href="#areachair-tasks"]').parent().show();
 }
 
 var displayError = function(message) {

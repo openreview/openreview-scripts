@@ -202,7 +202,7 @@ var displayHeader = function(headerP) {
         },
         {
           heading: 'Reviewer Tasks',
-          id: 'your-iclr-tasks',
+          id: 'reviewer-tasks',
           content: loadingMessage,
         },
         {
@@ -254,12 +254,26 @@ var displayTasks = function(invitations, tagInvitations){
   console.log('displayTasks');
   //  My Tasks tab
   var tasksOptions = {
-    container: '#your-iclr-tasks',
+    container: '#reviewer-tasks',
     emptyMessage: 'No outstanding tasks for this conference'
   }
   $(tasksOptions.container).empty();
-  Webfield.ui.newTaskList(invitations, tagInvitations, tasksOptions)
-  $('.tabs-container a[href="#your-iclr-tasks"]').parent().show();
+
+  // filter out non-reviewer invitations
+  reviewerInvitations = _.filter(invitations, inv => {
+    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Reviewer')) ) {
+      return inv;
+    }
+  });
+
+  reviewerTagInvitations = _.filter(tagInvitations, inv => {
+    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Reviewer')) ) {
+      return inv;
+    }
+  });
+
+  Webfield.ui.newTaskList(reviewerInvitations, reviewerTagInvitations, tasksOptions)
+  $('.tabs-container a[href="#reviewer-tasks"]').parent().show();
 }
 
 var displayError = function(message) {

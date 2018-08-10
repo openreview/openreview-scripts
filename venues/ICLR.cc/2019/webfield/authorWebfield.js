@@ -162,6 +162,15 @@ function load() {
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID);
 
+  var invitationsP = Webfield.get('/invitations', {
+    invitation: WILDCARD_INVITATION,
+    pageSize: 100,
+    invitee: true,
+    duedate: true,
+    replyto: true,
+    details:'replytoNote,repliedNotes'
+  }).then(result => result.invitations)
+
   return userGroupsP
   .then(function(userGroups) {
 
@@ -178,7 +187,7 @@ function load() {
 
     return $.when(
       notesP, submittedNotesP, assignedNotePairsP, assignedNotesP, userGroups,
-      authorNotesP, tagInvitationsP, activityNotesP
+      authorNotesP, invitationsP, tagInvitationsP, activityNotesP
     );
   });
 
@@ -194,8 +203,12 @@ function renderConferenceTabs() {
       content: SCHEDULE_HTML
     },
     {
+      heading: 'Author Tasks',
+      id: 'author-tasks'
+    },
+    {
       heading: 'Your Anonymous Versions',
-      id: 'your-anonymous-submissions',
+      id: 'your-anonymous-versions',
     },
     {
       heading: 'Your Private Versions',
@@ -209,7 +222,36 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, userGroups, authorNotes, tagInvitations, activityNotes) {
+var displayTasks = function(invitations, tagInvitations){
+  console.log('displayTasks');
+  //  My Tasks tab
+  var tasksOptions = {
+    container: '#author-tasks',
+    emptyMessage: 'No outstanding tasks for this conference'
+  }
+  $(tasksOptions.container).empty();
+
+  // filter out non-author invitations
+  authorInvitations = _.filter(invitations, inv => {
+    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Authors')) ) {
+      return inv;
+    }
+  });
+
+  authorTagInvitations = _.filter(tagInvitations, inv => {
+    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Authors')) ) {
+      return inv;
+    }
+  });
+
+  console.log('author invitations', authorInvitations);
+  console.log('tagInvitations', authorTagInvitations);
+
+  Webfield.ui.newTaskList(authorInvitations, authorTagInvitations, tasksOptions)
+  $('.tabs-container a[href="#author-tasks"]').parent().show();
+}
+
+function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, userGroups, authorNotes, invitations, tagInvitations, activityNotes) {
   var data, commentNotes;
 
   console.log('userGroups',userGroups);
@@ -245,7 +287,10 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       'match the number of submitted note groups the user is a member of.');
   }
 
-  // My Submitted Papers tab
+  // Author Tasks tab
+  displayTasks(invitations, tagInvitations);
+
+  // Your Private Versions and Your Anonymous Versions tabs
   if (authorNotes.length) {
     Webfield.ui.searchResults(
       authorNotes,
@@ -258,28 +303,30 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
 
     console.log('authorNoteIds', authorNoteIds);
     // get blind papers that are authored by this user
-    var myPapersUnderReview = _.filter(notes, function(note){
+    var anonymousVersions = _.filter(notes, function(note){
       console.log('note.original', note.original);
       return _.includes(authorNoteIds, note.original);
     });
-    //var myPapersUnderReview = notes;
-    console.log('myPapersUnderReview',myPapersUnderReview);
+    //var anonymousVersions = notes;
+    console.log('anonymousVersions',anonymousVersions);
 
-    // My Papers Under Review tab
+    // Anonymous Versions
     Webfield.ui.searchResults(
-      myPapersUnderReview,
+      anonymousVersions,
       _.assign({}, paperDisplayOptions, {
-        container: '#your-anonymous-submissions',
+        container: '#your-anonymous-versions',
         emptyMessage: 'You have no papers currently under review.'
       })
     );
     $('.tabs-container a[href="#your-private-versions"]').parent().show();
-    $('.tabs-container a[href="#your-anonymous-submissions"]').parent().show();
+    $('.tabs-container a[href="#your-anonymous-versions"]').parent().show();
   } else {
     $('.tabs-container a[href="#your-private-versions"]').parent().hide();
-    $('.tabs-container a[href="#your-anonymous-submissions"]').parent().hide();
+    $('.tabs-container a[href="#your-anonymous-versions"]').parent().hide();
   }
 
+
+  // Toggle various UI elements
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
 
