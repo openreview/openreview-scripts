@@ -277,7 +277,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '" target="_blank">Program Chair Console</a>',
+          '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
         '</li>'
       ].join(''));
     }
@@ -285,7 +285,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/invitation?id=' + ADD_BID_ID + '" target="_blank">Bidding Console</a>',
+          '<a href="/invitation?id=' + ADD_BID_ID + '">Bidding Console</a>',
         '</li>'
       ].join(''));
     }
@@ -293,7 +293,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     if (_.includes(userGroups, AREA_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + AREA_CHAIRS_ID + '" target="_blank">Area Chair Console</a>',
+          '<a href="/group?id=' + AREA_CHAIRS_ID + '">Area Chair Console</a>',
         '</li>'
       ].join(''));
     }
@@ -301,7 +301,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     if (_.includes(userGroups, REVIEWERS_ID)) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + REVIEWERS_ID + '" target="_blank" >Reviewer Console</a>',
+          '<a href="/group?id=' + REVIEWERS_ID + '" >Reviewer Console</a>',
         '</li>'
       ].join(''));
     }
@@ -310,7 +310,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       console.log('attaching authors link');
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
-          '<a href="/group?id=' + AUTHORS_ID + '" target="_blank">Author Console</a>',
+          '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
         '</li>'
       ].join(''));
     }
