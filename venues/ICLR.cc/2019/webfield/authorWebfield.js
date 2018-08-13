@@ -69,11 +69,11 @@ INSTRUCTIONS_HTML = '\
     </p> \
     '
 
-var SCHEDULE_HTML = '<h4>Submission Phase</h4>\
+var SCHEDULE_HTML = '<h4>Submission Period</h4>\
     <p>\
       <em><strong>Submission deadline: Monday, August 3</strong></em>:\
       <ul>\
-        <li>You may edit your submissions without edit history any time until the submission deadline.</li>\
+        <li>Authors can revise their paper as many times as needed up to the paper submission deadline.</li>\
         <li>Please ensure that the email addresses of the corresponding author are up-to-date in his or her profile.</li>\
       </ul>\
     </p>\
@@ -85,12 +85,21 @@ var SCHEDULE_HTML = '<h4>Submission Phase</h4>\
       </ul>\
     </p>\
   <br>\
-  <h4>Reviewing Phase</h4>\
+  <h4>Reviewing Period</h4>\
     <p>\
       <em><strong>Reviews can be expected by Friday, August 17</strong></em>:\
       <ul>\
-        <li>Once all first-round reviews on your paper have been submitted, you will have the opportunity to respond to them.</li>\
+        <li>During the review period, authors will not be allowed to revise their paper. </li>\
         <li>Reviews and all discussion take place on the Anonymous Versions of your submitted papers.</li>\
+      </ul>\
+    </p>\
+  <br>\
+  <h4>Rebuttal Period</h4>\
+    <p>\
+      <em><strong>Rebuttal period ends on DATE</strong></em>\
+      <ul>\
+        <li>Authors may revise their paper, but revision history will be available to reviewers.</li>\
+        <li>Area chairs and reviewers reserve the right to ignore changes which are significant from the original scope of the paper.</li>\
       </ul>\
     </p>\
   <br>'
