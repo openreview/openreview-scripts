@@ -115,7 +115,7 @@ var SUBJECT_AREAS = [
 
 var HEADER = {
   title: 'ICLR 2019',
-  subtitle: 'International Conference on Machine Learning',
+  subtitle: 'International Conference on Learning Representations',
   location: 'New Orleans, Louisiana, United States',
   date: 'May 6 - May 9, 2019',
   website: 'https://iclr.cc/Conferences/2019',
