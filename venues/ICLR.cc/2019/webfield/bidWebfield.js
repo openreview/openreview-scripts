@@ -100,6 +100,16 @@ var SUBJECT_AREAS = [
   'Representation: Probabilistic'
 ];
 
+var INSTRUCTIONS =  '\
+<strong>Please indicate your level of interest in reviewing the submitted papers below, on a scale from "Very Low" to "Very High".</strong><br><br>\
+<p>\
+  <em>A few tips:</em>\
+  <ul>\
+    <li>We expect <strong>approximately 50 bids per reviewer</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
+    <li>You may search for papers by keyword or subject area filter.</li>\
+    <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
+</p><br>'
+
 // Main is the entry point to the webfield code and runs everything
 function main() {
   Webfield.ui.setup('#invitation-container', CONFERENCE_ID);  // required
@@ -141,6 +151,7 @@ function load() {
 
 // Display the page interface populated with loaded data
 function renderContent(validNotes, tagInvitations, metadataNotesMap) {
+  $('#header').append(INSTRUCTIONS);
   addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
