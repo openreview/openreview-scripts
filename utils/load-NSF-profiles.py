@@ -72,26 +72,39 @@ def get_expertise(root):
 
     return expertise
 
-def new_referent(id, invitation, content):
+def new_referent(client, id, invitation, content):
     # creates new profile with only the necessary info
-    return openreview.Profile(referent=id,
+    if content:
+        profile = openreview.Profile(referent=id,
                              invitation=invitation,
                              signatures=[source_id],
                              writers=[source_id],
                              content=content)
+        profile = client.update_profile(profile)
+        # test if fails to get original
+        db_profile = client.get_profile(id)
+        super_group = client.get_group('OpenReview.net')
+        if len(super_group.members) > 1:
+            print super_group.members
+            raise openreview.OpenReviewException
+        return profile
+
+    else:
+        return None
 
 # creates profile then adds information from NSF
 def create_nsf_profile(client, email, first_name, last_name, institute, expertise):
     # create new profile
     profile= tools.create_profile(client, email, first_name, last_name)
 
-    # create referent with only new information
-    nsf_profile = new_referent(profile.id, profile.invitation,
-                               update_expertise_and_institute({}, expertise, institute))
+    # create referent
+    content = {}
+    content['emails'] = [email]
+    #content['names'] = [{'first': first_name, 'last': last_name}]
+    content = update_expertise_and_institute(content, expertise, institute)
+    nsf_profile = new_referent(client, profile.id, profile.invitation, content)
 
-    updated_profile = client.update_profile(nsf_profile)
-
-    return updated_profile
+    return nsf_profile
 
 def update_expertise_and_institute(profile_content, expertise, institute):
     # add new information if it exists
@@ -115,6 +128,8 @@ def update_coauthors(content, author_ids, email):
 
 # load information for one or more investigators from each xml file
 def load_xml_investigators(client, dirpath):
+    super_group = client.get_group('OpenReview.net')
+    print len(super_group.members)
     # create the NSF group (or overwrite it if it exists)
     source_group = openreview.Group(id=source_entity, signatures=['OpenReview.net'],
                                    signatories=[source_entity], readers=[source_entity],
@@ -137,6 +152,8 @@ def load_xml_investigators(client, dirpath):
     total_files = len(file_names)
     file_count = 0
     one_percent = total_files//100.0
+    if one_percent < 1:
+        one_percent = 1
 
     # get all profiles
     print "Loading profiles..."
@@ -195,11 +212,10 @@ def load_xml_investigators(client, dirpath):
                             content['names']= [{'first':first_name, 'last':last_name}]
 
                         # create new profile and set content to only the new changes
-                        nsf_profile =new_referent(profile.id, profile.invitation, content)
-
                         try:
-                            client.update_profile(nsf_profile)
-                            num_updates += 1
+                            nsf_profile =new_referent(client, profile.id, profile.invitation, content)
+                            if nsf_profile:
+                                num_updates += 1
                         except openreview.OpenReviewException as e:
                             # can be unhappy if name includes parenthesis etc
                             print "Exception updating profile {}".format(e)
@@ -231,14 +247,14 @@ def load_xml_investigators(client, dirpath):
                                                 ## create new empty content so just sending new data
                                                 content = {}
                                                 content['emails'] = [email]
-                                                nsf_profile = new_referent(profile.id, profile.invitation, content)
-                                                client.update_profile(nsf_profile)
-                                                num_updates += 1
+                                                nsf_profile = new_referent(client, profile.id, profile.invitation, content)
+                                                if nsf_profile:
+                                                    num_updates += 1
                                                 break
                                 # if name matches but institution info doesn't,
                                 # ignore it because we don't know if it's new or not
                         else:
-                            # email and name/institution don't match
+                            # neither email nor name/institution don't match
                             profile = create_nsf_profile(client, email, first_name, last_name, institute, expertise)
                             profiles_by_id[tilde_id]=profile
                             profiles_by_email[email]=profile
