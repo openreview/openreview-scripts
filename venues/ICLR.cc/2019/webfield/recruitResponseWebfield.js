@@ -2,18 +2,16 @@
 var CONFERENCE_ID = 'ICLR.cc/2019/Conference'
 var HEADER = {
   title: 'ICLR 2019',
-  subtitle: 'International Conference on Machine Learning',
+  subtitle: 'International Conference on Learning Representations',
   location: 'New Orleans, Louisiana, United States',
   date: 'May 6 - May 9, 2019',
   website: 'https://iclr.cc/Conferences/2019',
-  instructions: '<p><strong>Important Information</strong><br>\
-    Some instructions could go here.</p> \
-    <p><strong>Questions or Concerns</strong><br> \
+  instructions: '<p><strong>Questions or Concerns</strong><br> \
     Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
     Please contact the ICLR 2019 Program Chairs at \
-    <a href="mailto:ICLR2019programchairs@gmail.com">ICLR2019programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
-  deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
+    <a href="mailto:iclr2019programchairs@googlegroups.com">ICLR2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy. \</p>',
+  deadline: 'Paper Submission Deadline: September 27, 2019'
 }
 
 // Main is the entry point to the webfield code and runs everything

@@ -61,7 +61,24 @@ HASH_SEED = "2810398440804348173"
 RECRUIT_MESSAGE_SUBJ = 'ICLR 2019: Invitation to Review'
 RECRUIT_REVIEWERS_MESSAGE = '''Dear {name},
 
-You have been invited to serve as a reviewer for the ICLR 2019 Conference.
+We are writing to invite you to be a reviewer for the 7th International Conference on Learning Representations 
+(ICLR 2019); see call for papers at: www.iclr.cc. 
+As a recognized researcher by the ICLR community, we hope you can contribute to the review process of ICLR 2019.
+
+The reviewing period will start around September 27th for conference submissions. 
+A tentative timeline for the ICLR reviewing process is:
+
+September 27: Paper submission deadline 
+October 29: Review deadline 
+November 8 - November 21: Rebuttal and discussion
+November 21 - December 5: Discussion between ACs and reviewers 
+
+Please, make sure you are available during the review and discussion period before accepting. 
+We will be using OpenReview throughout the review process, which we hope will make the review process 
+more engaging and allow us to more effectively leverage the whole ICLR community.
+
+The success of ICLR depends on the quality of the reviewing process and ultimately on the quality and 
+dedication of the reviewers. We hope you can accept our invitation and help make ICLR thrive. 
 
 To ACCEPT the invitation, please click on the following link:
 
@@ -71,10 +88,29 @@ To DECLINE the invitation, please click on the following link:
 
 {decline_url}
 
-We  hope you will be able to accept our invitation and help us select a high quality program for ICLR 2019.
+We'd appreciate an answer within 10 days.
 
-Best regards,
-The ICLR 2019 Program Chairs
+If you accept, please make sure to either update your Toronto Paper Matching System (TPMS) account, 
+or create one if you do not have one already: http://torontopapermatching.org/webapp/profileBrowser/login/. 
+We will be using TPMS to assign reviewers to papers, and having an account that reflects your expertise will 
+be crucial for you to receive papers for which you are suited. Also please make sure your OpenReview account 
+lists the email you are using for your TPMS account. There will also be a brief survey through the OpenReview system. 
+
+If you have any question, please contact the program chairs at iclr2019programchairs@googlegroups.com . 
+We are also maintaining a list of reviewer guidelines and frequently asked questions 
+here: https://iclr.cc/Conferences/2019/PaperInformation/ReviewerACGuidelines. 
+
+We are looking forward to your reply, and are grateful if you accept this invitation and help make ICLR 2019 a success!
+
+Cheers!
+
+Alexander Rush, Senior Program Chair
+Sergey Levine, Program Chair
+Karen Livescu, Program Chair
+Shakir Mohamed, Program Chair
+Tara Sainath, General Chair
+
+Contact: iclr2019programchairs@googlegroups.com
 
 '''
 
