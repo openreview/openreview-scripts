@@ -31,47 +31,6 @@ function() {
     }
   };
   or3client.or3request(or3client.inviteUrl, revisionInvitation, 'POST', token)
-  .then(result=> {
-    console.log('revision invitation posted');
-    var paperGroup = {
-      id: PAPER_GROUP_ID,
-      readers: [CONFERENCE_ID],
-      writers: [CONFERENCE_ID],
-      members: [],
-      signatories: [],
-      signatures: [CONFERENCE_ID]
-    }
-    return or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token);
-  })
-  .then(result => {
-    console.log('papergroup posted');
-    var authorGroup = {
-      id: PAPER_AUTHORS_ID,
-      readers: [CONFERENCE_ID, PAPER_AUTHORS_ID],
-      writers: [CONFERENCE_ID],
-      members: note.content.authorids,
-      signatories: [PAPER_AUTHORS_ID],
-      signatures: [CONFERENCE_ID]
-    };
-    return or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token);
-  })
-  .then(result => { console.log(JSON.stringify(result));
-    console.log('author group posted');
-    var blindSubmission = {
-      original: note.id,
-      invitation: BLIND_SUBMISSION_ID,
-      forum: null,
-      parent: null,
-      signatures: [CONFERENCE_ID],
-      writers: [CONFERENCE_ID],
-      readers: ['everyone'],
-      content: {
-        authors: ['Anonymous'],
-        authorids: [CONFERENCE_ID + '/Paper' + note.number + '/Authors'],
-      }
-    };
-    return or3client.or3request(or3client.notesUrl, blindSubmission, 'POST', token);
-  })
   .then(result => { console.log(JSON.stringify(result));
     console.log('blind note posted');
     var authorMail = {
