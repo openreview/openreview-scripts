@@ -290,44 +290,8 @@ recruit_reviewers = invitations.RecruitReviewers(
     web = os.path.abspath('../webfield/recruitResponseWebfield.js')
 )
 
-subj_desc = ''.join([
-    'To properly assign papers to reviewers, we ask that reviewers provide their areas ',
-    'of expertise from among the provided list of subject areas. ',
-    'Please submit your areas of expertise by clicking on the "Subject Areas" button below.',
-    '\n\n'
-    ])
-
-coi_desc = ''.join([
-    'In order to avoid conflicts of interest in reviewing, we ask that all reviewers take a moment to ',
-    'update their OpenReview profiles with their latest information regarding work history and professional relationships. ',
-    'After you have updated your profile, please confirm that your profile is up-to-date by clicking on ',
-    'the "Profile Confirmed" button below.',
-    '\n\n'
-    ])
-
-data_consent_desc = ''.join([
-    'One of the missions of OpenReview is to enable the study of the scientific peer review process itself. ',
-    'In accordance with that mission, OpenReview is collecting a dataset of peer reviews and ',
-    'discussions between authors and reviewers for research purposes. ',
-    'This dataset will include the contents of peer reviews and comments between authors, reviewers, and area chairs. ',
-    'The dataset will be anonymized, and will not include your true identity, but may include non-identifiable metadata related to your profile (e.g. years of experience, field of expertise). ',
-    'The dataset may be released to the public domain ',
-    'after the final accept/reject decisions are made. ',
-    'Do you agree to having your reviews and comments included in this dataset? ',
-    'Please indicate your response by clicking on the "Consent Response" button below. ',
-    '\n\n'
-    ])
-
-tpms_desc = ''.join([
-    'In addition to subject areas, we will be using the Toronto Paper Matching System (TPMS) to compute paper-reviewer affinity scores. ',
-    'Please take a moment to sign up for TPMS and/or update your TPMS account with your latest papers. ',
-    'Then, please ensure that the email address that is affiliated with your TPMS account is linked to your OpenReview profile. ',
-    'After you have done this, please confirm that your TPMS account is up-to-date by clicking the "TPMS Account Confirmed" button below. ',
-    '\n\n'
-    ])
-
-registration_root_invitation = openreview.Invitation.from_json({
-    'id': CONFERENCE_ID + '/-/Registration',
+questionnaire_instructions_invitation = openreview.Invitation.from_json({
+    'id': CONFERENCE_ID + '/-/Questionnaire_Instructions',
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
@@ -339,62 +303,107 @@ registration_root_invitation = openreview.Invitation.from_json({
         'writers': {'values': [CONFERENCE_ID]},
         'signatures': {'values': [CONFERENCE_ID]},
         'content': {
-            'title': {'value': 'ICLR 2019 Registration'},
-            'Subject Areas': {
-                'value': subj_desc,
+            'title': {'value': 'Questionnaire for Reviewers'},
+            'Instructions': {
+                'value': 'Help us get to know our reviewers better and the ways to make the reviewing process smoother by answering these questions.',
                 'order': 1
-            },
-            'Profile Confirmed': {
-                'value': coi_desc,
-                'order': 2
-            },
-            'Consent Response': {
-                'value': data_consent_desc,
-                'order': 9
             }
         }
     }
 })
 
-registration_root_note = openreview.Note.from_json({
-    'readers': registration_root_invitation.reply['readers']['values'],
-    'writers': registration_root_invitation.reply['writers']['values'],
-    'signatures': registration_root_invitation.reply['signatures']['values'],
-    'invitation': registration_root_invitation.id,
+questionnaire_instructions_note = openreview.Note.from_json({
+    'readers': questionnaire_instructions_invitation.reply['readers']['values'],
+    'writers': questionnaire_instructions_invitation.reply['writers']['values'],
+    'signatures': questionnaire_instructions_invitation.reply['signatures']['values'],
+    'invitation': questionnaire_instructions_invitation.id,
     'content': {
-        'title': registration_root_invitation.reply['content']['title']['value'],
-        'Subject Areas': registration_root_invitation.reply['content']['Subject Areas']['value'],
-        'Profile Confirmed': registration_root_invitation.reply['content']['Profile Confirmed']['value'],
-        'Consent Response': registration_root_invitation.reply['content']['Consent Response']['value'],
+        'title': questionnaire_instructions_invitation.reply['content']['title']['value'],
+        'Instructions': questionnaire_instructions_invitation.reply['content']['Instructions']['value'],
     }
 })
 
-data_consent_template = {
-    'id': CONFERENCE_ID + '/-/Registration/Data/Consent', # I would like for this to be Consent_Response, but right now the prettyId function is taking the last TWO segments. It should only take the last.
+questionnaire_response_template = {
+    'id': CONFERENCE_ID + '/-/Questionaire_Response',
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'invitees': [REVIEWERS_ID, AREA_CHAIRS_ID, AUTHORS_ID],
-    'duedate': 1520639999000, # March 9, 2018
-    'process': '../process/registrationProcess.js',
+    'invitees': [REVIEWERS_ID, AUTHORS_ID, AREA_CHAIRS_ID],
+    'duedate': OFFICIAL_REVIEW_DEADLINE,
     'reply': {
         'forum': '<forum>',
         'replyto': '<forum>',
-        'readers': {'values': [CONFERENCE_ID]},
+        'readers': {'values': [PROGRAM_CHAIRS_ID]},
         'writers': {'values-regex': '~.*'},
         'signatures': {'values-regex': '~.*'},
         'content': {
             'title': {
-                'value': 'Data Consent',
+                'value': 'Questionnaire Response',
                 'order': 1
             },
-            'consent': {
-                'value-dropdown': [
-                    'Yes, I agree to participate.',
-                    'No, I do not agree to participate.'
+            'Current Positions': {
+                'description': 'Which categories describe you best? Select all that apply.',
+                'values-dropdown': [
+                    'Academia: Lecturer/Assistant Professor',
+                    'Academia: Post-doctoral candidate',
+                    'Academia: Associate Professor/Reader',
+                    'Academia: Full professor',
+                    'Industry: Research Scientist',
+                    'Industry: Research Engineer',
+                    'Industry: Software Engineer',
+                    'Student: PhD',
+                    'Student: Masters',
+                    'Student: Other',
+                    'Other' # At some point we'll want to let them add text here
                 ],
-                'required': True,
-                'order': 2
+                'order': 3
+            },
+            'Reviewing Experience': {
+                'description': 'How many times have you been a reviewer for any conference or journal?',
+                'value-radio': [
+                    'Never - this is my first time',
+                    '1 time - building my reviewer skills',
+                    '2-4 times  - comfortable with the reviewing process',
+                    '5-10 times  - active community citizen',
+                    '10+ times  - seasoned reviewer'
+                ]
+
+            },
+            'Previous ICLR Author': {
+                'description': 'Have you published at ICLR in the last two years?',
+                'value-radio': ['Yes','No']
+            },
+            'Your Recent Publications': {
+                'description': 'Where have you recently published? Select all that apply.',
+                'values-dropdown': [
+                    'Neural Information Processing Systems (NIPS)',
+                    'International Conference on Machine Learning (ICML)',
+                    'Artificial Intelligence and Statistics (AISTATS)',
+                    'Uncertainty in Artificial Intelligence (UAI)',
+                    'Association for Advances in Artificial Intelligence (AAAI)',
+                    'Computer Vision and Pattern Recognition (CVPR)',
+                    'International Conference on Computer Vision (ICCV)',
+                    'International Joint Conference on Artificial Intelligence (IJCAI)',
+                    'Robotics: Systems and Science (RSS)',
+                    'Conference on Robotics and Learning (CORL)',
+                    'Association for Computational Linguistics or related (ACL/NAACL/EACL)',
+                    'Empirical Methods in Natural Language Processing (EMNLP)',
+                    'Conference on Learning Theory (COLT)',
+                    'Algorithmic Learning Theory (ALT)',
+                    'Knowledge Discovery and Data Mining (KDD)',
+                    'Other'
+                ]
+            },
+            'Reviewing Preferences': {
+                'description': 'What is the most important factor of the reviewing process for you? (Choose one)',
+                'value-radio': [
+                    'Getting papers that best match my area of expertise',
+                    'Having the smallest number of papers to review',
+                    'Having a long-enough reviewing period (6-8 weeks)',
+                    'Having enough time for active discussion about papers.',
+                    'Receiving clear instructions about the expectations of reviews.'
+                ]
+
             }
         }
     }
