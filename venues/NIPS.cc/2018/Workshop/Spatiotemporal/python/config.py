@@ -46,6 +46,7 @@ SUBMISSION = CONFERENCE_ID + '/-/Submission'
 BLIND_SUBMISSION = CONFERENCE_ID + '/-/Blind_Submission'
 COMMENT = CONFERENCE_ID + '/-/Comment'
 
+'''
 JS_CONSTANTS = {
     'CONFERENCE': CONFERENCE_ID,
     'PROGRAM_CHAIRS': PROGRAM_CHAIRS,
@@ -59,9 +60,9 @@ JS_CONSTANTS = {
     'LOCATION': 'Montreal, Canada',
     'SUBMISSION_INVITATION': SUBMISSION,
     'BLIND_INVITATION': BLIND_SUBMISSION
-}
+}'''
 
-HOMEPAGE_TEMPLATE = "../webfield/conferenceWebfield.template"
+HOMEPAGE = "../webfield/conferenceWebfield.js"
 """
 PARAMETERS
 
