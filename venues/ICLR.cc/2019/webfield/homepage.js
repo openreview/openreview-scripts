@@ -157,11 +157,11 @@ function main() {
 
   renderConferenceHeader();
 
-  renderSubmissionButton();
+  //renderSubmissionButton();
 
-  renderConferenceTabs();
+  //renderConferenceTabs();
 
-  load().then(renderContent);
+  //load().then(renderContent);
 }
 
 // Load makes all the API calls needed to get the data to render the page
@@ -203,7 +203,7 @@ function load() {
 function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
 
-  Webfield.ui.spinner('#notes');
+  //Webfield.ui.spinner('#notes');
 }
 
 function renderSubmissionButton() {
