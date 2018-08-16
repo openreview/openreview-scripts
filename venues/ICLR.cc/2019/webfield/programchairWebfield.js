@@ -4,9 +4,9 @@
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
 
 // Constants
-var HEADER_TEXT = 'ICLR 2018 Program Chairs Console';
+var HEADER_TEXT = 'ICLR 2019 Program Chairs Console';
 
-var CONFERENCE = 'ICLR.cc/2018/Conference';
+var CONFERENCE = 'ICLR.cc/2019/Conference';
 var INVITATION = CONFERENCE + '/-/Submission';
 var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
@@ -18,8 +18,8 @@ var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair';
 
-var ANONREVIEWER_REGEX = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICLR\.cc\/2018\/Conference\/Paper(\d+)\/Area_Chair/;
+var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
 
 
 // Ajax functions
@@ -284,6 +284,15 @@ var displaySortPanel = function(container, sortOptions, sortResults) {
 };
 
 var displayPaperStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
+  console.log('displayPaperStatusTable');
+  console.log('profiles', profiles);
+  console.log('notes', notes);
+  console.log('completedReviews', completedReviews);
+  console.log('metaReviews', metaReviews);
+  console.log('reviewerIds', reviewerIds);
+  console.log('areachairIds', areachairIds);
+  console.log('container', container);
+  console.log('options', options);
 
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
@@ -306,6 +315,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     return buildPaperTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
   });
 
+  console.log('rowData', rowData);
   var toNumber = function(value) {
     return value == 'N/A' ? 0 : value;
   }
@@ -444,6 +454,10 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
   var rowData = [];
   var index = 1;
   var sortedReviewerIds = _.sortBy(_.keys(reviewerById));
+
+  console.log('reviewerByNote', reviewerByNote);
+
+
   _.forEach(sortedReviewerIds, function(reviewer) {
     var numbers = reviewerById[reviewer];
 
@@ -536,7 +550,8 @@ var displayError = function(message) {
 
 // Helper functions
 var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
-
+  console.log('buildPaperTableRow');
+  console.log('reviewerIds', reviewerIds);
   // Build Note Summary Cell
   note.content.authors = null;  // Don't display 'Blinded Authors'
 
@@ -775,7 +790,7 @@ controller.addHandler('areachairs', {
       );
     })
     .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
-
+      console.log('reviewerGroups', reviewerGroups);
       var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj, noteNum) {
         return result.concat(_.values(idsObj));
       }, []));
@@ -810,8 +825,8 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var userId = $(this).data('userId');
   var forumUrl = $(this).data('forumUrl');
   var postData = {
-    subject: 'ICLR 2018 Reminder',
-    message: 'This is a reminder to please submit your official reviews for ICLR 2018. ' +
+    subject: 'ICLR 2019 Reminder',
+    message: 'This is a reminder to please submit your official reviews for ICLR 2019. ' +
       'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };

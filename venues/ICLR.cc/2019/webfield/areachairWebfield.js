@@ -5,20 +5,42 @@
 
 // Constants
 var HEADER_TEXT = 'Area Chair Console';
-var SHORT_PHRASE = 'ICML 2019';
-var CONFERENCE = 'ICML.cc/2019/Conference';
+var SHORT_PHRASE = 'ICLR 2019';
+var CONFERENCE = 'ICLR.cc/2019/Conference';
 
 var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Blind_Submission';
 
 var OFFICIAL_REVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Official_Review';
 var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';
-
+var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*';
 
-var ANONREVIEWER_REGEX = /^ICML\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICML\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
+var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
+
+var INSTRUCTIONS =  '<p><strong>This page provides information and status updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference progresses, so please check back frequently for news and other updates.</strong></p>\
+  <br>'
+
+var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
+    <p>\
+      <em><strong>Please do the following by Friday, August 10</strong></em>:\
+      <ul>\
+        <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
+        <li>Complete the ICLR registration form (found in your Tasks view).</li>\
+      </ul>\
+    </p>\
+  <br>\
+  <h4>Bidding Phase</h4>\
+    <p>\
+      <em><strong>Please do the following by Friday, August 17</strong></em>:\
+      <ul>\
+        <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
+        <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\
+      </ul>\
+    </p>\
+  <br>'
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {
@@ -128,7 +150,7 @@ var getUserProfiles = function(userIds) {
 
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferred_email;
+      profile.email = profile.content.preferredEmail;
       profileMap[profile.id] = profile;
     })
 
@@ -169,26 +191,34 @@ var displayHeader = function(headerP) {
   var $panel = $('#group-container');
   $panel.hide('fast', function() {
     $panel.empty().append(
-      '<div id="header" class="panel">' +
-        '<h1>' + HEADER_TEXT + '</h1>' +
-      '</div>' +
-      '<div id="notes"><div class="tabs-container"></div></div>'
+      '<div id="header" class="panel"> \
+        <h1>' + HEADER_TEXT + '</h1> \
+      </div>\
+      <div class="description">' + INSTRUCTIONS + '</div>\
+      <div id="notes">\
+        <div class="tabs-container"></div>\
+      </div>'
     );
 
     var loadingMessage = '<p class="empty-message">Loading...</p>';
     var tabsData = {
       sections: [
         {
-          heading: 'Reviewer Status',
-          id: 'reviewer-status',
-          content: loadingMessage,
+          heading: 'Area Chair Schedule',
+          id: 'areachair-schedule',
+          content: SCHEDULE_HTML,
           active: true
         },
-        // {
-        //   heading: 'Your Assigned Papers',
-        //   id: 'assigned-papers',
-        //   content: loadingMessage,
-        // }
+        {
+          heading: 'Area Chair Tasks',
+          id: 'areachair-tasks',
+          content: loadingMessage,
+        },
+        {
+          heading: 'Assigned Papers',
+          id: 'assigned-papers',
+          content: loadingMessage
+        },
       ]
     };
     $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](tabsData));
@@ -199,9 +229,9 @@ var displayHeader = function(headerP) {
   });
 };
 
-var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, authorDomains, container, options) {
+var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container, options) {
   console.log('displayStatusTable')
-  console.log('notes', notes);
+  console.log('profiles', profiles);
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
     for (var revNumber in revIds) {
@@ -211,7 +241,7 @@ var displayStatusTable = function(profiles, notes, completedReviews, metaReviews
 
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
     return buildTableRow(
-      note, revIds, completedReviews[note.number], metaReview, authorDomains[note.number]
+      note, revIds, completedReviews[note.number], metaReview
     );
   });
 
@@ -224,6 +254,33 @@ var displayStatusTable = function(profiles, notes, completedReviews, metaReviews
   $(container).empty().append(tableHTML);
 };
 
+var displayTasks = function(invitations, tagInvitations){
+  console.log('displayTasks');
+  //  My Tasks tab
+  var tasksOptions = {
+    container: '#areachair-tasks',
+    emptyMessage: 'No outstanding tasks for this conference'
+  }
+  $(tasksOptions.container).empty();
+  console.log('invitations', invitations);
+
+  // filter out non-areachair tasks
+  areachairInvitations = _.filter(invitations, inv => {
+    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Area_Chair')) ) {
+      return inv;
+    }
+  });
+
+  areachairTagInvitations = _.filter(tagInvitations, inv => {
+    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Area_Chair')) ) {
+      return inv;
+    }
+  });
+
+  Webfield.ui.newTaskList(invitations, tagInvitations, tasksOptions)
+  $('.tabs-container a[href="#areachair-tasks"]').parent().show();
+}
+
 var displayError = function(message) {
   message = message || 'The group data could not be loaded.';
   $('#notes').empty().append('<div class="alert alert-danger"><strong>Error:</strong> ' + message + '</div>');
@@ -231,12 +288,12 @@ var displayError = function(message) {
 
 
 // Helper functions
-var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, domains) {
+var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   var number = '<strong class="note-number">' + note.number + '</strong>';
 
   // Build Note Summary Cell
   note.content.authors = null;  // Don't display 'Blinded Authors'
-  note.content.authorDomains = domains;
+  //note.content.authorDomains = domains;
   var summaryHtml = Handlebars.templates.noteSummary(note);
 
   // Build Review Progress Cell
@@ -267,7 +324,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, do
         noteId: note.id,
         invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official_Review'
       });
-      var lastReminderSent = window.localStorage.getItem(forumUrl + '|' + reviewer.id);
+      var lastReminderSent = localStorage.getItem(forumUrl + '|' + reviewer.id);
       combinedObj[reviewerNum] = {
         id: reviewer.id,
         name: reviewer.name,
@@ -295,6 +352,8 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, do
     maxConfidence = _.max(confidences);
   }
 
+  console.log('combinedObj', combinedObj);
+  console.log('reviewerIds', reviewerIds);
   var reviewProgressData = {
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
@@ -322,7 +381,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, do
     reviewStatus.recommendation = metaReview.content.recommendation;
     reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
   }
-  var statusHtml = Handlebars.templates.noteReviewStatus(reviewStatus);
+  var statusHtml = Handlebars.templates.noteMetaReviewStatus(reviewStatus);
 
   return [number, summaryHtml, reviewHtml, statusHtml];
 };
@@ -359,11 +418,21 @@ controller.addHandler('areachairs', {
           getOfficialReviews(noteNumbers),
           getMetaReviews(),
           getReviewerGroups(noteNumbers),
+          Webfield.get('/invitations', {
+            invitation: WILDCARD_INVITATION,
+            pageSize: 100,
+            invitee: true,
+            duedate: true,
+            replyto: true,
+            details:'replytoNote,repliedNotes'
+          }).then(result => result.invitations),
+          Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID),
           headerLoaded
         );
       })
-      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, authorDomains, loaded) {
+      .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations, loaded, authorDomains) {
         console.log('blindedNotes', blindedNotes);
+        console.log('noteToReviewerIds', noteToReviewerIds);
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
           return result.concat(_.values(idsObj));
         }, []));
@@ -376,7 +445,9 @@ controller.addHandler('areachairs', {
             officialReviews: officialReviews,
             metaReviews: metaReviews,
             noteToReviewerIds: noteToReviewerIds,
-            authorDomains: authorDomains
+            authorDomains: authorDomains,
+            invitations: invitations,
+            tagInvitations: tagInvitations
           }
           renderTable();
         });
@@ -395,9 +466,11 @@ var renderTable = function() {
     fetchedData.officialReviews,
     fetchedData.metaReviews,
     _.cloneDeep(fetchedData.noteToReviewerIds), // Need to clone this dictionary because some values are missing after the first refresh
-    fetchedData.authorDomains,
-    '#reviewer-status'
+    //fetchedData.authorDomains,
+    '#assigned-papers'
   );
+
+  displayTasks(fetchedData.invitations, fetchedData.tagInvitations);
 }
 
 $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
@@ -413,14 +486,14 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var postData = {
     subject: SHORT_PHRASE + ' Reminder',
     message: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
-      'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
+      'Click on the link below to go to the review page:\n\n' + location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };
 
   $.post('/mail', JSON.stringify(postData), function(result) {
     promptMessage('A reminder email has been sent to ' + view.prettyId(userId));
     //Save the timestamp in the local storage
-    window.localStorage.setItem(forumUrl + '|' + userId, Date.now());
+    localStorage.setItem(forumUrl + '|' + userId, Date.now());
     renderTable();
   }, 'json').fail(function(error) {
     console.log(error);
