@@ -4,7 +4,6 @@ import argparse
 import openreview
 from openreview import tools
 from openreview import invitations
-from openreview import webfield
 import config
 
 """
@@ -43,21 +42,11 @@ for g in groups:
 Create the homepage and add it to the conference group.
 '''
 
-homepage = webfield.Webfield(
-	config.HOMEPAGE_TEMPLATE,
-    group_id = config.CONFERENCE_ID,
-    js_constants = config.JS_CONSTANTS,
-)
 
 this_conference = client.get_group(config.CONFERENCE_ID)
-this_conference.web = homepage.render()
+this_conference.add_webfield(config.HOMEPAGE)
 this_conference = client.post_group(this_conference)
 print "adding webfield to", this_conference.id
-
-filename = config.HOMEPAGE_TEMPLATE.split('.template')[0]+'.js'
-f = open(filename, 'w')
-f.write(this_conference.web)
-f.close()
 
 '''
 Set up the first couple groups that are needed before submission.
