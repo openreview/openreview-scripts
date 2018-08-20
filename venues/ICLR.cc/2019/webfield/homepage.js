@@ -157,7 +157,7 @@ function main() {
 
   renderConferenceHeader();
 
-  //renderSubmissionButton();
+  renderSubmissionButton();
 
   //renderConferenceTabs();
 
@@ -212,11 +212,11 @@ function renderSubmissionButton() {
       Webfield.ui.submissionButton(invitation, user, {
         onNoteCreated: function() {
           // Callback funtion to be run when a paper has successfully been submitted (required)
-          promptMessage('Your submission is complete. The list of all current submissions is shown below.');
+          promptMessage('Your submission is complete. Check your inbox for a confirmation email. A list of all submissions will be available after the deadline');
 
-          load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#all-submissions"]').click();
-          });
+          // load().then(renderContent).then(function() {
+          //   $('.tabs-container a[href="#all-submissions"]').click();
+          // });x
         }
       });
     });
