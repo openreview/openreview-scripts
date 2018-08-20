@@ -49,6 +49,8 @@ function render() {
       '</div>'
     ].join('\n'));
   }
+
+  Webfield.ui.done();
 }
 
 // Go!
