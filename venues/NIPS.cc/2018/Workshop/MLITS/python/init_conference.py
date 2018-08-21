@@ -74,21 +74,21 @@ submission_inv = invitations.Submission(
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
             'values-copied': [config.CONFERENCE_ID, config.PROGRAM_CHAIRS, '{content.authorids}', '{signatures}']
+        }
+    },
+    content_params = {
+        # defaults to blind submission description
+        'authors': {
+            'description': 'Comma separated list of author names.',
+            'order': 2,
+            'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+            'required': True
         },
-        'content_params': {
-            # defaults to blind submission description
-            'authors': {
-                'description': 'Comma separated list of author names.',
-                'order': 2,
-                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required': True
-            },
-            'authorids': {
-                'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
-                'order': 3,
-                'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
-                'required': True
-            }
+        'authorids': {
+            'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
+            'order': 3,
+            'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+            'required': True
         }
     }
 )
