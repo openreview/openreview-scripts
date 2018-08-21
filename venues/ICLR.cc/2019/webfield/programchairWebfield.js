@@ -690,7 +690,6 @@ var buildSPCTableRow = function(index, areaChair, papers) {
 
 };
 
-
 var buildPCTableRow = function(index, reviewer, papers) {
 
   var summary = {
@@ -806,6 +805,8 @@ controller.addHandler('areachairs', {
         displayPaperStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
         displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
         displayPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
+
+        Webfield.ui.done();
       })
     })
     .fail(function(error) {

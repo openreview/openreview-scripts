@@ -230,8 +230,6 @@ var displayHeader = function(headerP) {
 };
 
 var displayStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container, options) {
-  console.log('displayStatusTable')
-  console.log('profiles', profiles);
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
     for (var revNumber in revIds) {
@@ -255,14 +253,12 @@ var displayStatusTable = function(profiles, notes, completedReviews, metaReviews
 };
 
 var displayTasks = function(invitations, tagInvitations){
-  console.log('displayTasks');
   //  My Tasks tab
   var tasksOptions = {
     container: '#areachair-tasks',
     emptyMessage: 'No outstanding tasks for this conference'
   }
   $(tasksOptions.container).empty();
-  console.log('invitations', invitations);
 
   // filter out non-areachair tasks
   areachairInvitations = _.filter(invitations, inv => {
@@ -352,8 +348,6 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     maxConfidence = _.max(confidences);
   }
 
-  console.log('combinedObj', combinedObj);
-  console.log('reviewerIds', reviewerIds);
   var reviewProgressData = {
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
@@ -412,7 +406,7 @@ controller.addHandler('areachairs', {
     var userAreachairGroupsP = $.getJSON('groups', { member: user.id, regex: CONFERENCE + '/Paper.*/Area_Chair.*' })
       .then(function(result) {
         var noteNumbers = getPaperNumbersfromGroups(result.groups);
-        console.log('noteNumbers', noteNumbers);
+
         return $.when(
           getBlindedNotes(noteNumbers),
           getOfficialReviews(noteNumbers),
@@ -431,8 +425,6 @@ controller.addHandler('areachairs', {
         );
       })
       .then(function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations, loaded, authorDomains) {
-        console.log('blindedNotes', blindedNotes);
-        console.log('noteToReviewerIds', noteToReviewerIds);
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
           return result.concat(_.values(idsObj));
         }, []));
@@ -471,6 +463,8 @@ var renderTable = function() {
   );
 
   displayTasks(fetchedData.invitations, fetchedData.tagInvitations);
+
+  Webfield.ui.done();
 }
 
 $('#group-container').on('click', 'a.note-contents-toggle', function(e) {

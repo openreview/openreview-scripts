@@ -31,7 +31,7 @@ set up the conference groups
 conference_group = openreview.Group(**config.conference_params)
 groups = tools.build_groups(conference_group.id)
 for g in groups:
-    # TODO check group exists first
+    # don't overwrite existing groups
     try:
         group_exist = client.get_group(g.id)
     except openreview.OpenReviewException as e:
@@ -41,10 +41,8 @@ for g in groups:
 '''
 Create the homepage and add it to the conference group.
 '''
-
-
 this_conference = client.get_group(config.CONFERENCE_ID)
-this_conference.add_webfield(config.HOMEPAGE)
+this_conference.add_webfield(config.WEBPATH)
 this_conference = client.post_group(this_conference)
 print "adding webfield to", this_conference.id
 
@@ -71,14 +69,9 @@ submission_inv = invitations.Submission(
     conference_id = config.CONFERENCE_ID,
     duedate = config.SUBMISSION_TIMESTAMP,
 	process = '../process/submissionProcess.js',
-    reply_params={
-        'readers': {
-            'description': 'The users who will be allowed to read the above content.',
-            'values-copied': [config.CONFERENCE_ID, config.PROGRAM_CHAIRS, '{content.authorids}', '{signatures}']
-        }
-    }
+    reply_params=config.submission_params
 )
-
+submission_inv.reply['content']['pdf']['required']=False
 submission_inv = client.post_invitation(submission_inv)
 print "posted invitation "+submission_inv.id
 

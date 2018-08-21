@@ -410,6 +410,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
     $('#notes .spinner-container').remove();
     $('#notes .tabs-container').show();
+
+    Webfield.ui.done();
   }
 
   function updateCounts() {

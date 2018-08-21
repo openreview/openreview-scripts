@@ -17,12 +17,12 @@ Example:
 
 """
 
-CONFERENCE_ID = 'NIPS.cc/2018/Workshop/Spatiotemporal'
+CONFERENCE_ID = 'NIPS.cc/2018/Workshop/IRASL'
 PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
 REVIEWERS = CONFERENCE_ID + '/Reviewers'
 
 # GMT is the same as UTC
-SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day=30, hour=23, minute=59)
+SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=15, hour=23, minute=59)
 #REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=placeholder, hour=23, minute=59)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
@@ -46,23 +46,6 @@ SUBMISSION = CONFERENCE_ID + '/-/Submission'
 BLIND_SUBMISSION = CONFERENCE_ID + '/-/Blind_Submission'
 COMMENT = CONFERENCE_ID + '/-/Comment'
 
-'''
-JS_CONSTANTS = {
-    'CONFERENCE': CONFERENCE_ID,
-    'PROGRAM_CHAIRS': PROGRAM_CHAIRS,
-    'REVIEWERS': REVIEWERS,
-    'TITLE': 'NIPS 2018 Spatiotemporal Workshop',
-    'SUBTITLE': '32nd Annual Conference on Neural Information Processing Systems',
-    'DEADLINE_STRING': 'September 30, 2018, 11:59 pm UTC',
-    'CONF_DATE_STRING': 'December 3-8, 2018',
-    'INSTRUCTIONS': ' ',
-    'WEBSITE': 'https://sites.google.com/site/nips18spatiotemporal/',
-    'LOCATION': 'Montreal, Canada',
-    'SUBMISSION_INVITATION': SUBMISSION,
-    'BLIND_INVITATION': BLIND_SUBMISSION
-}'''
-
-HOMEPAGE = "../webfield/conferenceWebfield.js"
 """
 PARAMETERS
 
@@ -103,10 +86,11 @@ program_chairs_params = {
 }
 
 submission_params = {
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'invitees': ['~'],
-    'signatures': [CONFERENCE_ID],
+    'pdf': {"required": True},
+    'readers': {
+        'description': 'The users who will be allowed to read the above content.',
+        'values-copied': [CONFERENCE_ID, PROGRAM_CHAIRS, '{content.authorids}', '{signatures}']
+    },
     'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')
 }
 
