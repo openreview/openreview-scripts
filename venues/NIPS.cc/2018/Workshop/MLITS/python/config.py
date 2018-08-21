@@ -60,7 +60,6 @@ JS_CONSTANTS = {
     'SUBMISSION_INVITATION': SUBMISSION
 }
 
-HOMEPAGE_TEMPLATE = "../webfield/conferenceWebfield.template"
 """
 PARAMETERS
 
