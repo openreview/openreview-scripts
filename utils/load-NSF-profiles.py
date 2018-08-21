@@ -17,7 +17,7 @@ parser.add_argument('directory', help = "the full path to the XML files")
 parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
-
+parser.add_argument('--start_at', help="filename to start with")
 source_entity = 'NSF.gov'
 source_id = source_entity+'/Upload'
 
@@ -80,9 +80,14 @@ def new_referent(client, id, invitation, content):
                              signatures=[source_id],
                              writers=[source_id],
                              content=content)
-        profile = client.update_profile(profile)
-        # test if fails to get original
-        db_profile = client.get_profile(id)
+        try:
+            #print profile
+            profile = client.update_profile(profile)
+            # test if fails to get original
+            db_profile = client.get_profile(id)
+        except Exception as e:
+            print "Exception {}".format(e)
+            print id
         super_group = client.get_group('OpenReview.net')
         if len(super_group.members) > 1:
             print super_group.members
@@ -127,7 +132,7 @@ def update_coauthors(content, author_ids, email):
     return content
 
 # load information for one or more investigators from each xml file
-def load_xml_investigators(client, dirpath):
+def load_xml_investigators(client, dirpath, start_at=0):
     super_group = client.get_group('OpenReview.net')
     print len(super_group.members)
     # create the NSF group (or overwrite it if it exists)
@@ -161,14 +166,23 @@ def load_xml_investigators(client, dirpath):
     print "Retrieved profiles"
 
     for filename in file_names:
+        if start_at > int(filename[0:-4]):
+            file_count += 1
+            continue
         # print progress
-        file_count += 1
         if file_count/one_percent == file_count//one_percent:
-            print "{0}% complete".format(file_count*100/total_files)
+            print "{0}% complete {1}".format(file_count*100/total_files, filename)
+        file_count += 1
+
         # only handle xml files
         if filename.endswith('.xml'):
             f = open(dirpath+'/'+filename, 'r')
-            contents = ET.parse(f)
+            try:
+                contents = ET.parse(f)
+            except Exception as e:
+                print e
+                print filename
+                continue
             root = contents.getroot()
             expertise = get_expertise(root)
 
@@ -205,11 +219,11 @@ def load_xml_investigators(client, dirpath):
                         # if email profile exists, but name is different, create new name
                         found = False
                         # check if name already exists
-                        for name in profile.content['names']:
+                        '''for name in profile.content['names']:
                                 if first_name == name['first'] and last_name == name['last']:
                                     found = True
                         if not found:
-                            content['names']= [{'first':first_name, 'last':last_name}]
+                            content['names']= [{'first':first_name, 'last':last_name}]'''
 
                         # create new profile and set content to only the new changes
                         try:
@@ -219,6 +233,7 @@ def load_xml_investigators(client, dirpath):
                         except openreview.OpenReviewException as e:
                             # can be unhappy if name includes parenthesis etc
                             print "Exception updating profile {}".format(e)
+                            print "Exception with id: "+profile.id
                             continue
                     else:
                         # profile for this email doesn't exist,
@@ -254,7 +269,8 @@ def load_xml_investigators(client, dirpath):
                                 # if name matches but institution info doesn't,
                                 # ignore it because we don't know if it's new or not
                         else:
-                            # neither email nor name/institution don't match
+                            #email doesn't match and name hasn't been used before
+                            # print "Creating "+tilde_id
                             profile = create_nsf_profile(client, email, first_name, last_name, institute, expertise)
                             profiles_by_id[tilde_id]=profile
                             profiles_by_email[email]=profile
@@ -272,7 +288,7 @@ def main():
     ## Initialize the client library with username and password.
     client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    load_xml_investigators(client, args.directory)
+    load_xml_investigators(client, args.directory, int(args.start_at))
 
 
 
