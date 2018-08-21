@@ -245,10 +245,6 @@ function renderConferenceTabs() {
 }
 
 function renderContent(notes, userGroups, tagInvitations, activityNotes) {
-  var data
-
-  console.log('userGroups',userGroups);
-
   // if (_.isEmpty(userGroups)) {
   //   // If the user isn't part of the conference don't render tabs
   //   $('.tabs-container').hide();
@@ -264,9 +260,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
   });
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-  console.log('authorPaperNumbers',authorPaperNumbers);
-  console.log('userGroups', userGroups);
-
 
   // Your Consoles tab
   if (userGroups.length) {
@@ -307,7 +300,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     }
 
     if (authorPaperNumbers.length) {
-      console.log('attaching authors link');
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
@@ -378,6 +370,8 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
     initialPageLoad = false;
   }
+
+  Webfield.ui.done();
 }
 
 // Helper functions
@@ -393,19 +387,6 @@ function getAuthorPaperNumbersfromGroups(groups) {
     _.filter(groups, function(gid) { return AUTHORS_SIGNATORY_REGEX.test(gid); }),
     function(fgid) { return parseInt(fgid.match(AUTHORS_SIGNATORY_REGEX)[1], 10); }
   );
-}
-
-function getDueDateStatus(date) {
-  var day = 24 * 60 * 60 * 1000;
-  var diff = Date.now() - date.getTime();
-
-  if (diff > 0) {
-    return 'expired';
-  }
-  if (diff > -3 * day) {
-    return 'warning';
-  }
-  return '';
 }
 
 // Go!

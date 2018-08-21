@@ -471,6 +471,8 @@ var renderTable = function() {
   );
 
   displayTasks(fetchedData.invitations, fetchedData.tagInvitations);
+
+  Webfield.ui.done();
 }
 
 $('#group-container').on('click', 'a.note-contents-toggle', function(e) {

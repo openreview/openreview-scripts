@@ -253,19 +253,12 @@ var displayTasks = function(invitations, tagInvitations){
     }
   });
 
-  console.log('author invitations', authorInvitations);
-  console.log('tagInvitations', authorTagInvitations);
-
   Webfield.ui.newTaskList(authorInvitations, authorTagInvitations, tasksOptions)
   $('.tabs-container a[href="#author-tasks"]').parent().show();
 }
 
 function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, userGroups, authorNotes, invitations, tagInvitations, activityNotes) {
-  var data, commentNotes;
-
-  console.log('userGroups',userGroups);
-
-  commentNotes = [];
+  var commentNotes = [];
 
   _.forEach(submittedNotes, function(note) {
     if (!_.isNil(note.ddate)) {
@@ -305,19 +298,15 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       authorNotes,
       _.assign({}, paperDisplayOptions, {container: '#your-private-versions'})
     );
-    console.log('authorNotes', authorNotes);
     var authorNoteIds = _.map(authorNotes, function(original){
       return original.id;
     });
 
-    console.log('authorNoteIds', authorNoteIds);
     // get blind papers that are authored by this user
     var anonymousVersions = _.filter(notes, function(note){
-      console.log('note.original', note.original);
       return _.includes(authorNoteIds, note.original);
     });
     //var anonymousVersions = notes;
-    console.log('anonymousVersions',anonymousVersions);
 
     // Anonymous Versions
     Webfield.ui.searchResults(
@@ -344,6 +333,8 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
     initialPageLoad = false;
   }
+
+  Webfield.ui.done();
 }
 
 // Helper functions
