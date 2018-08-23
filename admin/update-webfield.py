@@ -56,6 +56,6 @@ if __name__ == "__main__":
     parser.add_argument("--password")
     args = parser.parse_args()
 
-    exit_status = update_webfield(args)
-    if exit_status is False:
+    success = update_webfield(args)
+    if success is False:
         sys.exit(1)
