@@ -20,9 +20,9 @@ var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*';
 var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
 
-var INSTRUCTIONS = '<p><strong>This page provides information and status updates for ICLR 2019 Area Chairs.\
-  It will be regularly updated as the conference progresses, so please check back frequently for news and other updates.</strong></p>';
-
+var INSTRUCTIONS = '<p class="dark"><strong>This page provides information and status \
+  updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
+  progresses, so please check back frequently for news and other updates.</strong></p>';
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
     <em><strong>Please do the following by Friday, August 10</strong></em>:\
@@ -176,7 +176,7 @@ var formatData = function(blindedNotes, officialReviews, metaReviews, noteToRevi
   var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
     return result.concat(_.values(idsObj));
   }, []));
-console.log(officialReviews);
+
   return getUserProfiles(uniqueIds)
   .then(function(profiles) {
     return {
@@ -249,9 +249,9 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
   });
 
   var tableHtml = Handlebars.templates['components/table']({
-    headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
+    headings: ['#', 'Paper Summary', 'Review Progress', 'Rating', 'Confidence', 'Status'],
     rows: rowData,
-    extraClasses: 'console-table'
+    extraClasses: 'ac-console-table'
   });
 
   $(container).empty().append(tableHtml);
@@ -365,15 +365,15 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
-    averageRating: averageRating,
-    maxRating: maxRating,
-    minRating: minRating,
-    averageConfidence: averageConfidence,
-    minConfidence: minConfidence,
-    maxConfidence: maxConfidence,
     sendReminder: true
   };
   var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
+
+  var ratingHtml = '<h4>Avg: ' + averageRating + '</h4><span>Min: ' + minRating + '</span>' +
+    '<br><span>Max: ' + maxRating + '</span>';
+
+  var confidenceHtml = '<h4>Avg: ' + averageConfidence + '</h4><span>Min: ' + minConfidence + '</span>' +
+    '<br><span>Max: ' + maxConfidence + '</span>';
 
   // Build Status Cell
   var invitationUrlParams = {
@@ -390,7 +390,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   }
   var statusHtml = Handlebars.templates.noteMetaReviewStatus(reviewStatus);
 
-  return [number, summaryHtml, reviewHtml, statusHtml];
+  return [number, summaryHtml, reviewHtml, ratingHtml, confidenceHtml, statusHtml];
 };
 
 
@@ -417,7 +417,6 @@ var registerEventHandlers = function() {
       promptMessage('A reminder email has been sent to ' + view.prettyId(userId));
       // Save the timestamp in the local storage
       localStorage.setItem(forumUrl + '|' + userId, Date.now());
-      renderTableAndTasks();
     }, 'json').fail(function(error) {
       console.log(error);
       promptError('The reminder email could not be sent at this time');
