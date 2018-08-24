@@ -15,9 +15,8 @@ function(){
       var replytoNote = note.replyto ? result[1].notes[0] : null;
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : [];
       var author_mail;
-
       var selfComment = replytoNoteSignatures.indexOf(note.signatures[0]) > -1 ? true : false;
-      console.log('self comment detected');
+
       if(!selfComment){
         if(replytoNote.id == origNote.id){
           author_mail = {
@@ -33,9 +32,10 @@ function(){
           };
         }
         return or3client.or3request(or3client.mailUrl, author_mail, 'POST', token);
+      } else {
+        console.log('self comment detected');
+        return Promise.resolve();
       }
-
-      return Promise.all(promises);
     })
     .then(result => done())
     .catch(error => done(error));
