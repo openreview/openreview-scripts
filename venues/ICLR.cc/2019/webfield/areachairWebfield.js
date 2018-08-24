@@ -20,9 +20,9 @@ var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*';
 var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
 
-var INSTRUCTIONS = '<p class="dark"><strong>This page provides information and status \
+var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
-  progresses, so please check back frequently for news and other updates.</strong></p>';
+  progresses, so please check back frequently for news and other updates.</p>';
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
     <em><strong>Please do the following by Friday, August 10</strong></em>:\
@@ -385,7 +385,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     invitationUrl: '/forum?' + $.param(invitationUrlParams)
   };
   if (metaReview) {
-    reviewStatus.recommendation = metaReview.content.recommendation;
+    reviewStatus.recommendation = metaReview.content.rating;
     reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
   }
   var statusHtml = Handlebars.templates.noteMetaReviewStatus(reviewStatus);
