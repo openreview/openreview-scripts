@@ -56,8 +56,6 @@ var main = function() {
   .fail(function() {
     Webfield.ui.errorMessage();
   });
-
-  registerEventHandlers();
 };
 
 
@@ -368,6 +366,8 @@ var renderTableAndTasks = function(fetchedData) {
     '#assigned-papers'
   );
 
+  registerEventHandlers();
+
   Webfield.ui.done();
 }
 
@@ -419,6 +419,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   }
 
   var cell2 = {
+    noteId: note.id,
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
@@ -495,6 +496,17 @@ var registerEventHandlers = function() {
       promptError('The reminder email could not be sent at this time');
     });
 
+    return false;
+  });
+
+  $('a.collapse-btn').on('click', function(e) {
+    console.log('here');
+    $(this).next().slideToggle();
+    if ($(this).text() === 'Show reviewers') {
+      $(this).text('Hide reviewers');
+    } else {
+      $(this).text('Show reviewers');
+    }
     return false;
   });
 };
