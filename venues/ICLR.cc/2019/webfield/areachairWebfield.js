@@ -235,7 +235,7 @@ var renderHeader = function() {
 };
 
 var renderStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
-  var rowData = _.map(notes, function(note) {
+  var rows = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
     for (var revNumber in revIds) {
       var uId = revIds[revNumber];
@@ -243,19 +243,93 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     }
 
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
+
     return buildTableRow(
       note, revIds, completedReviews[note.number], metaReview
     );
   });
 
+  var order = 'desc';
+  var sortOptions = {
+    Paper_Number: function(row) { return row[0].number; },
+    Paper_Title: function(row) { return _.toLower(row[1].content.title); },
+    Reviews_Submitted: function(row) { return row[2].numSubmittedReviews; },
+    Reviews_Missing: function(row) { return row[2].numReviewers - row[2].numSubmittedReviews; },
+    Average_Rating: function(row) { return row[3].averageRating === 'N/A' ? 0 : row[3].averageRating; },
+    Max_Rating: function(row) { return row[3].maxRating === 'N/A' ? 0 : row[3].maxRating; },
+    Min_Rating: function(row) { return row[3].minRating === 'N/A' ? 0 : row[3].minRating; },
+    Average_Confidence: function(row) { return row[4].averageConfidence === 'N/A' ? 0 : row[4].averageConfidence; },
+    Max_Confidence: function(row) { return row[4].maxConfidence === 'N/A' ? 0 : row[4].maxConfidence; },
+    Min_Confidence: function(row) { return row[4].minConfidence === 'N/A' ? 0 : row[4].minConfidence; },
+    Meta_Review_Missing: function(row) { return row[5].rating ? 1 : 0; }
+  };
+  var sortResults = function(newOption, switchOrder) {
+    if (switchOrder) {
+      order = (order == 'asc' ? 'desc' : 'asc');
+    }
+
+    var selectedOption = newOption;
+    renderTableRows(_.orderBy(rows, sortOptions[selectedOption], order), container);
+  }
+
+  var sortOptionHtml = Object.keys(sortOptions).map(function(option) {
+    return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
+  }).join('\n');
+
+  var sortBarHtml = '<form class="form-inline search-form clearfix" role="search">' +
+    '<strong>Sort By:</strong> ' +
+    '<select id="form-sort" class="form-control">' + sortOptionHtml + '</select>' +
+    '<button id="form-order" class="btn btn-icon"><span class="glyphicon glyphicon-sort"></span></button>' +
+    '<div class="pull-right">' +
+      '<button id="message-reviewers" class="btn btn-icon"><span class="glyphicon glyphicon-envelope"></span> &nbsp;Message Reviewers</button>' +
+    '</div>' +
+    '</form>';
+  $(container).empty().append(sortBarHtml);
+
+  $('#form-sort').on('change', function(e) {
+    sortResults($(e.target).val(), false);
+  });
+  $('#form-order').on('click', function(e) {
+    sortResults($(this).prev().val(), true);
+    return false;
+  });
+
+  renderTableRows(rows, container);
+};
+
+var renderTableRows = function(rows, container) {
+  var templateFuncs = [
+    function(data) {
+      return '<strong class="note-number">' + data.number + '</strong>';
+    },
+    Handlebars.templates.noteSummary,
+    Handlebars.templates.noteReviewers,
+    function(data) {
+      return '<h4>Avg: ' + data.averageRating + '</h4><span>Min: ' + data.minRating + '</span>' +
+        '<br><span>Max: ' + data.maxRating + '</span>';
+    },
+    function(data) {
+      return '<h4>Avg: ' + data.averageConfidence + '</h4><span>Min: ' + data.minConfidence + '</span>' +
+      '<br><span>Max: ' + data.maxConfidence + '</span>';
+    },
+    Handlebars.templates.noteMetaReviewStatus
+  ];
+
+  var rowsHtml = rows.map(function(row) {
+    return row.map(function(cell, i) {
+      return templateFuncs[i](cell);
+    });
+  });
+
   var tableHtml = Handlebars.templates['components/table']({
     headings: ['#', 'Paper Summary', 'Review Progress', 'Rating', 'Confidence', 'Status'],
-    rows: rowData,
+    rows: rowsHtml,
     extraClasses: 'ac-console-table'
   });
 
-  $(container).empty().append(tableHtml);
-};
+  $('.table-responsive', container).remove();
+  $(container).append(tableHtml);
+}
 
 var renderTasks = function(invitations, tagInvitations) {
   //  My Tasks tab
@@ -298,14 +372,14 @@ var renderTableAndTasks = function(fetchedData) {
 }
 
 var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
-  var number = '<strong class="note-number">' + note.number + '</strong>';
+  // Paper number cell
+  var cell0 = { number: note.number};
 
+  // Note summary cell
   note.content.authors = null;  // Don't display 'Blinded Authors'
+  var cell1 = note;
 
-  // Build Note Summary Cell
-  var summaryHtml = Handlebars.templates.noteSummary(note);
-
-  // Build Review Progress Cell
+  // Review progress cell
   var reviewObj;
   var combinedObj = {};
   var ratings = [];
@@ -343,54 +417,53 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
       };
     }
   }
-  var averageRating = 'N/A';
-  var minRating = 'N/A';
-  var maxRating = 'N/A';
-  if (ratings.length) {
-    averageRating = _.round(_.sum(ratings) / ratings.length, 2);
-    minRating = _.min(ratings);
-    maxRating = _.max(ratings);
-  }
 
-  var averageConfidence = 'N/A';
-  var minConfidence = 'N/A';
-  var maxConfidence = 'N/A';
-  if (confidences.length) {
-    averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
-    minConfidence = _.min(confidences);
-    maxConfidence = _.max(confidences);
-  }
-
-  var reviewProgressData = {
+  var cell2 = {
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
     sendReminder: true
   };
-  var reviewHtml = Handlebars.templates.noteReviewers(reviewProgressData);
 
-  var ratingHtml = '<h4>Avg: ' + averageRating + '</h4><span>Min: ' + minRating + '</span>' +
-    '<br><span>Max: ' + maxRating + '</span>';
+  // Rating cell
+  var cell3 = {
+    averageRating: 'N/A',
+    minRating: 'N/A',
+    maxRating: 'N/A'
+  };
+  if (ratings.length) {
+    cell3.averageRating = _.round(_.sum(ratings) / ratings.length, 2);
+    cell3.minRating = _.min(ratings);
+    cell3.maxRating = _.max(ratings);
+  }
 
-  var confidenceHtml = '<h4>Avg: ' + averageConfidence + '</h4><span>Min: ' + minConfidence + '</span>' +
-    '<br><span>Max: ' + maxConfidence + '</span>';
+  // Confidence cell
+  var cell4 = {
+    averageConfidence: 'N/A',
+    minConfidence: 'N/A',
+    maxConfidence: 'N/A'
+  };
+  if (confidences.length) {
+    cell4.averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
+    cell4.minConfidence = _.min(confidences);
+    cell4.maxConfidence = _.max(confidences);
+  }
 
-  // Build Status Cell
+  // Status cell
   var invitationUrlParams = {
     id: note.forum,
     noteId: note.id,
     invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta_Review'
   };
-  var reviewStatus = {
+  var cell5 = {
     invitationUrl: '/forum?' + $.param(invitationUrlParams)
   };
   if (metaReview) {
-    reviewStatus.recommendation = metaReview.content.rating;
-    reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
+    cell5.recommendation = metaReview.content.rating;
+    cell5.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
   }
-  var statusHtml = Handlebars.templates.noteMetaReviewStatus(reviewStatus);
 
-  return [number, summaryHtml, reviewHtml, ratingHtml, confidenceHtml, statusHtml];
+  return [cell0, cell1, cell2, cell3, cell4, cell5];
 };
 
 

@@ -284,15 +284,6 @@ var displaySortPanel = function(container, sortOptions, sortResults) {
 };
 
 var displayPaperStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, areachairIds, container, options) {
-  console.log('displayPaperStatusTable');
-  console.log('profiles', profiles);
-  console.log('notes', notes);
-  console.log('completedReviews', completedReviews);
-  console.log('metaReviews', metaReviews);
-  console.log('reviewerIds', reviewerIds);
-  console.log('areachairIds', areachairIds);
-  console.log('container', container);
-  console.log('options', options);
 
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
