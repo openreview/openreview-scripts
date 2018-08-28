@@ -352,7 +352,8 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
   // Activity Tab
   if (activityNotes.length) {
     var displayOptions = {
-      container: '#recent-activity'
+      container: '#recent-activity',
+      user: user.profile
     };
 
     Webfield.ui.activityList(activityNotes, displayOptions);
