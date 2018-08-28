@@ -270,6 +270,59 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     renderTableRows(_.orderBy(rows, sortOptions[selectedOption], order), container);
   }
 
+  var sendReviewerReminderEmails = function(e) {
+    $('#message-reviewers-modal').modal('hide');
+
+    var subject = $('#message-reviewers-modal input[name="subject"]').val().trim();
+    var message = $('#message-reviewers-modal textarea[name="message"]').val().trim();
+    var group   = $('#message-reviewers-modal select[name="group"]').val();
+    var filter  = $('#message-reviewers-modal select[name="filter"]').val();
+
+    var count = 0;
+    var selectedRows = rows;
+    if (group === 'selected') {
+      selectedIds = _.map(
+        $('#assigned-papers .ac-console-table tr.reviewers-selected'),
+        function(tr) { return $(tr).data('id'); }
+      );
+      selectedRows = rows.filter(function(row) {
+        return _.includes(selectedIds, row[1].forum);
+      });
+    }
+    selectedRows.forEach(function(row) {
+      var users = _.values(row[2].reviewers);
+      if (filter === 'submitted') {
+        users = users.filter(function(u) {
+          return u.completedReview;
+        });
+      } else if (filter === 'unsubmitted') {
+        users = users.filter(function(u) {
+          return !u.completedReview;
+        });
+      }
+      var userIds = _.map(users, 'id');
+
+      var forumUrl = '/forum?' + $.param({
+        id: row[1].forum,
+        noteId: row[1].id,
+        invitationId: CONFERENCE + '/-/Paper' + row[0].number + '/Official_Review'
+      });
+
+      if (userIds.length) {
+        postReviewerEmails({
+          groups: userIds,
+          forumUrl: forumUrl,
+          subject: subject,
+          message: message,
+        });
+      }
+      count += userIds.length;
+    });
+
+    promptMessage('Your reminder email has been sent to ' + count + ' reviewers');
+    return false;
+  };
+
   var sortOptionHtml = Object.keys(sortOptions).map(function(option) {
     return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
   }).join('\n');
@@ -279,16 +332,36 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     '<select id="form-sort" class="form-control">' + sortOptionHtml + '</select>' +
     '<button id="form-order" class="btn btn-icon"><span class="glyphicon glyphicon-sort"></span></button>' +
     '<div class="pull-right">' +
-      '<button id="message-reviewers" class="btn btn-icon"><span class="glyphicon glyphicon-envelope"></span> &nbsp;Message Reviewers</button>' +
+      '<button id="message-reviewers-btn" class="btn btn-icon"><span class="glyphicon glyphicon-envelope"></span> &nbsp;Message Reviewers</button>' +
     '</div>' +
     '</form>';
   $(container).empty().append(sortBarHtml);
 
+  // Need to add event handlers for these controls inside this function so they have access to row
+  // data
   $('#form-sort').on('change', function(e) {
     sortResults($(e.target).val(), false);
   });
   $('#form-order').on('click', function(e) {
     sortResults($(this).prev().val(), true);
+    return false;
+  });
+
+  $('#message-reviewers-btn').on('click', function(e) {
+    $('#message-reviewers-modal').remove();
+
+    var modalHtml = Handlebars.templates.messageReviewersModal({
+      defaultSubject: SHORT_PHRASE + ' Reminder',
+      defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
+        'Click on the link below to go to the review page:\n\n[[SUBMIT_LINK]]' +
+        '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
+    });
+    $('body').append(modalHtml);
+
+    $('#message-reviewers-modal .btn-primary').on('click', sendReviewerReminderEmails);
+    $('#message-reviewers-modal form').on('submit', sendReviewerReminderEmails);
+
+    $('#message-reviewers-modal').modal();
     return false;
   });
 
@@ -480,27 +553,41 @@ var registerEventHandlers = function() {
   $('#group-container').on('click', 'a.send-reminder-link', function(e) {
     var userId = $(this).data('userId');
     var forumUrl = $(this).data('forumUrl');
-    var postData = {
-      subject: SHORT_PHRASE + ' Reminder',
-      message: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
-        'Click on the link below to go to the review page:\n\n' + location.origin + forumUrl + '\n\nThank you.',
-      groups: [userId]
+
+    var sendReviewerReminderEmails = function(e) {
+      var postData = {
+        groups: [userId],
+        forumUrl: forumUrl,
+        subject: $('#message-reviewers-modal input[name="subject"]').val().trim(),
+        message: $('#message-reviewers-modal textarea[name="message"]').val().trim(),
+      };
+
+      $('#message-reviewers-modal').modal('hide');
+      promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
+      postReviewerEmails(postData);
+      return false;
     };
 
-    $.post('/mail', JSON.stringify(postData), function(result) {
-      promptMessage('A reminder email has been sent to ' + view.prettyId(userId));
-      // Save the timestamp in the local storage
-      localStorage.setItem(forumUrl + '|' + userId, Date.now());
-    }, 'json').fail(function(error) {
-      console.log(error);
-      promptError('The reminder email could not be sent at this time');
+    var modalHtml = Handlebars.templates.messageReviewersModal({
+      singleRecipient: true,
+      reviewerId: userId,
+      forumUrl: forumUrl,
+      defaultSubject: SHORT_PHRASE + ' Reminder',
+      defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
+        'Click on the link below to go to the review page:\n\n[[SUBMIT_LINK]]' +
+        '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
     });
+    $('#message-reviewers-modal').remove();
+    $('body').append(modalHtml);
 
+    $('#message-reviewers-modal .btn-primary').on('click', sendReviewerReminderEmails);
+    $('#message-reviewers-modal form').on('submit', sendReviewerReminderEmails);
+
+    $('#message-reviewers-modal').modal();
     return false;
   });
 
-  $('a.collapse-btn').on('click', function(e) {
-    console.log('here');
+  $('#group-container').on('click', 'a.collapse-btn', function(e) {
     $(this).next().slideToggle();
     if ($(this).text() === 'Show reviewers') {
       $(this).text('Hide reviewers');
@@ -509,6 +596,38 @@ var registerEventHandlers = function() {
     }
     return false;
   });
+
+  $('#group-container').on('click', 'a.select-reviewers-btn', function(e) {
+    var $tr = $(this).closest('tr');
+    $tr.toggleClass('reviewers-selected');
+
+    if (!$tr.data('id')) {
+      $tr.data('id', $tr.find('div.note').data('id'));
+    }
+
+    if ($(this).text() === 'Select reviewers') {
+      $(this).text('Unselect reviewers');
+    } else {
+      $(this).text('Select reviewers');
+    }
+    return false;
+  });
+};
+
+var postReviewerEmails = function(postData) {
+  postData.message = postData.message.replace(
+    '[[SUBMIT_LINK]]',
+    '<a href="' + postData.forumUrl + '" title="Submit your review">'+ postData.forumUrl +'</a>'
+  );
+
+  return Webfield.post('/mail', postData)
+    .then(function(response) {
+      // Save the timestamp in the local storage
+      for (var i = 0; i < postData.groups.length; i++) {
+        var userId = postData.groups[i];
+        localStorage.setItem(postData.forumUrl + '|' + userId, Date.now());
+      }
+    });
 };
 
 main();
