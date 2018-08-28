@@ -34,9 +34,6 @@ BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission'
 RECRUIT_AREA_CHAIRS_ID = CONFERENCE_ID + '/-/Recruit_Area_Chairs'
 RECRUIT_REVIEWERS_ID = CONFERENCE_ID + '/-/Recruit_Reviewers'
 
-REVIEWER_METADATA_ID = CONFERENCE_ID + '/-/Reviewer_Metadata'
-AREA_CHAIR_METADATA_ID = CONFERENCE_ID + '/-/Area_Chair_Metadata'
-
 # template strings
 PAPER_TEMPLATE_STR = CONFERENCE_ID + '/Paper<number>'
 PAPER_REVIEWERS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Reviewers'
@@ -539,12 +536,13 @@ ac_recommendation_template = {
         }
     }
 
+METADATA_INV_ID = CONFERENCE_ID + '/-/Paper_Metadata'
 
 # Metadata and matching stuff
-reviewer_metadata = openreview.Invitation.from_json({
-    'id': REVIEWER_METADATA_ID,
+metadata_inv = openreview.Invitation.from_json({
+    'id': METADATA_INV_ID,
     'readers': [
-        # CONFERENCE_ID, //seems like we can get rid of this for now
+        CONFERENCE_ID,
         PROGRAM_CHAIRS_ID
     ],
     'writers': [CONFERENCE_ID],
@@ -597,7 +595,7 @@ config_inv = openreview.Invitation.from_json({
         'forum': None,
         'replyto': None,
         'invitation': None,
-        'readers': {'values': [CONFERENCE_ID]},
+        'readers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
         'writers': {'values': [CONFERENCE_ID]},
         'signatures': {'values': [CONFERENCE_ID]},
         'content': {}
