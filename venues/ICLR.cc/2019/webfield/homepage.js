@@ -353,7 +353,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
   if (activityNotes.length) {
     var displayOptions = {
       container: '#recent-activity',
-      user: user.profile
+      user: user && user.profile
     };
 
     Webfield.ui.activityList(activityNotes, displayOptions);
