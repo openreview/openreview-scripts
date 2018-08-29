@@ -247,29 +247,29 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     );
   });
 
+  // Sort form handler
   var order = 'desc';
   var sortOptions = {
-    Paper_Number: function(row) { return row[0].number; },
-    Paper_Title: function(row) { return _.toLower(row[1].content.title); },
-    Reviews_Submitted: function(row) { return row[2].numSubmittedReviews; },
-    Reviews_Missing: function(row) { return row[2].numReviewers - row[2].numSubmittedReviews; },
-    Average_Rating: function(row) { return row[3].averageRating === 'N/A' ? 0 : row[3].averageRating; },
-    Max_Rating: function(row) { return row[3].maxRating === 'N/A' ? 0 : row[3].maxRating; },
-    Min_Rating: function(row) { return row[3].minRating === 'N/A' ? 0 : row[3].minRating; },
-    Average_Confidence: function(row) { return row[4].averageConfidence === 'N/A' ? 0 : row[4].averageConfidence; },
-    Max_Confidence: function(row) { return row[4].maxConfidence === 'N/A' ? 0 : row[4].maxConfidence; },
-    Min_Confidence: function(row) { return row[4].minConfidence === 'N/A' ? 0 : row[4].minConfidence; },
-    Meta_Review_Missing: function(row) { return row[5].rating ? 1 : 0; }
+    Paper_Number: function(row) { return row[1].number; },
+    Paper_Title: function(row) { return _.toLower(row[2].content.title); },
+    Number_of_Reviews_Submitted: function(row) { return row[3].numSubmittedReviews; },
+    Number_of_Reviews_Missing: function(row) { return row[3].numReviewers - row[3].numSubmittedReviews; },
+    Average_Rating: function(row) { return row[4].averageRating === 'N/A' ? 0 : row[4].averageRating; },
+    Max_Rating: function(row) { return row[4].maxRating === 'N/A' ? 0 : row[4].maxRating; },
+    Min_Rating: function(row) { return row[4].minRating === 'N/A' ? 0 : row[4].minRating; },
+    Average_Confidence: function(row) { return row[5].averageConfidence === 'N/A' ? 0 : row[5].averageConfidence; },
+    Max_Confidence: function(row) { return row[5].maxConfidence === 'N/A' ? 0 : row[5].maxConfidence; },
+    Min_Confidence: function(row) { return row[5].minConfidence === 'N/A' ? 0 : row[5].minConfidence; },
+    Meta_Review_Rating: function(row) { return row[6].recommendation ? _.toInteger(row[6].recommendation.split(':')[0]) : 0; }
   };
   var sortResults = function(newOption, switchOrder) {
     if (switchOrder) {
-      order = (order == 'asc' ? 'desc' : 'asc');
+      order = order === 'asc' ? 'desc' : 'asc';
     }
-
-    var selectedOption = newOption;
-    renderTableRows(_.orderBy(rows, sortOptions[selectedOption], order), container);
+    renderTableRows(_.orderBy(rows, sortOptions[newOption], order), container);
   }
 
+  // Message modal handler
   var sendReviewerReminderEmails = function(e) {
     $('#message-reviewers-modal').modal('hide');
 
@@ -282,15 +282,15 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     var selectedRows = rows;
     if (group === 'selected') {
       selectedIds = _.map(
-        $('#assigned-papers .ac-console-table tr.reviewers-selected'),
-        function(tr) { return $(tr).data('id'); }
+        $('.ac-console-table input.select-note-reviewers:checked'),
+        function(checkbox) { return $(checkbox).data('noteId'); }
       );
       selectedRows = rows.filter(function(row) {
-        return _.includes(selectedIds, row[1].forum);
+        return _.includes(selectedIds, row[2].forum);
       });
     }
     selectedRows.forEach(function(row) {
-      var users = _.values(row[2].reviewers);
+      var users = _.values(row[3].reviewers);
       if (filter === 'submitted') {
         users = users.filter(function(u) {
           return u.completedReview;
@@ -300,23 +300,23 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
           return !u.completedReview;
         });
       }
+console.log(users);
       var userIds = _.map(users, 'id');
 
-      var forumUrl = '/forum?' + $.param({
-        id: row[1].forum,
-        noteId: row[1].id,
-        invitationId: CONFERENCE + '/-/Paper' + row[0].number + '/Official_Review'
-      });
-
       if (userIds.length) {
+        var forumUrl = '/forum?' + $.param({
+          id: row[2].forum,
+          noteId: row[2].id,
+          invitationId: CONFERENCE + '/-/Paper' + row[2].number + '/Official_Review'
+        });
         postReviewerEmails({
           groups: userIds,
           forumUrl: forumUrl,
           subject: subject,
           message: message,
         });
+        count += userIds.length;
       }
-      count += userIds.length;
     });
 
     promptMessage('Your reminder email has been sent to ' + count + ' reviewers');
@@ -353,7 +353,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     var modalHtml = Handlebars.templates.messageReviewersModal({
       defaultSubject: SHORT_PHRASE + ' Reminder',
       defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
-        'Click on the link below to go to the review page:\n\n[[SUBMIT_LINK]]' +
+        'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
         '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
     });
     $('body').append(modalHtml);
@@ -371,6 +371,11 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
 var renderTableRows = function(rows, container) {
   var templateFuncs = [
     function(data) {
+      var checked = data.selected ? 'checked="checked"' : '';
+      return '<label><input type="checkbox" class="select-note-reviewers" data-note-id="' +
+        data.noteId + '" ' + checked + '></label>';
+    },
+    function(data) {
       return '<strong class="note-number">' + data.number + '</strong>';
     },
     Handlebars.templates.noteSummary,
@@ -381,7 +386,7 @@ var renderTableRows = function(rows, container) {
     },
     function(data) {
       return '<h4>Avg: ' + data.averageConfidence + '</h4><span>Min: ' + data.minConfidence + '</span>' +
-      '<br><span>Max: ' + data.maxConfidence + '</span>';
+        '<br><span>Max: ' + data.maxConfidence + '</span>';
     },
     Handlebars.templates.noteMetaReviewStatus
   ];
@@ -393,7 +398,10 @@ var renderTableRows = function(rows, container) {
   });
 
   var tableHtml = Handlebars.templates['components/table']({
-    headings: ['#', 'Paper Summary', 'Review Progress', 'Rating', 'Confidence', 'Status'],
+    headings: [
+      '<span class="glyphicon glyphicon-envelope"></span>', '#', 'Paper Summary',
+      'Review Progress', 'Rating', 'Confidence', 'Status'
+    ],
     rows: rowsHtml,
     extraClasses: 'ac-console-table'
   });
@@ -445,6 +453,8 @@ var renderTableAndTasks = function(fetchedData) {
 }
 
 var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
+  var cellCheck = { selected: false, noteId: note.id };
+
   // Paper number cell
   var cell0 = { number: note.number};
 
@@ -537,7 +547,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     cell5.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
   }
 
-  return [cell0, cell1, cell2, cell3, cell4, cell5];
+  return [cellCheck, cell0, cell1, cell2, cell3, cell4, cell5];
 };
 
 
@@ -574,7 +584,7 @@ var registerEventHandlers = function() {
       forumUrl: forumUrl,
       defaultSubject: SHORT_PHRASE + ' Reminder',
       defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
-        'Click on the link below to go to the review page:\n\n[[SUBMIT_LINK]]' +
+        'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
         '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
     });
     $('#message-reviewers-modal').remove();
@@ -596,27 +606,11 @@ var registerEventHandlers = function() {
     }
     return false;
   });
-
-  $('#group-container').on('click', 'a.select-reviewers-btn', function(e) {
-    var $tr = $(this).closest('tr');
-    $tr.toggleClass('reviewers-selected');
-
-    if (!$tr.data('id')) {
-      $tr.data('id', $tr.find('div.note').data('id'));
-    }
-
-    if ($(this).text() === 'Select reviewers') {
-      $(this).text('Unselect reviewers');
-    } else {
-      $(this).text('Select reviewers');
-    }
-    return false;
-  });
 };
 
 var postReviewerEmails = function(postData) {
   postData.message = postData.message.replace(
-    '[[SUBMIT_LINK]]',
+    '[[SUBMIT_REVIEW_LINK]]',
     '<a href="' + postData.forumUrl + '" title="Submit your review">'+ postData.forumUrl +'</a>'
   );
 
