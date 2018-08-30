@@ -23,8 +23,8 @@ AREA_CHAIRS = CONFERENCE_ID + '/Area_Chairs'
 REVIEWERS = CONFERENCE_ID + '/Reviewers'
 # midnight CET = 11pm GMT
 # TODO Need to update times and review dates
-SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day= 1, hour=23)
-REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day= 15, hour=23)
+SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day= 15, hour=23)
+REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day= 30, hour=23)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
 
