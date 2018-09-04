@@ -376,7 +376,7 @@ questionnaire_response_template = {
                 'description': 'Have you published at ICLR in the last two years?',
                 'value-radio': ['Yes','No']
             },
-            'Your Recent Publications': {
+            'Your Recent Publication Venues': {
                 'description': 'Where have you recently published? Select all that apply.',
                 'values-dropdown': [
                     'Neural Information Processing Systems (NIPS)',
@@ -407,6 +407,10 @@ questionnaire_response_template = {
                     'Receiving clear instructions about the expectations of reviews.'
                 ]
 
+            },
+            'Confirm Profile Updated': {
+                'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
+                'value-radio': ['Yes', 'No']
             }
         }
     }
