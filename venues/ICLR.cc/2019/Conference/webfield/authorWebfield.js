@@ -48,14 +48,6 @@ HEADER_TEXT = 'ICLR 2019 Author Console';
 INSTRUCTIONS_HTML = '\
     <h3>Frequently Asked Questions</h3>\
     <br>\
-    <strong>Why are there two versions of my paper?</strong>\
-    <br>\
-    <p>\
-      OpenReview maintains both anonymity and attributability of papers by storing an "original" \
-      version of the paper, complete with full author names and email addresses, as well as an anonymous \
-      version of the paper, which protects the authors\' identities during the review process.\
-      All reviewing takes place in the discussion page of the anonymous version.\
-    </p>\
     <strong>How do I revise my paper after submitting it?</strong>\
     <p>\
       To post a revision to your paper, navigate to the original (non-anonymous) version. If revisions are enabled,\
@@ -71,14 +63,14 @@ INSTRUCTIONS_HTML = '\
 
 var SCHEDULE_HTML = '<h4>Submission Period</h4>\
     <p>\
-      <em><strong>Submission deadline: Monday, August 3</strong></em>:\
+      <em><strong>Submission deadline: Thursday, September 27</strong></em>:\
       <ul>\
         <li>Authors can revise their paper as many times as needed up to the paper submission deadline.</li>\
         <li>Please ensure that the email addresses of the corresponding author are up-to-date in his or her profile.</li>\
       </ul>\
     </p>\
     <p>\
-      <em><strong>Please do the following by Friday, August 10</strong></em>:\
+      <em><strong>Please do the following by Monday, October 8</strong></em>:\
       <ul>\
         <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
         <li>Complete the ICLR registration form (found in your Tasks view).</li>\
@@ -87,7 +79,7 @@ var SCHEDULE_HTML = '<h4>Submission Period</h4>\
   <br>\
   <h4>Reviewing Period</h4>\
     <p>\
-      <em><strong>Reviews can be expected by Friday, August 17</strong></em>:\
+      <em><strong>Reviews can be expected by Wednesday, October 17</strong></em>:\
       <ul>\
         <li>During the review period, authors will not be allowed to revise their paper. </li>\
         <li>Reviews and all discussion take place on the Anonymous Versions of your submitted papers.</li>\
@@ -96,7 +88,7 @@ var SCHEDULE_HTML = '<h4>Submission Period</h4>\
   <br>\
   <h4>Rebuttal Period</h4>\
     <p>\
-      <em><strong>Rebuttal period ends on DATE</strong></em>\
+      <em><strong>Rebuttal period ends on Friday, October 26</strong></em>:\
       <ul>\
         <li>Authors may revise their paper, but revision history will be available to reviewers.</li>\
         <li>Area chairs and reviewers reserve the right to ignore changes which are significant from the original scope of the paper.</li>\
@@ -215,13 +207,13 @@ function renderConferenceTabs() {
       heading: 'Author Tasks',
       id: 'author-tasks'
     },
+    // {
+    //   heading: 'Your Anonymous Versions',
+    //   id: 'your-anonymous-versions',
+    // },
     {
-      heading: 'Your Anonymous Versions',
-      id: 'your-anonymous-versions',
-    },
-    {
-      heading: 'Your Private Versions',
-      id: 'your-private-versions',
+      heading: 'Your Submissions',
+      id: 'your-submissions',
     }
   ];
 
@@ -296,31 +288,31 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
   if (authorNotes.length) {
     Webfield.ui.searchResults(
       authorNotes,
-      _.assign({}, paperDisplayOptions, {container: '#your-private-versions'})
+      _.assign({}, paperDisplayOptions, {container: '#your-submissions'})
     );
-    var authorNoteIds = _.map(authorNotes, function(original){
-      return original.id;
-    });
+    // var authorNoteIds = _.map(authorNotes, function(original){
+    //   return original.id;
+    // });
 
-    // get blind papers that are authored by this user
-    var anonymousVersions = _.filter(notes, function(note){
-      return _.includes(authorNoteIds, note.original);
-    });
+    // // get blind papers that are authored by this user
+    // var anonymousVersions = _.filter(notes, function(note){
+    //   return _.includes(authorNoteIds, note.original);
+    // });
     //var anonymousVersions = notes;
 
     // Anonymous Versions
-    Webfield.ui.searchResults(
-      anonymousVersions,
-      _.assign({}, paperDisplayOptions, {
-        container: '#your-anonymous-versions',
-        emptyMessage: 'You have no papers currently under review.'
-      })
-    );
-    $('.tabs-container a[href="#your-private-versions"]').parent().show();
-    $('.tabs-container a[href="#your-anonymous-versions"]').parent().show();
+    // Webfield.ui.searchResults(
+    //   anonymousVersions,
+    //   _.assign({}, paperDisplayOptions, {
+    //     container: '#your-anonymous-versions',
+    //     emptyMessage: 'You have no papers currently under review.'
+    //   })
+    // );
+    $('.tabs-container a[href="#your-submissions"]').parent().show();
+    // $('.tabs-container a[href="#your-anonymous-versions"]').parent().show();
   } else {
-    $('.tabs-container a[href="#your-private-versions"]').parent().hide();
-    $('.tabs-container a[href="#your-anonymous-versions"]').parent().hide();
+    $('.tabs-container a[href="#your-submissions"]').parent().hide();
+    // $('.tabs-container a[href="#your-anonymous-versions"]').parent().hide();
   }
 
 
