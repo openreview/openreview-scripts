@@ -159,9 +159,9 @@ function main() {
 
   renderSubmissionButton();
 
-  //renderConferenceTabs();
+  renderConferenceTabs();
 
-  //load().then(renderContent);
+  load().then(renderContent);
 }
 
 // Load makes all the API calls needed to get the data to render the page
@@ -228,10 +228,10 @@ function renderConferenceTabs() {
       heading: 'Your Consoles',
       id: 'your-consoles',
     },
-    {
-      heading: 'All Submissions',
-      id: 'all-submissions',
-    },
+    // {
+    //   heading: 'All Submissions',
+    //   id: 'all-submissions',
+    // },
     {
       heading: 'Recent Activity',
       id: 'recent-activity',
@@ -261,8 +261,14 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
 
   var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
 
+  var submissionActivityNotes = _.filter(activityNotes, function(note) {
+    return note.invitation === SUBMISSION_ID;
+  });
+
+  console.log('submissionActivityNotes', submissionActivityNotes);
+
   // Your Consoles tab
-  if (userGroups.length) {
+  if (userGroups.length || submissionActivityNotes.length) {
 
     var $container = $('#your-consoles');
     $container.append('<ul class="list-unstyled submissions-list">');
@@ -299,7 +305,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       ].join(''));
     }
 
-    if (authorPaperNumbers.length) {
+    if (authorPaperNumbers.length || submissionActivityNotes.length) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
