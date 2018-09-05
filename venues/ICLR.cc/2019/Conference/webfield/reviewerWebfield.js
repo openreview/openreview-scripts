@@ -11,7 +11,7 @@ var INSTRUCTIONS =  '<p><strong>This page provides information and status update
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
     <p>\
-      <em><strong>Please do the following by Friday, August 10</strong></em>:\
+      <em><strong>Please do the following by Thursday, September 27</strong></em>:\
       <ul>\
         <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
         <li>Complete the ICLR registration form (found in your Tasks view).</li>\
@@ -20,10 +20,11 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>\
   <h4>Bidding Phase</h4>\
     <p>\
-      <em><strong>Please do the following by Friday, August 17</strong></em>:\
+      <em><strong>Please do the following by Monday, Oct 8</strong></em>:\
       <ul>\
         <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
-        <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\
+        <li>A URL to the bidding interface will be provided when the Bidding phase starts.</li>\
+        <!--<li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\-->\
       </ul>\
     </p>\
   <br>'

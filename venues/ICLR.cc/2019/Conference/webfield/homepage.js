@@ -281,13 +281,13 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       ].join(''));
     }
 
-    if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
-      $('#your-consoles .submissions-list').append([
-        '<li class="note invitation-link">',
-          '<a href="/invitation?id=' + ADD_BID_ID + '">Bidding Console</a>',
-        '</li>'
-      ].join(''));
-    }
+    // if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
+    //   $('#your-consoles .submissions-list').append([
+    //     '<li class="note invitation-link">',
+    //       '<a href="/invitation?id=' + ADD_BID_ID + '">Bidding Console</a>',
+    //     '</li>'
+    //   ].join(''));
+    // }
 
     if (_.includes(userGroups, AREA_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
