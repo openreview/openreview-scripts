@@ -11,27 +11,28 @@ var INSTRUCTIONS =  '<p><strong>This page provides information and status update
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
     <p>\
-      <em><strong>Please do the following by Thursday, September 27</strong></em>:\
+      <!--<em><strong>Please do the following by Thursday, September 21</strong></em>:-->\
       <ul>\
         <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
-        <li>Complete the ICLR registration form (found in your Tasks view).</li>\
+        <!--<li>Complete the ICLR registration form (found in your Tasks view).</li>-->\
       </ul>\
     </p>\
   <br>\
   <h4>Bidding Phase</h4>\
     <p>\
-      <em><strong>Please do the following by Monday, Oct 8</strong></em>:\
+      <!--<em><strong>Please do the following by Monday, Oct 8</strong></em>:\
       <ul>\
         <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
         <li>A URL to the bidding interface will be provided when the Bidding phase starts.</li>\
-        <!--<li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\-->\
-      </ul>\
+        <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\
+      </ul>-->\
+      <em><strong>The bidding phase has not started yet.</strong><br/>\
+    This section will be updated once the bidding phase begins.</em>\
     </p>\
   <br>'
 
 
 var CONFERENCE = 'ICLR.cc/2019/Conference';
-
 
 
 var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Blind_Submission';
