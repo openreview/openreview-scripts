@@ -302,7 +302,7 @@ questionnaire_instructions_invitation = openreview.Invitation.from_json({
     'reply': {
         'forum': None,
         'replyto': None,
-        'readers': {'values': [REVIEWERS_ID, AREA_CHAIRS_ID, PROGRAM_CHAIRS_ID, CONFERENCE_ID, AUTHORS_ID]},
+        'readers': {'values': [REVIEWERS_ID, AREA_CHAIRS_ID, PROGRAM_CHAIRS_ID, CONFERENCE_ID]},
         'writers': {'values': [CONFERENCE_ID]},
         'signatures': {'values': [CONFERENCE_ID]},
         'content': {
@@ -406,7 +406,6 @@ questionnaire_response_template = {
                     'Having enough time for active discussion about papers.',
                     'Receiving clear instructions about the expectations of reviews.'
                 ]
-
             },
             'Confirm Profile Updated': {
                 'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
@@ -435,38 +434,9 @@ subject_areas_template = {
                 'value': 'Subject Areas',
                 'order': 1
             },
-            'subject_areas': {
-                'values-dropdown': subject_areas,
-                'required': True,
-                'order': 2
-            }
-        }
-    }
-}
-
-confirm_profile_template = {
-    'id': CONFERENCE_ID + '/-/Registration/Confirm/Profile',
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'invitees': [REVIEWERS_ID, AREA_CHAIRS_ID, AUTHORS_ID],
-    'duedate': 1520639999000, # March 9, 2018,
-    'process': '../process/registrationProcess.js',
-    'reply': {
-        'forum': '<forum>',
-        'replyto': '<forum>',
-        'readers': {'values': [CONFERENCE_ID]},
-        'writers': {'values-regex': '~.*'},
-        'signatures': {'values-regex': '~.*'},
-        'content': {
-            'title': {
-                'value': 'Confirm Profile',
-                'order': 1
-            },
-            'confirmation': {
-                'value': 'I confirm that I have updated my profile sufficiently to capture my conflicts of interest.',
-                'required': True,
-                'order': 2
+            'Confirm Profile Updated': {
+                'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
+                'value-radio': ['Yes', 'No']
             }
         }
     }
@@ -488,23 +458,6 @@ add_bid = invitations.AddBid(
         'web': os.path.abspath('../webfield/bidWebfield.js')
     }
 )
-
-# add_wager = invitations.AddWager(
-#     conference_id = CONFERENCE_ID,
-#     duedate = ADD_BID_DEADLINE,
-#     completion_count = 50,
-#     inv_params = {
-#         'readers': [
-#             CONFERENCE_ID,
-#             PROGRAM_CHAIRS_ID,
-#             REVIEWERS_ID,
-#             AREA_CHAIRS_ID
-#         ],
-#         'invitees': [],
-#         'web': os.path.abspath('../webfield/bidWebfield.js')
-#     }
-# )
-
 
 # Configure AC recommendations
 ac_recommendation_template = {
