@@ -406,7 +406,34 @@ questionnaire_response_template = {
                     'Having enough time for active discussion about papers.',
                     'Receiving clear instructions about the expectations of reviews.'
                 ]
+            },
+            'Confirm Profile Updated': {
+                'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
+                'value-radio': ['Yes', 'No']
+            }
+        }
+    }
+}
 
+subject_areas_template = {
+    'id': CONFERENCE_ID + '/-/Registration/Subject/Areas', # same here, see comment above
+    'readers': ['everyone'],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'invitees': [REVIEWERS_ID, AREA_CHAIRS_ID, AUTHORS_ID],
+    'duedate': 1520639999000, # March 9, 2018,
+    'process': '../process/registrationProcess.js',
+    'reply': {
+        'forum': '<forum>',
+        'replyto': '<forum>',
+        'readers': {'values': [CONFERENCE_ID]},
+        'writers': {'values-regex': '~.*'},
+        'signatures': {'values-regex': '~.*'},
+        'content': {
+            'title': {
+                'value': 'Subject Areas',
+                'order': 1
+>>>>>>> master
             },
             'Confirm Profile Updated': {
                 'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
