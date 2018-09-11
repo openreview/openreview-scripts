@@ -433,7 +433,6 @@ subject_areas_template = {
             'title': {
                 'value': 'Subject Areas',
                 'order': 1
->>>>>>> master
             },
             'Confirm Profile Updated': {
                 'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
