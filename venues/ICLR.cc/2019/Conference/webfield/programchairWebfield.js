@@ -358,7 +358,11 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   }
 
   displaySortPanel(container, sortOptions, sortResults);
-  renderTable(container, rowData);
+  if(rowData.length){
+    renderTable(container, rowData);
+  } else {
+    $(container).append('<p>No papers have been submitted. Check back later or contact info@openreview.net if you believe this to be an error.</p>');
+  }
 
 };
 

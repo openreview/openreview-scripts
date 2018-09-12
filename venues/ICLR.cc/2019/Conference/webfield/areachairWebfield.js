@@ -367,7 +367,11 @@ console.log(users);
     return false;
   });
 
-  renderTableRows(rows, container);
+  if(rows.length){
+    renderTableRows(rows, container);
+  } else {
+    $(container).append('<p>No papers have been submitted. Check back later or contact info@openreview.net if you believe this to be an error.</p>');
+  }
 };
 
 var renderTableRows = function(rows, container) {
