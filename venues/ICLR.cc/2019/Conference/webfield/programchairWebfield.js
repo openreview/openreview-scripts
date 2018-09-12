@@ -306,7 +306,6 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     return buildPaperTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
   });
 
-  console.log('rowData', rowData);
   var toNumber = function(value) {
     return value == 'N/A' ? 0 : value;
   }
@@ -357,11 +356,12 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     $(container).append(tableHTML);
   }
 
-  displaySortPanel(container, sortOptions, sortResults);
-  if(rowData.length){
+  if (rowData.length) {
+    displaySortPanel(container, sortOptions, sortResults);
     renderTable(container, rowData);
   } else {
-    $(container).append('<p>No papers have been submitted. Check back later or contact info@openreview.net if you believe this to be an error.</p>');
+    $(container).append('<p class="empty-message">No papers have been submitted. ' +
+      'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
   }
 
 };
@@ -449,9 +449,6 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
   var rowData = [];
   var index = 1;
   var sortedReviewerIds = _.sortBy(_.keys(reviewerById));
-
-  console.log('reviewerByNote', reviewerByNote);
-
 
   _.forEach(sortedReviewerIds, function(reviewer) {
     var numbers = reviewerById[reviewer];
@@ -545,8 +542,6 @@ var displayError = function(message) {
 
 // Helper functions
 var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
-  console.log('buildPaperTableRow');
-  console.log('reviewerIds', reviewerIds);
   // Build Note Summary Cell
   note.content.authors = null;  // Don't display 'Blinded Authors'
 
@@ -784,7 +779,6 @@ controller.addHandler('areachairs', {
       );
     })
     .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
-      console.log('reviewerGroups', reviewerGroups);
       var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj, noteNum) {
         return result.concat(_.values(idsObj));
       }, []));
