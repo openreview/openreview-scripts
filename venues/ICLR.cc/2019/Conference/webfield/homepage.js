@@ -214,9 +214,9 @@ function renderSubmissionButton() {
           // Callback funtion to be run when a paper has successfully been submitted (required)
           promptMessage('Your submission is complete. Check your inbox for a confirmation email. A list of all submissions will be available after the deadline');
 
-          // load().then(renderContent).then(function() {
-          //   $('.tabs-container a[href="#all-submissions"]').click();
-          // });x
+          load().then(renderContent).then(function() {
+            $('.tabs-container a[href="#your-consoles"]').click();
+          });
         }
       });
     });
