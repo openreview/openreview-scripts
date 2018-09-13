@@ -265,8 +265,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     return note.invitation === SUBMISSION_ID;
   });
 
-  console.log('submissionActivityNotes', submissionActivityNotes);
-
   // Your Consoles tab
   if (userGroups.length || submissionActivityNotes.length) {
 
@@ -326,6 +324,8 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     container: '#all-submissions'
   });
 
+  $(submissionListOptions.container).empty();
+
   Webfield.ui.submissionList(notes, {
     heading: null,
     container: '#all-submissions',
@@ -351,7 +351,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     fadeIn: false
   });
 
-
   if (notes.length === PAGE_SIZE) {
     Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
   }
@@ -362,6 +361,8 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       container: '#recent-activity',
       user: user && user.profile
     };
+
+    $(displayOptions.container).empty();
 
     Webfield.ui.activityList(activityNotes, displayOptions);
 
