@@ -252,6 +252,10 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     if (!_.includes(COMMENT_EXCLUSION, note.invitation)) {
       commentNotes.push(note);
     }
+    if (note.invitation === SUBMISSION_ID &&
+        !_.includes(_.map(authorNotes, n=>n.id), note.id)) {
+      authorNotes.push(note);
+    }
   });
 
   // Filter out all tags that belong to other users (important for bid tags)
