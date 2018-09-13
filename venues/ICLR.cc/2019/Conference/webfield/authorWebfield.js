@@ -163,7 +163,7 @@ function load() {
     duedate: true,
     replyto: true,
     details:'replytoNote,repliedNotes'
-  }).then(result => result.invitations)
+  }).then(function(result) {return result.invitations;})
 
   return userGroupsP
   .then(function(userGroups) {
@@ -226,14 +226,16 @@ var displayTasks = function(invitations, tagInvitations){
   $(tasksOptions.container).empty();
 
   // filter out non-author invitations
-  authorInvitations = _.filter(invitations, inv => {
-    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Authors')) ) {
+  authorInvitations = _.filter(invitations, function(inv) {
+    if ( _.some(inv.invitees, function(invitee) {return _.includes(invitee, 'Authors');} ) ) {
       return inv;
     }
-  });
+  }
 
-  authorTagInvitations = _.filter(tagInvitations, inv => {
-    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Authors')) ) {
+  );
+
+  authorTagInvitations = _.filter(tagInvitations, function(inv) {
+    if ( _.some(inv.invitees, function(invitee) {return _.includes(invitee, 'Authors');}) ) {
       return inv;
     }
   });
@@ -253,7 +255,7 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
       commentNotes.push(note);
     }
     if (note.invitation === SUBMISSION_ID &&
-        !_.includes(_.map(authorNotes, n=>n.id), note.id)) {
+        !_.includes(_.map(authorNotes, function(n){return n.id;}), note.id)) {
       authorNotes.push(note);
     }
   });
