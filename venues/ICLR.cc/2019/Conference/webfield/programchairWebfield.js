@@ -363,7 +363,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     displaySortPanel(container, sortOptions, sortResults);
     renderTable(container, rowData);
   } else {
-    $(container).append('<p class="empty-message">No papers have been submitted. ' +
+    $(container).empty().append('<p class="empty-message">No papers have been submitted. ' +
       'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
   }
 
