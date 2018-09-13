@@ -217,7 +217,6 @@ function renderConferenceTabs() {
 }
 
 var displayTasks = function(invitations, tagInvitations){
-  console.log('displayTasks');
   //  My Tasks tab
   var tasksOptions = {
     container: '#author-tasks',
@@ -225,20 +224,12 @@ var displayTasks = function(invitations, tagInvitations){
   }
   $(tasksOptions.container).empty();
 
-  // filter out non-author invitations
-  authorInvitations = _.filter(invitations, function(inv) {
-    if ( _.some(inv.invitees, function(invitee) {return _.includes(invitee, 'Authors');} ) ) {
-      return inv;
-    }
-  }
-
-  );
-
-  authorTagInvitations = _.filter(tagInvitations, function(inv) {
-    if ( _.some(inv.invitees, function(invitee) {return _.includes(invitee, 'Authors');}) ) {
-      return inv;
-    }
-  });
+  // Filter out non-areachair tasks
+  var filterFunc = function(inv) {
+    return _.some(inv.invitees, function(invitee) { return invitee.indexOf('Authors') !== -1; });
+  };
+  var authorInvitations = _.filter(invitations, filterFunc);
+  var authorTagInvitations = _.filter(tagInvitations, filterFunc);
 
   Webfield.ui.newTaskList(authorInvitations, authorTagInvitations, tasksOptions)
   $('.tabs-container a[href="#author-tasks"]').parent().show();

@@ -86,26 +86,25 @@ var getAllRatings = function(callback) {
 };
 
 var getReviewRatings = function(noteNumbers) {
-
   var dfd = $.Deferred();
 
   var noteMap = buildNoteMap(noteNumbers);
 
   getAllRatings(function(notes) {
-
     _.forEach(notes, function(n) {
-      var paperPart = _.find(n.invitation.split('/'), part=>_.includes(part, 'Paper'))
-      var num = parseInt(paperPart.split('Paper')[1]);
+      var paperPart = _.find(n.invitation.split('/'), function(part) {
+        return part.indexOf('Paper') !== -1;
+      });
+      var num = parseInt(paperPart.split('Paper')[1], 10);
       if (num in noteMap) {
         noteMap[num][n.forum] = n;
       }
     });
-    dfd.resolve(noteMap);
 
+    dfd.resolve(noteMap);
   });
 
   return dfd.promise();
-
 };
 
 var getReviewerGroups = function(noteNumbers) {
@@ -261,18 +260,12 @@ var displayTasks = function(invitations, tagInvitations){
   }
   $(tasksOptions.container).empty();
 
-  // filter out non-reviewer invitations
-  reviewerInvitations = _.filter(invitations, inv => {
-    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Reviewer')) ) {
-      return inv;
-    }
-  });
-
-  reviewerTagInvitations = _.filter(tagInvitations, inv => {
-    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Reviewer')) ) {
-      return inv;
-    }
-  });
+  // Filter out non-reviewer tasks
+  var filterFunc = function(inv) {
+    return _.some(inv.invitees, function(invitee) { return invitee.indexOf('Reviewer') !== -1; });
+  };
+  var reviewerInvitations = _.filter(invitations, filterFunc);
+  var reviewerTagInvitations = _.filter(tagInvitations, filterFunc);
 
   Webfield.ui.newTaskList(reviewerInvitations, reviewerTagInvitations, tasksOptions)
   $('.tabs-container a[href="#reviewer-tasks"]').parent().show();
@@ -426,7 +419,9 @@ controller.addHandler('reviewers', {
             duedate: true,
             replyto: true,
             details:'replytoNote,repliedNotes'
-          }).then(result => result.invitations),
+          }).then(function(result) {
+            return result.invitations;
+          }),
           Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID),
           headerLoaded
         );
