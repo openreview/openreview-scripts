@@ -260,6 +260,8 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
     }
   });
 
+  authorNotes = _.sortBy(authorNotes, function(n){return n.cdate;}).reverse();
+
   // Filter out all tags that belong to other users (important for bid tags)
   notes = _.map(notes, function(n) {
     n.tags = _.filter(n.tags, function(t) {
