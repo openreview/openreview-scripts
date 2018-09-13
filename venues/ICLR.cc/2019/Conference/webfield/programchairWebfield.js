@@ -238,17 +238,20 @@ var displayHeader = function(headerP) {
           heading: 'Paper Status',
           id: 'paper-status',
           content: loadingMessage,
+          extraClasses: 'horizontal-scroll',
           active: true
         },
         {
           heading: 'Area Chair Status',
           id: 'areachair-status',
           content: loadingMessage,
+          extraClasses: 'horizontal-scroll'
         },
         {
           heading: 'Reviewer Status',
           id: 'reviewer-status',
           content: loadingMessage,
+          extraClasses: 'horizontal-scroll'
         }
       ]
     };
@@ -352,7 +355,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
       extraClasses: 'console-table paper-table'
     });
 
-    $(container).find('.table-responsive').remove();
+    $(container).find('.table-container').remove();
     $(container).append(tableHTML);
   }
 
@@ -435,7 +438,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
       extraClasses: 'console-table'
     });
 
-    $(container).find('.table-responsive').remove();
+    $(container).find('.table-container').remove();
     $(container).append(tableHTML);
   }
 
@@ -525,7 +528,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
       extraClasses: 'console-table'
     });
 
-    $(container).find('.table-responsive').remove();
+    $(container).find('.table-container').remove();
     $(container).append(tableHTML);
   }
 

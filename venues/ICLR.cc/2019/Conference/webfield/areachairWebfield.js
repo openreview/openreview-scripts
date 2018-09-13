@@ -219,6 +219,7 @@ var renderHeader = function() {
       heading: 'Assigned Papers',
       id: 'assigned-papers',
       content: loadingMessage,
+      extraClasses: 'horizontal-scroll',
       active: true
     },
     {
@@ -414,7 +415,7 @@ var renderTableRows = function(rows, container) {
     extraClasses: 'ac-console-table'
   });
 
-  $('.table-responsive', container).remove();
+  $('.table-container', container).remove();
   $(container).append(tableHtml);
 }
 
