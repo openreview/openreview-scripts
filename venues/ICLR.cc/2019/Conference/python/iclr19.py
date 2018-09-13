@@ -251,9 +251,6 @@ submission_inv = invitations.Submission(
         'writers': {
             'values-regex': '|'.join(['~.*', CONFERENCE_ID])
         }
-    },
-    content_params = {
-        'subject areas': {'required': True, 'values-dropdown': subject_areas}
     }
 )
 
