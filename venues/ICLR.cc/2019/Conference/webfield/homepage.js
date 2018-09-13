@@ -214,9 +214,9 @@ function renderSubmissionButton() {
           // Callback funtion to be run when a paper has successfully been submitted (required)
           promptMessage('Your submission is complete. Check your inbox for a confirmation email. A list of all submissions will be available after the deadline');
 
-          // load().then(renderContent).then(function() {
-          //   $('.tabs-container a[href="#all-submissions"]').click();
-          // });x
+          load().then(renderContent).then(function() {
+            $('.tabs-container a[href="#your-consoles"]').click();
+          });
         }
       });
     });
@@ -265,12 +265,10 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     return note.invitation === SUBMISSION_ID;
   });
 
-  console.log('submissionActivityNotes', submissionActivityNotes);
-
   // Your Consoles tab
   if (userGroups.length || submissionActivityNotes.length) {
 
-    var $container = $('#your-consoles');
+    var $container = $('#your-consoles').empty();
     $container.append('<ul class="list-unstyled submissions-list">');
 
     if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
@@ -281,6 +279,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       ].join(''));
     }
 
+    // Not open yet
     // if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
     //   $('#your-consoles .submissions-list').append([
     //     '<li class="note invitation-link">',
@@ -325,6 +324,8 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     container: '#all-submissions'
   });
 
+  $(submissionListOptions.container).empty();
+
   Webfield.ui.submissionList(notes, {
     heading: null,
     container: '#all-submissions',
@@ -350,7 +351,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     fadeIn: false
   });
 
-
   if (notes.length === PAGE_SIZE) {
     Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
   }
@@ -361,6 +361,8 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       container: '#recent-activity',
       user: user && user.profile
     };
+
+    $(displayOptions.container).empty();
 
     Webfield.ui.activityList(activityNotes, displayOptions);
 
