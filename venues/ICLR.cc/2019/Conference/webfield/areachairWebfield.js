@@ -427,20 +427,14 @@ var renderTasks = function(invitations, tagInvitations) {
   }
   $(tasksOptions.container).empty();
 
-  // filter out non-areachair tasks
-  areachairInvitations = _.filter(invitations, inv => {
-    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Area_Chair')) ) {
-      return inv;
-    }
-  });
+  // Filter out non-areachair tasks
+  var filterFunc = function(inv) {
+    return _.some(inv.invitees, function(invitee) { return invitee.indexOf('Area_Chair') !== -1; });
+  };
+  var areachairInvitations = _.filter(invitations, filterFunc);
+  var areachairTagInvitations = _.filter(tagInvitations, filterFunc);
 
-  areachairTagInvitations = _.filter(tagInvitations, inv => {
-    if ( _.some(inv.invitees, invitee => _.includes(invitee, 'Area_Chair')) ) {
-      return inv;
-    }
-  });
-
-  Webfield.ui.newTaskList(invitations, tagInvitations, tasksOptions);
+  Webfield.ui.newTaskList(areachairInvitations, areachairTagInvitations, tasksOptions);
   $('.tabs-container a[href="#areachair-tasks"]').parent().show();
 }
 
