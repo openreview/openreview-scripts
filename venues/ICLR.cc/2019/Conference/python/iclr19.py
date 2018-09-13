@@ -133,9 +133,9 @@ The ICLR 2019 Program Chairs
 
 # Deadlines
 SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=9, day=27, hour=9)
-ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=9, day=7)
-OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=8, day=1)
-META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=9, day=24)
+ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=5)
+OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=29)
+META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=7)
 
 
 
@@ -333,6 +333,7 @@ questionnaire_response_template = {
     'signatures': [CONFERENCE_ID],
     'invitees': [REVIEWERS_ID, AUTHORS_ID, AREA_CHAIRS_ID],
     'duedate': OFFICIAL_REVIEW_DEADLINE,
+    'expdate': OFFICIAL_REVIEW_DEADLINE,
     'reply': {
         'forum': '<forum>',
         'replyto': '<forum>',
@@ -343,6 +344,14 @@ questionnaire_response_template = {
             'title': {
                 'value': 'Questionnaire Response',
                 'order': 1
+            },
+            'Confirm Profile Updated': {
+                'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
+                'value-radio': ['Yes', 'No']
+            },
+            'Confirm TPMS Registration': {
+                'description': 'Have you registered and/or updated your TPMS account, and updated your OpenReview profile to include the email address you used for TPMS?',
+                'value-radio': ['Yes', 'No']
             },
             'Current Positions': {
                 'description': 'Which categories describe you best? Select all that apply.',
@@ -406,37 +415,6 @@ questionnaire_response_template = {
                     'Having enough time for active discussion about papers.',
                     'Receiving clear instructions about the expectations of reviews.'
                 ]
-            },
-            'Confirm Profile Updated': {
-                'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
-                'value-radio': ['Yes', 'No']
-            }
-        }
-    }
-}
-
-subject_areas_template = {
-    'id': CONFERENCE_ID + '/-/Registration/Subject/Areas', # same here, see comment above
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'invitees': [REVIEWERS_ID, AREA_CHAIRS_ID, AUTHORS_ID],
-    'duedate': 1520639999000, # March 9, 2018,
-    'process': '../process/registrationProcess.js',
-    'reply': {
-        'forum': '<forum>',
-        'replyto': '<forum>',
-        'readers': {'values': [CONFERENCE_ID]},
-        'writers': {'values-regex': '~.*'},
-        'signatures': {'values-regex': '~.*'},
-        'content': {
-            'title': {
-                'value': 'Subject Areas',
-                'order': 1
-            },
-            'Confirm Profile Updated': {
-                'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
-                'value-radio': ['Yes', 'No']
             }
         }
     }
