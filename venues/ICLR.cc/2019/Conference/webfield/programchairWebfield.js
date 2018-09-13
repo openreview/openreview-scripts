@@ -238,17 +238,20 @@ var displayHeader = function(headerP) {
           heading: 'Paper Status',
           id: 'paper-status',
           content: loadingMessage,
+          extraClasses: 'horizontal-scroll',
           active: true
         },
         {
           heading: 'Area Chair Status',
           id: 'areachair-status',
           content: loadingMessage,
+          extraClasses: 'horizontal-scroll'
         },
         {
           heading: 'Reviewer Status',
           id: 'reviewer-status',
           content: loadingMessage,
+          extraClasses: 'horizontal-scroll'
         }
       ]
     };
@@ -306,7 +309,6 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     return buildPaperTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
   });
 
-  console.log('rowData', rowData);
   var toNumber = function(value) {
     return value == 'N/A' ? 0 : value;
   }
@@ -353,15 +355,16 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
       extraClasses: 'console-table paper-table'
     });
 
-    $(container).find('.table-responsive').remove();
+    $(container).find('.table-container').remove();
     $(container).append(tableHTML);
   }
 
-  displaySortPanel(container, sortOptions, sortResults);
-  if(rowData.length){
+  if (rowData.length) {
+    displaySortPanel(container, sortOptions, sortResults);
     renderTable(container, rowData);
   } else {
-    $(container).append('<p>No papers have been submitted. Check back later or contact info@openreview.net if you believe this to be an error.</p>');
+    $(container).append('<p class="empty-message">No papers have been submitted. ' +
+      'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
   }
 
 };
@@ -435,7 +438,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
       extraClasses: 'console-table'
     });
 
-    $(container).find('.table-responsive').remove();
+    $(container).find('.table-container').remove();
     $(container).append(tableHTML);
   }
 
@@ -449,9 +452,6 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
   var rowData = [];
   var index = 1;
   var sortedReviewerIds = _.sortBy(_.keys(reviewerById));
-
-  console.log('reviewerByNote', reviewerByNote);
-
 
   _.forEach(sortedReviewerIds, function(reviewer) {
     var numbers = reviewerById[reviewer];
@@ -528,7 +528,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
       extraClasses: 'console-table'
     });
 
-    $(container).find('.table-responsive').remove();
+    $(container).find('.table-container').remove();
     $(container).append(tableHTML);
   }
 
@@ -545,8 +545,6 @@ var displayError = function(message) {
 
 // Helper functions
 var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
-  console.log('buildPaperTableRow');
-  console.log('reviewerIds', reviewerIds);
   // Build Note Summary Cell
   note.content.authors = null;  // Don't display 'Blinded Authors'
 
@@ -784,7 +782,6 @@ controller.addHandler('areachairs', {
       );
     })
     .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
-      console.log('reviewerGroups', reviewerGroups);
       var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj, noteNum) {
         return result.concat(_.values(idsObj));
       }, []));

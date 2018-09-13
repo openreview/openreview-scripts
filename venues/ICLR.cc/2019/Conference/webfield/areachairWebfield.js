@@ -219,6 +219,7 @@ var renderHeader = function() {
       heading: 'Assigned Papers',
       id: 'assigned-papers',
       content: loadingMessage,
+      extraClasses: 'horizontal-scroll',
       active: true
     },
     {
@@ -302,7 +303,6 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
           return !u.completedReview;
         });
       }
-console.log(users);
       var userIds = _.map(users, 'id');
 
       if (userIds.length) {
@@ -337,7 +337,9 @@ console.log(users);
       '<button id="message-reviewers-btn" class="btn btn-icon"><span class="glyphicon glyphicon-envelope"></span> &nbsp;Message Reviewers</button>' +
     '</div>' +
     '</form>';
-  $(container).empty().append(sortBarHtml);
+  if (rows.length) {
+    $(container).empty().append(sortBarHtml);
+  }
 
   // Need to add event handlers for these controls inside this function so they have access to row
   // data
@@ -367,10 +369,11 @@ console.log(users);
     return false;
   });
 
-  if(rows.length){
+  if (rows.length) {
     renderTableRows(rows, container);
   } else {
-    $(container).append('<p>No papers have been submitted. Check back later or contact info@openreview.net if you believe this to be an error.</p>');
+    $(container).append('<p class="empty-message">No papers have been submitted. ' +
+      'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
   }
 };
 
@@ -412,7 +415,7 @@ var renderTableRows = function(rows, container) {
     extraClasses: 'ac-console-table'
   });
 
-  $('.table-responsive', container).remove();
+  $('.table-container', container).remove();
   $(container).append(tableHtml);
 }
 
