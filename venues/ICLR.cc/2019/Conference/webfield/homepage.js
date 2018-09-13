@@ -270,7 +270,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
   // Your Consoles tab
   if (userGroups.length || submissionActivityNotes.length) {
 
-    var $container = $('#your-consoles');
+    var $container = $('#your-consoles').empty();
     $container.append('<ul class="list-unstyled submissions-list">');
 
     if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
@@ -281,6 +281,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       ].join(''));
     }
 
+    // Not open yet
     // if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
     //   $('#your-consoles .submissions-list').append([
     //     '<li class="note invitation-link">',
