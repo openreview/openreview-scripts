@@ -366,6 +366,10 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     $('#message-reviewers-modal form').on('submit', sendReviewerReminderEmails);
 
     $('#message-reviewers-modal').modal();
+
+    if ($('.ac-console-table input.select-note-reviewers:checked').length) {
+      $('#message-reviewers-modal select[name="group"]').val('selected');
+    }
     return false;
   });
 
