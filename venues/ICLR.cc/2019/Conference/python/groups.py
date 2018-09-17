@@ -1,15 +1,13 @@
 #!/usr/bin/python
 
 """
-A script for managing invitations with parameters that depend on the papers to which
+A script for managing groups with parameters that depend on the papers to which
 they are attached.
-
-You can create, enable, or disable most invitations in ICLR 2018 from this script.
 
 Usage:
 
-python toggle-invitations.py Public_Comment --enable
-python toggle-invitations.py Public_Comment --disable
+python groups.py Reviewers
+python groups.py Reviewers --overwrite
 """
 
 import openreview

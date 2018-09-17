@@ -4,12 +4,10 @@
 A script for managing invitations with parameters that depend on the papers to which
 they are attached.
 
-You can create, enable, or disable most invitations in ICLR 2018 from this script.
-
 Usage:
 
-python toggle-invitations.py Public_Comment --enable
-python toggle-invitations.py Public_Comment --disable
+python invitations.py Official_Comment --enable
+python invitations.py Official_Comment --disable
 """
 
 import openreview
