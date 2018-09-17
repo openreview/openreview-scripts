@@ -8,7 +8,7 @@ import openreview
 import argparse
 import iclr19
 
-def resubmit_papers(client, old_papers_inv, new_papers_inv):
+def resubmit(client, old_papers_inv, new_papers_inv):
     for paper in openreview.tools.iterget_notes(client, invitation=old_papers_inv):
         new_content = paper.content
         new_paper = openreview.Note(**{
@@ -38,4 +38,4 @@ if __name__ == '__main__':
     print("connecting to", client.baseurl)
 
     print('posting ICLR 18 submissions to ICLR 19')
-    resubmit_papers(client, 'ICLR.cc/2018/Conference/-/Submission', iclr19.SUBMISSION_ID)
+    resubmit(client, 'ICLR.cc/2018/Conference/-/Submission', iclr19.SUBMISSION_ID)
