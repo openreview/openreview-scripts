@@ -192,6 +192,29 @@ invitation_templates = {
     'Official_Review': official_review_template,
 }
 
+def toggle_invitation(template_key, paper, disable=False):
+    new_invitation = openreview.Invitation.from_json(
+        openreview.tools.fill_template(invitation_templates[template], paper))
+    if disable:
+        new_invitation.invitees = []
+    return new_invitation
+
+def enable_comments(client, paper):
+    public_comment = client.post_invitation(toggle_invitation('Public_Comment'))
+    official_comment = client.post_invitation(toggle_invitation('Official_Comment'))
+    return official_comment, public_comment
+
+def disable_comments(client, paper):
+    public_comment = client.post_invitation(toggle_invitation('Public_Comment', disable=True))
+    official_comment = client.post_invitation(toggle_invitation('Official_Comment', disable=True))
+    return official_comment, public_comment
+
+def enable_revisions(client, paper):
+    return client.post_invitation(toggle_invitation('Add_Revision'))
+
+def disable_revisions(client, paper):
+    return client.post_invitation(toggle_invitation('Add_Revision', disable=True))
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
@@ -209,10 +232,7 @@ if __name__ == '__main__':
     for paper in blind_submissions:
         for template in args.invitations:
             assert template in invitation_templates, 'invitation template not defined'
-            new_invitation = openreview.Invitation.from_json(
-                openreview.tools.fill_template(invitation_templates[template], paper))
-            if args.disable:
-                new_invitation.invitees = []
+            new_invitation = toggle_invitation(template, paper, args.disable)
             posted_invitation = client.post_invitation(new_invitation)
             print('posted new invitation {} to paper {}'.format(posted_invitation.id, paper.id))
 
