@@ -24,6 +24,18 @@ papergroup_template = {
     'members': [],
 }
 
+authors_template = {
+    'id': iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+    'readers':[
+        iclr19.CONFERENCE_ID,
+        iclr19.PROGRAM_CHAIRS_ID
+    ],
+    'writers': [iclr19.CONFERENCE_ID],
+    'signatures': [iclr19.CONFERENCE_ID],
+    'signatories': [iclr19.CONFERENCE_ID],
+    'members': [],
+}
+
 reviewers_template = {
     'id': iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
     'readers':[
@@ -35,6 +47,8 @@ reviewers_template = {
     'signatories': [iclr19.CONFERENCE_ID],
     'members': [],
 }
+
+
 
 area_chairs_template = {
     'id': iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
@@ -100,11 +114,20 @@ reviewers_submitted_template = {
 
 group_templates = {
     'Paper': papergroup_template,
+    'Authors': authors_template,
     'Reviewers': reviewers_template,
     'Area_Chairs': area_chairs_template,
     'Reviewers/Submitted': reviewers_submitted_template,
     'Reviewers/Unsubmitted': reviewers_unsubmitted_template,
 }
+
+def create_paper_group(paper):
+    return openreview.Group.from_json(
+        openreview.tools.fill_template(group_templates['Paper'], paper))
+
+def create_paper_author_group(note):
+    return openreview.Group.from_json(
+        openreview.tools.fill_template(group_templates['Authors'], paper))
 
 if __name__ == '__main__':
     ## Argument handling
