@@ -129,6 +129,11 @@ def create_paper_author_group(note):
     return openreview.Group.from_json(
         openreview.tools.fill_template(group_templates['Authors'], paper))
 
+def update_webfield(group, webfield_file):
+    with open(webfield_file) as f:
+        group.web = f.read()
+    return group
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()

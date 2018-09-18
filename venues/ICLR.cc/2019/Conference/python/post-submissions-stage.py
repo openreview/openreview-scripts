@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     for original_note in original_notes:
         blind_note = notes.create_blind_note(original_note)
-    
+
         #create paper and paper-author group
         paper_group = groups.create_paper_group(blind_note)
         author_group = groups.create_paper_author_group(blind_note)
@@ -34,5 +34,8 @@ if __name__ == '__main__':
 
         client.post_note(notes.freeze_note(original_note))
 
-
+    conference_group = client.get_group(iclr19.CONFERENCE_ID)
+    conference_group = groups.update_webfield(
+        conference_group, '../webfield/post-submission-stage-homepage.js')
+    conference_group = client.post_group(conference_group)
 
