@@ -12,7 +12,7 @@ python groups.py Reviewers --overwrite
 
 import openreview
 import argparse
-import iclr19 as ICLR
+import iclr19
 
 def getBibtex(client, note):
     firstWord = note.content["title"].split(' ')[0].lower();
@@ -29,10 +29,10 @@ def getBibtex(client, note):
 def create_blind_note(note):
     return openreview.Note(
         original= note.id,
-        invitation= ICLR.BLIND_SUBMISSION_ID,
+        invitation= iclr19.BLIND_SUBMISSION_ID,
         forum= None,
-        signatures= [ICLR.CONFERENCE_ID],
-        writers= [ICLR.CONFERENCE_ID],
+        signatures= [iclr19.CONFERENCE_ID],
+        writers= [iclr19.CONFERENCE_ID],
         readers= ['everyone'],
         content= {
             "authors": ['Anonymous'],
