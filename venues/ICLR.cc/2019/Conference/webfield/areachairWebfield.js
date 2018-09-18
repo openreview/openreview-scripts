@@ -273,9 +273,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
   }
 
   // Message modal handler
-  var sendReviewerReminderEmails = function(e) {
-    $('#message-reviewers-modal').modal('hide');
-
+  var sendReviewerReminderEmailsStep1 = function(e) {
     var subject = $('#message-reviewers-modal input[name="subject"]').val().trim();
     var message = $('#message-reviewers-modal textarea[name="message"]').val().trim();
     var group   = $('#message-reviewers-modal select[name="group"]').val();
@@ -283,6 +281,8 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
 
     var count = 0;
     var selectedRows = rows;
+    var reviewerMessages = [];
+    var reviewerCounts = Object.create(null);
     if (group === 'selected') {
       selectedIds = _.map(
         $('.ac-console-table input.select-note-reviewers:checked'),
@@ -292,6 +292,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
         return _.includes(selectedIds, row[2].forum);
       });
     }
+
     selectedRows.forEach(function(row) {
       var users = _.values(row[3].reviewers);
       if (filter === 'submitted') {
@@ -303,26 +304,68 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
           return !u.completedReview;
         });
       }
-      var userIds = _.map(users, 'id');
 
-      if (userIds.length) {
+      if (users.length) {
         var forumUrl = '/forum?' + $.param({
           id: row[2].forum,
           noteId: row[2].id,
           invitationId: CONFERENCE + '/-/Paper' + row[2].number + '/Official_Review'
         });
-        postReviewerEmails({
-          groups: userIds,
+        reviewerMessages.push({
+          groups: _.map(users, 'id'),
           forumUrl: forumUrl,
           subject: subject,
           message: message,
         });
-        count += userIds.length;
+
+        users.forEach(function(u) {
+          if (u.id in reviewerCounts) {
+            reviewerCounts[u.id].count++;
+          } else {
+            reviewerCounts[u.id] = {
+              name: u.name,
+              email: u.email,
+              count: 1
+            };
+          }
+        });
+
+        count += users.length;
       }
     });
+    localStorage.setItem('reviewerMessages', JSON.stringify(reviewerMessages));
+    localStorage.setItem('messageCount', count);
 
-    promptMessage('Your reminder email has been sent to ' + count + ' reviewers');
+    // Show step 2
+    var namesHtml = _.flatMap(reviewerCounts, function(obj) {
+      var text = obj.name + ' <span>&lt;' + obj.email + '&gt;</span>';
+      if (obj.count > 1) {
+        text += ' (&times;' + obj.count + ')';
+      }
+      return text;
+    }).join(', ');
+    $('#message-reviewers-modal .reviewer-list').html(namesHtml);
+    $('#message-reviewers-modal .num-reviewers').text(count);
+    $('#message-reviewers-modal .step-1').hide();
+    $('#message-reviewers-modal .step-2').show();
+
     return false;
+  };
+
+  var sendReviewerReminderEmailsStep2 = function(e) {
+    var reviewerMessages = localStorage.getItem('reviewerMessages');
+    var messageCount = localStorage.getItem('messageCount');
+    if (!reviewerMessages || !messageCount) {
+      $('#message-reviewers-modal').modal('hide');
+      promptError('Could not send reminder emails at this time. Please refresh the page and try again.');
+    }
+    JSON.parse(reviewerMessages).forEach(postReviewerEmails);
+
+    localStorage.removeItem('reviewerMessages');
+    localStorage.removeItem('messageCount');
+
+    $('#message-reviewers-modal').modal('hide');
+    promptMessage('Successfully sent ' + messageCount + ' reminder emails');
   };
 
   var sortOptionHtml = Object.keys(sortOptions).map(function(option) {
@@ -362,8 +405,9 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     });
     $('body').append(modalHtml);
 
-    $('#message-reviewers-modal .btn-primary').on('click', sendReviewerReminderEmails);
-    $('#message-reviewers-modal form').on('submit', sendReviewerReminderEmails);
+    $('#message-reviewers-modal .btn-primary.step-1').on('click', sendReviewerReminderEmailsStep1);
+    $('#message-reviewers-modal .btn-primary.step-2').on('click', sendReviewerReminderEmailsStep2);
+    $('#message-reviewers-modal form').on('submit', sendReviewerReminderEmailsStep1);
 
     $('#message-reviewers-modal').modal();
 
