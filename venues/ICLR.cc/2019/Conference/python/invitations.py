@@ -194,7 +194,7 @@ invitation_templates = {
 
 def toggle_invitation(template_key, paper, disable=False):
     new_invitation = openreview.Invitation.from_json(
-        openreview.tools.fill_template(invitation_templates[template], paper))
+        openreview.tools.fill_template(invitation_templates[template_key], paper))
     if disable:
         new_invitation.invitees = []
     return new_invitation
