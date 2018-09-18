@@ -291,7 +291,7 @@ recruit_reviewers = invitations.RecruitReviewers(
 )
 
 questionnaire_instructions_invitation = openreview.Invitation.from_json({
-    'id': CONFERENCE_ID + '/-/Questionnaire_Instructions',
+    'id': CONFERENCE_ID + '/-/Reviewer_Questionnaire',
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
@@ -305,7 +305,7 @@ questionnaire_instructions_invitation = openreview.Invitation.from_json({
         'content': {
             'title': {'value': 'Questionnaire for Reviewers'},
             'Instructions': {
-                'value': 'Help us get to know our reviewers better and the ways to make the reviewing process smoother by answering these questions. If you don\'t see the questionnaire form below, click on the blue "Questionnaire Response" button below these instructions.',
+                'value': 'Help us get to know our reviewers better and the ways to make the reviewing process smoother by answering these questions. If you don\'t see the questionnaire form below, click on the blue "Reviewer Questionnaire Response" button below these instructions.',
                 'order': 1
             }
         }
@@ -324,11 +324,11 @@ questionnaire_instructions_note = openreview.Note.from_json({
 })
 
 questionnaire_response_template = {
-    'id': CONFERENCE_ID + '/-/Questionaire_Response',
+    'id': CONFERENCE_ID + '/-/Reviewer_Questionnaire_Response',
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'invitees': [REVIEWERS_ID, AUTHORS_ID, AREA_CHAIRS_ID],
+    'invitees': [REVIEWERS_ID],
     'duedate': OFFICIAL_REVIEW_DEADLINE,
     'expdate': OFFICIAL_REVIEW_DEADLINE,
     'reply': {
@@ -339,16 +339,21 @@ questionnaire_response_template = {
         'signatures': {'values-regex': '~.*'},
         'content': {
             'title': {
-                'value': 'Questionnaire Response',
-                'order': 1
+                'value': 'Reviewer Questionnaire Response',
+                'order': 1,
+                'required': True
             },
             'Confirm Profile Updated': {
                 'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
-                'value-radio': ['Yes', 'No']
+                'value-radio': ['Yes', 'No'],
+                'order': 2,
+                'required': True
             },
             'Confirm TPMS Registration': {
                 'description': 'Have you registered and/or updated your TPMS account, and updated your OpenReview profile to include the email address you used for TPMS?',
-                'value-radio': ['Yes', 'No']
+                'value-radio': ['Yes', 'No'],
+                'order': 3,
+                'required': True
             },
             'Current Positions': {
                 'description': 'Which categories describe you best? Select all that apply.',
@@ -365,7 +370,8 @@ questionnaire_response_template = {
                     'Student: Other',
                     'Other' # At some point we'll want to let them add text here
                 ],
-                'order': 3
+                'order': 4,
+                'required': True
             },
             'Reviewing Experience': {
                 'description': 'How many times have you been a reviewer for any conference or journal?',
@@ -375,12 +381,16 @@ questionnaire_response_template = {
                     '2-4 times  - comfortable with the reviewing process',
                     '5-10 times  - active community citizen',
                     '10+ times  - seasoned reviewer'
-                ]
+                ],
+                'order': 5,
+                'required': True
 
             },
             'Previous ICLR Author': {
                 'description': 'Have you published at ICLR in the last two years?',
-                'value-radio': ['Yes','No']
+                'value-radio': ['Yes','No'],
+                'order': 6,
+                'required': True
             },
             'Your Recent Publication Venues': {
                 'description': 'Where have you recently published? Select all that apply.',
@@ -401,7 +411,9 @@ questionnaire_response_template = {
                     'Algorithmic Learning Theory (ALT)',
                     'Knowledge Discovery and Data Mining (KDD)',
                     'Other'
-                ]
+                ],
+                'order': 7,
+                'required': True
             },
             'Reviewing Preferences': {
                 'description': 'What is the most important factor of the reviewing process for you? (Choose one)',
@@ -411,7 +423,9 @@ questionnaire_response_template = {
                     'Having a long-enough reviewing period (6-8 weeks)',
                     'Having enough time for active discussion about papers.',
                     'Receiving clear instructions about the expectations of reviews.'
-                ]
+                ],
+                'order': 8,
+                'required': True
             }
         }
     }
