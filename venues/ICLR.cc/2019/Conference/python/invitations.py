@@ -14,6 +14,7 @@ import openreview
 import argparse
 import iclr19
 import os
+import time
 
 official_review_template = {
     'id': iclr19.OFFICIAL_REVIEW_TEMPLATE_STR,
@@ -186,34 +187,76 @@ official_comment_template = {
     }
 }
 
+public_comment_template = {
+    'id': iclr19.PUBLIC_COMMENT_TEMPLATE_STR,
+    'readers': ['everyone'],
+    'writers': [iclr19.CONFERENCE_ID],
+    'invitees': ['~'],
+    'noninvitees': [
+        iclr19.PROGRAM_CHAIRS_ID,
+        iclr19.AREA_CHAIRS_ID,
+        iclr19.REVIEWERS_ID,
+        iclr19.AUTHORS_ID
+    ],
+    'signatures': [iclr19.CONFERENCE_ID],
+    'process': os.path.abspath('../process/commentProcess.js'),
+    'multiReply': True,
+    'reply': {
+        'forum': '<forum>',
+        'replyto': None,
+        'readers': {
+            'description': 'Select all user groups that should be able to read this comment.',
+            'values-dropdown': [
+                'everyone',
+                iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+                iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
+                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                iclr19.PROGRAM_CHAIRS_ID
+            ]
+        },
+        'nonreaders': {
+            'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
+        },
+        'signatures': {
+            'values-regex': '~.*',
+        },
+        'writers': {
+            'description': 'Users that may modify this record.',
+            'values-copied':  [
+                iclr19.CONFERENCE_ID,
+                '{signatures}'
+            ]
+        },
+        'content': openreview.invitations.content.comment
+    }
+}
+
 invitation_templates = {
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
     'Official_Review': official_review_template,
+    'Public_Comment': public_comment_template
 }
 
-def toggle_invitation(template_key, paper, disable=False):
+current_timestamp = lambda: int(round(time.time() * 1000))
+
+def enable_invitation(template_key, paper):
     new_invitation = openreview.Invitation.from_json(
         openreview.tools.fill_template(invitation_templates[template_key], paper))
-    if disable:
-        new_invitation.invitees = []
     return new_invitation
 
-def enable_comments(client, paper):
-    public_comment = client.post_invitation(toggle_invitation('Public_Comment'))
-    official_comment = client.post_invitation(toggle_invitation('Official_Comment'))
-    return official_comment, public_comment
+def disable_invitation(template_key, paper):
+    new_invitation = openreview.Invitation.from_json(
+        openreview.tools.fill_template(invitation_templates[template_key], paper))
+    new_invitation.expdate = current_timestamp()
+    return new_invitation
 
-def disable_comments(client, paper):
-    public_comment = client.post_invitation(toggle_invitation('Public_Comment', disable=True))
-    official_comment = client.post_invitation(toggle_invitation('Official_Comment', disable=True))
-    return official_comment, public_comment
-
-def enable_revisions(client, paper):
-    return client.post_invitation(toggle_invitation('Add_Revision'))
-
-def disable_revisions(client, paper):
-    return client.post_invitation(toggle_invitation('Add_Revision', disable=True))
+def enable_and_post(client, blind_notes, template_key):
+    new_invitations = []
+    for paper in blind_notes:
+        new_inv = enable_invitation(template_key, paper)
+        new_invitations.append(client.post_invitation(new_inv))
+    return new_invitations
 
 if __name__ == '__main__':
     ## Argument handling
@@ -232,7 +275,12 @@ if __name__ == '__main__':
     for paper in blind_submissions:
         for template in args.invitations:
             assert template in invitation_templates, 'invitation template not defined'
-            new_invitation = toggle_invitation(template, paper, args.disable)
+
+            if args.disable:
+                new_invitation = disable_invitation(template, paper)
+            else:
+                new_invitation = enable_invitation(template, paper)
+
             posted_invitation = client.post_invitation(new_invitation)
             print('posted new invitation {} to paper {}'.format(posted_invitation.id, paper.id))
 
