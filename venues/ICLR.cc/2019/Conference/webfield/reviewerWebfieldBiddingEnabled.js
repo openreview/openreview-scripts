@@ -20,7 +20,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>\
   <h4>Bidding Phase</h4>\
     <p>\
-      <em><strong>Please note that the bidding has begun. You are requested to do the following by Friday, October 5</strong></em>:\
+      <em><strong>Please note that the bidding has begun. You are requested to do the following by Friday, October 5.</strong></em>:\
       <ul>\
         <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
         <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\

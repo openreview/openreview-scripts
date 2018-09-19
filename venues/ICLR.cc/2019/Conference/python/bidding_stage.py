@@ -29,6 +29,11 @@ if __name__ == '__main__':
         reviewers.web = f.read()
         client.post_group(reviewers)
 
+    with open('../webfield/areaChairWebfieldBiddingEnabled.js','r') as f:
+        area_chairs = client.get_group(iclr19.AREA_CHAIRS_ID)
+        area_chairs.web = f.read()
+        client.post_group(area_chairs)
+
     iclr19.add_bid.invitees = [iclr19.REVIEWERS_ID, iclr19.AREA_CHAIRS_ID]
     client.post_invitation(iclr19.add_bid)
 
