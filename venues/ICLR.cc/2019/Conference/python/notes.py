@@ -44,22 +44,19 @@ def freeze_note(note, writers=[iclr19.CONFERENCE_ID]):
     note.writers = writers
     return note
 
-def freeze_and_post(client, notes):
-    for note in notes:
-        client.post_note(freeze_note(note))
+def freeze_and_post(client, note):
+    client.post_note(freeze_note(note))
 
-def post_blind_notes(client, original_notes):
-    blind_notes = []
-    for original_note in original_notes:
-        blind_note = client.post_note(create_blind_note(original_note))
-        paper_group_id = iclr19.CONFERENCE_ID + "/Paper{}".format(blind_note.number)
-        author_group_id = iclr19.CONFERENCE_ID + "/Paper{}/Authors".format(blind_note.number)
+def post_blind_note(client, original_note):
+    blind_note = client.post_note(create_blind_note(original_note))
+    paper_group_id = iclr19.CONFERENCE_ID + "/Paper{}".format(blind_note.number)
+    author_group_id = iclr19.CONFERENCE_ID + "/Paper{}/Authors".format(blind_note.number)
 
-        # Update Blind note's contents, repost the updated blind note, and freeze and post the original note
-        blind_note.content["authorids"] = [author_group_id]
-        blind_note.content["_bibtex"] = getBibtex(client, blind_note)
-        blind_notes.append(client.post_note(blind_note))
-    return blind_notes
+    # Update Blind note's contents, repost the updated blind note, and freeze and post the original note
+    blind_note.content["authorids"] = [author_group_id]
+    blind_note.content["_bibtex"] = getBibtex(client, blind_note)
+
+    return client.post_note(blind_note)
 
 if __name__ == '__main__':
     # Argument handling

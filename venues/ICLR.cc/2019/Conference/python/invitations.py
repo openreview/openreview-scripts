@@ -257,12 +257,9 @@ def disable_invitation(template_key, paper):
     new_invitation.expdate = current_timestamp()
     return new_invitation
 
-def enable_and_post(client, blind_notes, template_key):
-    new_invitations = []
-    for paper in blind_notes:
-        new_inv = enable_invitation(template_key, paper)
-        new_invitations.append(client.post_invitation(new_inv))
-    return new_invitations
+def enable_and_post(client, paper, template_key):
+    new_inv = enable_invitation(template_key, paper)
+    return client.post_invitation(new_inv)
 
 if __name__ == '__main__':
     ## Argument handling
