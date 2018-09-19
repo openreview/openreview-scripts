@@ -126,6 +126,17 @@ group_templates = {
     'Paper/Reviewers/Unsubmitted': reviewers_unsubmitted_template,
 }
 
+def post_paper_groups(client, blind_notes):
+    for paper in blind_notes:
+        client.post_group(openreview.Group.from_json(
+            openreview.tools.fill_template(group_templates['Paper'], paper)))
+
+def post_paper_author_groups(client, blind_notes):
+    for paper in blind_notes:
+        client.post_group(openreview.Group.from_json(
+            openreview.tools.fill_template(group_templates['Paper/Authors'], paper)))
+
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
