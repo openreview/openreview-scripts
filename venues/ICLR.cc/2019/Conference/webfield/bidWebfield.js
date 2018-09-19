@@ -17,6 +17,7 @@ var INSTRUCTIONS =  '\
     <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>You may search for papers by keyword or subject area filter.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
+    <li>Default bid on each paper is \"No bid\"</li>\
 </p><br>'
 
 // Main is the entry point to the webfield code and runs everything
