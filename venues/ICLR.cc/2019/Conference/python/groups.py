@@ -31,12 +31,15 @@ papergroup_template = {
 authors_template = {
     'id': iclr19.PAPER_AUTHORS_TEMPLATE_STR,
     'readers':[
-        iclr19.CONFERENCE_ID,
-        iclr19.PROGRAM_CHAIRS_ID
+        iclr19.PROGRAM_CHAIRS_ID,
+        iclr19.PAPER_AUTHORS_TEMPLATE_STR
     ],
     'writers': [iclr19.CONFERENCE_ID],
     'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'signatories': [
+        iclr19.CONFERENCE_ID,
+        iclr19.PAPER_AUTHORS_TEMPLATE_STR
+    ],
     'members': [],
 }
 
@@ -51,8 +54,6 @@ reviewers_template = {
     'signatories': [iclr19.CONFERENCE_ID],
     'members': [],
 }
-
-
 
 area_chairs_template = {
     'id': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
