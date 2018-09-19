@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 '''
 Post-submission Stage (Sept. 27 - Oct 1)
 
@@ -45,4 +46,3 @@ if __name__ == '__main__':
 
     invitations.enable_and_post(client, blind_notes, 'Public_Comment')
     invitations.enable_and_post(client, blind_notes, 'Official_Comment')
-

@@ -231,6 +231,7 @@ public_comment_template = {
     }
 }
 
+
 invitation_templates = {
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
@@ -275,12 +276,10 @@ if __name__ == '__main__':
     for paper in blind_submissions:
         for template in args.invitations:
             assert template in invitation_templates, 'invitation template not defined'
-
             if args.disable:
                 new_invitation = disable_invitation(template, paper)
             else:
                 new_invitation = enable_invitation(template, paper)
-
             posted_invitation = client.post_invitation(new_invitation)
             print('posted new invitation {} to paper {}'.format(posted_invitation.id, paper.id))
 
