@@ -44,7 +44,7 @@ def freeze_note(note, writers=[iclr19.CONFERENCE_ID]):
     note.writers = writers
     return note
 
-def freeze_notes(client, notes):
+def freeze_and_post(client, notes):
     for note in notes:
         client.post_note(freeze_note(note))
 
