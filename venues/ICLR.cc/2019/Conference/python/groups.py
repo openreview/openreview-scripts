@@ -117,6 +117,7 @@ reviewers_submitted_template = {
 }
 
 group_templates = {
+    'Conference': iclr19.conference.to_json(),
     'Area_Chairs': iclr19.area_chairs.to_json(),
     'Paper': papergroup_template,
     'Paper/Authors': authors_template,
@@ -185,7 +186,7 @@ if __name__ == '__main__':
                 group.members = []
 
             if args.webfield:
-                group.add_webfield(webfield_file)
+                group.add_webfield(args.webfield)
 
             posted_group = client.post_group(group)
             print('posted new group {}'.format(posted_group.id))
