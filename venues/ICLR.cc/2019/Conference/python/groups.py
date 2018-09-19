@@ -13,6 +13,10 @@ python groups.py Reviewers --overwrite
 import openreview
 import argparse
 import iclr19
+import os
+
+import re
+import json
 
 # Per-paper group template definitions
 papergroup_template = {
@@ -51,7 +55,7 @@ reviewers_template = {
 
 
 area_chairs_template = {
-    'id': iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
+    'id': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
     'readers':[
         iclr19.CONFERENCE_ID,
         iclr19.PROGRAM_CHAIRS_ID
@@ -113,58 +117,64 @@ reviewers_submitted_template = {
 }
 
 group_templates = {
+    'Area_Chairs': iclr19.area_chairs.to_json(),
     'Paper': papergroup_template,
-    'Authors': authors_template,
-    'Reviewers': reviewers_template,
-    'Area_Chairs': area_chairs_template,
-    'Reviewers/Submitted': reviewers_submitted_template,
-    'Reviewers/Unsubmitted': reviewers_unsubmitted_template,
+    'Paper/Authors': authors_template,
+    'Paper/Reviewers': reviewers_template,
+    'Paper/Area_Chairs': area_chairs_template,
+    'Paper/Reviewers/Submitted': reviewers_submitted_template,
+    'Paper/Reviewers/Unsubmitted': reviewers_unsubmitted_template,
 }
-
-def create_paper_group(paper):
-    return openreview.Group.from_json(
-        openreview.tools.fill_template(group_templates['Paper'], paper))
-
-def create_paper_author_group(note):
-    return openreview.Group.from_json(
-        openreview.tools.fill_template(group_templates['Authors'], paper))
-
-def update_webfield(group, webfield_file):
-    with open(webfield_file) as f:
-        group.web = f.read()
-    return group
 
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
     parser.add_argument('groups', nargs='*', help="any of the following: " + ", ".join(group_templates.keys()))
-    parser.add_argument('--overwrite', action='store_true', help="if present, overwrites the members of the groups")
+    parser.add_argument('--clear_members', action='store_true', help='if present, removes all members')
+    parser.add_argument('--webfield', help='webfield file path')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+    print('connecting to {}'.format(client.baseurl))
+    blind_submissions = list(openreview.tools.iterget_notes(client, invitation=iclr19.BLIND_SUBMISSION_ID))
 
-    blind_submissions = openreview.tools.iterget_notes(client, invitation=iclr19.BLIND_SUBMISSION_ID)
+    for template_key in args.groups:
+        assert template_key in group_templates, 'group template not defined'
+        group_template = group_templates[template_key]
 
-    for paper in blind_submissions:
-        for template in args.groups:
-            assert template in group_templates, 'group template not defined'
+        groups_to_process = []
+        # this conditional checks to see if the group is a single group
+        # (i.e. it has no wildcards) (ignores the webfield)
+        wildcard_matches = re.findall('<.*>', json.dumps(
+            {k: v for k, v in group_template.items() if k != 'web'}))
 
-            # note that the function below is being used for an nonstandard purpose. it should be refactored.
-            new_group = openreview.Group.from_json(
-                openreview.tools.fill_template(group_templates[template], paper))
-            if not args.overwrite:
-                try:
-                    existing_group = client.get_group(new_group.id)
-                    new_group.members = existing_group.members
-                except openreview.OpenReviewException as e:
-                    # TODO: replace this with the correct conditional
-                    if 'Group Not Found' in e.args[0][0]:
-                        pass
-                    else:
-                        raise e
+        if not wildcard_matches:
+            groups_to_process = [openreview.Group.from_json(group_template)]
+        else:
+            assert blind_submissions, 'no blind submissions found'
+            for paper in blind_submissions:
+                new_group = openreview.Group.from_json(
+                    openreview.tools.fill_template(group_template, paper))
+                groups_to_process.append(new_group)
 
-            posted_group = client.post_group(new_group)
-            print('posted new group {} for paper {}'.format(posted_group.id, paper.id))
+        for group in groups_to_process:
+            try:
+                existing_group = client.get_group(group.id)
+                group.members = existing_group.members
+            except openreview.OpenReviewException as e:
+                if 'Group Not Found' in e.args[0][0]:
+                    print(e)
+                else:
+                    raise e
+
+            if args.clear_members:
+                group.members = []
+
+            if args.webfield:
+                group.add_webfield(webfield_file)
+
+            posted_group = client.post_group(group)
+            print('posted new group {}'.format(posted_group.id))
