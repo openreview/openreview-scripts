@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 '''
 Post-submission Stage (Sept. 27 - Oct 1)
 
