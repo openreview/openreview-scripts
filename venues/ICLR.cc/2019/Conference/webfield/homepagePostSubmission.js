@@ -138,10 +138,10 @@ function renderConferenceTabs() {
       heading: 'Your Consoles',
       id: 'your-consoles',
     },
-    // {
-    //   heading: 'All Submissions',
-    //   id: 'all-submissions',
-    // },
+    {
+      heading: 'All Submissions',
+      id: 'all-submissions',
+    },
     {
       heading: 'Recent Activity',
       id: 'recent-activity',
@@ -155,12 +155,6 @@ function renderConferenceTabs() {
 }
 
 function renderContent(notes, userGroups, tagInvitations, activityNotes) {
-  // if (_.isEmpty(userGroups)) {
-  //   // If the user isn't part of the conference don't render tabs
-  //   $('.tabs-container').hide();
-  //   return;
-  // }
-
   // Filter out all tags that belong to other users (important for bid tags)
   notes = _.map(notes, function(n) {
     n.tags = _.filter(n.tags, function(t) {
@@ -188,15 +182,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
         '</li>'
       ].join(''));
     }
-
-    // Not open yet
-    // if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
-    //   $('#your-consoles .submissions-list').append([
-    //     '<li class="note invitation-link">',
-    //       '<a href="/invitation?id=' + ADD_BID_ID + '">Bidding Console</a>',
-    //     '</li>'
-    //   ].join(''));
-    // }
 
     if (_.includes(userGroups, AREA_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
