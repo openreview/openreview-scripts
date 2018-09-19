@@ -1,7 +1,8 @@
 // ------------------------------------
 // Advanced venue homepage template
 //
-// This webfield displays the conference header (#header), the submit button (#invitation),
+// This webfield displays the conference header (#header),
+// important instructions for this phase of the conference,
 // and a tabbed interface for viewing various types of notes.
 // ------------------------------------
 
@@ -22,106 +23,14 @@ var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers';
 var PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs';
 var AUTHORS_ID = CONFERENCE_ID + '/Authors';
 
-var SUBJECT_AREAS = [
-  'Algorithms: Approximate Inference',
-  'Algorithms: Belief Propagation',
-  'Algorithms: Distributed and Parallel',
-  'Algorithms: Exact Inference',
-  'Algorithms: Graph Theory',
-  'Algorithms: Heuristics',
-  'Algorithms: Lifted Inference',
-  'Algorithms: MCMC methods',
-  'Algorithms: Optimization',
-  'Algorithms: Other',
-  'Algorithms: Software and Tools',
-  'Applications: Biology',
-  'Applications: Databases',
-  'Applications: Decision Support',
-  'Applications: Diagnosis and Reliability',
-  'Applications: Economics',
-  'Applications: Education',
-  'Applications: General',
-  'Applications: Medicine',
-  'Applications: Planning and Control',
-  'Applications: Privacy and Security',
-  'Applications: Robotics',
-  'Applications: Sensor Data',
-  'Applications: Social Network Analysis',
-  'Applications: Speech',
-  'Applications: Sustainability and Climate',
-  'Applications: Text and Web Data',
-  'Applications: User Models',
-  'Applications: Vision',
-  'Data: Big Data',
-  'Data: Multivariate',
-  'Data: Other',
-  'Data: Relational',
-  'Data: Spatial',
-  'Data: Temporal or Sequential',
-  'Learning: Active Learning',
-  'Learning: Classification',
-  'Learning: Clustering',
-  'Learning: Deep Learning',
-  'Learning: General',
-  'Learning: Nonparametric Bayes',
-  'Learning: Online and Anytime Learning',
-  'Learning: Other',
-  'Learning: Parameter Estimation',
-  'Learning: Probabilistic Generative Models',
-  'Learning: Ranking',
-  'Learning: Recommender Systems',
-  'Learning: Regression',
-  'Learning: Reinforcement Learning',
-  'Learning: Relational Learning',
-  'Learning: Relational Models',
-  'Learning: Scalability',
-  'Learning: Semi-Supervised Learning',
-  'Learning: Structure Learning',
-  'Learning: Structured Prediction',
-  'Learning: Theory',
-  'Learning: Unsupervised',
-  'Methodology: Bayesian Methods',
-  'Methodology: Calibration',
-  'Methodology: Elicitation',
-  'Methodology: Evaluation',
-  'Methodology: Human Expertise and Judgement',
-  'Methodology: Other',
-  'Methodology: Probabilistic Programming',
-  'Models: Bayesian Networks',
-  'Models: Directed Graphical Models',
-  'Models: Dynamic Bayesian Networks',
-  'Models: Markov Decision Processes',
-  'Models: Mixed Graphical Models',
-  'Models: Other',
-  'Models: Relational Models',
-  'Models: Topic Models',
-  'Models: Undirected Graphical Models',
-  'None of the above',
-  'Principles: Causality',
-  'Principles: Cognitive Models',
-  'Principles: Decision Theory',
-  'Principles: Game Theory',
-  'Principles: Information Theory',
-  'Principles: Other',
-  'Principles: Probability Theory',
-  'Principles: Statistical Theory',
-  'Representation: Constraints',
-  'Representation: Dempster-Shafer',
-  'Representation: Fuzzy Logic',
-  'Representation: Influence Diagrams',
-  'Representation: Non-Probabilistic Frameworks',
-  'Representation: Probabilistic'
-];
-
 var HEADER = {
   title: 'ICLR 2019',
   subtitle: 'International Conference on Learning Representations',
   location: 'New Orleans, Louisiana, United States',
   date: 'May 6 - May 9, 2019',
   website: 'https://iclr.cc/Conferences/2019',
-  instructions: '<p><strong>Important note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails</strong></p>\
-    <p><strong>Important Information</strong><br>\
-    Note that ICLR 2019 Conference submissions are now open.</p> \
+  instructions: '<p><strong>Important Information</strong><br>\
+    Please note that the ICLR 2019 Conference submissions are now closed.</p> \
     <p><strong>Questions or Concerns</strong><br> \
     Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
@@ -229,10 +138,10 @@ function renderConferenceTabs() {
       heading: 'Your Consoles',
       id: 'your-consoles',
     },
-    // {
-    //   heading: 'All Submissions',
-    //   id: 'all-submissions',
-    // },
+    {
+      heading: 'All Submissions',
+      id: 'all-submissions',
+    },
     {
       heading: 'Recent Activity',
       id: 'recent-activity',
@@ -246,12 +155,6 @@ function renderConferenceTabs() {
 }
 
 function renderContent(notes, userGroups, tagInvitations, activityNotes) {
-  // if (_.isEmpty(userGroups)) {
-  //   // If the user isn't part of the conference don't render tabs
-  //   $('.tabs-container').hide();
-  //   return;
-  // }
-
   // Filter out all tags that belong to other users (important for bid tags)
   notes = _.map(notes, function(n) {
     n.tags = _.filter(n.tags, function(t) {
@@ -279,15 +182,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
         '</li>'
       ].join(''));
     }
-
-    // Not open yet
-    // if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
-    //   $('#your-consoles .submissions-list').append([
-    //     '<li class="note invitation-link">',
-    //       '<a href="/invitation?id=' + ADD_BID_ID + '">Bidding Console</a>',
-    //     '</li>'
-    //   ].join(''));
-    // }
 
     if (_.includes(userGroups, AREA_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
@@ -332,7 +226,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     container: '#all-submissions',
     search: {
       enabled: true,
-      subjectAreas: SUBJECT_AREAS,
       localSearch: false,
       onResults: function(searchResults) {
         var blindedSearchResults = searchResults.filter(function(note) {

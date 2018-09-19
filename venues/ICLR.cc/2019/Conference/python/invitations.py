@@ -14,6 +14,7 @@ import openreview
 import argparse
 import iclr19
 import os
+import time
 
 official_review_template = {
     'id': iclr19.OFFICIAL_REVIEW_TEMPLATE_STR,
@@ -23,7 +24,6 @@ official_review_template = {
     'noninvitees': [iclr19.PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR],
     'signatures': [iclr19.CONFERENCE_ID],
     'duedate': iclr19.OFFICIAL_REVIEW_DEADLINE,
-    'process': os.path.abspath('../process/officialReviewProcess.js'),
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -49,6 +49,8 @@ official_review_template = {
         'content': openreview.invitations.content.review
     }
 }
+with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
+    official_review_template['process'] = f.read()
 
 review_rating_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
@@ -93,7 +95,6 @@ meta_review_template = {
     'noninvitees': [],
     'signatures': [iclr19.CONFERENCE_ID],
     'duedate': iclr19.META_REVIEW_DEADLINE,
-    'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -117,6 +118,8 @@ meta_review_template = {
         'content': openreview.invitations.content.review
     }
 }
+with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js')) as f:
+    meta_review_template['process'] = f.read()
 
 add_revision_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Add_Revision',
@@ -148,7 +151,6 @@ official_comment_template = {
     ],
     'noninvitees': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
     'signatures': [iclr19.CONFERENCE_ID],
-    'process': os.path.abspath('../process/commentProcess.js'),
     'multiReply': True,
     'reply': {
         'forum': '<forum>',
@@ -185,35 +187,79 @@ official_comment_template = {
         'content': openreview.invitations.content.comment
     }
 }
+with open(os.path.abspath('../process/commentProcess.js')) as f:
+    official_comment_template['process'] = f.read()
+
+public_comment_template = {
+    'id': iclr19.PUBLIC_COMMENT_TEMPLATE_STR,
+    'readers': ['everyone'],
+    'writers': [iclr19.CONFERENCE_ID],
+    'invitees': ['~'],
+    'noninvitees': [
+        iclr19.PROGRAM_CHAIRS_ID,
+        iclr19.AREA_CHAIRS_ID,
+        iclr19.REVIEWERS_ID,
+        iclr19.AUTHORS_ID
+    ],
+    'signatures': [iclr19.CONFERENCE_ID],
+    'multiReply': True,
+    'reply': {
+        'forum': '<forum>',
+        'replyto': None,
+        'readers': {
+            'description': 'Select all user groups that should be able to read this comment.',
+            'values-dropdown': [
+                'everyone',
+                iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+                iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
+                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                iclr19.PROGRAM_CHAIRS_ID
+            ]
+        },
+        'nonreaders': {
+            'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
+        },
+        'signatures': {
+            'values-regex': '~.*',
+        },
+        'writers': {
+            'description': 'Users that may modify this record.',
+            'values-copied':  [
+                iclr19.CONFERENCE_ID,
+                '{signatures}'
+            ]
+        },
+        'content': openreview.invitations.content.comment
+    }
+}
+with open(os.path.abspath('../process/commentProcess.js')) as f:
+    public_comment_template['process'] = f.read()
+
 
 invitation_templates = {
+    'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
     'Official_Review': official_review_template,
+    'Public_Comment': public_comment_template
 }
 
-def toggle_invitation(template_key, paper, disable=False):
+current_timestamp = lambda: int(round(time.time() * 1000))
+
+def enable_invitation(template_key, paper):
     new_invitation = openreview.Invitation.from_json(
         openreview.tools.fill_template(invitation_templates[template_key], paper))
-    if disable:
-        new_invitation.invitees = []
     return new_invitation
 
-def enable_comments(client, paper):
-    public_comment = client.post_invitation(toggle_invitation('Public_Comment'))
-    official_comment = client.post_invitation(toggle_invitation('Official_Comment'))
-    return official_comment, public_comment
+def disable_invitation(template_key, paper):
+    new_invitation = openreview.Invitation.from_json(
+        openreview.tools.fill_template(invitation_templates[template_key], paper))
+    new_invitation.expdate = current_timestamp()
+    return new_invitation
 
-def disable_comments(client, paper):
-    public_comment = client.post_invitation(toggle_invitation('Public_Comment', disable=True))
-    official_comment = client.post_invitation(toggle_invitation('Official_Comment', disable=True))
-    return official_comment, public_comment
-
-def enable_revisions(client, paper):
-    return client.post_invitation(toggle_invitation('Add_Revision'))
-
-def disable_revisions(client, paper):
-    return client.post_invitation(toggle_invitation('Add_Revision', disable=True))
+def enable_and_post(client, paper, template_key):
+    new_inv = enable_invitation(template_key, paper)
+    return client.post_invitation(new_inv)
 
 if __name__ == '__main__':
     ## Argument handling
@@ -232,7 +278,10 @@ if __name__ == '__main__':
     for paper in blind_submissions:
         for template in args.invitations:
             assert template in invitation_templates, 'invitation template not defined'
-            new_invitation = toggle_invitation(template, paper, args.disable)
+            if args.disable:
+                new_invitation = disable_invitation(template, paper)
+            else:
+                new_invitation = enable_invitation(template, paper)
             posted_invitation = client.post_invitation(new_invitation)
             print('posted new invitation {} to paper {}'.format(posted_invitation.id, paper.id))
 

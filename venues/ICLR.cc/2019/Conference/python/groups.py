@@ -117,6 +117,7 @@ reviewers_submitted_template = {
 }
 
 group_templates = {
+    'Conference': iclr19.conference.to_json(),
     'Area_Chairs': iclr19.area_chairs.to_json(),
     'Paper': papergroup_template,
     'Paper/Authors': authors_template,
@@ -125,6 +126,16 @@ group_templates = {
     'Paper/Reviewers/Submitted': reviewers_submitted_template,
     'Paper/Reviewers/Unsubmitted': reviewers_unsubmitted_template,
 }
+
+def create_and_post(client, paper, template_key):
+    client.post_group(openreview.Group.from_json(
+        openreview.tools.fill_template(group_templates[template_key], paper)))
+
+def update_homepage(client, webfield_file):
+    conference_group = client.get_group(iclr19.CONFERENCE_ID)
+    conference_group.add_webfield(webfield_file)
+    posted_group = client.post_group(conference_group)
+    return posted_group
 
 if __name__ == '__main__':
     ## Argument handling
@@ -174,7 +185,7 @@ if __name__ == '__main__':
                 group.members = []
 
             if args.webfield:
-                group.add_webfield(webfield_file)
+                group.add_webfield(args.webfield)
 
             posted_group = client.post_group(group)
             print('posted new group {}'.format(posted_group.id))
