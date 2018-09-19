@@ -443,6 +443,21 @@ add_bid = invitations.AddBid(
         ],
         'invitees': [],
         'web': os.path.abspath('../webfield/bidWebfield.js')
+    },
+    content_params = {
+        'tag': {
+            'description': 'Bid description',
+            'order': 1,
+            'value-radio': [
+                'Very High',
+                'High',
+                'Neutral',
+                'Low',
+                'Very Low',
+                'No bid'
+            ],
+            'required':True
+        }
     }
 )
 
