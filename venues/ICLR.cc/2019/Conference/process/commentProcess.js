@@ -3,8 +3,12 @@ function(){
 
     var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
     var SHORT_PHRASE = "ICLR 2019";
+    var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + note.number + '/Authors'
+    var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note.number + '/Reviewers'
+    var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note.number + '/Area_Chairs'
+    var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
 
-    var origNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
+    var forumNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token) : null;
 
     var checkReadersMatch = function(regex) {
@@ -18,24 +22,24 @@ function(){
 
 
     Promise.all([
-      origNoteP,
+      forumNoteP,
       replytoNoteP
     ]).then(function(result) {
 
-      var origNote = result[0].notes[0];
+      var forumNote = result[0].notes[0];
       var replytoNote = note.replyto ? result[1].notes[0] : null;
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : [];
       var author_mail;
 
       var ac_mail = {
-        'groups': [CONFERENCE_ID + '/Paper' + origNote.number + '/Area_Chair'],
-        'subject': 'Comment posted to a paper in your area. Title: ' + origNote.content.title,
+        'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chair'],
+        'subject': 'Comment posted to a paper in your area. Title: ' + forumNote.content.title,
         'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var reviewer_mail = {
-        'groups': [CONFERENCE_ID + '/Paper' + origNote.number + '/Reviewers'],
-        'subject': 'Comment posted to a paper you are reviewing. Title: ' + origNote.content.title,
+        'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Reviewers'],
+        'subject': 'Comment posted to a paper you are reviewing. Title: ' + forumNote.content.title,
         'message': 'A comment was posted to a paper for which you are serving as reviewer.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
@@ -46,25 +50,33 @@ function(){
       };
 
       author_mail = {
-        "groups": origNote.content.authorids,
+        "groups": forumNote.content.authorids,
         "subject": "Your submission to " + SHORT_PHRASE + " has received a comment",;
         "message": "Your submission to " + SHORT_PHRASE + " has received a comment.\n\nComment title: " + note.content.title + "\n\nComment: " + note.content.comment + "\n\nTo view the comment, click here: " + baseUrl + "/forum?id=" + note.forum + '&noteId=' + note.id;
       };
 
       var promises = [];
 
-      if(checkReadersMatch(/ICLR.cc\/2018\/Conference\/Paper[0-9]+\/Authors_and_Higher/) ||
-        checkReadersMatch(/everyone/)) {
-        promises.push(or3client.or3request(or3client.mailUrl, author_mail, 'POST', token));
-        promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token));
-        promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token));
-      } else if(checkReadersMatch(/ICLR.cc\/2018\/Conference\/Paper[0-9]+\/Reviewers_and_Higher/)){
-        promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token));
-        promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token));
-      } else if(checkReadersMatch(/ICLR.cc\/2018\/Conference\/Paper[0-9]+\/Area_Chairs_and_Higher/)){
-        promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token));
-      } else if(note.readers.indexOf('ICLR.cc/2018/Conference/Program_Chairs') > -1){
-        promises.push(or3client.or3request(or3client.mailUrl, pc_mail, 'POST', token));
+      if(note.readers.includes(PAPER_AUTHORS) || note.readers.includes('everyone')){
+        promises.push(promises.push(or3client.or3request(or3client.mailUrl, author_mail, 'POST', token)))
+      }
+
+      if(note.readers.includes(PAPER_REVIEWERS) || note.readers.includes('everyone')){
+        promises.push(promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token)))
+      }
+
+      if(note.readers.includes(PAPER_AREACHAIRS) || note.readers.includes('everyone')){
+        promises.push(promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token)))
+      }
+
+      // This rule arbitrarily invented by Michael.
+      // Sends a message to Program Chairs only if the message is readable by only PCs,
+      // or only ACs and PCs. This will prevent the PCs from being constantly spammed.
+      if(note.readers.includes(PROGRAM_CHAIRS) &&
+        !note.readers.includes('everyone') &&
+        !note.readers.includes(PAPER_REVIEWERS)
+        ){
+        promises.push(promises.push(or3client.or3request(or3client.mailUrl, pc_mail, 'POST', token)))
       }
 
       return Promise.all(promises);
