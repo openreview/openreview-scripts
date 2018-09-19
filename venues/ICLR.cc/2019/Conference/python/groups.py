@@ -126,16 +126,16 @@ group_templates = {
     'Paper/Reviewers/Unsubmitted': reviewers_unsubmitted_template,
 }
 
-def post_paper_groups(client, blind_notes):
+def create_and_post(client, blind_notes, template_key):
     for paper in blind_notes:
         client.post_group(openreview.Group.from_json(
-            openreview.tools.fill_template(group_templates['Paper'], paper)))
+            openreview.tools.fill_template(group_templates[template_key], paper)))
 
-def post_paper_author_groups(client, blind_notes):
-    for paper in blind_notes:
-        client.post_group(openreview.Group.from_json(
-            openreview.tools.fill_template(group_templates['Paper/Authors'], paper)))
-
+def update_homepage(client, webfield_file):
+    conference_group = client.get_group(iclr19.CONFERENCE_ID)
+    conference_group.add_webfield(webfield_file)
+    posted_group = client.post_group(conference_group)
+    return posted_group
 
 if __name__ == '__main__':
     ## Argument handling
