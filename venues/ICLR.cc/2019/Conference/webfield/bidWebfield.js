@@ -281,7 +281,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#allPapers',
       search: {
         enabled: true,
-        localSearch: false,
+        localSearch: true,
         sort: sortOptionsList,
         onResults: function(searchResults) {
           addMetadataToNotes(searchResults, metadataNotesMap);
