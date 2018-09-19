@@ -1,7 +1,8 @@
 // ------------------------------------
 // Advanced venue homepage template
 //
-// This webfield displays the conference header (#header), the submit button (#invitation),
+// This webfield displays the conference header (#header), 
+// important instructions for this phase of the conference,
 // and a tabbed interface for viewing various types of notes.
 // ------------------------------------
 
@@ -119,9 +120,8 @@ var HEADER = {
   location: 'New Orleans, Louisiana, United States',
   date: 'May 6 - May 9, 2019',
   website: 'https://iclr.cc/Conferences/2019',
-  instructions: '<p><strong>Important note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails</strong></p>\
-    <p><strong>Important Information</strong><br>\
-    Note that ICLR 2019 Conference submissions are now open.</p> \
+  instructions: '<p><strong>Important Information</strong><br>\
+    Please note that the ICLR 2019 Conference submissions are now closed.</p> \
     <p><strong>Questions or Concerns</strong><br> \
     Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
