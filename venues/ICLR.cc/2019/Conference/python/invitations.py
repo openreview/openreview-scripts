@@ -24,7 +24,6 @@ official_review_template = {
     'noninvitees': [iclr19.PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR],
     'signatures': [iclr19.CONFERENCE_ID],
     'duedate': iclr19.OFFICIAL_REVIEW_DEADLINE,
-    'process': os.path.abspath('../process/officialReviewProcess.js'),
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -50,6 +49,8 @@ official_review_template = {
         'content': openreview.invitations.content.review
     }
 }
+with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
+    official_review_template['process'] = f.read()
 
 review_rating_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
@@ -94,7 +95,6 @@ meta_review_template = {
     'noninvitees': [],
     'signatures': [iclr19.CONFERENCE_ID],
     'duedate': iclr19.META_REVIEW_DEADLINE,
-    'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -118,6 +118,8 @@ meta_review_template = {
         'content': openreview.invitations.content.review
     }
 }
+with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js')) as f:
+    meta_review_template['process'] = f.read()
 
 add_revision_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Add_Revision',
@@ -149,7 +151,6 @@ official_comment_template = {
     ],
     'noninvitees': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
     'signatures': [iclr19.CONFERENCE_ID],
-    'process': os.path.abspath('../process/commentProcess.js'),
     'multiReply': True,
     'reply': {
         'forum': '<forum>',
@@ -186,6 +187,8 @@ official_comment_template = {
         'content': openreview.invitations.content.comment
     }
 }
+with open(os.path.abspath('../process/commentProcess.js')) as f:
+    official_comment_template['process'] = f.read()
 
 public_comment_template = {
     'id': iclr19.PUBLIC_COMMENT_TEMPLATE_STR,
@@ -199,7 +202,6 @@ public_comment_template = {
         iclr19.AUTHORS_ID
     ],
     'signatures': [iclr19.CONFERENCE_ID],
-    'process': os.path.abspath('../process/commentProcess.js'),
     'multiReply': True,
     'reply': {
         'forum': '<forum>',
@@ -230,9 +232,12 @@ public_comment_template = {
         'content': openreview.invitations.content.comment
     }
 }
+with open(os.path.abspath('../process/commentProcess.js')) as f:
+    public_comment_template['process'] = f.read()
 
 
 invitation_templates = {
+    'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
     'Official_Review': official_review_template,
