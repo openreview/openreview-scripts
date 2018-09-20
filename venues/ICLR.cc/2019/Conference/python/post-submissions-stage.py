@@ -40,7 +40,7 @@ if __name__ == '__main__':
         blind_note = notes.post_blind_note(client, original)
 
         groups.create_and_post(client, blind_note, 'Paper')
-        groups.create_and_post(client, blind_note, 'Paper/Authors')
+        groups.create_and_post(client, blind_note, 'Paper/Authors', members=original.content['authorids'])
 
         notes.freeze_and_post(client, original)
 
