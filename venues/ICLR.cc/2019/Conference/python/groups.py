@@ -129,8 +129,14 @@ group_templates = {
 }
 
 def create_and_post(client, paper, template_key):
-    client.post_group(openreview.Group.from_json(
-        openreview.tools.fill_template(group_templates[template_key], paper)))
+    group_to_post = openreview.Group.from_json(
+        openreview.tools.fill_template(
+            group_templates[template_key], paper))
+
+    if template_key == "Paper/Authors":
+        group_to_post.members = client.get_note(id=paper.original).content["authors"]
+
+    return client.post_group(group_to_post)
 
 def update_homepage(client, webfield_file):
     conference_group = client.get_group(iclr19.CONFERENCE_ID)
