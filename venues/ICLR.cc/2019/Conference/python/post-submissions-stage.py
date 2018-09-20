@@ -34,14 +34,17 @@ if __name__ == '__main__':
 
     client.post_invitation(iclr19.blind_submission_inv)
 
-    original_notes = list(openreview.tools.iterget_notes(client, invitation=iclr19.submission_inv.id))
-    blind_notes = notes.post_blind_notes(client, original_notes)
+original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.submission_inv.id)
 
-    groups.create_and_post(client, blind_notes, 'Paper')
-    groups.create_and_post(client, blind_notes, 'Paper/Authors')
+    for original in original_notes:
+        blind_note = notes.post_blind_note(client, original)
+
+        groups.create_and_post(client, blind_note, 'Paper')
+        groups.create_and_post(client, blind_note, 'Paper/Authors')
+
+        notes.freeze_and_post(client, original)
+
+        invitations.enable_and_post(client, blind_note, 'Public_Comment')
+        invitations.enable_and_post(client, blind_note, 'Official_Comment')
+
     groups.update_homepage(client, '../webfield/homepagePostSubmission.js')
-
-    notes.freeze_and_post(client, original_notes)
-
-    invitations.enable_and_post(client, blind_notes, 'Public_Comment')
-    invitations.enable_and_post(client, blind_notes, 'Official_Comment')

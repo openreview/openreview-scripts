@@ -24,7 +24,6 @@ official_review_template = {
     'noninvitees': [iclr19.PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR],
     'signatures': [iclr19.CONFERENCE_ID],
     'duedate': iclr19.OFFICIAL_REVIEW_DEADLINE,
-    'process': os.path.abspath('../process/officialReviewProcess.js'),
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -50,6 +49,8 @@ official_review_template = {
         'content': openreview.invitations.content.review
     }
 }
+with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
+    official_review_template['process'] = f.read()
 
 review_rating_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
@@ -94,7 +95,6 @@ meta_review_template = {
     'noninvitees': [],
     'signatures': [iclr19.CONFERENCE_ID],
     'duedate': iclr19.META_REVIEW_DEADLINE,
-    'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -118,6 +118,8 @@ meta_review_template = {
         'content': openreview.invitations.content.review
     }
 }
+with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js')) as f:
+    meta_review_template['process'] = f.read()
 
 add_revision_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Add_Revision',
@@ -149,7 +151,6 @@ official_comment_template = {
     ],
     'noninvitees': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
     'signatures': [iclr19.CONFERENCE_ID],
-    'process': os.path.abspath('../process/commentProcess.js'),
     'multiReply': True,
     'reply': {
         'forum': '<forum>',
@@ -186,6 +187,54 @@ official_comment_template = {
         'content': openreview.invitations.content.comment
     }
 }
+with open(os.path.abspath('../process/commentProcess.js')) as f:
+    official_comment_template['process'] = f.read()
+
+public_comment_template = {
+    'id': iclr19.PUBLIC_COMMENT_TEMPLATE_STR,
+    'readers': ['everyone'],
+    'writers': [iclr19.CONFERENCE_ID],
+    'invitees': ['~'],
+    'noninvitees': [
+        iclr19.PROGRAM_CHAIRS_ID,
+        iclr19.AREA_CHAIRS_ID,
+        iclr19.REVIEWERS_ID,
+        iclr19.AUTHORS_ID
+    ],
+    'signatures': [iclr19.CONFERENCE_ID],
+    'multiReply': True,
+    'reply': {
+        'forum': '<forum>',
+        'replyto': None,
+        'readers': {
+            'description': 'Select all user groups that should be able to read this comment.',
+            'values-dropdown': [
+                'everyone',
+                iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+                iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
+                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                iclr19.PROGRAM_CHAIRS_ID
+            ]
+        },
+        'nonreaders': {
+            'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
+        },
+        'signatures': {
+            'values-regex': '~.*',
+        },
+        'writers': {
+            'description': 'Users that may modify this record.',
+            'values-copied':  [
+                iclr19.CONFERENCE_ID,
+                '{signatures}'
+            ]
+        },
+        'content': openreview.invitations.content.comment
+    }
+}
+with open(os.path.abspath('../process/commentProcess.js')) as f:
+    public_comment_template['process'] = f.read()
+
 
 public_comment_template = {
     'id': iclr19.PUBLIC_COMMENT_TEMPLATE_STR,
@@ -233,6 +282,7 @@ public_comment_template = {
 
 
 invitation_templates = {
+    'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
     'Official_Review': official_review_template,
@@ -252,12 +302,9 @@ def disable_invitation(template_key, paper):
     new_invitation.expdate = current_timestamp()
     return new_invitation
 
-def enable_and_post(client, blind_notes, template_key):
-    new_invitations = []
-    for paper in blind_notes:
-        new_inv = enable_invitation(template_key, paper)
-        new_invitations.append(client.post_invitation(new_inv))
-    return new_invitations
+def enable_and_post(client, paper, template_key):
+    new_inv = enable_invitation(template_key, paper)
+    return client.post_invitation(new_inv)
 
 if __name__ == '__main__':
     ## Argument handling
