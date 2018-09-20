@@ -9,16 +9,17 @@ var METADATA_INVITATION_ID = CONFERENCE_ID + '/-/Paper_Metadata';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
 
-var INSTRUCTIONS =  '\
-<strong>Please indicate your level of interest in reviewing the submitted papers below, on a scale from "Very Low" to "Very High".</strong><br><br>\
-<p>\
-  <em>A few tips:</em>\
+var INSTRUCTIONS = '\<p class="dark">Please indicate your level of interest in reviewing \
+the submitted papers below, on a scale from "Very Low" to "Very High".</p>\
+<p class="dark">\
+  <strong>A few tips:</strong>\
   <ul>\
     <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>You may search for papers by keyword or subject area filter.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
     <li>Default bid on each paper is \"No Bid\"</li>\
-</p><br>'
+  </ul>\
+</p>'
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -147,8 +148,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
     var bidCount = veryHigh.length + high.length + neutral.length + low.length + veryLow.length;
 
-    $('#header > #bidcount').remove();
-    $('#header').append('<h4 id=bidcount>You have completed ' + bidCount + ' bids</h4>');
+    $('#bidcount').remove();
+    $('#header').append('<h4 id="bidcount">You have completed ' + bidCount + ' bids</h4>');
 
     var sections = [
       {
@@ -347,8 +348,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       }
     });
 
-    $('#header > #bidcount').remove();
-    $('#header').append('<h4 id=bidcount>You have completed ' + totalCount + ' bids</h4>');
+    $('#bidcount').remove();
+    $('#header').append('<h4 id="bidcount">You have completed ' + totalCount + ' bids</h4>');
   }
 
   updateNotes(validNotes);
