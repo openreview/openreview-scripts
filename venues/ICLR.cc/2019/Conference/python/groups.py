@@ -31,12 +31,12 @@ papergroup_template = {
 authors_template = {
     'id': iclr19.PAPER_AUTHORS_TEMPLATE_STR,
     'readers':[
-        iclr19.CONFERENCE_ID,
-        iclr19.PROGRAM_CHAIRS_ID
+        iclr19.PROGRAM_CHAIRS_ID,
+        iclr19.PAPER_AUTHORS_TEMPLATE_STR
     ],
     'writers': [iclr19.CONFERENCE_ID],
     'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'signatories': [iclr19.PAPER_AUTHORS_TEMPLATE_STR],
     'members': [],
 }
 
@@ -51,8 +51,6 @@ reviewers_template = {
     'signatories': [iclr19.CONFERENCE_ID],
     'members': [],
 }
-
-
 
 area_chairs_template = {
     'id': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
@@ -127,9 +125,15 @@ group_templates = {
     'Paper/Reviewers/Unsubmitted': reviewers_unsubmitted_template,
 }
 
-def create_and_post(client, paper, template_key):
-    client.post_group(openreview.Group.from_json(
-        openreview.tools.fill_template(group_templates[template_key], paper)))
+def create_and_post(client, paper, template_key, members=[]):
+    group_to_post = openreview.Group.from_json(
+        openreview.tools.fill_template(
+            group_templates[template_key], paper))
+
+    if members:
+        group_to_post.members = members
+
+    return client.post_group(group_to_post)
 
 def update_homepage(client, webfield_file):
     conference_group = client.get_group(iclr19.CONFERENCE_ID)

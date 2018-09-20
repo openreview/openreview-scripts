@@ -235,7 +235,6 @@ public_comment_template = {
 with open(os.path.abspath('../process/commentProcess.js')) as f:
     public_comment_template['process'] = f.read()
 
-
 invitation_templates = {
     'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,

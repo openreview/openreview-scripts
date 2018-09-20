@@ -3,10 +3,10 @@ function(){
 
     var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
     var SHORT_PHRASE = "ICLR 2019";
-    var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + note.number + '/Authors'
-    var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note.number + '/Reviewers'
-    var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note.number + '/Area_Chairs'
-    var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
+    var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + note.number + '/Authors';
+    var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note.number + '/Reviewers';
+    var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note.number + '/Area_Chairs';
+    var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs';
 
     var forumNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token) : null;
@@ -51,22 +51,22 @@ function(){
 
       author_mail = {
         "groups": forumNote.content.authorids,
-        "subject": "Your submission to " + SHORT_PHRASE + " has received a comment",;
-        "message": "Your submission to " + SHORT_PHRASE + " has received a comment.\n\nComment title: " + note.content.title + "\n\nComment: " + note.content.comment + "\n\nTo view the comment, click here: " + baseUrl + "/forum?id=" + note.forum + '&noteId=' + note.id;
+        "subject": "Your submission to " + SHORT_PHRASE + " has received a comment",
+        "message": "Your submission to " + SHORT_PHRASE + " has received a comment.\n\nComment title: " + note.content.title + "\n\nComment: " + note.content.comment + "\n\nTo view the comment, click here: " + baseUrl + "/forum?id=" + note.forum + '&noteId=' + note.id
       };
 
       var promises = [];
 
       if(note.readers.includes(PAPER_AUTHORS) || note.readers.includes('everyone')){
-        promises.push(promises.push(or3client.or3request(or3client.mailUrl, author_mail, 'POST', token)))
+        promises.push(or3client.or3request(or3client.mailUrl, author_mail, 'POST', token));
       }
 
       if(note.readers.includes(PAPER_REVIEWERS) || note.readers.includes('everyone')){
-        promises.push(promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token)))
+        promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token));
       }
 
       if(note.readers.includes(PAPER_AREACHAIRS) || note.readers.includes('everyone')){
-        promises.push(promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token)))
+        promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token));
       }
 
       // This rule arbitrarily invented by Michael.
@@ -76,7 +76,7 @@ function(){
         !note.readers.includes('everyone') &&
         !note.readers.includes(PAPER_REVIEWERS)
         ){
-        promises.push(promises.push(or3client.or3request(or3client.mailUrl, pc_mail, 'POST', token)))
+        promises.push(or3client.or3request(or3client.mailUrl, pc_mail, 'POST', token));
       }
 
       return Promise.all(promises);
