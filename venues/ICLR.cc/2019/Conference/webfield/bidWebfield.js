@@ -253,7 +253,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     Webfield.ui.submissionList(noBid, {
       heading: null,
       container: '#noBid',
-      search: { enabled: true },
+      search: { enabled: false },
       displayOptions: paperDisplayOptions,
       fadeIn: false
     });
