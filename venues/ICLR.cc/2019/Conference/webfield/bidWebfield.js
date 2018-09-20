@@ -17,7 +17,7 @@ var INSTRUCTIONS =  '\
     <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>You may search for papers by keyword or subject area filter.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
-    <li>Default bid on each paper is \"No bid\"</li>\
+    <li>Default bid on each paper is \"No Bid\"</li>\
 </p><br>'
 
 // Main is the entry point to the webfield code and runs everything
@@ -75,7 +75,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     if (!updatedNote) {
       return;
     }
-    var prevVal = _.has(updatedNote.details, 'tags[0].tag') ? updatedNote.details.tags[0].tag : 'No bid';
+    var prevVal = _.has(updatedNote.details, 'tags[0].tag') ? updatedNote.details.tags[0].tag : 'No Bid';
     updatedNote.details.tags[0] = tagObj;
 
     var tagToElemId = {
@@ -84,7 +84,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       'Neutral': '#neutral',
       'Low': '#low',
       'Very Low': '#veryLow',
-      'No bid': '#noBid'
+      'No Bid': '#noBid'
     };
 
     var $sourceContainer = $(tagToElemId[prevVal] + ' .submissions-list');
@@ -157,7 +157,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
         content: null
       },
       {
-        heading: 'No bid',
+        heading: 'No Bid',
         headingCount: noBid.length,
         id: 'noBid',
         content: null
