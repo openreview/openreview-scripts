@@ -52,8 +52,6 @@ reviewers_template = {
     'members': [],
 }
 
-
-
 area_chairs_template = {
     'id': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
     'readers':[

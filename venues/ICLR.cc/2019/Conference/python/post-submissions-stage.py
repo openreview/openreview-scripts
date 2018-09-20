@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     client.post_invitation(iclr19.blind_submission_inv)
 
-original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.submission_inv.id)
+    original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.submission_inv.id)
 
     for original in original_notes:
         blind_note = notes.post_blind_note(client, original)

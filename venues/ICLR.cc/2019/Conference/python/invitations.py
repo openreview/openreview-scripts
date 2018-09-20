@@ -235,52 +235,6 @@ public_comment_template = {
 with open(os.path.abspath('../process/commentProcess.js')) as f:
     public_comment_template['process'] = f.read()
 
-
-public_comment_template = {
-    'id': iclr19.PUBLIC_COMMENT_TEMPLATE_STR,
-    'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
-    'invitees': ['~'],
-    'noninvitees': [
-        iclr19.PROGRAM_CHAIRS_ID,
-        iclr19.AREA_CHAIRS_ID,
-        iclr19.REVIEWERS_ID,
-        iclr19.AUTHORS_ID
-    ],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'process': os.path.abspath('../process/commentProcess.js'),
-    'multiReply': True,
-    'reply': {
-        'forum': '<forum>',
-        'replyto': None,
-        'readers': {
-            'description': 'Select all user groups that should be able to read this comment.',
-            'values-dropdown': [
-                'everyone',
-                iclr19.PAPER_AUTHORS_TEMPLATE_STR,
-                iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
-                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-                iclr19.PROGRAM_CHAIRS_ID
-            ]
-        },
-        'nonreaders': {
-            'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
-        },
-        'signatures': {
-            'values-regex': '~.*',
-        },
-        'writers': {
-            'description': 'Users that may modify this record.',
-            'values-copied':  [
-                iclr19.CONFERENCE_ID,
-                '{signatures}'
-            ]
-        },
-        'content': openreview.invitations.content.comment
-    }
-}
-
-
 invitation_templates = {
     'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,
