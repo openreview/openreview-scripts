@@ -244,10 +244,9 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     }
 
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
+    var noteCompletedReviews = completedReviews[note.number] || Object.create(null);
 
-    return buildTableRow(
-      note, revIds, completedReviews[note.number], metaReview
-    );
+    return buildTableRow(note, revIds, noteCompletedReviews, metaReview);
   });
 
   // Sort form handler
