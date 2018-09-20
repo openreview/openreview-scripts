@@ -9,105 +9,15 @@ var METADATA_INVITATION_ID = CONFERENCE_ID + '/-/Paper_Metadata';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
 
-var SUBJECT_AREAS = [
-  'Algorithms: Approximate Inference',
-  'Algorithms: Belief Propagation',
-  'Algorithms: Distributed and Parallel',
-  'Algorithms: Exact Inference',
-  'Algorithms: Graph Theory',
-  'Algorithms: Heuristics',
-  'Algorithms: Lifted Inference',
-  'Algorithms: MCMC methods',
-  'Algorithms: Optimization',
-  'Algorithms: Other',
-  'Algorithms: Software and Tools',
-  'Applications: Biology',
-  'Applications: Databases',
-  'Applications: Decision Support',
-  'Applications: Diagnosis and Reliability',
-  'Applications: Economics',
-  'Applications: Education',
-  'Applications: General',
-  'Applications: Medicine',
-  'Applications: Planning and Control',
-  'Applications: Privacy and Security',
-  'Applications: Robotics',
-  'Applications: Sensor Data',
-  'Applications: Social Network Analysis',
-  'Applications: Speech',
-  'Applications: Sustainability and Climate',
-  'Applications: Text and Web Data',
-  'Applications: User Models',
-  'Applications: Vision',
-  'Data: Big Data',
-  'Data: Multivariate',
-  'Data: Other',
-  'Data: Relational',
-  'Data: Spatial',
-  'Data: Temporal or Sequential',
-  'Learning: Active Learning',
-  'Learning: Classification',
-  'Learning: Clustering',
-  'Learning: Deep Learning',
-  'Learning: General',
-  'Learning: Nonparametric Bayes',
-  'Learning: Online and Anytime Learning',
-  'Learning: Other',
-  'Learning: Parameter Estimation',
-  'Learning: Probabilistic Generative Models',
-  'Learning: Ranking',
-  'Learning: Recommender Systems',
-  'Learning: Regression',
-  'Learning: Reinforcement Learning',
-  'Learning: Relational Learning',
-  'Learning: Relational Models',
-  'Learning: Scalability',
-  'Learning: Semi-Supervised Learning',
-  'Learning: Structure Learning',
-  'Learning: Structured Prediction',
-  'Learning: Theory',
-  'Learning: Unsupervised',
-  'Methodology: Bayesian Methods',
-  'Methodology: Calibration',
-  'Methodology: Elicitation',
-  'Methodology: Evaluation',
-  'Methodology: Human Expertise and Judgement',
-  'Methodology: Other',
-  'Methodology: Probabilistic Programming',
-  'Models: Bayesian Networks',
-  'Models: Directed Graphical Models',
-  'Models: Dynamic Bayesian Networks',
-  'Models: Markov Decision Processes',
-  'Models: Mixed Graphical Models',
-  'Models: Other',
-  'Models: Relational Models',
-  'Models: Topic Models',
-  'Models: Undirected Graphical Models',
-  'None of the above',
-  'Principles: Causality',
-  'Principles: Cognitive Models',
-  'Principles: Decision Theory',
-  'Principles: Game Theory',
-  'Principles: Information Theory',
-  'Principles: Other',
-  'Principles: Probability Theory',
-  'Principles: Statistical Theory',
-  'Representation: Constraints',
-  'Representation: Dempster-Shafer',
-  'Representation: Fuzzy Logic',
-  'Representation: Influence Diagrams',
-  'Representation: Non-Probabilistic Frameworks',
-  'Representation: Probabilistic'
-];
-
 var INSTRUCTIONS =  '\
 <strong>Please indicate your level of interest in reviewing the submitted papers below, on a scale from "Very Low" to "Very High".</strong><br><br>\
 <p>\
   <em>A few tips:</em>\
   <ul>\
-    <li>We expect <strong>approximately 50 bids per reviewer</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
+    <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>You may search for papers by keyword or subject area filter.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
+    <li>Default bid on each paper is \"No bid\"</li>\
 </p><br>'
 
 // Main is the entry point to the webfield code and runs everything
@@ -371,8 +281,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#allPapers',
       search: {
         enabled: true,
-        localSearch: false,
-        subjectAreas: SUBJECT_AREAS,
+        localSearch: true,
         sort: sortOptionsList,
         onResults: function(searchResults) {
           addMetadataToNotes(searchResults, metadataNotesMap);
