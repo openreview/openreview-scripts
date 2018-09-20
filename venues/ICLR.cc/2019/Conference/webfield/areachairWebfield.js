@@ -237,7 +237,7 @@ var renderHeader = function() {
 
 var renderStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
   var rows = _.map(notes, function(note) {
-    var revIds = reviewerIds[note.number];
+    var revIds = reviewerIds[note.number] || Object.create(null);
     for (var revNumber in revIds) {
       var uId = revIds[revNumber];
       revIds[revNumber] = _.get(profiles, uId, { id: uId, name: '', email: uId });
