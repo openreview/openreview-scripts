@@ -13,6 +13,7 @@ python groups.py Reviewers --overwrite
 import openreview
 import argparse
 import iclr19
+from matcher import utils
 
 def getBibtex(client, note):
     firstWord = note.content["title"].split(' ')[0].lower();
@@ -57,6 +58,50 @@ def post_blind_note(client, original_note):
     blind_note.content["_bibtex"] = getBibtex(client, blind_note)
 
     return client.post_note(blind_note)
+
+def _build_entries(author_profiles, reviewer_profiles):
+    entries = []
+    for profile in reviewer_profiles:
+
+        # find conflicts between the reviewer's profile and the paper's authors' profiles
+        user_entry = {
+            'userId': profile.id,
+            'scores': {
+                'tpms_score': random.random()
+            }
+        }
+
+        conflicts = utils.get_conflicts(author_profiles, profile)
+
+        if conflicts:
+            user_entry['scores']['conflict_score'] = '-inf'
+            user_entry['conflicts'] = conflicts
+
+        entries.append(user_entry)
+
+    return entries
+
+def post_metadata_note(client,
+    blind_note,
+    original_note,
+    reviewer_profiles,
+    metadata_inv=iclr19.metadata_inv):
+
+    paper_author_profiles = client.get_profiles(original_note.content['authorids'])
+    entries = _build_entries(paper_author_profiles, reviewer_profiles)
+
+    new_metadata_note = openreview.Note(**{
+        'forum': blind_note.id,
+        'invitation': metadata_inv.id,
+        'readers': metadata_inv.reply['readers']['values'],
+        'writers': metadata_inv.reply['writers']['values'],
+        'signatures': metadata_inv.reply['signatures']['values'],
+        'content': {
+            'entries': entries
+        }
+    })
+
+    return client.post_note(new_metadata_note)
 
 if __name__ == '__main__':
     # Argument handling
