@@ -303,7 +303,7 @@ questionnaire_instructions_invitation = openreview.Invitation.from_json({
         'content': {
             'title': {'value': 'Questionnaire for Reviewers'},
             'Instructions': {
-                'value': 'Help us get to know our reviewers better and the ways to make the reviewing process smoother by answering these questions. If you don\'t see the questionnaire form below, click on the blue "Reviewer Questionnaire Response" button below these instructions.',
+                'value': 'Help us get to know our reviewers better and the ways to make the reviewing process smoother by answering these questions. If you don\'t see the questionnaire form below, click on the blue "Reviewer Questionnaire Response" button.',
                 'order': 1
             }
         }
@@ -336,21 +336,16 @@ questionnaire_response_template = {
         'writers': {'values-regex': '~.*'},
         'signatures': {'values-regex': '~.*'},
         'content': {
-            'title': {
-                'value': 'Reviewer Questionnaire Response',
-                'order': 1,
-                'required': True
-            },
             'Confirm Profile Updated': {
                 'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
                 'value-radio': ['Yes', 'No'],
-                'order': 2,
+                'order': 1,
                 'required': True
             },
             'Confirm TPMS Registration': {
                 'description': 'Have you registered and/or updated your TPMS account, and updated your OpenReview profile to include the email address you used for TPMS?',
                 'value-radio': ['Yes', 'No'],
-                'order': 3,
+                'order': 2,
                 'required': True
             },
             'Current Positions': {
@@ -368,7 +363,7 @@ questionnaire_response_template = {
                     'Student: Other',
                     'Other' # At some point we'll want to let them add text here
                 ],
-                'order': 4,
+                'order': 3,
                 'required': True
             },
             'Reviewing Experience': {
@@ -380,14 +375,14 @@ questionnaire_response_template = {
                     '5-10 times  - active community citizen',
                     '10+ times  - seasoned reviewer'
                 ],
-                'order': 5,
+                'order': 4,
                 'required': True
 
             },
             'Previous ICLR Author': {
                 'description': 'Have you published at ICLR in the last two years?',
                 'value-radio': ['Yes','No'],
-                'order': 6,
+                'order': 5,
                 'required': True
             },
             'Your Recent Publication Venues': {
@@ -410,7 +405,7 @@ questionnaire_response_template = {
                     'Knowledge Discovery and Data Mining (KDD)',
                     'Other'
                 ],
-                'order': 7,
+                'order': 6,
                 'required': True
             },
             'Reviewing Preferences': {
@@ -422,7 +417,7 @@ questionnaire_response_template = {
                     'Having enough time for active discussion about papers.',
                     'Receiving clear instructions about the expectations of reviews.'
                 ],
-                'order': 8,
+                'order': 7,
                 'required': True
             }
         }
