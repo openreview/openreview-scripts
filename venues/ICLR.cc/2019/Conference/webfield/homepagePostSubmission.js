@@ -84,7 +84,7 @@ function main() {
 function load() {
   var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
     pageSize: PAGE_SIZE,
-    details: 'all'
+    details: 'replyCount'
   });
 
   var activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
@@ -93,23 +93,29 @@ function load() {
   });
 
   var userGroupsP;
+  var authorNotesP;
 
   if (!user || _.startsWith(user.id, 'guest_')) {
     userGroupsP = $.Deferred().resolve([]);
+    authorNotesP = $.Deferred().resolve([]);
 
   } else {
-    userGroupsP = Webfield.get('/groups', {member: user.id}).then(function(result) {
+    userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
       return _.filter(
         _.map(result.groups, function(g) { return g.id; }),
         function(id) { return _.startsWith(id, CONFERENCE_ID); }
       );
     });
+
+    authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
+      pageSize: PAGE_SIZE,
+      'content.authorids': user.profile.id,
+      details: 'noDetails'
+    });     
   }
 
-  var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID);
-
   return $.when(
-    notesP, userGroupsP, tagInvitationsP, activityNotesP
+    notesP, userGroupsP, activityNotesP, authorNotesP
   );
 }
 
@@ -118,7 +124,7 @@ function load() {
 function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
 
-  //Webfield.ui.spinner('#notes');
+  Webfield.ui.spinner('#notes');
 }
 
 function renderSubmissionButton() {
@@ -159,23 +165,10 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, userGroups, tagInvitations, activityNotes) {
-  // Filter out all tags that belong to other users (important for bid tags)
-  notes = _.map(notes, function(n) {
-    n.tags = _.filter(n.tags, function(t) {
-      return !_.includes(t.signatures, user.id);
-    });
-    return n;
-  });
-
-  var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-
-  var submissionActivityNotes = _.filter(activityNotes, function(note) {
-    return note.invitation === SUBMISSION_ID;
-  });
+function renderContent(notes, userGroups, activityNotes, authorNotes) {
 
   // Your Consoles tab
-  if (userGroups.length || submissionActivityNotes.length) {
+  if (userGroups.length || authorNotes.length) {
 
     var $container = $('#your-consoles').empty();
     $container.append('<ul class="list-unstyled submissions-list">');
@@ -204,7 +197,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       ].join(''));
     }
 
-    if (authorPaperNumbers.length || submissionActivityNotes.length) {
+    if (authorNotes.length) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
@@ -220,7 +213,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: false,
-    tagInvitations: tagInvitations,
     container: '#all-submissions'
   });
 
@@ -280,21 +272,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
   }
 
   Webfield.ui.done();
-}
-
-// Helper functions
-function getPaperNumbersfromGroups(groups) {
-  return _.map(
-    _.filter(groups, function(gid) { return ANON_SIGNATORY_REGEX.test(gid); }),
-    function(fgid) { return parseInt(fgid.match(ANON_SIGNATORY_REGEX)[1], 10); }
-  );
-}
-
-function getAuthorPaperNumbersfromGroups(groups) {
-  return _.map(
-    _.filter(groups, function(gid) { return AUTHORS_SIGNATORY_REGEX.test(gid); }),
-    function(fgid) { return parseInt(fgid.match(AUTHORS_SIGNATORY_REGEX)[1], 10); }
-  );
 }
 
 // Go!
