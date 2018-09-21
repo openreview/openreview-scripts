@@ -27,7 +27,9 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    blind_submissions = openreview.tools.iterget_notes(client, invitation=iclr19.BLIND_SUBMISSION_ID)
+    blind_submissions = openreview.tools.iterget_notes(client,
+        invitation=iclr19.BLIND_SUBMISSION_ID,
+        details='original,tags')
 
     # At this point, all reviewers should have been
     # converted to profile IDs and deduplicated.
@@ -41,9 +43,7 @@ if __name__ == '__main__':
     metadata_notes = []
     metadata_inv = client.post_invitation(iclr19.metadata_inv)
     for blind_note in blind_submissions:
-        original_note = client.get_note(id=blind_note.original)
-        paper_bids = client.get_tags(invitation=iclr19.add_bid.id)
-        new_metadata_note = notes.post_metadata_note(client, blind_note, original_note, reviewer_profiles, paper_bids)
+        new_metadata_note = notes.post_metadata_note(client, blind_note, reviewer_profiles)
         metadata_notes.append(new_metadata_note)
 
     with open('../data/iclr19-match-config-example.json') as f:

@@ -99,12 +99,11 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bids):
 
 def post_metadata_note(client,
     blind_note,
-    original_note,
     reviewer_profiles,
-    paper_bids,
     metadata_inv=iclr19.metadata_inv):
 
-    paper_author_profiles = client.get_profiles(original_note.content['authorids'])
+    original_authorids = blind_note.details['original']['content']['authorids']
+    paper_author_profiles = client.get_profiles(original_authorids)
     entries = _build_entries(paper_author_profiles, reviewer_profiles, paper_bids)
 
     new_metadata_note = openreview.Note(**{
