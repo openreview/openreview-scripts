@@ -28,14 +28,18 @@ var HEADER = {
   location: 'New Orleans, Louisiana, United States',
   date: 'May 6 - May 9, 2019',
   website: 'https://iclr.cc/Conferences/2019',
-  instructions: '<p><strong>Important note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails</strong></p>\
-    <p><strong>Important Information</strong><br>\
-    Note that ICLR 2019 Conference submissions are now open.</p> \
-    <p><strong>Questions or Concerns</strong><br> \
-    Please contact the OpenReview support team at \
-    <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
+  instructions: '<p><strong>Important note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails.</strong></p>\
+    <p><strong>Important Information</strong>\
+    <ul>\
+    <li>Note that ICLR 2019 Conference submissions are now open.</li>\
+    <li>For more details refer to the <a href="https://iclr.cc/Conferences/2019/CallForPapers">ICLR 2019 - Call for Paper</a>.</li>\
+    </ul></p> \
+    <p><strong>Questions or Concerns</strong></p>\
+    <p>Please contact the OpenReview support team at \
+    <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>\
     Please contact the ICLR 2019 Program Chairs at \
-    <a href="mailto:iclr2019programchairs@googlegroups.com">iclr2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy. \</p>',
+    <a href="mailto:iclr2019programchairs@googlegroups.com">iclr2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy.\
+    </p>',
   deadline: 'Submission Deadline: 6:00 pm Eastern Standard Time, September 27, 2018'
 }
 
