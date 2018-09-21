@@ -460,7 +460,6 @@ metadata_inv = openreview.Invitation.from_json({
         'readers': {
             'values': [
                 CONFERENCE_ID,
-                PROGRAM_CHAIRS_ID
             ]
         },
         'writers': {
