@@ -81,34 +81,37 @@ function main() {
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-  var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
-    pageSize: PAGE_SIZE,
-    details: 'all'
-  });
 
   var activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
     pageSize: PAGE_SIZE,
     details: 'forumContent'
   });
 
+  
+  var authorNotesP;   
   var userGroupsP;
 
   if (!user || _.startsWith(user.id, 'guest_')) {
     userGroupsP = $.Deferred().resolve([]);
+    authorNotesP = $.Deferred().resolve([]);
 
   } else {
-    userGroupsP = Webfield.get('/groups', {member: user.id}).then(function(result) {
+    userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
       return _.filter(
         _.map(result.groups, function(g) { return g.id; }),
         function(id) { return _.startsWith(id, CONFERENCE_ID); }
       );
     });
+
+    authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
+      pageSize: PAGE_SIZE,
+      'content.authorids': user.profile.id,
+      details: 'noDetails'
+    });
   }
 
-  var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID);
-
   return $.when(
-    notesP, userGroupsP, tagInvitationsP, activityNotesP
+    userGroupsP, activityNotesP, authorNotesP
   );
 }
 
@@ -117,7 +120,7 @@ function load() {
 function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
 
-  //Webfield.ui.spinner('#notes');
+  Webfield.ui.spinner('#notes');
 }
 
 function renderSubmissionButton() {
@@ -142,10 +145,6 @@ function renderConferenceTabs() {
       heading: 'Your Consoles',
       id: 'your-consoles',
     },
-    // {
-    //   heading: 'All Submissions',
-    //   id: 'all-submissions',
-    // },
     {
       heading: 'Recent Activity',
       id: 'recent-activity',
@@ -158,29 +157,10 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, userGroups, tagInvitations, activityNotes) {
-  // if (_.isEmpty(userGroups)) {
-  //   // If the user isn't part of the conference don't render tabs
-  //   $('.tabs-container').hide();
-  //   return;
-  // }
-
-  // Filter out all tags that belong to other users (important for bid tags)
-  notes = _.map(notes, function(n) {
-    n.tags = _.filter(n.tags, function(t) {
-      return !_.includes(t.signatures, user.id);
-    });
-    return n;
-  });
-
-  var authorPaperNumbers = getAuthorPaperNumbersfromGroups(userGroups);
-
-  var submissionActivityNotes = _.filter(activityNotes, function(note) {
-    return note.invitation === SUBMISSION_ID;
-  });
+function renderContent(userGroups, activityNotes, authorNotes) {
 
   // Your Consoles tab
-  if (userGroups.length || submissionActivityNotes.length) {
+  if (userGroups.length || authorNotes.length) {
 
     var $container = $('#your-consoles').empty();
     $container.append('<ul class="list-unstyled submissions-list">');
@@ -192,15 +172,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
         '</li>'
       ].join(''));
     }
-
-    // Not open yet
-    // if (_.includes(userGroups, REVIEWERS_ID) || _.includes(userGroups, AREA_CHAIRS_ID)) {
-    //   $('#your-consoles .submissions-list').append([
-    //     '<li class="note invitation-link">',
-    //       '<a href="/invitation?id=' + ADD_BID_ID + '">Bidding Console</a>',
-    //     '</li>'
-    //   ].join(''));
-    // }
 
     if (_.includes(userGroups, AREA_CHAIRS_ID)) {
       $('#your-consoles .submissions-list').append([
@@ -218,7 +189,7 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
       ].join(''));
     }
 
-    if (authorPaperNumbers.length || submissionActivityNotes.length) {
+    if (authorNotes.length) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
@@ -229,43 +200,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
     $('.tabs-container a[href="#your-consoles"]').parent().show();
   } else {
     $('.tabs-container a[href="#your-consoles"]').parent().hide();
-  }
-
-  // All Submitted Papers tab
-  var submissionListOptions = _.assign({}, paperDisplayOptions, {
-    showTags: false,
-    tagInvitations: tagInvitations,
-    container: '#all-submissions'
-  });
-
-  $(submissionListOptions.container).empty();
-
-  Webfield.ui.submissionList(notes, {
-    heading: null,
-    container: '#all-submissions',
-    search: {
-      enabled: true,
-      localSearch: false,
-      onResults: function(searchResults) {
-        var blindedSearchResults = searchResults.filter(function(note) {
-          return note.invitation === BLIND_SUBMISSION_ID;
-        });
-        Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
-        Webfield.disableAutoLoading();
-      },
-      onReset: function() {
-        Webfield.ui.searchResults(notes, submissionListOptions);
-        if (notes.length === PAGE_SIZE) {
-          Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
-        }
-      }
-    },
-    displayOptions: submissionListOptions,
-    fadeIn: false
-  });
-
-  if (notes.length === PAGE_SIZE) {
-    Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
   }
 
   // Activity Tab
@@ -294,21 +228,6 @@ function renderContent(notes, userGroups, tagInvitations, activityNotes) {
   }
 
   Webfield.ui.done();
-}
-
-// Helper functions
-function getPaperNumbersfromGroups(groups) {
-  return _.map(
-    _.filter(groups, function(gid) { return ANON_SIGNATORY_REGEX.test(gid); }),
-    function(fgid) { return parseInt(fgid.match(ANON_SIGNATORY_REGEX)[1], 10); }
-  );
-}
-
-function getAuthorPaperNumbersfromGroups(groups) {
-  return _.map(
-    _.filter(groups, function(gid) { return AUTHORS_SIGNATORY_REGEX.test(gid); }),
-    function(fgid) { return parseInt(fgid.match(AUTHORS_SIGNATORY_REGEX)[1], 10); }
-  );
 }
 
 // Go!
