@@ -327,7 +327,6 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   }
 
   var renderTable = function(container, data) {
-    console.log(data[0].reviewProgressData);
     var rowData = _.map(data, function(d) {
       var number = '<strong class="note-number">' + d.note.number + '</strong>';
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
