@@ -61,7 +61,7 @@ def post_blind_note(client, original_note):
 
     return client.post_note(blind_note)
 
-def _build_entries(author_profiles, reviewer_profiles, paper_bids):
+def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons):
     entries = []
     for profile in reviewer_profiles:
         bid_score_map = {
@@ -71,8 +71,8 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bids):
             'Low': 0.25,
             'Very Low': 0.0
         }
-        reviewer_bids = [t for t in paper_bids if profile.id in t.signatures]
-        reviewer_bid_scores = [bid_score_map.get(bid, 0.0) for bid in reviewer_bids]
+        reviewer_bids = [t for t in paper_bid_jsons if profile.id in t['signatures']]
+        reviewer_bid_scores = [bid_score_map.get(bid['tag'], 0.0) for bid in reviewer_bids]
 
         # find conflicts between the reviewer's profile and the paper's authors' profiles
         user_entry = {
@@ -103,8 +103,9 @@ def post_metadata_note(client,
     metadata_inv=iclr19.metadata_inv):
 
     original_authorids = blind_note.details['original']['content']['authorids']
+    paper_bid_jsons = blind_note.details['tags']
     paper_author_profiles = client.get_profiles(original_authorids)
-    entries = _build_entries(paper_author_profiles, reviewer_profiles, paper_bids)
+    entries = _build_entries(paper_author_profiles, reviewer_profiles, paper_bid_jsons)
 
     new_metadata_note = openreview.Note(**{
         'forum': blind_note.id,

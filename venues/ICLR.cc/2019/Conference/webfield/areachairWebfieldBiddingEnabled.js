@@ -34,13 +34,11 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>\
   <h4>Bidding Phase</h4>\
   <p>\
-    <em><strong>The bidding phase has not started yet.</strong><br/>\
-    This section will be updated once the bidding phase begins.</em>\
-    <!--<em><strong>Please do the following by Friday, Sept 28</strong></em>:\
+    <em><strong>Please note that the bidding has begun. You are requested to do the following by Friday, October 5.</strong></em><br/>\
     <ul>\
       <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
       <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\
-    </ul>-->\
+    </ul>\
   </p>';
 
 // Main function is the entry point to the webfield code
@@ -237,16 +235,17 @@ var renderHeader = function() {
 
 var renderStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
   var rows = _.map(notes, function(note) {
-    var revIds = reviewerIds[note.number] || Object.create(null);
+    var revIds = reviewerIds[note.number];
     for (var revNumber in revIds) {
       var uId = revIds[revNumber];
       revIds[revNumber] = _.get(profiles, uId, { id: uId, name: '', email: uId });
     }
 
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
-    var noteCompletedReviews = completedReviews[note.number] || Object.create(null);
 
-    return buildTableRow(note, revIds, noteCompletedReviews, metaReview);
+    return buildTableRow(
+      note, revIds, completedReviews[note.number], metaReview
+    );
   });
 
   // Sort form handler
@@ -415,7 +414,6 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     }
     return false;
   });
-
   if (rows.length) {
     renderTableRows(rows, container);
   } else {
