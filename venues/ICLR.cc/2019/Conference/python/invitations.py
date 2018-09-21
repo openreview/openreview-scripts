@@ -56,6 +56,49 @@ official_review_template = {
 with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
     official_review_template['process'] = f.read()
 
+revise_review_template = {
+    'id': iclr19.CONFERENCE_ID + '/-/<id>/Revise_Review',
+    'readers': ['everyone'],
+    'writers': [iclr19.CONFERENCE_ID],
+    'invitees': '<signatures>',
+    'signatures': [iclr19.CONFERENCE_ID],
+    'multiReply': None,
+    'reply': {
+        'referent': '<id>',
+        'forum': '<forum>',
+        'content': openreview.invitations.content.review,
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
+        },
+        'writers': {
+            'description': 'Users that may modify this record.',
+            'values-regex': iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
+        },
+        'readers': {
+            'description': 'The users who will be allowed to read the reply content.',
+            'values': ['everyone']
+        }
+    }
+}
+
+add_revision_template = {
+    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Add_Revision',
+    'readers': ['everyone'],
+    'writers': [iclr19.CONFERENCE_ID],
+    'invitees': [iclr19.CONFERENCE_ID + '/Paper<number>/Authors'],
+    'signatures': [iclr19.CONFERENCE_ID],
+    'multiReply': None,
+    'reply': {
+        'referent': '<forum>',
+        'forum': '<forum>',
+        'content': iclr19.submission_inv.reply['content'],
+        'signatures': iclr19.submission_inv.reply['signatures'],
+        'writers': iclr19.submission_inv.reply['writers'],
+        'readers': iclr19.submission_inv.reply['readers']
+    }
+}
+
 review_rating_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
     'readers': ['everyone'],
@@ -140,7 +183,6 @@ add_revision_template = {
         'writers': iclr19.submission_inv.reply['writers'],
         'readers': iclr19.submission_inv.reply['readers']
     }
-
 }
 
 official_comment_template = {
@@ -243,6 +285,7 @@ invitation_templates = {
     'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
+    'Revise_Review': revise_review_template,
     'Official_Review': official_review_template,
     'Meta_Review': meta_review_template,
     'Public_Comment': public_comment_template

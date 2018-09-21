@@ -50,6 +50,10 @@ def freeze_note(note, writers=[iclr19.CONFERENCE_ID]):
 def freeze_and_post(client, note):
     client.post_note(freeze_note(note))
 
+def reveal_note(note, readers=['everyone']):
+    note.readers = readers
+    return note
+
 def post_blind_note(client, original_note):
     blind_note = client.post_note(create_blind_note(original_note))
     paper_group_id = iclr19.CONFERENCE_ID + "/Paper{}".format(blind_note.number)
