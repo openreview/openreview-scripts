@@ -12,6 +12,7 @@ import openreview
 import iclr19
 import invitations
 import notes
+import groups
 import time
 import json
 
@@ -51,6 +52,8 @@ if __name__ == '__main__':
     reviewer_profiles = client.get_profiles(valid_reviewer_ids)
 
     invitations.disable_bids(client)
+    groups.update_AC_console(client, '../webfield/areachairWebfieldReviewerAssignmentStage.js')
+    groups.update_Reviewer_console(client, '../webfield/reviewerWebfieldReviewerAssignmentStage.js')
 
     # create metadata
     metadata_inv = client.post_invitation(iclr19.metadata_inv)
