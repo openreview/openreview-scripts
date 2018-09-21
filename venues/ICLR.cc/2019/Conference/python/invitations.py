@@ -30,7 +30,11 @@ official_review_template = {
         'replyto': '<forum>',
         'readers': {
             'description': 'The users who will be allowed to read the reply content.',
-            'values': ['everyone']
+            'values': [
+                iclr19.PROGRAM_CHAIRS_ID,
+                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                iclr19.PAPER_REVIEWERS_TEMPLATE_STR
+                ]
         },
         'nonreaders': {
             'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
