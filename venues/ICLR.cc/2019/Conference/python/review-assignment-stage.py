@@ -17,6 +17,10 @@ import json
 
 import matcher
 
+def clear(client, invitation):
+    for note in openreview.tools.iterget_notes(client, invitation = invitation):
+        client.delete_note(note)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--baseurl', help="base url")
@@ -25,6 +29,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+
+    print('clearing previous metadata, assignments, and configs...')
+    clear(client, iclr19.METADATA_INV_ID)
+    clear(client, iclr19.ASSIGNMENT_INV_ID)
+    clear(client, iclr19.CONFIG_INV_ID)
+
+    # TODO: update the reviewer and AC consoles to indicate that the bidding phase is over
 
     blind_submissions = openreview.tools.iterget_notes(client,
         invitation=iclr19.BLIND_SUBMISSION_ID,
