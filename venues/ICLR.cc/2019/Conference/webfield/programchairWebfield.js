@@ -14,13 +14,15 @@ var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official_Review';
 var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
 
-
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair';
 
 var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
 
+var INSTRUCTIONS = '<p class="dark">This page provides information and status \
+  updates for ICLR 2019 Program Chairs. It will be regularly updated as the conference \
+  progresses, so please check back frequently for news and other updates.</p>';
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {
@@ -220,47 +222,32 @@ var getMetaReviews = function() {
 
 
 // Render functions
-var displayHeader = function(headerP) {
-  var $panel = $('#group-container');
-  $panel.hide('fast', function() {
-    $panel.empty().append(
-      '<div id="header" class="panel">' +
-        '<h1>' + HEADER_TEXT + '</h1>' +
-      '</div>' +
-      '<div id="notes"><div class="tabs-container"></div></div>'
-    );
+var displayHeader = function() {
+  Webfield.ui.setup('#group-container', CONFERENCE);
+  Webfield.ui.header(HEADER_TEXT, INSTRUCTIONS);
 
-    var loadingMessage = '<p class="empty-message">Loading...</p>';
-
-    var tabsData = {
-      sections: [
-        {
-          heading: 'Paper Status',
-          id: 'paper-status',
-          content: loadingMessage,
-          extraClasses: 'horizontal-scroll',
-          active: true
-        },
-        {
-          heading: 'Area Chair Status',
-          id: 'areachair-status',
-          content: loadingMessage,
-          extraClasses: 'horizontal-scroll'
-        },
-        {
-          heading: 'Reviewer Status',
-          id: 'reviewer-status',
-          content: loadingMessage,
-          extraClasses: 'horizontal-scroll'
-        }
-      ]
-    };
-    $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](tabsData));
-
-    $panel.show('fast', function() {
-      headerP.resolve(true);
-    });
-  });
+  var loadingMessage = '<p class="empty-message">Loading...</p>';
+  Webfield.ui.tabPanel([
+    {
+      heading: 'Paper Status',
+      id: 'paper-status',
+      content: loadingMessage,
+      extraClasses: 'horizontal-scroll',
+      active: true
+    },
+    {
+      heading: 'Area Chair Status',
+      id: 'areachair-status',
+      content: loadingMessage,
+      extraClasses: 'horizontal-scroll'
+    },
+    {
+      heading: 'Reviewer Status',
+      id: 'reviewer-status',
+      content: loadingMessage,
+      extraClasses: 'horizontal-scroll'
+    }
+  ]);
 };
 
 var displaySortPanel = function(container, sortOptions, sortResults) {
@@ -268,7 +255,7 @@ var displaySortPanel = function(container, sortOptions, sortResults) {
   var allOptions = _.map(_.keys(sortOptions), function(option) {
     return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
   });
-  var sortBarHTML = '<form class="form-inline search-form" role="search" style="margin: -10px 0 -1px -16px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; padding: 1rem;">' +
+  var sortBarHTML = '<form class="form-inline search-form" role="search">' +
     '<strong>Sort: </strong>' +
     '<div class="form-group search-content" style="margin-right: 0;">' +
       '<select id="form-sort" class="form-control" style="width: 330px">' + allOptions.join('') + '</select>' +
@@ -316,7 +303,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   var order = 'desc';
   var sortOptions = {
     Paper_Number: function(row) { return row.note.number; },
-    Paper_Title: function(row) { return row.note.content.title; },
+    Paper_Title: function(row) { return _.toLower(_.trim(row.note.content.title)); },
     Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
     Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
     Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
@@ -606,7 +593,7 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
     maxConfidence: maxConfidence,
     sendReminder: false
   };
-
+console.log(reviewProgressData);
   var areachairProgressData = {
     numMetaReview: metaReview ? 'One' : 'No',
     areachair: areachairProfile,
@@ -757,8 +744,7 @@ var buildNoteMap = function(noteNumbers) {
 
 
 // Kick the whole thing off
-var headerLoaded = $.Deferred();
-displayHeader(headerLoaded);
+displayHeader();
 
 $.ajaxSetup({
   contentType: 'application/json; charset=utf-8'
@@ -777,8 +763,7 @@ controller.addHandler('areachairs', {
         getOfficialReviews(noteNumbers),
         getMetaReviews(),
         getReviewerGroups(noteNumbers),
-        getAreaChairGroups(noteNumbers),
-        headerLoaded
+        getAreaChairGroups(noteNumbers)
       );
     })
     .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
@@ -830,6 +815,16 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
     console.log(error);
     promptError('The reminder email could not be sent at this time');
   });
+  return false;
+});
+
+$('#group-container').on('click', 'a.collapse-btn', function(e) {
+  $(this).next().slideToggle();
+  if ($(this).text() === 'Show reviewers') {
+    $(this).text('Hide reviewers');
+  } else {
+    $(this).text('Show reviewers');
+  }
   return false;
 });
 

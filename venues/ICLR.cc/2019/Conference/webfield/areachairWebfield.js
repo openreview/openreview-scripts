@@ -253,7 +253,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
   var order = 'desc';
   var sortOptions = {
     Paper_Number: function(row) { return row[1].number; },
-    Paper_Title: function(row) { return _.toLower(row[2].content.title); },
+    Paper_Title: function(row) { return _.toLower(_.trim(row[2].content.title)); },
     Number_of_Reviews_Submitted: function(row) { return row[3].numSubmittedReviews; },
     Number_of_Reviews_Missing: function(row) { return row[3].numReviewers - row[3].numSubmittedReviews; },
     Average_Rating: function(row) { return row[4].averageRating === 'N/A' ? 0 : row[4].averageRating; },
