@@ -141,6 +141,18 @@ def update_homepage(client, webfield_file):
     posted_group = client.post_group(conference_group)
     return posted_group
 
+def update_AC_console(client, webfield_file):
+    AC_group = client.get_group(iclr19.AREA_CHAIRS_ID)
+    AC_group.add_webfield(webfield_file)
+    posted_group = client.post_group(AC_group)
+    return posted_group
+
+def update_Reviewer_console(client, webfield_file):
+    Reviewer_group = client.get_group(iclr19.REVIEWERS_ID)
+    Reviewer_group.add_webfield(webfield_file)
+    posted_group = client.post_group(Reviewer_group)
+    return posted_group
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
