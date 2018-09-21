@@ -21,7 +21,7 @@ official_review_template = {
     'readers': ['everyone'],
     'writers': [iclr19.CONFERENCE_ID],
     'invitees': [iclr19.PAPER_REVIEWERS_TEMPLATE_STR],
-    'noninvitees': [iclr19.PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR],
+    'noninvitees': [],
     'signatures': [iclr19.CONFERENCE_ID],
     'duedate': iclr19.OFFICIAL_REVIEW_DEADLINE,
     'multiReply': False,
