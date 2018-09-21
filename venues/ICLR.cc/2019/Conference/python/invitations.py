@@ -157,7 +157,7 @@ official_comment_template = {
         'replyto': None,
         'readers': {
             'description': 'Select all user groups that should be able to read this comment.',
-            'values-dropdown': [
+            'value-dropdown-hierarchy': [
                 'everyone',
                 iclr19.PAPER_AUTHORS_TEMPLATE_STR,
                 iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
@@ -208,7 +208,7 @@ public_comment_template = {
         'replyto': None,
         'readers': {
             'description': 'Select all user groups that should be able to read this comment.',
-            'values-dropdown': [
+            'value-dropdown-hierarchy': [
                 'everyone',
                 iclr19.PAPER_AUTHORS_TEMPLATE_STR,
                 iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
