@@ -199,7 +199,7 @@ var getUserProfiles = function(userIds) {
     _.forEach(result.profiles, function(profile) {
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferredEmail;
+      profile.email = profile.content.preferredEmail || profile.content.emails[0];
       profileMap[profile.id] = profile;
     });
 

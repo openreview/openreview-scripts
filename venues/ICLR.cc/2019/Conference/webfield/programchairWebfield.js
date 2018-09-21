@@ -4,7 +4,7 @@
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
 
 // Constants
-var HEADER_TEXT = 'ICLR 2019 Program Chairs Console';
+var HEADER_TEXT = 'Program Chairs Console';
 
 var CONFERENCE = 'ICLR.cc/2019/Conference';
 var INVITATION = CONFERENCE + '/-/Submission';
@@ -185,7 +185,7 @@ var getUserProfiles = function(userIds) {
 
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferred_email;
+      profile.email = profile.content.preferred_email || profile.content.emails[0];
       profileMap[profile.id] = profile;
     })
 
@@ -327,7 +327,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   }
 
   var renderTable = function(container, data) {
-
+    console.log(data[0].reviewProgressData);
     var rowData = _.map(data, function(d) {
       var number = '<strong class="note-number">' + d.note.number + '</strong>';
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
@@ -593,7 +593,7 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
     maxConfidence: maxConfidence,
     sendReminder: false
   };
-console.log(reviewProgressData);
+
   var areachairProgressData = {
     numMetaReview: metaReview ? 'One' : 'No',
     areachair: areachairProfile,
