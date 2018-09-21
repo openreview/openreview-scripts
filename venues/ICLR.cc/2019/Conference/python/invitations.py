@@ -245,20 +245,33 @@ invitation_templates = {
 
 current_timestamp = lambda: int(round(time.time() * 1000))
 
-def enable_invitation(template_key, paper):
-    new_invitation = openreview.Invitation.from_json(
-        openreview.tools.fill_template(invitation_templates[template_key], paper))
+def enable_invitation(template_key, target_paper=None):
+    if target_paper:
+        new_invitation = openreview.Invitation.from_json(
+            openreview.tools.fill_template(invitation_templates[template_key], target_paper))
+    else:
+        new_invitation = openreview.Invitation.from_json(
+            invitation_templates[template_key], target_paper)
+
     return new_invitation
 
-def disable_invitation(template_key, paper):
-    new_invitation = openreview.Invitation.from_json(
-        openreview.tools.fill_template(invitation_templates[template_key], paper))
+def disable_invitation(template_key, target_paper=None):
+    if target_paper:
+        new_invitation = openreview.Invitation.from_json(
+            openreview.tools.fill_template(invitation_templates[template_key], target_paper))
+    else:
+        new_invitation = openreview.Invitation.from_json(
+            invitation_templates[template_key])
+
     new_invitation.expdate = current_timestamp()
     return new_invitation
 
 def enable_and_post(client, paper, template_key):
-    new_inv = enable_invitation(template_key, paper)
+    new_inv = enable_invitation(template_key, target_paper=paper)
     return client.post_invitation(new_inv)
+
+def disable_bids(client):
+    return client.post_invitation(disable_invitation('Add_Bid'))
 
 if __name__ == '__main__':
     ## Argument handling
@@ -278,7 +291,7 @@ if __name__ == '__main__':
         for template in args.invitations:
             assert template in invitation_templates, 'invitation template not defined'
             if args.disable:
-                new_invitation = disable_invitation(template, paper)
+                new_invitation = disable_invitation(template, target_paper=paper)
             else:
                 new_invitation = enable_invitation(template, paper)
             posted_invitation = client.post_invitation(new_invitation)
