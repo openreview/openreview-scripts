@@ -237,17 +237,16 @@ var renderHeader = function() {
 
 var renderStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
   var rows = _.map(notes, function(note) {
-    var revIds = reviewerIds[note.number];
+    var revIds = reviewerIds[note.number] || Object.create(null);
     for (var revNumber in revIds) {
       var uId = revIds[revNumber];
       revIds[revNumber] = _.get(profiles, uId, { id: uId, name: '', email: uId });
     }
 
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
+    var noteCompletedReviews = completedReviews[note.number] || Object.create(null);
 
-    return buildTableRow(
-      note, revIds, completedReviews[note.number], metaReview
-    );
+    return buildTableRow(note, revIds, noteCompletedReviews, metaReview);
   });
 
   // Sort form handler
