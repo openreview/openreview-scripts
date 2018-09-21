@@ -240,6 +240,7 @@ invitation_templates = {
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
     'Official_Review': official_review_template,
+    'Meta_Review': meta_review_template,
     'Public_Comment': public_comment_template
 }
 
