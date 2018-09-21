@@ -15,9 +15,9 @@ the submitted papers below, on a scale from "Very Low" to "Very High".</p>\
   <strong>A few tips:</strong>\
   <ul>\
     <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
-    <li>You may search for papers by keyword or subject area filter.</li>\
+    <li>You may search for papers by keywords</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
-    <li>Default bid on each paper is \"No Bid\"</li>\
+    <li>Default bid on each paper is \"No Bid\".</li>\
   </ul>\
 </p>'
 
