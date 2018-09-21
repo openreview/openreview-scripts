@@ -4,28 +4,36 @@ function(){
     var or3client = lib.or3client;
 
     var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
+    var PAPER_REVIEWERS;
+    var PAPER_AREACHAIRS;
 
-    var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
-    var list = note.invitation.replace(/_/g,' ').split('/');
-    list.splice(list.indexOf('-',1));
-    var conference = list.join(' ');
+    var forumNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
 
-    origNote.then(function(result) {
+    forumNote.then(function(result) {
       var forum = result.notes[0];
       var note_number = forum.number;
 
-      var reviewers = [CONFERENCE_ID + '/Paper' + note_number + '/Reviewers'];
-      var areachairs = [CONFERENCE_ID + '/Paper' + note_number + '/Area_Chairs'];
-      var authors = forum.content.authorids;
-
+      PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note_number + '/Reviewers';
+      PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note_number + '/Area_Chairs';
+      console.log(PAPER_REVIEWERS);
+      console.log(PAPER_AREACHAIRS);
+      console.log(note_number);
       var areachair_mail = {
-        "groups": areachairs,
+        "groups": [PAPER_AREACHAIRS],
         "subject": "Review posted to your assigned paper: \"" + forum.content.title + "\"",
-        "message": "A submission to " + conference + ", for which you are an official area chair, has received an official review. \n\nTitle: " + note.content.title + "\n\nComment: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl + "/forum?id=" + note.forum
+        "message": "A submission to " + CONFERENCE_ID + ", for which you are an official area chair, has received an official review. \n\nTitle: " + note.content.title + "\n\nComment: " + note.content.review + "\n\nTo view the review, click here: " + baseUrl + "/forum?id=" + note.forum
       };
       var areachairMailP = or3client.or3request( or3client.mailUrl, areachair_mail, 'POST', token );
 
       return areachairMailP;
+    })
+    .then(result => {
+      console.log('attempting to add to group ' + PAPER_REVIEWERS + '/Submitted');
+      return or3client.addGroupMember(PAPER_REVIEWERS + '/Submitted', note.signatures[0], token);
+    })
+    .then(result => {
+      console.log('attempting to add to group ' + PAPER_REVIEWERS + '/Unubmitted');
+      return or3client.removeGroupMember(PAPER_REVIEWERS + '/Unsubmitted', note.signatures[0], token);
     })
     .then(result => done())
     .catch(error => done(error));

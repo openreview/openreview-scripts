@@ -22,6 +22,7 @@ import notes
 import groups
 import invitations
 import argparse
+from collections import defaultdict
 
 if __name__ == '__main__':
     ## Argument handling
@@ -56,6 +57,8 @@ if __name__ == '__main__':
         num = int(paper_num.split('Paper')[1])
         return num
 
+    anonreviewerids_by_forum = defaultdict(list)
+
     for assignment_note in assignment_notes:
         paper_number = get_number_from_details(assignment_note.details)
         assignment_entries = assignment_note.content['assignedGroups']
@@ -75,13 +78,24 @@ if __name__ == '__main__':
             ]}
 
         for entry in assignment_entries:
-            openreview.tools.assign(client, paper_number, iclr19.CONFERENCE_ID,
-                reviewer_to_add = entry['userId'],
+            new_assigned_group = openreview.tools.add_assignment(
+                client, paper_number, iclr19.CONFERENCE_ID, entry['userId'],
                 parent_label = parent_label,
                 individual_label = individual_label,
                 individual_group_params = individual_group_params)
 
-    for blind_submission in blind_submissions:
-        client.post_invitation(invitations.enable_invitation('Official_Review', blind_submission))
-        client.post_invitation(invitations.enable_invitation('Meta_Review', blind_submission))
+            if 'AnonReviewer' in new_assigned_group.id:
+                anonreviewerids_by_forum[assignment_note.forum].append(new_assigned_group.id)
+
+    for blind_note in blind_submissions:
+        client.post_invitation(invitations.enable_invitation('Official_Review', blind_note))
+        client.post_invitation(invitations.enable_invitation('Meta_Review', blind_note))
+
+        groups.create_and_post(
+            client, blind_note, 'Paper/Reviewers/Submitted')
+
+        groups.create_and_post(
+            client, blind_note, 'Paper/Reviewers/Unsubmitted',
+            members=anonreviewerids_by_forum[blind_note.id])
+
 

@@ -48,5 +48,7 @@ if __name__ == '__main__':
         invitations.enable_and_post(client, blind_note, 'Official_Comment')
 
     reviewers_group = client.get_group(iclr19.REVIEWERS_ID)
+    areachairs_group = client.get_group(iclr19.AREA_CHAIRS_ID)
     openreview.tools.replace_members_with_ids(client, reviewers_group)
+    openreview.tools.replace_members_with_ids(client, areachairs_group)
     groups.update_homepage(client, '../webfield/homepagePostSubmission.js')
