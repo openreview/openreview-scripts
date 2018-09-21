@@ -1,10 +1,12 @@
+// THIS WEBFIELD IS NOT READY TO BE DEPLOYED. IT WILL EVENTUALLY REPLACE
+// THE PROGRAM CHAIR CONSOLE, BUT NEEDS EDITING FIRST.
 
 // Assumes the following pattern for meta reviews and official reviews:
 // CONFERENCE + '/-/Paper' + number + '/Meta_Review'
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
 
 // Constants
-var HEADER_TEXT = 'Area Chair Console';
+var HEADER_TEXT = 'Program Chairs Console';
 var SHORT_PHRASE = 'ICLR 2019';
 var CONFERENCE = 'ICLR.cc/2019/Conference';
 
@@ -21,27 +23,9 @@ var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(
 var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
-  updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
+  updates for ICLR 2019 Program Chairs. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p>';
-var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
-  <p>\
-    <!--<em><strong>Please do the following by Friday, Sept 21</strong></em>:-->\
-    <ul>\
-      <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li>\
-      <!--<li>Complete the ICLR registration form (found in your Tasks view).</li>-->\
-    </ul>\
-  </p>\
-  <br>\
-  <h4>Bidding Phase</h4>\
-  <p>\
-    <em><strong>The bidding phase has not started yet.</strong><br/>\
-    This section will be updated once the bidding phase begins.</em>\
-    <!--<em><strong>Please do the following by Friday, Sept 28</strong></em>:\
-    <ul>\
-      <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
-      <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\
-    </ul>-->\
-  </p>';
+
 
 // Main function is the entry point to the webfield code
 var main = function() {
@@ -199,7 +183,7 @@ var getUserProfiles = function(userIds) {
     _.forEach(result.profiles, function(profile) {
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferredEmail || profile.content.emails[0];
+      profile.email = profile.content.preferredEmail;
       profileMap[profile.id] = profile;
     });
 
