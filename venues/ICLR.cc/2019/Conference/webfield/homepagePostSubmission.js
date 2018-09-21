@@ -32,7 +32,7 @@ var HEADER = {
   instructions: '<p><strong>Important Information</strong>\
     <ul>\
     <li>Note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails.</li>\
-    <li>ICLR 2019 Conference submissions are now open.</li>\
+    <li>ICLR 2019 Conference submissions are now closed.</li>\
     <li>For more details refer to the <a href="https://iclr.cc/Conferences/2019/CallForPapers">ICLR 2019 - Call for Papers</a>.</li>\
     </ul></p> \
     <p><strong>Questions or Concerns</strong></p>\
