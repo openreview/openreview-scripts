@@ -6,20 +6,23 @@
 // Constants
 var HEADER_TEXT = 'ICLR 2019 Reviewer Console';
 var SHORT_PHRASE = 'ICLR 2019';
-var INSTRUCTIONS =  '<p><strong>This page provides information and status updates for ICLR 2019 reviewers. It will be regularly updated as the conference progresses, so please check back frequently for news and other updates.</strong></p>\
+var INSTRUCTIONS =  '<p class="dark">This page provides information and status\
+ updates for ICLR 2019 reviewers. It will be regularly updated as the conference \
+ progresses, so please check back frequently for news and other updates.</p>\
   <br>'
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
     <p>\
-      <!--<em><strong>Please do the following:</strong></em>:-->\
       <ul>\
-        <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
+        <li>Update your profile to include your most up-to-date information, including \
+        work history and relations, to ensure proper conflict-of-interest detection \
+        during the paper matching process.</li>\
       </ul>\
     </p>\
   <br>\
   <h4>Bidding Phase</h4>\
     <p>\
-      <em><strong>The bidding phase is over now.</strong></em>:\
+      <em>Please note that the bidding phase is over now.</em>:\
     </p>\
   <br>'
 
