@@ -41,7 +41,7 @@ if __name__ == '__main__':
         invitation=iclr19.BLIND_SUBMISSION_ID,
         details='original,tags')
 
-    # At this point, all reviewers should have been
+    # At this point, all reviewers & ACs should have been
     # converted to profile IDs and deduplicated.
     reviewers_group = client.get_group(iclr19.REVIEWERS_ID)
     if not all(['~' in member for member in reviewers_group.members]):
@@ -50,6 +50,15 @@ if __name__ == '__main__':
 
     reviewer_profiles = client.get_profiles(valid_reviewer_ids)
 
+    areachairs_group = client.get_group(iclr19.AREA_CHAIRS_ID)
+    if not all(['~' in member for member in areachairs_group.members]):
+        print('WARNING: not all area chairs have been converted to profile IDs. Members without profiles will not have metadata created.')
+    valid_ac_ids = [r for r in areachairs_group.members if '~' in r]
+
+    ac_profiles = client.get_profiles(valid_ac_ids)
+
+    user_profiles = ac_profiles + reviewer_profiles
+
     invitations.disable_bids(client)
 
     # create metadata
@@ -57,5 +66,4 @@ if __name__ == '__main__':
     config_inv = client.post_invitation(iclr19.config_inv)
     assignment_inv = client.post_invitation(iclr19.assignment_inv)
     for blind_note in blind_submissions:
-        new_metadata_note = notes.post_metadata_note(client, blind_note, reviewer_profiles, metadata_inv)
-
+        new_metadata_note = notes.post_metadata_note(client, blind_note, user_profiles, metadata_inv)
