@@ -100,7 +100,7 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons):
 def post_metadata_note(client,
     blind_note,
     reviewer_profiles,
-    metadata_inv=iclr19.metadata_inv):
+    metadata_inv):
 
     original_authorids = blind_note.details['original']['content']['authorids']
     paper_bid_jsons = blind_note.details['tags']

@@ -43,6 +43,6 @@ if __name__ == '__main__':
     metadata_notes = []
     metadata_inv = client.post_invitation(iclr19.metadata_inv)
     for blind_note in blind_submissions:
-        new_metadata_note = notes.post_metadata_note(client, blind_note, reviewer_profiles)
+        new_metadata_note = notes.post_metadata_note(client, blind_note, reviewer_profiles, metadata_inv)
         metadata_notes.append(new_metadata_note)
 
