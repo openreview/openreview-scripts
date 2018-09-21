@@ -482,7 +482,7 @@ assignment_inv = openreview.Invitation.from_json({
         'forum': None,
         'replyto': None,
         'invitation': BLIND_SUBMISSION_ID,
-        'readers': {'values': [CONFERENCE_ID]},
+        'readers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
         'writers': {'values': [CONFERENCE_ID]},
         'signatures': {'values': [CONFERENCE_ID]},
         'content': {}
