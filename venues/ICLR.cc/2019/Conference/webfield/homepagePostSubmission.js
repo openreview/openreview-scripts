@@ -29,11 +29,11 @@ var HEADER = {
   location: 'New Orleans, Louisiana, United States',
   date: 'May 6 - May 9, 2019',
   website: 'https://iclr.cc/Conferences/2019',
-  instructions: '<p><strong>Important note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails.</strong></p>\
-    <p><strong>Important Information</strong>\
+  instructions: '<p><strong>Important Information</strong>\
     <ul>\
-    <li>Please note that the ICLR 2019 Conference submissions are now closed.</li>\
-    <li>For more details refer to the <a href="https://iclr.cc/Conferences/2019/CallForPapers">ICLR 2019 - Call for Paper</a>.</li>\
+    <li>Note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails.</li>\
+    <li>ICLR 2019 Conference submissions are now open.</li>\
+    <li>For more details refer to the <a href="https://iclr.cc/Conferences/2019/CallForPapers">ICLR 2019 - Call for Papers</a>.</li>\
     </ul></p> \
     <p><strong>Questions or Concerns</strong></p>\
     <p>Please contact the OpenReview support team at \
