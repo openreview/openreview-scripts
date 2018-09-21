@@ -33,8 +33,11 @@ if __name__ == '__main__':
     # At this point, all reviewers should have been
     # converted to profile IDs and deduplicated.
     reviewers_group = client.get_group(iclr19.REVIEWERS_ID)
-    assert all(['~' in member for member in reviewers_group.members]), 'not all reviewers have been converted to profile IDs'
-    reviewer_profiles = client.get_profiles(reviewers_group.members)
+    if not all(['~' in member for member in reviewers_group.members]):
+        print('WARNING: not all reviewers have been converted to profile IDs. Members without profiles will not have metadata created.')
+    valid_reviewer_ids = [r for r in reviewers_group.members if '~' in r]
+
+    reviewer_profiles = client.get_profiles(valid_reviewer_ids)
 
     invitations.disable_bids(client)
 
