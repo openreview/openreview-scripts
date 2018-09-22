@@ -40,8 +40,12 @@ if __name__ == '__main__':
         blind_note = notes.post_blind_note(client, original)
 
         groups.create_and_post(client, blind_note, 'Paper')
-        groups.create_and_post(client, blind_note, 'Paper/Authors', members=original.content['authorids'])
+        author_group = groups.create_and_post(client, blind_note, 'Paper/Authors', members=original.content['authorids'])
 
+        original.readers = [
+            iclr19.CONFERENCE_ID,
+            author_group.id
+        ]
         notes.freeze_and_post(client, original)
 
         invitations.enable_and_post(client, blind_note, 'Public_Comment')
