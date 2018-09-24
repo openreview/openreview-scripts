@@ -41,7 +41,7 @@ var HEADER = {
     Please contact the ICLR 2019 Program Chairs at \
     <a href="mailto:iclr2019programchairs@googlegroups.com">iclr2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy.\
     </p>',
-  deadline: 'Submission Deadline: 6:00 pm Eastern Standard Time, September 27, 2018'
+  deadline: 'Submission Deadline: 6:00 pm EDT, September 27, 2018'
 }
 
 var COMMENT_EXCLUSION = [
