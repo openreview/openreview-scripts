@@ -76,23 +76,6 @@ revise_review_template = {
     }
 }
 
-add_revision_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Add_Revision',
-    'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
-    'invitees': [iclr19.CONFERENCE_ID + '/Paper<number>/Authors'],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'multiReply': None,
-    'reply': {
-        'referent': '<forum>',
-        'forum': '<forum>',
-        'content': iclr19.submission_inv.reply['content'],
-        'signatures': iclr19.submission_inv.reply['signatures'],
-        'writers': iclr19.submission_inv.reply['writers'],
-        'readers': iclr19.submission_inv.reply['readers']
-    }
-}
-
 review_rating_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
     'readers': ['everyone'],
