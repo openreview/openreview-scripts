@@ -263,13 +263,14 @@ withdraw_submission_template = {
         },
         'content': {
             'title': {
-                'value': 'Paper Withdrawn',
+                'value': 'Submission Withdrawn by the Authors',
                 'order': 1
             },
             'withdrawal confirmation': {
                 'description': iclr19.withdrawal_statement,
-                'value-radio': ['I have read and agree with the withdrawal statement.'],
-                'order': 2
+                'value-radio': ['I have read and agree with the withdrawal statement on behalf of myself and my co-authors.'],
+                'order': 2,
+                'required': True
             }
         }
     }
