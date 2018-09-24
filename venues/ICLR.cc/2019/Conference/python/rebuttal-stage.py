@@ -26,21 +26,33 @@ if __name__ == '__main__':
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
     official_review_invs = openreview.tools.iterget(
-        client.get_invitations, regex='ICLR.cc/2019/Conference/-/Paper.*/Official_Review')
+        client.get_invitations,
+        regex='ICLR.cc/2019/Conference/-/Paper.*/Official_Review',
+        details='repliedNotes,replytoNote')
 
     for review_inv in official_review_invs:
         review_inv.reply['readers']['values'] = ['everyone']
         client.post_invitation(review_inv)
+        if review_inv.details and 'repliedNotes' in review_inv.details:
+            official_reviews = [
+                openreview.Note.from_json(r) \
+                for r in review_inv.details['repliedNotes']]
 
-    official_reviews = openreview.tools.iterget_notes(
-        client, invitation='ICLR.cc/2019/Conference/-/Paper.*/Official_Review')
-    for review in official_reviews:
-        review = notes.reveal_note(review)
-        review = notes.freeze_note(review)
-        review = client.post_note(review)
+            paper = openreview.Note.from_json(review_inv.details['replytoNote'])
+            for review in official_reviews:
+                review.readers = ['everyone']
+                review.writers = [iclr19.CONFERENCE_ID]
+                review = client.post_note(review)
 
-        client.post_invitation(
-            invitations.enable_invitation('Revise_Review', target_paper=review))
+                reviewer_id = review.signatures[0].split('/')[4]
+
+                review_revision_inv = invitations.enable_invitation(
+                    'Revise_Review', target_paper=paper)
+                review_revision_inv.id = review_revision_inv.id.replace('<reviewer_id>', reviewer_id)
+                review_revision_inv.reply['referent'] = review.id
+                review_revision_inv.invitees = review.signatures
+
+                client.post_invitation(review_revision_inv)
 
     original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.SUBMISSION_ID)
     for original in original_notes:

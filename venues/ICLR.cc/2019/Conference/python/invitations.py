@@ -57,24 +57,18 @@ with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
     official_review_template['process'] = f.read()
 
 revise_review_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/<id>/Revise_Review',
+    'id': iclr19.CONFERENCE_ID + '/-/<reviewer_id>/Revise/Review',
     'readers': ['everyone'],
     'writers': [iclr19.CONFERENCE_ID],
-    'invitees': '<signatures>',
+    'invitees': [], # this needs to be filled in manually on a per-reviewer basis
     'signatures': [iclr19.CONFERENCE_ID],
     'multiReply': None,
     'reply': {
-        'referent': '<id>',
+        'referent': None, # this needs to be filled in manually on a per-reviewer basis
         'forum': '<forum>',
         'content': openreview.invitations.content.review,
-        'signatures': {
-            'description': 'How your identity will be displayed with the above content.',
-            'values-regex': iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
-        },
-        'writers': {
-            'description': 'Users that may modify this record.',
-            'values-regex': iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
-        },
+        'signatures': official_review_template['reply']['signatures'],
+        'writers': official_review_template['reply']['writers'],
         'readers': {
             'description': 'The users who will be allowed to read the reply content.',
             'values': ['everyone']
@@ -285,7 +279,6 @@ invitation_templates = {
     'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
-    'Revise_Review': revise_review_template,
     'Official_Review': official_review_template,
     'Meta_Review': meta_review_template,
     'Public_Comment': public_comment_template
