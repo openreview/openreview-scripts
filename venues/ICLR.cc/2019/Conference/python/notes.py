@@ -58,7 +58,7 @@ def post_blind_note(client, original_note):
 
     blind_note.content = {
         "authors": ['Anonymous'],
-        "authorids": [author_group_id]
+        "authorids": [author_group_id],
         "_bibtex": bibtex_entry
     }
 
