@@ -239,13 +239,52 @@ public_comment_template = {
 with open(os.path.abspath('../process/commentProcess.js')) as f:
     public_comment_template['process'] = f.read()
 
+withdraw_submission_template = {
+    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Withdraw_Submission',
+    'readers': ['everyone'],
+    'writers': [iclr19.CONFERENCE_ID],
+    'invitees': [iclr19.CONFERENCE_ID + '/Paper<number>/Authors'],
+    'signatures': [iclr19.CONFERENCE_ID],
+    'multiReply': False,
+    'reply': {
+        'forum': '<forum>',
+        'replyto': '<forum>',
+        'readers': {
+            'description': 'Select all user groups that should be able to read this comment.',
+            'values': ['everyone']
+        },
+        'signatures': {
+            'description': '',
+            'values-regex': iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+        },
+        'writers': {
+            'description': 'Users that may modify this record.',
+            'values':  []
+        },
+        'content': {
+            'title': {
+                'value': 'Paper Withdrawn',
+                'order': 1
+            },
+            'withdrawal confirmation': {
+                'description': iclr19.withdrawal_statement,
+                'value-radio': ['I have read and agree with the withdrawal statement.'],
+                'order': 2
+            }
+        }
+    }
+}
+with open(os.path.abspath('../process/withdrawProcess.js')) as f:
+    withdraw_submission_template['process'] = f.read()
+
 invitation_templates = {
     'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
     'Official_Review': official_review_template,
     'Meta_Review': meta_review_template,
-    'Public_Comment': public_comment_template
+    'Public_Comment': public_comment_template,
+    'Withdraw_Submission': withdraw_submission_template
 }
 
 current_timestamp = lambda: int(round(time.time() * 1000))

@@ -50,6 +50,14 @@ OFFICIAL_REVIEW_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Review
 PAPER_AREA_CHAIRS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/Area_Chair[0-9]+'
 PAPER_ANONREVIEWERS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/AnonReviewer[0-9]+'
 
+# paper withdrawal
+withdrawal_statement = 'On behalf of the authors of this paper, \
+I hereby withdraw this submission from consideration for ICLR 2019. \
+I understand that this cannot be undone, \
+and that my identity and the identity of my co-authors will be revealed upon withdrawal, \
+and that the record of this submission (including all existing reviews and comments) \
+will remain publicly accessible on OpenReview.'
+
 # Email templates
 HASH_SEED = "2810398440804348173"
 RECRUIT_MESSAGE_SUBJ = 'ICLR 2019: Invitation to Review'
