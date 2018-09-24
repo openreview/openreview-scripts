@@ -52,12 +52,15 @@ def freeze_and_post(client, note):
 
 def post_blind_note(client, original_note):
     blind_note = client.post_note(create_blind_note(original_note))
+    bibtex_entry = getBibtex(client, blind_note)
     paper_group_id = iclr19.CONFERENCE_ID + "/Paper{}".format(blind_note.number)
     author_group_id = iclr19.CONFERENCE_ID + "/Paper{}/Authors".format(blind_note.number)
 
-    # Update Blind note's contents, repost the updated blind note, and freeze and post the original note
-    blind_note.content["authorids"] = [author_group_id]
-    blind_note.content["_bibtex"] = getBibtex(client, blind_note)
+    blind_note.content = {
+        "authors": ['Anonymous'],
+        "authorids": [author_group_id]
+        "_bibtex": bibtex_entry
+    }
 
     return client.post_note(blind_note)
 
