@@ -25,10 +25,8 @@ var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   progresses, so please check back frequently for news and other updates.</p>';
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
-    <!--<em><strong>Please do the following by Friday, Sept 21</strong></em>:-->\
     <ul>\
       <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li>\
-      <!--<li>Complete the ICLR registration form (found in your Tasks view).</li>-->\
     </ul>\
   </p>\
   <br>\
@@ -36,11 +34,6 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
     <em><strong>The bidding phase has not started yet.</strong><br/>\
     This section will be updated once the bidding phase begins.</em>\
-    <!--<em><strong>Please do the following by Friday, Sept 28</strong></em>:\
-    <ul>\
-      <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
-      <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\
-    </ul>-->\
   </p>';
 
 // Main function is the entry point to the webfield code
@@ -419,7 +412,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
   if (rows.length) {
     renderTableRows(rows, container);
   } else {
-    $(container).empty().append('<p class="empty-message">No papers have been submitted. ' +
+    $(container).empty().append('<p class="empty-message">No assigned papers. ' +
       'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
   }
 };
