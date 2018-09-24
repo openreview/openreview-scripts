@@ -58,4 +58,5 @@ if __name__ == '__main__':
     for original in original_notes:
         client.post_invitation(
             invitations.enable_invitation('Add_Revision', target_paper=original))
-
+        client.post_invitation(
+            invitations.enable_invitation('Withdraw_Submission', target_paper=original))
