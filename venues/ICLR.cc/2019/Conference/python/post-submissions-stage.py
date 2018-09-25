@@ -50,6 +50,7 @@ if __name__ == '__main__':
 
         invitations.enable_and_post(client, blind_note, 'Public_Comment')
         invitations.enable_and_post(client, blind_note, 'Official_Comment')
+        invitations.enable_and_post(client, blind_note, 'Withdraw_Submission')
 
     reviewers_group = client.get_group(iclr19.REVIEWERS_ID)
     areachairs_group = client.get_group(iclr19.AREA_CHAIRS_ID)
