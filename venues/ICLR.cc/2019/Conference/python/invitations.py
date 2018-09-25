@@ -219,10 +219,10 @@ public_comment_template = {
     'writers': [iclr19.CONFERENCE_ID],
     'invitees': ['~'],
     'noninvitees': [
-        iclr19.PROGRAM_CHAIRS_ID,
-        iclr19.AREA_CHAIRS_ID,
-        iclr19.REVIEWERS_ID,
-        iclr19.AUTHORS_ID
+        iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+        iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
+        iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+        iclr19.PROGRAM_CHAIRS_ID
     ],
     'signatures': [iclr19.CONFERENCE_ID],
     'multiReply': True,
