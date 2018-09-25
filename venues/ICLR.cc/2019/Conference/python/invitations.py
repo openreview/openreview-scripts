@@ -56,6 +56,26 @@ official_review_template = {
 with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
     official_review_template['process'] = f.read()
 
+revise_review_template = {
+    'id': iclr19.CONFERENCE_ID + '/-/<reviewer_id>/Revise/Review',
+    'readers': ['everyone'],
+    'writers': [iclr19.CONFERENCE_ID],
+    'invitees': [], # this needs to be filled in manually on a per-reviewer basis
+    'signatures': [iclr19.CONFERENCE_ID],
+    'multiReply': None,
+    'reply': {
+        'referent': None, # this needs to be filled in manually on a per-reviewer basis
+        'forum': '<forum>',
+        'content': openreview.invitations.content.review,
+        'signatures': official_review_template['reply']['signatures'],
+        'writers': official_review_template['reply']['writers'],
+        'readers': {
+            'description': 'The users who will be allowed to read the reply content.',
+            'values': ['everyone']
+        }
+    }
+}
+
 review_rating_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
     'readers': ['everyone'],
@@ -140,7 +160,6 @@ add_revision_template = {
         'writers': iclr19.submission_inv.reply['writers'],
         'readers': iclr19.submission_inv.reply['readers']
     }
-
 }
 
 official_comment_template = {
