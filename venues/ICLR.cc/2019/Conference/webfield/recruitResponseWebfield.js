@@ -26,7 +26,7 @@ function main() {
 function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
 
-  Webfield.ui.spinner('#notes');
+  Webfield.ui.spinner('#notes', { inline: true });
 }
 
 function render() {
