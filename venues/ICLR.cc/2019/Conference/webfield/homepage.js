@@ -83,7 +83,7 @@ function main() {
 function load() {
 
   var activityNotesP;
-  var authorNotesP;   
+  var authorNotesP;
   var userGroupsP;
 
   if (!user || _.startsWith(user.id, 'guest_')) {
@@ -95,7 +95,7 @@ function load() {
       pageSize: PAGE_SIZE,
       details: 'forumContent'
     });
- 
+
     userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
       return _.filter(
         _.map(result.groups, function(g) { return g.id; }),
@@ -120,7 +120,7 @@ function load() {
 function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
 
-  Webfield.ui.spinner('#notes');
+  Webfield.ui.spinner('#notes', { inline: true });
 }
 
 function renderSubmissionButton() {

@@ -6,8 +6,8 @@
 // Constants
 var HEADER_TEXT = 'ICLR 2019 Reviewer Console';
 var SHORT_PHRASE = 'ICLR 2019';
-var INSTRUCTIONS =  '<p class="dark">This page provides information and status updates \
-for ICLR 2019 reviewers. It will be regularly updated as the conference progresses, \
+var INSTRUCTIONS = '<p class="dark">This page provides information and status updates \
+  for ICLR 2019 reviewers. It will be regularly updated as the conference progresses, \
   so please check back frequently for news and other updates.</p>';
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
@@ -184,9 +184,9 @@ var displayHeader = function(headerP) {
   var $panel = $('#group-container');
   $panel.hide('fast', function() {
     $panel.prepend('\
-      <div id="header" class="panel">\
+      <div id="header">\
         <h1>' + HEADER_TEXT + '</h1>\
-        <p class="description">' + INSTRUCTIONS + '</p>\
+        <div class="description">' + INSTRUCTIONS + '</div>\
       </div>\
       <div id="notes">\
         <div class="tabs-container"></div>\

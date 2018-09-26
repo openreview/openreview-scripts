@@ -111,7 +111,7 @@ function load() {
       pageSize: PAGE_SIZE,
       'content.authorids': user.profile.id,
       details: 'noDetails'
-    });     
+    });
   }
 
   return $.when(
@@ -124,7 +124,7 @@ function load() {
 function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
 
-  Webfield.ui.spinner('#notes');
+  Webfield.ui.spinner('#notes', { inline: true });
 }
 
 function renderSubmissionButton() {
