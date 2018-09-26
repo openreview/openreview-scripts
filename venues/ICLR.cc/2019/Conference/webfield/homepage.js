@@ -82,20 +82,20 @@ function main() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
 
-  var activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
-    pageSize: PAGE_SIZE,
-    details: 'forumContent'
-  });
-
-
+  var activityNotesP;
   var authorNotesP;
   var userGroupsP;
 
   if (!user || _.startsWith(user.id, 'guest_')) {
+    activityNotesP = $.Deferred().resolve([]);
     userGroupsP = $.Deferred().resolve([]);
     authorNotesP = $.Deferred().resolve([]);
-
   } else {
+    activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+      pageSize: PAGE_SIZE,
+      details: 'forumContent'
+    });
+
     userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
       return _.filter(
         _.map(result.groups, function(g) { return g.id; }),

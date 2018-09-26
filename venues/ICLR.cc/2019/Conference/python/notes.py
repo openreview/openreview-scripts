@@ -20,13 +20,14 @@ import random
 def getBibtex(client, note):
     firstWord = note.content["title"].split(' ')[0].lower();
     url = client.baseurl + '/forums?id=' + note.forum
-    return '@article{\
+    return '@inproceedings{\
     \nanonymous2019' + firstWord + ',\
     \ntitle={' + note.content["title"] + '},\
     \nauthor={Anonymous},\
     \njournal={International Conference on Learning Representations},\
     \nyear={2019},\
-    \nurl={' + url + '}\
+    \nurl={' + url + '},\
+    \nnote={under review}\
     \n}'
 
 def create_blind_note(note):

@@ -5,7 +5,7 @@
 var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
 var SHORT_PHRASE = 'ICLR 2019';
 var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
-var METADATA_INVITATION_ID = CONFERENCE_ID + '/-/Paper_Metadata';
+var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
 
@@ -46,15 +46,28 @@ function load() {
     });
   });
 
-  var metadataNotesP = Webfield.getAll('/notes', {invitation: METADATA_INVITATION_ID}).then(function(allNotes) {
-    var metadataMap = {};
-    for (var i = 0; i < allNotes.length; i++) {
-      metadataMap[allNotes[i].forum] = allNotes[i].content.groups;
+  var userScoresP = Webfield.getAll('/notes', {invitation: USER_SCORES_INVITATION_ID}).then(function(scoreNotes) {
+    // should be keyed on forum, with an object with the user's tpms (and conflict) scores
+
+    userScoreNotes = _.filter(scoreNotes, function(n){
+      if(n.content.user === user.profile.id){
+        return n;
+      }
+    })
+
+    var metadataNotesMap = {};
+
+    if (userScoreNotes.length){
+      userScores = userScoreNotes[0].content.scores;
     }
-    return metadataMap;
+
+    for (var i = 0; i < userScores.length; i++) {
+      metadataNotesMap[userScores[i].forum] = userScores[i];
+    }
+    return metadataNotesMap;
   });
 
-  return $.when(notesP, tagInvitationsP, metadataNotesP);
+  return $.when(notesP, tagInvitationsP, userScoresP);
 }
 
 
@@ -123,17 +136,20 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     var veryLow = [];
     var noBid = [];
     notes.forEach(function(n) {
-      var tags = n.details.tags;
-      if (tags.length) {
-        if (tags[0].tag === 'Very High') {
+      var bids = _.filter(n.details.tags, function(t){
+        if(t.invitation === ADD_BID){ return t; }
+      });
+
+      if (bids.length) {
+        if (bids[0].tag === 'Very High') {
           veryHigh.push(n);
-        } else if (tags[0].tag === 'High') {
+        } else if (bids[0].tag === 'High') {
           high.push(n);
-        } else if (tags[0].tag === 'Neutral') {
+        } else if (bids[0].tag === 'Neutral') {
           neutral.push(n);
-        } else if (tags[0].tag === 'Low') {
+        } else if (bids[0].tag === 'Low') {
           low.push(n);
-        } else if (tags[0].tag === 'Very Low') {
+        } else if (bids[0].tag === 'Very Low') {
           veryLow.push(n);
         } else {
           noBid.push(n);
@@ -257,23 +273,15 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     });
 
     var submissionListOptions = _.assign({}, paperDisplayOptions, {container: '#allPapers'});
-    var sortOptionsList = [];
-    // var sortOptionsList = [
-    //   {
-    //     label: 'Affinity Score',
-    //     compareProp: function(n) {
-    //       // Sort in descending order
-    //       return -1 * n.metadata.affinityScore;
-    //     },
-    //     default: true
-    //   },
-    //   {
-    //     label: 'TPMS Score',
-    //     compareProp: function(n) {
-    //       return -1 * n.metadata.tpmsScore;
-    //     }
-    //   }
-    // ];
+    var sortOptionsList = [
+      {
+        label: 'TPMS Score',
+        compareProp: function(n) {
+          return -1 * n.metadata.tpmsScore;
+        },
+        default: true
+      }
+    ];
     Webfield.ui.submissionList(notes, {
       heading: null,
       container: '#allPapers',
@@ -283,8 +291,6 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
         sort: sortOptionsList,
         onResults: function(searchResults) {
           addMetadataToNotes(searchResults, metadataNotesMap);
-
-          // Only include this code if there is a sort dropdown in the search form
           var selectedVal = $('.notes-search-form .sort-dropdown').val();
           if (selectedVal !== 'Default') {
             var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
@@ -295,19 +301,19 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
           Webfield.ui.searchResults(searchResults, submissionListOptions);
         },
         onReset: function() {
-          // // Only include this code if there is a sort dropdown in the search form
-          // var selectedVal = $('.notes-search-form .sort-dropdown').val();
-          // var sortedNotes;
-          // if (selectedVal !== 'Default') {
-          //   var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
-          //   if (sortOption) {
-          //     sortedNotes = _.sortBy(notes, sortOption.compareProp);
-          //   }
-          //   Webfield.ui.searchResults(sortedNotes, submissionListOptions);
-          // } else {
-          //   Webfield.ui.searchResults(notes, submissionListOptions);
-          // }
-          Webfield.ui.searchResults(notes, submissionListOptions);
+          addMetadataToNotes(notes, metadataNotesMap);
+
+          var selectedVal = $('.notes-search-form .sort-dropdown').val();
+          var sortedNotes;
+          if (selectedVal !== 'Default') {
+            var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
+            if (sortOption) {
+              sortedNotes = _.sortBy(notes, sortOption.compareProp);
+            }
+            Webfield.ui.searchResults(sortedNotes, submissionListOptions);
+          } else {
+            Webfield.ui.searchResults(notes, submissionListOptions);
+          }
 
         },
       },
@@ -359,30 +365,11 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
 
   for (var i = 0; i < validNotes.length; i++) {
     var note = validNotes[i];
-    var metadataNoteGroups = metadataNotesMap[note.id];
-    if (_.isEmpty(metadataNoteGroups)) {
-      continue;
-    }
-
-    var userMetadataObj;
-    var groups = Object.keys(metadataNoteGroups);
-    var affinityScore = 0;
-    var tpmsScore = 0;
-    var hasConflict = false;
-    for (var j = 0; j < groups.length; j++) {
-      userMetadataObj = _.find(metadataNoteGroups[groups[j]], ['userId', currUserId])
-      if (userMetadataObj) {
-        affinityScore = _.get(userMetadataObj, 'scores.affinity_score', 0);
-        tpmsScore = _.get(userMetadataObj, 'scores.tpms_score', 0);
-        hasConflict = _.has(userMetadataObj, 'scores.conflict_score');
-        break;
-      }
-    }
+    var paperMetadataObj = _.get(metadataNotesMap, note.id, {});
 
     note.metadata = {
-      affinityScore: affinityScore,
-      tpmsScore: tpmsScore,
-      conflict: hasConflict
+      tpmsScore: _.get(paperMetadataObj, 'tpmsScore', 0),
+      conflict: _.has(paperMetadataObj, 'conflict')
     };
   }
 }
