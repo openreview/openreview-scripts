@@ -76,21 +76,29 @@ var buildNoteMap = function(noteNumbers) {
 // Ajax functions
 var loadData = function(result) {
   var noteNumbers = getPaperNumbersfromGroups(result.groups);
-  var noteNumbersStr = noteNumbers.join(',');
+  var blindedNotesP;
+  var metaReviewsP;
 
-  var blindedNotesP = Webfield.get('/notes', {
-    invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
-  })
-  .then(function(result) {
-    return result.notes;
-  });
+  if (noteNumbers.length) {
+    var noteNumbersStr = noteNumbers.join(',');
 
-  var metaReviewsP = Webfield.get('/notes', {
-    invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
-  })
-  .then(function(result) {
-    return result.notes;
-  });
+    blindedNotesP = Webfield.get('/notes', {
+      invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
+    })
+    .then(function(result) {
+      return result.notes;
+    });
+  
+    metaReviewsP = Webfield.get('/notes', {
+      invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
+    })
+    .then(function(result) {
+      return result.notes;
+    });
+  } else {
+    blindedNotesP = $.Deferred().resolve([]);
+    metaReviewsP = $.Deferred().resolve([]);
+  }
 
   var invitationsP = Webfield.get('/invitations', {
     invitation: WILDCARD_INVITATION, pageSize: 100, invitee: true,
@@ -113,57 +121,68 @@ var loadData = function(result) {
 };
 
 var getOfficialReviews = function(noteNumbers) {
-  var noteMap = buildNoteMap(noteNumbers);
 
-  return Webfield.getAll('/notes', {
-    invitation: OFFICIAL_REVIEW_INVITATION, noDetails: true
-  })
-  .then(function(notes) {
-    var ratingExp = /^(\d+): .*/;
+  if (noteNumbers.length) {
+    var noteMap = buildNoteMap(noteNumbers);
 
-    _.forEach(notes, function(n) {
-      var num, index, ratingMatch;
-      var matches = n.signatures[0].match(ANONREVIEWER_REGEX);
-      if (matches) {
-        num = parseInt(matches[1], 10);
-        index = parseInt(matches[2], 10);
-
-        if (num in noteMap) {
-          // Need to parse rating and confidence strings into ints
-          ratingMatch = n.content.rating.match(ratingExp);
-          n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
-          confidenceMatch = n.content.confidence.match(ratingExp);
-          n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
-
-          noteMap[num][index] = n;
+    return Webfield.getAll('/notes', {
+      invitation: OFFICIAL_REVIEW_INVITATION, noDetails: true
+    })
+    .then(function(notes) {
+      var ratingExp = /^(\d+): .*/;
+  
+      _.forEach(notes, function(n) {
+        var num, index, ratingMatch;
+        var matches = n.signatures[0].match(ANONREVIEWER_REGEX);
+        if (matches) {
+          num = parseInt(matches[1], 10);
+          index = parseInt(matches[2], 10);
+  
+          if (num in noteMap) {
+            // Need to parse rating and confidence strings into ints
+            ratingMatch = n.content.rating.match(ratingExp);
+            n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+            confidenceMatch = n.content.confidence.match(ratingExp);
+            n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+  
+            noteMap[num][index] = n;
+          }
         }
-      }
+      });
+  
+      return noteMap;
     });
+  } else {
+    return $.Deferred().resolve({});
+  }
 
-    return noteMap;
-  });
 };
 
 var getReviewerGroups = function(noteNumbers) {
-  var noteMap = buildNoteMap(noteNumbers);
 
-  return Webfield.get('/groups', { id: ANONREVIEWER_WILDCARD })
-  .then(function(result) {
-    _.forEach(result.groups, function(g) {
-      var matches = g.id.match(ANONREVIEWER_REGEX);
-      var num, index;
-      if (matches) {
-        num = parseInt(matches[1], 10);
-        index = parseInt(matches[2], 10);
+  if (noteNumbers.length) {
+    var noteMap = buildNoteMap(noteNumbers);
 
-        if ((num in noteMap) && g.members.length) {
-          noteMap[num][index] = g.members[0];
+    return Webfield.get('/groups', { id: ANONREVIEWER_WILDCARD })
+    .then(function(result) {
+      _.forEach(result.groups, function(g) {
+        var matches = g.id.match(ANONREVIEWER_REGEX);
+        var num, index;
+        if (matches) {
+          num = parseInt(matches[1], 10);
+          index = parseInt(matches[2], 10);
+  
+          if ((num in noteMap) && g.members.length) {
+            noteMap[num][index] = g.members[0];
+          }
         }
-      }
+      });
+  
+      return noteMap;
     });
-
-    return noteMap;
-  });
+  } else {
+    return $.Deferred().resolve({});
+  }
 
 };
 
@@ -194,7 +213,7 @@ var getUserProfiles = function(userIds) {
     _.forEach(result.profiles, function(profile) {
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferredEmail;
+      profile.email = profile.content.preferredEmail || profile.content.emails[0];
       profileMap[profile.id] = profile;
     });
 
@@ -248,7 +267,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
   var order = 'desc';
   var sortOptions = {
     Paper_Number: function(row) { return row[1].number; },
-    Paper_Title: function(row) { return _.toLower(row[2].content.title); },
+    Paper_Title: function(row) { return _.toLower(_.trim(row[2].content.title)); },
     Number_of_Reviews_Submitted: function(row) { return row[3].numSubmittedReviews; },
     Number_of_Reviews_Missing: function(row) { return row[3].numReviewers - row[3].numSubmittedReviews; },
     Average_Rating: function(row) { return row[4].averageRating === 'N/A' ? 0 : row[4].averageRating; },
