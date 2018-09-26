@@ -281,7 +281,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
         label: 'TPMS Score',
         compareProp: function(n) {
           return -1 * n.metadata.tpmsScore;
-        }
+        },
+        default: true
       }
     ];
     Webfield.ui.submissionList(notes, {
