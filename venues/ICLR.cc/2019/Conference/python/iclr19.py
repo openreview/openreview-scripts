@@ -453,6 +453,23 @@ add_bid = invitations.AddBid(
     }
 )
 
+SCORES_INV_ID = CONFERENCE_ID + '/-/User_Scores'
+scores_inv = openreview.Invitation.from_json({
+    'id': SCORES_INV_ID,
+    'invitees': ['ICLR.cc/2019/Conference'],
+    'readers': ['everyone'],
+    'writers': ['ICLR.cc/2019/Conference'],
+    'signatures': ['ICLR.cc/2019/Conference'],
+    'reply': {
+        'content': {},
+        'forum': None,
+        'replyto': None,
+        'invitation': 'ICLR.cc/2019/Conference/-/Blind_Submission',
+        'readers': {'values-regex':'~.*'},
+        'writers': {'values': ['ICLR.cc/2019/Conference']}
+    }
+})
+
 
 METADATA_INV_ID = CONFERENCE_ID + '/-/Paper_Metadata'
 
