@@ -52,7 +52,7 @@ function load() {
     // should be keyed on forum, with an object with the user's tpms (and conflict) scores
 
     userScoreNotes = _.filter(scoreNotes, function(n){
-      if(n.content.users.includes(user.profile.id)){
+      if(n.content.user === user.profile.id){
         return n;
       }
     })

@@ -58,7 +58,7 @@ if __name__ == '__main__':
                     'readers': [user_id],
                     'writers': ['ICLR.cc/2019/Conference'],
                     'content': {
-                        'users': [user_id],
+                        'user': user_id,
                         'scores': []
                     },
                     'signatures': ['ICLR.cc/2019/Conference'],
