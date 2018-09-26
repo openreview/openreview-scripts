@@ -58,12 +58,17 @@ var getPaperNumbersfromGroups = function(groups) {
 };
 
 var getBlindedNotes = function(noteNumbers) {
-  var noteNumbersStr = noteNumbers.join(',');
+  if (noteNumbers.length) {
+    var noteNumbersStr = noteNumbers.join(',');
 
-  return $.getJSON('notes', { invitation: CONFERENCE + '/-/Blind_Submission', number: noteNumbersStr, noDetails: true })
-    .then(function(result) {
-      return result.notes;
-    });
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Blind_Submission', number: noteNumbersStr, noDetails: true })
+      .then(function(result) {
+        return result.notes;
+      });
+  } else {
+    return $.Deferred().resolve([]);
+  }
+
 };
 
 var getAllRatings = function(callback) {
@@ -82,78 +87,92 @@ var getAllRatings = function(callback) {
     });
   };
 
-  getPromise(0, 2000);
+  getPromise(0, 1000);
 
 };
 
 var getReviewRatings = function(noteNumbers) {
-  var dfd = $.Deferred();
+  if (noteNumbers.length) {
+    var dfd = $.Deferred();
 
-  var noteMap = buildNoteMap(noteNumbers);
-
-  getAllRatings(function(notes) {
-    _.forEach(notes, function(n) {
-      var paperPart = _.find(n.invitation.split('/'), function(part) {
-        return part.indexOf('Paper') !== -1;
+    var noteMap = buildNoteMap(noteNumbers);
+  
+    getAllRatings(function(notes) {
+      _.forEach(notes, function(n) {
+        var paperPart = _.find(n.invitation.split('/'), function(part) {
+          return part.indexOf('Paper') !== -1;
+        });
+        var num = parseInt(paperPart.split('Paper')[1], 10);
+        if (num in noteMap) {
+          noteMap[num][n.forum] = n;
+        }
       });
-      var num = parseInt(paperPart.split('Paper')[1], 10);
-      if (num in noteMap) {
-        noteMap[num][n.forum] = n;
-      }
+  
+      dfd.resolve(noteMap);
     });
+  
+    return dfd.promise();
+  } else {
+    return $.Deferred().resolve([]);
+  }
 
-    dfd.resolve(noteMap);
-  });
-
-  return dfd.promise();
 };
 
 var getReviewerGroups = function(noteNumbers) {
-  var noteMap = buildNoteMap(noteNumbers);
+  if (noteNumbers.length) {
+    var noteMap = buildNoteMap(noteNumbers);
 
-  return $.getJSON('groups', { id: CONFERENCE + '/Paper.*/AnonReviewer.*' })
-    .then(function(result) {
-
-      _.forEach(result.groups, function(g) {
-        var matches = g.id.match(ANONREVIEWER_REGEX);
-        var num, index;
-        if (matches) {
-          num = parseInt(matches[1], 10);
-          index = parseInt(matches[2], 10);
-
-          if ((num in noteMap) && g.members.length) {
-            noteMap[num][index] = g.members[0];
+    return $.getJSON('groups', { id: CONFERENCE + '/Paper.*/AnonReviewer.*' })
+      .then(function(result) {
+  
+        _.forEach(result.groups, function(g) {
+          var matches = g.id.match(ANONREVIEWER_REGEX);
+          var num, index;
+          if (matches) {
+            num = parseInt(matches[1], 10);
+            index = parseInt(matches[2], 10);
+  
+            if ((num in noteMap) && g.members.length) {
+              noteMap[num][index] = g.members[0];
+            }
           }
-        }
+        });
+        return noteMap;
+      })
+      .fail(function(error) {
+        displayError();
+        return null;
       });
-      return noteMap;
+  } else {
+    return $.Deferred().resolve({});
+  }
+
+};
+
+var getUserProfiles = function(userIds) {
+  if (userIds.length) {
+    return $.post('/user/profiles', JSON.stringify({ids: userIds}))
+    .then(function(result) {
+  
+      var profileMap = {};
+  
+      _.forEach(result.profiles, function(profile) {
+  
+        var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
+        profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
+        profile.email = profile.content.preferredEmail;
+        profileMap[profile.id] = profile;
+      })
+  
+      return profileMap;
     })
     .fail(function(error) {
       displayError();
       return null;
     });
-};
-
-var getUserProfiles = function(userIds) {
-  return $.post('/user/profiles', JSON.stringify({ids: userIds}))
-  .then(function(result) {
-
-    var profileMap = {};
-
-    _.forEach(result.profiles, function(profile) {
-
-      var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
-      profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferredEmail;
-      profileMap[profile.id] = profile;
-    })
-
-    return profileMap;
-  })
-  .fail(function(error) {
-    displayError();
-    return null;
-  });
+  } else {
+    return $.Deferred().resolve([]);
+  }
 };
 
 var findProfile = function(profiles, id) {
@@ -169,14 +188,19 @@ var findProfile = function(profiles, id) {
   }
 }
 
-var getOfficialReviews = function() {
-  return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Official_Review', tauthor: true, noDetails: true })
+var getOfficialReviews = function(noteNumbers) {
+  if (noteNumbers.length) {
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Official_Review', tauthor: true, noDetails: true })
     .then(function(result) {
       return result.notes;
     }).fail(function(error) {
       displayError();
       return null;
     });
+  } else {
+    return $.Deferred().resolve([]); 
+  }
+
 };
 
 // Render functions
@@ -197,20 +221,20 @@ var displayHeader = function(headerP) {
     var tabsData = {
       sections: [
         {
+          heading: 'Assigned Papers',
+          id: 'assigned-papers',
+          content: loadingMessage,
+          active: true
+        },        
+        {
           heading: 'Reviewer Schedule',
           id: 'reviewer-schedule',
-          content: SCHEDULE_HTML,
-          active: true
+          content: SCHEDULE_HTML
         },
         {
           heading: 'Reviewer Tasks',
           id: 'reviewer-tasks',
           content: loadingMessage,
-        },
-        {
-          heading: 'Assigned Papers',
-          id: 'assigned-papers',
-          content: loadingMessage
         }
       ]
     };
@@ -223,9 +247,7 @@ var displayHeader = function(headerP) {
 };
 
 var displayStatusTable = function(profiles, notes, completedRatings, officialReviews, reviewerIds, container, options) {
-  console.log('reviewerIds', reviewerIds);
   if (Object.keys(reviewerIds).length){
-    console.log('Object.keys(reviewerIds).length', Object.keys(reviewerIds).length);
     var rowData = _.map(notes, function(note) {
       var revIds = reviewerIds[note.number];
       for (var revNumber in revIds) {
@@ -287,78 +309,6 @@ var buildTableRow = function(note, reviewerIds, completedRatings, officialReview
   //note.content.authorDomains = domains;
   var summaryHtml = Handlebars.templates.noteSummary(note);
 
-  // Build Review Progress Cell
-  // var reviewObj;
-  // var combinedObj = {};
-  // var ratings = [];
-  // var confidences = [];
-  // for (var reviewerNum in reviewerIds) {
-  //   var reviewer = reviewerIds[reviewerNum];
-  //   if (reviewerNum in completedRatings) {
-  //     reviewObj = completedRatings[reviewerNum];
-  //     combinedObj[reviewerNum] = {
-  //       id: reviewer.id,
-  //       name: reviewer.name,
-  //       email: reviewer.email,
-  //       completedReview: true,
-  //       forum: reviewObj.forum,
-  //       note: reviewObj.id,
-  //       rating: reviewObj.rating,
-  //       confidence: reviewObj.confidence,
-  //       reviewLength: reviewObj.content.review.length
-  //     };
-  //     ratings.push(reviewObj.rating);
-  //     confidences.push(reviewObj.confidence);
-  //   } else {
-  //     var forumUrl = '/forum?' + $.param({
-  //       id: note.forum,
-  //       noteId: note.id,
-  //       invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official_Review'
-  //     });
-  //     var lastReminderSent = localStorage.getItem(forumUrl + '|' + reviewer.id);
-  //     combinedObj[reviewerNum] = {
-  //       id: reviewer.id,
-  //       name: reviewer.name,
-  //       email: reviewer.email,
-  //       forumUrl: forumUrl,
-  //       lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
-  //     };
-  //   }
-  // }
-  // var averageRating = 'N/A';
-  // var minRating = 'N/A';
-  // var maxRating = 'N/A';
-  // if (ratings.length) {
-  //   averageRating = _.round(_.sum(ratings) / ratings.length, 2);
-  //   minRating = _.min(ratings);
-  //   maxRating = _.max(ratings);
-  // }
-
-  // var averageConfidence = 'N/A';
-  // var minConfidence = 'N/A';
-  // var maxConfidence = 'N/A';
-  // if (confidences.length) {
-  //   averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
-  //   minConfidence = _.min(confidences);
-  //   maxConfidence = _.max(confidences);
-  // }
-
-  // console.log('combinedObj', combinedObj);
-  // console.log('reviewerIds', reviewerIds);
-  // var ratingProgressData = {
-  //   numSubmittedReviews: Object.keys(completedRatings).length,
-  //   numReviewers: Object.keys(reviewerIds).length,
-  //   reviewers: combinedObj,
-  //   averageRating: averageRating,
-  //   maxRating: maxRating,
-  //   minRating: minRating,
-  //   averageConfidence: averageConfidence,
-  //   minConfidence: minConfidence,
-  //   maxConfidence: maxConfidence,
-  //   sendReminder: true
-  // };
-  // var ratingHtml = Handlebars.templates.noteRatings(ratingProgressData);
-
   // Build Status Cell
   var invitationUrlParams = {
     id: note.forum,
@@ -370,7 +320,6 @@ var buildTableRow = function(note, reviewerIds, completedRatings, officialReview
     invitationName: 'Official Review'
   };
   if (officialReview) {
-    console.log('officialReview detected', officialReview);
     reviewStatus.paperRating = officialReview.content.rating;
     reviewStatus.review = officialReview.content.review;
     reviewStatus.editUrl = '/forum?id=' + note.forum + '&noteId=' + officialReview.id;
@@ -407,15 +356,13 @@ controller.addHandler('reviewers', {
     var userReviewerGroupsP = $.getJSON('groups', { member: user.id, regex: CONFERENCE + '/Paper.*/AnonReviewer.*' })
       .then(function(result) {
         var noteNumbers = getPaperNumbersfromGroups(result.groups);
-        console.log('noteNumbers', noteNumbers);
         return $.when(
           getBlindedNotes(noteNumbers),
           getReviewRatings(noteNumbers),
-          getOfficialReviews(),
+          getOfficialReviews(noteNumbers),
           getReviewerGroups(noteNumbers),
           Webfield.get('/invitations', {
             invitation: WILDCARD_INVITATION,
-            pageSize: 100,
             invitee: true,
             duedate: true,
             replyto: true,
@@ -423,16 +370,19 @@ controller.addHandler('reviewers', {
           }).then(function(result) {
             return result.invitations;
           }),
-          Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID),
+          Webfield.get('/invitations', {
+            invitation: WILDCARD_INVITATION,
+            invitee: true,
+            duedate: true,
+            tags: true,
+            details:'repliedTags'
+          }).then(function(result) {
+            return result.invitations;
+          }),
           headerLoaded
         );
       })
       .then(function(blindedNotes, reviewRatings, officialReviews, noteToReviewerIds, invitations, tagInvitations, loaded) {
-        console.log('blindedNotes', blindedNotes);
-        console.log('reviewRatings', reviewRatings);
-        console.log('noteToReviewerIds', noteToReviewerIds);
-        console.log('invitations', invitations);
-        console.log('tagInvitations', tagInvitations);
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
           return result.concat(_.values(idsObj));
         }, []));
