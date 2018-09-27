@@ -76,21 +76,29 @@ var buildNoteMap = function(noteNumbers) {
 // Ajax functions
 var loadData = function(result) {
   var noteNumbers = getPaperNumbersfromGroups(result.groups);
-  var noteNumbersStr = noteNumbers.join(',');
+  var blindedNotesP;
+  var metaReviewsP;
 
-  var blindedNotesP = Webfield.get('/notes', {
-    invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
-  })
-  .then(function(result) {
-    return result.notes;
-  });
+  if (noteNumbers.length) {
+    var noteNumbersStr = noteNumbers.join(',');
 
-  var metaReviewsP = Webfield.get('/notes', {
-    invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
-  })
-  .then(function(result) {
-    return result.notes;
-  });
+    blindedNotesP = Webfield.get('/notes', {
+      invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
+    })
+    .then(function(result) {
+      return result.notes;
+    });
+  
+    metaReviewsP = Webfield.get('/notes', {
+      invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
+    })
+    .then(function(result) {
+      return result.notes;
+    });
+  } else {
+    blindedNotesP = $.Deferred().resolve([]);
+    metaReviewsP = $.Deferred().resolve([]);
+  }
 
   var invitationsP = Webfield.get('/invitations', {
     invitation: WILDCARD_INVITATION, pageSize: 100, invitee: true,
@@ -113,6 +121,11 @@ var loadData = function(result) {
 };
 
 var getOfficialReviews = function(noteNumbers) {
+
+  if (!noteNumbers.length) {
+    return $.Deferred().resolve({});
+  }
+
   var noteMap = buildNoteMap(noteNumbers);
 
   return Webfield.getAll('/notes', {
@@ -145,6 +158,11 @@ var getOfficialReviews = function(noteNumbers) {
 };
 
 var getReviewerGroups = function(noteNumbers) {
+
+  if (!noteNumbers.length) {
+    return $.Deferred().resolve({});
+  };
+
   var noteMap = buildNoteMap(noteNumbers);
 
   return Webfield.get('/groups', { id: ANONREVIEWER_WILDCARD })
@@ -194,7 +212,7 @@ var getUserProfiles = function(userIds) {
     _.forEach(result.profiles, function(profile) {
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferredEmail;
+      profile.email = profile.content.preferredEmail || profile.content.emails[0];
       profileMap[profile.id] = profile;
     });
 
@@ -248,7 +266,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
   var order = 'desc';
   var sortOptions = {
     Paper_Number: function(row) { return row[1].number; },
-    Paper_Title: function(row) { return _.toLower(row[2].content.title); },
+    Paper_Title: function(row) { return _.toLower(_.trim(row[2].content.title)); },
     Number_of_Reviews_Submitted: function(row) { return row[3].numSubmittedReviews; },
     Number_of_Reviews_Missing: function(row) { return row[3].numReviewers - row[3].numSubmittedReviews; },
     Average_Rating: function(row) { return row[4].averageRating === 'N/A' ? 0 : row[4].averageRating; },

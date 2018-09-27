@@ -74,21 +74,29 @@ var buildNoteMap = function(noteNumbers) {
 // Ajax functions
 var loadData = function(result) {
   var noteNumbers = getPaperNumbersfromGroups(result.groups);
-  var noteNumbersStr = noteNumbers.join(',');
+  var blindedNotesP;
+  var metaReviewsP;
 
-  var blindedNotesP = Webfield.get('/notes', {
-    invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
-  })
-  .then(function(result) {
-    return result.notes;
-  });
+  if (noteNumbers.length) {
+    var noteNumbersStr = noteNumbers.join(',');
 
-  var metaReviewsP = Webfield.get('/notes', {
-    invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
-  })
-  .then(function(result) {
-    return result.notes;
-  });
+    blindedNotesP = Webfield.get('/notes', {
+      invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
+    })
+    .then(function(result) {
+      return result.notes;
+    });
+  
+    metaReviewsP = Webfield.get('/notes', {
+      invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
+    })
+    .then(function(result) {
+      return result.notes;
+    });
+  } else {
+    blindedNotesP = $.Deferred().resolve([]);
+    metaReviewsP = $.Deferred().resolve([]);
+  }
 
   var invitationsP = Webfield.get('/invitations', {
     invitation: WILDCARD_INVITATION, pageSize: 100, invitee: true,
@@ -111,6 +119,11 @@ var loadData = function(result) {
 };
 
 var getOfficialReviews = function(noteNumbers) {
+
+  if (!noteNumbers.length) {
+    return $.Deferred().resolve({});
+  }
+
   var noteMap = buildNoteMap(noteNumbers);
 
   return Webfield.getAll('/notes', {
@@ -143,6 +156,11 @@ var getOfficialReviews = function(noteNumbers) {
 };
 
 var getReviewerGroups = function(noteNumbers) {
+
+  if (!noteNumbers.length) {
+    return $.Deferred().resolve({});
+  };
+
   var noteMap = buildNoteMap(noteNumbers);
 
   return Webfield.get('/groups', { id: ANONREVIEWER_WILDCARD })
