@@ -68,7 +68,6 @@ var getBlindedNotes = function(noteNumbers) {
     .then(function(result) {
       return result.notes;
     });
-
 };
 
 var getAllRatings = function(callback) {
@@ -116,7 +115,6 @@ var getReviewRatings = function(noteNumbers) {
   });
 
   return dfd.promise();
-
 };
 
 var getReviewerGroups = function(noteNumbers) {
@@ -148,7 +146,6 @@ var getReviewerGroups = function(noteNumbers) {
       displayError();
       return null;
     });
-
 };
 
 var getUserProfiles = function(userIds) {
@@ -198,12 +195,12 @@ var getOfficialReviews = function(noteNumbers) {
   }  
 
   return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Official_Review', tauthor: true, noDetails: true })
-  .then(function(result) {
-    return result.notes;
-  }).fail(function(error) {
-    displayError();
-    return null;
-  });
+    .then(function(result) {
+      return result.notes;
+    }).fail(function(error) {
+      displayError();
+      return null;
+    });
 
 };
 
