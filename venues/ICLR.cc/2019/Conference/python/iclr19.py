@@ -287,6 +287,36 @@ blind_submission_inv = invitations.Submission(
 )
 
 
+# User "registration".
+# this is a workaround to force ICLR to show up in users'
+# "your active venues" list, even if they haven't replied to
+# any active ICLR invitations.
+# It's a workaround in the sense that it requires us to
+# falsify the "tauthor" field in the note using the Super User.
+
+register_user_inv = openreview.Invitation.from_json({
+    'id': CONFERENCE_ID + '/-/Register_User',
+    'readers': ['everyone'],
+    'writers': [],
+    'invitees': ['~'],
+    'signatures': [CONFERENCE_ID],
+    # The dates below are the day after the in-person meeting of the conference
+    'expdate': openreview.tools.timestamp_GMT(year=2019, month=5, day=10),
+    'duedate': openreview.tools.timestamp_GMT(year=2019, month=5, day=10),
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'readers': {'values': [CONFERENCE_ID]},
+        'writers': {'values': [CONFERENCE_ID]},
+        'signatures': {'values': [CONFERENCE_ID]},
+        'content': {
+            'registered': {
+                'value': 'yes'
+            }
+        }
+    }
+})
+
 # Configure reviewer recruitment
 recruit_reviewers = invitations.RecruitReviewers(
     id = RECRUIT_REVIEWERS_ID,
