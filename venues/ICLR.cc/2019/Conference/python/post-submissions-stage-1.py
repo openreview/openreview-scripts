@@ -37,7 +37,7 @@ if __name__ == '__main__':
     original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.submission_inv.id)
 
     for original in original_notes:
-        blind_note = notes.post_blind_note(client, original)
+        # blind_note = notes.post_blind_note(client, original)
 
         # groups.create_and_post(client, blind_note, 'Paper')
         # author_group = groups.create_and_post(client, blind_note, 'Paper/Authors', members=original.content['authorids'])
@@ -47,6 +47,7 @@ if __name__ == '__main__':
         #     author_group.id
         # ]
         notes.freeze_and_post(client, original)
+        print('freezing note {}'.format(original.id))
 
         # invitations.enable_and_post(client, blind_note, 'Public_Comment')
         # invitations.enable_and_post(client, blind_note, 'Official_Comment')
