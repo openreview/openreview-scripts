@@ -140,7 +140,8 @@ The ICLR 2019 Program Chairs
 SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=9, day=27, hour=22)
 BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=10, hour=9)
 ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=5)
-OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=29)
+OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=2, hour=22)
+OFFICIAL_REVIEW_EXPIRY = openreview.tools.timestamp_GMT(year=2018, month=10, day=29)
 META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=7)
 
 
@@ -306,6 +307,8 @@ questionnaire_instructions_invitation = openreview.Invitation.from_json({
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
     'invitees': [CONFERENCE_ID],
+    'duedate': OFFICIAL_REVIEW_DEADLINE,
+    'expdate': OFFICIAL_REVIEW_EXPIRY,
     'reply': {
         'forum': None,
         'replyto': None,
@@ -340,7 +343,7 @@ questionnaire_response_template = {
     'signatures': [CONFERENCE_ID],
     'invitees': [REVIEWERS_ID],
     'duedate': OFFICIAL_REVIEW_DEADLINE,
-    'expdate': OFFICIAL_REVIEW_DEADLINE,
+    'expdate': OFFICIAL_REVIEW_EXPIRY,
     'reply': {
         'forum': '<forum>',
         'replyto': '<forum>',
