@@ -115,6 +115,8 @@ var getReviewRatings = function(noteNumbers) {
     dfd.resolve(noteMap);
   });
 
+  return dfd.promise();
+
 };
 
 var getReviewerGroups = function(noteNumbers) {
