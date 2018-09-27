@@ -153,7 +153,6 @@ var getOfficialReviews = function(noteNumbers) {
 
     return noteMap;
   });
-
 };
 
 var getReviewerGroups = function(noteNumbers) {
