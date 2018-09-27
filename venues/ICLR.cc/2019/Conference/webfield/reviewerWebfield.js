@@ -172,7 +172,6 @@ var getUserProfiles = function(userIds) {
     displayError();
     return null;
   });
-
 };
 
 var findProfile = function(profiles, id) {
@@ -201,7 +200,6 @@ var getOfficialReviews = function(noteNumbers) {
       displayError();
       return null;
     });
-
 };
 
 // Render functions
