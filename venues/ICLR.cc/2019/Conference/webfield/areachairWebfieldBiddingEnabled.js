@@ -124,67 +124,66 @@ var loadData = function(result) {
 
 var getOfficialReviews = function(noteNumbers) {
 
-  if (noteNumbers.length) {
-    var noteMap = buildNoteMap(noteNumbers);
-
-    return Webfield.getAll('/notes', {
-      invitation: OFFICIAL_REVIEW_INVITATION, noDetails: true
-    })
-    .then(function(notes) {
-      var ratingExp = /^(\d+): .*/;
-  
-      _.forEach(notes, function(n) {
-        var num, index, ratingMatch;
-        var matches = n.signatures[0].match(ANONREVIEWER_REGEX);
-        if (matches) {
-          num = parseInt(matches[1], 10);
-          index = parseInt(matches[2], 10);
-  
-          if (num in noteMap) {
-            // Need to parse rating and confidence strings into ints
-            ratingMatch = n.content.rating.match(ratingExp);
-            n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
-            confidenceMatch = n.content.confidence.match(ratingExp);
-            n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
-  
-            noteMap[num][index] = n;
-          }
-        }
-      });
-  
-      return noteMap;
-    });
-  } else {
+  if (!noteNumbers.length) {
     return $.Deferred().resolve({});
   }
 
+  var noteMap = buildNoteMap(noteNumbers);
+
+  return Webfield.getAll('/notes', {
+    invitation: OFFICIAL_REVIEW_INVITATION, noDetails: true
+  })
+  .then(function(notes) {
+    var ratingExp = /^(\d+): .*/;
+
+    _.forEach(notes, function(n) {
+      var num, index, ratingMatch;
+      var matches = n.signatures[0].match(ANONREVIEWER_REGEX);
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        index = parseInt(matches[2], 10);
+
+        if (num in noteMap) {
+          // Need to parse rating and confidence strings into ints
+          ratingMatch = n.content.rating.match(ratingExp);
+          n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+          confidenceMatch = n.content.confidence.match(ratingExp);
+          n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+
+          noteMap[num][index] = n;
+        }
+      }
+    });
+
+    return noteMap;
+  });
 };
 
 var getReviewerGroups = function(noteNumbers) {
 
-  if (noteNumbers.length) {
-    var noteMap = buildNoteMap(noteNumbers);
-
-    return Webfield.get('/groups', { id: ANONREVIEWER_WILDCARD })
-    .then(function(result) {
-      _.forEach(result.groups, function(g) {
-        var matches = g.id.match(ANONREVIEWER_REGEX);
-        var num, index;
-        if (matches) {
-          num = parseInt(matches[1], 10);
-          index = parseInt(matches[2], 10);
-  
-          if ((num in noteMap) && g.members.length) {
-            noteMap[num][index] = g.members[0];
-          }
-        }
-      });
-  
-      return noteMap;
-    });
-  } else {
+  if (!noteNumbers.length) {
     return $.Deferred().resolve({});
-  }
+  };
+
+  var noteMap = buildNoteMap(noteNumbers);
+
+  return Webfield.get('/groups', { id: ANONREVIEWER_WILDCARD })
+  .then(function(result) {
+    _.forEach(result.groups, function(g) {
+      var matches = g.id.match(ANONREVIEWER_REGEX);
+      var num, index;
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        index = parseInt(matches[2], 10);
+
+        if ((num in noteMap) && g.members.length) {
+          noteMap[num][index] = g.members[0];
+        }
+      }
+    });
+
+    return noteMap;
+  });
 
 };
 
