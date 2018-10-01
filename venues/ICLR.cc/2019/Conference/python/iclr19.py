@@ -139,7 +139,7 @@ The ICLR 2019 Program Chairs
 # Deadlines
 SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=9, day=27, hour=22)
 BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=10, hour=9)
-ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=5)
+ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=6, hour=0)
 OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=29)
 META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=7)
 
