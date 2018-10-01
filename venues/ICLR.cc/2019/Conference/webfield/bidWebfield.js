@@ -8,6 +8,21 @@ var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
+var SEARCH_KEYWORDS = [
+  "deep learning", "reinforcement learning", "neural networks", "unsupervised learning",
+  "generative adversarial networks", "optimization", "natural language processing",
+  "generative models", "deep reinforcement learning", "representation learning",
+  "adversarial examples", "recurrent neural networks", "gan", "generalization", "gans",
+  "variational inference", "rnn", "lstm", "convolutional neural networks", "transfer learning",
+  "neural network", "computer vision", "deep neural networks", "domain adaptation", "attention",
+  "regularization", "image classification", "machine learning", "interpretability",
+  "meta-learning", "generative model", "deep generative models", "model compression",
+  "word embeddings", "sparsity", "adversarial learning", "imitation learning",
+  "question answering", "clustering", "policy gradient", "unsupervised", "cnn",
+  "supervised learning", "adversarial training", "exploration", "classification",
+  "recurrent neural network", "convolutional neural network", "robotics",
+  "machine translation"
+];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
   the submitted papers below, on a scale from "Very Low" to "Very High".</p>\
@@ -36,7 +51,7 @@ function load() {
   var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
     return _.sortBy(
       allNotes.filter(function(note) { return !note.content.hasOwnProperty('withdrawal'); }),
-      function(n) { return n.content.title.toLowerCase(); }
+      function(n) { return n.content.title.trim().toLowerCase(); }
     );
   });
 
@@ -47,22 +62,17 @@ function load() {
   });
 
   var userScoresP = Webfield.getAll('/notes', {invitation: USER_SCORES_INVITATION_ID}).then(function(scoreNotes) {
-    // should be keyed on forum, with an object with the user's tpms (and conflict) scores
-
-    userScoreNotes = _.filter(scoreNotes, function(n){
-      if(n.content.user === user.profile.id){
-        return n;
-      }
-    })
-
+    // Build mapping from forum id to an object with the user's scores
+    // (tpms and conflict if available)
     var metadataNotesMap = {};
-
-    if (userScoreNotes.length){
-      userScores = userScoreNotes[0].content.scores;
+    var userScores = _.find(scoreNotes, ['content.user', user.profile.id]);
+    if (!userScores) {
+      return metadataNotesMap;
     }
 
+    userScores = userScores.content.scores;
     for (var i = 0; i < userScores.length; i++) {
-      metadataNotesMap[userScores[i].forum] = userScores[i];
+      metadataNotesMap[userScores[i].forum] = _.omit(userScores[i], ['forum']);
     }
     return metadataNotesMap;
   });
@@ -71,17 +81,17 @@ function load() {
 }
 
 
-// Display the page interface populated with loaded data
+// Display the bid interface populated with loaded data
 function renderContent(validNotes, tagInvitations, metadataNotesMap) {
   addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
 
-  $('#invitation-container').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
+  $('#invitation-container').off('shown.bs.tab').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
     activeTab = $(e.target).data('tabIndex');
   });
 
-  $('#invitation-container').on('bidUpdated', '.tag-widget', function(e, tagObj) {
+  $('#invitation-container').off('bidUpdated').on('bidUpdated', '.tag-widget', function(e, tagObj) {
     var updatedNote = _.find(validNotes, ['id', tagObj.forum]);
     if (!updatedNote) {
       return;
@@ -128,16 +138,19 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
   });
 
   function updateNotes(notes) {
-    // Sort notes by bid
+    // Sort notes into bins by bid
     var veryHigh = [];
     var high = [];
     var neutral = [];
     var low = [];
     var veryLow = [];
     var noBid = [];
-    notes.forEach(function(n) {
-      var bids = _.filter(n.details.tags, function(t){
-        if(t.invitation === ADD_BID){ return t; }
+
+    var bids, n;
+    for (var i = 0; i < notes.length; i++) {
+      n = notes[i];
+      bids = _.filter(n.details.tags, function(t) {
+        return t.invitation === ADD_BID;
       });
 
       if (bids.length) {
@@ -157,7 +170,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       } else {
         noBid.push(n);
       }
-    });
+    }
 
     var bidCount = veryHigh.length + high.length + neutral.length + low.length + veryLow.length;
 
@@ -229,7 +242,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#veryHigh',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false
+      fadeIn: false,
+      pageSize: 50
     });
 
     Webfield.ui.submissionList(high, {
@@ -237,7 +251,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#high',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false
+      fadeIn: false,
+      pageSize: 50
     });
 
     Webfield.ui.submissionList(neutral, {
@@ -245,7 +260,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#neutral',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false
+      fadeIn: false,
+      pageSize: 50
     });
 
     Webfield.ui.submissionList(low, {
@@ -253,7 +269,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#low',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false
+      fadeIn: false,
+      pageSize: 50
     });
 
     Webfield.ui.submissionList(veryLow, {
@@ -261,7 +278,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#veryLow',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false
+      fadeIn: false,
+      pageSize: 50
     });
 
     Webfield.ui.submissionList(noBid, {
@@ -269,16 +287,15 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#noBid',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false
+      fadeIn: false,
+      pageSize: 50
     });
 
-    var submissionListOptions = _.assign({}, paperDisplayOptions, {container: '#allPapers'});
+    var searchResultsOptions = _.assign({}, paperDisplayOptions, { container: '#allPapers', pageSize: 50 });
     var sortOptionsList = [
       {
         label: 'TPMS Score',
-        compareProp: function(n) {
-          return -1 * n.metadata.tpmsScore;
-        },
+        compareFunc: function(a, b) { return b.metadata.tpmsScore - a.metadata.tpmsScore; },
         default: true
       }
     ];
@@ -288,40 +305,35 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       search: {
         enabled: true,
         localSearch: true,
+        subjectAreas: SEARCH_KEYWORDS,
         sort: sortOptionsList,
         onResults: function(searchResults) {
-          addMetadataToNotes(searchResults, metadataNotesMap);
           var selectedVal = $('.notes-search-form .sort-dropdown').val();
           if (selectedVal !== 'Default') {
             var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
             if (sortOption) {
-              searchResults = _.sortBy(searchResults, sortOption.compareProp);
+              searchResults.sort(sortOption.compareFunc);
             }
           }
-          Webfield.ui.searchResults(searchResults, submissionListOptions);
+          Webfield.ui.searchResults(searchResults, searchResultsOptions);
         },
         onReset: function() {
-          addMetadataToNotes(notes, metadataNotesMap);
-
           var selectedVal = $('.notes-search-form .sort-dropdown').val();
-          var sortedNotes;
           if (selectedVal !== 'Default') {
             var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
             if (sortOption) {
-              sortedNotes = _.sortBy(notes, sortOption.compareProp);
+              notes.sort(sortOption.compareFunc);
             }
-            Webfield.ui.searchResults(sortedNotes, submissionListOptions);
-          } else {
-            Webfield.ui.searchResults(notes, submissionListOptions);
           }
-
+          Webfield.ui.searchResults(notes, searchResultsOptions);
         },
       },
-      displayOptions: submissionListOptions,
+      displayOptions: paperDisplayOptions,
+      pageSize: 50,
       fadeIn: false
     });
 
-    $('#notes .spinner-container').remove();
+    $('#notes > .spinner-container').remove();
     $('#notes .tabs-container').show();
 
     Webfield.ui.done();
@@ -361,15 +373,13 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
 // Add affinity data from metadata notes to note objects
 function addMetadataToNotes(validNotes, metadataNotesMap) {
-  var currUserId = user.profile.id;
-
   for (var i = 0; i < validNotes.length; i++) {
     var note = validNotes[i];
-    var paperMetadataObj = _.get(metadataNotesMap, note.id, {});
+    var paperMetadataObj = metadataNotesMap.hasOwnProperty(note.id) ? metadataNotesMap[note.id] : {};
 
     note.metadata = {
-      tpmsScore: _.get(paperMetadataObj, 'tpmsScore', 0),
-      conflict: _.has(paperMetadataObj, 'conflict')
+      tpmsScore: paperMetadataObj.hasOwnProperty('tpmsScore') ? paperMetadataObj['tpmsScore'] : 0,
+      conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
   }
 }
