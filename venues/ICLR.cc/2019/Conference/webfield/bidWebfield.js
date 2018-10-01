@@ -83,7 +83,7 @@ function load() {
 
 // Display the bid interface populated with loaded data
 function renderContent(validNotes, tagInvitations, metadataNotesMap) {
-  
+
   var completedNotes = addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
@@ -108,8 +108,8 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
         container: '#' + containerId,
         search: { enabled: false },
         displayOptions: paperDisplayOptions,
-        fadeIn: false,
-        pageSize: 50
+        fadeIn: false
+        //pageSize: 50
       });
     }
   });
@@ -259,7 +259,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
         },
       },
       displayOptions: paperDisplayOptions,
-      pageSize: 50,
+      //pageSize: 50,
       fadeIn: false
     });
 
@@ -304,8 +304,6 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
 // Add affinity data from metadata notes to note objects
 function addMetadataToNotes(validNotes, metadataNotesMap) {
-  var completedNotes = [];
-  
   for (var i = 0; i < validNotes.length; i++) {
     var note = validNotes[i];
     var paperMetadataObj = metadataNotesMap.hasOwnProperty(note.id) ? metadataNotesMap[note.id] : {};
@@ -316,10 +314,9 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
     };
 
     note.content.tpmsScore = note.metadata.tpmsScore.toFixed(2);
-    completedNotes.push(note);
   }
 
-  return _.sortBy(completedNotes, function(a) { return -1 * a.metadata.tpmsScore; });
+  return _.orderBy(validNotes, ['metadata.tpmsScore'], ['desc']);
 }
 
 // Go!
