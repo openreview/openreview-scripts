@@ -131,6 +131,18 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       'No Bid': 'noBid'
     };
 
+    var previousNoteList = binnedNotes[tagToContainerId[prevVal]];
+    var currentNoteList = binnedNotes[tagToContainerId[tagObj.tag]];
+
+    var currentIndex = previousNoteList.findIndex(function(e) { return e.id === tagObj.forum; });
+    if (currentIndex >= 0) {
+      var currentNote = previousNoteList[currentIndex];
+      previousNoteList.splice(currentIndex, 1);
+      currentNoteList.push(currentNote);
+    } else {
+      console.log('Note not found!');
+    }
+
     updateCounts();
   });
 
@@ -270,7 +282,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
     containers.forEach(function(containerId) {
       var $tab = $('ul.nav-tabs li a[href="#' + containerId + '"]');
-      var numPapers = binnedNotes.containerId.length;
+      var numPapers = binnedNotes[containerId].length;
 
       $tab.find('span.badge').remove();
       if (numPapers) {
