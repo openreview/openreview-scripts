@@ -325,7 +325,7 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
       conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
 
-    note.content.tpmsScore = note.metadata.tpmsScore.toFixed(2);
+    note.content['TPMS Score'] = note.metadata.tpmsScore.toFixed(3);
   }
 
   return _.orderBy(validNotes, ['metadata.tpmsScore'], ['desc']);
