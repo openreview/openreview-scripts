@@ -86,9 +86,31 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
   addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
+  var sections;
+  var binnedNotes;
+
+  var paperDisplayOptions = {
+    pdfLink: true,
+    replyCount: true,
+    showContents: true,
+    showTags: true,
+    tagInvitations: tagInvitations
+  };
 
   $('#invitation-container').off('shown.bs.tab').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
     activeTab = $(e.target).data('tabIndex');
+    var containerId = sections[activeTab].id;
+
+    if (containerId !== 'allPapers') {
+      Webfield.ui.submissionList(binnedNotes[containerId], {
+        heading: null,
+        container: '#' + containerId,
+        search: { enabled: false },
+        displayOptions: paperDisplayOptions,
+        fadeIn: false,
+        pageSize: 50
+      });
+    }
   });
 
   $('#invitation-container').off('bidUpdated').on('bidUpdated', '.tag-widget', function(e, tagObj) {
@@ -99,52 +121,28 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     var prevVal = _.has(updatedNote.details, 'tags[0].tag') ? updatedNote.details.tags[0].tag : 'No Bid';
     updatedNote.details.tags[0] = tagObj;
 
-    var tagToElemId = {
-      'Very High': '#veryHigh',
-      'High': '#high',
-      'Neutral': '#neutral',
-      'Low': '#low',
-      'Very Low': '#veryLow',
-      'No Bid': '#noBid'
+    var tagToContainerId = {
+      'Very High': 'veryHigh',
+      'High': 'high',
+      'Neutral': 'neutral',
+      'Low': 'low',
+      'Very Low': 'veryLow',
+      'No Bid': 'noBid'
     };
-
-    var $sourceContainer = $(tagToElemId[prevVal] + ' .submissions-list');
-    var $note = $sourceContainer.find('li.note[data-id="' + tagObj.forum + '"]').detach();
-    if (!$sourceContainer.children().length) {
-      $sourceContainer.append('<li><p class="empty-message">No papers to display at this time</p></li>');
-    }
-
-    var $destContainer = $(tagToElemId[tagObj.tag] + ' .submissions-list');
-    if ($destContainer.find('p.empty-message').length) {
-      $destContainer.empty();
-    }
-    $destContainer.prepend($note);
-
-    // For radio button widgets, we need to update the selected value of the widget
-    // that wasn't clicked (since there are 2 on the page)
-    if ($(this).data('type') === 'radio') {
-      var $noteToUpdate;
-      var newVal = updatedNote.details.tags[0].tag;
-
-      if ($(this).closest('.tab-pane').is('#allPapers')) {
-        $noteToUpdate = $note;
-      } else {
-        $noteToUpdate = $('#allPapers').find('li.note[data-id="' + tagObj.forum + '"]');
-      }
-      $noteToUpdate.find('.tag-widget .radio-toggle[data-value="' + newVal + '"]').button('toggle');
-    }
 
     updateCounts();
   });
 
   function updateNotes(notes) {
     // Sort notes into bins by bid
-    var veryHigh = [];
-    var high = [];
-    var neutral = [];
-    var low = [];
-    var veryLow = [];
-    var noBid = [];
+    binnedNotes = {
+      noBid: [],
+      veryHigh: [],
+      high: [],
+      neutral: [],
+      low: [],
+      veryLow: []
+    };
 
     var bids, n;
     for (var i = 0; i < notes.length; i++) {
@@ -155,29 +153,30 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
       if (bids.length) {
         if (bids[0].tag === 'Very High') {
-          veryHigh.push(n);
+          binnedNotes.veryHigh.push(n);
         } else if (bids[0].tag === 'High') {
-          high.push(n);
+          binnedNotes.high.push(n);
         } else if (bids[0].tag === 'Neutral') {
-          neutral.push(n);
+          binnedNotes.neutral.push(n);
         } else if (bids[0].tag === 'Low') {
-          low.push(n);
+          binnedNotes.low.push(n);
         } else if (bids[0].tag === 'Very Low') {
-          veryLow.push(n);
+          binnedNotes.veryLow.push(n);
         } else {
-          noBid.push(n);
+          binnedNotes.noBid.push(n);
         }
       } else {
-        noBid.push(n);
+        binnedNotes.noBid.push(n);
       }
     }
 
-    var bidCount = veryHigh.length + high.length + neutral.length + low.length + veryLow.length;
+    var bidCount = binnedNotes.veryHigh.length + binnedNotes.high.length +
+      binnedNotes.neutral.length + binnedNotes.low.length + binnedNotes.veryLow.length;
 
     $('#bidcount').remove();
     $('#header').append('<h4 id="bidcount">You have completed ' + bidCount + ' bids</h4>');
 
-    var sections = [
+    sections = [
       {
         heading: 'All Papers  <span class="glyphicon glyphicon-search"></span>',
         id: 'allPapers',
@@ -185,37 +184,37 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       },
       {
         heading: 'No Bid',
-        headingCount: noBid.length,
+        headingCount: binnedNotes.noBid.length,
         id: 'noBid',
         content: null
       },
       {
         heading: 'Very High',
-        headingCount: veryHigh.length,
+        headingCount: binnedNotes.veryHigh.length,
         id: 'veryHigh',
         content: null
       },
       {
         heading: 'High',
-        headingCount: high.length,
+        headingCount: binnedNotes.high.length,
         id: 'high',
         content: null
       },
       {
         heading: 'Neutral',
-        headingCount: neutral.length,
+        headingCount: binnedNotes.neutral.length,
         id: 'neutral',
         content: null
       },
       {
         heading: 'Low',
-        headingCount: low.length,
+        headingCount: binnedNotes.low.length,
         id: 'low',
         content: null
       },
       {
         heading: 'Very Low',
-        headingCount: veryLow.length,
+        headingCount: binnedNotes.veryLow.length,
         id: 'veryLow',
         content: null
       }
@@ -229,63 +228,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       hidden: true
     });
 
-    var paperDisplayOptions = {
-      pdfLink: true,
-      replyCount: true,
-      showContents: true,
-      showTags: true,
-      tagInvitations: tagInvitations
-    };
-
-    Webfield.ui.submissionList(veryHigh, {
-      heading: null,
-      container: '#veryHigh',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(high, {
-      heading: null,
-      container: '#high',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(neutral, {
-      heading: null,
-      container: '#neutral',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(low, {
-      heading: null,
-      container: '#low',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(veryLow, {
-      heading: null,
-      container: '#veryLow',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(noBid, {
-      heading: null,
-      container: '#noBid',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false,
-      pageSize: 50
-    });
-
+    // Render the contents of the All Papers tab
     var searchResultsOptions = _.assign({}, paperDisplayOptions, { container: '#allPapers', pageSize: 50 });
     var sortOptionsList = [
       {
@@ -336,25 +279,26 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
   function updateCounts() {
     var containers = [
-      '#noBid',
-      '#veryHigh',
-      '#high',
-      '#neutral',
-      '#low',
-      '#veryLow'
+      'noBid',
+      'veryHigh',
+      'high',
+      'neutral',
+      'low',
+      'veryLow'
     ];
     var totalCount = 0;
 
     containers.forEach(function(containerId) {
-      var numPapers = $(containerId).find('li.note').length;
-      if (containerId !== '#noBid') {
-        totalCount += numPapers;
-      }
+      var $tab = $('ul.nav-tabs li a[href="#' + containerId + '"]');
+      var numPapers = binnedNotes.containerId.length;
 
-      $tab = $('ul.nav-tabs li a[href="' + containerId + '"]');
       $tab.find('span.badge').remove();
       if (numPapers) {
         $tab.append('<span class="badge">' + numPapers + '</span>');
+      }
+
+      if (containerId != 'noBid') {
+        totalCount += numPapers;
       }
     });
 
