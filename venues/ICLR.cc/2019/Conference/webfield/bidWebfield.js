@@ -49,14 +49,13 @@ function main() {
 // Perform all the required API calls
 function load() {
   var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
-    return _.sortBy(
-      allNotes.filter(function(note) { return !note.content.hasOwnProperty('withdrawal'); }),
-      function(n) { return n.content.title.trim().toLowerCase(); }
-    );
+    return allNotes.filter(function(note) {
+      return !note.content.hasOwnProperty('withdrawal');
+    });
   });
 
   var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(invitations) {
-    return _.filter(invitations, function(invitation) {
+    return invitations.filter(function(invitation) {
       return invitation.invitees.length;
     });
   });
@@ -84,7 +83,7 @@ function load() {
 // Display the bid interface populated with loaded data
 function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
-  var completedNotes = addMetadataToNotes(validNotes, metadataNotesMap);
+  validNotes = addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
   var sections;
@@ -115,7 +114,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
   });
 
   $('#invitation-container').off('bidUpdated').on('bidUpdated', '.tag-widget', function(e, tagObj) {
-    var updatedNote = _.find(completedNotes, ['id', tagObj.forum]);
+    var updatedNote = _.find(validNotes, ['id', tagObj.forum]);
     if (!updatedNote) {
       return;
     }
@@ -134,13 +133,26 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     var previousNoteList = binnedNotes[tagToContainerId[prevVal]];
     var currentNoteList = binnedNotes[tagToContainerId[tagObj.tag]];
 
-    var currentIndex = previousNoteList.findIndex(function(e) { return e.id === tagObj.forum; });
-    if (currentIndex >= 0) {
+    var currentIndex = _.findIndex(previousNoteList, ['id', tagObj.forum]);
+    if (currentIndex !== -1) {
       var currentNote = previousNoteList[currentIndex];
       previousNoteList.splice(currentIndex, 1);
       currentNoteList.push(currentNote);
     } else {
-      console.log('Note not found!');
+      console.warn('Note not found!');
+    }
+
+    // If the current tab is not the All Papers tab remove the note from the DOM
+    if (activeTab) {
+      var $elem = $(e.target).closest('.note');
+      $elem.fadeOut('normal', function() {
+        $elem.remove();
+
+        var $container = $('#' + tagToContainerId[prevVal] + ' .submissions-list');
+        if (!$container.children().length) {
+          $container.append('<li><p class="empty-message">No papers to display at this time</p></li>');
+        }
+      });
     }
 
     updateCounts();
@@ -298,7 +310,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     $('#header').append('<h4 id="bidcount">You have completed ' + totalCount + ' bids</h4>');
   }
 
-  updateNotes(completedNotes);
+  updateNotes(validNotes);
 }
 
 
