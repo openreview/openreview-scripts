@@ -254,7 +254,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     });
 
     // Render the contents of the All Papers tab
-    var searchResultsOptions = _.assign({}, paperDisplayOptions, { container: '#allPapers', pageSize: 50 });
+    var searchResultsOptions = _.assign({}, paperDisplayOptions, { container: '#allPapers' });
     Webfield.ui.submissionList(notes, {
       heading: null,
       container: '#allPapers',
