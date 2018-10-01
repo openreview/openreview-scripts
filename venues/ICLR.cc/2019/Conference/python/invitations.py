@@ -243,7 +243,8 @@ public_comment_template = {
             'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
         },
         'signatures': {
-            'values-regex': '~.*',
+            "description": "How your identity will be displayed.",
+            "values-regex": "~.*|\\(anonymous\\)"
         },
         'writers': {
             'description': 'Users that may modify this record.',
