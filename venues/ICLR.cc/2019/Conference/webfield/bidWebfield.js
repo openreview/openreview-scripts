@@ -359,7 +359,7 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
       conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
 
-    note.content.title = "(" + paperMetadataObj['tpmsScore'].toFixed(2) + ") " + note.content.title;
+    note.content.tpmsScore = note.metadata.tpmsScore.toFixed(2);
     completedNotes.push(note);
   }
 
