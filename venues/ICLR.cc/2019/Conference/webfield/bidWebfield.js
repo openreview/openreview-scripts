@@ -242,8 +242,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#veryHigh',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false,
-      pageSize: 50
+      fadeIn: false
     });
 
     Webfield.ui.submissionList(high, {
@@ -251,8 +250,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#high',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false,
-      pageSize: 50
+      fadeIn: false
     });
 
     Webfield.ui.submissionList(neutral, {
@@ -260,8 +258,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#neutral',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false,
-      pageSize: 50
+      fadeIn: false
     });
 
     Webfield.ui.submissionList(low, {
@@ -269,8 +266,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#low',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false,
-      pageSize: 50
+      fadeIn: false
     });
 
     Webfield.ui.submissionList(veryLow, {
@@ -278,8 +274,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       container: '#veryLow',
       search: { enabled: false },
       displayOptions: paperDisplayOptions,
-      fadeIn: false,
-      pageSize: 50
+      fadeIn: false
     });
 
     Webfield.ui.submissionList(noBid, {
