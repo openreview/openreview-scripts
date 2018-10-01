@@ -22,7 +22,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <h4>Bidding Phase</h4>\
     <p>\
       <em><strong>Please note that the bidding has begun. You are requested to do the\
-       following by 8:00 PM EDT, Thursday, October 5 2018</strong></em>:\
+       following by 8:00 PM EDT, Friday, October 5 2018</strong></em>:\
       <ul>\
         <li>Provide your reviewing preferences by bidding on papers using the Bidding \
         Interface.</li>\
