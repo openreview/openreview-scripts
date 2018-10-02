@@ -33,7 +33,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>\
   <h4>Bidding Phase</h4>\
   <p>\
-    <em><strong>Please note that the bidding has begun. You are requested to do the following by 8:00 PM EDT,\
+    <em><strong>Please note that the bidding has begun. You are requested to do the following by 5:00 PM EDT,\
      Friday, October 5 2018.</strong></em>:<br/>\
     <ul>\
       <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
@@ -91,7 +91,7 @@ var loadData = function(result) {
     .then(function(result) {
       return result.notes;
     });
-  
+
     metaReviewsP = Webfield.get('/notes', {
       invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
     })

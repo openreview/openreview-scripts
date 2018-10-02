@@ -8,13 +8,16 @@ var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
+var SEARCH_KEYWORDS = [
+'adversarial', 'adversarial attacks', 'adversarial examples', 'adversarial learning', 'adversarial training', 'attention', 'classification', 'cnn', 'computer vision', 'convolutional neural network', 'convolutional neural networks', 'deep generative models', 'deep learning', 'deep neural networks', 'deep reinforcement learning', 'domain adaptation', 'exploration', 'few-shot learning', 'gan', 'gans', 'generalization', 'generative adversarial network', 'generative adversarial networks', 'generative models', 'graph neural networks', 'imitation learning', 'information theory', 'interpretability', 'machine learning', 'machine translation', 'meta-learning', 'model compression', 'natural language processing', 'neural network', 'neural networks', 'non-convex optimization', 'optimization', 'quantization', 'recurrent neural networks', 'regularization', 'reinforcement learning', 'representation learning', 'robustness', 'semi-supervised learning', 'sgd', 'stochastic gradient descent', 'theory', 'transfer learning', 'unsupervised learning', 'vae', 'variational autoencoder', 'variational inference'
+];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
   the submitted papers below, on a scale from "Very Low" to "Very High".</p>\
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
     <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
-    <li>You may search for papers by keywords</li>\
+    <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
     <li>Default bid on each paper is \"No Bid\".</li>\
   </ul><br>'
@@ -34,35 +37,29 @@ function main() {
 // Perform all the required API calls
 function load() {
   var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
-    return _.sortBy(
-      allNotes.filter(function(note) { return !note.content.hasOwnProperty('withdrawal'); }),
-      function(n) { return n.content.title.toLowerCase(); }
-    );
+    return allNotes.filter(function(note) {
+      return !note.content.hasOwnProperty('withdrawal');
+    });
   });
 
   var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(invitations) {
-    return _.filter(invitations, function(invitation) {
+    return invitations.filter(function(invitation) {
       return invitation.invitees.length;
     });
   });
 
   var userScoresP = Webfield.getAll('/notes', {invitation: USER_SCORES_INVITATION_ID}).then(function(scoreNotes) {
-    // should be keyed on forum, with an object with the user's tpms (and conflict) scores
-
-    userScoreNotes = _.filter(scoreNotes, function(n){
-      if(n.content.user === user.profile.id){
-        return n;
-      }
-    })
-
+    // Build mapping from forum id to an object with the user's scores
+    // (tpms and conflict if available)
     var metadataNotesMap = {};
-
-    if (userScoreNotes.length){
-      userScores = userScoreNotes[0].content.scores;
+    var userScores = _.find(scoreNotes, ['content.user', user.profile.id]);
+    if (!userScores) {
+      return metadataNotesMap;
     }
 
+    userScores = userScores.content.scores;
     for (var i = 0; i < userScores.length; i++) {
-      metadataNotesMap[userScores[i].forum] = userScores[i];
+      metadataNotesMap[userScores[i].forum] = _.omit(userScores[i], ['forum']);
     }
     return metadataNotesMap;
   });
@@ -71,14 +68,46 @@ function load() {
 }
 
 
-// Display the page interface populated with loaded data
+// Display the bid interface populated with loaded data
 function renderContent(validNotes, tagInvitations, metadataNotesMap) {
-  addMetadataToNotes(validNotes, metadataNotesMap);
+
+  validNotes = addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
+  var sections;
+  var binnedNotes;
+
+  var paperDisplayOptions = {
+    pdfLink: true,
+    replyCount: true,
+    showContents: true,
+    showTags: true,
+    tagInvitations: tagInvitations
+  };
 
   $('#invitation-container').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
     activeTab = $(e.target).data('tabIndex');
+    var containerId = sections[activeTab].id;
+
+    if (containerId !== 'allPapers') {
+      setTimeout(function() {
+        Webfield.ui.submissionList(binnedNotes[containerId], {
+          heading: null,
+          container: '#' + containerId,
+          search: { enabled: false },
+          displayOptions: paperDisplayOptions,
+          fadeIn: false
+          //pageSize: 50
+        });
+      }, 100);
+    }
+  });
+
+  $('#invitation-container').on('hidden.bs.tab', 'ul.nav-tabs li a', function(e) {
+    var containerId = $(e.target).attr('href');
+    if (containerId !== '#allPapers') {
+      Webfield.ui.spinner(containerId, {inline: true});
+    }
   });
 
   $('#invitation-container').on('bidUpdated', '.tag-widget', function(e, tagObj) {
@@ -89,82 +118,89 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     var prevVal = _.has(updatedNote.details, 'tags[0].tag') ? updatedNote.details.tags[0].tag : 'No Bid';
     updatedNote.details.tags[0] = tagObj;
 
-    var tagToElemId = {
-      'Very High': '#veryHigh',
-      'High': '#high',
-      'Neutral': '#neutral',
-      'Low': '#low',
-      'Very Low': '#veryLow',
-      'No Bid': '#noBid'
+    var tagToContainerId = {
+      'Very High': 'veryHigh',
+      'High': 'high',
+      'Neutral': 'neutral',
+      'Low': 'low',
+      'Very Low': 'veryLow',
+      'No Bid': 'noBid'
     };
 
-    var $sourceContainer = $(tagToElemId[prevVal] + ' .submissions-list');
-    var $note = $sourceContainer.find('li.note[data-id="' + tagObj.forum + '"]').detach();
-    if (!$sourceContainer.children().length) {
-      $sourceContainer.append('<li><p class="empty-message">No papers to display at this time</p></li>');
+    var previousNoteList = binnedNotes[tagToContainerId[prevVal]];
+    var currentNoteList = binnedNotes[tagToContainerId[tagObj.tag]];
+
+    var currentIndex = _.findIndex(previousNoteList, ['id', tagObj.forum]);
+    if (currentIndex !== -1) {
+      var currentNote = previousNoteList[currentIndex];
+      currentNote.details.tags[0] = tagObj;
+      previousNoteList.splice(currentIndex, 1);
+      currentNoteList.push(currentNote);
+    } else {
+      console.warn('Note not found!');
     }
 
-    var $destContainer = $(tagToElemId[tagObj.tag] + ' .submissions-list');
-    if ($destContainer.find('p.empty-message').length) {
-      $destContainer.empty();
-    }
-    $destContainer.prepend($note);
+    // If the current tab is not the All Papers tab remove the note from the DOM
+    if (activeTab) {
+      var $elem = $(e.target).closest('.note');
+      $elem.fadeOut('normal', function() {
+        $elem.remove();
 
-    // For radio button widgets, we need to update the selected value of the widget
-    // that wasn't clicked (since there are 2 on the page)
-    if ($(this).data('type') === 'radio') {
-      var $noteToUpdate;
-      var newVal = updatedNote.details.tags[0].tag;
-
-      if ($(this).closest('.tab-pane').is('#allPapers')) {
-        $noteToUpdate = $note;
-      } else {
-        $noteToUpdate = $('#allPapers').find('li.note[data-id="' + tagObj.forum + '"]');
-      }
-      $noteToUpdate.find('.tag-widget .radio-toggle[data-value="' + newVal + '"]').button('toggle');
+        var $container = $('#' + tagToContainerId[prevVal] + ' .submissions-list');
+        if (!$container.children().length) {
+          $container.append('<li><p class="empty-message">No papers to display at this time</p></li>');
+        }
+      });
     }
 
     updateCounts();
   });
 
   function updateNotes(notes) {
-    // Sort notes by bid
-    var veryHigh = [];
-    var high = [];
-    var neutral = [];
-    var low = [];
-    var veryLow = [];
-    var noBid = [];
-    notes.forEach(function(n) {
-      var bids = _.filter(n.details.tags, function(t){
-        if(t.invitation === ADD_BID){ return t; }
+    // Sort notes into bins by bid
+    binnedNotes = {
+      noBid: [],
+      veryHigh: [],
+      high: [],
+      neutral: [],
+      low: [],
+      veryLow: []
+    };
+
+    var bids, n;
+    for (var i = 0; i < notes.length; i++) {
+      n = notes[i];
+      bids = _.filter(n.details.tags, function(t) {
+        return t.invitation === ADD_BID;
       });
 
       if (bids.length) {
         if (bids[0].tag === 'Very High') {
-          veryHigh.push(n);
+          binnedNotes.veryHigh.push(n);
         } else if (bids[0].tag === 'High') {
-          high.push(n);
+          binnedNotes.high.push(n);
         } else if (bids[0].tag === 'Neutral') {
-          neutral.push(n);
+          binnedNotes.neutral.push(n);
         } else if (bids[0].tag === 'Low') {
-          low.push(n);
+          binnedNotes.low.push(n);
         } else if (bids[0].tag === 'Very Low') {
-          veryLow.push(n);
+          binnedNotes.veryLow.push(n);
         } else {
-          noBid.push(n);
+          binnedNotes.noBid.push(n);
         }
       } else {
-        noBid.push(n);
+        binnedNotes.noBid.push(n);
       }
-    });
+    }
 
-    var bidCount = veryHigh.length + high.length + neutral.length + low.length + veryLow.length;
+    var bidCount = binnedNotes.veryHigh.length + binnedNotes.high.length +
+      binnedNotes.neutral.length + binnedNotes.low.length + binnedNotes.veryLow.length;
 
     $('#bidcount').remove();
     $('#header').append('<h4 id="bidcount">You have completed ' + bidCount + ' bids</h4>');
 
-    var sections = [
+    var loadingContent = Handlebars.templates.spinner({ extraClasses: 'spinner-inline' });
+    sections = [
       {
         heading: 'All Papers  <span class="glyphicon glyphicon-search"></span>',
         id: 'allPapers',
@@ -172,39 +208,39 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       },
       {
         heading: 'No Bid',
-        headingCount: noBid.length,
+        headingCount: binnedNotes.noBid.length,
         id: 'noBid',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'Very High',
-        headingCount: veryHigh.length,
+        headingCount: binnedNotes.veryHigh.length,
         id: 'veryHigh',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'High',
-        headingCount: high.length,
+        headingCount: binnedNotes.high.length,
         id: 'high',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'Neutral',
-        headingCount: neutral.length,
+        headingCount: binnedNotes.neutral.length,
         id: 'neutral',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'Low',
-        headingCount: low.length,
+        headingCount: binnedNotes.low.length,
         id: 'low',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'Very Low',
-        headingCount: veryLow.length,
+        headingCount: binnedNotes.veryLow.length,
         id: 'veryLow',
-        content: null
+        content: loadingContent
       }
     ];
     sections[activeTab].active = true;
@@ -216,112 +252,30 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       hidden: true
     });
 
-    var paperDisplayOptions = {
-      pdfLink: true,
-      replyCount: true,
-      showContents: true,
-      showTags: true,
-      tagInvitations: tagInvitations
-    };
-
-    Webfield.ui.submissionList(veryHigh, {
-      heading: null,
-      container: '#veryHigh',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(high, {
-      heading: null,
-      container: '#high',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(neutral, {
-      heading: null,
-      container: '#neutral',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(low, {
-      heading: null,
-      container: '#low',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(veryLow, {
-      heading: null,
-      container: '#veryLow',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    Webfield.ui.submissionList(noBid, {
-      heading: null,
-      container: '#noBid',
-      search: { enabled: false },
-      displayOptions: paperDisplayOptions,
-      fadeIn: false
-    });
-
-    var submissionListOptions = _.assign({}, paperDisplayOptions, {container: '#allPapers'});
-    var sortOptionsList = [
-      {
-        label: 'TPMS Score',
-        compareProp: function(n) {
-          return -1 * n.metadata.tpmsScore;
-        },
-        default: true
-      }
-    ];
+    // Render the contents of the All Papers tab
+    var searchResultsOptions = _.assign({}, paperDisplayOptions, { container: '#allPapers' });
     Webfield.ui.submissionList(notes, {
       heading: null,
       container: '#allPapers',
       search: {
         enabled: true,
         localSearch: true,
-        sort: sortOptionsList,
+        subjectAreas: SEARCH_KEYWORDS,
+        subjectAreaDropdown: 'basic',
+        sort: false,
         onResults: function(searchResults) {
-          addMetadataToNotes(searchResults, metadataNotesMap);
-          var selectedVal = $('.notes-search-form .sort-dropdown').val();
-          if (selectedVal !== 'Default') {
-            var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
-            if (sortOption) {
-              searchResults = _.sortBy(searchResults, sortOption.compareProp);
-            }
-          }
-          Webfield.ui.searchResults(searchResults, submissionListOptions);
+          Webfield.ui.searchResults(searchResults, searchResultsOptions);
         },
         onReset: function() {
-          addMetadataToNotes(notes, metadataNotesMap);
-
-          var selectedVal = $('.notes-search-form .sort-dropdown').val();
-          var sortedNotes;
-          if (selectedVal !== 'Default') {
-            var sortOption = _.find(sortOptionsList, ['label', selectedVal]);
-            if (sortOption) {
-              sortedNotes = _.sortBy(notes, sortOption.compareProp);
-            }
-            Webfield.ui.searchResults(sortedNotes, submissionListOptions);
-          } else {
-            Webfield.ui.searchResults(notes, submissionListOptions);
-          }
-
+          Webfield.ui.searchResults(notes, searchResultsOptions);
         },
       },
-      displayOptions: submissionListOptions,
+      displayOptions: paperDisplayOptions,
+      //pageSize: 50,
       fadeIn: false
     });
 
-    $('#notes .spinner-container').remove();
+    $('#notes > .spinner-container').remove();
     $('#notes .tabs-container').show();
 
     Webfield.ui.done();
@@ -329,25 +283,26 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
   function updateCounts() {
     var containers = [
-      '#noBid',
-      '#veryHigh',
-      '#high',
-      '#neutral',
-      '#low',
-      '#veryLow'
+      'noBid',
+      'veryHigh',
+      'high',
+      'neutral',
+      'low',
+      'veryLow'
     ];
     var totalCount = 0;
 
     containers.forEach(function(containerId) {
-      var numPapers = $(containerId).find('li.note').length;
-      if (containerId !== '#noBid') {
-        totalCount += numPapers;
-      }
+      var $tab = $('ul.nav-tabs li a[href="#' + containerId + '"]');
+      var numPapers = binnedNotes[containerId].length;
 
-      $tab = $('ul.nav-tabs li a[href="' + containerId + '"]');
       $tab.find('span.badge').remove();
       if (numPapers) {
         $tab.append('<span class="badge">' + numPapers + '</span>');
+      }
+
+      if (containerId != 'noBid') {
+        totalCount += numPapers;
       }
     });
 
@@ -361,17 +316,19 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
 // Add affinity data from metadata notes to note objects
 function addMetadataToNotes(validNotes, metadataNotesMap) {
-  var currUserId = user.profile.id;
-
   for (var i = 0; i < validNotes.length; i++) {
     var note = validNotes[i];
-    var paperMetadataObj = _.get(metadataNotesMap, note.id, {});
+    var paperMetadataObj = metadataNotesMap.hasOwnProperty(note.id) ? metadataNotesMap[note.id] : {};
 
     note.metadata = {
-      tpmsScore: _.get(paperMetadataObj, 'tpmsScore', 0),
-      conflict: _.has(paperMetadataObj, 'conflict')
+      tpmsScore: paperMetadataObj.hasOwnProperty('tpmsScore') ? paperMetadataObj['tpmsScore'] : 0,
+      conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
+
+    note.content['TPMS Score'] = note.metadata.tpmsScore.toFixed(3);
   }
+
+  return _.orderBy(validNotes, ['metadata.tpmsScore'], ['desc']);
 }
 
 // Go!

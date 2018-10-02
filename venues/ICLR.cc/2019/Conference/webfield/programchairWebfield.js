@@ -256,7 +256,7 @@ var displaySortPanel = function(container, sortOptions, sortResults) {
     return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
   });
   var sortBarHTML = '<form class="form-inline search-form" role="search">' +
-    '<strong>Sort: </strong>' +
+    '<strong>Sort By:</strong>' +
     '<div class="form-group search-content" style="margin-right: 0;">' +
       '<select id="form-sort" class="form-control" style="width: 330px">' + allOptions.join('') + '</select>' +
     '</div>' +
