@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
         authorids = note_details['forumContent']['authorids']
         assert len(authorids) == 1, 'something went wrong: no authorids in paper with title {}'.format(
-            forum_content['title'])
+            note_details['forumContent']['title'])
         paper_authors_id = authorids[0]
         authorgroup_components = paper_authors_id.split('/')
         paper_num = authorgroup_components[3]

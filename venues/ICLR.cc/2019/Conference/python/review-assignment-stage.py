@@ -15,7 +15,7 @@ import notes
 import groups
 import time
 import json
-
+import csv
 import matcher
 
 def clear(client, invitation):
@@ -24,6 +24,7 @@ def clear(client, invitation):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('scores_file')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
@@ -68,5 +69,19 @@ if __name__ == '__main__':
     metadata_inv = client.post_invitation(iclr19.metadata_inv)
     config_inv = client.post_invitation(iclr19.config_inv)
     assignment_inv = client.post_invitation(iclr19.assignment_inv)
+
+    # read in TPMS scores
+    paper_scores_by_number = {}
+
+    with open(args.scores_file) as f:
+        for row in csv.reader(f):
+            paper_number = int(row[0])
+            profile_id = row[1]
+            score = row[2]
+            if paper_number not in paper_scores_by_number:
+                paper_scores_by_number[paper_number] = {}
+            paper_scores_by_number[paper_number][profile_id] = score
+
     for blind_note in blind_submissions:
-        new_metadata_note = notes.post_metadata_note(client, blind_note, user_profiles, metadata_inv)
+        paper_tpms_scores = paper_scores_by_number[blind_note.number]
+        new_metadata_note = notes.post_metadata_note(client, blind_note, user_profiles, metadata_inv, paper_tpms_scores)
