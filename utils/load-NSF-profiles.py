@@ -10,6 +10,7 @@
 import argparse
 import xml.etree.ElementTree as ET
 from openreview import *
+from openreview import tools
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -166,16 +167,16 @@ def load_xml_investigators(client, dirpath, start_at=0):
     print "Retrieved profiles"
 
     for filename in file_names:
-        if start_at > int(filename[0:-4]):
-            file_count += 1
-            continue
-        # print progress
-        if file_count/one_percent == file_count//one_percent:
-            print "{0}% complete {1}".format(file_count*100/total_files, filename)
-        file_count += 1
-
         # only handle xml files
         if filename.endswith('.xml'):
+            if start_at > int(filename[0:-4]):
+                file_count += 1
+                continue
+            # print progress
+            if file_count / one_percent == file_count // one_percent:
+                print "{0}% complete {1}".format(file_count * 100 / total_files, filename)
+            file_count += 1
+
             f = open(dirpath+'/'+filename, 'r')
             try:
                 contents = ET.parse(f)
@@ -288,7 +289,11 @@ def main():
     ## Initialize the client library with username and password.
     client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    load_xml_investigators(client, args.directory, int(args.start_at))
+    if not args.start_at:
+        start_at = 0
+    else:
+        start_at = int(args.start_at)
+    load_xml_investigators(client, args.directory, start_at)
 
 
 
