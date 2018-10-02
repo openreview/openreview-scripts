@@ -9,19 +9,7 @@ var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
 var SEARCH_KEYWORDS = [
-  "deep learning", "reinforcement learning", "neural networks", "unsupervised learning",
-  "generative adversarial networks", "optimization", "natural language processing",
-  "generative models", "deep reinforcement learning", "representation learning",
-  "adversarial examples", "recurrent neural networks", "gan", "generalization", "gans",
-  "variational inference", "rnn", "lstm", "convolutional neural networks", "transfer learning",
-  "neural network", "computer vision", "deep neural networks", "domain adaptation", "attention",
-  "regularization", "image classification", "machine learning", "interpretability",
-  "meta-learning", "generative model", "deep generative models", "model compression",
-  "word embeddings", "sparsity", "adversarial learning", "imitation learning",
-  "question answering", "clustering", "policy gradient", "unsupervised", "cnn",
-  "supervised learning", "adversarial training", "exploration", "classification",
-  "recurrent neural network", "convolutional neural network", "robotics",
-  "machine translation"
+'adversarial', 'adversarial attacks', 'adversarial examples', 'adversarial learning', 'adversarial training', 'attention', 'classification', 'cnn', 'computer vision', 'convolutional neural network', 'convolutional neural networks', 'deep generative models', 'deep learning', 'deep neural networks', 'deep reinforcement learning', 'domain adaptation', 'exploration', 'few-shot learning', 'gan', 'gans', 'generalization', 'generative adversarial network', 'generative adversarial networks', 'generative models', 'graph neural networks', 'imitation learning', 'information theory', 'interpretability', 'machine learning', 'machine translation', 'meta-learning', 'model compression', 'natural language processing', 'neural network', 'neural networks', 'non-convex optimization', 'optimization', 'quantization', 'recurrent neural networks', 'regularization', 'reinforcement learning', 'representation learning', 'robustness', 'semi-supervised learning', 'sgd', 'stochastic gradient descent', 'theory', 'transfer learning', 'unsupervised learning', 'vae', 'variational autoencoder', 'variational inference'
 ];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
@@ -29,7 +17,7 @@ var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in re
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
     <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
-    <li>For the best bidding experience, it is recommended that you filter papers by Subject Area and search for key phrases in paper metadata using the search form.</li>\
+    <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
     <li>Default bid on each paper is \"No Bid\".</li>\
   </ul><br>'
