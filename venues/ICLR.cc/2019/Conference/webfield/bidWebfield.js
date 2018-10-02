@@ -97,23 +97,32 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     tagInvitations: tagInvitations
   };
 
-  $('#invitation-container').off('shown.bs.tab').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
+  $('#invitation-container').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
     activeTab = $(e.target).data('tabIndex');
     var containerId = sections[activeTab].id;
 
     if (containerId !== 'allPapers') {
-      Webfield.ui.submissionList(binnedNotes[containerId], {
-        heading: null,
-        container: '#' + containerId,
-        search: { enabled: false },
-        displayOptions: paperDisplayOptions,
-        fadeIn: false
-        //pageSize: 50
-      });
+      setTimeout(function() {
+        Webfield.ui.submissionList(binnedNotes[containerId], {
+          heading: null,
+          container: '#' + containerId,
+          search: { enabled: false },
+          displayOptions: paperDisplayOptions,
+          fadeIn: false
+          //pageSize: 50
+        });
+      }, 100);
     }
   });
 
-  $('#invitation-container').off('bidUpdated').on('bidUpdated', '.tag-widget', function(e, tagObj) {
+  $('#invitation-container').on('hidden.bs.tab', 'ul.nav-tabs li a', function(e) {
+    var containerId = $(e.target).attr('href');
+    if (containerId !== '#allPapers') {
+      Webfield.ui.spinner(containerId, {inline: true});
+    }
+  });
+
+  $('#invitation-container').on('bidUpdated', '.tag-widget', function(e, tagObj) {
     var updatedNote = _.find(validNotes, ['id', tagObj.forum]);
     if (!updatedNote) {
       return;
@@ -201,6 +210,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     $('#bidcount').remove();
     $('#header').append('<h4 id="bidcount">You have completed ' + bidCount + ' bids</h4>');
 
+    var loadingContent = Handlebars.templates.spinner({ extraClasses: 'spinner-inline' });
     sections = [
       {
         heading: 'All Papers  <span class="glyphicon glyphicon-search"></span>',
@@ -211,37 +221,37 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
         heading: 'No Bid',
         headingCount: binnedNotes.noBid.length,
         id: 'noBid',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'Very High',
         headingCount: binnedNotes.veryHigh.length,
         id: 'veryHigh',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'High',
         headingCount: binnedNotes.high.length,
         id: 'high',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'Neutral',
         headingCount: binnedNotes.neutral.length,
         id: 'neutral',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'Low',
         headingCount: binnedNotes.low.length,
         id: 'low',
-        content: null
+        content: loadingContent
       },
       {
         heading: 'Very Low',
         headingCount: binnedNotes.veryLow.length,
         id: 'veryLow',
-        content: null
+        content: loadingContent
       }
     ];
     sections[activeTab].active = true;
