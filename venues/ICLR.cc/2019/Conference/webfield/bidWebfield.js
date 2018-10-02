@@ -262,6 +262,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
         enabled: true,
         localSearch: true,
         subjectAreas: SEARCH_KEYWORDS,
+        subjectAreaDropdown: 'basic',
         sort: false,
         onResults: function(searchResults) {
           Webfield.ui.searchResults(searchResults, searchResultsOptions);
