@@ -145,6 +145,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
     var currentIndex = _.findIndex(previousNoteList, ['id', tagObj.forum]);
     if (currentIndex !== -1) {
       var currentNote = previousNoteList[currentIndex];
+      currentNote.details.tags[0] = tagObj;
       previousNoteList.splice(currentIndex, 1);
       currentNoteList.push(currentNote);
     } else {
