@@ -218,34 +218,37 @@ function renderContent(notes, userGroups, activityNotes, authorNotes) {
 
   $(submissionListOptions.container).empty();
 
-  Webfield.ui.submissionList(notes, {
-    heading: null,
-    container: '#all-submissions',
-    search: {
-      enabled: true,
-      localSearch: false,
-      onResults: function(searchResults) {
-        var blindedSearchResults = searchResults.filter(function(note) {
-          return note.invitation === BLIND_SUBMISSION_ID;
-        });
-        Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
-        Webfield.disableAutoLoading();
-      },
-      onReset: function() {
-        Webfield.ui.searchResults(notes, submissionListOptions);
-        if (notes.length === PAGE_SIZE) {
-          Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
+  if (notes.length){
+    Webfield.ui.submissionList(notes, {
+      heading: null,
+      container: '#all-submissions',
+      search: {
+        enabled: true,
+        localSearch: false,
+        onResults: function(searchResults) {
+          var blindedSearchResults = searchResults.filter(function(note) {
+            return note.invitation === BLIND_SUBMISSION_ID;
+          });
+          Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
+          Webfield.disableAutoLoading();
+        },
+        onReset: function() {
+          Webfield.ui.searchResults(notes, submissionListOptions);
+          if (notes.length === PAGE_SIZE) {
+            Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
+          }
         }
-      }
-    },
-    displayOptions: submissionListOptions,
-    fadeIn: false
-  });
+      },
+      displayOptions: submissionListOptions,
+      fadeIn: false
+    });
 
-  if (notes.length === PAGE_SIZE) {
-    Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
+    if (notes.length === PAGE_SIZE) {
+      Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
+    }
+  } else {
+    $('.tabs-container a[href="#all-submissions"]').parent().hide();
   }
-
   // Activity Tab
   if (activityNotes.length) {
     var displayOptions = {

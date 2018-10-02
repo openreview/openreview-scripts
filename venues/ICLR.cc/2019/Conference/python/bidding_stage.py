@@ -30,7 +30,7 @@ if __name__ == '__main__':
         reviewers.web = f.read()
         reviewers = client.post_group(reviewers)
 
-    with open('../webfield/areaChairWebfieldBiddingEnabled.js','r') as f:
+    with open('../webfield/areachairWebfieldBiddingEnabled.js','r') as f:
         area_chairs = client.get_group(iclr19.AREA_CHAIRS_ID)
         area_chairs.web = f.read()
         area_chairs = client.post_group(area_chairs)

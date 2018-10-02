@@ -37,6 +37,7 @@ if __name__ == '__main__':
     original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.submission_inv.id)
 
     for original in original_notes:
+        print('processing {}'.format(original.id))
         blind_note = notes.post_blind_note(client, original)
 
         groups.create_and_post(client, blind_note, 'Paper')
@@ -54,6 +55,35 @@ if __name__ == '__main__':
 
     reviewers_group = client.get_group(iclr19.REVIEWERS_ID)
     areachairs_group = client.get_group(iclr19.AREA_CHAIRS_ID)
+    all_emails = reviewers_group.members + areachairs_group.members
+    print('replacing members with IDs')
     openreview.tools.replace_members_with_ids(client, reviewers_group)
     openreview.tools.replace_members_with_ids(client, areachairs_group)
     groups.update_homepage(client, '../webfield/homepagePostSubmission.js')
+
+    # User registration.
+
+    '''
+    This is a workaround to resolve the issue where not all reviewers/ACs
+    see the ICLR venue in their "your active venues" list.
+
+    Notice that we're falsifying the tauthor. This is so that the query
+    in home.js (copied below) will pick up the note as a reply,
+    but the note won't show up in the user's activity.
+
+    home.js, Line 67:
+    controller.get('invitations', { invitee: true, duedate: true, details: 'replytoNote,repliedNotes' })
+    '''
+    register_user_inv = client.post_invitation(iclr19.register_user_inv)
+    for email in all_emails:
+        print('posting registration note for {}'.format(email))
+        register_note = client.post_note(openreview.Note.from_json({
+            'invitation': register_user_inv.id,
+            'forum': None,
+            'replyto': None,
+            'readers': register_user_inv.reply['readers']['values'],
+            'writers': register_user_inv.reply['writers']['values'],
+            'signatures': register_user_inv.reply['signatures']['values'],
+            'content': {'registered': 'yes'},
+            'tauthor': email
+        }))

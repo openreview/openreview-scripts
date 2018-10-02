@@ -139,8 +139,10 @@ The ICLR 2019 Program Chairs
 # Deadlines
 SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=9, day=27, hour=22)
 BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=10, hour=9)
-ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=5)
+ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=6, hour=0)
 OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=29)
+QUESTIONNAIRE_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=2, hour=22)
+QUESTIONNAIRE_EXPIRY = openreview.tools.timestamp_GMT(year=2018, month=10, day=20)
 META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=7)
 
 
@@ -286,6 +288,36 @@ blind_submission_inv = invitations.Submission(
 )
 
 
+# User "registration".
+# this is a workaround to force ICLR to show up in users'
+# "your active venues" list, even if they haven't replied to
+# any active ICLR invitations.
+# It's a workaround in the sense that it requires us to
+# falsify the "tauthor" field in the note using the Super User.
+
+register_user_inv = openreview.Invitation.from_json({
+    'id': CONFERENCE_ID + '/-/Register_User',
+    'readers': ['everyone'],
+    'writers': [],
+    'invitees': ['~'],
+    'signatures': [CONFERENCE_ID],
+    # The dates below are the day after the in-person meeting of the conference
+    'expdate': openreview.tools.timestamp_GMT(year=2019, month=5, day=10),
+    'duedate': openreview.tools.timestamp_GMT(year=2019, month=5, day=10),
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'readers': {'values': [CONFERENCE_ID]},
+        'writers': {'values': [CONFERENCE_ID]},
+        'signatures': {'values': [CONFERENCE_ID]},
+        'content': {
+            'registered': {
+                'value': 'yes'
+            }
+        }
+    }
+})
+
 # Configure reviewer recruitment
 recruit_reviewers = invitations.RecruitReviewers(
     id = RECRUIT_REVIEWERS_ID,
@@ -306,6 +338,8 @@ questionnaire_instructions_invitation = openreview.Invitation.from_json({
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
     'invitees': [CONFERENCE_ID],
+    'duedate': QUESTIONNAIRE_DEADLINE,
+    'expdate': QUESTIONNAIRE_EXPIRY,
     'reply': {
         'forum': None,
         'replyto': None,
@@ -339,8 +373,8 @@ questionnaire_response_template = {
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
     'invitees': [REVIEWERS_ID],
-    'duedate': OFFICIAL_REVIEW_DEADLINE,
-    'expdate': OFFICIAL_REVIEW_DEADLINE,
+    'duedate': QUESTIONNAIRE_DEADLINE,
+    'expdate': QUESTIONNAIRE_EXPIRY,
     'reply': {
         'forum': '<forum>',
         'replyto': '<forum>',
