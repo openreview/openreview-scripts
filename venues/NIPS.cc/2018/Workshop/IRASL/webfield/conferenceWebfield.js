@@ -10,7 +10,7 @@
 var CONFERENCE = 'NIPS.cc/2018/Workshop/IRASL';
 var SUBTITLE = '32nd Annual Conference on Neural Information Processing Systems';
 var TITLE = 'NIPS 2018 Interpretability and Robustness for Audio, Speech and Language Workshop';
-var CONF_DATE_STRING = 'December 3-8, 2018';
+var CONF_DATE_STRING = '8 December, 2018';
 var WEBSITE = 'https://irasl.gitlab.io/';
 var LOCATION = 'Montreal, Canada';
 var SUBMISSION_INVITATION = 'NIPS.cc/2018/Workshop/IRASL/-/Submission';

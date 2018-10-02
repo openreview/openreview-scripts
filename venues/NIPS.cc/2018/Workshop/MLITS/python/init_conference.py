@@ -71,10 +71,8 @@ submission_inv = invitations.Submission(
     duedate = config.SUBMISSION_TIMESTAMP,
 	process = '../process/submissionProcess.js',
     reply_params={
-        'readers': {
-            'description': 'The users who will be allowed to read the above content.',
-            'values-copied': [config.CONFERENCE_ID, config.PROGRAM_CHAIRS, '{content.authorids}', '{signatures}']
-        }
+        'readers': ['everyone'],
+        'writers': {'values-regex': "~.*|"+config.CONFERENCE_ID}
     },
     content_params = {
         # defaults to blind submission description
