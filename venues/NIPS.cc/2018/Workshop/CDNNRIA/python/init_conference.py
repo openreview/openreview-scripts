@@ -68,9 +68,14 @@ submission_inv = invitations.Submission(
 	process = '../process/submissionProcess.js',
     reply_params={
         'readers': {
-            'description': 'The users who will be allowed to read the above content.',
-            'values-copied': [config.CONFERENCE_ID, config.PROGRAM_CHAIRS, '{content.authorids}', '{signatures}']
-        }
+            'values-copied': [
+                config.CONFERENCE_ID,
+                config.PROGRAM_CHAIRS,
+                '{content.authorids}',
+                '{signatures}'
+            ]
+        },
+        'writers': {'values-regex': "~.*|"+config.CONFERENCE_ID}
     }
 )
 
@@ -90,8 +95,9 @@ blind_submission_inv = invitations.Submission(
         }
     },
     reply_params={
-        'signatures': {'values': [config.CONFERENCE_ID]},
-        'readers': {'values': ['everyone']}
+        'signatures': {'values-regex': "~.*|"+CONFERENCE_ID},
+        'readers': {'values': ['everyone']},
+        'writers': {'values-regex': "~.*|"+config.CONFERENCE_ID}
     }
 )
 blind_submission_inv = client.post_invitation(blind_submission_inv)

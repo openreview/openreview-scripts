@@ -88,9 +88,14 @@ program_chairs_params = {
 submission_params = {
     'pdf': {"required": True},
     'readers': {
-        'description': 'The users who will be allowed to read the above content.',
-        'values-copied': [CONFERENCE_ID, PROGRAM_CHAIRS, '{content.authorids}', '{signatures}']
+        'values-copied': [
+            CONFERENCE_ID,
+            PROGRAM_CHAIRS,
+            '{content.authorids}',
+            '{signatures}'
+        ]
     },
+    'writers': {'values-regex': "~.*|" + CONFERENCE_ID},
     'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')
 }
 
