@@ -78,7 +78,7 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, paper_tp
         reviewer_bids = [t for t in paper_bid_jsons if profile.id in t['signatures']]
         reviewer_bid_scores = [bid_score_map.get(bid['tag'], 0.0) for bid in reviewer_bids]
 
-        tpms_score = paper_tpms_scores[profile.id]
+        tpms_score = paper_tpms_scores.get(profile.id)
 
         # find conflicts between the reviewer's profile and the paper's authors' profiles
         user_entry = {
@@ -94,7 +94,7 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, paper_tp
                 user_entry['scores']['bid_score'] = mean_bid_score
 
         if tpms_score:
-            user_entry['scores']['tpms_score'] = tpms_score
+            user_entry['scores']['tpms_score'] = float(tpms_score)
 
         conflicts = utils.get_conflicts(author_profiles, profile)
 
