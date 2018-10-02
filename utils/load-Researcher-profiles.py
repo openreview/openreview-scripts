@@ -114,7 +114,7 @@ def load_json_file(dirpath, filename):
         emails = [repair_email(e) for e in emails]
         imported_profile_content['emails'] = emails
 
-        converted_name = {'first':name.get('first','').encode('utf-8'), 'middle':name.get('middle','').encode('utf-8'), 'last':name.get('last','').encode('utf-8')}
+        converted_name = {'first':name.get('first',''), 'middle':name.get('middle',''), 'last':name.get('last','')}
         imported_profile_content['names'].insert(0,converted_name)
     return imported_profile_content
 

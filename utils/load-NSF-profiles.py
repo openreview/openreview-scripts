@@ -87,11 +87,11 @@ def new_referent(client, id, invitation, content):
             # test if fails to get original
             db_profile = client.get_profile(id)
         except Exception as e:
-            print "Exception {}".format(e)
-            print id
+            print("Exception {}".format(e))
+            print(id)
         super_group = client.get_group('OpenReview.net')
         if len(super_group.members) > 1:
-            print super_group.members
+            print(super_group.members)
             raise openreview.OpenReviewException
         return profile
 
@@ -135,7 +135,7 @@ def update_coauthors(content, author_ids, email):
 # load information for one or more investigators from each xml file
 def load_xml_investigators(client, dirpath, start_at=0):
     super_group = client.get_group('OpenReview.net')
-    print len(super_group.members)
+    print(len(super_group.members))
     # create the NSF group (or overwrite it if it exists)
     source_group = openreview.Group(id=source_entity, signatures=['OpenReview.net'],
                                    signatories=[source_entity], readers=[source_entity],
@@ -162,9 +162,9 @@ def load_xml_investigators(client, dirpath, start_at=0):
         one_percent = 1
 
     # get all profiles
-    print "Loading profiles..."
+    print("Loading profiles...")
     profiles_by_id, profiles_by_email = get_all_profiles(client)
-    print "Retrieved profiles"
+    print("Retrieved profiles")
 
     for filename in file_names:
         # only handle xml files
@@ -174,15 +174,15 @@ def load_xml_investigators(client, dirpath, start_at=0):
                 continue
             # print progress
             if file_count / one_percent == file_count // one_percent:
-                print "{0}% complete {1}".format(file_count * 100 / total_files, filename)
+                print("{0}% complete {1}".format(file_count * 100 / total_files, filename))
             file_count += 1
 
             f = open(dirpath+'/'+filename, 'r')
             try:
                 contents = ET.parse(f)
             except Exception as e:
-                print e
-                print filename
+                print(e)
+                print(filename)
                 continue
             root = contents.getroot()
             expertise = get_expertise(root)
@@ -233,8 +233,8 @@ def load_xml_investigators(client, dirpath, start_at=0):
                                 num_updates += 1
                         except openreview.OpenReviewException as e:
                             # can be unhappy if name includes parenthesis etc
-                            print "Exception updating profile {}".format(e)
-                            print "Exception with id: "+profile.id
+                            print("Exception updating profile {}".format(e))
+                            print("Exception with id: "+profile.id)
                             continue
                     else:
                         # profile for this email doesn't exist,
@@ -245,7 +245,7 @@ def load_xml_investigators(client, dirpath, start_at=0):
                             # can be unhappy if name includes parenthesis etc
                             # in this case it is OK to skip it
                             continue
-                        tilde_id = response['username'].encode('utf-8')
+                        tilde_id = response['username']
                         # if tilde_name doesn't end with '1' then it already exists
                         if not tilde_id.endswith(last_name + '1'):
                             tilde_id = tilde_id[:-1] + '1'
@@ -271,7 +271,7 @@ def load_xml_investigators(client, dirpath, start_at=0):
                                 # ignore it because we don't know if it's new or not
                         else:
                             #email doesn't match and name hasn't been used before
-                            # print "Creating "+tilde_id
+                            # print("Creating "+tilde_id)
                             profile = create_nsf_profile(client, email, first_name, last_name, institute, expertise)
                             profiles_by_id[tilde_id]=profile
                             profiles_by_email[email]=profile
@@ -280,8 +280,8 @@ def load_xml_investigators(client, dirpath, start_at=0):
 
             f.closed
 
-    print "Added {0} profiles.".format(num_new)
-    print "Updated {0} profiles.".format(num_updates)
+    print("Added {0} profiles.".format(num_new))
+    print("Updated {0} profiles.".format(num_updates))
 
 def main():
     args = parser.parse_args()
