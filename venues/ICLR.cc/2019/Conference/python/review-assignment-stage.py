@@ -71,16 +71,16 @@ if __name__ == '__main__':
     assignment_inv = client.post_invitation(iclr19.assignment_inv)
 
     # read in TPMS scores
-    tpms_emails = set()
-    tpms_score_matrix = {}
+    paper_scores_by_number = {}
 
     with open(args.scores_file) as f:
         for row in csv.reader(f):
             paper_number = int(row[0])
             profile_id = row[1]
             score = row[2]
-
-
+            if paper_number not in paper_scores_by_number:
+                paper_scores_by_number[paper_number] = {}
+            paper_scores_by_number[paper_number][profile_id] = score
 
     for blind_note in blind_submissions:
         paper_tpms_scores = paper_scores_by_number[blind_note.number]
