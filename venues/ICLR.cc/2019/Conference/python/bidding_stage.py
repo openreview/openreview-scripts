@@ -14,16 +14,29 @@ import groups
 import invitations
 import argparse
 import random
+import csv
 
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
+    parser.add_argument('scores_file')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+
+    # read in TPMS scores
+    paper_scores_by_number = {}
+    with open(args.scores_file) as f:
+        for row in csv.reader(f):
+            paper_number = int(row[0])
+            profile_id = row[1]
+            score = row[2]
+            if paper_number not in paper_scores_by_number:
+                paper_scores_by_number[paper_number] = {}
+            paper_scores_by_number[paper_number][profile_id] = score
 
     with open('../webfield/reviewerWebfieldBiddingEnabled.js','r') as f:
         reviewers = client.get_group(iclr19.REVIEWERS_ID)
@@ -69,7 +82,7 @@ if __name__ == '__main__':
 
             score_entry = {
                 'forum': paper.forum,
-                'tpmsScore': random.random(),
+                'tpmsScore': float(paper_scores_by_number[paper.number].get(user_id,0.0)),
                 # 'conflict': 'cs.umass.edu'
             }
 
