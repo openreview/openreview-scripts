@@ -45,7 +45,7 @@ PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR = PAPER_REVIEWERS_TEMPLATE_STR + '/Submit
 PUBLIC_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Public_Comment'
 OFFICIAL_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Comment'
 OFFICIAL_REVIEW_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Review'
-WITHDRAWN_SUBMISSION_TEMPLATE_STR = CONFERENCE_ID + "/-/Withdrawn_Submission"
+
 
 # The groups corresponding to these regexes will get automatically created upon assignment
 PAPER_AREA_CHAIRS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/Area_Chair[0-9]+'
@@ -287,7 +287,6 @@ blind_submission_inv = invitations.Submission(
         }
     }
 )
-
 
 # User "registration".
 # this is a workaround to force ICLR to show up in users'
@@ -574,7 +573,7 @@ config_inv = openreview.Invitation.from_json({
 
 # This is the Conference level Invitation for all withdrawn submissions
 withdrawn_submission_invitation = openreview.Invitation.from_json({
-    'id': WITHDRAWN_SUBMISSION_TEMPLATE_STR,
+    'id': CONFERENCE_ID + "/-/Withdrawn_Submission",
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'invitees': [CONFERENCE_ID],
@@ -599,7 +598,6 @@ withdrawn_submission_invitation = openreview.Invitation.from_json({
     },
     "nonreaders": []
 })
-
 
 # Configure the invitations that will be attached on a per-paper basis
 # These are constructed using templates in the script invitations.py
