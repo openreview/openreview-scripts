@@ -1,0 +1,17 @@
+{
+    "label": "sr-reviewers-1",
+    "weights": {
+        "bid_score": 1.0,
+        "tpms_score": 1.0
+    },
+    "max_users": 1,
+    "max_papers": 5,
+    "alternates": 5,
+    "constraints": {},
+    "config_invitation": "ICLR.cc/2019/Conference/-/Assignment_Configuration",
+    "paper_invitation": "ICLR.cc/2019/Conference/-/Blind_Submission",
+    "metadata_invitation": "ICLR.cc/2019/Conference/-/Paper_Metadata",
+    "assignment_invitation": "ICLR.cc/2019/Conference/-/Paper_Assignment",
+    "match_group": "ICLR.cc/2019/Conference/Senior_Reviewers",
+    "status": "complete"
+}

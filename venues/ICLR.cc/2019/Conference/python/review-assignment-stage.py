@@ -22,6 +22,28 @@ def clear(client, invitation):
     for note in openreview.tools.iterget_notes(client, invitation = invitation):
         client.delete_note(note)
 
+def split_reviewers_by_experience(client, reviewers_group):
+    questionnaire_responses = openreview.tools.iterget_notes(
+        client, invitation='ICLR.cc/2019/Conference/-/Reviewer_Questionnaire_Response')
+
+    experience_by_signature = {r.signatures[0]: r.content['Reviewing Experience'] for r in questionnaire_responses}
+
+    senior_reviewers = []
+    junior_reviewers = []
+
+    valid_reviewer_ids = [r for r in reviewers_group.members if '~' in r]
+    for reviewer in valid_reviewer_ids:
+        experience = experience_by_signature.get(reviewer, '')
+        if experience in [
+            '5-10 times  - active community citizen',
+            '10+ times  - seasoned reviewer'
+        ]:
+            senior_reviewers.append(reviewer)
+        else:
+            junior_reviewers.append(reviewer)
+
+    return senior_reviewers, junior_reviewers
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('scores_file')
@@ -85,3 +107,10 @@ if __name__ == '__main__':
     for blind_note in blind_submissions:
         paper_tpms_scores = paper_scores_by_number[blind_note.number]
         new_metadata_note = notes.post_metadata_note(client, blind_note, user_profiles, metadata_inv, paper_tpms_scores)
+
+    senior_reviewer_ids, junior_reviewer_ids = split_reviewers_by_experience(client, reviewers_group)
+    iclr19.senior_reviewers.members = senior_reviewer_ids
+    iclr19.junior_reviewers.members = junior_reviewer_ids
+    client.post_group(iclr19.senior_reviewers)
+    client.post_group(iclr19.junior_reviewers)
+

@@ -70,28 +70,28 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, paper_tp
     for profile in reviewer_profiles:
         bid_score_map = {
             'Very High': 1.0,
-            'High': 0.75,
-            'Neutral': 0.5,
-            'Low': 0.25,
-            'Very Low': 0.0
+            'High': 0.5,
+            'Neutral': 0.0,
+            'Low': -0.5,
+            'Very Low': -1.0
         }
-        reviewer_bids = [t for t in paper_bid_jsons if profile.id in t['signatures']]
-        reviewer_bid_scores = [bid_score_map.get(bid['tag'], 0.0) for bid in reviewer_bids]
-
+        try:
+            reviewer_bids = sorted([t for t in [j for j in paper_bid_jsons if j['tcdate']] if profile.id in t['signatures']], key=lambda t: t.get('tcdate',0), reverse=True)
+        except TypeError as e:
+            print(paper_bid_jsons)
+            raise e
         tpms_score = paper_tpms_scores.get(profile.id)
 
         # find conflicts between the reviewer's profile and the paper's authors' profiles
         user_entry = {
             'userId': profile.id,
-            'scores': {
-                # 'tpms_score': random.random()
-            }
+            'scores': {}
         }
 
-        if reviewer_bid_scores:
-            mean_bid_score = np.mean(reviewer_bid_scores)
-            if mean_bid_score > 0.0:
-                user_entry['scores']['bid_score'] = mean_bid_score
+        if reviewer_bids:
+            bid_score = bid_score_map.get(reviewer_bids[0]['tag'], 0.0)
+            if bid_score != 0.0:
+                user_entry['scores']['bid_score'] = bid_score
 
         if tpms_score:
             user_entry['scores']['tpms_score'] = float(tpms_score)
