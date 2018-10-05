@@ -336,9 +336,9 @@ def enable_and_post(client, paper, template_key):
     return client.post_invitation(new_inv)
 
 def disable_bids(client):
-    disabled_invitaion = client.post_invitation(disable_invitation('Add_Bid'))
-    disabled_invitaion.invitees = []
-    return disabled_invitaion
+    disabled_invitation = client.post_invitation(disable_invitation('Add_Bid'))
+    disabled_invitation.invitees = []
+    return disabled_invitation
 
 if __name__ == '__main__':
     ## Argument handling
