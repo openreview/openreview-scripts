@@ -72,8 +72,6 @@ function main() {
 
   renderConferenceHeader();
 
-  renderSubmissionButton();
-
   renderConferenceTabs();
 
   load().then(renderContent);
@@ -84,6 +82,7 @@ function main() {
 function load() {
   var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
     pageSize: PAGE_SIZE,
+    sort: 'replyCount',
     details: 'replyCount'
   });
 
@@ -125,22 +124,6 @@ function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
 
   Webfield.ui.spinner('#notes', { inline: true });
-}
-
-function renderSubmissionButton() {
-  Webfield.api.getSubmissionInvitation(SUBMISSION_ID, {deadlineBuffer: BUFFER})
-    .then(function(invitation) {
-      Webfield.ui.submissionButton(invitation, user, {
-        onNoteCreated: function() {
-          // Callback funtion to be run when a paper has successfully been submitted (required)
-          promptMessage('Your submission is complete. Check your inbox for a confirmation email. A list of all submissions will be available after the deadline');
-
-          load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#your-consoles"]').click();
-          });
-        }
-      });
-    });
 }
 
 function renderConferenceTabs() {
@@ -213,7 +196,12 @@ function renderContent(notes, userGroups, activityNotes, authorNotes) {
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: false,
-    container: '#all-submissions'
+    container: '#all-submissions',
+    queryParams: { 
+      pageSize: PAGE_SIZE, 
+      details: 'replyCount', 
+      sort: 'replyCount'
+    }
   });
 
   $(submissionListOptions.container).empty();
