@@ -14,6 +14,11 @@ var SEARCH_KEYWORDS = [
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
   the submitted papers below, on a scale from "Very Low" to "Very High".</p>\
+  <p class="dark"><strong>Please note:</strong></p>\
+  <ul>\
+    <li><strong>Conflict of interest will be taken into account at the next stage. So, please do not worry about that while bidding.</strong></li>\
+    <li>Please update your Conflict of Interest details on your profile page, specifically "Emails", "Education and Career History" & "Advisors and Other Relations" fields.</li>\
+  </ul>\
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
     <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
