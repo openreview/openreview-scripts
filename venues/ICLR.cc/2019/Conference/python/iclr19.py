@@ -576,16 +576,16 @@ CONFIG_INV_ID = CONFERENCE_ID + '/-/Assignment_Configuration'
 
 config_inv = openreview.Invitation.from_json({
     'id': CONFIG_INV_ID,
-    'readers': [CONFERENCE_ID],
+    'readers': [CONFERENCE_ID, PROGRAM_CHAIRS_ID],
     'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
+    'signatures': [PROGRAM_CHAIRS_ID],
     'reply': {
         'forum': None,
         'replyto': None,
         'invitation': None,
         'readers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
         'writers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
-        'signatures': {'values': [CONFERENCE_ID]},
+        'signatures': {'values': [PROGRAM_CHAIRS_ID]},
         'content': {}
     }
 
