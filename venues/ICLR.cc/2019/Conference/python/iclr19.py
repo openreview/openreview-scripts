@@ -21,6 +21,8 @@ AREA_CHAIRS_DECLINED_ID = AREA_CHAIRS_ID + '/Declined'
 REVIEWERS_ID = CONFERENCE_ID + '/Reviewers'
 REVIEWERS_INVITED_ID = REVIEWERS_ID + '/Invited'
 REVIEWERS_DECLINED_ID = REVIEWERS_ID + '/Declined'
+SENIOR_REVIEWERS_ID = CONFERENCE_ID + '/Senior_Reviewers'
+JUNIOR_REVIEWERS_ID = CONFERENCE_ID + '/Junior_Reviewers'
 
 AUTHORS_ID = CONFERENCE_ID + '/Authors'
 
@@ -139,7 +141,7 @@ The ICLR 2019 Program Chairs
 # Deadlines
 SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=9, day=27, hour=22)
 BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=10, hour=9)
-ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=6, hour=0)
+ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=5, hour=21)
 OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=29)
 QUESTIONNAIRE_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=2, hour=22)
 QUESTIONNAIRE_EXPIRY = openreview.tools.timestamp_GMT(year=2018, month=10, day=20)
@@ -221,6 +223,24 @@ reviewers_invited = openreview.Group.from_json({
 
 reviewers_declined = openreview.Group.from_json({
     'id': REVIEWERS_DECLINED_ID,
+    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'signatories': [CONFERENCE_ID],
+    'members': [],
+})
+
+senior_reviewers = openreview.Group.from_json({
+    'id': SENIOR_REVIEWERS_ID,
+    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'signatories': [CONFERENCE_ID],
+    'members': [],
+})
+
+junior_reviewers = openreview.Group.from_json({
+    'id': JUNIOR_REVIEWERS_ID,
     'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
@@ -564,7 +584,7 @@ config_inv = openreview.Invitation.from_json({
         'replyto': None,
         'invitation': None,
         'readers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
-        'writers': {'values': [CONFERENCE_ID]},
+        'writers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
         'signatures': {'values': [CONFERENCE_ID]},
         'content': {}
     }
