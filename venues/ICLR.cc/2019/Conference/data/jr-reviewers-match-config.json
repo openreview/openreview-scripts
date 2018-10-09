@@ -13,5 +13,16 @@
     "metadata_invitation": "ICLR.cc/2019/Conference/-/Paper_Metadata",
     "assignment_invitation": "ICLR.cc/2019/Conference/-/Paper_Assignment",
     "match_group": "ICLR.cc/2019/Conference/Junior_Reviewers",
-    "status": "complete"
+    "status": "complete",
+    "custom_loads": {
+        "~Margarita_Kotti1": 2,
+        "~Mark_Herbster1": 2,
+        "~Rianne_van_den_Berg1": 2,
+        "~Dragomir_Anguelov1": 2,
+        "~Nicolò_Cesa-Bianchi1": 3,
+        "~Ognjen_Rudovic1": 3,
+        "~houssam_nassif1": 3,
+        "~Alice_Zheng1": 3,
+        "~Sageev_Oore1": 3
+    }
 }
