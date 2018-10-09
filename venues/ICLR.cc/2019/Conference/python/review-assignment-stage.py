@@ -108,11 +108,12 @@ if __name__ == '__main__':
     # read in manual conflicts
     # manual_conflicts_by_id is keyed on tilde IDs, and values are each a list of domains.
     manual_conflicts_by_id = {}
-    with open(args.constraints_file) as f:
-        for row in csv.reader(f):
-            id = row[0]
-            conflicts = row[1:]
-            manual_conflicts_by_id[id] = conflicts
+    if args.constraints_file:
+        with open(args.constraints_file) as f:
+            for row in csv.reader(f):
+                id = row[0]
+                conflicts = row[1:]
+                manual_conflicts_by_id[id] = conflicts
 
     for blind_note in blind_submissions:
         paper_tpms_scores = paper_scores_by_number[blind_note.number]
