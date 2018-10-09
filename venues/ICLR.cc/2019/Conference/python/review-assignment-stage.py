@@ -48,7 +48,7 @@ def split_reviewers_by_experience(client, reviewers_group):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('scores_file')
-    parser.add_argument('constraints_file')
+    parser.add_argument('-c','--constraints_file')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
