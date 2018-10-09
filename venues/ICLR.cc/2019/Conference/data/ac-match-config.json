@@ -5,7 +5,7 @@
         "tpms_score": 1.0
     },
     "max_users": 1,
-    "max_papers": 30,
+    "max_papers": 25,
     "alternates": 5,
     "constraints": {},
     "config_invitation": "ICLR.cc/2019/Conference/-/Assignment_Configuration",

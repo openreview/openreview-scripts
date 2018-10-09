@@ -19,7 +19,8 @@ import csv
 import matcher
 
 def clear(client, invitation):
-    for note in openreview.tools.iterget_notes(client, invitation = invitation):
+    note_list = list(openreview.tools.iterget_notes(client, invitation = invitation))
+    for note in note_list:
         client.delete_note(note)
 
 def split_reviewers_by_experience(client, reviewers_group):
