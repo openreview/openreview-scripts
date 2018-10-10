@@ -1,20 +1,4 @@
-'''
-Reviewing Stage (~Oct. 8 - ~Oct. 29)
 
-- Review assignments are deployed.
-- Authors, reviewers, areachairs, and members of the public may continue to post comments under the same permissions as above.
-- Reviewers and areachairs may no longer bid on papers.
-- Review and meta-review tasks deployed.
-- Reviews are visible to to paper area chairs and program chairs immediately upon creation.
-- Reviews are hidden from reviewers until they post their own review.
-- Reviews will be made available to the public during the rebuttal period
-- Reviewer identity is revealed only to the paper’s area chair and to the program chairs, *not* to the other reviewers. This is important so that reviews can be rated honestly later.
-- - Important: reviewers *should not* reveal their identities in any part of the discussion.
-- Reviewer and areachair assignments consoles are enabled.
-- Area chairs can send messages and reminders to reviewers through the AC console.
-
-
-'''
 
 import openreview
 import iclr19
