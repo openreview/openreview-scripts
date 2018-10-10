@@ -23,7 +23,7 @@ REVIEWERS = CONFERENCE_ID + '/Reviewers'
 
 # GMT is the same as UTC
 SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day=30, hour=23, minute=59)
-#REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=placeholder, hour=23, minute=59)
+REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day= 20, hour=11, minute=59)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
 
@@ -110,22 +110,13 @@ submission_params = {
     'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')
 }
 
-comment_params = {
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'invitees': ['~'],
-    'signatures': [CONFERENCE_ID],
-    'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js')
-}
-
-'''
 review_params = {
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
+    'process': os.path.join(os.path.dirname(__file__), '../process/confidentialReviewProcess.js'),
     'duedate': REVIEW_TIMESTAMP
-}'''
+}
 
 
 """
