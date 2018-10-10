@@ -5,6 +5,7 @@
         "tpms_score": 1.0
     },
     "max_users": 1,
+    "min_papers": 18,
     "max_papers": 25,
     "alternates": 5,
     "constraints": {},
