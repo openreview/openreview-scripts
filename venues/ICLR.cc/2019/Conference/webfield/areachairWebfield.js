@@ -80,13 +80,13 @@ var loadData = function(result) {
   if (noteNumbers.length) {
     var noteNumbersStr = noteNumbers.join(',');
 
-    blindedNotesP = Webfield.get('/notes', {
+    blindedNotesP = Webfield.getAll('/notes', {
       invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
     })
     .then(function(result) {
       return result.notes;
     });
-  
+
     metaReviewsP = Webfield.get('/notes', {
       invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
     })
@@ -119,7 +119,6 @@ var loadData = function(result) {
 };
 
 var getOfficialReviews = function(noteNumbers) {
-
   if (!noteNumbers.length) {
     return $.Deferred().resolve({});
   }
@@ -156,7 +155,6 @@ var getOfficialReviews = function(noteNumbers) {
 };
 
 var getReviewerGroups = function(noteNumbers) {
-
   if (!noteNumbers.length) {
     return $.Deferred().resolve({});
   };
@@ -180,7 +178,6 @@ var getReviewerGroups = function(noteNumbers) {
 
     return noteMap;
   });
-
 };
 
 var formatData = function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations) {
