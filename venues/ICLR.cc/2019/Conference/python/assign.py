@@ -11,8 +11,8 @@ from collections import defaultdict
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
-    parser.add_argument('type', help='enter "areachairs" or "reviewers"')
-    parser.add_argument('label')
+    parser.add_argument('--type', help='enter "areachairs" or "reviewers"')
+    parser.add_argument('--label')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
@@ -45,7 +45,6 @@ if __name__ == '__main__':
 
     for assignment_note in assignment_notes:
         if assignment_note.content['label'] == args.label:
-            print(assignment_note.forum)
             paper_number = get_number_from_details(assignment_note.details)
             assignment_entries = assignment_note.content['assignedGroups']
 

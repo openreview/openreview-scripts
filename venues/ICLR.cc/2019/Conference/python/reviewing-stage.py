@@ -30,6 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
+    parser.add_argument('--type')
     args = parser.parse_args()
 
     assert args.type in ['areachairs','reviewers'], 'input "type" must be either "areachairs" or "reviewers"'
