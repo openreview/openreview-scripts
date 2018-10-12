@@ -11,8 +11,8 @@ from collections import defaultdict
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
-    parser.add_argument('--type', help='enter "areachairs" or "reviewers"')
-    parser.add_argument('--label')
+    parser.add_argument('type', help='enter "areachairs" or "reviewers"')
+    parser.add_argument('label')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
