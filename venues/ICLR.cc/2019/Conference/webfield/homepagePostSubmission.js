@@ -11,6 +11,7 @@ var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
 var SUBMISSION_ID = CONFERENCE_ID + '/-/Submission';
 var ADD_BID_ID = CONFERENCE_ID + '/-/Add_Bid';
 var BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission';
+var WITHDRAWN_SUBMISSION_ID = CONFERENCE_ID + '/-/Withdrawn_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE_ID + '/-/Recruit_Reviewers';
 var RECRUIT_AREA_CHAIRS = CONFERENCE_ID + '/-/Recruit_Area_Chairs';
 var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
@@ -87,6 +88,10 @@ function load() {
     details: 'replyCount'
   });
 
+  var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_SUBMISSION_ID, {
+    pageSize: 1000
+  });
+
   var activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
     pageSize: PAGE_SIZE,
     details: 'forumContent'
@@ -115,7 +120,7 @@ function load() {
   }
 
   return $.when(
-    notesP, userGroupsP, activityNotesP, authorNotesP
+    notesP, withdrawnNotesP, userGroupsP, activityNotesP, authorNotesP
   );
 }
 
@@ -154,6 +159,10 @@ function renderConferenceTabs() {
       id: 'all-submissions',
     },
     {
+      heading: 'Withdrawn Papers',
+      id: 'withdrawn-papers',
+    },
+    {
       heading: 'Recent Activity',
       id: 'recent-activity',
     }
@@ -165,7 +174,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, userGroups, activityNotes, authorNotes) {
+function renderContent(notes, withdrawnNotes, userGroups, activityNotes, authorNotes) {
 
   // Your Consoles tab
   if (userGroups.length || authorNotes.length) {
@@ -249,6 +258,17 @@ function renderContent(notes, userGroups, activityNotes, authorNotes) {
   } else {
     $('.tabs-container a[href="#all-submissions"]').parent().hide();
   }
+
+  // Withdrawn Tab
+  if (withdrawnNotes.length) {
+    Webfield.ui.searchResults(
+      withdrawnNotes,
+      _.assign({}, paperDisplayOptions, {showTags: false, container: '#withdrawn-papers'})
+    );
+  } else {
+    $('.tabs-container a[href="#withdrawn-papers"]').parent().hide();
+  }
+
   // Activity Tab
   if (activityNotes.length) {
     var displayOptions = {
