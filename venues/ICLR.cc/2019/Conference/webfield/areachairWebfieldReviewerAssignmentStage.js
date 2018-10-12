@@ -598,7 +598,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     invitationUrl: '/forum?' + $.param(invitationUrlParams)
   };
   if (metaReview) {
-    cell5.recommendation = metaReview.content.rating;
+    cell5.recommendation = metaReview.content.recommendation;
     cell5.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
   }
 
