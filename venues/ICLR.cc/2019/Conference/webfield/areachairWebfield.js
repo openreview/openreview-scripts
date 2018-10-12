@@ -82,9 +82,6 @@ var loadData = function(result) {
 
     blindedNotesP = Webfield.getAll('/notes', {
       invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
-    })
-    .then(function(result) {
-      return result.notes;
     });
 
     metaReviewsP = Webfield.getAll('/notes', {
@@ -156,8 +153,8 @@ var getReviewerGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
 
   return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
-  .then(function(result) {
-    _.forEach(result, function(g) {
+  .then(function(groups) {
+    _.forEach(groups, function(g) {
       var matches = g.id.match(ANONREVIEWER_REGEX);
       var num, index;
       if (matches) {
