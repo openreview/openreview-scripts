@@ -96,7 +96,7 @@ var loadData = function(result) {
   }
 
   var invitationsP = Webfield.getAll('/invitations', {
-    invitation: WILDCARD_INVITATION, pageSize: 100, invitee: true,
+    invitation: WILDCARD_INVITATION, invitee: true,
     duedate: true, replyto: true, details: 'replytoNote,repliedNotes'
   });
 
@@ -159,7 +159,7 @@ var getReviewerGroups = function(noteNumbers) {
 
   return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
   .then(function(result) {
-    _.forEach(result, function(g, i) {
+    _.forEach(result, function(g) {
       var matches = g.id.match(ANONREVIEWER_REGEX);
       var num, index;
       if (matches) {
