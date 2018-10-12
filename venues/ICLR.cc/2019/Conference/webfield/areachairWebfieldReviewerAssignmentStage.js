@@ -1,4 +1,3 @@
-
 // Assumes the following pattern for meta reviews and official reviews:
 // CONFERENCE + '/-/Paper' + number + '/Meta_Review'
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
@@ -88,24 +87,18 @@ var loadData = function(result) {
     .then(function(result) {
       return result.notes;
     });
-  
-    metaReviewsP = Webfield.get('/notes', {
+
+    metaReviewsP = Webfield.getAll('/notes', {
       invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
-    })
-    .then(function(result) {
-      return result.notes;
     });
   } else {
     blindedNotesP = $.Deferred().resolve([]);
     metaReviewsP = $.Deferred().resolve([]);
   }
 
-  var invitationsP = Webfield.get('/invitations', {
-    invitation: WILDCARD_INVITATION, pageSize: 100, invitee: true,
+  var invitationsP = Webfield.getAll('/invitations', {
+    invitation: WILDCARD_INVITATION, invitee: true,
     duedate: true, replyto: true, details: 'replytoNote,repliedNotes'
-  })
-  .then(function(result) {
-    return result.invitations;
   });
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID);
@@ -164,10 +157,9 @@ var getReviewerGroups = function(noteNumbers) {
   };
 
   var noteMap = buildNoteMap(noteNumbers);
-
-  return Webfield.get('/groups', { id: ANONREVIEWER_WILDCARD })
+  return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
   .then(function(result) {
-    _.forEach(result.groups, function(g) {
+    _.forEach(result, function(g, i) {
       var matches = g.id.match(ANONREVIEWER_REGEX);
       var num, index;
       if (matches) {
@@ -318,7 +310,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
       }
 
       if (users.length) {
-        var forumUrl = '/forum?' + $.param({
+        var forumUrl = 'https://openreview.net/forum?' + $.param({
           id: row[2].forum,
           noteId: row[2].id,
           invitationId: CONFERENCE + '/-/Paper' + row[2].number + '/Official_Review'
