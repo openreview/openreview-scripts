@@ -33,11 +33,8 @@ var getPaperNumbersfromGroups = function(groups) {
 };
 
 var getBlindedNotes = function() {
-  return Webfield.getAll('notes', {
+  return Webfield.getAll('/notes', {
     invitation: BLIND_INVITATION, noDetails: true
-  })
-  .then(function(result) {
-    return result.notes;
   });
 };
 
@@ -80,11 +77,11 @@ var getReviewerGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var reviewerMap = {};
 
-  return $.getJSON('groups', { id: ANONREVIEWER_WILDCARD })
-    .then(function(result) {
+  return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
+    .then(function(groups) {
       var re = ANONREVIEWER_REGEX;
 
-      result.groups.forEach(function(g) {
+      _.forEach(groups, function(g) {
         var matches = g.id.match(re);
         var num, index;
         if (matches) {
@@ -121,11 +118,11 @@ var getAreaChairGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var areaChairMap = {};
 
-  return $.getJSON('groups', { id: AREACHAIR_WILDCARD })
-    .then(function(result) {
+  return Webfield.getAll('/groups', { id: AREACHAIR_WILDCARD })
+    .then(function(groups) {
       var re = AREACHAIR_REGEX;
 
-      result.groups.forEach(function(g) {
+      _.forEach(groups, function(g) {
         var matches = g.id.match(re);
         var num;
         if (matches) {
@@ -191,13 +188,12 @@ var findProfile = function(profiles, id) {
 }
 
 var getMetaReviews = function() {
-  return $.getJSON('notes', { invitation: METAREVIEW_INVITATION, noDetails: true })
-    .then(function(result) {
-      return result.notes;
-    }).fail(function(error) {
-      displayError();
-      return null;
-    });
+  return Webfield.get('/notes', {
+    invitation: METAREVIEW_INVITATION, noDetails: true
+  })
+  .then(function(result) {
+    return result.notes;
+  });
 };
 
 
