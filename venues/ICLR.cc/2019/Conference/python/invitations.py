@@ -139,7 +139,7 @@ meta_review_template = {
             'description': 'Users that may modify this record.',
             'values-regex': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_REGEX
         },
-        'content': openreview.invitations.content.review
+        'content': openreview.invitations.content.meta_review
     }
 }
 with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js')) as f:
