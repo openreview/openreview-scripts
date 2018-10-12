@@ -188,11 +188,8 @@ var findProfile = function(profiles, id) {
 }
 
 var getMetaReviews = function() {
-  return Webfield.get('/notes', {
+  return Webfield.getAll('/notes', {
     invitation: METAREVIEW_INVITATION, noDetails: true
-  })
-  .then(function(result) {
-    return result.notes;
   });
 };
 
