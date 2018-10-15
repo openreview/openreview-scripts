@@ -58,6 +58,9 @@ if __name__ == "__main__":
     reviewer_to_add = args.add
 
     conference = 'ICLR.cc/2019/Conference'
+    paperUrl = "ICLR.cc/2019/Conference/Paper{}".format(paper_number)
+    unsubmittedGroupId = paperUrl + "/Reviewers/Unsubmitted"
+    anonReviewerRegex = re.compile(paperUrl+"/AnonReviewer.*")
 
     if reviewer_to_remove :
         if '@' in reviewer_to_remove:
@@ -68,6 +71,18 @@ if __name__ == "__main__":
                                             parent_label = 'Reviewers',
                                             individual_label = 'AnonReviewer')
         reviewer_to_remove = user
+        anonReviewerGroup = ""
+        
+        try:
+            anonReviewerGroup = [grp for grp in changed_groups_rem if anonReviewerRegex.match(str(grp))][0]
+        except IndexError as e:
+            pass
+        
+        client.remove_members_from_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
+        changed_groups_rem.append(unsubmittedGroupId)
+        
+        for grp in changed_groups_rem:
+            print("{:40s} removed from --> {}".format(reviewer_to_remove, grp))
 
     if reviewer_to_add :
         if '@' in reviewer_to_add:
@@ -82,27 +97,6 @@ if __name__ == "__main__":
                             parent_label = 'Reviewers', 
                             individual_label = 'AnonReviewer')
         reviewer_to_add = user
-    
-    
-    paperUrl = "ICLR.cc/2019/Conference/Paper{}".format(paper_number)
-    unsubmittedGroupId = paperUrl + "/Reviewers/Unsubmitted"
-    anonReviewerRegex = re.compile(paperUrl+"/AnonReviewer.*")
-
-    if reviewer_to_remove:
-        anonReviewerGroup = ""
-        
-        try:
-            anonReviewerGroup = [grp for grp in changed_groups_rem if anonReviewerRegex.match(str(grp))][0]
-        except IndexError as e:
-            pass
-        
-        client.remove_members_from_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
-        changed_groups_rem.append(unsubmittedGroupId)
-        
-        for grp in changed_groups_rem:
-            print("{:40s} removed from --> {}".format(reviewer_to_remove, grp))
-    
-    if reviewer_to_add:
         anonReviewerGroup = ""
         
         try:
