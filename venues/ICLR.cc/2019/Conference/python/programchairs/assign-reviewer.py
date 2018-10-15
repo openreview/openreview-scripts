@@ -66,17 +66,13 @@ if __name__ == "__main__":
         if '@' in reviewer_to_remove:
             reviewer_to_remove = reviewer_to_remove.lower()
         
-        (user,changed_groups_rem) = openreview.tools.remove_assignment(client, paper_number, conference, reviewer_to_remove,
-                                            parent_group_params = {},
-                                            parent_label = 'Reviewers',
-                                            individual_label = 'AnonReviewer')
+        (user,changed_groups_rem) = openreview.tools.remove_assignment(client, paper_number, conference, reviewer_to_remove)
         reviewer_to_remove = user
         anonReviewerGroup = ""
         
-        try:
-            anonReviewerGroup = [grp for grp in changed_groups_rem if anonReviewerRegex.match(str(grp))][0]
-        except IndexError as e:
-            pass
+        matchResult = next(filter(anonReviewerRegex.match,changed_groups_rem),None)
+        if (matchResult):
+            anonReviewerGroup = matchResult
         
         client.remove_members_from_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
         changed_groups_rem.append(unsubmittedGroupId)
@@ -89,13 +85,11 @@ if __name__ == "__main__":
             reviewer_to_add = reviewer_to_add.lower()
         
         (user,changed_groups_add) = openreview.tools.add_assignment(client, paper_number, conference, reviewer_to_add,
-                            parent_group_params = {}, individual_group_params = {'readers': [
+                            individual_group_params = {'readers': [
                             'ICLR.cc/2019/Conference',
                             'ICLR.cc/2019/Conference/Program_Chairs',
                             'ICLR.cc/2019/Conference/Paper{}/Area_Chairs'.format(paper_number)
-                            ]}, 
-                            parent_label = 'Reviewers', 
-                            individual_label = 'AnonReviewer')
+                            ]})
         reviewer_to_add = user
         anonReviewerGroup = ""
         
