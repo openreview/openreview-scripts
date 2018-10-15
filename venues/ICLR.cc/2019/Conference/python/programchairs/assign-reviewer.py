@@ -68,13 +68,10 @@ if __name__ == "__main__":
         
         (user,changed_groups_rem) = openreview.tools.remove_assignment(client, paper_number, conference, reviewer_to_remove)
         reviewer_to_remove = user
-        anonReviewerGroup = ""
         
-        matchResult = next(filter(anonReviewerRegex.match,changed_groups_rem),None)
-        if (matchResult):
-            anonReviewerGroup = matchResult
-        
-        client.remove_members_from_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
+        anonReviewerGroup = next(filter(anonReviewerRegex.match,changed_groups_rem), None)
+        if anonReviewerGroup:
+            client.remove_members_from_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
         changed_groups_rem.append(unsubmittedGroupId)
         
         for grp in changed_groups_rem:
@@ -91,14 +88,10 @@ if __name__ == "__main__":
                             'ICLR.cc/2019/Conference/Paper{}/Area_Chairs'.format(paper_number)
                             ]})
         reviewer_to_add = user
-        anonReviewerGroup = ""
         
-        try:
-            anonReviewerGroup = [grp for grp in changed_groups_add if anonReviewerRegex.match(str(grp))][0]
-        except IndexError as e:
-            pass
-        
-        client.add_members_to_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
+        anonReviewerGroup = next(filter(anonReviewerRegex.match,changed_groups_add), "")
+        if anonReviewerGroup:
+            client.add_members_to_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
         changed_groups_add.append(unsubmittedGroupId)
         
         for grp in changed_groups_add:
