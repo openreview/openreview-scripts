@@ -57,48 +57,61 @@ if __name__ == "__main__":
     reviewer_to_remove = args.remove
     reviewer_to_add = args.add
 
-    if reviewer_to_remove and '@' in reviewer_to_remove:
-        reviewer_to_remove = reviewer_to_remove.lower()
+    conference = 'ICLR.cc/2019/Conference'
 
-    if reviewer_to_add and '@' in reviewer_to_add:
-        reviewer_to_add = reviewer_to_add.lower()
+    if reviewer_to_remove :
+        if '@' in reviewer_to_remove:
+            reviewer_to_remove = reviewer_to_remove.lower()
+        
+        (user,changed_groups_rem) = openreview.tools.remove_assignment(client, paper_number, conference, reviewer_to_remove,
+                                            parent_group_params = {},
+                                            parent_label = 'Reviewers',
+                                            individual_label = 'AnonReviewer')
+        reviewer_to_remove = user
+
+    if reviewer_to_add :
+        if '@' in reviewer_to_add:
+            reviewer_to_add = reviewer_to_add.lower()
+        
+        (user,changed_groups_add) = openreview.tools.add_assignment(client, paper_number, conference, reviewer_to_add,
+                            parent_group_params = {}, individual_group_params = {'readers': [
+                            'ICLR.cc/2019/Conference',
+                            'ICLR.cc/2019/Conference/Program_Chairs',
+                            'ICLR.cc/2019/Conference/Paper{}/Area_Chairs'.format(paper_number)
+                            ]}, 
+                            parent_label = 'Reviewers', 
+                            individual_label = 'AnonReviewer')
+        reviewer_to_add = user
     
-    (user,changed_groups) = openreview.tools.assign(client, paper_number, 'ICLR.cc/2019/Conference',
-        individual_group_params = {'readers': [
-            'ICLR.cc/2019/Conference',
-            'ICLR.cc/2019/Conference/Program_Chairs',
-            'ICLR.cc/2019/Conference/Paper{}/Area_Chairs'.format(paper_number)
-            ]},
-        reviewer_to_add = reviewer_to_add,
-        reviewer_to_remove = reviewer_to_remove,
-        parent_label = 'Reviewers',
-        individual_label = 'AnonReviewer')
-
-    userInUnsubmitted = 0
+    
     paperUrl = "ICLR.cc/2019/Conference/Paper{}".format(paper_number)
     unsubmittedGroupId = paperUrl + "/Reviewers/Unsubmitted"
     anonReviewerRegex = re.compile(paperUrl+"/AnonReviewer.*")
-    anonReviewerGroup = ""
 
-    try:
-        anonReviewerGroup = [grp for grp in changed_groups if anonReviewerRegex.match(str(grp))][0]
-    except Exception as e:
-        pass
-
-    if anonReviewerGroup and (anonReviewerGroup in client.get_group(id=unsubmittedGroupId).members):
-        userInUnsubmitted = 1
-    
     if reviewer_to_remove:
-        if userInUnsubmitted and anonReviewerGroup:
-            client.remove_members_from_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
-            changed_groups.append(unsubmittedGroupId)
-        if not changed_groups:
-            print("{:40s} is already not a part of any groups for Paper --> {}".format(user, paper_number))
-        for grp in changed_groups:
-            print("{:40s} removed from --> {}".format(user, grp))
-    elif reviewer_to_add:
-        if not userInUnsubmitted and anonReviewerGroup:
-            client.add_members_to_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
-            changed_groups.append(unsubmittedGroupId)
-        for grp in changed_groups:
-            print("{:40s} added to --> {}".format(user, grp))
+        anonReviewerGroup = ""
+        
+        try:
+            anonReviewerGroup = [grp for grp in changed_groups_rem if anonReviewerRegex.match(str(grp))][0]
+        except IndexError as e:
+            pass
+        
+        client.remove_members_from_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
+        changed_groups_rem.append(unsubmittedGroupId)
+        
+        for grp in changed_groups_rem:
+            print("{:40s} removed from --> {}".format(reviewer_to_remove, grp))
+    
+    if reviewer_to_add:
+        anonReviewerGroup = ""
+        
+        try:
+            anonReviewerGroup = [grp for grp in changed_groups_add if anonReviewerRegex.match(str(grp))][0]
+        except IndexError as e:
+            pass
+        
+        client.add_members_to_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
+        changed_groups_add.append(unsubmittedGroupId)
+        
+        for grp in changed_groups_add:
+            print("{:40s} added to --> {}".format(reviewer_to_add, grp))
