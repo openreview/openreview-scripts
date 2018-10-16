@@ -777,7 +777,7 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var postData = {
     subject: 'ICLR 2019 Reminder',
     message: 'This is a reminder to please submit your official reviews for ICLR 2019. ' +
-      'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
+      'Click on the link below to go to the review page:\n\n' + location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };
 
