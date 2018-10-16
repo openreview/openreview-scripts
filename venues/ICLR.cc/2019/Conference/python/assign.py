@@ -45,7 +45,6 @@ if __name__ == '__main__':
 
     for assignment_note in assignment_notes:
         if assignment_note.content['label'] == args.label:
-            print(assignment_note.forum)
             paper_number = get_number_from_details(assignment_note.details)
             assignment_entries = assignment_note.content['assignedGroups']
 

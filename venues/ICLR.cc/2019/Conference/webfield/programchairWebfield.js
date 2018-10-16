@@ -15,7 +15,7 @@ var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official_Review';
 var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
 
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair';
+var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chairs';
 
 var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
@@ -127,7 +127,7 @@ var getAreaChairGroups = function(noteNumbers) {
         var num;
         if (matches) {
           num = parseInt(matches[1], 10);
-
+          
           if (g.members.length) {
             var areaChair = g.members[0];
             if (num in noteMap) {
@@ -738,12 +738,12 @@ controller.addHandler('areachairs', {
         getAreaChairGroups(noteNumbers)
       );
     })
-    .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
-      var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj, noteNum) {
+    .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups) {
+      var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj) {
         return result.concat(_.values(idsObj));
       }, []));
 
-      var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj, noteNum) {
+      var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj) {
         return result.concat(_.values(idsObj));
       }, []));
 
