@@ -22,7 +22,7 @@ PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
 REVIEWERS = CONFERENCE_ID + '/Reviewers'
 
 # GMT is the same as UTC
-SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=15, hour=23, minute=59)
+SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=22, hour=23, minute=59)
 #REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=placeholder, hour=23, minute=59)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
