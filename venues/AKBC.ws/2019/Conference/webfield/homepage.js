@@ -1,5 +1,5 @@
 // ------------------------------------
-// Advanced venue homepage template
+// Venue homepage template
 //
 // This webfield displays the conference header (#header), the submit button (#invitation),
 // and a tabbed interface for viewing various types of notes.

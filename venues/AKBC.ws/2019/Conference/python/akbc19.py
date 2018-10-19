@@ -129,14 +129,17 @@ The AKBC 2019 Program Chairs
 '''
 
 # Deadlines
-SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=16, hour=23)
-BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=18, hour=23)
 
-ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=5, hour=21)
-OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=29)
+# submission deadline is 
+SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=17, hour=8)
+BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=23, hour=23)
+
+# add bid deadline is 2PM PST = 10PM GMT = 5PM EDT
+ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=30, hour=22)
+OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2019, month=1, day=9, hour=22)
 QUESTIONNAIRE_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=2, hour=22)
 QUESTIONNAIRE_EXPIRY = openreview.tools.timestamp_GMT(year=2018, month=10, day=20)
-META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=7)
+META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2019, month=1, day=10, hour=22)
 
 
 # Global group definitions
@@ -220,24 +223,6 @@ reviewers_declined = openreview.Group.from_json({
     'members': [],
 })
 
-senior_reviewers = openreview.Group.from_json({
-    'id': SENIOR_REVIEWERS_ID,
-    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
-
-junior_reviewers = openreview.Group.from_json({
-    'id': JUNIOR_REVIEWERS_ID,
-    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
-
 authors = openreview.Group.from_json({
     'id': AUTHORS_ID,
     'readers': ['everyone'],
@@ -258,7 +243,7 @@ submission_inv = invitations.Submission(
     reply_params = {
         'readers': {
             'values-copied': [
-                # CONFERENCE_ID, //seems like we can remove this
+                CONFERENCE_ID,
                 '{content.authorids}',
                 '{signatures}'
             ]
@@ -296,36 +281,6 @@ blind_submission_inv = invitations.Submission(
         }
     }
 )
-
-# User "registration".
-# this is a workaround to force ICLR to show up in users'
-# "your active venues" list, even if they haven't replied to
-# any active ICLR invitations.
-# It's a workaround in the sense that it requires us to
-# falsify the "tauthor" field in the note using the Super User.
-
-register_user_inv = openreview.Invitation.from_json({
-    'id': CONFERENCE_ID + '/-/Register_User',
-    'readers': ['everyone'],
-    'writers': [],
-    'invitees': ['~'],
-    'signatures': [CONFERENCE_ID],
-    # The dates below are the day after the in-person meeting of the conference
-    'expdate': openreview.tools.timestamp_GMT(year=2019, month=5, day=10),
-    'duedate': openreview.tools.timestamp_GMT(year=2019, month=5, day=10),
-    'reply': {
-        'forum': None,
-        'replyto': None,
-        'readers': {'values': [CONFERENCE_ID]},
-        'writers': {'values': [CONFERENCE_ID]},
-        'signatures': {'values': [CONFERENCE_ID]},
-        'content': {
-            'registered': {
-                'value': 'yes'
-            }
-        }
-    }
-})
 
 # Configure reviewer recruitment
 recruit_reviewers = invitations.RecruitReviewers(
@@ -499,17 +454,17 @@ add_bid = invitations.AddBid(
 SCORES_INV_ID = CONFERENCE_ID + '/-/User_Scores'
 scores_inv = openreview.Invitation.from_json({
     'id': SCORES_INV_ID,
-    'invitees': ['ICLR.cc/2019/Conference'],
+    'invitees': [CONFERENCE_ID],
     'readers': ['everyone'],
-    'writers': ['ICLR.cc/2019/Conference'],
-    'signatures': ['ICLR.cc/2019/Conference'],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
     'reply': {
         'content': {},
         'forum': None,
         'replyto': None,
-        'invitation': 'ICLR.cc/2019/Conference/-/Blind_Submission',
+        'invitation': BLIND_SUBMISSION_ID,
         'readers': {'values-regex':'~.*'},
-        'writers': {'values': ['ICLR.cc/2019/Conference']}
+        'writers': {'values': [CONFERENCE_ID]}
     }
 })
 
@@ -607,8 +562,3 @@ withdrawn_submission_invitation = openreview.Invitation.from_json({
     },
     "nonreaders": []
 })
-
-# Configure the invitations that will be attached on a per-paper basis
-# These are constructed using templates in the script invitations.py
-
-
