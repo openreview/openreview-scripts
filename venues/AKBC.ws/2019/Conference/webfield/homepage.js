@@ -6,7 +6,7 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
+var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
 var SUBMISSION_ID = CONFERENCE_ID + '/-/Submission';
 var ADD_BID_ID = CONFERENCE_ID + '/-/Add_Bid';
 var BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission';
@@ -14,8 +14,8 @@ var RECRUIT_REVIEWERS = CONFERENCE_ID + '/-/Recruit_Reviewers';
 var RECRUIT_AREA_CHAIRS = CONFERENCE_ID + '/-/Recruit_Area_Chairs';
 var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
 
-var ANON_SIGNATORY_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair\d+)/;
-var AUTHORS_SIGNATORY_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Authors/;
+var ANON_SIGNATORY_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair\d+)/;
+var AUTHORS_SIGNATORY_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/Authors/;
 
 var AREA_CHAIRS_ID = CONFERENCE_ID + '/Area_Chairs';
 var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers';
@@ -23,24 +23,24 @@ var PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs';
 var AUTHORS_ID = CONFERENCE_ID + '/Authors';
 
 var HEADER = {
-  title: 'ICLR 2019',
-  subtitle: 'International Conference on Learning Representations',
-  location: 'New Orleans, Louisiana, United States',
-  date: 'May 6 - May 9, 2019',
-  website: 'https://iclr.cc/Conferences/2019',
+  title: 'AKBC 2019',
+  subtitle: 'Automated Knowledge Base Construction',
+  location: 'UMASS, Amherst, Massachusetts, United States',
+  date: 'May 20 - May 21, 2019',
+  website: 'http://www.akbc.ws/2019/',
   instructions: '<p><strong>Important Information</strong>\
     <ul>\
     <li>Note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails.</li>\
-    <li>ICLR 2019 Conference submissions are now open.</li>\
-    <li>For more details refer to the <a href="https://iclr.cc/Conferences/2019/CallForPapers">ICLR 2019 - Call for Papers</a>.</li>\
+    <li>AKBC 2019 Conference submissions are now open.</li>\
+    <li>For more details refer to the <a href="http://www.akbc.ws/2019/cfp/">AKBC 2019 - Call for Papers</a>.</li>\
     </ul></p> \
     <p><strong>Questions or Concerns</strong></p>\
     <p>Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>\
-    Please contact the ICLR 2019 Program Chairs at \
-    <a href="mailto:iclr2019programchairs@googlegroups.com">iclr2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy.\
+    Please contact the AKBC 2019 Program Chairs at \
+    <a href="mailto:akbc2019programchairs@googlegroups.com">akbc2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy.\
     </p>',
-  deadline: 'Submission Deadline: 6:00 pm Eastern Daylight Time, September 27, 2018'
+  deadline: 'Submission Deadline: 6:00 pm Eastern Daylight Time, November 16, 2018'
 }
 
 var COMMENT_EXCLUSION = [

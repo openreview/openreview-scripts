@@ -21,8 +21,6 @@ AREA_CHAIRS_DECLINED_ID = AREA_CHAIRS_ID + '/Declined'
 REVIEWERS_ID = CONFERENCE_ID + '/Reviewers'
 REVIEWERS_INVITED_ID = REVIEWERS_ID + '/Invited'
 REVIEWERS_DECLINED_ID = REVIEWERS_ID + '/Declined'
-SENIOR_REVIEWERS_ID = CONFERENCE_ID + '/Senior_Reviewers'
-JUNIOR_REVIEWERS_ID = CONFERENCE_ID + '/Junior_Reviewers'
 
 AUTHORS_ID = CONFERENCE_ID + '/Authors'
 
@@ -67,22 +65,21 @@ RECRUIT_MESSAGE_SUBJ = 'AKBC 2019: Invitation to Review'
 RECRUIT_REVIEWERS_MESSAGE = '''Dear {name},
 
 We are writing to invite you to be a reviewer for the conference Automated Knowledge Base Construction
-(AKBC 2019); see call for papers at: www.iclr.cc.
+(AKBC 2019); see call for papers at: http://www.akbc.ws/2019/cfp/.
 As a recognized researcher by the AKBC community, we hope you can contribute to the review process of AKBC 2019.
 
 A tentative timeline for the AKBC reviewing process is:
 
-September 27: Paper submission deadline
-October 29: Review deadline
-November 8 - November 21: Rebuttal and discussion
-November 21 - December 5: Discussion between ACs and reviewers
+November 16: Paper submission deadline
+January 9: Review deadline
+January 9 - February 1: Rebuttal and discussion
+February 1 - February 10: Discussion between ACs and reviewers
+February 13: Release of final decisions
 
-Please, make sure you are available during the review and discussion period before accepting.
-We will be using OpenReview throughout the review process, which we hope will make the review process
-more engaging and allow us to more effectively leverage the whole ICLR community.
+Please, make sure you are available during the review and discussion period.
+We will be using OpenReview throughout the review process, which we hope will make the review process more engaging and allow us to more effectively leverage the whole AKBC community.
 
-The success of ICLR depends on the quality of the reviewing process and ultimately on the quality and
-dedication of the reviewers. We hope you can accept our invitation and help make ICLR thrive.
+The success of AKBC depends on the quality of the reviewing process and ultimately on the quality and dedication of the reviewers. We hope you can accept our invitation and help make the first AKBC conference a great success.
 
 To ACCEPT the invitation, please click on the following link:
 
@@ -94,33 +91,27 @@ To DECLINE the invitation, please click on the following link:
 
 We'd appreciate an answer within 10 days.
 
-If you accept, please make sure to either update your Toronto Paper Matching System (TPMS) account,
-or create one if you do not have one already: http://torontopapermatching.org/webapp/profileBrowser/login/.
-We will be using TPMS to assign reviewers to papers, and having an account that reflects your expertise will
-be crucial for you to receive papers for which you are suited. Also please make sure your OpenReview account
-lists the email you are using for your TPMS account. There will also be a brief survey through the OpenReview system.
+If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.
 
-If you have any question, please contact the program chairs at iclr2019programchairs@googlegroups.com .
+If you have any questions, please contact the program chairs at <AKBC Program Chairs EMAIL GROUP>.
 We are also maintaining a list of reviewer guidelines and frequently asked questions
-here: https://iclr.cc/Conferences/2019/PaperInformation/ReviewerACGuidelines.
+here: <AKBC REVIEWER GUIDELINES (if available)>.
 
-We are looking forward to your reply, and are grateful if you accept this invitation and help make ICLR 2019 a success!
+We are looking forward to your reply, and are grateful if you accept this invitation and help make AKBC 2019 a success!
 
 Cheers!
 
-Alexander Rush, Senior Program Chair
-Sergey Levine, Program Chair
-Karen Livescu, Program Chair
-Shakir Mohamed, Program Chair
-Tara Sainath, General Chair
+Isabelle Augenstein, Program Co-chair
+Sameer Singh, Program Co-chair
+Andrew McCallum, General Chair
 
-Contact: iclr2019programchairs@googlegroups.com
+Contact: <AKBC PROGRAM CHAIR EMAIL GROUP>
 
 '''
 
 RECRUIT_AREA_CHAIRS_MESSAGE = '''Dear {name},
 
-You have been invited to serve as an area chair for the ICLR 2019 Conference.
+You have been invited to serve as an area chair for the AKBC 2019 Conference.
 
 To ACCEPT the invitation, please click on the following link:
 
@@ -130,23 +121,22 @@ To DECLINE the invitation, please click on the following link:
 
 {decline_url}
 
-We  hope you will be able to accept our invitation and help us select a high quality program for ICLR 2019.
+We  hope you will be able to accept our invitation and help us select a high quality program for AKBC 2019.
 
 Best regards,
-The ICLR 2019 Program Chairs
+The AKBC 2019 Program Chairs
 
 '''
 
-
 # Deadlines
-SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=9, day=27, hour=22)
-BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=10, hour=9)
+SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=16, hour=23)
+BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=18, hour=23)
+
 ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=5, hour=21)
 OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=29)
 QUESTIONNAIRE_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=2, hour=22)
 QUESTIONNAIRE_EXPIRY = openreview.tools.timestamp_GMT(year=2018, month=10, day=20)
 META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=7)
-
 
 
 # Global group definitions
