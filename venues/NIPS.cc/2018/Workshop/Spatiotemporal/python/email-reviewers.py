@@ -72,6 +72,41 @@ Fabio Ramos, The University of Sydney and NVIDIA Research (fabio.ramos@sydney.ed
 Girish Chowdhary, University of Illinois Urbana-Champaign (girishc@illinois.edu)"""
     return message
 
+
+reminder_message = """Dear reviewer,
+
+This is a friendly reminder about the NIPS'18 Workshop on Modeling and Decision-Making in the Spatiotemporal Domain. We would highly appreciate if you could provide the reviews for the assigned manuscripts before 11.59 pm on October 19, 2018 AOE. Please ignore this email, if you have already done so.
+
+Rating (only visible to the program chairs):
+    Please rate the paper (very high, high, borderline, low, very low) on:
+    1. Relevance to the workshop
+    2. Novelty
+    3. Potential impact
+
+Overall evaluation (visible to the authors and public):
+    Please write a few sentences summarizing the paper and its main contributions, then your overall evaluation of the paper. As the submitted manuscripts are for a workshop, please be aware that most of them are based on the work under progress.  Try to include comments about the positive aspects of the paper as well as advice about how the paper could be improved—we hope for the review process to be beneficial for authors!
+
+Specific questions (please provide short answers):
+    1. What did you learn from reading this paper that you did not know before?
+    2. What was the most exciting part of the work?
+    3. What in your opinion makes this work stand apart from other papers in this area?
+    4. Does the paper fit into the scope of the workshop?
+    5. Are you aware of relevant literature that you may want to make the authors aware of?
+
+
+Reviewer instructions:
+    To submit a review, log into https://openreview.net. Select "Tasks" from the top menubar.  Select "Show pending tasks", then select a task to see the papers that have been assigned to you and the review forms. Feel free to contact us if you have any questions regarding the review process or the OpenReview system.
+
+Please note that your reviews under overall evaluation will be anonymously visible to the public in January 2019. More information about the objective and scope of the workshop can be found: https://sites.google.com/site/nips18spatiotemporal/
+
+We would be most grateful for your assistance.
+
+Best Regards,
+Ransalu Senanayake, The University of Sydney (rsen4557@uni.sydney.edu.au)
+Neal Jean, Stanford University (nealjean@stanford.edu)
+Fabio Ramos, The University of Sydney and NVIDIA Research (fabio.ramos@sydney.edu.au)
+Girish Chowdhary, University of Illinois Urbana-Champaign (girishc@illinois.edu)"""
+
 #################################################
 #                                               #
 #               END OF MESSAGE                  #
@@ -88,5 +123,5 @@ with open(args.assignments, 'r') as csvfile:
 email_set = set(email_addrs)
 email_addrs = list(email_set)
 
-response = client.send_mail(subjectline, email_addrs, reviewer_email_message())
+response = client.send_mail(subjectline, email_addrs, reminder_message)
 print(response)
