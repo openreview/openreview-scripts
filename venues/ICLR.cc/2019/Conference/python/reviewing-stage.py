@@ -24,6 +24,13 @@ import invitations
 import argparse
 from collections import defaultdict
 
+def getAnonReviewersByForum(blind_note):
+    anonreviewer_ids = []
+    reg = 'ICLR.cc/2019/Conference/Paper' + str(blind_note.number) + '/AnonReviewer.*'
+    anonreviewers = client.get_groups(regex=reg)
+    anonreviewer_ids = [an.id for an in anonreviewers]
+    return anonreviewer_ids
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
@@ -32,21 +39,20 @@ if __name__ == '__main__':
     parser.add_argument('--password')
     args = parser.parse_args()
 
-    assert args.type in ['areachairs','reviewers'], 'input "type" must be either "areachairs" or "reviewers"'
-
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
     blind_submissions = openreview.tools.iterget_notes(client, invitation=iclr19.BLIND_SUBMISSION_ID)
 
     for blind_note in blind_submissions:
-        client.post_invitation(invitations.enable_invitation('Official_Review', blind_note))
-        client.post_invitation(invitations.enable_invitation('Meta_Review', blind_note))
-
         groups.create_and_post(
             client, blind_note, 'Paper/Reviewers/Submitted')
 
         groups.create_and_post(
             client, blind_note, 'Paper/Reviewers/Unsubmitted',
-            members=anonreviewerids_by_forum[blind_note.id])
+            members=getAnonReviewersByForum(blind_note))
+        
+        client.post_invitation(invitations.enable_invitation('Official_Review', blind_note))
+        client.post_invitation(invitations.enable_invitation('Meta_Review', blind_note))
 
+        
 

@@ -80,30 +80,21 @@ var loadData = function(result) {
   if (noteNumbers.length) {
     var noteNumbersStr = noteNumbers.join(',');
 
-    blindedNotesP = Webfield.get('/notes', {
+    blindedNotesP = Webfield.getAll('/notes', {
       invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
-    })
-    .then(function(result) {
-      return result.notes;
     });
-  
-    metaReviewsP = Webfield.get('/notes', {
+
+    metaReviewsP = Webfield.getAll('/notes', {
       invitation: CONFERENCE + '/-/Paper.*/Meta_Review', noDetails: true
-    })
-    .then(function(result) {
-      return result.notes;
     });
   } else {
     blindedNotesP = $.Deferred().resolve([]);
     metaReviewsP = $.Deferred().resolve([]);
   }
 
-  var invitationsP = Webfield.get('/invitations', {
-    invitation: WILDCARD_INVITATION, pageSize: 100, invitee: true,
+  var invitationsP = Webfield.getAll('/invitations', {
+    invitation: WILDCARD_INVITATION, invitee: true,
     duedate: true, replyto: true, details: 'replytoNote,repliedNotes'
-  })
-  .then(function(result) {
-    return result.invitations;
   });
 
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID);
@@ -119,7 +110,6 @@ var loadData = function(result) {
 };
 
 var getOfficialReviews = function(noteNumbers) {
-
   if (!noteNumbers.length) {
     return $.Deferred().resolve({});
   }
@@ -156,16 +146,15 @@ var getOfficialReviews = function(noteNumbers) {
 };
 
 var getReviewerGroups = function(noteNumbers) {
-
   if (!noteNumbers.length) {
     return $.Deferred().resolve({});
   };
 
   var noteMap = buildNoteMap(noteNumbers);
 
-  return Webfield.get('/groups', { id: ANONREVIEWER_WILDCARD })
-  .then(function(result) {
-    _.forEach(result.groups, function(g) {
+  return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
+  .then(function(groups) {
+    _.forEach(groups, function(g) {
       var matches = g.id.match(ANONREVIEWER_REGEX);
       var num, index;
       if (matches) {
@@ -180,7 +169,6 @@ var getReviewerGroups = function(noteNumbers) {
 
     return noteMap;
   });
-
 };
 
 var formatData = function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations) {
@@ -316,7 +304,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
       }
 
       if (users.length) {
-        var forumUrl = '/forum?' + $.param({
+        var forumUrl = 'https://openreview.net/forum?' + $.param({
           id: row[2].forum,
           noteId: row[2].id,
           invitationId: CONFERENCE + '/-/Paper' + row[2].number + '/Official_Review'
@@ -604,7 +592,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     invitationUrl: '/forum?' + $.param(invitationUrlParams)
   };
   if (metaReview) {
-    cell5.recommendation = metaReview.content.rating;
+    cell5.recommendation = metaReview.content.recommendation;
     cell5.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
   }
 
