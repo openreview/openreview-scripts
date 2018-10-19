@@ -71,7 +71,7 @@ submission_inv = invitations.Submission(
     duedate = config.SUBMISSION_TIMESTAMP,
 	process = '../process/submissionProcess.js',
     reply_params={
-        'readers': ['everyone'],
+        'readers': {'values':['everyone']},
         'writers': {'values-regex': "~.*|"+config.CONFERENCE_ID}
     },
     content_params = {

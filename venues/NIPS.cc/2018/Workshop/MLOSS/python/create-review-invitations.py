@@ -14,8 +14,6 @@
 
 ## Import statements
 import argparse
-import sys
-import os
 from openreview import *
 import config
 
@@ -74,7 +72,7 @@ for paper in submissions:
         'writers':{'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
         'signatures':{'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
         'readers':{
-            'values': [config.CONFERENCE_ID, config.PROGRAM_CHAIRS],
+            'values': ['everyone'],
             'description': 'The users who will be allowed to read the above content.'
         },
         'content':config.review_content

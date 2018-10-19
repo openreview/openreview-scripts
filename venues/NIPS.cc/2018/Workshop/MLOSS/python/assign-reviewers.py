@@ -106,7 +106,7 @@ def assign_reviewer(reviewer_email, paper_number):
 
 
 if args.assignments.endswith('.csv'):   
-    with open(args.assignments, 'rb') as csvfile:
+    with open(args.assignments, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
             reviewer_email = row[0]
