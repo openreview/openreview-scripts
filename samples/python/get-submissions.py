@@ -28,7 +28,7 @@ openreview = Client(baseurl=args.baseurl, username=args.username, password=args.
 base_path = "../../venues/"+args.cpath
 config_path = base_path+"/python/"
 if os.path.isfile(config_path+"config.py") is False:
-    print "Cannot locate config.py in:"+config_path
+    print ("Cannot locate config.py in:"+config_path)
     sys.exit()
 ## load conference specific data
 sys.path.insert(0, config_path)
@@ -49,7 +49,7 @@ if args.output!=None:
                 json.dump(n.to_json(), outfile, indent=4, sort_keys=True)
 
     elif ext.lower()=='csv':
-        with open(args.output, 'wb') as outfile:
+        with open(args.output, 'w') as outfile:
             csvwriter = csv.writer(outfile, delimiter=',')
             fieldnames = ['id', 'number', 'date', 'title', 'abstract','keywords','authors','authorids']
             csvwriter.writerow(fieldnames)
@@ -59,16 +59,16 @@ if args.output!=None:
                 row.append('%s/forum?id=%s' % (args.baseurl,note.id))
                 row.append(note.number)
                 row.append(note.tcdate)
-                row.append(note.content['title'].encode('UTF-8'))
-                row.append(note.content['abstract'].encode('UTF-8'))
-                row.append(', '.join(note.content['keywords']).encode('UTF-8'))
-                row.append(', '.join(note.content['authors']).encode('UTF-8'))
-                row.append(', '.join(note.content['authorids']).encode('UTF-8'))
+                row.append(note.content['title'])
+                row.append(note.content['abstract'])
+                row.append(', '.join(note.content['keywords']))
+                row.append(', '.join(note.content['authors']))
+                row.append(', '.join(note.content['authorids']))
                 csvwriter.writerow(row)
 
     else:
-        print "Unrecognized file extension: "+ext
+        print("Unrecognized file extension: "+ext)
 
 else:
     for n in notes:
-        print json.dumps(n.to_json(), indent=4, sort_keys=True)
+        print(json.dumps(n.to_json(), indent=4, sort_keys=True))

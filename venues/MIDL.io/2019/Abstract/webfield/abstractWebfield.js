@@ -7,16 +7,15 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE = 'NIPS.cc/2018/Workshop/IRASL';
-var SUBTITLE = '32nd Annual Conference on Neural Information Processing Systems';
-var TITLE = 'NIPS 2018 Interpretability and Robustness for Audio, Speech and Language Workshop';
-var CONF_DATE_STRING = '8 December, 2018';
-var WEBSITE = 'https://irasl.gitlab.io/';
-var LOCATION = 'Montreal, Canada';
-var SUBMISSION_INVITATION = 'NIPS.cc/2018/Workshop/IRASL/-/Submission';
-var BLIND_INVITATION = 'NIPS.cc/2018/Workshop/IRASL/-/Blind_Submission';
-var INSTRUCTIONS = 'October 22, 2018, 11:59 pm UTC';
-var DEADLINE_STRING = 'October 29, 2018, 11:59 pm UTC';
+var CONFERENCE = 'MIDL.amsterdam/2019/Abstract';
+var SUBTITLE = 'MIDL 2019 Conference';
+var TITLE = 'Medical Imaging with Deep Learning';
+var DEADLINE_STRING = '13th of December, 2018';
+var CONF_DATE_STRING = '8-10 July 2019';
+var WEBSITE = ' http://2019.midl.io';
+var LOCATION = 'London';
+var SUBMISSION_INVITATION = CONFERENCE+'/-/Submission';
+var INSTRUCTIONS = 'Extended abstracts are up to 3 pages (excluding references and acknowledgements) and can, for example, focus on preliminary novel methodological ideas without extensive validation. We also specifically accept extended abstracts of recently published or submitted journal and conference contributions to give authors the opportunity to present their work and obtain feedback from the community. All accepted abstracts will be presented as posters at the conference.';
 
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 50;
@@ -34,7 +33,7 @@ function main() {
   renderConferenceHeader();
 
   load().then(render).then(function() {
-    Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, paperDisplayOptions);
+    Webfield.setupAutoLoading(SUBMISSION_INVITATION, PAGE_SIZE, paperDisplayOptions);
   });
 }
 
@@ -47,9 +46,10 @@ function renderConferenceHeader() {
     location: LOCATION,
     date: CONF_DATE_STRING,
     website: WEBSITE,
-    instructions: "Abstract Submission Deadline: "+INSTRUCTIONS,
-    deadline: "Conference Submission Deadline: "+DEADLINE_STRING
+    instructions: INSTRUCTIONS,
+    deadline: "Submission Deadline: "+DEADLINE_STRING
   });
+
   Webfield.ui.spinner('#notes');
 }
 
@@ -57,7 +57,7 @@ function renderConferenceHeader() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
   var invitationP = Webfield.api.getSubmissionInvitation(SUBMISSION_INVITATION, {deadlineBuffer: BUFFER});
-  var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, {pageSize: PAGE_SIZE});
+  var notesP = Webfield.api.getSubmissions(SUBMISSION_INVITATION, {pageSize: PAGE_SIZE});
 
   return $.when(invitationP, notesP);
 }
@@ -73,7 +73,7 @@ function render(invitation, notes) {
       onNoteCreated: function() {
         // Callback funtion to be run when a paper has successfully been submitted (required)
         load().then(render).then(function() {
-          Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, paperDisplayOptions);
+          Webfield.setupAutoLoading(SUBMISSION_INVITATION, PAGE_SIZE, paperDisplayOptions);
         });
       }
     });
@@ -92,7 +92,7 @@ function render(invitation, notes) {
       },
       onReset: function() {
         Webfield.ui.searchResults(notes, paperDisplayOptions);
-        Webfield.setupAutoLoading(BLIND_INVITATION, PAGE_SIZE, paperDisplayOptions);
+        Webfield.setupAutoLoading(SUBMISSION_INVITATION, PAGE_SIZE, paperDisplayOptions);
       }
     }
   });
