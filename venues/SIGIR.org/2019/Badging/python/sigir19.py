@@ -150,8 +150,141 @@ authors = openreview.Group.from_json({
 with open(os.path.abspath('../webfield/authorWebfield.js')) as f:
     authors.web = f.read()
 
+# Template for artifacts
+
+
+artifactSubmission = {
+    'title': {
+        'fieldDisplayLabel': 'Title',
+        'description': 'Title of artifact.',
+        'order': 1,
+        'value-regex': '.{1,250}',
+        'required':True
+    },
+    'authors': {
+        'fieldDisplayLabel': 'Authors',
+        'description': 'Comma separated list of author names. Please provide real names.',
+        'order': 2,
+        'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+        'required':True
+    },
+    'authorids': {
+        'fieldDisplayLabel': 'Author IDs',
+        'description': '''Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, 
+        please make sure that the provided email address(es) match those listed in the author\'s profile. Please provide real emails.''',
+        'order': 3,
+        'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+        'required':True
+    },
+    'abstract': {
+        'fieldDisplayLabel': 'Abstract',
+        'description': 'Abstract of paper.',
+        'order': 4,
+        'value-regex': '[\\S\\s]{1,5000}',
+        'required':True
+    },
+    'artifactType': {
+        'fieldDisplayLabel': 'Artifact Type',
+        'description': 'Type of the artifact.',
+        'order': 5,
+        'values-dropdown': [
+            'Code',
+            'Dataset',
+            'User study log book',
+            'Other'
+        ],
+        'required': True
+    },
+    'requestedBadges': {
+        'fieldDisplayLabel': 'Requested Badges',
+        'description': 'Please select all the badges that you are requesting for.',
+        'order': 6,
+        'values-dropdown': [
+            'Artifacts Available',
+            'Artifacts Evaluated – Functional and Reusable',
+            'Results Replicated',
+            'Results Reproduced'
+        ],
+        'required': True
+    },
+    # 'artifactUrl': {
+    #     'fieldDisplayLabel': 'Artifact URL',
+    #     'description': 'Provide a valid web URL for the artifact',
+    #     'order': 7,
+    #     'value-regex': '.{1,250}',
+    #     'required':True
+    # },
+    'pdf': {
+        'fieldDisplayLabel': 'PDF',
+        'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv (link must begin with http(s) and end with .pdf)',
+        'order': 7,
+        'value-regex': 'upload|(http|https):\/\/.+\.pdf',
+        'required':True
+    }
+}
+
+class ArtifactSubmission(openreview.Invitation):
+    def __init__(self, conference_id = None, id = None,
+        duedate = None, process = None, inv_params = {},
+        reply_params = {}, content_params = {}, mask = {}):
+
+        self.conference_id = conference_id
+
+        if id:
+            self.id = id
+        else:
+            self.id = '/'.join([self.conference_id, '-', 'Submission'])
+
+        default_inv_params = {
+            'id': self.id,
+            'readers': ['everyone'],
+            'writers': [self.conference_id],
+            'invitees': ['~'],
+            'signatures': [self.conference_id],
+            'duedate': duedate,
+            'process': process
+        }
+
+        default_reply_params = {
+            'forum': None,
+            'replyto': None,
+            'readers': {
+                'description': 'The users who will be allowed to read the above content.',
+                'values': ['everyone']
+            },
+            'signatures': {
+                'description': 'Your authorized identity to be associated with the above content.',
+                'values-regex': '~.*'
+            },
+            'writers': {
+                'values': [self.conference_id]
+            }
+        }
+
+        self.content_params = {}
+        self.content_params.update(artifactSubmission)
+        self.content_params.update(content_params)
+
+        if mask:
+            self.content_params = mask
+
+        self.reply_params = {}
+        self.reply_params.update(default_reply_params)
+        self.reply_params.update(reply_params)
+        self.reply_params['content'] = self.content_params
+
+        self.inv_params = {}
+        self.inv_params.update(default_inv_params)
+        self.inv_params.update(inv_params)
+        self.inv_params['reply'] = self.reply_params
+
+        super(ArtifactSubmission, self).__init__(**self.inv_params)
+
+    def add_process(self, process):
+        self.process = process.render()
+
 # Configure paper submissions
-submission_inv = invitations.Submission(
+submission_inv = ArtifactSubmission(
     id = SUBMISSION_ID,
     conference_id = CONFERENCE_ID,
     duedate = SUBMISSION_DEADLINE,
@@ -165,7 +298,7 @@ submission_inv = invitations.Submission(
             ]
         },
         'signatures': {
-            'values-regex': '~.*',
+            'values-regex': '~.*'
         },
         'writers': {
             'values-copied': [

@@ -18,7 +18,7 @@ var CHAIRS_ID = CONFERENCE_ID + '/Chairs';
 
 
 var HEADER = {
-  title: 'SIGIR ACM',
+  title: 'SIGIR ACM 2019',
   subtitle: 'Special Interests Group on Information Retrieval',
   website: 'http://sigir.org/',
   instructions: '<p><strong>Questions or Concerns</strong></p>\
