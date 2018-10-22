@@ -151,8 +151,8 @@ with open(os.path.abspath('../webfield/homepage.js')) as f:
 program_chairs = openreview.Group.from_json({
     'id': PROGRAM_CHAIRS_ID,
     'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
-    'writers': [],
-    'signatures': [],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
     'signatories': [CONFERENCE_ID, PROGRAM_CHAIRS_ID],
     'members': []
 })
@@ -254,6 +254,7 @@ submission_inv = invitations.Submission(
         }
     }
 )
+submission_inv.reply_params['content']['archival-status'] = {'value-dropdown': ['Archival', 'Non-Archival']}
 
 blind_submission_inv = invitations.Submission(
     id = BLIND_SUBMISSION_ID,
