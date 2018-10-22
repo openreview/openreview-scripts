@@ -44,6 +44,7 @@ PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR = PAPER_REVIEWERS_TEMPLATE_STR + '/Submit
 PUBLIC_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Public_Comment'
 OFFICIAL_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Comment'
 OFFICIAL_REVIEW_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Review'
+ARCHIVAL_STATUS_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Update_Archival_Status'
 
 # The groups corresponding to these regexes will get automatically created upon assignment
 PAPER_AREA_CHAIRS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/Area_Chair[0-9]+'
@@ -134,6 +135,7 @@ OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2019, month=1, da
 QUESTIONNAIRE_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=2, hour=22)
 QUESTIONNAIRE_EXPIRY = openreview.tools.timestamp_GMT(year=2018, month=10, day=20)
 META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2019, month=1, day=10, hour=22)
+FINAL_DECISION_DEADLINE = openreview.tools.timestamp_GMT(year=2019, month=2, day=13, hour=22)
 
 
 # Global group definitions
@@ -254,7 +256,35 @@ submission_inv = invitations.Submission(
         }
     }
 )
-submission_inv.reply_params['content']['archival-status'] = {'value-dropdown': ['Archival', 'Non-Archival']}
+submission_inv.reply_params['content']['archival-status'] = {'description': 'Authors will be able to modify this until a descision deadline',
+    'value-dropdown': [
+        'Archival', 
+        'Non-Archival'
+    ],
+    'required': True
+}
+submission_inv.reply_params['content']['subject-areas'] = {'order' : 5, 
+    'values-dropdown': [
+        'Machine Learning',
+        'Natural Language Processing',
+        'Information Extraction',
+        'Question Answering',
+        'Reasoning',
+        'Databases',
+        'Information Integration',
+        'Knowledge Representation',
+        'Semantic Web Search',
+        'Applications: Science',
+        'Applications: Biomedicine',
+        'Applications: Other',
+        'Relational AI',
+        'Fairness',
+        'Human computation',
+        'Crowd-sourcing',
+        'Other'
+    ],
+    'required': True
+}
 
 blind_submission_inv = invitations.Submission(
     id = BLIND_SUBMISSION_ID,
