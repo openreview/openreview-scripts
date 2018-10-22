@@ -1,22 +1,19 @@
-
 // Assumes the following pattern for meta reviews and official reviews:
 // CONFERENCE + '/-/Paper' + number + '/Meta_Review'
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
 
 // Constants
-var HEADER_TEXT = 'ICLR 2019 Reviewer Console';
-var SHORT_PHRASE = 'ICLR 2019';
+var HEADER_TEXT = 'AKBC 2019 Reviewer Console';
+var SHORT_PHRASE = 'AKBC 2019';
 var INSTRUCTIONS = '<p class="dark">This page provides information and status updates \
-  for ICLR 2019 reviewers. It will be regularly updated as the conference progresses, \
+  for AKBC 2019 reviewers. It will be regularly updated as the conference progresses, \
   so please check back frequently for news and other updates.</p>';
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
     <p>\
-      <ul>\
-        <li>Update your profile to include your most up-to-date information, including \
-        work history and relations, to ensure proper conflict-of-interest detection \
-        during the paper matching process.</li>\
-      </ul>\
+      Update your profile to include your most up-to-date information, including \
+      work history and relations, to ensure proper conflict-of-interest detection \
+      during the paper matching process.\
     </p>\
   <br>\
   <h4>Bidding Phase</h4>\
@@ -26,7 +23,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>';
 
 
-var CONFERENCE = 'ICLR.cc/2019/Conference';
+var CONFERENCE = 'AKBC.ws/2019/Conference';
 
 
 var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Blind_Submission';
@@ -39,8 +36,8 @@ var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*';
 
-var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
+var ANONREVIEWER_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+var AREACHAIR_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {

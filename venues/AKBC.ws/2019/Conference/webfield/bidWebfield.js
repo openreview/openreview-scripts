@@ -2,8 +2,8 @@
 // Add Bid Interface
 // ------------------------------------
 
-var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
-var SHORT_PHRASE = 'ICLR 2019';
+var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
+var SHORT_PHRASE = 'AKBC 2019';
 var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';

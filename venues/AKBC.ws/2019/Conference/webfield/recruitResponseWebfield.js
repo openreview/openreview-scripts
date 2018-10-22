@@ -3,14 +3,14 @@ var CONFERENCE_ID = 'AKBC.ws/2019/Conference'
 var HEADER = {
   title: 'AKBC 2019',
   subtitle: 'Automated Knowledge Base Construction',
-  location: 'UMASS, Amherst, Massachusetts, United States',
+  location: 'Amherst, Massachusetts, United States',
   date: 'May 20 - May 21, 2019',
   website: 'http://www.akbc.ws/2019/',
   instructions: '<p><strong>Questions or Concerns</strong><br> \
-    Please contact the OpenReview support team at \
-    <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
-    Please contact the AKBC 2019 Program Chairs at \
-    <a href="mailto:akbc2019programchairs@googlegroups.com">AKBC2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy. \</p>',
+  Please contact the AKBC 2019 Program Chairs at \
+  <a href="mailto:info@akbc.ws">info@akbc.ws</a> with any questions or concerns about conference administration or policy. </br>\
+  Please contact the OpenReview support team at \
+  <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. </p>',
   deadline: 'Paper Submission Deadline: November 16, 2019'
 }
 

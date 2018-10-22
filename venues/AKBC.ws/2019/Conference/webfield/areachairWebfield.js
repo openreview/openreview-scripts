@@ -5,8 +5,8 @@
 
 // Constants
 var HEADER_TEXT = 'Area Chair Console';
-var SHORT_PHRASE = 'ICLR 2019';
-var CONFERENCE = 'ICLR.cc/2019/Conference';
+var SHORT_PHRASE = 'AKBC 2019';
+var CONFERENCE = 'AKBC.ws/2019/Conference';
 
 var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Blind_Submission';
 
@@ -17,16 +17,18 @@ var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*';
 
-var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
+var ANONREVIEWER_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+var AREACHAIR_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
-  updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
+  updates for AKBC 2019 Area Chairs. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p>';
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
     <ul>\
-      <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li>\
+      <li>Update your profile to include your most up-to-date information, \
+      including work history and relations, to ensure proper conflict-of-interest \
+      detection during the paper matching process.</li>\
     </ul>\
   </p>\
   <br>\

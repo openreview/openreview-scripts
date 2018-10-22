@@ -6,7 +6,7 @@
 // Constants
 var HEADER_TEXT = 'Program Chairs Console';
 
-var CONFERENCE = 'ICLR.cc/2019/Conference';
+var CONFERENCE = 'AKBC.ws/2019/Conference';
 var INVITATION = CONFERENCE + '/-/Submission';
 var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
@@ -17,11 +17,11 @@ var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chairs';
 
-var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
+var ANONREVIEWER_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+var AREACHAIR_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
-  updates for ICLR 2019 Program Chairs. It will be regularly updated as the conference \
+  updates for AKBC 2019 Program Chairs. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p>';
 
 // Ajax functions
@@ -775,8 +775,8 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var userId = $(this).data('userId');
   var forumUrl = $(this).data('forumUrl');
   var postData = {
-    subject: 'ICLR 2019 Reminder',
-    message: 'This is a reminder to please submit your official reviews for ICLR 2019. ' +
+    subject: 'AKBC 2019 Reminder',
+    message: 'This is a reminder to please submit your official reviews for AKBC 2019. ' +
       'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };

@@ -8,7 +8,6 @@ import openreview
 from openreview import invitations
 import os
 
-
 # group ids
 CONFERENCE_ID = 'AKBC.ws/2019/Conference'
 SHORT_PHRASE = 'AKBC 2019'
@@ -46,7 +45,6 @@ PUBLIC_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Public_Comment'
 OFFICIAL_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Comment'
 OFFICIAL_REVIEW_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Review'
 
-
 # The groups corresponding to these regexes will get automatically created upon assignment
 PAPER_AREA_CHAIRS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/Area_Chair[0-9]+'
 PAPER_ANONREVIEWERS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/AnonReviewer[0-9]+'
@@ -64,12 +62,10 @@ HASH_SEED = "2810398440804348173"
 RECRUIT_MESSAGE_SUBJ = 'AKBC 2019: Invitation to Review'
 RECRUIT_REVIEWERS_MESSAGE = '''Dear {name},
 
-We are writing to invite you to be a reviewer for the conference Automated Knowledge Base Construction
-(AKBC 2019); see call for papers at: http://www.akbc.ws/2019/cfp/.
+We are writing to invite you to be a reviewer for the 1st Conference on Automated Knowledge Base Construction (AKBC 2019), to take place in Amherst, MA, May 20-22, 2019, Monday-Wednesday; see call for papers at: http://www.akbc.ws/2019/cfp/.
 As a recognized researcher by the AKBC community, we hope you can contribute to the review process of AKBC 2019.
 
 A tentative timeline for the AKBC reviewing process is:
-
 November 16: Paper submission deadline
 January 9: Review deadline
 January 9 - February 1: Rebuttal and discussion
@@ -93,9 +89,7 @@ We'd appreciate an answer within 10 days.
 
 If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.
 
-If you have any questions, please contact the program chairs at <AKBC Program Chairs EMAIL GROUP>.
-We are also maintaining a list of reviewer guidelines and frequently asked questions
-here: <AKBC REVIEWER GUIDELINES (if available)>.
+If you have any questions, please contact the program chairs at info@akbc.ws.
 
 We are looking forward to your reply, and are grateful if you accept this invitation and help make AKBC 2019 a success!
 
@@ -105,7 +99,7 @@ Isabelle Augenstein, Program Co-chair
 Sameer Singh, Program Co-chair
 Andrew McCallum, General Chair
 
-Contact: <AKBC PROGRAM CHAIR EMAIL GROUP>
+Contact: info@akbc.ws
 
 '''
 
@@ -147,7 +141,7 @@ conference = openreview.Group.from_json({
     'id': CONFERENCE_ID,
     'readers':['everyone'],
     'writers': [CONFERENCE_ID],
-    'signatures': [],
+    'signatures': ["OpenReview.net"],
     'signatories': [CONFERENCE_ID],
     'members': []
 })
@@ -295,144 +289,6 @@ recruit_reviewers = invitations.RecruitReviewers(
         'signatures': {'values': ['(anonymous)']}
     }
 )
-
-questionnaire_instructions_invitation = openreview.Invitation.from_json({
-    'id': CONFERENCE_ID + '/-/Reviewer_Questionnaire',
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'invitees': [CONFERENCE_ID],
-    'duedate': QUESTIONNAIRE_DEADLINE,
-    'expdate': QUESTIONNAIRE_EXPIRY,
-    'reply': {
-        'forum': None,
-        'replyto': None,
-        'readers': {'values': [REVIEWERS_ID, AREA_CHAIRS_ID, PROGRAM_CHAIRS_ID, CONFERENCE_ID]},
-        'writers': {'values': [CONFERENCE_ID]},
-        'signatures': {'values': [CONFERENCE_ID]},
-        'content': {
-            'title': {'value': 'Questionnaire for Reviewers'},
-            'Instructions': {
-                'value': 'Help us get to know our reviewers better and the ways to make the reviewing process smoother by answering these questions. If you don\'t see the questionnaire form below, click on the blue "Reviewer Questionnaire Response" button.',
-                'order': 1
-            }
-        }
-    }
-})
-
-questionnaire_instructions_note = openreview.Note.from_json({
-    'readers': questionnaire_instructions_invitation.reply['readers']['values'],
-    'writers': questionnaire_instructions_invitation.reply['writers']['values'],
-    'signatures': questionnaire_instructions_invitation.reply['signatures']['values'],
-    'invitation': questionnaire_instructions_invitation.id,
-    'content': {
-        'title': questionnaire_instructions_invitation.reply['content']['title']['value'],
-        'Instructions': questionnaire_instructions_invitation.reply['content']['Instructions']['value'],
-    }
-})
-
-questionnaire_response_template = {
-    'id': CONFERENCE_ID + '/-/Reviewer_Questionnaire_Response',
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'invitees': [REVIEWERS_ID],
-    'duedate': QUESTIONNAIRE_DEADLINE,
-    'expdate': QUESTIONNAIRE_EXPIRY,
-    'reply': {
-        'forum': '<forum>',
-        'replyto': '<forum>',
-        'readers': {'values': [PROGRAM_CHAIRS_ID]},
-        'writers': {'values-regex': '~.*'},
-        'signatures': {'values-regex': '~.*'},
-        'content': {
-            'Confirm Profile Updated': {
-                'description': 'Have you updated your OpenReview profile to include your most up-to-date relations, work history, and conflicts of interest?',
-                'value-radio': ['Yes', 'No'],
-                'order': 1,
-                'required': True
-            },
-            'Confirm TPMS Registration': {
-                'description': 'Have you registered and/or updated your TPMS account, and updated your OpenReview profile to include the email address you used for TPMS?',
-                'value-radio': ['Yes', 'No'],
-                'order': 2,
-                'required': True
-            },
-            'Current Positions': {
-                'description': 'Which categories describe you best? Select all that apply.',
-                'values-dropdown': [
-                    'Academia: Lecturer/Assistant Professor',
-                    'Academia: Post-doctoral candidate',
-                    'Academia: Associate Professor/Reader',
-                    'Academia: Full professor',
-                    'Industry: Research Scientist',
-                    'Industry: Research Engineer',
-                    'Industry: Software Engineer',
-                    'Student: PhD',
-                    'Student: Masters',
-                    'Student: Other',
-                    'Other' # At some point we'll want to let them add text here
-                ],
-                'order': 3,
-                'required': True
-            },
-            'Reviewing Experience': {
-                'description': 'How many times have you been a reviewer for any conference or journal?',
-                'value-radio': [
-                    'Never - this is my first time',
-                    '1 time - building my reviewer skills',
-                    '2-4 times  - comfortable with the reviewing process',
-                    '5-10 times  - active community citizen',
-                    '10+ times  - seasoned reviewer'
-                ],
-                'order': 4,
-                'required': True
-
-            },
-            'Previous ICLR Author': {
-                'description': 'Have you published at ICLR in the last two years?',
-                'value-radio': ['Yes','No'],
-                'order': 5,
-                'required': True
-            },
-            'Your Recent Publication Venues': {
-                'description': 'Where have you recently published? Select all that apply.',
-                'values-dropdown': [
-                    'Neural Information Processing Systems (NIPS)',
-                    'International Conference on Machine Learning (ICML)',
-                    'Artificial Intelligence and Statistics (AISTATS)',
-                    'Uncertainty in Artificial Intelligence (UAI)',
-                    'Association for Advances in Artificial Intelligence (AAAI)',
-                    'Computer Vision and Pattern Recognition (CVPR)',
-                    'International Conference on Computer Vision (ICCV)',
-                    'International Joint Conference on Artificial Intelligence (IJCAI)',
-                    'Robotics: Systems and Science (RSS)',
-                    'Conference on Robotics and Learning (CORL)',
-                    'Association for Computational Linguistics or related (ACL/NAACL/EACL)',
-                    'Empirical Methods in Natural Language Processing (EMNLP)',
-                    'Conference on Learning Theory (COLT)',
-                    'Algorithmic Learning Theory (ALT)',
-                    'Knowledge Discovery and Data Mining (KDD)',
-                    'Other'
-                ],
-                'order': 6,
-                'required': True
-            },
-            'Reviewing Preferences': {
-                'description': 'What is the most important factor of the reviewing process for you? (Choose one)',
-                'value-radio': [
-                    'Getting papers that best match my area of expertise',
-                    'Having the smallest number of papers to review',
-                    'Having a long-enough reviewing period (6-8 weeks)',
-                    'Having enough time for active discussion about papers.',
-                    'Receiving clear instructions about the expectations of reviews.'
-                ],
-                'order': 7,
-                'required': True
-            }
-        }
-    }
-}
 
 # Configure bidding
 add_bid = invitations.AddBid(

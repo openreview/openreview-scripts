@@ -16,7 +16,7 @@ Post-submission Stage (Sept. 27 - Oct 1)
 '''
 
 import openreview
-import iclr19
+import akbc19 as conferenceConfig
 import notes
 import groups
 import invitations
@@ -32,9 +32,9 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    # client.post_invitation(iclr19.blind_submission_inv)
+    # client.post_invitation(conferenceConfig.blind_submission_inv)
 
-    original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.submission_inv.id)
+    original_notes = openreview.tools.iterget_notes(client, invitation=conferenceConfig.submission_inv.id)
 
     for original in original_notes:
         # blind_note = notes.post_blind_note(client, original)
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         # author_group = groups.create_and_post(client, blind_note, 'Paper/Authors', members=original.content['authorids'])
 
         # original.readers = [
-        #     iclr19.CONFERENCE_ID,
+        #     conferenceConfig.CONFERENCE_ID,
         #     author_group.id
         # ]
         notes.freeze_and_post(client, original)
@@ -53,8 +53,8 @@ if __name__ == '__main__':
         # invitations.enable_and_post(client, blind_note, 'Official_Comment')
         # invitations.enable_and_post(client, blind_note, 'Withdraw_Submission')
 
-    # reviewers_group = client.get_group(iclr19.REVIEWERS_ID)
-    # areachairs_group = client.get_group(iclr19.AREA_CHAIRS_ID)
+    # reviewers_group = client.get_group(conferenceConfig.REVIEWERS_ID)
+    # areachairs_group = client.get_group(conferenceConfig.AREA_CHAIRS_ID)
     # openreview.tools.replace_members_with_ids(client, reviewers_group)
     # openreview.tools.replace_members_with_ids(client, areachairs_group)
     groups.update_homepage(client, '../webfield/homepagePostSubmission.js')
