@@ -108,8 +108,6 @@ function load() {
       'content.authorids': user.profile.id,
       details: 'noDetails'
     });
-    console.log("userProfileId:",user.profile.id)
-    console.log("authorNotes:",authorNotesP)
   }
 
   return $.when(
@@ -158,7 +156,7 @@ function renderConferenceTabs() {
 }
 
 function renderContent(userGroups, activityNotes, authorNotes) {
-  console.log("in:",authorNotes)
+  
   // Your Consoles tab
   if (userGroups.length || authorNotes.length) {
 

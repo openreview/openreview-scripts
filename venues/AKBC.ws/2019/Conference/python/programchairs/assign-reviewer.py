@@ -8,7 +8,9 @@ import re
 '''
 Requirements:
 
-openreview-py
+1. openreview-py
+2. User running this script should have read & write permissions over Reviewers, Reviewers/Unsubmitted 
+& AnonReviewer[integer] groups
 
 Usage:
 
@@ -22,7 +24,8 @@ lowest AnonReviewer# group that is empty.
 For example, after running the following:
 
 python assign-reviewer.py --paper 123 --remove ~Oriol_Vinyals1 --add ~MarcAurelio_Ranzato1
-
+or
+python assign-reviewer.py --p 123 --r ~Oriol_Vinyals1 --a ~MarcAurelio_Ranzato1
 
 Paper123/Reviewers = {
     AnonReviewer1: ~Tara_Sainath1
@@ -38,6 +41,7 @@ Paper123/Reviewers = {
     AnonReviewer3: ~Iain_Murray1
 }
 '''
+conference = 'AKBC.ws/2019/Conference'
 
 if __name__ == "__main__":
     ## Argument handling
@@ -57,8 +61,8 @@ if __name__ == "__main__":
     reviewer_to_remove = args.remove
     reviewer_to_add = args.add
 
-    conference = 'ICLR.cc/2019/Conference'
-    paperUrl = "ICLR.cc/2019/Conference/Paper{}".format(paper_number)
+    
+    paperUrl = conference + "/Paper{}".format(paper_number)
     unsubmittedGroupId = paperUrl + "/Reviewers/Unsubmitted"
     anonReviewerRegex = re.compile(paperUrl+"/AnonReviewer.*")
 
@@ -83,9 +87,9 @@ if __name__ == "__main__":
         
         (user,changed_groups_add) = openreview.tools.add_assignment(client, paper_number, conference, reviewer_to_add,
                             individual_group_params = {'readers': [
-                            'ICLR.cc/2019/Conference',
-                            'ICLR.cc/2019/Conference/Program_Chairs',
-                            'ICLR.cc/2019/Conference/Paper{}/Area_Chairs'.format(paper_number)
+                            conference,
+                            conference + '/Program_Chairs',
+                            conference + '/Paper{}/Area_Chairs'.format(paper_number)
                             ]})
         reviewer_to_add = user
         

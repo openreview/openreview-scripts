@@ -1,9 +1,7 @@
 '''
-Post-submission Stage (Sept. 27 - Oct 1)
+Post-submission Stage 2 (Nov 17 - )
 
 - Anonymous, publicly visible submissions are made available to the public.
-- Author permission to edit papers is revoked.
-- ICLR 2019 homepage is updated to show anonymous submissions.
 - Commentary is enabled. Comment rules:
 - - Reviewers, authors, and area chairs are forced to comment anonymously.
 - - Members of the public may comment with their public ID (e.g. ~Michael_Spector1)
@@ -16,7 +14,7 @@ Post-submission Stage (Sept. 27 - Oct 1)
 '''
 
 import openreview
-import iclr19
+import akbc19 as conferenceConfig
 import notes
 import groups
 import invitations
@@ -32,9 +30,9 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    client.post_invitation(iclr19.blind_submission_inv)
+    client.post_invitation(conferenceConfig.blind_submission_inv)
 
-    original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.submission_inv.id)
+    original_notes = openreview.tools.iterget_notes(client, invitation=conferenceConfig.submission_inv.id)
 
     for original in original_notes:
         print('processing {}'.format(original.id))
@@ -44,7 +42,7 @@ if __name__ == '__main__':
         author_group = groups.create_and_post(client, blind_note, 'Paper/Authors', members=original.content['authorids'])
 
         original.readers = [
-            iclr19.CONFERENCE_ID,
+            conferenceConfig.CONFERENCE_ID,
             author_group.id
         ]
         notes.freeze_and_post(client, original)
@@ -53,8 +51,8 @@ if __name__ == '__main__':
         invitations.enable_and_post(client, blind_note, 'Official_Comment')
         invitations.enable_and_post(client, blind_note, 'Withdraw_Submission')
 
-    reviewers_group = client.get_group(iclr19.REVIEWERS_ID)
-    areachairs_group = client.get_group(iclr19.AREA_CHAIRS_ID)
+    reviewers_group = client.get_group(conferenceConfig.REVIEWERS_ID)
+    areachairs_group = client.get_group(conferenceConfig.AREA_CHAIRS_ID)
     all_emails = reviewers_group.members + areachairs_group.members
     print('replacing members with IDs')
     openreview.tools.replace_members_with_ids(client, reviewers_group)
@@ -74,7 +72,7 @@ if __name__ == '__main__':
     home.js, Line 67:
     controller.get('invitations', { invitee: true, duedate: true, details: 'replytoNote,repliedNotes' })
     '''
-    register_user_inv = client.post_invitation(iclr19.register_user_inv)
+    register_user_inv = client.post_invitation(conferenceConfig.register_user_inv)
     for email in all_emails:
         print('posting registration note for {}'.format(email))
         register_note = client.post_note(openreview.Note.from_json({
