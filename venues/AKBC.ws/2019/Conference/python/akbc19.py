@@ -256,14 +256,14 @@ submission_inv = invitations.Submission(
         }
     }
 )
-submission_inv.reply_params['content']['archival-status'] = {'description': 'Authors can change the archival/non-archival status up until the decision deadline',
+submission_inv.reply_params['content']['archival status'] = {'description': 'Authors can change the archival/non-archival status up until the decision deadline',
     'value-radio': [
         'Archival', 
         'Non-Archival'
     ],
     'required': True
 }
-submission_inv.reply_params['content']['subject-areas'] = {'order' : 5,
+submission_inv.reply_params['content']['subject areas'] = {'order' : 5,
     'description' : "Select or type subject area",
     'values-dropdown': [
         'Machine Learning',
