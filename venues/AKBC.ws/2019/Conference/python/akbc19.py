@@ -263,7 +263,8 @@ submission_inv.reply_params['content']['archival-status'] = {'description': 'Aut
     ],
     'required': True
 }
-submission_inv.reply_params['content']['subject-areas'] = {'order' : 5, 
+submission_inv.reply_params['content']['subject-areas'] = {'order' : 5,
+    'description' : "Select or type subject area",
     'values-dropdown': [
         'Machine Learning',
         'Natural Language Processing',

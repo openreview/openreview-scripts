@@ -86,7 +86,7 @@ function load() {
       duedate: true,
       tags: true,
       details:'repliedTags'
-    }).then(function(result) {return result.invitations;});  
+    }).then(function(result) {return result.invitations;});
 
   }
   return $.when(authorNotesP, invitationsP, tagInvitationsP);
@@ -156,12 +156,6 @@ function renderContent(authorNotes, invitations, tagInvitations) {
   // Toggle various UI elements
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  // Show first available tab
-  if (initialPageLoad) {
-    $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
-    initialPageLoad = false;
-  }
 
   Webfield.ui.done();
 }

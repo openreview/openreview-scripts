@@ -35,7 +35,7 @@ function main() {
 
   Webfield.ui.spinner('#notes', { inline: true });
 
-  load().then(renderContent);
+  load().then(renderContent).then(Webfield.ui.done);
 }
 
 
