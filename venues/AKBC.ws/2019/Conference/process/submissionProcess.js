@@ -1,4 +1,4 @@
-function submissionProcess() {
+function() {
   var or3client = lib.or3client;
   
   var SHORT_PHRASE = 'AKBC 2019';

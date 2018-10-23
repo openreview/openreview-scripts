@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     '''
     This is a workaround to resolve the issue where not all reviewers/ACs
-    see the ICLR venue in their "your active venues" list.
+    see the AKBC venue in their "your active venues" list.
 
     Notice that we're falsifying the tauthor. This is so that the query
     in home.js (copied below) will pick up the note as a reply,

@@ -3,7 +3,7 @@
 function(){
     var or3client = lib.or3client;
 
-    var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
+    var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
     var PAPER_REVIEWERS;
     var PAPER_AREACHAIRS;
 

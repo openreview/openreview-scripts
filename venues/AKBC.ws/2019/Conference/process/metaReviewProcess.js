@@ -1,7 +1,7 @@
 function() {
     var or3client = lib.or3client;
-    var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
-    var SHORT_PHRASE = 'ICLR 2019'
+    var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
+    var SHORT_PHRASE = 'AKBC 2019'
 
     var origNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
 
