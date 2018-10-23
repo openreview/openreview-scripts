@@ -172,7 +172,7 @@ official_comment_template = {
         iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
         iclr19.PROGRAM_CHAIRS_ID
     ],
-    'noninvitees': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
+    'noninvitees': [],
     'signatures': [iclr19.CONFERENCE_ID],
     'multiReply': True,
     'reply': {
