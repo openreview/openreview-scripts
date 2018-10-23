@@ -31,7 +31,7 @@ var HEADER = {
   instructions: '<p><strong>Important Information</strong>\
     <ul>\
     <li>Note to Authors, Reviewers and Area Chairs: Please update your OpenReview profile to have all your recent emails.</li>\
-    <li>AKBC 2019 Conference submissions are not open yet.</li>\
+    <li>AKBC 2019 Conference submissions are now open.</li>\
     <li>For more details refer to the <a href="http://www.akbc.ws/2019/cfp/">AKBC 2019 - Call for Papers</a>.</li>\
     </ul></p> \
     <p><strong>Questions or Concerns</strong></p>\
