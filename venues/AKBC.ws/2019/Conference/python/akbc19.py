@@ -256,8 +256,8 @@ submission_inv = invitations.Submission(
         }
     }
 )
-submission_inv.reply_params['content']['archival-status'] = {'description': 'Authors will be able to modify this until a descision deadline',
-    'value-dropdown': [
+submission_inv.reply_params['content']['archival-status'] = {'description': 'Authors can change the archival/non-archival status up until the decision deadline',
+    'value-radio': [
         'Archival', 
         'Non-Archival'
     ],
