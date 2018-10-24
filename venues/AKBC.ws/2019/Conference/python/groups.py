@@ -12,7 +12,7 @@ python groups.py Reviewers --overwrite
 
 import openreview
 import argparse
-import iclr19
+import akbc19 as conferenceConfig
 import os
 
 import re
@@ -20,103 +20,103 @@ import json
 
 # Per-paper group template definitions
 papergroup_template = {
-    'id': iclr19.PAPER_TEMPLATE_STR,
-    'readers':[iclr19.CONFERENCE_ID],
-    'writers': [iclr19.CONFERENCE_ID],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'id': conferenceConfig.PAPER_TEMPLATE_STR,
+    'readers':[conferenceConfig.CONFERENCE_ID],
+    'writers': [conferenceConfig.CONFERENCE_ID],
+    'signatures': [conferenceConfig.CONFERENCE_ID],
+    'signatories': [conferenceConfig.CONFERENCE_ID],
     'members': [],
 }
 
 authors_template = {
-    'id': iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+    'id': conferenceConfig.PAPER_AUTHORS_TEMPLATE_STR,
     'readers':[
-        iclr19.PROGRAM_CHAIRS_ID,
-        iclr19.PAPER_AUTHORS_TEMPLATE_STR
+        conferenceConfig.PROGRAM_CHAIRS_ID,
+        conferenceConfig.PAPER_AUTHORS_TEMPLATE_STR
     ],
-    'writers': [iclr19.CONFERENCE_ID],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.PAPER_AUTHORS_TEMPLATE_STR],
+    'writers': [conferenceConfig.CONFERENCE_ID],
+    'signatures': [conferenceConfig.CONFERENCE_ID],
+    'signatories': [conferenceConfig.PAPER_AUTHORS_TEMPLATE_STR],
     'members': [],
 }
 
 reviewers_template = {
-    'id': iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
+    'id': conferenceConfig.PAPER_REVIEWERS_TEMPLATE_STR,
     'readers':[
-        iclr19.CONFERENCE_ID,
-        iclr19.PROGRAM_CHAIRS_ID
+        conferenceConfig.CONFERENCE_ID,
+        conferenceConfig.PROGRAM_CHAIRS_ID
     ],
-    'writers': [iclr19.CONFERENCE_ID],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'writers': [conferenceConfig.CONFERENCE_ID],
+    'signatures': [conferenceConfig.CONFERENCE_ID],
+    'signatories': [conferenceConfig.CONFERENCE_ID],
     'members': [],
 }
 
 area_chairs_template = {
-    'id': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+    'id': conferenceConfig.PAPER_AREA_CHAIRS_TEMPLATE_STR,
     'readers':[
-        iclr19.CONFERENCE_ID,
-        iclr19.PROGRAM_CHAIRS_ID
+        conferenceConfig.CONFERENCE_ID,
+        conferenceConfig.PROGRAM_CHAIRS_ID
     ],
-    'writers': [iclr19.CONFERENCE_ID],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'writers': [conferenceConfig.CONFERENCE_ID],
+    'signatures': [conferenceConfig.CONFERENCE_ID],
+    'signatories': [conferenceConfig.CONFERENCE_ID],
     'members': [],
 }
 
 review_nonreaders_template = {
-    'id': iclr19.PAPER_REVIEW_NONREADERS_TEMPLATE_STR,
+    'id': conferenceConfig.PAPER_REVIEW_NONREADERS_TEMPLATE_STR,
     'readers':[
-        iclr19.CONFERENCE_ID,
-        iclr19.PROGRAM_CHAIRS_ID
+        conferenceConfig.CONFERENCE_ID,
+        conferenceConfig.PROGRAM_CHAIRS_ID
     ],
-    'writers': [iclr19.CONFERENCE_ID],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'writers': [conferenceConfig.CONFERENCE_ID],
+    'signatures': [conferenceConfig.CONFERENCE_ID],
+    'signatories': [conferenceConfig.CONFERENCE_ID],
     'members': [],
 }
 
 comment_nonreaders_template = {
-    'id': iclr19.PAPER_COMMENT_NONREADERS_TEMPLATE_STR,
+    'id': conferenceConfig.PAPER_COMMENT_NONREADERS_TEMPLATE_STR,
     'readers':[
-        iclr19.CONFERENCE_ID,
-        iclr19.PROGRAM_CHAIRS_ID
+        conferenceConfig.CONFERENCE_ID,
+        conferenceConfig.PROGRAM_CHAIRS_ID
     ],
-    'writers': [iclr19.CONFERENCE_ID],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'writers': [conferenceConfig.CONFERENCE_ID],
+    'signatures': [conferenceConfig.CONFERENCE_ID],
+    'signatories': [conferenceConfig.CONFERENCE_ID],
     'members': [],
 }
 
 reviewers_unsubmitted_template = {
-    'id': iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR,
+    'id': conferenceConfig.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR,
     'readers':[
-        iclr19.CONFERENCE_ID,
-        iclr19.PROGRAM_CHAIRS_ID,
-        iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR
+        conferenceConfig.CONFERENCE_ID,
+        conferenceConfig.PROGRAM_CHAIRS_ID,
+        conferenceConfig.PAPER_AREA_CHAIRS_TEMPLATE_STR
     ],
-    'writers': [iclr19.CONFERENCE_ID],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'writers': [conferenceConfig.CONFERENCE_ID],
+    'signatures': [conferenceConfig.CONFERENCE_ID],
+    'signatories': [conferenceConfig.CONFERENCE_ID],
     'members': [],
 }
 
 reviewers_submitted_template = {
-    'id': iclr19.PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR,
+    'id': conferenceConfig.PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR,
     'readers':[
-        iclr19.CONFERENCE_ID,
-        iclr19.PROGRAM_CHAIRS_ID,
-        iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR
+        conferenceConfig.CONFERENCE_ID,
+        conferenceConfig.PROGRAM_CHAIRS_ID,
+        conferenceConfig.PAPER_AREA_CHAIRS_TEMPLATE_STR
     ],
-    'writers': [iclr19.CONFERENCE_ID],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'signatories': [iclr19.CONFERENCE_ID],
+    'writers': [conferenceConfig.CONFERENCE_ID],
+    'signatures': [conferenceConfig.CONFERENCE_ID],
+    'signatories': [conferenceConfig.CONFERENCE_ID],
     'members': [],
 }
 
 group_templates = {
-    'Conference': iclr19.conference.to_json(),
-    'Area_Chairs': iclr19.area_chairs.to_json(),
+    'Conference': conferenceConfig.conference.to_json(),
+    'Area_Chairs': conferenceConfig.area_chairs.to_json(),
     'Paper': papergroup_template,
     'Paper/Authors': authors_template,
     'Paper/Reviewers': reviewers_template,
@@ -136,19 +136,19 @@ def create_and_post(client, paper, template_key, members=[]):
     return client.post_group(group_to_post)
 
 def update_homepage(client, webfield_file):
-    conference_group = client.get_group(iclr19.CONFERENCE_ID)
+    conference_group = client.get_group(conferenceConfig.CONFERENCE_ID)
     conference_group.add_webfield(webfield_file)
     posted_group = client.post_group(conference_group)
     return posted_group
 
 def update_AC_console(client, webfield_file):
-    AC_group = client.get_group(iclr19.AREA_CHAIRS_ID)
+    AC_group = client.get_group(conferenceConfig.AREA_CHAIRS_ID)
     AC_group.add_webfield(webfield_file)
     posted_group = client.post_group(AC_group)
     return posted_group
 
 def update_Reviewer_console(client, webfield_file):
-    Reviewer_group = client.get_group(iclr19.REVIEWERS_ID)
+    Reviewer_group = client.get_group(conferenceConfig.REVIEWERS_ID)
     Reviewer_group.add_webfield(webfield_file)
     posted_group = client.post_group(Reviewer_group)
     return posted_group
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     print('connecting to {}'.format(client.baseurl))
-    blind_submissions = list(openreview.tools.iterget_notes(client, invitation=iclr19.BLIND_SUBMISSION_ID))
+    blind_submissions = list(openreview.tools.iterget_notes(client, invitation=conferenceConfig.BLIND_SUBMISSION_ID))
 
     for template_key in args.groups:
         assert template_key in group_templates, 'group template not defined'

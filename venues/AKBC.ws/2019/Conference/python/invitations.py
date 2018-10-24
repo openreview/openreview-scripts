@@ -16,49 +16,20 @@ import akbc19 as conferenceConfig
 import os
 import time
 
-archival_status = {
-    'archival_status': {
-        'order': 1,
-        'value-dropdown': {},
-        'description': 'Update archival status.',
-        'required': True
-    }
-}
-
-archival_status_template = {
-    'id': conferenceConfig.ARCHIVAL_STATUS_TEMPLATE_STR,
+change_archival_status_template = {
+    'id': conferenceConfig.CONFERENCE_ID + '/-/Paper<number>/Change_Archival_Status',
     'readers': ['everyone'],
     'writers': [conferenceConfig.CONFERENCE_ID],
-    'invitees': [conferenceConfig.PAPER_AUTHORS_TEMPLATE_STR],
-    'noninvitees': [],
+    'invitees': [conferenceConfig.CONFERENCE_ID + '/Paper<number>/Authors'],
     'signatures': [conferenceConfig.CONFERENCE_ID],
-    'duedate': conferenceConfig.FINAL_DECISION_DEADLINE,
-    'multiReply': False,
+    'multiReply': None,
     'reply': {
-        'forum': '<forum>',
-        'replyto': '<forum>',
-        'readers': {
-            'description': 'The users who will be allowed to read the reply content.',
-            'values': [
-                conferenceConfig.PROGRAM_CHAIRS_ID,
-                conferenceConfig.PAPER_AUTHORS_TEMPLATE_STR
-                ]
-        },
-        'nonreaders': {
-            'values': []
-        },
-        'signatures': {
-            'description': 'How your identity will be displayed with the above content.',
-            'values-regex': conferenceConfig.PAPER_AUTHORS_TEMPLATE_REGEX
-        },
-        'writers': {
-            'description': 'Users that may modify this record.',
-            'values-copied':  [
-                conferenceConfig.CONFERENCE_ID,
-                '{signatures}'
-            ]
-        },
-        'content': archival_status
+        'referent': '<original>',
+        'forum': '<original>',
+        'content': {'archival status' : conferenceConfig.submission_inv.reply['content']['archival status']},
+        'signatures': conferenceConfig.submission_inv.reply['signatures'],
+        'writers': conferenceConfig.submission_inv.reply['writers'],
+        'readers': conferenceConfig.submission_inv.reply['readers']
     }
 }
 
@@ -199,8 +170,8 @@ add_revision_template = {
     'signatures': [conferenceConfig.CONFERENCE_ID],
     'multiReply': None,
     'reply': {
-        'referent': '<forum>',
-        'forum': '<forum>',
+        'referent': '<original>',
+        'forum': '<original>',
         'content': conferenceConfig.submission_inv.reply['content'],
         'signatures': conferenceConfig.submission_inv.reply['signatures'],
         'writers': conferenceConfig.submission_inv.reply['writers'],
@@ -351,8 +322,8 @@ invitation_templates = {
     'Official_Review': official_review_template,
     'Meta_Review': meta_review_template,
     'Public_Comment': public_comment_template,
-    'Withdraw_Submission': withdraw_submission_template.
-    'Archival_Status': archival_status_template
+    'Withdraw_Submission': withdraw_submission_template,
+    'Change_Archival_Status': change_archival_status_template
 }
 
 current_timestamp = lambda: int(round(time.time() * 1000))
