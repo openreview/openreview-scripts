@@ -130,7 +130,8 @@ function renderSubmissionButton() {
           promptMessage('Your submission is complete. Check your inbox for a confirmation email. A list of all submissions will be available after the deadline');
 
           load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#your-consoles"]').click();
+            // Select the first available tab
+            $('.tabs-container ul.nav-tabs > li > a:visible').eq(0).click();
           });
         }
       });
