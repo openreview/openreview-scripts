@@ -8,7 +8,7 @@ Bidding Stage (Oct 2 - Oct 5)
 '''
 
 import openreview
-import akbc19 as conferenceConfig
+import akbc19 as conference_config
 import notes
 import groups
 import invitations
@@ -39,17 +39,17 @@ if __name__ == '__main__':
             paper_scores_by_number[paper_number][profile_id] = score
 
     with open('../webfield/reviewerWebfieldBiddingEnabled.js','r') as f:
-        reviewers = client.get_group(conferenceConfig.REVIEWERS_ID)
+        reviewers = client.get_group(conference_config.REVIEWERS_ID)
         reviewers.web = f.read()
         reviewers = client.post_group(reviewers)
 
     with open('../webfield/areachairWebfieldBiddingEnabled.js','r') as f:
-        area_chairs = client.get_group(conferenceConfig.AREA_CHAIRS_ID)
+        area_chairs = client.get_group(conference_config.AREA_CHAIRS_ID)
         area_chairs.web = f.read()
         area_chairs = client.post_group(area_chairs)
 
-    conferenceConfig.add_bid.invitees = [conferenceConfig.REVIEWERS_ID, conferenceConfig.AREA_CHAIRS_ID]
-    client.post_invitation(conferenceConfig.add_bid)
+    conference_config.add_bid.invitees = [conference_config.REVIEWERS_ID, conference_config.AREA_CHAIRS_ID]
+    client.post_invitation(conference_config.add_bid)
 
     # set up User Score notes
 
@@ -61,20 +61,20 @@ if __name__ == '__main__':
         print('WARNING: not all area chairs have been converted to profile IDs. Members without profiles will not have metadata created.')
     valid_ac_ids = [r for r in area_chairs.members if '~' in r]
 
-    client.post_invitation(conferenceConfig.scores_inv)
+    client.post_invitation(conference_config.scores_inv)
     user_score_notes = {}
-    for paper in openreview.tools.iterget_notes(client, invitation=conferenceConfig.BLIND_SUBMISSION_ID):
+    for paper in openreview.tools.iterget_notes(client, invitation=conference_config.BLIND_SUBMISSION_ID):
         for user_id in valid_reviewer_ids + valid_ac_ids:
             if user_id not in user_score_notes:
                 user_score_notes[user_id] = openreview.Note.from_json({
-                    'invitation': conferenceConfig.SCORES_INV_ID,
+                    'invitation': conference_config.SCORES_INV_ID,
                     'readers': [user_id],
-                    'writers': [conferenceConfig.CONFERENCE_ID],
+                    'writers': [conference_config.CONFERENCE_ID],
                     'content': {
                         'user': user_id,
                         'scores': []
                     },
-                    'signatures': [conferenceConfig.CONFERENCE_ID],
+                    'signatures': [conference_config.CONFERENCE_ID],
                     'forum': None,
                     'multiReply': False
                 })

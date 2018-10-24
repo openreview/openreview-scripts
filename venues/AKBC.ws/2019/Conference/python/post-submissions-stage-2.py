@@ -10,7 +10,7 @@ Post-submission Stage 2 (Nov 17 - )
 '''
 
 import openreview
-import akbc19 as conferenceConfig
+import akbc19 as conference_config
 import notes
 import groups
 import invitations
@@ -26,9 +26,9 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    client.post_invitation(conferenceConfig.blind_submission_inv)
+    client.post_invitation(conference_config.blind_submission_inv)
 
-    original_notes = openreview.tools.iterget_notes(client, invitation=conferenceConfig.submission_inv.id)
+    original_notes = openreview.tools.iterget_notes(client, invitation=conference_config.submission_inv.id)
 
     for original in original_notes:
         print('processing {}'.format(original.id))
@@ -38,7 +38,7 @@ if __name__ == '__main__':
         author_group = groups.create_and_post(client, blind_note, 'Paper/Authors', members=original.content['authorids'])
 
         original.readers = [
-            conferenceConfig.CONFERENCE_ID,
+            conference_config.CONFERENCE_ID,
             author_group.id
         ]
         notes.freeze_and_post(client, original)
@@ -47,8 +47,8 @@ if __name__ == '__main__':
         invitations.enable_and_post(client, blind_note, 'Official_Comment')
         invitations.enable_and_post(client, blind_note, 'Withdraw_Submission')
 
-    reviewers_group = client.get_group(conferenceConfig.REVIEWERS_ID)
-    areachairs_group = client.get_group(conferenceConfig.AREA_CHAIRS_ID)
+    reviewers_group = client.get_group(conference_config.REVIEWERS_ID)
+    areachairs_group = client.get_group(conference_config.AREA_CHAIRS_ID)
     all_emails = reviewers_group.members + areachairs_group.members
     print('replacing members with IDs')
     openreview.tools.replace_members_with_ids(client, reviewers_group)

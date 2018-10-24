@@ -17,7 +17,7 @@ Reviewing Stage (~Oct. 8 - ~Oct. 29)
 '''
 
 import openreview
-import akbc19 as conferenceConfig
+import akbc19 as conference_config
 import notes
 import groups
 import invitations
@@ -26,7 +26,7 @@ from collections import defaultdict
 
 def getAnonReviewersByForum(blind_note):
     anonreviewer_ids = []
-    reg = conferenceConfig.CONFERENCE_ID + '/Paper' + str(blind_note.number) + '/AnonReviewer.*'
+    reg = conference_config.CONFERENCE_ID + '/Paper' + str(blind_note.number) + '/AnonReviewer.*'
     anonreviewers = client.get_groups(regex=reg)
     anonreviewer_ids = [an.id for an in anonreviewers]
     return anonreviewer_ids
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    blind_submissions = openreview.tools.iterget_notes(client, invitation=conferenceConfig.BLIND_SUBMISSION_ID)
+    blind_submissions = openreview.tools.iterget_notes(client, invitation=conference_config.BLIND_SUBMISSION_ID)
 
     for blind_note in blind_submissions:
         groups.create_and_post(

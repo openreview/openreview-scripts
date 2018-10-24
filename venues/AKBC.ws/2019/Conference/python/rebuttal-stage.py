@@ -12,7 +12,7 @@ Rebuttal and Discussion Stage (~Oct. 29 - TBD)
 
 import argparse
 import openreview
-import akbc19 as conferenceConfig
+import akbc19 as conference_config
 import invitations
 import notes
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     official_review_invs = openreview.tools.iterget(
         client.get_invitations,
-        regex=conferenceConfig.CONFERENCE_ID + '/-/Paper.*/Official_Review',
+        regex=conference_config.CONFERENCE_ID + '/-/Paper.*/Official_Review',
         details='repliedNotes,replytoNote')
 
     for review_inv in official_review_invs:
@@ -41,7 +41,7 @@ if __name__ == '__main__':
             paper = openreview.Note.from_json(review_inv.details['replytoNote'])
             for review in official_reviews:
                 review.readers = ['everyone']
-                review.writers = [conferenceConfig.CONFERENCE_ID]
+                review.writers = [conference_config.CONFERENCE_ID]
                 review = client.post_note(review)
 
                 reviewer_id = review.signatures[0].split('/')[4]
@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
                 client.post_invitation(review_revision_inv)
 
-    original_notes = openreview.tools.iterget_notes(client, invitation=conferenceConfig.SUBMISSION_ID)
+    original_notes = openreview.tools.iterget_notes(client, invitation=conference_config.SUBMISSION_ID)
     for original in original_notes:
         client.post_invitation(
             invitations.enable_invitation('Add_Revision', target_paper=original))

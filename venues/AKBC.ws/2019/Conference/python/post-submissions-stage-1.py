@@ -7,7 +7,7 @@ Post-submission Stage 1 (Midnight Nov 16)
 '''
 
 import openreview
-import akbc19 as conferenceConfig
+import akbc19 as conference_config
 import notes
 import groups
 import invitations
@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    original_notes = openreview.tools.iterget_notes(client, invitation=conferenceConfig.submission_inv.id)
+    original_notes = openreview.tools.iterget_notes(client, invitation=conference_config.submission_inv.id)
 
     for original in original_notes:
         notes.freeze_and_post(client, original)
