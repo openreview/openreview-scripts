@@ -6,7 +6,7 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE_ID = 'SIGIR.org/2019/Badging';
+var CONFERENCE_ID = 'ACM.org/SIGIR/Badging';
 var SUBMISSION_ID = CONFERENCE_ID + '/-/Submission';
 var RECRUIT_REVIEWERS = CONFERENCE_ID + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
@@ -18,9 +18,9 @@ var CHAIRS_ID = CONFERENCE_ID + '/Chairs';
 
 
 var HEADER = {
-  title: 'SIGIR ACM 2019',
-  subtitle: 'Special Interests Group on Information Retrieval',
-  website: 'http://sigir.org/',
+  title: 'ACM SIGIR Badging',
+  subtitle: 'Asociation for Computing Machinery - Special Interests Group on Information Retrieval',
+  website: 'https://acm.org/',
   instructions: '<p><strong>Questions or Concerns</strong></p>\
     <p>Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>\
@@ -104,7 +104,8 @@ function renderSubmissionButton() {
           promptMessage('Your artifact submission is complete. Check your inbox for a confirmation email.');
 
           load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#your-consoles"]').click();
+             // Select the first available tab
+             $('.tabs-container ul.nav-tabs > li > a:visible').eq(0).click();
           });
         }
       });
