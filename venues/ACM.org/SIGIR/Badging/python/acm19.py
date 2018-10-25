@@ -153,7 +153,7 @@ artifactSubmission = {
     },
     'authorids': {
         'fieldDisplayLabel': 'Author IDs',
-        'description': '''Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, 
+        'description': '''Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts,
         please make sure that the provided email address(es) match those listed in the author\'s profile. Please provide real emails.''',
         'order': 3,
         'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
@@ -190,13 +190,6 @@ artifactSubmission = {
         ],
         'required': True
     },
-    # 'artifactUrl': {
-    #     'fieldDisplayLabel': 'Artifact URL',
-    #     'description': 'Provide a valid web URL for the artifact',
-    #     'order': 7,
-    #     'value-regex': '.{1,250}',
-    #     'required':True
-    # },
     'pdf': {
         'fieldDisplayLabel': 'PDF',
         'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv (link must begin with http(s) and end with .pdf)',
@@ -274,10 +267,8 @@ submission_inv = ArtifactSubmission(
     process = os.path.abspath('../process/submissionProcess.js'),
     reply_params = {
         'readers': {
-            'values-copied': [ 
-                CONFERENCE_ID,
-                '{content.authorids}',
-                '{signatures}'
+            'values': [
+                'everyone'
             ]
         },
         'signatures': {
