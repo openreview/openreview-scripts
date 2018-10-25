@@ -4,7 +4,6 @@ https://acm.org
 '''
 
 import openreview
-from openreview import invitations
 import os
 
 
@@ -22,48 +21,10 @@ AUTHORS_ID = CONFERENCE_ID + '/Authors'
 
 # invitation ids
 SUBMISSION_ID = CONFERENCE_ID + '/-/Submission'
-RECRUIT_REVIEWERS_ID = CONFERENCE_ID + '/-/Recruit_Reviewers'
 
 # template strings
 PAPER_TEMPLATE_STR = CONFERENCE_ID + '/Paper<number>'
 PAPER_REVIEWERS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Reviewers'
-PAPER_AUTHORS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Authors'
-
-PUBLIC_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Public_Comment'
-OFFICIAL_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Comment'
-OFFICIAL_BADGE_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Badge'
-
-# Email templates
-HASH_SEED = "2810398440804348173"
-RECRUIT_MESSAGE_SUBJ = '[ACM SIGIR Badging] Invitation to Badge artifacts'
-RECRUIT_REVIEWERS_MESSAGE = '''Dear {name},
-
-We are writing to invite you for badging for artifacts for ACM SIGIR.
-As a recognized researcher by the ACM community, we hope you can contribute to the process of ACM SIGIR Badging.
-
-Please, make sure you are available during the review, discussion and badging period.
-We will be using OpenReview throughout the badging process, which we hope will make the badging process
-more engaging and allow us to more effectively leverage the whole ACM community.
-
-We hope you can accept our invitation and help make ACM SIGIR thrive.
-
-To ACCEPT the invitation, please click on the following link:
-
-{accept_url}
-
-To DECLINE the invitation, please click on the following link:
-
-{decline_url}
-
-We are looking forward to your reply, and are grateful if you accept this invitation and help make this ACM SIGIR badging process a success!
-
-Cheers!
-
-Nicola Ferro
-
-Contact: ferro@dei.unipd.it
-
-'''
 
 # Deadlines
 SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2050, month=1, day=1, hour=22)
@@ -89,8 +50,8 @@ chairs = openreview.Group.from_json({
     'members': []
 })
 
-with open(os.path.abspath('../webfield/chairWebfield.js')) as f:
-    chairs.web = f.read()
+# with open(os.path.abspath('../webfield/chairWebfield.js')) as f:
+#     chairs.web = f.read()
 
 reviewers = openreview.Group.from_json({
     'id': REVIEWERS_ID,
@@ -100,9 +61,6 @@ reviewers = openreview.Group.from_json({
     'signatories': [CONFERENCE_ID],
     'members': [],
 })
-
-with open(os.path.abspath('../webfield/reviewerWebfield.js')) as f:
-    reviewers.web = f.read()
 
 reviewers_invited = openreview.Group.from_json({
     'id': REVIEWERS_INVITED_ID,
@@ -122,19 +80,7 @@ reviewers_declined = openreview.Group.from_json({
     'members': [],
 })
 
-authors = openreview.Group.from_json({
-    'id': AUTHORS_ID,
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
-with open(os.path.abspath('../webfield/authorWebfield.js')) as f:
-    authors.web = f.read()
-
 # Template for artifacts
-
 
 artifactSubmission = {
     'title': {
@@ -281,19 +227,5 @@ submission_inv = ArtifactSubmission(
                 '{signatures}'
             ]
         }
-    }
-)
-
-# Configure reviewer recruitment
-recruit_reviewers = invitations.RecruitReviewers(
-    id = RECRUIT_REVIEWERS_ID,
-    conference_id = CONFERENCE_ID,
-    process = os.path.abspath('../process/recruitReviewersProcess.js'),
-    web = os.path.abspath('../webfield/recruitResponseWebfield.js'),
-    inv_params = {
-        'invitees': ['everyone']
-    },
-    reply_params = {
-        'signatures': {'values': ['(anonymous)']}
     }
 )
