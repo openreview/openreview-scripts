@@ -60,7 +60,7 @@ function main() {
 function load() {
   var notesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
     pageSize: PAGE_SIZE,
-    details: 'replyCount'
+    details: 'replyCount,tags'
   });
   var authorNotesP;
   var userGroupsP;
