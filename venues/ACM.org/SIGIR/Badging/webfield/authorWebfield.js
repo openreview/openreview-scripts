@@ -31,7 +31,7 @@ function main() {
 
   renderConferenceTabs();
 
-  load().then(renderContent);
+  load().then(renderContent).then(Webfield.ui.done);
 
   OpenBanner.venueHomepageLink(CONFERENCE_ID);
 }
