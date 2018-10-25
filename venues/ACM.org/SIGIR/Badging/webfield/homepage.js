@@ -126,41 +126,7 @@ function renderConferenceTabs() {
 }
 
 function renderContent(notes, userGroups, authorNotes) {
-  // Your Consoles tab
-  if (userGroups.length || authorNotes.length) {
-
-    var $container = $('#your-consoles').empty();
-    $container.append('<ul class="list-unstyled submissions-list">');
-
-    if (_.includes(userGroups, CHAIRS_ID)) {
-      $('#your-consoles .submissions-list').append([
-        '<li class="note invitation-link">',
-          '<a href="/group?id=' + CHAIRS_ID + '">Chair Console</a>',
-        '</li>'
-      ].join(''));
-    }
-
-    if (_.includes(userGroups, REVIEWERS_ID)) {
-      $('#your-consoles .submissions-list').append([
-        '<li class="note invitation-link">',
-          '<a href="/group?id=' + REVIEWERS_ID + '" >Reviewer Console</a>',
-        '</li>'
-      ].join(''));
-    }
-
-    if (authorNotes.length) {
-      $('#your-consoles .submissions-list').append([
-        '<li class="note invitation-link">',
-          '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
-        '</li>'
-      ].join(''));
-    }
-
-    $('.tabs-container a[href="#your-consoles"]').parent().show();
-  } else {
-    $('.tabs-container a[href="#your-consoles"]').parent().hide();
-  }
-
+  
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: false,
