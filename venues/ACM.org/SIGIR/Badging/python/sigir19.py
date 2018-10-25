@@ -274,7 +274,7 @@ submission_inv = ArtifactSubmission(
     process = os.path.abspath('../process/submissionProcess.js'),
     reply_params = {
         'readers': {
-            'values-copied': [
+            'values-copied': [ 
                 CONFERENCE_ID,
                 '{content.authorids}',
                 '{signatures}'
