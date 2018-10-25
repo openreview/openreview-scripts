@@ -52,7 +52,7 @@ function main() {
 
   renderConferenceTabs();
 
-  load().then(renderContent);
+  load().then(renderContent).then(Webfield.ui.done);
 }
 
 // Load makes all the API calls needed to get the data to render the page
@@ -62,28 +62,11 @@ function load() {
     pageSize: PAGE_SIZE,
     details: 'replyCount,tags'
   });
-  var authorNotesP;
-  var userGroupsP;
   var tagInvitationsP;
 
   if (!user || _.startsWith(user.id, 'guest_')) {
-    userGroupsP = $.Deferred().resolve([]);
-    authorNotesP = $.Deferred().resolve([]);
     tagInvitationsP = $.Deferred().resolve([]);
   } else {
-    userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
-      return _.filter(
-        _.map(result.groups, function(g) { return g.id; }),
-        function(id) { return _.startsWith(id, CONFERENCE_ID); }
-      );
-    });
-
-    authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
-      pageSize: PAGE_SIZE,
-      'content.authorids': user.profile.id,
-      details: 'noDetails'
-    });
-
     tagInvitationsP = Webfield.get('/invitations', { replyInvitation: SUBMISSION_ID, tags: true })
     .then(function(result) {
       return result.invitations;
@@ -91,7 +74,7 @@ function load() {
   }
 
   return $.when(
-    notesP, userGroupsP, authorNotesP, tagInvitationsP
+    notesP, tagInvitationsP
   );
 }
 
@@ -132,7 +115,7 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, userGroups, authorNotes, tagInvitations) {
+function renderContent(notes, tagInvitations) {
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: true,
@@ -177,13 +160,6 @@ function renderContent(notes, userGroups, authorNotes, tagInvitations) {
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
 
-  // Show first available tab
-  if (initialPageLoad) {
-    $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
-    initialPageLoad = false;
-  }
-
-  Webfield.ui.done();
 }
 
 // Go!

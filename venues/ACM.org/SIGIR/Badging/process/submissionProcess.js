@@ -15,7 +15,7 @@ function() {
     id: CONF + '/-/Paper' + note.number + '/Comment',
     signatures: [CONF],
     writers: [CONF],
-    invitees: ['everyone'],
+    invitees: ['~'],
     readers: ['everyone'],
     reply: {
       forum: note.id,
@@ -90,7 +90,7 @@ function() {
           order: 2,
           'value-regex': '[\\S\\s]{1,5000}',
           description: 'Your review comment.',
-          required: true
+          required: false
         }
       }
     }
