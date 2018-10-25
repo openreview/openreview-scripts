@@ -1,9 +1,8 @@
 // Constants
-var HEADER_TEXT = 'Program Chairs Console';
+var HEADER_TEXT = 'Chairs Console';
 
 var CONFERENCE = 'ACM.org/SIGIR/Badging';
 var INVITATION = CONFERENCE + '/-/Submission';
-var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official_Review';
 var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
@@ -703,47 +702,47 @@ $.ajaxSetup({
   contentType: 'application/json; charset=utf-8'
 });
 
-// controller.addHandler('areachairs', {
-//   token: function(token) {
-//     var pl = model.tokenPayload(token);
-//     var user = pl.user;
+controller.addHandler('chairs', {
+  token: function(token) {
+    var pl = model.tokenPayload(token);
+    var user = pl.user;
 
-//     getBlindedNotes()
-//     .then(function(notes) {
-//       var noteNumbers = _.map(notes, function(note) { return note.number; });
-//       return $.when(
-//         notes,
-//         getOfficialReviews(noteNumbers),
-//         getMetaReviews(),
-//         getReviewerGroups(noteNumbers),
-//         getAreaChairGroups(noteNumbers)
-//       );
-//     })
-//     .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups) {
-//       var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj) {
-//         return result.concat(_.values(idsObj));
-//       }, []));
+    getBlindedNotes()
+    .then(function(notes) {
+      var noteNumbers = _.map(notes, function(note) { return note.number; });
+      return $.when(
+        notes,
+        getOfficialReviews(noteNumbers),
+        getMetaReviews(),
+        getReviewerGroups(noteNumbers),
+        getChairGroups(noteNumbers)
+      );
+    })
+    .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups) {
+      var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj) {
+        return result.concat(_.values(idsObj));
+      }, []));
 
-//       var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj) {
-//         return result.concat(_.values(idsObj));
-//       }, []));
+      var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj) {
+        return result.concat(_.values(idsObj));
+      }, []));
 
-//       var uniqueIds = _.union(uniqueReviewerIds, uniqueAreaChairIds);
+      var uniqueIds = _.union(uniqueReviewerIds, uniqueAreaChairIds);
 
-//       return getUserProfiles(uniqueIds)
-//       .then(function(profiles) {
-//         displayPaperStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
-//         // displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
-//         displayPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
+      return getUserProfiles(uniqueIds)
+      .then(function(profiles) {
+        displayPaperStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
+        // displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
+        displayPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
 
-//         Webfield.ui.done();
-//       })
-//     })
-//     .fail(function(error) {
-//       displayError();
-//     });
-//   }
-// });
+        Webfield.ui.done();
+      })
+    })
+    .fail(function(error) {
+      displayError();
+    });
+  }
+});
 
 $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
   var hiddenText = 'Show paper details';

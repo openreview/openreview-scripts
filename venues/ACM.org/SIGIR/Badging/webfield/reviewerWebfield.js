@@ -190,11 +190,6 @@ var displayHeader = function(headerP) {
           id: 'assigned-papers',
           content: loadingMessage,
           active: true
-        },        
-        {
-          heading: 'Reviewer Schedule',
-          id: 'reviewer-schedule',
-          content: SCHEDULE_HTML
         },
         {
           heading: 'Reviewer Tasks',
