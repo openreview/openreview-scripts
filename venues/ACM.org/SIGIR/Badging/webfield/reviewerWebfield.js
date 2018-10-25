@@ -1,53 +1,19 @@
-
 // Assumes the following pattern for meta reviews and official reviews:
 // CONFERENCE + '/-/Paper' + number + '/Meta_Review'
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
 
 // Constants
-var HEADER_TEXT = 'ICLR 2019 Reviewer Console';
-var SHORT_PHRASE = 'ICLR 2019';
+var HEADER_TEXT = 'ACM SIGIR Badging Reviewer Console';
+var SHORT_PHRASE = 'ACM SIGIR Badging';
 var INSTRUCTIONS = '<p class="dark">This page provides information and status updates \
-  for ICLR 2019 reviewers. It will be regularly updated as the conference progresses, \
-  so please check back frequently for news and other updates.</p>';
+  for ACM SIGIR Badging reviewers.</p>';
 
-var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
-    <p>\
-      <!--<em><strong>Please do the following by Thursday, September 21</strong></em>:-->\
-      <ul>\
-        <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
-        <!--<li>Complete the ICLR registration form (found in your Tasks view).</li>-->\
-      </ul>\
-    </p>\
-  <br>\
-  <h4>Bidding Phase</h4>\
-    <p>\
-      <!--<em><strong>Please do the following by Monday, Oct 8</strong></em>:\
-      <ul>\
-        <li>Provide your reviewing preferences by bidding on papers using the Bidding Interface.</li>\
-        <li>A URL to the bidding interface will be provided when the Bidding phase starts.</li>\
-        <li><strong><a href="/invitation?id=ICLR.cc/2019/Conference/-/Add_Bid">Go to Bidding Interface</a></strong></li>\
-      </ul>-->\
-      <em><strong>The bidding phase has not started yet.</strong><br/>\
-    This section will be updated once the bidding phase begins.</em>\
-    </p>\
-  <br>'
+var SCHEDULE_HTML = ""
 
-
-var CONFERENCE = 'ICLR.cc/2019/Conference';
-
-
-var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Blind_Submission';
-
+var CONFERENCE = 'ACM.org/SIGIR/Badging';
 var OFFICIAL_REVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Official_Review';
 var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
-
-
-var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*';
-
-var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {

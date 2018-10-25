@@ -1,10 +1,8 @@
 function() {
   var or3client = lib.or3client;
 
-  var CONFERENCE_ID = 'ICLR.cc/2019/Conference'
-  var PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs'
+  var CONFERENCE_ID = 'ACM.org/SIGIR/Badging'
   var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers'
-  var REVIEWERS_INVITE_ID = REVIEWERS_ID + '/Invited'
   var REVIEWERS_DECLINE_ID = REVIEWERS_ID + '/Declined'
   var HASH_SEED = "2810398440804348173"
 

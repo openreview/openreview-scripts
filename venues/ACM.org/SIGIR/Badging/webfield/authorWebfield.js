@@ -6,11 +6,8 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE_ID = 'SIGIR.org/2019/Badging';
+var CONFERENCE_ID = 'ACM.org/SIGIR/Badging';
 var SUBMISSION_ID = CONFERENCE_ID + '/-/Submission';
-
-var BUFFER = 1000 * 60 * 30;  // 30 minutes
-var PAGE_SIZE = 50;
 
 var paperDisplayOptions = {
   pdfLink: true,
@@ -20,14 +17,12 @@ var paperDisplayOptions = {
 
 var initialPageLoad = true;
 
-HEADER_TEXT = 'SIGIR ACM 2019 Author Console';
+HEADER_TEXT = 'ACM SIGIR Author Console';
 
 INSTRUCTIONS = '<p><strong>Questions or Concerns</strong></p>\
     <p>Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>\
     </p>';
-
-var SCHEDULE_HTML = ''
 
 // Main is the entry point to the webfield code and runs everything
 function main() {

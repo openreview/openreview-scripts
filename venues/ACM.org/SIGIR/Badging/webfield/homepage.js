@@ -13,7 +13,6 @@ var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
 
 var AUTHORS_ID = CONFERENCE_ID + '/Authors';
 var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers';
-// var VICE_CHAIRS_ID = CONFERENCE_ID + '/Vice_Chairs';
 var CHAIRS_ID = CONFERENCE_ID + '/Chairs';
 
 

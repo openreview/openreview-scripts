@@ -1,28 +1,15 @@
-
-// Assumes the following pattern for meta reviews and official reviews:
-// CONFERENCE + '/-/Paper' + number + '/Meta_Review'
-// CONFERENCE + '/-/Paper' + number + '/Official_Review'
-
 // Constants
 var HEADER_TEXT = 'Program Chairs Console';
 
-var CONFERENCE = 'ICLR.cc/2019/Conference';
+var CONFERENCE = 'ACM.org/SIGIR/Badging';
 var INVITATION = CONFERENCE + '/-/Submission';
-var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official_Review';
 var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
 
-var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chairs';
-
-var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
-
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
-  updates for ICLR 2019 Program Chairs. It will be regularly updated as the conference \
-  progresses, so please check back frequently for news and other updates.</p>';
+  updates for ACM SIGIR Badging Chairs.</p>';
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {
@@ -202,17 +189,11 @@ var displayHeader = function() {
   var loadingMessage = '<p class="empty-message">Loading...</p>';
   Webfield.ui.tabPanel([
     {
-      heading: 'Paper Status',
+      heading: 'Artifact Status',
       id: 'paper-status',
       content: loadingMessage,
       extraClasses: 'horizontal-scroll',
       active: true
-    },
-    {
-      heading: 'Area Chair Status',
-      id: 'areachair-status',
-      content: loadingMessage,
-      extraClasses: 'horizontal-scroll'
     },
     {
       heading: 'Reviewer Status',
@@ -722,47 +703,47 @@ $.ajaxSetup({
   contentType: 'application/json; charset=utf-8'
 });
 
-controller.addHandler('areachairs', {
-  token: function(token) {
-    var pl = model.tokenPayload(token);
-    var user = pl.user;
+// controller.addHandler('areachairs', {
+//   token: function(token) {
+//     var pl = model.tokenPayload(token);
+//     var user = pl.user;
 
-    getBlindedNotes()
-    .then(function(notes) {
-      var noteNumbers = _.map(notes, function(note) { return note.number; });
-      return $.when(
-        notes,
-        getOfficialReviews(noteNumbers),
-        getMetaReviews(),
-        getReviewerGroups(noteNumbers),
-        getAreaChairGroups(noteNumbers)
-      );
-    })
-    .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups) {
-      var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj) {
-        return result.concat(_.values(idsObj));
-      }, []));
+//     getBlindedNotes()
+//     .then(function(notes) {
+//       var noteNumbers = _.map(notes, function(note) { return note.number; });
+//       return $.when(
+//         notes,
+//         getOfficialReviews(noteNumbers),
+//         getMetaReviews(),
+//         getReviewerGroups(noteNumbers),
+//         getAreaChairGroups(noteNumbers)
+//       );
+//     })
+//     .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups) {
+//       var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj) {
+//         return result.concat(_.values(idsObj));
+//       }, []));
 
-      var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj) {
-        return result.concat(_.values(idsObj));
-      }, []));
+//       var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj) {
+//         return result.concat(_.values(idsObj));
+//       }, []));
 
-      var uniqueIds = _.union(uniqueReviewerIds, uniqueAreaChairIds);
+//       var uniqueIds = _.union(uniqueReviewerIds, uniqueAreaChairIds);
 
-      return getUserProfiles(uniqueIds)
-      .then(function(profiles) {
-        displayPaperStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
-        displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
-        displayPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
+//       return getUserProfiles(uniqueIds)
+//       .then(function(profiles) {
+//         displayPaperStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
+//         // displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
+//         displayPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
 
-        Webfield.ui.done();
-      })
-    })
-    .fail(function(error) {
-      displayError();
-    });
-  }
-});
+//         Webfield.ui.done();
+//       })
+//     })
+//     .fail(function(error) {
+//       displayError();
+//     });
+//   }
+// });
 
 $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
   var hiddenText = 'Show paper details';
@@ -775,8 +756,8 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var userId = $(this).data('userId');
   var forumUrl = $(this).data('forumUrl');
   var postData = {
-    subject: 'ICLR 2019 Reminder',
-    message: 'This is a reminder to please submit your official reviews for ICLR 2019. ' +
+    subject: 'ACM SIGIR Badging Reminder',
+    message: 'This is a reminder to please submit your official reviews for ACM SIGIR Badging. ' +
       'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };
