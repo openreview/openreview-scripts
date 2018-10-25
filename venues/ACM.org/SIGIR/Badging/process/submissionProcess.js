@@ -19,7 +19,7 @@ function() {
     readers: ['everyone'],
     reply: {
       forum: note.id,
-      replyto: note.id,
+      replyto: null,
       readers: {
         description: 'The users who will be allowed to read the above content.',
         'values': ['everyone']
@@ -75,10 +75,21 @@ function() {
           description: 'Brief summary of your review.',
           required: true
         },
+        'awarded badges': {
+          'description': 'Please select all the badges that you are awarding to this artifact.',
+          'order': 1,
+          'values-dropdown': [
+              'Artifacts Available',
+              'Artifacts Evaluated – Functional and Reusable',
+              'Results Replicated',
+              'Results Reproduced'
+          ],
+          'required': true
+        },
         comment: {
-          order: 1,
+          order: 2,
           'value-regex': '[\\S\\s]{1,5000}',
-          description: 'Your review.',
+          description: 'Your review comment.',
           required: true
         }
       }

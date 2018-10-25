@@ -166,7 +166,7 @@ artifactSubmission = {
         'value-regex': '[\\S\\s]{1,5000}',
         'required':True
     },
-    'artifactType': {
+    'artifact type': {
         'fieldDisplayLabel': 'Artifact Type',
         'description': 'Type of the artifact.',
         'order': 5,
@@ -178,7 +178,7 @@ artifactSubmission = {
         ],
         'required': True
     },
-    'requestedBadges': {
+    'requested badges': {
         'fieldDisplayLabel': 'Requested Badges',
         'description': 'Please select all the badges that you are requesting for.',
         'order': 6,
@@ -192,9 +192,9 @@ artifactSubmission = {
     },
     'pdf': {
         'fieldDisplayLabel': 'PDF',
-        'description': 'Either upload a PDF file or provide a direct link to your PDF on ArXiv (link must begin with http(s) and end with .pdf)',
+        'description': 'Either upload a PDF file or provide a direct link to your artifact (link must begin with http(s))',
         'order': 7,
-        'value-regex': 'upload|(http|https):\/\/.+\.pdf',
+        'value-regex': 'upload|(http|https):\/\/.+',
         'required':True
     }
 }
