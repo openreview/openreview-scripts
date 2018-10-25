@@ -31,7 +31,7 @@ papergroup_template = {
 authors_template = {
     'id': conference_config.PAPER_AUTHORS_TEMPLATE_STR,
     'readers':[
-        conference_config.PROGRAM_CHAIRS_ID,
+        conference_config.CHAIRS_ID,
         conference_config.PAPER_AUTHORS_TEMPLATE_STR
     ],
     'writers': [conference_config.CONFERENCE_ID],
@@ -44,19 +44,7 @@ reviewers_template = {
     'id': conference_config.PAPER_REVIEWERS_TEMPLATE_STR,
     'readers':[
         conference_config.CONFERENCE_ID,
-        conference_config.PROGRAM_CHAIRS_ID
-    ],
-    'writers': [conference_config.CONFERENCE_ID],
-    'signatures': [conference_config.CONFERENCE_ID],
-    'signatories': [conference_config.CONFERENCE_ID],
-    'members': [],
-}
-
-area_chairs_template = {
-    'id': conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-    'readers':[
-        conference_config.CONFERENCE_ID,
-        conference_config.PROGRAM_CHAIRS_ID
+        conference_config.CHAIRS_ID
     ],
     'writers': [conference_config.CONFERENCE_ID],
     'signatures': [conference_config.CONFERENCE_ID],
@@ -68,19 +56,7 @@ review_nonreaders_template = {
     'id': conference_config.PAPER_REVIEW_NONREADERS_TEMPLATE_STR,
     'readers':[
         conference_config.CONFERENCE_ID,
-        conference_config.PROGRAM_CHAIRS_ID
-    ],
-    'writers': [conference_config.CONFERENCE_ID],
-    'signatures': [conference_config.CONFERENCE_ID],
-    'signatories': [conference_config.CONFERENCE_ID],
-    'members': [],
-}
-
-comment_nonreaders_template = {
-    'id': conference_config.PAPER_COMMENT_NONREADERS_TEMPLATE_STR,
-    'readers':[
-        conference_config.CONFERENCE_ID,
-        conference_config.PROGRAM_CHAIRS_ID
+        conference_config.CHAIRS_ID
     ],
     'writers': [conference_config.CONFERENCE_ID],
     'signatures': [conference_config.CONFERENCE_ID],
@@ -92,8 +68,8 @@ reviewers_unsubmitted_template = {
     'id': conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR,
     'readers':[
         conference_config.CONFERENCE_ID,
-        conference_config.PROGRAM_CHAIRS_ID,
-        conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR
+        conference_config.CHAIRS_ID,
+        conference_config.PAPER_CHAIRS_TEMPLATE_STR
     ],
     'writers': [conference_config.CONFERENCE_ID],
     'signatures': [conference_config.CONFERENCE_ID],
@@ -105,8 +81,8 @@ reviewers_submitted_template = {
     'id': conference_config.PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR,
     'readers':[
         conference_config.CONFERENCE_ID,
-        conference_config.PROGRAM_CHAIRS_ID,
-        conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR
+        conference_config.CHAIRS_ID,
+        conference_config.PAPER_CHAIRS_TEMPLATE_STR
     ],
     'writers': [conference_config.CONFERENCE_ID],
     'signatures': [conference_config.CONFERENCE_ID],
@@ -116,11 +92,11 @@ reviewers_submitted_template = {
 
 group_templates = {
     'Conference': conference_config.conference.to_json(),
-    'Area_Chairs': conference_config.area_chairs.to_json(),
+    'Chairs': conference_config.chairs.to_json(),
     'Paper': papergroup_template,
     'Paper/Authors': authors_template,
     'Paper/Reviewers': reviewers_template,
-    'Paper/Area_Chairs': area_chairs_template,
+    'Paper/Chairs': chairs_template,
     'Paper/Reviewers/Submitted': reviewers_submitted_template,
     'Paper/Reviewers/Unsubmitted': reviewers_unsubmitted_template,
 }
@@ -141,10 +117,10 @@ def update_homepage(client, webfield_file):
     posted_group = client.post_group(conference_group)
     return posted_group
 
-def update_AC_console(client, webfield_file):
-    AC_group = client.get_group(conference_config.AREA_CHAIRS_ID)
-    AC_group.add_webfield(webfield_file)
-    posted_group = client.post_group(AC_group)
+def update_Chair_console(client, webfield_file):
+    Chair_group = client.get_group(conference_config.CHAIRS_ID)
+    Chair_group.add_webfield(webfield_file)
+    posted_group = client.post_group(Chair_group)
     return posted_group
 
 def update_Reviewer_console(client, webfield_file):
@@ -166,7 +142,7 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     print('connecting to {}'.format(client.baseurl))
-    blind_submissions = list(openreview.tools.iterget_notes(client, invitation=conference_config.BLIND_SUBMISSION_ID))
+    submissions = list(openreview.tools.iterget_notes(client, invitation=conference_config.SUBMISSION_ID))
 
     for template_key in args.groups:
         assert template_key in group_templates, 'group template not defined'
@@ -181,8 +157,8 @@ if __name__ == '__main__':
         if not wildcard_matches:
             groups_to_process = [openreview.Group.from_json(group_template)]
         else:
-            assert blind_submissions, 'no blind submissions found'
-            for paper in blind_submissions:
+            assert submissions, 'no submissions found'
+            for paper in submissions:
                 new_group = openreview.Group.from_json(
                     openreview.tools.fill_template(group_template, paper))
                 groups_to_process.append(new_group)

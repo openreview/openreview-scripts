@@ -114,10 +114,6 @@ function renderSubmissionButton() {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'Your Consoles',
-      id: 'your-consoles',
-    },
-    {
       heading: 'All Submissions',
       id: 'all-submissions',
     }

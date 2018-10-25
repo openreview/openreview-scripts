@@ -18,9 +18,9 @@ var getPaperNumbersfromGroups = function(groups) {
   );
 };
 
-var getBlindedNotes = function() {
+var getNotes = function() {
   return Webfield.getAll('/notes', {
-    invitation: BLIND_INVITATION, noDetails: true
+    invitation: INVITATION, noDetails: true
   });
 };
 
@@ -92,44 +92,6 @@ var getReviewerGroups = function(noteNumbers) {
       return {
         byNotes: noteMap,
         byReviewers: reviewerMap
-      };
-    })
-    .fail(function(error) {
-      displayError();
-      return null;
-    });
-};
-
-var getAreaChairGroups = function(noteNumbers) {
-  var noteMap = buildNoteMap(noteNumbers);
-  var areaChairMap = {};
-
-  return Webfield.getAll('/groups', { id: AREACHAIR_WILDCARD })
-    .then(function(groups) {
-      var re = AREACHAIR_REGEX;
-
-      _.forEach(groups, function(g) {
-        var matches = g.id.match(re);
-        var num;
-        if (matches) {
-          num = parseInt(matches[1], 10);
-          
-          if (g.members.length) {
-            var areaChair = g.members[0];
-            if (num in noteMap) {
-              noteMap[num][0] = areaChair;
-            }
-
-            if (!(areaChair in areaChairMap)) {
-              areaChairMap[areaChair] = [];
-            }
-            areaChairMap[areaChair].push(num);
-          }
-        }
-      });
-      return {
-        byNotes: noteMap,
-        byAreaChairs: areaChairMap
       };
     })
     .fail(function(error) {
@@ -707,7 +669,7 @@ controller.addHandler('chairs', {
     var pl = model.tokenPayload(token);
     var user = pl.user;
 
-    getBlindedNotes()
+    getNotes()
     .then(function(notes) {
       var noteNumbers = _.map(notes, function(note) { return note.number; });
       return $.when(

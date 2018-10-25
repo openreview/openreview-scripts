@@ -11,6 +11,7 @@ var INSTRUCTIONS = '<p class="dark">This page provides information and status up
 var SCHEDULE_HTML = ""
 
 var CONFERENCE = 'ACM.org/SIGIR/Badging';
+var INVITATION = CONFERENCE + '/-/Submission';
 var OFFICIAL_REVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Official_Review';
 var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
@@ -30,7 +31,7 @@ var getBlindedNotes = function(noteNumbers) {
 
   var noteNumbersStr = noteNumbers.join(',');
 
-  return $.getJSON('notes', { invitation: CONFERENCE + '/-/Blind_Submission', number: noteNumbersStr, noDetails: true })
+  return $.getJSON('notes', { invitation: INVITATION, number: noteNumbersStr, noDetails: true })
     .then(function(result) {
       return result.notes;
     });
