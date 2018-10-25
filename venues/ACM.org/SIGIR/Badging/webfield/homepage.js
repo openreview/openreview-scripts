@@ -64,10 +64,12 @@ function load() {
   });
   var authorNotesP;
   var userGroupsP;
+  var tagInvitationsP;
 
   if (!user || _.startsWith(user.id, 'guest_')) {
     userGroupsP = $.Deferred().resolve([]);
     authorNotesP = $.Deferred().resolve([]);
+    tagInvitationsP = $.Deferred().resolve([]);
   } else {
     userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
       return _.filter(
@@ -81,10 +83,15 @@ function load() {
       'content.authorids': user.profile.id,
       details: 'noDetails'
     });
+
+    tagInvitationsP = Webfield.get('/invitations', { replyInvitation: SUBMISSION_ID, tags: true })
+    .then(function(result) {
+      return result.invitations;
+    });
   }
 
   return $.when(
-    notesP, userGroupsP, authorNotesP
+    notesP, userGroupsP, authorNotesP, tagInvitationsP
   );
 }
 
@@ -125,11 +132,11 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, userGroups, authorNotes) {
-  
+function renderContent(notes, userGroups, authorNotes, tagInvitations) {
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
-    showTags: false,
+    showTags: true,
+    tagInvitations: tagInvitations,
     container: '#all-submissions'
   });
 
