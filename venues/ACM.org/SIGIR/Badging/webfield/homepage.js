@@ -19,6 +19,8 @@ var CHAIRS_ID = CONFERENCE_ID + '/Chairs';
 var HEADER = {
   title: 'ACM SIGIR Badging',
   subtitle: 'Asociation for Computing Machinery - Special Interests Group on Information Retrieval',
+  location: 'Global',
+  date: 'Continuous process',
   website: 'https://acm.org/',
   instructions: '<p><strong>Questions or Concerns</strong></p>\
     <p>Please contact the OpenReview support team at \
