@@ -8,20 +8,17 @@
 // Constants
 var CONFERENCE_ID = 'ACM.org/SIGIR/Badging';
 var SUBMISSION_ID = CONFERENCE_ID + '/-/Submission';
-var RECRUIT_REVIEWERS = CONFERENCE_ID + '/-/Recruit_Reviewers';
-var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
 
 var AUTHORS_ID = CONFERENCE_ID + '/Authors';
 var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers';
 var CHAIRS_ID = CONFERENCE_ID + '/Chairs';
 
-
 var HEADER = {
   title: 'ACM SIGIR Badging',
-  subtitle: 'Asociation for Computing Machinery - Special Interests Group on Information Retrieval',
+  subtitle: 'ACM - Special Interests Group on Information Retrieval',
   location: 'Global',
   date: 'Continuous process',
-  website: 'https://acm.org/',
+  website: 'http://sigir.org/',
   instructions: '<p><strong>Questions or Concerns</strong></p>\
     <p>Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>\

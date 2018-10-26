@@ -50,9 +50,6 @@ chairs = openreview.Group.from_json({
     'members': []
 })
 
-# with open(os.path.abspath('../webfield/chairWebfield.js')) as f:
-#     chairs.web = f.read()
-
 reviewers = openreview.Group.from_json({
     'id': REVIEWERS_ID,
     'readers':[CONFERENCE_ID, CHAIRS_ID, REVIEWERS_ID],

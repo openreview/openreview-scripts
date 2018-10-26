@@ -79,6 +79,7 @@ function() {
           'description': 'Please select all the badges that you are awarding to this artifact.',
           'order': 1,
           'values-dropdown': [
+              'No Badges',
               'Artifacts Available',
               'Artifacts Evaluated – Functional and Reusable',
               'Results Replicated',
@@ -96,7 +97,7 @@ function() {
     }
   }
 
-
+  
   or3client.or3request(or3client.mailUrl, authorMail, 'POST', token)
   .then(result => or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token))
   .then(result => or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token))
