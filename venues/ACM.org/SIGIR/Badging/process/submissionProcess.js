@@ -47,11 +47,11 @@ function() {
       }
     }
   }
-
+  var Conf_Chairs = CONF + '/Chairs';
   var reviewInvitation = {
     id: CONF + '/-/Paper' + note.number + '/Review',
     signatures: [CONF],
-    writers: [CONF],
+    writers: [CONF, Conf_Chairs],
     invitees: [],
     readers: ['everyone'],
     reply: {
