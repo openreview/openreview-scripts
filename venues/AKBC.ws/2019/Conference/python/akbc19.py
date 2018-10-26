@@ -63,22 +63,26 @@ HASH_SEED = "2810398440804348173"
 RECRUIT_MESSAGE_SUBJ = 'AKBC 2019: Invitation to Review'
 RECRUIT_REVIEWERS_MESSAGE = '''Dear {name},
 
-We are writing to invite you to be a reviewer for the 1st Conference on Automated Knowledge Base Construction (AKBC 2019), to take place in Amherst, MA, May 20-22, 2019, Monday-Wednesday; see call for papers at: http://www.akbc.ws/2019/cfp/.
-As a recognized researcher by the AKBC community, we hope you can contribute to the review process of AKBC 2019.
+You have been nominated by the area chairs of the first international conference on Automated Knowledge Base Construction (AKBC) to serve as a reviewer.  As a respected researcher in the area, we hope you will accept and help us make the conference a success.
 
-A tentative timeline for the AKBC reviewing process is:
-November 16: Paper submission deadline
-January 9: Review deadline
-January 9 - February 1: Rebuttal and discussion
-February 1 - February 10: Discussion between ACs and reviewers
-February 13: Release of final decisions
+Reviewers are also welcome to submit papers, so please also consider submitting to the conference!
 
-Please, make sure you are available during the review and discussion period.
-We will be using OpenReview throughout the review process, which we hope will make the review process more engaging and allow us to more effectively leverage the whole AKBC community.
+Key facts:
+After 10 years of successful workshops, AKBC is becoming a conference.
+Conference web site: http://akbc.ws 
+Paper submission deadline: November 16
+Review deadline: January 9
+Rebuttal and discussion: January 9 - February 1
+Discussion between ACs and reviewers: February 1 - February 10
+Release of final decisions: February 13
+Area Chairs: Tim Rocktäschel, Luke Zettlemoyer, Siva Reddy, Matt Gardner, Hannaneh Hajishirzi, Sunita Sarawagi, Michael Cafarella, Paul Groth, Roman Klinger, Michael Wick, Max Nickel, Jay Pujara, Kai-Wei Chang, Lora Aroyo
 
-The success of AKBC depends on the quality of the reviewing process and ultimately on the quality and dedication of the reviewers. We hope you can accept our invitation and help make the first AKBC conference a great success.
+We will be using OpenReview.net and a reviewing process that we hope will be engaging and inclusive of the whole AKBC community.
+
+The success of AKBC depends on the quality of the reviewing process and ultimately on the quality and dedication of the reviewers. We hope you will accept our invitation.
 
 To ACCEPT the invitation, please click on the following link:
+
 
 {accept_url}
 
@@ -86,13 +90,11 @@ To DECLINE the invitation, please click on the following link:
 
 {decline_url}
 
-We'd appreciate an answer within 10 days.
+Please answer within 10 days.
 
-If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.
+If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.  Visit http://openreview.net/profile after logging in.
 
 If you have any questions, please contact the program chairs at info@akbc.ws.
-
-We are looking forward to your reply, and are grateful if you accept this invitation and help make AKBC 2019 a success!
 
 Cheers!
 
@@ -100,7 +102,10 @@ Isabelle Augenstein, Program Co-chair
 Sameer Singh, Program Co-chair
 Andrew McCallum, General Chair
 
-Contact: info@akbc.ws
+Contact: 
+Email: info@akbc.ws
+Website: http://akbc.ws 
+Twitter: @akbc_conf 
 
 '''
 
