@@ -77,138 +77,16 @@ reviewers_declined = openreview.Group.from_json({
     'members': [],
 })
 
-# Template for artifacts
-
-artifactSubmission = {
-    'title': {
-        'fieldDisplayLabel': 'Title',
-        'description': 'Title of artifact.',
-        'order': 1,
-        'value-regex': '.{1,250}',
-        'required':True
-    },
-    'authors': {
-        'fieldDisplayLabel': 'Authors',
-        'description': 'Comma separated list of author names. Please provide real names.',
-        'order': 2,
-        'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-        'required':True
-    },
-    'authorids': {
-        'fieldDisplayLabel': 'Author IDs',
-        'description': '''Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts,
-        please make sure that the provided email address(es) match those listed in the author\'s profile. Please provide real emails.''',
-        'order': 3,
-        'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
-        'required':True
-    },
-    'abstract': {
-        'fieldDisplayLabel': 'Abstract',
-        'description': 'Abstract of paper.',
-        'order': 4,
-        'value-regex': '[\\S\\s]{1,5000}',
-        'required':True
-    },
-    'artifact type': {
-        'fieldDisplayLabel': 'Artifact Type',
-        'description': 'Type of the artifact.',
-        'order': 5,
-        'values-dropdown': [
-            'Code',
-            'Dataset',
-            'User study log book',
-            'Other'
-        ],
-        'required': True
-    },
-    'requested badges': {
-        'fieldDisplayLabel': 'Requested Badges',
-        'description': 'Please select all the badges that you are requesting for.',
-        'order': 6,
-        'values-dropdown': [
-            'Artifacts Available',
-            'Artifacts Evaluated – Functional and Reusable',
-            'Results Replicated',
-            'Results Reproduced'
-        ],
-        'required': True
-    },
-    'pdf': {
-        'fieldDisplayLabel': 'PDF',
-        'description': 'Either upload a PDF file or provide a direct link to your artifact (link must begin with http(s))',
-        'order': 7,
-        'value-regex': 'upload|(http|https):\/\/.+',
-        'required':True
-    }
-}
-
-class ArtifactSubmission(openreview.Invitation):
-    def __init__(self, conference_id = None, id = None,
-        duedate = None, process = None, inv_params = {},
-        reply_params = {}, content_params = {}, mask = {}):
-
-        self.conference_id = conference_id
-
-        if id:
-            self.id = id
-        else:
-            self.id = '/'.join([self.conference_id, '-', 'Submission'])
-
-        default_inv_params = {
-            'id': self.id,
-            'readers': ['everyone'],
-            'writers': [self.conference_id],
-            'invitees': ['~'],
-            'signatures': [self.conference_id],
-            'duedate': duedate,
-            'process': process
-        }
-
-        default_reply_params = {
-            'forum': None,
-            'replyto': None,
-            'readers': {
-                'description': 'The users who will be allowed to read the above content.',
-                'values': ['everyone']
-            },
-            'signatures': {
-                'description': 'Your authorized identity to be associated with the above content.',
-                'values-regex': '~.*'
-            },
-            'writers': {
-                'values': [self.conference_id]
-            }
-        }
-
-        self.content_params = {}
-        self.content_params.update(artifactSubmission)
-        self.content_params.update(content_params)
-
-        if mask:
-            self.content_params = mask
-
-        self.reply_params = {}
-        self.reply_params.update(default_reply_params)
-        self.reply_params.update(reply_params)
-        self.reply_params['content'] = self.content_params
-
-        self.inv_params = {}
-        self.inv_params.update(default_inv_params)
-        self.inv_params.update(inv_params)
-        self.inv_params['reply'] = self.reply_params
-
-        super(ArtifactSubmission, self).__init__(**self.inv_params)
-
-    def add_process(self, process):
-        self.process = process.render()
-
 # Configure paper submissions
-submission_inv = ArtifactSubmission(
+submission_inv = openreview.Invitation(
     id = SUBMISSION_ID,
-    conference_id = CONFERENCE_ID,
     duedate = SUBMISSION_DEADLINE,
     process = os.path.abspath('../process/submissionProcess.js'),
-    reply_params = {
+    invitees = ['~'],
+    readers = ["everyone"],
+    writers = [CONFERENCE_ID],
+    signatures = [CONFERENCE_ID],
+    reply = {
         'readers': {
             'values': [
                 'everyone'
@@ -223,38 +101,102 @@ submission_inv = ArtifactSubmission(
                 '{content.authorids}',
                 '{signatures}'
             ]
+        },
+        'content': {
+            'title': {
+                'fieldDisplayLabel': 'Title',
+                'description': 'Title of artifact.',
+                'order': 1,
+                'value-regex': '.{1,250}',
+                'required':True
+            },
+            'authors': {
+                'fieldDisplayLabel': 'Authors',
+                'description': 'Comma separated list of author names. Please provide real names.',
+                'order': 2,
+                'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+                'required':True
+            },
+            'authorids': {
+                'fieldDisplayLabel': 'Author IDs',
+                'description': '''Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, 
+                please make sure that the provided email address(es) match those listed in the author\'s profile. Please provide real emails.''',
+                'order': 3,
+                'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+                'required':True
+            },
+            'abstract': {
+                'fieldDisplayLabel': 'Abstract',
+                'description': 'Abstract of paper.',
+                'order': 4,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'required':True
+            },
+            'artifact type': {
+                'fieldDisplayLabel': 'Artifact Type',
+                'description': 'Type of the artifact.',
+                'order': 5,
+                'values-dropdown': [
+                    'Code',
+                    'Dataset',
+                    'User study log book',
+                    'Other'
+                ],
+                'required': True
+            },
+            'requested badges': {
+                'fieldDisplayLabel': 'Requested Badges',
+                'description': 'Please select all the badges that you are requesting for.',
+                'order': 6,
+                'values-dropdown': [
+                    'Artifacts Available',
+                    'Artifacts Evaluated – Functional and Reusable',
+                    'Results Replicated',
+                    'Results Reproduced'
+                ],
+                'required': True
+            },
+            'pdf': {
+                'fieldDisplayLabel': 'PDF',
+                'description': 'Either upload a PDF file or provide a direct link to your artifact (link must begin with http(s))',
+                'order': 7,
+                'value-regex': 'upload|(http|https):\/\/.+',
+                'required':True
+            }
         }
     }
 )
 
 # Badging decision invitation for Chairs
-badging_decision_inv = openreview.Invitation(id = 'ACM.org/SIGIR/Badging/-/Decision',
-                                        duedate = 1543161141000,
-                                        readers = ['everyone'],
-                                        writers = ['ACM.org/SIGIR/Badging'],
-                                        signatures = ['ACM.org/SIGIR/Badging'],
-                                        invitees = ['ACM.org/SIGIR/Badging/Chairs'],
-                                        multiReply = True,
-                                        taskCompletionCount = 1,
-                                        reply = {
-                                            'invitation': 'ACM.org/SIGIR/Badging/-/Submission',
-                                            'readers': {
-                                            'description': 'The users who will be allowed to read the above content.',
-                                            'values': ['everyone']
-                                            },
-                                            'signatures': {
-                                            'description': 'How your identity will be displayed with the above content.',
-                                            'values-regex': '~.*'
-                                            },
-                                            'writers': {
-                                            'values-regex': '~.*'
-                                            },
-                                            'content':{
-                                            'tag': {
-                                                'description': 'Artifact Badge decision',
-                                                'order': 1,
-                                                'values-dropdown': ['No Badges', 'Artifacts Available', 'Artifacts Evaluated – Functional and Reusable', 'Results Replicated', 'Results Reproduced'],
-                                                'required': True
-                                            }
-                                            }
-                                        })
+badging_decision_inv = openreview.Invitation(
+    id = CONFERENCE_ID + '/-/Decision',
+    duedate = 1543161141000,
+    readers = ['everyone'],
+    writers = [CONFERENCE_ID],
+    signatures = [CONFERENCE_ID],
+    invitees = [CONFERENCE_ID + '/Chairs'],
+    multiReply = True,
+    taskCompletionCount = 1,
+    reply = {
+        'invitation': CONFERENCE_ID + '/-/Submission',
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['everyone']
+        },
+        'signatures': {
+            'description': 'How your identity will be displayed with the above content.',
+            'values-regex': '~.*'
+        },
+        'writers': {
+            'values-regex': '~.*'
+        },
+        'content':{
+            'tag': {
+                'description': 'Artifact Badge decision',
+                'order': 1,
+                'values-dropdown': ['No Badges', 'Artifacts Available', 'Artifacts Evaluated – Functional and Reusable', 'Results Replicated', 'Results Reproduced'],
+                'required': True
+            }
+        }
+    }
+)
