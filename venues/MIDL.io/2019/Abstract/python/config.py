@@ -17,14 +17,14 @@ Example:
 
 """
 
-CONFERENCE_ID = 'NIPS.cc/2018/Workshop/IRASL'
+CONFERENCE_ID = 'MIDL.amsterdam/2019/Abstract'
 PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
+AREA_CHAIRS = CONFERENCE_ID + '/Area_Chairs'
 REVIEWERS = CONFERENCE_ID + '/Reviewers'
-
-# GMT is the same as UTC
-SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=22, hour=23, minute=59)
-#REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=placeholder, hour=23, minute=59)
-WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
+#
+SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2019, month=4, day= 15, hour=23, minute=59)
+# REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day= 30, hour=23, minute=59)
+WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/abstractWebfield.js')
 
 
 """
@@ -39,12 +39,11 @@ Example:
     SUBMISSION = 'Submission'
 
     --> my.conference/2017/-/Submission
-
 """
 
 SUBMISSION = CONFERENCE_ID + '/-/Submission'
-BLIND_SUBMISSION = CONFERENCE_ID + '/-/Blind_Submission'
 COMMENT = CONFERENCE_ID + '/-/Comment'
+
 
 """
 PARAMETERS
@@ -86,16 +85,10 @@ program_chairs_params = {
 }
 
 submission_params = {
-    'pdf': {"required": True},
-    'readers': {
-        'values-copied': [
-            CONFERENCE_ID,
-            PROGRAM_CHAIRS,
-            '{content.authorids}',
-            '{signatures}'
-        ]
-    },
-    'writers': {'values-regex': "~.*|" + CONFERENCE_ID},
+    'readers': ['everyone'],
+    'writers': [CONFERENCE_ID],
+    'invitees': ['~'],
+    'signatures': [CONFERENCE_ID],
     'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')
 }
 
@@ -107,52 +100,46 @@ comment_params = {
     'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js')
 }
 
-'''
-review_params = {
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
-    'duedate': REVIEW_TIMESTAMP
-}'''
-
-
-"""
-TEMPLATES
-
-"""
-
-review_content = {
+submission_content = {
     'title': {
+        'description': 'Title of paper (up to 250 chars).',
         'order': 1,
-        'value-regex': '.{0,500}',
-        'description': 'Brief summary of your review (up to 500 chars).',
+        'value-regex': '.{1,250}',
         'required': True
     },
-    'review': {
+    'authors': {
+        'description': 'Comma separated list of author names.',
         'order': 2,
-        'value-regex': '[\\S\\s]{1,5000}',
-        'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (up to 5000 chars).',
+        'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
         'required': True
     },
-    'rating': {
+    'authorids': {
+        'description': 'Comma separated list of author email addresses, lowercase, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
+        'order': 3,
+        'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+        'required': True
+    },
+    'abstract': {
+        'description': 'Abstract of paper (up to 5000 chars).',
         'order': 4,
-        'value-dropdown': [
-            '5: Top 15% of accepted papers, strong accept',
-            '4: Top 50% of accepted papers, clear accept',
-            '3: Marginally above acceptance threshold',
-            '2: Marginally below acceptance threshold',
-            '1: Strong rejection'
-        ],
+        'value-regex': '[\\S\\s]{1,5000}',
         'required': True
     },
-    'confidence': {
-        'order': 5,
-        'value-radio': [
-            '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
-            '2: The reviewer is fairly confident that the evaluation is correct',
-            '1: The reviewer\'s evaluation is an educated guess'
-        ],
+    'keywords': {
+        'description': 'Comma separated list of keywords.',
+        'order': 6,
+        'values-regex': "(^$)|[^;,\\n]+(,[^,\\n]+)*"
+    },
+    'pdf': {
+        'description': 'Upload a PDF file that ends with .pdf. Submissions can be up to three pages.',
+        'order': 9,
+        'value-regex': 'upload',
         'required': True
+    },
+    'author affiliation': {
+        'description': 'Institution name(s) of the author(s)',
+        'order': 10,
+        'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+        'required': False
     }
 }

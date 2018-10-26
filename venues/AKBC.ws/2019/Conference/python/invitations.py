@@ -12,18 +12,35 @@ python invitations.py Official_Comment --disable
 
 import openreview
 import argparse
-import iclr19
+import akbc19 as conference_config
 import os
 import time
 
-official_review_template = {
-    'id': iclr19.OFFICIAL_REVIEW_TEMPLATE_STR,
+change_archival_status_template = {
+    'id': conference_config.CONFERENCE_ID + '/-/Paper<number>/Change_Archival_Status',
     'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
-    'invitees': [iclr19.PAPER_REVIEWERS_TEMPLATE_STR],
+    'writers': [conference_config.CONFERENCE_ID],
+    'invitees': [conference_config.CONFERENCE_ID + '/Paper<number>/Authors'],
+    'signatures': [conference_config.CONFERENCE_ID],
+    'multiReply': None,
+    'reply': {
+        'referent': '<original>',
+        'forum': '<original>',
+        'content': {'archival status' : conference_config.submission_inv.reply['content']['archival status']},
+        'signatures': conference_config.submission_inv.reply['signatures'],
+        'writers': conference_config.submission_inv.reply['writers'],
+        'readers': conference_config.submission_inv.reply['readers']
+    }
+}
+
+official_review_template = {
+    'id': conference_config.OFFICIAL_REVIEW_TEMPLATE_STR,
+    'readers': ['everyone'],
+    'writers': [conference_config.CONFERENCE_ID],
+    'invitees': [conference_config.PAPER_REVIEWERS_TEMPLATE_STR],
     'noninvitees': [],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'duedate': iclr19.OFFICIAL_REVIEW_DEADLINE,
+    'signatures': [conference_config.CONFERENCE_ID],
+    'duedate': conference_config.OFFICIAL_REVIEW_DEADLINE,
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -31,22 +48,22 @@ official_review_template = {
         'readers': {
             'description': 'The users who will be allowed to read the reply content.',
             'values': [
-                iclr19.PROGRAM_CHAIRS_ID,
-                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-                iclr19.PAPER_REVIEWERS_TEMPLATE_STR
+                conference_config.PROGRAM_CHAIRS_ID,
+                conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                conference_config.PAPER_REVIEWERS_TEMPLATE_STR
                 ]
         },
         'nonreaders': {
-            'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
+            'values': [conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
+            'values-regex': conference_config.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
         },
         'writers': {
             'description': 'Users that may modify this record.',
             'values-copied':  [
-                iclr19.CONFERENCE_ID,
+                conference_config.CONFERENCE_ID,
                 '{signatures}'
             ]
         },
@@ -57,11 +74,11 @@ with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
     official_review_template['process'] = f.read()
 
 revise_review_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/<reviewer_id>/Revise/Review',
+    'id': conference_config.CONFERENCE_ID + '/-/<reviewer_id>/Revise/Review',
     'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
+    'writers': [conference_config.CONFERENCE_ID],
     'invitees': [], # this needs to be filled in manually on a per-reviewer basis
-    'signatures': [iclr19.CONFERENCE_ID],
+    'signatures': [conference_config.CONFERENCE_ID],
     'multiReply': None,
     'reply': {
         'referent': None, # this needs to be filled in manually on a per-reviewer basis
@@ -77,29 +94,29 @@ revise_review_template = {
 }
 
 review_rating_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
+    'id': conference_config.CONFERENCE_ID + '/-/Paper<number>/Review_Rating',
     'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
-    'invitees': [iclr19.PAPER_REVIEWERS_TEMPLATE_STR],
-    'noninvitees': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'duedate': iclr19.OFFICIAL_REVIEW_DEADLINE,
+    'writers': [conference_config.CONFERENCE_ID],
+    'invitees': [conference_config.PAPER_REVIEWERS_TEMPLATE_STR],
+    'noninvitees': [conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
+    'signatures': [conference_config.CONFERENCE_ID],
+    'duedate': conference_config.OFFICIAL_REVIEW_DEADLINE,
     'process': None,
     'multiReply': None,
     'reply': {
         'forum': '<forum>',
         'replyto': None,
-        'invitation': iclr19.OFFICIAL_REVIEW_TEMPLATE_STR,
+        'invitation': conference_config.OFFICIAL_REVIEW_TEMPLATE_STR,
         'readers': {
             'description': 'The users who will be allowed to read the reply content.',
             'values': ['everyone']
         },
         'nonreaders': {
-            'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
+            'values': [conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
+            'values-regex': conference_config.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
         },
         'writers': {
             'description': 'Users that may modify this record.',
@@ -112,13 +129,13 @@ review_rating_template = {
 }
 
 meta_review_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Meta_Review',
+    'id': conference_config.CONFERENCE_ID + '/-/Paper<number>/Meta_Review',
     'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
-    'invitees': [iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR],
+    'writers': [conference_config.CONFERENCE_ID],
+    'invitees': [conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR],
     'noninvitees': [],
-    'signatures': [iclr19.CONFERENCE_ID],
-    'duedate': iclr19.META_REVIEW_DEADLINE,
+    'signatures': [conference_config.CONFERENCE_ID],
+    'duedate': conference_config.META_REVIEW_DEADLINE,
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -126,18 +143,18 @@ meta_review_template = {
         'readers': {
             'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
             'values': [
-                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-                iclr19.PROGRAM_CHAIRS_ID
+                conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                conference_config.PROGRAM_CHAIRS_ID
             ]
 
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_REGEX
+            'values-regex': conference_config.PAPER_AREA_CHAIRS_TEMPLATE_REGEX
         },
         'writers': {
             'description': 'Users that may modify this record.',
-            'values-regex': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_REGEX
+            'values-regex': conference_config.PAPER_AREA_CHAIRS_TEMPLATE_REGEX
         },
         'content': openreview.invitations.content.meta_review
     }
@@ -146,34 +163,34 @@ with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.
     meta_review_template['process'] = f.read()
 
 add_revision_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Add_Revision',
+    'id': conference_config.CONFERENCE_ID + '/-/Paper<number>/Add_Revision',
     'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
-    'invitees': [iclr19.CONFERENCE_ID + '/Paper<number>/Authors'],
-    'signatures': [iclr19.CONFERENCE_ID],
+    'writers': [conference_config.CONFERENCE_ID],
+    'invitees': [conference_config.CONFERENCE_ID + '/Paper<number>/Authors'],
+    'signatures': [conference_config.CONFERENCE_ID],
     'multiReply': None,
     'reply': {
         'referent': '<original>',
         'forum': '<original>',
-        'content': iclr19.submission_inv.reply['content'],
-        'signatures': iclr19.submission_inv.reply['signatures'],
-        'writers': iclr19.submission_inv.reply['writers'],
-        'readers': iclr19.submission_inv.reply['readers']
+        'content': conference_config.submission_inv.reply['content'],
+        'signatures': conference_config.submission_inv.reply['signatures'],
+        'writers': conference_config.submission_inv.reply['writers'],
+        'readers': conference_config.submission_inv.reply['readers']
     }
 }
 
 official_comment_template = {
-    'id': iclr19.OFFICIAL_COMMENT_TEMPLATE_STR,
+    'id': conference_config.OFFICIAL_COMMENT_TEMPLATE_STR,
     'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
+    'writers': [conference_config.CONFERENCE_ID],
     'invitees': [
-        iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
-        iclr19.PAPER_AUTHORS_TEMPLATE_STR,
-        iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-        iclr19.PROGRAM_CHAIRS_ID
+        conference_config.PAPER_REVIEWERS_TEMPLATE_STR,
+        conference_config.PAPER_AUTHORS_TEMPLATE_STR,
+        conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+        conference_config.PROGRAM_CHAIRS_ID
     ],
-    'noninvitees': [],
-    'signatures': [iclr19.CONFERENCE_ID],
+    'noninvitees': [conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
+    'signatures': [conference_config.CONFERENCE_ID],
     'multiReply': True,
     'reply': {
         'forum': '<forum>',
@@ -182,28 +199,28 @@ official_comment_template = {
             'description': 'Select all user groups that should be able to read this comment.',
             'value-dropdown-hierarchy': [
                 'everyone',
-                iclr19.PAPER_AUTHORS_TEMPLATE_STR,
-                iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
-                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-                iclr19.PROGRAM_CHAIRS_ID
+                conference_config.PAPER_AUTHORS_TEMPLATE_STR,
+                conference_config.PAPER_REVIEWERS_TEMPLATE_STR,
+                conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                conference_config.PROGRAM_CHAIRS_ID
             ]
         },
         'nonreaders': {
-            'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
+            'values': [conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
         },
         'signatures': {
             'description': '',
             'values-regex': '|'.join([
-                iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX,
-                iclr19.PAPER_AUTHORS_TEMPLATE_STR,
-                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_REGEX,
-                iclr19.PROGRAM_CHAIRS_ID,
+                conference_config.PAPER_ANONREVIEWERS_TEMPLATE_REGEX,
+                conference_config.PAPER_AUTHORS_TEMPLATE_STR,
+                conference_config.PAPER_AREA_CHAIRS_TEMPLATE_REGEX,
+                conference_config.PROGRAM_CHAIRS_ID,
             ]),
         },
         'writers': {
             'description': 'Users that may modify this record.',
             'values-copied':  [
-                iclr19.CONFERENCE_ID,
+                conference_config.CONFERENCE_ID,
                 '{signatures}'
             ]
         },
@@ -214,17 +231,17 @@ with open(os.path.abspath('../process/commentProcess.js')) as f:
     official_comment_template['process'] = f.read()
 
 public_comment_template = {
-    'id': iclr19.PUBLIC_COMMENT_TEMPLATE_STR,
+    'id': conference_config.PUBLIC_COMMENT_TEMPLATE_STR,
     'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
+    'writers': [conference_config.CONFERENCE_ID],
     'invitees': ['~'],
     'noninvitees': [
-        iclr19.PAPER_AUTHORS_TEMPLATE_STR,
-        iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
-        iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-        iclr19.PROGRAM_CHAIRS_ID
+        conference_config.PAPER_AUTHORS_TEMPLATE_STR,
+        conference_config.PAPER_REVIEWERS_TEMPLATE_STR,
+        conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+        conference_config.PROGRAM_CHAIRS_ID
     ],
-    'signatures': [iclr19.CONFERENCE_ID],
+    'signatures': [conference_config.CONFERENCE_ID],
     'multiReply': True,
     'reply': {
         'forum': '<forum>',
@@ -233,14 +250,14 @@ public_comment_template = {
             'description': 'Select all user groups that should be able to read this comment.',
             'value-dropdown-hierarchy': [
                 'everyone',
-                iclr19.PAPER_AUTHORS_TEMPLATE_STR,
-                iclr19.PAPER_REVIEWERS_TEMPLATE_STR,
-                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-                iclr19.PROGRAM_CHAIRS_ID
+                conference_config.PAPER_AUTHORS_TEMPLATE_STR,
+                conference_config.PAPER_REVIEWERS_TEMPLATE_STR,
+                conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
+                conference_config.PROGRAM_CHAIRS_ID
             ]
         },
         'nonreaders': {
-            'values': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
+            'values': [conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
         },
         'signatures': {
             "description": "How your identity will be displayed.",
@@ -249,7 +266,7 @@ public_comment_template = {
         'writers': {
             'description': 'Users that may modify this record.',
             'values-copied':  [
-                iclr19.CONFERENCE_ID,
+                conference_config.CONFERENCE_ID,
                 '{signatures}'
             ]
         },
@@ -260,11 +277,11 @@ with open(os.path.abspath('../process/commentProcess.js')) as f:
     public_comment_template['process'] = f.read()
 
 withdraw_submission_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Withdraw_Submission',
+    'id': conference_config.CONFERENCE_ID + '/-/Paper<number>/Withdraw_Submission',
     'readers': ['everyone'],
-    'writers': [iclr19.CONFERENCE_ID],
-    'invitees': [iclr19.CONFERENCE_ID + '/Paper<number>/Authors'],
-    'signatures': [iclr19.CONFERENCE_ID],
+    'writers': [conference_config.CONFERENCE_ID],
+    'invitees': [conference_config.CONFERENCE_ID + '/Paper<number>/Authors'],
+    'signatures': [conference_config.CONFERENCE_ID],
     'multiReply': False,
     'reply': {
         'forum': '<forum>',
@@ -275,7 +292,7 @@ withdraw_submission_template = {
         },
         'signatures': {
             'description': '',
-            'values-regex': iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+            'values-regex': conference_config.PAPER_AUTHORS_TEMPLATE_STR,
         },
         'writers': {
             'description': 'Users that may modify this record.',
@@ -287,7 +304,7 @@ withdraw_submission_template = {
                 'order': 1
             },
             'withdrawal confirmation': {
-                'description': iclr19.withdrawal_statement,
+                'description': conference_config.withdrawal_statement,
                 'value-radio': ['I have read and agree with the withdrawal statement on behalf of myself and my co-authors.'],
                 'order': 2,
                 'required': True
@@ -299,13 +316,14 @@ with open(os.path.abspath('../process/withdrawProcess.js')) as f:
     withdraw_submission_template['process'] = f.read()
 
 invitation_templates = {
-    'Add_Bid': iclr19.add_bid.to_json(),
+    'Add_Bid': conference_config.add_bid.to_json(),
     'Official_Comment': official_comment_template,
     'Add_Revision': add_revision_template,
     'Official_Review': official_review_template,
     'Meta_Review': meta_review_template,
     'Public_Comment': public_comment_template,
-    'Withdraw_Submission': withdraw_submission_template
+    'Withdraw_Submission': withdraw_submission_template,
+    'Change_Archival_Status': change_archival_status_template
 }
 
 current_timestamp = lambda: int(round(time.time() * 1000))
@@ -350,7 +368,7 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    blind_submissions = openreview.tools.iterget_notes(client, invitation=iclr19.BLIND_SUBMISSION_ID)
+    blind_submissions = openreview.tools.iterget_notes(client, invitation=conference_config.BLIND_SUBMISSION_ID)
 
     for paper in blind_submissions:
         for template in args.invitations:

@@ -1,23 +1,21 @@
 // ------------------------------------
-// Advanced venue homepage template
+// Venue homepage template
 //
-// This webfield displays the conference header (#header),
-// important instructions for this phase of the conference,
+// This webfield displays the conference header (#header), the submit button (#invitation),
 // and a tabbed interface for viewing various types of notes.
 // ------------------------------------
 
 // Constants
-var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
+var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
 var SUBMISSION_ID = CONFERENCE_ID + '/-/Submission';
 var ADD_BID_ID = CONFERENCE_ID + '/-/Add_Bid';
 var BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission';
-var WITHDRAWN_SUBMISSION_ID = CONFERENCE_ID + '/-/Withdrawn_Submission';
 var RECRUIT_REVIEWERS = CONFERENCE_ID + '/-/Recruit_Reviewers';
 var RECRUIT_AREA_CHAIRS = CONFERENCE_ID + '/-/Recruit_Area_Chairs';
 var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
 
-var ANON_SIGNATORY_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair\d+)/;
-var AUTHORS_SIGNATORY_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Authors/;
+var ANON_SIGNATORY_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/(AnonReviewer\d+|Area_Chair\d+)/;
+var AUTHORS_SIGNATORY_REGEX = /^AKBC\.ws\/2019\/Conference\/Paper(\d+)\/Authors/;
 
 var AREA_CHAIRS_ID = CONFERENCE_ID + '/Area_Chairs';
 var REVIEWERS_ID = CONFERENCE_ID + '/Reviewers';
@@ -25,24 +23,25 @@ var PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs';
 var AUTHORS_ID = CONFERENCE_ID + '/Authors';
 
 var HEADER = {
-  title: 'ICLR 2019',
-  subtitle: 'International Conference on Learning Representations',
-  location: 'New Orleans, Louisiana, United States',
-  date: 'May 6 - May 9, 2019',
-  website: 'https://iclr.cc/Conferences/2019',
+  title: 'AKBC 2019',
+  subtitle: 'Automated Knowledge Base Construction',
+  location: 'Amherst, Massachusetts, United States',
+  date: 'May 20 - May 21, 2019',
+  website: 'http://www.akbc.ws/2019/',
   instructions: '<p><strong>Important Information</strong>\
     <ul>\
-    <li>Note to Authors and Reviewers: Please update your OpenReview profile to have all your recent emails.</li>\
-    <li>ICLR 2019 Conference submissions are now closed.</li>\
-    <li>For more details refer to the <a href="https://iclr.cc/Conferences/2019/CallForPapers">ICLR 2019 - Call for Papers</a>.</li>\
+    <li>Note to Authors, Reviewers and Area Chairs: Please update your OpenReview profile to have all your recent emails.</li>\
+    <li>AKBC 2019 Conference submissions are now open.</li>\
+    <li>For more details refer to the <a href="http://www.akbc.ws/2019/cfp/">AKBC 2019 - Call for Papers</a>.</li>\
     </ul></p> \
     <p><strong>Questions or Concerns</strong></p>\
-    <p>Please contact the OpenReview support team at \
-    <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>\
-    Please contact the ICLR 2019 Program Chairs at \
-    <a href="mailto:iclr2019programchairs@googlegroups.com">iclr2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy.\
-    </p>',
-  deadline: 'Submission Deadline: 6:00 pm EDT, September 27, 2018'
+    <p><ul>\
+    <li>Please contact the AKBC 2019 Program Chairs at \
+    <a href="mailto:info@akbc.ws">info@akbc.ws</a> with any questions or concerns about conference administration or policy.</li>\
+    <li>Please contact the OpenReview support team at \
+    <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.</li>\
+    </ul></p>',
+  deadline: 'Submission Deadline: Midnight Pacific Time, Friday, November 16, 2018'
 }
 
 var COMMENT_EXCLUSION = [
@@ -83,35 +82,27 @@ function main() {
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-  var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
-    pageSize: PAGE_SIZE,
-    details: 'replyCount'
-  });
 
-  var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_SUBMISSION_ID, {
-    pageSize: 1000
-  });
-
-  var activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
-    pageSize: PAGE_SIZE,
-    details: 'forumContent'
-  });
-
-  var userGroupsP;
+  var activityNotesP;
   var authorNotesP;
+  var userGroupsP;
 
   if (!user || _.startsWith(user.id, 'guest_')) {
+    activityNotesP = $.Deferred().resolve([]);
     userGroupsP = $.Deferred().resolve([]);
     authorNotesP = $.Deferred().resolve([]);
-
   } else {
+    activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+      pageSize: PAGE_SIZE,
+      details: 'forumContent'
+    });
+
     userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
       return _.filter(
         _.map(result.groups, function(g) { return g.id; }),
         function(id) { return _.startsWith(id, CONFERENCE_ID); }
       );
     });
-
     authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
       pageSize: PAGE_SIZE,
       'content.authorids': user.profile.id,
@@ -120,15 +111,13 @@ function load() {
   }
 
   return $.when(
-    notesP, withdrawnNotesP, userGroupsP, activityNotesP, authorNotesP
+    userGroupsP, activityNotesP, authorNotesP
   );
 }
-
 
 // Render functions
 function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
-
   Webfield.ui.spinner('#notes', { inline: true });
 }
 
@@ -141,7 +130,8 @@ function renderSubmissionButton() {
           promptMessage('Your submission is complete. Check your inbox for a confirmation email. A list of all submissions will be available after the deadline');
 
           load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#your-consoles"]').click();
+            // Select the first available tab
+            $('.tabs-container ul.nav-tabs > li > a:visible').eq(0).click();
           });
         }
       });
@@ -155,14 +145,6 @@ function renderConferenceTabs() {
       id: 'your-consoles',
     },
     {
-      heading: 'All Submissions',
-      id: 'all-submissions',
-    },
-    {
-      heading: 'Withdrawn Papers',
-      id: 'withdrawn-papers',
-    },
-    {
       heading: 'Recent Activity',
       id: 'recent-activity',
     }
@@ -174,8 +156,8 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, withdrawnNotes, userGroups, activityNotes, authorNotes) {
-
+function renderContent(userGroups, activityNotes, authorNotes) {
+  
   // Your Consoles tab
   if (userGroups.length || authorNotes.length) {
 
@@ -219,56 +201,6 @@ function renderContent(notes, withdrawnNotes, userGroups, activityNotes, authorN
     $('.tabs-container a[href="#your-consoles"]').parent().hide();
   }
 
-  // All Submitted Papers tab
-  var submissionListOptions = _.assign({}, paperDisplayOptions, {
-    showTags: false,
-    container: '#all-submissions'
-  });
-
-  $(submissionListOptions.container).empty();
-
-  if (notes.length){
-    Webfield.ui.submissionList(notes, {
-      heading: null,
-      container: '#all-submissions',
-      search: {
-        enabled: true,
-        localSearch: false,
-        onResults: function(searchResults) {
-          var blindedSearchResults = searchResults.filter(function(note) {
-            return note.invitation === BLIND_SUBMISSION_ID;
-          });
-          Webfield.ui.searchResults(blindedSearchResults, submissionListOptions);
-          Webfield.disableAutoLoading();
-        },
-        onReset: function() {
-          Webfield.ui.searchResults(notes, submissionListOptions);
-          if (notes.length === PAGE_SIZE) {
-            Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
-          }
-        }
-      },
-      displayOptions: submissionListOptions,
-      fadeIn: false
-    });
-
-    if (notes.length === PAGE_SIZE) {
-      Webfield.setupAutoLoading(BLIND_SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
-    }
-  } else {
-    $('.tabs-container a[href="#all-submissions"]').parent().hide();
-  }
-
-  // Withdrawn Tab
-  if (withdrawnNotes.length) {
-    Webfield.ui.searchResults(
-      withdrawnNotes,
-      _.assign({}, paperDisplayOptions, {showTags: false, container: '#withdrawn-papers'})
-    );
-  } else {
-    $('.tabs-container a[href="#withdrawn-papers"]').parent().hide();
-  }
-
   // Activity Tab
   if (activityNotes.length) {
     var displayOptions = {
@@ -287,6 +219,8 @@ function renderContent(notes, withdrawnNotes, userGroups, activityNotes, authorN
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
+
+  Webfield.ui.done();
 }
 
 // Go!

@@ -6,7 +6,7 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
+var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
 var SUBMISSION_ID = CONFERENCE_ID + '/-/Submission';
 
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
@@ -20,7 +20,7 @@ var paperDisplayOptions = {
 
 var initialPageLoad = true;
 
-HEADER_TEXT = 'ICLR 2019 Author Console';
+HEADER_TEXT = 'AKBC 2019 Author Console';
 
 INSTRUCTIONS = '\
   <h4>Frequently Asked Questions</h4>\
@@ -31,38 +31,14 @@ INSTRUCTIONS = '\
 
 var SCHEDULE_HTML = '<h4>Submission Period</h4>\
   <p>\
-    <!--<em><strong>Submission deadline: Thursday, September 27</strong></em>:-->\
+    <em><strong>Submission deadline: Midnight Pacific Time, Friday November 16</strong></em>\
     <ul>\
-      <li>Authors can revise their paper as many times as needed up to the paper submission deadline.</li>\
-      <li>Please ensure that the email addresses of the corresponding author are up-to-date in his or her profile.</li>\
+      <li>Please note that authors can revise their submissions as many times as needed up to the paper submission deadline.</li>\
+      <li>Authors are requested to ensure that the email addresses provided in submissions are updated in corresponding author\'s OpenReview profile.</li>\
+      <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest \
+      detection during the paper matching process.</li>\
     </ul>\
-  </p>\
-  <!--<p>\
-    <em><strong>Please do the following by Monday, October 8</strong></em>:\
-    <ul>\
-      <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
-      <li>Complete the ICLR registration form (found in your Tasks view).</li>\
-    </ul>\
-  </p>-->\
-  <br>\
-  <h4>Reviewing Period</h4>\
-  <p>\
-    <!--<em><strong>Reviews can be expected by Wednesday, October 17</strong></em>:-->\
-    <ul>\
-      <li>During the review period, authors will not be allowed to revise their paper. </li>\
-      <li>Reviews and all discussion take place on the Anonymous Versions of your submitted papers.</li>\
-    </ul>\
-  </p>\
-  <br>\
-  <h4>Rebuttal Period</h4>\
-  <p>\
-    <!--<em><strong>Rebuttal period ends on Friday, October 26</strong></em>:-->\
-    <ul>\
-      <li>Authors may revise their paper, but revision history will be available to reviewers.</li>\
-      <li>Area chairs and reviewers reserve the right to ignore changes which are significant from the original scope of the paper.</li>\
-    </ul>\
-  </p>\
-  <br>'
+  </p>'
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -103,7 +79,7 @@ function load() {
       replyto: true,
       details:'replytoNote,repliedNotes'
     }).then(function(result) {return result.invitations;});
-
+    
     tagInvitationsP = Webfield.get('/invitations', {
       invitation: CONFERENCE_ID + '/-/.*',
       invitee: true,

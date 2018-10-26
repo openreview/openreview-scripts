@@ -1,8 +1,12 @@
 function(){
     var or3client = lib.or3client;
 
-    var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
-    var SHORT_PHRASE = "ICLR 2019";
+    var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
+    var SHORT_PHRASE = "AKBc 2019";
+    var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + note.number + '/Authors';
+    var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note.number + '/Reviewers';
+    var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note.number + '/Area_Chairs';
+    var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs';
 
     var forumNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token) : null;
@@ -25,12 +29,6 @@ function(){
       var forumNote = result[0].notes[0];
       var replytoNote = note.replyto ? result[1].notes[0] : null;
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : [];
-
-      var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + forumNote.number + '/Authors';
-      var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + forumNote.number + '/Reviewers';
-      var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs';
-      var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs';
-
       var author_mail;
 
       var ac_mail = {
