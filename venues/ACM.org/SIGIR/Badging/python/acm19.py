@@ -226,3 +226,35 @@ submission_inv = ArtifactSubmission(
         }
     }
 )
+
+# Badging decision invitation for Chairs
+badging_decision_inv = openreview.Invitation(id = 'ACM.org/SIGIR/Badging/-/Decision',
+                                        duedate = 1543161141000,
+                                        readers = ['everyone'],
+                                        writers = ['ACM.org/SIGIR/Badging'],
+                                        signatures = ['ACM.org/SIGIR/Badging'],
+                                        invitees = ['ACM.org/SIGIR/Badging/Chairs'],
+                                        multiReply = True,
+                                        taskCompletionCount = 1,
+                                        reply = {
+                                            'invitation': 'ACM.org/SIGIR/Badging/-/Submission',
+                                            'readers': {
+                                            'description': 'The users who will be allowed to read the above content.',
+                                            'values': ['everyone']
+                                            },
+                                            'signatures': {
+                                            'description': 'How your identity will be displayed with the above content.',
+                                            'values-regex': '~.*'
+                                            },
+                                            'writers': {
+                                            'values-regex': '~.*'
+                                            },
+                                            'content':{
+                                            'tag': {
+                                                'description': 'Artifact Badge decision',
+                                                'order': 1,
+                                                'values-dropdown': ['No Badges', 'Artifacts Available', 'Artifacts Evaluated – Functional and Reusable', 'Results Replicated', 'Results Reproduced'],
+                                                'required': True
+                                            }
+                                            }
+                                        })
