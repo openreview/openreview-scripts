@@ -50,9 +50,12 @@ function() {
   var Conf_Chairs = CONF + '/Chairs';
   var reviewInvitation = {
     id: CONF + '/-/Paper' + note.number + '/Review',
-    signatures: [CONF],
+    signatures: [CONF, Conf_Chairs],
     writers: [CONF, Conf_Chairs],
-    invitees: [],
+    invitees: [
+      "srreviewer@acmtest.org",
+      "jrreviewer@acmtest.org"
+      ],
     readers: ['everyone'],
     reply: {
       forum: note.id,

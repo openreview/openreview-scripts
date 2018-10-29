@@ -35,7 +35,7 @@ conference = openreview.Group.from_json({
     'readers':['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': ["OpenReview.net"],
-    'signatories': [CONFERENCE_ID],
+    'signatories': [CONFERENCE_ID, CHAIRS_ID],
     'members': []
 })
 with open(os.path.abspath('../webfield/homepage.js')) as f:
