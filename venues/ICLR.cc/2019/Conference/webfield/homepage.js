@@ -93,7 +93,7 @@ function load() {
   } else {
     activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
       pageSize: PAGE_SIZE,
-      details: 'forumContent'
+      details: 'forumContent,writable'
     });
 
     userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
@@ -206,7 +206,8 @@ function renderContent(userGroups, activityNotes, authorNotes) {
   if (activityNotes.length) {
     var displayOptions = {
       container: '#recent-activity',
-      user: user && user.profile
+      user: user && user.profile,
+      showActionButtons: true
     };
 
     $(displayOptions.container).empty();

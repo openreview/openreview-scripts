@@ -273,7 +273,8 @@ function renderContent(notes, withdrawnNotes, userGroups, activityNotes, authorN
   if (activityNotes.length) {
     var displayOptions = {
       container: '#recent-activity',
-      user: user && user.profile
+      user: user && user.profile,
+      showActionButtons: true
     };
 
     $(displayOptions.container).empty();
