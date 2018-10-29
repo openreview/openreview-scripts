@@ -556,7 +556,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
         name: reviewer.name,
         email: reviewer.email,
         forumUrl: forumUrl,
-        lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
+        lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString() : lastReminderSent
       };
     }
   }
@@ -621,8 +621,9 @@ var registerEventHandlers = function() {
   });
 
   $('#group-container').on('click', 'a.send-reminder-link', function(e) {
-    var userId = $(this).data('userId');
-    var forumUrl = $(this).data('forumUrl');
+    var $link = $(this);
+    var userId = $link.data('userId');
+    var forumUrl = $link.data('forumUrl');
 
     var sendReviewerReminderEmails = function(e) {
       var postData = {
@@ -633,8 +634,10 @@ var registerEventHandlers = function() {
       };
 
       $('#message-reviewers-modal').modal('hide');
-      promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
+      // promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
       postReviewerEmails(postData);
+      $link.after(' (Last sent: ' + (new Date()).toLocaleDateString());
+
       return false;
     };
 
