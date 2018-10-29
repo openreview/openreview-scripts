@@ -622,8 +622,10 @@ var registerEventHandlers = function() {
       };
 
       $('#message-reviewers-modal').modal('hide');
-      promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
+      // promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
       postReviewerEmails(postData);
+      $(this).parent().append('<span>(Last sent: ' + (new Date()).toLocaleDateString('en-GB') + '</span>');
+
       return false;
     };
 
