@@ -4,27 +4,40 @@ import openreview
 import re
 
 '''
-Requirements:
+Requirements: 
 
+Python3
 openreview-py (version 0.9.6 and above)
 
-Usage:
+Inputs to the script:
 
-Use the --forum (or -f) flag to specify the paper forum.
+Use the --forum (or -f) flag to specify the paper forum. Forum is mandatory.
 Use the --add (or -a) flag to specify an openreview username or an email address to assign.
 Use the --remove (or -r) flag to specify an openreview username or an email address to remove.
 
-For example, after running the following:
-python assign-reviewer.py --forum "H1g2gTJZ2Q" --remove "muniyal@cs.umass.edu" --add "mspector@cs.umass.edu"
+The script uses forum as an input which represents a submission. You can retrieve the forum of a submission like this:
+1. Open ACM SIGIR Badging page - https://dev.openreview.net/group?id=ACM.org/SIGIR/Badging
+2. Click on the submission you want to modify reviewers for. 
+3. Forum id is present in the url. E.g. https://dev.openreview.net/forum?id=H1xhIohNn7 has the forum id “H1xhIohNn7”.
 
+Usage: 
 
-ACM.org/SIGIR/Badging/-/Paper5/Review -> Invitees = ['muniyal@cs.umass.edu']
-becomes
-ACM.org/SIGIR/Badging/-/Paper5/Review -> Invitees = ['mspector@cs.umass.edu']
+>>> python assign-reviewer.py --baseurl https://dev.openreview.net --username chair@acmtest.org  --password 1234 --forum H1g2gTJZ2Q --remove muniyal@cs.umass.edu --add mspector@cs.umass.edu
+
+Results in removal of 'muniyal@cs.umass.edu’ as a reviewer and addition of 'mspector@cs.umass.edu’ as a reviewer.
 
 You can also just remove or just add reviewers. Examples:
-python assign-reviewer.py --forum H1g2gTJZ2Q --remove mspector@cs.umass.edu
-python assign-reviewer.py --forum H1g2gTJZ2Q --add muniyal@cs.umass.edu
+>>> python assign-reviewer.py --baseurl https://dev.openreview.net --username chair@acmtest.org  --password 1234 -f H1g2gTJZ2Q -r mspector@cs.umass.edu
+>>> python assign-reviewer.py --baseurl https://dev.openreview.net --username chair@acmtest.org  --password 1234 -f H1g2gTJZ2Q -a muniyal@cs.umass.edu
+
+
+Also, if both --add or --remove flags are not provided, then the script prints the existing reviewers for the given forum id.
+For example: 
+>>> python assign-reviewer.py --baseurl https://dev.openreview.net --username chair@acmtest.org  --password 1234 -f H1xhIohNn7
+
+Output: 
+Reviewers for forum H1xhIohNn7 are
+['~srreviewer_acm1', 'mspector@cs.umass.edu']
 '''
 
 if __name__ == "__main__":
