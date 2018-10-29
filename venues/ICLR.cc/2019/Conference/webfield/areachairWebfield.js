@@ -545,7 +545,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
         name: reviewer.name,
         email: reviewer.email,
         forumUrl: forumUrl,
-        lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
+        lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString() : lastReminderSent
       };
     }
   }
@@ -624,7 +624,7 @@ var registerEventHandlers = function() {
       $('#message-reviewers-modal').modal('hide');
       // promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
       postReviewerEmails(postData);
-      $(this).parent().append('<span>(Last sent: ' + (new Date()).toLocaleDateString('en-GB') + '</span>');
+      $(this).parent().append(' (Last sent: ' + (new Date()).toLocaleDateString());
 
       return false;
     };
