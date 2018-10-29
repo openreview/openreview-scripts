@@ -610,8 +610,9 @@ var registerEventHandlers = function() {
   });
 
   $('#group-container').on('click', 'a.send-reminder-link', function(e) {
-    var userId = $(this).data('userId');
-    var forumUrl = $(this).data('forumUrl');
+    var $link = $(this);
+    var userId = $link.data('userId');
+    var forumUrl = $link.data('forumUrl');
 
     var sendReviewerReminderEmails = function(e) {
       var postData = {
@@ -624,7 +625,7 @@ var registerEventHandlers = function() {
       $('#message-reviewers-modal').modal('hide');
       // promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
       postReviewerEmails(postData);
-      $(this).parent().append(' (Last sent: ' + (new Date()).toLocaleDateString());
+      $link.after(' (Last sent: ' + (new Date()).toLocaleDateString());
 
       return false;
     };
