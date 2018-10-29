@@ -94,7 +94,7 @@ function load() {
 
   var activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
     pageSize: PAGE_SIZE,
-    details: 'forumContent'
+    details: 'forumContent,writable'
   });
 
   var userGroupsP;
