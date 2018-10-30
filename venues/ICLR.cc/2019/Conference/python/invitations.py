@@ -57,7 +57,7 @@ with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
     official_review_template['process'] = f.read()
 
 revise_review_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/<paper_reviewer_id>/Review/Revision',
+    'id': iclr19.CONFERENCE_ID + '/-/<paper_number>/Official_Review/<reviewer_id>/Revision',
     'readers': ['everyone'],
     'writers': [iclr19.CONFERENCE_ID],
     'invitees': [], # this needs to be filled in manually on a per-reviewer basis
