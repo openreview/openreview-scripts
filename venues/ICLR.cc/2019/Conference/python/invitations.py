@@ -146,7 +146,7 @@ with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.
     meta_review_template['process'] = f.read()
 
 add_revision_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Paper_Revision',
+    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Revision',
     'readers': ['everyone'],
     'writers': [iclr19.CONFERENCE_ID],
     'invitees': [iclr19.CONFERENCE_ID + '/Paper<number>/Authors'],
