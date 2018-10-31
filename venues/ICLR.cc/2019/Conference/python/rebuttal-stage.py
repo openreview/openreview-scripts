@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     official_review_invs = openreview.tools.iterget(
         client.get_invitations,
-        regex='ICLR.cc/2019/Conference/-/Paper.*/Official_Review',
+        regex='ICLR.cc/2019/Conference/-/Paper.*/Official_Review$',
         details='repliedNotes,replytoNote')
 
     for review_inv in official_review_invs:
