@@ -619,6 +619,19 @@ withdrawn_submission_invitation = openreview.Invitation.from_json({
     "nonreaders": []
 })
 
+# Invitation to create copies of reviewer questionnaire responses to be viewed only by ACs and PCs
+view_questionnaire_response_invi = openreview.Invitation.from_json( {
+    'id': CONFERENCE_ID + '/-/View_Questionnaire_Response',
+    'readers': [CONFERENCE_ID],
+    'writers': [CONFERENCE_ID],
+    'signatures': [CONFERENCE_ID],
+    'reply': {
+        'readers': {'values-regex': "ICLR.cc/2019/Conference/Paper[0-9]+/Area_Chairs|ICLR.cc/2019/Conference/Program_Chairs"},
+        'writers': {'values': [CONFERENCE_ID]},
+        'signatures': {'values': [CONFERENCE_ID]},
+    }
+})
+
 # Configure the invitations that will be attached on a per-paper basis
 # These are constructed using templates in the script invitations.py
 
