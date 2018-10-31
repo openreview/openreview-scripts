@@ -1,4 +1,4 @@
-var GROUP_ID = 'AKBC.ws';
+var GROUP_ID = 'ICLR.cc';
 var HEADER = {
   title: 'International Conference on Learning Representations',
   description: ''
