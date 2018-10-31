@@ -269,7 +269,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, do
         noteId: note.id,
         invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official_Review'
       });
-      var lastReminderSent = window.localStorage.getItem(forumUrl + '|' + reviewer.id);
+      var lastReminderSent = localStorage.getItem(forumUrl + '|' + reviewer.id);
       combinedObj[reviewerNum] = {
         id: reviewer.id,
         name: reviewer.name,
@@ -422,7 +422,7 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   $.post('/mail', JSON.stringify(postData), function(result) {
     promptMessage('A reminder email has been sent to ' + view.prettyId(userId));
     //Save the timestamp in the local storage
-    window.localStorage.setItem(forumUrl + '|' + userId, Date.now());
+    localStorage.setItem(forumUrl + '|' + userId, Date.now());
     renderTable();
   }, 'json').fail(function(error) {
     console.log(error);
