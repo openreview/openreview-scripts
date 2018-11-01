@@ -75,8 +75,6 @@ if __name__ == '__main__':
         for response in ques_response_inv.details['repliedNotes']:
             map_reviewer_response[response['signatures'][0]] = response
 
-    # print (map_reviewer_response)
-
     # Map: Paper-AnonReview -> Member's Signature
     map_paperanonreviewer_member = {}
     paper_anon_reviewers = openreview.tools.iterget_groups(client, regex = "ICLR.cc/2019/Conference/Paper.*/AnonReviewer.*")
@@ -126,4 +124,4 @@ if __name__ == '__main__':
             )
             posted_note = client.post_note(copy_note)
             processed_count += 1
-    print ("New questionnaire response copies created: {}".format(processed_count))
+    print ("Questionnaire response copies created: {}".format(processed_count))
