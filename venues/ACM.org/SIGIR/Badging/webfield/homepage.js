@@ -90,11 +90,7 @@ function renderSubmissionButton() {
         onNoteCreated: function() {
           // Callback funtion to be run when a paper has successfully been submitted (required)
           promptMessage('Your artifact submission is complete. Check your inbox for a confirmation email.');
-
-          load().then(renderContent).then(function() {
-             // Select the first available tab
-             $('.tabs-container ul.nav-tabs > li > a:visible').eq(0).click();
-          });
+          load().then(renderContent).then(Webfield.ui.done);
         }
       });
     });
@@ -152,13 +148,14 @@ function renderContent(notes, tagInvitations) {
     if (notes.length === PAGE_SIZE) {
       Webfield.setupAutoLoading(SUBMISSION_ID, PAGE_SIZE, submissionListOptions);
     }
+    $('.tabs-container a[href="#all-submissions"]').parent().show();
   } else {
     $('.tabs-container a[href="#all-submissions"]').parent().hide();
   }
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
+  Webfield.ui.done();
 }
 
 // Go!
