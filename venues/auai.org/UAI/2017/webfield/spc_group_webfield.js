@@ -1,4 +1,3 @@
-<!-- UI for Area Chair Console -->
 var CONFERENCE = 'auai.org/UAI/2017';
 
 // Ajax functions
