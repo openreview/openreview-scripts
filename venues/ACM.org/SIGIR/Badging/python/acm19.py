@@ -156,12 +156,18 @@ submission_inv = openreview.Invitation(
                 ],
                 'required': True
             },
+            'html': {
+                'fieldDisplayLabel': 'Html',
+                'description': 'Either provide a direct url to your artifact (link must begin with http(s)) or upload a PDF file',
+                'order': 8,
+                'value-regex': '(http|https):\/\/.+',
+                'required':False
+            },
             'pdf': {
                 'fieldDisplayLabel': 'PDF',
-                'description': 'Either upload a PDF file or provide a direct link to your artifact (link must begin with http(s))',
-                'order': 7,
-                'value-regex': 'upload|(http|https):\/\/.+',
-                'required':True
+                'order': 8,
+                'value-regex': 'upload',
+                'required':False
             }
         }
     }
