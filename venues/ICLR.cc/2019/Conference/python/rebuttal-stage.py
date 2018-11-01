@@ -32,6 +32,12 @@ if __name__ == '__main__':
 
     for review_inv in official_review_invs:
         review_inv.reply['readers']['values'] = ['everyone']
+        review_inv.reply['writers'] = {
+            "description": "Users that may modify this record.",
+            "values": [
+                iclr19.CONFERENCE_ID
+                ]
+        }
         client.post_invitation(review_inv)
         if review_inv.details and 'repliedNotes' in review_inv.details:
             official_reviews = [
