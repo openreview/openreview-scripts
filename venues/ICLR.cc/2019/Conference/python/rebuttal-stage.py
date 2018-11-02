@@ -46,6 +46,7 @@ if __name__ == '__main__':
 
             if (review_inv.details.get('replytoNote')):
                 paper = openreview.Note.from_json(review_inv.details.get('replytoNote'))
+                paper_number = paper.number
                 for review in official_reviews:
                     review.readers = ['everyone']
                     review.writers = [iclr19.CONFERENCE_ID]
@@ -56,8 +57,6 @@ if __name__ == '__main__':
                     review_revision_inv = invitations.enable_invitation(
                         'Review_Revision', target_paper=review)
                     
-                    paper_number = review.invitation.split('Paper')[1].split('/')[0]
-
                     review_revision_inv.id = review_revision_inv.id.replace('<paper_number>', "Paper" + str(paper_number))
                     review_revision_inv.id = review_revision_inv.id.replace('<reviewer_id>', reviewer_id)
 
