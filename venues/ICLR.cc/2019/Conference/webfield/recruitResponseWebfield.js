@@ -25,12 +25,10 @@ function main() {
 // never changes, put it in its own function
 function renderConferenceHeader() {
   Webfield.ui.venueHeader(HEADER);
-
   Webfield.ui.spinner('#notes', { inline: true });
 }
 
 function render() {
-
   var $response = $('#notes');
   $response.empty();
 
@@ -51,14 +49,9 @@ function render() {
         '</div>'
       ].join('\n'));
     }
-
   } else {
     promptError('Response parameter missing');
   }
-
-
-
-
   Webfield.ui.done();
 }
 
