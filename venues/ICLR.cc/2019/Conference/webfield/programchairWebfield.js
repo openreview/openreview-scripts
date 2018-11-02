@@ -127,7 +127,7 @@ var getAreaChairGroups = function(noteNumbers) {
         var num;
         if (matches) {
           num = parseInt(matches[1], 10);
-          
+
           if (g.members.length) {
             var areaChair = g.members[0];
             if (num in noteMap) {
@@ -162,7 +162,7 @@ var getUserProfiles = function(userIds) {
 
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferred_email || profile.content.emails[0];
+      profile.email = profile.content.preferredEmail || profile.content.emails[0];
       profileMap[profile.id] = profile;
     })
 
