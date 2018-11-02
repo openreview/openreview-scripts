@@ -159,7 +159,7 @@ submission_inv = openreview.Invitation(
             'html': {
                 'fieldDisplayLabel': 'Html',
                 'description': 'Either provide a direct url to your artifact (link must begin with http(s)) or upload a PDF file',
-                'order': 8,
+                'order': 7,
                 'value-regex': '(http|https):\/\/.+',
                 'required':False
             },
