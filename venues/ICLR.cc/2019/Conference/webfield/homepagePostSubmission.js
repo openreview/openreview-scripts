@@ -85,7 +85,7 @@ function main() {
 function load() {
   var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
     pageSize: PAGE_SIZE,
-    details: 'replyCount'
+    details: 'replyCount,writable'
   });
 
   var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_SUBMISSION_ID, {
@@ -222,7 +222,7 @@ function renderContent(notes, withdrawnNotes, userGroups, activityNotes, authorN
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: false,
-    container: '#all-submissions'
+    showActionButtons: true,
   });
 
   $(submissionListOptions.container).empty();

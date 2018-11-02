@@ -19,6 +19,7 @@ var PAGE_SIZE = 50;
 var paperDisplayOptions = {
   pdfLink: true,
   replyCount: true,
+  showActionButtons: true,
   showContents: true
 };
 
@@ -67,7 +68,10 @@ function renderConferenceHeader() {
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
   var invitationP = Webfield.api.getSubmissionInvitation(SUBMISSION, {deadlineBuffer: BUFFER});
-  var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION, {pageSize: PAGE_SIZE});
+  var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION, {
+    pageSize: PAGE_SIZE,
+    details: 'replyCount,writable'
+  });
   return $.when(invitationP, notesP);
 }
 
