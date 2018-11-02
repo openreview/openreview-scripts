@@ -153,8 +153,8 @@ add_revision_template = {
     'signatures': [iclr19.CONFERENCE_ID],
     'multiReply': None,
     'reply': {
-        'referent': '<forum>',
-        'forum': '<forum>',
+        'referent': '<original>',
+        'forum': '<original>',
         'content': iclr19.submission_inv.reply['content'],
         'signatures': iclr19.submission_inv.reply['signatures'],
         'writers': iclr19.submission_inv.reply['writers'],

@@ -12,7 +12,7 @@ python groups.py Reviewers --overwrite
 
 import openreview
 import argparse
-import akbc19
+import akbc19 as conference_config
 from matcher import utils
 import numpy as np
 import random
@@ -33,10 +33,10 @@ def getBibtex(client, note):
 def create_blind_note(note):
     return openreview.Note(
         original= note.id,
-        invitation= akbc19.BLIND_SUBMISSION_ID,
+        invitation= conference_config.BLIND_SUBMISSION_ID,
         forum= None,
-        signatures= [akbc19.CONFERENCE_ID],
-        writers= [akbc19.CONFERENCE_ID],
+        signatures= [conference_config.CONFERENCE_ID],
+        writers= [conference_config.CONFERENCE_ID],
         readers= ['everyone'],
         content= {
             "authors": ['Anonymous'],
@@ -44,7 +44,7 @@ def create_blind_note(note):
             "_bibtex": None
         })
 
-def freeze_note(note, writers=[akbc19.CONFERENCE_ID]):
+def freeze_note(note, writers=[conference_config.CONFERENCE_ID]):
     note.writers = writers
     return note
 
@@ -54,8 +54,8 @@ def freeze_and_post(client, note):
 def post_blind_note(client, original_note):
     blind_note = client.post_note(create_blind_note(original_note))
     bibtex_entry = getBibtex(client, blind_note)
-    paper_group_id = akbc19.CONFERENCE_ID + "/Paper{}".format(blind_note.number)
-    author_group_id = akbc19.CONFERENCE_ID + "/Paper{}/Authors".format(blind_note.number)
+    paper_group_id = conference_config.CONFERENCE_ID + "/Paper{}".format(blind_note.number)
+    author_group_id = conference_config.CONFERENCE_ID + "/Paper{}/Authors".format(blind_note.number)
 
     blind_note.content = {
         "authors": ['Anonymous'],
