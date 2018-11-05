@@ -78,7 +78,7 @@ if __name__ == '__main__':
     client.post_invitation(iclr19.view_questionnaire_response_invi)
         
     ques_response_inv = client.get_invitations(
-        regex='ICLR.cc/2019/Conference/-/Reviewer_Questionnaire_Response',
+        regex='ICLR.cc/2019/Conference/-/Reviewer_Questionnaire_Response$',
         details='repliedNotes,replytoNote')[0]
     print ("Available responses to reviewer questionnaire: {}".format (len(ques_response_inv.details['repliedNotes'])))
     
@@ -90,14 +90,15 @@ if __name__ == '__main__':
 
     # Map: Paper-AnonReview -> Member's Signature
     map_paperanonreviewer_member = {}
-    paper_anon_reviewers = openreview.tools.iterget_groups(client, regex = "ICLR.cc/2019/Conference/Paper.*/AnonReviewer.*")
+    paper_anon_reviewers = openreview.tools.iterget_groups(client, regex = "ICLR.cc/2019/Conference/Paper.*/AnonReviewer[0-9]*$")
     
     for reviewer in paper_anon_reviewers:
-        map_paperanonreviewer_member[reviewer.id] = reviewer.members[0]
-    
+        rev_members = reviewer.members
+        map_paperanonreviewer_member[reviewer.id] = rev_members[0] if len(rev_members) != 0 else ""
+            
     # Map: Paper_Number -> Area Chair group
     map_paper_ac = {}
-    paper_area_chairs = openreview.tools.iterget_groups(client, regex = "ICLR.cc/2019/Conference/Paper.*/Area_Chairs")
+    paper_area_chairs = openreview.tools.iterget_groups(client, regex = "ICLR.cc/2019/Conference/Paper.*/Area_Chairs$")
     for grp in paper_area_chairs:
         paper_number = grp.id.split('Paper')[1].split('/')[0]
         map_paper_ac[paper_number] = grp.id
@@ -116,7 +117,7 @@ if __name__ == '__main__':
 
     # Process each anonymous review
     processed_count = 0
-    anon_reviews = openreview.tools.iterget_notes(client, invitation = iclr19.CONFERENCE_ID+'/-/Paper.*/Official_Review')
+    anon_reviews = openreview.tools.iterget_notes(client, invitation = iclr19.CONFERENCE_ID+'/-/Paper.*/Official_Review$')
     for review in anon_reviews:
         paper_number = review.invitation.split('Paper')[1].split('/')[0]
         
