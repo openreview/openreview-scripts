@@ -113,19 +113,29 @@ for ac in area_chairs_group:
     if ac.members:
         area_chairs[paper_number] = ac.members[0]
 
-def get_email(profile_id):
-    prof = tools.get_profile(client, profile_id)
-    email = None
-    if prof :
-        if (prof.content.get('preferredEmail', None) != None):
-            email = prof.content.get('preferredEmail')
-        elif (prof.content.get('emailsConfirmed', None) != None):
-            email = prof.content.get('emailsConfirmed')[0]
-        else:
-            email = prof.content.get('emails')[0]
-    else : 
-        email = "No email found"
-    return email
+def get_profile_email_map(cl, profile_id_list):
+    profiles = cl.get_profiles(profile_id_list)
+    map_profile_email = {}
+    for prof in profiles:
+        if prof :
+            if (prof.content.get('preferredEmail', None) != None):
+                map_profile_email[prof.id] = prof.content.get('preferredEmail')
+            elif (prof.content.get('emailsConfirmed', None) != None):
+                map_profile_email[prof.id] = prof.content.get('emailsConfirmed')[0]
+            else:
+                map_profile_email[prof.id] = prof.content.get('emails')[0]
+        else : 
+            map_profile_email[prof.id] = "No email found"
+    return map_profile_email
+
+# collect all emails
+map_profile_email = {}
+all_profiles = []
+for paper_number in late_reviewers:
+    all_profiles.append( str(area_chairs.get(paper_number, '')) )
+    all_profiles.extend( [rev for rev in late_reviewers[paper_number]] )
+
+map_profile_email = get_profile_email_map(client, all_profiles)
 
 print ("All late reviewers by paper")
 print ("Paper Number, AC, AC Email, Late Reviewers, Reviewer Emails")
@@ -133,13 +143,13 @@ for paper_number in sorted(late_reviewers):
     ac = area_chairs.get(paper_number, '')
     reviewer_emails = []
     for rev in late_reviewers[paper_number]:
-        reviewer_emails.append(get_email(rev))
+        reviewer_emails.append( map_profile_email[rev] )
 
     print ("{0}, {1}, {2}, {3}, {4}".format(
         paper_number, 
         str(ac),
-        get_email(ac),
-        '(' + ','.join(late_reviewers[paper_number]) + ')',
-        '(' + str (','.join(reviewer_emails)) + ')'
+        map_profile_email[str(ac)],
+        '(' + ', '.join(late_reviewers[paper_number]) + ')',
+        '(' + str (', '.join(reviewer_emails)) + ')'
         )
     )
