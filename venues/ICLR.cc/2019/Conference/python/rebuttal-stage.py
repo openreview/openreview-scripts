@@ -72,9 +72,7 @@ if __name__ == '__main__':
     blind_notes = openreview.tools.iterget_notes(client, invitation=iclr19.BLIND_SUBMISSION_ID)
     for note in blind_notes:
         client.post_invitation(
-            invitations.enable_invitation('Add_Revision', target_paper=original))
-        client.post_invitation(
-            invitations.enable_invitation('Withdraw_Submission', target_paper=original))
+            invitations.enable_invitation('Paper_Revision', target_paper=note))
 
     # Create questionnaire response copies for only AC and PC's viewing
     client.post_invitation(iclr19.view_questionnaire_response_invi)
