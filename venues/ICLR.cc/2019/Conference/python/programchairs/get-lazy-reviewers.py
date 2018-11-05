@@ -29,7 +29,7 @@ def get_data(invitation):
     CONF = 'ICLR.cc/2019/Conference'
     paper_inv = CONF + '/Paper.*'
     anon_reviewers = tools.iterget_groups(client, regex = paper_inv+'/AnonReviewer.*')
-    current_reviewers = tools.iterget_groups(client, regex = paper_inv+'/Reviewers')
+    current_reviewers = tools.iterget_groups(client, regex = paper_inv+'/Reviewers$')
     submissions = client.get_notes(invitation = CONF + '/-/Blind_Submission')
 
     notes = tools.iterget_notes(client, invitation= CONF + '/-/Paper.*/' + invitation)
@@ -75,10 +75,10 @@ def get_data(invitation):
 
 ## Main ##
 invitation = 'Official_Review'
-# reviewers_by_paper[paper_number][reviewer_tilde_id] = review note id
+# Format: reviewers_by_paper[paper_number][reviewer_tilde_id] = review note id
 reviewers_by_paper = get_data(invitation)
 
-# late_reviewers[paper_number][reviewer_tilde_id] = reviewer_email
+# Format: late_reviewers[paper_number][reviewer_tilde_id] = reviewer_email
 late_reviewers = {}
 print ("Collecting users that did not submit their {}".format(invitation))
 
@@ -105,7 +105,7 @@ for paper_number in reviewers_by_paper:
 
 
 # associate area chairs with paper number
-area_chairs_group = client.get_groups(id='ICLR.cc/2019/Conference/Paper.*/Area_Chair')
+area_chairs_group = tools.iterget_groups(client, regex='ICLR.cc/2019/Conference/Paper[0-9]+/Area_Chairs$')
 # area_chairs[paper_num] = area chair id
 area_chairs = {}
 for ac in area_chairs_group:
@@ -113,12 +113,37 @@ for ac in area_chairs_group:
     if ac.members:
         area_chairs[paper_number] = ac.members[0]
 
-##print results
+def get_email(profile_id):
+    print (profile_id)
+    prof = tools.get_profile(client, profile_id)
+    email = None
+    if prof :
+        if (prof.content.get('preferredEmail', None) != None):
+            email = prof.content.get('preferredEmail')
+        elif (prof.content.get('emailsConfirmed', None) != None):
+            email = prof.content.get('emailsConfirmed')[0]
+        else:
+            email = prof.content.get('emails')[0]
+    else : 
+        email = "No email found"
+    return email
 
 print ("All late reviewers by paper")
-print ("Paper Number, AC, Reviewers")
+print ("Paper Number, AC, AC Email, Reviewers, Reviewer Emails")
 for paper_number in sorted(late_reviewers):
-    print ("{0}, {1}, {2}".format(paper_number, area_chairs.get(paper_number, ''),','.join(late_reviewers[paper_number])))
+    ac = area_chairs.get(paper_number, '')
+    reviewer_emails = []
+    for rev in late_reviewers[paper_number]:
+        reviewer_emails.append(get_email(rev))
+
+    print ("{0}, {1}, {2}, {3}, {4}".format(
+        paper_number, 
+        str(ac),
+        get_email(ac),
+        '(' + ','.join(late_reviewers[paper_number]) + ')',
+        '(' + str (','.join(reviewer_emails)) + ')'
+        )
+    )
 
 print ("")
 print ("All late reviewers {0}".format(len(reviewer_set)))
