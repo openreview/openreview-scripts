@@ -30,7 +30,7 @@ def get_data(invitation):
     paper_inv = CONF + '/Paper.*'
     anon_reviewers = tools.iterget_groups(client, regex = paper_inv+'/AnonReviewer.*')
     current_reviewers = tools.iterget_groups(client, regex = paper_inv+'/Reviewers$')
-    submissions = client.get_notes(invitation = CONF + '/-/Blind_Submission')
+    submissions = tools.iterget_notes(client, invitation = CONF + '/-/Blind_Submission')
 
     notes = tools.iterget_notes(client, invitation= CONF + '/-/Paper.*/' + invitation)
 
@@ -114,7 +114,6 @@ for ac in area_chairs_group:
         area_chairs[paper_number] = ac.members[0]
 
 def get_email(profile_id):
-    print (profile_id)
     prof = tools.get_profile(client, profile_id)
     email = None
     if prof :
@@ -129,7 +128,7 @@ def get_email(profile_id):
     return email
 
 print ("All late reviewers by paper")
-print ("Paper Number, AC, AC Email, Reviewers, Reviewer Emails")
+print ("Paper Number, AC, AC Email, Late Reviewers, Reviewer Emails")
 for paper_number in sorted(late_reviewers):
     ac = area_chairs.get(paper_number, '')
     reviewer_emails = []
@@ -144,22 +143,3 @@ for paper_number in sorted(late_reviewers):
         '(' + str (','.join(reviewer_emails)) + ')'
         )
     )
-
-print ("")
-print ("All late reviewers {0}".format(len(reviewer_set)))
-print (','.join(reviewer_set))
-print ("")
-print ("%s: %s missing" % (invitation,total_missing))
-print ("%s: %s complete" % (invitation,total_complete))
-print ("")
-print ("Papers with less than three reviews")
-print ("Paper Number, AC, Late Reviewers")
-late_required_reviews = 0
-for paper_number in sorted(complete_per_paper):
-    if complete_per_paper[paper_number] < num_required_reviewers:
-        print ("{0}, {1}, {2}".format(paper_number, area_chairs.get(paper_number, ''),','.join(late_reviewers[paper_number])))
-        late_required_reviews += 1
-print ("")
-print ("%s: %s papers missing reviews" % (invitation, late_required_reviews))
-
-
