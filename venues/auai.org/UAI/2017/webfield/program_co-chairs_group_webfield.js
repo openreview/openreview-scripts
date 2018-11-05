@@ -1,64 +1,60 @@
-
-// Assumes the following pattern for meta reviews and official reviews:
-// CONFERENCE + '/-/Paper' + number + '/Meta_Review'
-// CONFERENCE + '/-/Paper' + number + '/Official_Review'
-
-// Constants
-var HEADER_TEXT = 'Program Chairs Console';
-
-var CONFERENCE = 'ICLR.cc/2019/Conference';
-var INVITATION = CONFERENCE + '/-/Submission';
-var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
-var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
-var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
-var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official_Review';
-var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
-
-var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chairs';
-
-var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
-
-var INSTRUCTIONS = '<p class="dark">This page provides information and status \
-  updates for ICLR 2019 Program Chairs. It will be regularly updated as the conference \
-  progresses, so please check back frequently for news and other updates.</p>';
+var CONFERENCE = 'auai.org/UAI/2017';
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {
+  var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/Area_Chair/;
   return _.map(
-    _.filter(groups, function(g) { return AREACHAIR_REGEX.test(g.id); }),
-    function(fg) { return parseInt(fg.id.match(AREACHAIR_REGEX)[1], 10); }
+    _.filter(groups, function(g) { return re.test(g.id); }),
+    function(fg) { return parseInt(fg.id.match(re)[1], 10); }
   );
 };
 
 var getBlindedNotes = function() {
-  return Webfield.getAll('/notes', {
-    invitation: BLIND_INVITATION, noDetails: true
-  });
+  return $.getJSON('notes', { invitation: CONFERENCE + '/-/blind-submission' })
+    .then(function(result) {
+      return result.notes;
+    });
+};
+
+var getAllReviews = function(callback) {
+  var invitationId = CONFERENCE + '/-/Paper.*/Submit/Review';
+  var allNotes = [];
+
+  function getPromise(offset, limit) {
+    return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Submit/Review', offset: offset, limit: limit })
+    .then(function(result) {
+      allNotes = _.union(allNotes, result.notes);
+      if (result.notes.length == limit) {
+        return getPromise(offset + limit, limit);
+      } else {
+        callback(allNotes);
+      }
+    });
+  };
+
+  getPromise(0, 2000);
+
 };
 
 var getOfficialReviews = function(noteNumbers) {
-  if (!noteNumbers.length) {
-    return $.Deferred().resolve({});
-  }
+
+  var dfd = $.Deferred();
 
   var noteMap = buildNoteMap(noteNumbers);
 
-  return Webfield.getAll('/notes', {
-    invitation: OFFICIAL_REVIEW_INVITATION, noDetails: true
-  })
-  .then(function(notes) {
+  getAllReviews(function(notes) {
+    var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
     var ratingExp = /^(\d+): .*/;
 
-    _.forEach(notes, function(n) {
+    notes.forEach(function(n) {
+      var matches = n.signatures[0].match(re);
       var num, index, ratingMatch;
-      var matches = n.signatures[0].match(ANONREVIEWER_REGEX);
       if (matches) {
         num = parseInt(matches[1], 10);
         index = parseInt(matches[2], 10);
 
         if (num in noteMap) {
+          // Need to parse rating and confidence strings into ints
           ratingMatch = n.content.rating.match(ratingExp);
           n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
           confidenceMatch = n.content.confidence.match(ratingExp);
@@ -68,20 +64,23 @@ var getOfficialReviews = function(noteNumbers) {
         }
       }
     });
+    dfd.resolve(noteMap);
 
-    return noteMap;
   });
+
+  return dfd.promise();
+
 };
 
 var getReviewerGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var reviewerMap = {};
 
-  return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
-    .then(function(groups) {
-      var re = ANONREVIEWER_REGEX;
+  return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/AnonReviewer.*' })
+    .then(function(result) {
+      var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/AnonReviewer(\d+)/;
 
-      _.forEach(groups, function(g) {
+      result.groups.forEach(function(g) {
         var matches = g.id.match(re);
         var num, index;
         if (matches) {
@@ -118,11 +117,11 @@ var getAreaChairGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var areaChairMap = {};
 
-  return Webfield.getAll('/groups', { id: AREACHAIR_WILDCARD })
-    .then(function(groups) {
-      var re = AREACHAIR_REGEX;
+  return $.getJSON('groups', { regex: 'auai.org/UAI/2017/Paper.*/Area_Chair' })
+    .then(function(result) {
+      var re = /^auai\.org\/UAI\/2017\/Paper(\d+)\/Area_Chair/;
 
-      _.forEach(groups, function(g) {
+      result.groups.forEach(function(g) {
         var matches = g.id.match(re);
         var num;
         if (matches) {
@@ -162,7 +161,7 @@ var getUserProfiles = function(userIds) {
 
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferredEmail || profile.content.emails[0];
+      profile.email = profile.content.preferred_email;
       profileMap[profile.id] = profile;
     })
 
@@ -174,53 +173,56 @@ var getUserProfiles = function(userIds) {
   });
 };
 
-var findProfile = function(profiles, id) {
-  var profile = profiles[id];
-  if (profile) {
-    return profile;
-  } else {
-    return {
-      id: id,
-      name: '',
-      email: id
-    }
-  }
-}
-
 var getMetaReviews = function() {
-  return Webfield.getAll('/notes', {
-    invitation: METAREVIEW_INVITATION, noDetails: true
-  });
+  return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Meta/Review' })
+    .then(function(result) {
+      return result.notes;
+    }).fail(function(error) {
+      displayError();
+      return null;
+    });
 };
 
 
 // Render functions
-var displayHeader = function() {
-  Webfield.ui.setup('#group-container', CONFERENCE);
-  Webfield.ui.header(HEADER_TEXT, INSTRUCTIONS);
+var displayHeader = function(headerP) {
+  var $panel = $('#group-container');
+  $panel.hide('fast', function() {
+    $panel.empty().append(
+      '<div id="header" class="panel">' +
+        '<h1>UAI Program Co-Chairs Console</h1>' +
+      '</div>' +
+      '<div id="notes"><div class="tabs-container"></div></div>'
+    );
 
-  var loadingMessage = '<p class="empty-message">Loading...</p>';
-  Webfield.ui.tabPanel([
-    {
-      heading: 'Paper Status',
-      id: 'paper-status',
-      content: loadingMessage,
-      extraClasses: 'horizontal-scroll',
-      active: true
-    },
-    {
-      heading: 'Area Chair Status',
-      id: 'areachair-status',
-      content: loadingMessage,
-      extraClasses: 'horizontal-scroll'
-    },
-    {
-      heading: 'Reviewer Status',
-      id: 'reviewer-status',
-      content: loadingMessage,
-      extraClasses: 'horizontal-scroll'
-    }
-  ]);
+    var loadingMessage = '<p class="empty-message">Loading...</p>';
+
+    var tabsData = {
+      sections: [
+        {
+          heading: 'Paper Status',
+          id: 'paper-status',
+          content: loadingMessage,
+          active: true
+        },
+        {
+          heading: 'Area Chair Status',
+          id: 'areachair-status',
+          content: loadingMessage,
+        },
+        {
+          heading: 'Reviewer Status',
+          id: 'reviewer-status',
+          content: loadingMessage,
+        }
+      ]
+    };
+    $panel.find('.tabs-container').append(Handlebars.templates['components/tabs'](tabsData));
+
+    $panel.show('fast', function() {
+      headerP.resolve(true);
+    });
+  });
 };
 
 var displaySortPanel = function(container, sortOptions, sortResults) {
@@ -228,8 +230,8 @@ var displaySortPanel = function(container, sortOptions, sortResults) {
   var allOptions = _.map(_.keys(sortOptions), function(option) {
     return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
   });
-  var sortBarHTML = '<form class="form-inline search-form" role="search">' +
-    '<strong>Sort By:</strong>' +
+  var sortBarHTML = '<form class="form-inline search-form" role="search" style="margin: -10px 0 -1px -16px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; padding: 1rem;">' +
+    '<strong>Sort: </strong>' +
     '<div class="form-group search-content" style="margin-right: 0;">' +
       '<select id="form-sort" class="form-control" style="width: 330px">' + allOptions.join('') + '</select>' +
     '</div>' +
@@ -251,21 +253,20 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   var rowData = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number];
     for (var revNumber in revIds) {
-      var id = revIds[revNumber];
-      revIds[revNumber] = findProfile(profiles, id);
-
+      var profile = profiles[revIds[revNumber]];
+      revIds[revNumber] = profile;
     }
 
     var areachairId = areachairIds[note.number][0];
     var areachairProfile = {}
 
     if (areachairId) {
-      areachairProfile = findProfile(profiles, areachairId);
+      areachairProfile = profiles[areachairId];
     } else {
-      areachairProfile.name = view.prettyId(CONFERENCE + '/-/Paper' + note.number + '/Area_Chair');
+      areachairProfile.name = view.prettyId('auai.org/UAI/2017/-/Paper' + note.number + '/Area_Chair');
       areachairProfile.email = '-';
     }
-    var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
+    var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + note.number + '/Meta/Review']);
     return buildPaperTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
   });
 
@@ -276,14 +277,13 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   var order = 'desc';
   var sortOptions = {
     Paper_Number: function(row) { return row.note.number; },
-    Paper_Title: function(row) { return _.toLower(_.trim(row.note.content.title)); },
+    Paper_Title: function(row) { return row.note.content.title; },
     Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
     Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
     Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
     Average_Confidence: function(row) { return toNumber(row.reviewProgressData.averageConfidence); },
     Max_Confidence: function(row) { return toNumber(row.reviewProgressData.maxConfidence); },
     Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
-    Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
     Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
     Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
     Meta_Review_Missing: function(row) { return row.areachairProgressData.numMetaReview; }
@@ -300,6 +300,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   }
 
   var renderTable = function(container, data) {
+
     var rowData = _.map(data, function(d) {
       var number = '<strong class="note-number">' + d.note.number + '</strong>';
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
@@ -314,17 +315,12 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
       extraClasses: 'console-table paper-table'
     });
 
-    $(container).find('.table-container').remove();
+    $(container).find('.table-responsive').remove();
     $(container).append(tableHTML);
   }
 
-  if (rowData.length) {
-    displaySortPanel(container, sortOptions, sortResults);
-    renderTable(container, rowData);
-  } else {
-    $(container).empty().append('<p class="empty-message">No papers have been submitted. ' +
-      'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
-  }
+  displaySortPanel(container, sortOptions, sortResults);
+  renderTable(container, rowData);
 
 };
 
@@ -343,7 +339,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
       if (note) {
         var reviewers = reviewerIds[number];
         var reviews = completedReviews[number];
-        var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + number + '/Meta_Review']);
+        var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + number + '/Meta/Review']);
 
         papers.push({
           note: note,
@@ -355,7 +351,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
 
     });
 
-    var areaChairProfile = findProfile(profiles, areaChair);
+    var areaChairProfile = profiles[areaChair];
     rowData.push(buildSPCTableRow(index, areaChairProfile, papers));
     index++;
   });
@@ -363,7 +359,6 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
   var order = 'asc';
   var sortOptions = {
     Area_Chair: function(row) { return row.summary.name; },
-    Papers_Assigned: function(row) { return row.reviewProgressData.numPapers; },
     Papers_with_Completed_Review_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedReviews; },
     Papers_with_Completed_Review: function(row) { return row.reviewProgressData.numCompletedReviews; },
     Papers_with_Completed_MetaReview_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedMetaReviews; },
@@ -397,7 +392,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
       extraClasses: 'console-table'
     });
 
-    $(container).find('.table-container').remove();
+    $(container).find('.table-responsive').remove();
     $(container).append(tableHTML);
   }
 
@@ -408,10 +403,10 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
 };
 
 var displayPCStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerByNote, reviewerById, container, options) {
+
   var rowData = [];
   var index = 1;
   var sortedReviewerIds = _.sortBy(_.keys(reviewerById));
-
   _.forEach(sortedReviewerIds, function(reviewer) {
     var numbers = reviewerById[reviewer];
 
@@ -433,7 +428,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
 
         var reviews = completedReviews[number];
         var review = reviews[reviewerNum];
-        var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + number + '/Meta_Review']);
+        var metaReview = _.find(metaReviews, ['invitation', 'auai.org/UAI/2017/-/Paper' + number + '/Meta/Review']);
 
         papers.push({
           note: note,
@@ -446,7 +441,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
 
     });
 
-    var reviewerProfile = findProfile(profiles, reviewer);
+    var reviewerProfile = profiles[reviewer];
     rowData.push(buildPCTableRow(index, reviewerProfile, papers));
     index++;
   });
@@ -454,7 +449,6 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
   var order = 'asc';
   var sortOptions = {
     Reviewer: function(row) { return row.summary.name; },
-    Papers_Assigned: function(row) { return row.reviewProgressData.numPapers; },
     Papers_with_Reviews_Missing: function(row) { return row.reviewProgressData.numPapers - row.reviewProgressData.numCompletedReviews; },
     Papers_with_Reviews_Submitted: function(row) { return row.reviewProgressData.numCompletedReviews; },
     Papers_with_Completed_Reviews_Missing: function(row) { return row.reviewStatusData.numPapers - row.reviewStatusData.numCompletedReviews; },
@@ -487,7 +481,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
       extraClasses: 'console-table'
     });
 
-    $(container).find('.table-container').remove();
+    $(container).find('.table-responsive').remove();
     $(container).append(tableHTML);
   }
 
@@ -504,6 +498,7 @@ var displayError = function(message) {
 
 // Helper functions
 var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaReview, areachairProfile) {
+
   // Build Note Summary Cell
   note.content.authors = null;  // Don't display 'Blinded Authors'
 
@@ -530,7 +525,7 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
         forumUrl: '/forum?' + $.param({
           id: note.forum,
           noteId: note.id,
-          invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official_Review'
+          invitationId: CONFERENCE + '/-/Paper' + note.number + '/Submit/Review'
         })
       });
     }
@@ -642,6 +637,7 @@ var buildSPCTableRow = function(index, areaChair, papers) {
 
 };
 
+
 var buildPCTableRow = function(index, reviewer, papers) {
 
   var summary = {
@@ -716,7 +712,8 @@ var buildNoteMap = function(noteNumbers) {
 
 
 // Kick the whole thing off
-displayHeader();
+var headerLoaded = $.Deferred();
+displayHeader(headerLoaded);
 
 $.ajaxSetup({
   contentType: 'application/json; charset=utf-8'
@@ -735,15 +732,17 @@ controller.addHandler('areachairs', {
         getOfficialReviews(noteNumbers),
         getMetaReviews(),
         getReviewerGroups(noteNumbers),
-        getAreaChairGroups(noteNumbers)
+        getAreaChairGroups(noteNumbers),
+        headerLoaded
       );
     })
-    .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups) {
-      var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj) {
+    .then(function(blindedNotes, officialReviews, metaReviews, reviewerGroups, areaChairGroups, loaded) {
+
+      var uniqueReviewerIds = _.uniq(_.reduce(reviewerGroups.byNotes, function(result, idsObj, noteNum) {
         return result.concat(_.values(idsObj));
       }, []));
 
-      var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj) {
+      var uniqueAreaChairIds = _.uniq(_.reduce(areaChairGroups.byNotes, function(result, idsObj, noteNum) {
         return result.concat(_.values(idsObj));
       }, []));
 
@@ -754,8 +753,6 @@ controller.addHandler('areachairs', {
         displayPaperStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
         displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
         displayPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
-
-        Webfield.ui.done();
       })
     })
     .fail(function(error) {
@@ -775,8 +772,8 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var userId = $(this).data('userId');
   var forumUrl = $(this).data('forumUrl');
   var postData = {
-    subject: 'ICLR 2019 Reminder',
-    message: 'This is a reminder to please submit your official reviews for ICLR 2019. ' +
+    subject: 'UAI 2017 Reminder',
+    message: 'This is a reminder to please submit your official reviews for UAI 2017. ' +
       'Click on the link below to go to the review page:\n\n' + location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };
@@ -790,14 +787,7 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   return false;
 });
 
-$('#group-container').on('click', 'a.collapse-btn', function(e) {
-  $(this).next().slideToggle();
-  if ($(this).text() === 'Show reviewers') {
-    $(this).text('Hide reviewers');
-  } else {
-    $(this).text('Show reviewers');
-  }
-  return false;
-});
-
-OpenBanner.venueHomepageLink(CONFERENCE);
+OpenBanner.breadcrumbs([
+  { link: '/', text: 'Venues' },
+  { link: '/group?id=' + CONFERENCE, text: view.prettyId(CONFERENCE) }
+]);

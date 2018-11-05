@@ -9,7 +9,18 @@ var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
 var SEARCH_KEYWORDS = [
-'adversarial', 'adversarial attacks', 'adversarial examples', 'adversarial learning', 'adversarial training', 'attention', 'classification', 'cnn', 'computer vision', 'convolutional neural network', 'convolutional neural networks', 'deep generative models', 'deep learning', 'deep neural networks', 'deep reinforcement learning', 'domain adaptation', 'exploration', 'few-shot learning', 'gan', 'gans', 'generalization', 'generative adversarial network', 'generative adversarial networks', 'generative models', 'graph neural networks', 'imitation learning', 'information theory', 'interpretability', 'machine learning', 'machine translation', 'meta-learning', 'model compression', 'natural language processing', 'neural network', 'neural networks', 'non-convex optimization', 'optimization', 'quantization', 'recurrent neural networks', 'regularization', 'reinforcement learning', 'representation learning', 'robustness', 'semi-supervised learning', 'sgd', 'stochastic gradient descent', 'theory', 'transfer learning', 'unsupervised learning', 'vae', 'variational autoencoder', 'variational inference'
+  'adversarial', 'adversarial attacks', 'adversarial examples', 'adversarial learning',
+  'adversarial training', 'attention', 'classification', 'cnn', 'computer vision',
+  'convolutional neural network', 'convolutional neural networks', 'deep generative models',
+  'deep learning', 'deep neural networks', 'deep reinforcement learning', 'domain adaptation',
+  'exploration', 'few-shot learning', 'gan', 'gans', 'generalization', 'generative adversarial network',
+  'generative adversarial networks', 'generative models', 'graph neural networks',
+  'imitation learning', 'information theory', 'interpretability', 'machine learning',
+  'machine translation', 'meta-learning', 'model compression', 'natural language processing',
+  'neural network', 'neural networks', 'non-convex optimization', 'optimization', 'quantization',
+  'recurrent neural networks', 'regularization', 'reinforcement learning', 'representation learning',
+  'robustness', 'semi-supervised learning', 'sgd', 'stochastic gradient descent', 'theory',
+  'transfer learning', 'unsupervised learning', 'vae', 'variational autoencoder', 'variational inference'
 ];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
@@ -36,6 +47,8 @@ function main() {
   Webfield.ui.spinner('#notes', { inline: true });
 
   load().then(renderContent);
+
+  OpenBanner.venueHomepageLink(CONFERENCE_ID);
 }
 
 
