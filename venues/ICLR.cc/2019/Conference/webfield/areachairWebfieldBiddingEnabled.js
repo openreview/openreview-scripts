@@ -674,7 +674,7 @@ var registerEventHandlers = function() {
 var postReviewerEmails = function(postData) {
   postData.message = postData.message.replace(
     '[[SUBMIT_REVIEW_LINK]]',
-    '<a href="' + postData.forumUrl + '" title="Submit your review">'+ postData.forumUrl +'</a>'
+    postData.forumUrl
   );
 
   return Webfield.post('/mail', postData)

@@ -23,17 +23,10 @@ var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p>';
 
-var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
+var SCHEDULE_HTML = '<h4>Rebuttal Phase</h4>\
   <p>\
     <ul>\
-      <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li>\
-    </ul>\
-  </p>\
-  <br>\
-  <h4>Bidding Phase</h4>\
-  <p>\
-    <ul>\
-      <li>Please note that the bidding phase is over now.</li>\
+      <li>Please note that the rebuttal phase is going on from Nov 5 2018 to Nov 21 2018.</li>\
     </ul>\
   </p>';
 
@@ -642,8 +635,8 @@ var registerEventHandlers = function() {
       forumUrl: forumUrl,
       defaultSubject: SHORT_PHRASE + ' Reminder',
       defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
-        'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
-        '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
+      'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
+      '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
     });
     $('#message-reviewers-modal').remove();
     $('body').append(modalHtml);
@@ -669,7 +662,7 @@ var registerEventHandlers = function() {
 var postReviewerEmails = function(postData) {
   postData.message = postData.message.replace(
     '[[SUBMIT_REVIEW_LINK]]',
-    '<a href="' + postData.forumUrl + '" title="Submit your review">'+ postData.forumUrl +'</a>'
+    postData.forumUrl
   );
 
   return Webfield.post('/mail', postData)
