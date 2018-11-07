@@ -534,7 +534,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
       ratings.push(reviewObj.rating);
       confidences.push(reviewObj.confidence);
     } else {
-      var forumUrl = '/forum?' + $.param({
+      var forumUrl = 'https://openreview.net/forum?' + $.param({
         id: note.forum,
         noteId: note.id,
         invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official_Review'
