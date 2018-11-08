@@ -20,16 +20,10 @@ function(){
     ]).then(function(result) {
       var forumNote = result[0].notes[0];
       var replytoNote = note.replyto ? result[1].notes[0] : null;
-      var reviewer_group = CONFERENCE_ID+'/Paper'+forumNote.number+'/Reviewers';
       var author_group = CONFERENCE_ID+'/Paper'+forumNote.number+'/Authors';
-      var send_to = [PROG_CHAIRS, reviewer_group, author_group]
-      if (replytoNote) {
-        // send to person who wrote the note that is being commented on
-        send_to = replytoNote.signatures;
-      }
 
       var response_mail = {
-        "groups": send_to,
+        "groups": [PROG_CHAIRS, author_group],
         "subject": "Official comment posted to paper: \"" + forumNote.content.title + "\"",
         "message": 'Your entry has received a response.\n\nComment = '+note.content.comment+'\n\nTo view the comment, click here: ' + baseUrl+'/forum?id=' + note.forum +'&noteId='+note.id
       };

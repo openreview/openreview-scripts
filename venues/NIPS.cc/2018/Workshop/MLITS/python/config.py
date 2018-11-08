@@ -23,7 +23,7 @@ REVIEWERS = CONFERENCE_ID + '/Reviewers'
 
 # GMT is the same as UTC
 SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=12, hour=23, minute=59)
-#REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=10, day=placeholder, hour=23, minute=59)
+REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=11, day=18, hour=23, minute=59)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')
 
 
@@ -43,7 +43,6 @@ Example:
 """
 
 SUBMISSION = CONFERENCE_ID + '/-/Submission'
-BLIND_SUBMISSION = CONFERENCE_ID + '/-/Blind_Submission'
 COMMENT = CONFERENCE_ID + '/-/Comment'
 
 JS_CONSTANTS = {
@@ -115,14 +114,12 @@ comment_params = {
     'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js')
 }
 
-'''
 review_params = {
     'readers': ['everyone'],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
-    'process': os.path.join(os.path.dirname(__file__), '../process/officialReviewProcess.js'),
     'duedate': REVIEW_TIMESTAMP
-}'''
+}
 
 
 """
