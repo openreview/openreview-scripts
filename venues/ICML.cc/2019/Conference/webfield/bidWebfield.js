@@ -17,7 +17,7 @@ function main() {
 
   Webfield.ui.spinner('#notes');
 
-  load().then(renderContent);
+  load().then(renderContent).then(Webfield.ui.done);
 }
 
 

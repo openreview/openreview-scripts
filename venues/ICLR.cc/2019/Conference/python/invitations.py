@@ -57,7 +57,7 @@ with open(os.path.abspath('../process/officialReviewProcess.js')) as f:
     official_review_template['process'] = f.read()
 
 revise_review_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/<reviewer_id>/Revise/Review',
+    'id': iclr19.CONFERENCE_ID + '/-/<paper_number>/Official_Review/<reviewer_id>/Revision',
     'readers': ['everyone'],
     'writers': [iclr19.CONFERENCE_ID],
     'invitees': [], # this needs to be filled in manually on a per-reviewer basis
@@ -146,15 +146,15 @@ with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.
     meta_review_template['process'] = f.read()
 
 add_revision_template = {
-    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Add_Revision',
+    'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Revision',
     'readers': ['everyone'],
     'writers': [iclr19.CONFERENCE_ID],
     'invitees': [iclr19.CONFERENCE_ID + '/Paper<number>/Authors'],
     'signatures': [iclr19.CONFERENCE_ID],
     'multiReply': None,
     'reply': {
-        'referent': '<forum>',
-        'forum': '<forum>',
+        'referent': '<original>',
+        'forum': '<original>',
         'content': iclr19.submission_inv.reply['content'],
         'signatures': iclr19.submission_inv.reply['signatures'],
         'writers': iclr19.submission_inv.reply['writers'],
@@ -172,7 +172,7 @@ official_comment_template = {
         iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
         iclr19.PROGRAM_CHAIRS_ID
     ],
-    'noninvitees': [iclr19.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
+    'noninvitees': [],
     'signatures': [iclr19.CONFERENCE_ID],
     'multiReply': True,
     'reply': {
@@ -301,11 +301,12 @@ with open(os.path.abspath('../process/withdrawProcess.js')) as f:
 invitation_templates = {
     'Add_Bid': iclr19.add_bid.to_json(),
     'Official_Comment': official_comment_template,
-    'Add_Revision': add_revision_template,
+    'Paper_Revision': add_revision_template,
     'Official_Review': official_review_template,
     'Meta_Review': meta_review_template,
     'Public_Comment': public_comment_template,
-    'Withdraw_Submission': withdraw_submission_template
+    'Withdraw_Submission': withdraw_submission_template,
+    'Review_Revision' : revise_review_template
 }
 
 current_timestamp = lambda: int(round(time.time() * 1000))

@@ -27,36 +27,49 @@ if __name__ == '__main__':
 
     official_review_invs = openreview.tools.iterget(
         client.get_invitations,
-        regex='ICLR.cc/2019/Conference/-/Paper.*/Official_Review',
+        regex='ICLR.cc/2019/Conference/-/Paper.*/Official_Review$',
         details='repliedNotes,replytoNote')
 
     for review_inv in official_review_invs:
         review_inv.reply['readers']['values'] = ['everyone']
+        review_inv.reply['writers'] = {
+            "description": "Users that may modify this record.",
+            "values": [
+                iclr19.CONFERENCE_ID
+                ]
+        }
         client.post_invitation(review_inv)
         if review_inv.details and 'repliedNotes' in review_inv.details:
             official_reviews = [
                 openreview.Note.from_json(r) \
                 for r in review_inv.details['repliedNotes']]
 
-            paper = openreview.Note.from_json(review_inv.details['replytoNote'])
-            for review in official_reviews:
-                review.readers = ['everyone']
-                review.writers = [iclr19.CONFERENCE_ID]
-                review = client.post_note(review)
+            if (review_inv.details.get('replytoNote')):
+                paper = openreview.Note.from_json(review_inv.details.get('replytoNote'))
+                paper_number = paper.number
+                for review in official_reviews:
+                    review.readers = ['everyone']
+                    review.writers = [iclr19.CONFERENCE_ID]
+                    review = client.post_note(review)
 
-                reviewer_id = review.signatures[0].split('/')[4]
+                    reviewer_id = review.signatures[0].split('/')[4]
 
-                review_revision_inv = invitations.enable_invitation(
-                    'Revise_Review', target_paper=paper)
-                review_revision_inv.id = review_revision_inv.id.replace('<reviewer_id>', reviewer_id)
-                review_revision_inv.reply['referent'] = review.id
-                review_revision_inv.invitees = review.signatures
+                    review_revision_inv = invitations.enable_invitation(
+                        'Review_Revision', target_paper=review)
+                    
+                    review_revision_inv.id = review_revision_inv.id.replace('<paper_number>', "Paper" + str(paper_number))
+                    review_revision_inv.id = review_revision_inv.id.replace('<reviewer_id>', reviewer_id)
 
-                client.post_invitation(review_revision_inv)
+                    review_revision_inv.reply['referent'] = review.id
+                    review_revision_inv.reply['signatures'] = {
+                        'description': 'How your identity will be displayed with the above content.',
+                        'values-regex': iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX.replace('<number>',str(paper_number))
+                    }
+                    review_revision_inv.invitees = review.signatures
 
-    original_notes = openreview.tools.iterget_notes(client, invitation=iclr19.SUBMISSION_ID)
-    for original in original_notes:
+                    client.post_invitation(review_revision_inv)
+            
+    blind_notes = openreview.tools.iterget_notes(client, invitation=iclr19.BLIND_SUBMISSION_ID)
+    for note in blind_notes:
         client.post_invitation(
-            invitations.enable_invitation('Add_Revision', target_paper=original))
-        client.post_invitation(
-            invitations.enable_invitation('Withdraw_Submission', target_paper=original))
+            invitations.enable_invitation('Paper_Revision', target_paper=note))

@@ -534,7 +534,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
       ratings.push(reviewObj.rating);
       confidences.push(reviewObj.confidence);
     } else {
-      var forumUrl = '/forum?' + $.param({
+      var forumUrl = 'https://openreview.net/forum?' + $.param({
         id: note.forum,
         noteId: note.id,
         invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official_Review'
@@ -545,7 +545,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
         name: reviewer.name,
         email: reviewer.email,
         forumUrl: forumUrl,
-        lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString('en-GB') : lastReminderSent
+        lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString() : lastReminderSent
       };
     }
   }
@@ -610,8 +610,9 @@ var registerEventHandlers = function() {
   });
 
   $('#group-container').on('click', 'a.send-reminder-link', function(e) {
-    var userId = $(this).data('userId');
-    var forumUrl = $(this).data('forumUrl');
+    var $link = $(this);
+    var userId = $link.data('userId');
+    var forumUrl = $link.data('forumUrl');
 
     var sendReviewerReminderEmails = function(e) {
       var postData = {
@@ -622,8 +623,10 @@ var registerEventHandlers = function() {
       };
 
       $('#message-reviewers-modal').modal('hide');
-      promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
+      // promptMessage('Your reminder email has been sent to ' + view.prettyId(userId));
       postReviewerEmails(postData);
+      $link.after(' (Last sent: ' + (new Date()).toLocaleDateString());
+
       return false;
     };
 
@@ -660,7 +663,7 @@ var registerEventHandlers = function() {
 var postReviewerEmails = function(postData) {
   postData.message = postData.message.replace(
     '[[SUBMIT_REVIEW_LINK]]',
-    '<a href="' + postData.forumUrl + '" title="Submit your review">'+ postData.forumUrl +'</a>'
+    postData.forumUrl
   );
 
   return Webfield.post('/mail', postData)
