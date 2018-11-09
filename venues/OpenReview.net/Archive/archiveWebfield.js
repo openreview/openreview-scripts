@@ -21,17 +21,27 @@ var HEADER = {
     The OpenReview paper-reviewer matching system uses the text from your submitted papers to match you with papers that are relevant to you.\
     Listed below are your authored papers that we currently have on record.\
     </p><p>\
-    There are two ways to add papers:\n\
+    If the papers below do not adequately represent your reviewing expertise, \n\
+    please upload a few papers that are representative of your work by clicking the \n\
+    "OpenReview Direct Upload" button below.\
+    </p><p>\
+    Your reviewing expertise for every submission is inferred from keywords \
+    in the text found in your recent publications, and is represented by an affinity score. \
+    For any given submission, your affinity score is based on the single publication \
+    that is most similar to the submission. \
+    While more publications are always better, breadth across your areas of expertise \
+    is the most important factor.\
+    </p><br>\
+    <strong>Important information:</strong>\
     <ul>\
-    <li><strong>Upload a paper</strong>: provide either a URL to a pdf file, <strong>or</strong> upload the PDF from your hard drive.</li>\
-    <li><strong>Enter a publications page</strong>: Go to your <strong><a href=/profile>profile</a></strong> and ensure that the \"homepage\" field contains the URL of a page containing PDF links to your publications. If you have already done this and your publications do not appear in the list below, please contact us at <a href="mailto:info@openreview.net">info@openreview.net</a></li>\
-    </ul><br>\
-    <em>A few important tips:</em>\
-    <ul>\
-    <li>Direct Uploads are posted privately by default.</li>\
-    <li>Direct Uploads <strong>only require a PDF or a URL to a PDF</strong>. The other fields are recommended, but optional.</li>\
+    <li>Once the paper-reviewer assignment process has begun, \
+    uploaded papers will become publicly visible in your profile. \
+    If you decide to upload an unpublished paper, it will be treated as a public preprint. \
+    <strong>Do not upload papers that you are not willing to share publicly.</strong></li>\
+    <li>In the "pdf" field, please provide either a URL to a pdf file, <strong>or</strong> upload the PDF from your hard drive.</li>\
+    <li>Please make sure that the original author order is preserved.</li>\
     <li>OpenReview will attempt to fill in missing fields from the contents of the PDF.</li>\
-    </ul>\
+    </ul><br>\
     </p> \
     <p><strong>Questions?</strong><br> \
     Please contact the OpenReview support team at \

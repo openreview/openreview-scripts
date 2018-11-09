@@ -22,26 +22,16 @@ direct_upload_invitation = openreview.Invitation(**{
         'replyto': None,
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values-regex': '~.*'
+            'values': ['everyone']
         },
         'signatures': {
             'description': 'Your authorized identity to be associated with the above content.',
             'values-regex': '~.*'
         },
         'writers': {
-            'values-regex': ['~.*']
+            'values-regex': '~.*'
         },
         'content': {
-            'venue': {
-                'description': 'Venue',
-                'order': 0,
-                'values-dropdown': [
-                    'ICLR 2019 Conference',
-                    'AKBC 2019 Conference',
-                    'OpenReview Anonymous Preprint Server'
-                ],
-                'required': False
-            },
             'pdf': {
                 'description': 'Choose one of the following: (1) Upload a PDF file. (2) Enter a URL to a PDF file.',
                 'order': 2,
@@ -55,16 +45,16 @@ direct_upload_invitation = openreview.Invitation(**{
                 'required': True
             },
             'authors': {
-                'description': 'Comma separated list of author names. Please provide real names; identities will be anonymized.',
+                'description': 'Comma separated list of author names.',
                 'order': 4,
                 'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-                'required': False
+                'required': True
             },
             'authorids': {
-                'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile. Please provide real emails; identities will be anonymized.',
+                'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match at least one of those listed in the author\'s profile.',
                 'order': 5,
                 'values-regex': "([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
-                'required': False
+                'required': True
             }
         }
 
