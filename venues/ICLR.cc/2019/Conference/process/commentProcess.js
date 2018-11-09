@@ -16,7 +16,6 @@ function(){
       return false;
     };
 
-
     Promise.all([
       forumNoteP,
       replytoNoteP
@@ -34,26 +33,26 @@ function(){
       var author_mail;
 
       var ac_mail = {
-        'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chair'],
-        'subject': 'Comment posted to a paper in your area. Title: ' + forumNote.content.title,
+        'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs'],
+        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper in your area. Paper Number: ' + forumNote.number + ', Paper Title: \"' + forumNote.content.title + '\"',
         'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var reviewer_mail = {
         'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Reviewers'],
-        'subject': 'Comment posted to a paper you are reviewing. Title: ' + forumNote.content.title,
+        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper you are reviewing. Paper Number: ' + forumNote.number + ', Paper Title: \"' + forumNote.content.title + '\"',
         'message': 'A comment was posted to a paper for which you are serving as reviewer.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var pc_mail = {
         'groups': [CONFERENCE_ID + '/Program_Chairs'],
-        'subject': 'A Program Chair-only comment was posted',
+        'subject': '[' + SHORT_PHRASE + '] A Program Chair-only comment was posted. Paper Number: ' + forumNote.number + ', Paper Title: \"' + forumNote.content.title + '\"',
         'message': 'A comment was posted to a paper with readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       author_mail = {
         "groups": forumNote.content.authorids,
-        "subject": "Your submission to " + SHORT_PHRASE + " has received a comment",
+        "subject": "[' + SHORT_PHRASE + '] Your submission to " + SHORT_PHRASE + " has received a comment. Paper Title: \"" + forumNote.content.title + '\"',
         "message": "Your submission to " + SHORT_PHRASE + " has received a comment.\n\nComment title: " + note.content.title + "\n\nComment: " + note.content.comment + "\n\nTo view the comment, click here: " + baseUrl + "/forum?id=" + note.forum + '&noteId=' + note.id
       };
 
@@ -87,4 +86,4 @@ function(){
     .catch(error => done(error));
 
     return true;
-  };
+};
