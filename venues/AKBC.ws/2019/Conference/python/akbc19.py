@@ -150,7 +150,7 @@ conference = openreview.Group.from_json({
     'writers': [CONFERENCE_ID],
     'signatures': ["OpenReview.net"],
     'signatories': [CONFERENCE_ID],
-    'members': []
+    'members': [PROGRAM_CHAIRS_ID]
 })
 with open(os.path.abspath('../webfield/homepage.js')) as f:
     conference.web = f.read()
@@ -245,7 +245,6 @@ submission_inv = invitations.Submission(
         'readers': {
             'values-copied': [
                 CONFERENCE_ID,
-                PROGRAM_CHAIRS_ID,
                 '{content.authorids}',
                 '{signatures}'
             ]
