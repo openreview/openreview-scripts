@@ -1,8 +1,8 @@
 function () {
   var or3client = lib.or3client;
 
-  var SHORT_PHRASE = 'MIDL 2019 Abstract';
-  var CONFERENCE_ID = 'MIDL.io/2019/Abstract';
+  var SHORT_PHRASE = 'MIDL 2019 Conference';
+  var CONFERENCE_ID = 'MIDL.io/2019/Full';
 
     // send author a confirmation email
   var author_mail = {

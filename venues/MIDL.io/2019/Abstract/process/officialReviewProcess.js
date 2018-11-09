@@ -1,6 +1,6 @@
 function(){
     var SHORT_PHRASE = 'MIDL 2018 Abstract';
-    var CONFERENCE_ID = 'MIDL.amsterdam/2018/Abstract';
+    var CONFERENCE_ID = 'MIDL.io/2018/Abstract';
     var or3client = lib.or3client;
 
     // send email to author of paper submission

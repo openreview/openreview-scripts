@@ -2,6 +2,8 @@
 
 import sys, os
 from openreview import tools
+sys.path.insert(0, "../../python")
+import config
 """
 GROUPS
 
@@ -17,11 +19,11 @@ Example:
 
 """
 
-CONFERENCE_ID = 'MIDL.amsterdam/2019/Abstract'
-PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
-AREA_CHAIRS = CONFERENCE_ID + '/Area_Chairs'
-REVIEWERS = CONFERENCE_ID + '/Reviewers'
-#
+TRACK_NAME = "/Abstract"
+TRACK_ID = config.CONFERENCE_ID+TRACK_NAME
+AREA_CHAIRS = TRACK_ID + '/Area_Chairs'
+REVIEWERS = TRACK_ID + '/Reviewers'
+
 SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2019, month=4, day= 15, hour=23, minute=59)
 # REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day= 30, hour=23, minute=59)
 WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/abstractWebfield.js')
@@ -41,8 +43,8 @@ Example:
     --> my.conference/2017/-/Submission
 """
 
-SUBMISSION = CONFERENCE_ID + '/-/Submission'
-COMMENT = CONFERENCE_ID + '/-/Comment'
+SUBMISSION = TRACK_ID + '/-/Submission'
+COMMENT = TRACK_ID + '/-/Comment'
 
 
 """
@@ -61,42 +63,35 @@ Example:
     The "restricted" configuration above will only allow the CONFERENCE_ID group to read, write, and sign
     for the newly created Group that uses it.
 """
-conference_params = {
-    'id': CONFERENCE_ID,
+track_params = {
+    'id': TRACK_ID,
     'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
+    'writers': [TRACK_ID],
     'signatures': [],
-    'signatories': [CONFERENCE_ID],
+    'signatories': [TRACK_ID],
     'members': []
 }
 
 group_params = {
-    'readers': [CONFERENCE_ID],
-    'writers': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID]
-}
-
-program_chairs_params = {
-    'readers': [CONFERENCE_ID, PROGRAM_CHAIRS],
-    'writers': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID, PROGRAM_CHAIRS],
-    'signatures': [CONFERENCE_ID],
+    'readers': [TRACK_ID],
+    'writers': [TRACK_ID],
+    'signatories': [TRACK_ID],
+    'signatures': [TRACK_ID]
 }
 
 submission_params = {
     'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
+    'writers': [TRACK_ID],
     'invitees': ['~'],
-    'signatures': [CONFERENCE_ID],
+    'signatures': [TRACK_ID],
     'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')
 }
 
 comment_params = {
     'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
+    'writers': [TRACK_ID],
     'invitees': ['~'],
-    'signatures': [CONFERENCE_ID],
+    'signatures': [TRACK_ID],
     'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js')
 }
 
@@ -141,5 +136,16 @@ submission_content = {
         'order': 10,
         'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
         'required': False
+    },
+    'conduct': {
+        'order': 11,
+        'description': config.code_of_conduct_text,
+        'value-checkbox': 'I have read and accept the code of conduct.',
+        'required': True
+    },
+    'remove': {
+        'order': 12,
+        'value-checkbox': 'Remove submission if paper is rejected.',
+        'required': True
     }
 }
