@@ -175,7 +175,7 @@ function renderContent(authorNotes,directUploadNotes) {
 
   // Show first available tab
   if (initialPageLoad) {
-    $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
+    $('.tabs-container ul.nav-tabs li a:visible').eq(0);
     initialPageLoad = false;
   }
 
