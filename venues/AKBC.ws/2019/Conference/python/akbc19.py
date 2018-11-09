@@ -245,6 +245,7 @@ submission_inv = invitations.Submission(
         'readers': {
             'values-copied': [
                 CONFERENCE_ID,
+                PROGRAM_CHAIRS_ID,
                 '{content.authorids}',
                 '{signatures}'
             ]
