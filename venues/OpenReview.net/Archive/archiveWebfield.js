@@ -64,7 +64,6 @@ var commentDisplayOptions = {
   showContents: false,
   showParent: true
 };
-var initialPageLoad = true;
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -172,12 +171,6 @@ function renderContent(authorNotes,directUploadNotes) {
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  // Show first available tab
-  if (initialPageLoad) {
-    $('.tabs-container ul.nav-tabs li a:visible').eq(0);
-    initialPageLoad = false;
-  }
 
   Webfield.ui.done();
 }
