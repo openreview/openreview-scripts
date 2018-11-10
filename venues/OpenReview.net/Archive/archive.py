@@ -16,7 +16,7 @@ direct_upload_invitation = openreview.Invitation(**{
     'writers': ['OpenReview.net'],
     'signatures': ['OpenReview.net'],
     'invitees': ['~'],
-    'duedate': 2539795181000,
+    'duedate': None,
     'reply': {
         'forum': None,
         'replyto': None,

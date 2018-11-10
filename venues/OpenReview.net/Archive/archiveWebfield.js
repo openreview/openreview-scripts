@@ -99,7 +99,8 @@ function load() {
 
     directUploadsP = Webfield.get('/notes', {
       invitation: DIRECT_UPLOAD_ID,
-      details: 'writable'
+      details: 'writable',
+      tauthor: true,
     }).then(function(result) {
       return result.notes;
     });
@@ -150,7 +151,7 @@ function renderConferenceTabs() {
 
 function renderContent(authorNotes,directUploadNotes) {
 
-  var allNotes = authorNotes.concat(directUploadNotes);
+  var allNotes = _.unionBy(authorNotes, directUploadNotes, function(note){return note.id;});
 
   if (allNotes.length) {
     var displayOptions = {
