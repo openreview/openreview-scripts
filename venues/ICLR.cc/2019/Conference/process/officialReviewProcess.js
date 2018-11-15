@@ -17,10 +17,6 @@ function(){
       PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note_number + '/Reviewers';
       PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note_number + '/Area_Chairs';
       PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + note_number + '/Authors'
-      console.log(PAPER_REVIEWERS);
-      console.log(PAPER_AREACHAIRS);
-      console.log(PAPER_AUTHORS)
-      console.log(note_number);
       var areachair_mail = {
         "groups": [PAPER_AREACHAIRS],
         "subject": "[" + SHORT_PHRASE + "] Review posted to your assigned paper: \"" + forum.content.title + "\"",
