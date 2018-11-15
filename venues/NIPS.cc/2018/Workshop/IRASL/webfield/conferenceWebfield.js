@@ -15,7 +15,7 @@ var WEBSITE = 'https://irasl.gitlab.io/';
 var LOCATION = 'Montreal, Canada';
 var SUBMISSION_INVITATION = 'NIPS.cc/2018/Workshop/IRASL/-/Submission';
 var BLIND_INVITATION = 'NIPS.cc/2018/Workshop/IRASL/-/Blind_Submission';
-var INSTRUCTIONS = 'October 22, 2018, 11:59 pm UTC';
+var INSTRUCTIONS = 'October 23, 2018, 11:59 pm AoE';
 var DEADLINE_STRING = 'October 29, 2018, 11:59 pm UTC';
 
 var BUFFER = 1000 * 60 * 30;  // 30 minutes

@@ -70,6 +70,7 @@ def reviewer_conflicts(reviewer_email, paper_number, conflict_list):
 # check if reviewer already assigned to paper
 # if not then create Anonymous group for the reviewer and add to reviewer group
 def assign_reviewer(reviewer_email, paper_number):
+    reviewer_email=reviewer_email.lower()
     if not check_arguments(reviewer_email, paper_number):
         return False
 
@@ -107,12 +108,11 @@ def assign_reviewer(reviewer_email, paper_number):
 
 if args.assignments.endswith('.csv'):   
     with open(args.assignments, 'r') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',')
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
             reviewer_email = row[1]
             paper_number = row[0]
-            if reviewer_email:
-                assign_reviewer(reviewer_email,paper_number)
+            assign_reviewer(reviewer_email,paper_number)
 else:
     reviewer_email = args.assignments.split(',')[0]
     paper_number = args.assignments.split(',')[1]
