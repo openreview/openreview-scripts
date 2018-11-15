@@ -24,27 +24,27 @@ function(){
       var author_mail;
 
       var ac_mail = {
-        'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs'],
-        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper in your area. Paper Number: ' + forumNote.number + ', Paper Title: \"' + forumNote.content.title + '\"',
-        'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+        groups: [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs'],
+        subject: '[' + SHORT_PHRASE + '] Comment posted to a paper in your area. Paper Number: ' + forumNote.number + ', Paper Title: "' + forumNote.content.title + '"',
+        message: 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var reviewer_mail = {
-        'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Reviewers'],
-        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper you are reviewing. Paper Number: ' + forumNote.number + ', Paper Title: \"' + forumNote.content.title + '\"',
-        'message': 'A comment was posted to a paper for which you are serving as reviewer.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+        groups: [CONFERENCE_ID + '/Paper' + forumNote.number + '/Reviewers'],
+        subject: '[' + SHORT_PHRASE + '] Comment posted to a paper you are reviewing. Paper Number: ' + forumNote.number + ', Paper Title: "' + forumNote.content.title + '"',
+        message: 'A comment was posted to a paper for which you are serving as reviewer.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var pc_mail = {
-        'groups': [CONFERENCE_ID + '/Program_Chairs'],
-        'subject': '[' + SHORT_PHRASE + '] A Program Chair-only comment was posted. Paper Number: ' + forumNote.number + ', Paper Title: \"' + forumNote.content.title + '\"',
-        'message': 'A comment was posted to a paper with readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+        groups: [CONFERENCE_ID + '/Program_Chairs'],
+        subject: '[' + SHORT_PHRASE + '] A Program Chair-only comment was posted. Paper Number: ' + forumNote.number + ', Paper Title: "' + forumNote.content.title + '"',
+        message: 'A comment was posted to a paper with readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var author_mail = {
-        'groups': forumNote.content.authorids,
-        'subject': '[' + SHORT_PHRASE + '] Comment posted on your submission: \"' + forumNote.content.title + '\"',
-        'message': 'Your submission to ' + SHORT_PHRASE + ' has received a comment.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+        groups: forumNote.content.authorids,
+        subject: '[' + SHORT_PHRASE + '] Comment posted on your submission: "' + forumNote.content.title + '"',
+        message: 'Your submission to ' + SHORT_PHRASE + ' has received a comment.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var promises = [];
@@ -63,9 +63,9 @@ function(){
 
       if(note.replyto != note.forum && replytoNoteSignatures != '(anonymous)'){
         var reply_mail = {
-          'groups': replytoNoteSignatures,
-          'subject': '[' + SHORT_PHRASE + '] Response received on your comment on submission \"' + forumNote.content.title + '\"',
-          'message': 'Your comment to ' + SHORT_PHRASE + ' has received a response.\n\nResponse title: ' + note.content.title + '\n\nResponse comment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+          groups: replytoNoteSignatures,
+          subject: '[' + SHORT_PHRASE + '] Response received on your comment on submission "' + forumNote.content.title + '"',
+          message: 'Your comment to ' + SHORT_PHRASE + ' has received a response.\n\nResponse title: ' + note.content.title + '\n\nResponse comment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
         };
         promises.push(or3client.or3request(or3client.mailUrl, reply_mail, 'POST', token));
       }
