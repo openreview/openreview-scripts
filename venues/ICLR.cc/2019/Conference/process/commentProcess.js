@@ -62,14 +62,11 @@ function(){
       }
 
       if(note.replyto != note.forum && replytoNoteSignatures != '(anonymous)'){
-        console.log("Yahoooo! reply found");
-        console.log(replytoNoteSignatures);
         var reply_mail = {
           'groups': replytoNoteSignatures,
           'subject': '[' + SHORT_PHRASE + '] Response received on your comment on submission \"' + forumNote.content.title + '\"',
           'message': 'Your comment to ' + SHORT_PHRASE + ' has received a response.\n\nResponse title: ' + note.content.title + '\n\nResponse comment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
         };
-        console.log("mail sent");
         promises.push(or3client.or3request(or3client.mailUrl, reply_mail, 'POST', token));
       }
 
