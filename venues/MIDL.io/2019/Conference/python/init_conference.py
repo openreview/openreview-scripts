@@ -8,8 +8,8 @@ from openreview import invitations
 import config
 sys.path.insert(0, "../Full/python")
 import full
-sys.path.insert(0,"../Abstract/python")
-import abstract
+#sys.path.insert(0,"../Abstract/python")
+#import abstract
 
 """
 OPTIONAL SCRIPT ARGUMENTS
@@ -29,6 +29,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 def create_new_group(group_id, group_params):
+    # create group if it doesn't already exist
     try:
         group = client.get_group(group_id)
     except openreview.OpenReviewException as e:
@@ -72,13 +73,12 @@ def setup_track(track):
 
     '''
     Set up the first couple groups that are needed before submission.
-    e.g. Program Chairs, Reviewers, Area Chairs
+    e.g. Reviewers, Area Chairs
 
     The Reviewers and Area Chairs groups will need to exist before we can
     send out recruitment emails.
     '''
     groups = {}
-    groups[track.AREA_CHAIRS] = openreview.Group(track.AREA_CHAIRS, **track.group_params)
     groups[track.REVIEWERS] = openreview.Group(track.REVIEWERS, **track.group_params)
     for g in groups.values():
         # check group exists first
@@ -119,6 +119,10 @@ def setup_track(track):
         process='..' + track.TRACK_NAME + '/process/commentProcess.js',
         invitation = track.SUBMISSION,
     )
+    comment_inv.reply['nonreaders'] = {
+                'description': 'The users who will be allowed to read the above content.',
+                'values': ['everyone']
+            },
     comment_inv = client.post_invitation(comment_inv)
     print("posted invitation "+comment_inv.id)
 
@@ -127,4 +131,4 @@ def setup_track(track):
 
 setup_parent_conference()
 setup_track(full)
-setup_track(abstract)
+#setup_track(abstract)

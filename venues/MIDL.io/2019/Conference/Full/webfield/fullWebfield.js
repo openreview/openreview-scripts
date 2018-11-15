@@ -7,8 +7,8 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE = 'MIDL.io/2019/Full';
-var SUBTITLE = 'MIDL 2019 Conference';
+var CONFERENCE = 'MIDL.io/2019/Conference/Full';
+var SUBTITLE = 'MIDL 2019 Conference Full Paper';
 var TITLE = 'Medical Imaging with Deep Learning';
 var DEADLINE_STRING = '13th of December, 2018';
 var CONF_DATE_STRING = '8-10 July 2019';
