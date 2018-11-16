@@ -8,8 +8,25 @@ var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
-var SEARCH_KEYWORDS = [
-'adversarial', 'adversarial attacks', 'adversarial examples', 'adversarial learning', 'adversarial training', 'attention', 'classification', 'cnn', 'computer vision', 'convolutional neural network', 'convolutional neural networks', 'deep generative models', 'deep learning', 'deep neural networks', 'deep reinforcement learning', 'domain adaptation', 'exploration', 'few-shot learning', 'gan', 'gans', 'generalization', 'generative adversarial network', 'generative adversarial networks', 'generative models', 'graph neural networks', 'imitation learning', 'information theory', 'interpretability', 'machine learning', 'machine translation', 'meta-learning', 'model compression', 'natural language processing', 'neural network', 'neural networks', 'non-convex optimization', 'optimization', 'quantization', 'recurrent neural networks', 'regularization', 'reinforcement learning', 'representation learning', 'robustness', 'semi-supervised learning', 'sgd', 'stochastic gradient descent', 'theory', 'transfer learning', 'unsupervised learning', 'vae', 'variational autoencoder', 'variational inference'
+var SUBJECT_AREAS = [
+  "Machine Learning",
+  "Natural Language Processing",
+  "Information Extraction",
+  "Question Answering",
+  "Reasoning",
+  "Databases",
+  "Information Integration",
+  "Knowledge Representation",
+  "Semantic Web",
+  "Search",
+  "Applications: Science",
+  "Applications: Biomedicine",
+  "Applications: Other",
+  "Relational AI",
+  "Fairness",
+  "Human computation",
+  "Crowd-sourcing",
+  "Other"
 ];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
@@ -265,7 +282,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       search: {
         enabled: true,
         localSearch: true,
-        subjectAreas: SEARCH_KEYWORDS,
+        subjectAreas: SUBJECT_AREAS,
         subjectAreaDropdown: 'basic',
         sort: false,
         onResults: function(searchResults) {
@@ -326,14 +343,14 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
     var paperMetadataObj = metadataNotesMap.hasOwnProperty(note.id) ? metadataNotesMap[note.id] : {};
 
     note.metadata = {
-      tpmsScore: paperMetadataObj.hasOwnProperty('tpmsScore') ? paperMetadataObj['tpmsScore'] : 0,
+      tfidfScore: paperMetadataObj.hasOwnProperty('tfidfScore') ? paperMetadataObj['tfidfScore'] : 0,
       conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
 
-    note.content['TPMS Score'] = note.metadata.tpmsScore.toFixed(3);
+    note.content['TFIDF Score'] = note.metadata.tfidfScore.toFixed(3);
   }
 
-  return _.orderBy(validNotes, ['metadata.tpmsScore'], ['desc']);
+  return _.orderBy(validNotes, ['metadata.tfidfScore'], ['desc']);
 }
 
 // Go!
