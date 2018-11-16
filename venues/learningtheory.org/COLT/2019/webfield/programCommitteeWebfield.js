@@ -9,7 +9,7 @@ var INSTRUCTIONS = '<p class="dark">This page provides information and status \
 
 var SCHEDULE_HTML = '<h4>Coming Soon</h4>\
   <p>\
-    <em><strong>Please check back later for updates.</strong></em>:\
+    <em><strong>Please check back later for updates.</strong></em>\
   </p>';
 
 // Main function is the entry point to the webfield code
@@ -28,9 +28,10 @@ var renderHeader = function() {
   var loadingMessage = '<p class="empty-message">Loading...</p>';
   Webfield.ui.tabPanel([
     {
-      heading: 'Area Chair Schedule',
+      heading: 'Program Committee Schedule',
       id: 'areachair-schedule',
-      content: SCHEDULE_HTML
+      content: SCHEDULE_HTML,
+      active: true
     }
   ]);
 };
