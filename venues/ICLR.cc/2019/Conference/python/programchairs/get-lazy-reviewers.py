@@ -117,19 +117,10 @@ def get_profile_email_map(cl, profile_id_list):
     profiles = cl.get_profiles(profile_id_list)
     map_profile_email = {}
     for prof in profiles:
-        if prof :
-            if (prof.content.get('preferredEmail', None) != None):
-                map_profile_email[prof.id] = prof.content.get('preferredEmail')
-            elif (prof.content.get('emailsConfirmed', None) != None):
-                map_profile_email[prof.id] = prof.content.get('emailsConfirmed')[0]
-            else:
-                map_profile_email[prof.id] = prof.content.get('emails')[0]
-        else : 
-            map_profile_email[prof.id] = "No email found"
+        map_profile_email[prof.id] = prof.content.get('preferredEmail', prof.content.get('emails')[0])
     return map_profile_email
 
-# collect all emails
-map_profile_email = {}
+# collect all profiles and make a profile-email map
 all_profiles = []
 for paper_number in late_reviewers:
     all_profiles.append( str(area_chairs.get(paper_number, '')) )
@@ -143,12 +134,12 @@ for paper_number in sorted(late_reviewers):
     ac = area_chairs.get(paper_number, '')
     reviewer_emails = []
     for rev in late_reviewers[paper_number]:
-        reviewer_emails.append( map_profile_email[rev] )
+        reviewer_emails.append( map_profile_email.get(rev, 'Email not found') )
 
     print ("{0}, {1}, {2}, {3}, {4}".format(
         paper_number, 
         str(ac),
-        map_profile_email[str(ac)],
+        map_profile_email.get(str(ac), "Email not found"),
         '(' + ', '.join(late_reviewers[paper_number]) + ')',
         '(' + str (', '.join(reviewer_emails)) + ')'
         )
