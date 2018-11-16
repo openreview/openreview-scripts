@@ -109,9 +109,10 @@ if args.assignments.endswith('.csv'):
     with open(args.assignments, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
-            reviewer_email = row[0]
-            paper_number = row[1]
-            assign_reviewer(reviewer_email,paper_number)
+            reviewer_email = row[1]
+            paper_number = row[0]
+            if reviewer_email:
+                assign_reviewer(reviewer_email,paper_number)
 else:
     reviewer_email = args.assignments.split(',')[0]
     paper_number = args.assignments.split(',')[1]

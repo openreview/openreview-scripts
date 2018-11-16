@@ -127,7 +127,7 @@ var getAreaChairGroups = function(noteNumbers) {
         var num;
         if (matches) {
           num = parseInt(matches[1], 10);
-          
+
           if (g.members.length) {
             var areaChair = g.members[0];
             if (num in noteMap) {
@@ -162,7 +162,7 @@ var getUserProfiles = function(userIds) {
 
       var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
       profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferred_email || profile.content.emails[0];
+      profile.email = profile.content.preferredEmail || profile.content.emails[0];
       profileMap[profile.id] = profile;
     })
 
@@ -777,7 +777,7 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var postData = {
     subject: 'ICLR 2019 Reminder',
     message: 'This is a reminder to please submit your official reviews for ICLR 2019. ' +
-      'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
+      'Click on the link below to go to the review page:\n\n' + location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };
 

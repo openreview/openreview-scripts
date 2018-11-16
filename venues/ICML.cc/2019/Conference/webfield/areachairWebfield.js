@@ -267,7 +267,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, do
         noteId: note.id,
         invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official_Review'
       });
-      var lastReminderSent = window.localStorage.getItem(forumUrl + '|' + reviewer.id);
+      var lastReminderSent = localStorage.getItem(forumUrl + '|' + reviewer.id);
       combinedObj[reviewerNum] = {
         id: reviewer.id,
         name: reviewer.name,
@@ -413,14 +413,14 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var postData = {
     subject: SHORT_PHRASE + ' Reminder',
     message: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
-      'Click on the link below to go to the review page:\n\n' + window.location.origin + forumUrl + '\n\nThank you.',
+      'Click on the link below to go to the review page:\n\n' + location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };
 
   $.post('/mail', JSON.stringify(postData), function(result) {
     promptMessage('A reminder email has been sent to ' + view.prettyId(userId));
     //Save the timestamp in the local storage
-    window.localStorage.setItem(forumUrl + '|' + userId, Date.now());
+    localStorage.setItem(forumUrl + '|' + userId, Date.now());
     renderTable();
   }, 'json').fail(function(error) {
     console.log(error);
