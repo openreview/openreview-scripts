@@ -19,7 +19,8 @@ SHORT_PHRASE = 'COLT 2019'
 
 PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs'
 
-PROGRAM_COMMITTEE_ID = CONFERENCE_ID + '/Program_Committee'
+PROGRAM_CHAIRS_NAME = 'Program_Committee'
+PROGRAM_COMMITTEE_ID = CONFERENCE_ID + '/' + PROGRAM_CHAIRS_NAME
 
 # Deadlines
 SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2019, month=2, day=2, hour=6) # Feb 2, 6am GMT == Feb 1, 11pm PST
