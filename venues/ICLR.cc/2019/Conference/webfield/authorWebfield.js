@@ -14,7 +14,7 @@ var PAGE_SIZE = 50;
 
 var paperDisplayOptions = {
   pdfLink: true,
-  replyCount: true,
+  replyCount: false,
   showContents: true
 };
 
