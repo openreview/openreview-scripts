@@ -130,7 +130,7 @@ submission_content = {
         'value-regex': 'upload',
         'required': True
     },
-    'conduct of conduct': {
+    'code of conduct': {
         'order': 11,
         'description': config.code_of_conduct_text,
         'value-checkbox': ['I have read and accept the code of conduct.'],
