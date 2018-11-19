@@ -95,10 +95,12 @@ function load() {
 
 // Display the bid interface populated with loaded data
 function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesMap) {
+  var authoredNoteIds = _.map(authoredNotes, function(note){
+    return note.id;
+  });
+
   validNotes = _.filter(validNotes, function(note){
-    return !_.includes(_.map(authoredNotes, function(note){
-      return note.id;
-    }), note.original);
+    return !_.includes(authoredNoteIds, note.original);
   })
   validNotes = addMetadataToNotes(validNotes, metadataNotesMap);
 
