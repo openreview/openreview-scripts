@@ -19,7 +19,7 @@ import csv
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
-    parser.add_argument('scores_file')
+    parser.add_argument('tfidf_score_file')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
@@ -27,16 +27,22 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    # read in TPMS scores
-    paper_scores_by_number = {}
-    with open(args.scores_file) as f:
-        for row in csv.reader(f):
-            paper_number = int(row[0])
-            profile_id = row[1]
-            score = row[2]
-            if paper_number not in paper_scores_by_number:
-                paper_scores_by_number[paper_number] = {}
-            paper_scores_by_number[paper_number][profile_id] = score
+    # read in tfidf scores
+
+    def read_scores(scores_file):
+        scores_by_id = {}
+        with open(args.tfidf_score_file) as f:
+            for row in csv.reader(f):
+                paper_id = row[0]
+                profile_id = row[1]
+                score = row[2]
+                if paper_id not in scores_by_id:
+                    scores_by_id[paper_id] = {}
+                scores_by_id[paper_id][profile_id] = score
+
+        return scores_by_id
+
+    tfidf_score_by_id = read_scores(args.tfidf_score_file)
 
     with open('../webfield/reviewerWebfieldBiddingEnabled.js','r') as f:
         reviewers = client.get_group(conference_config.REVIEWERS_ID)
@@ -82,7 +88,7 @@ if __name__ == '__main__':
 
             score_entry = {
                 'forum': paper.forum,
-                'tpmsScore': float(paper_scores_by_number[paper.number].get(user_id,0.0)),
+                'tfidfScore': float(tfidf_score_by_id[paper.id].get(user_id,0.0)),
                 # 'conflict': 'cs.umass.edu'
             }
 
