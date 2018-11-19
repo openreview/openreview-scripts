@@ -42,22 +42,20 @@ def setup_parent_conference():
     '''
     set up the conference groups
     '''
-    conference_group = openreview.Group(**config.conference_params)
-    groups = tools.build_groups(conference_group.id)
-    g_params = {
-        'readers': ['everyone'],
-        'writers': [],
-        'signatures': [],
-        'signatories': [],
-        'members': []
-    }
-    for g in groups:
-        print(g.id)
-        g_params['id'] = g.id
-        create_new_group(g.id, g_params)
-
-    # Create PCs if needed
-    create_new_group(config.PROGRAM_CHAIRS, config.program_chairs_params)
+    builder = openreview.conference.ConferenceBuilder(client)
+    builder.set_conference_id('MIDL.io/2019/Conference')
+    builder.set_conference_name('Medical Imaging with Deep Learning')
+    builder.set_homepage_header({
+    'title': 'Medical Imaging with Deep Learning',
+    'subtitle': 'MIDL 2019 Conference',
+    'deadline': 'Submission Deadline: 13th of December, 2018',
+    'date': '8-10 July 2019',
+    'website': 'http://2019.midl.io',
+    'location': 'London',
+    'instructions': 'Full papers contain well-validated applications or methodological developments of deep learning algorithms in medical imaging. There is no strict limit on paper length. However, we strongly recommend keeping full papers at 8 pages (excluding references and acknowledgements). An appendix section can be added if needed with additional details but must be compiled into a single pdf. The appropriateness of using pages over the recommended page length will be judged by reviewers. All accepted papers will be presented as posters with a selection of these papers will also be invited for oral presentation.'
+    })
+    builder.set_conference_type(openreview.builder.SingleBlindConferenceType)
+    conference = builder.get_result()
 
 
 def setup_track(track):
