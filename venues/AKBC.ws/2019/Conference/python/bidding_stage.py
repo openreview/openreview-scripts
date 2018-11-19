@@ -30,19 +30,19 @@ if __name__ == '__main__':
     # read in tfidf scores
 
     def read_scores(scores_file):
-        scores_by_number = {}
+        scores_by_id = {}
         with open(args.tfidf_score_file) as f:
             for row in csv.reader(f):
-                paper_number = int(row[0])
+                paper_id = row[0]
                 profile_id = row[1]
                 score = row[2]
-                if paper_number not in scores_by_number:
-                    scores_by_number[paper_number] = {}
-                scores_by_number[paper_number][profile_id] = score
+                if paper_id not in scores_by_id:
+                    scores_by_id[paper_id] = {}
+                scores_by_id[paper_id][profile_id] = score
 
-        return scores_by_number
+        return scores_by_id
 
-    tfidf_scores_by_number = read_scores(args.tfidf_score_file)
+    tfidf_score_by_id = read_scores(args.tfidf_score_file)
 
     with open('../webfield/reviewerWebfieldBiddingEnabled.js','r') as f:
         reviewers = client.get_group(conference_config.REVIEWERS_ID)
@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
             score_entry = {
                 'forum': paper.forum,
-                'tfidfScore': float(tfidf_scores_by_number[paper.number].get(user_id,0.0)),
+                'tfidfScore': float(tfidf_score_by_id[paper.id].get(user_id,0.0)),
                 # 'conflict': 'cs.umass.edu'
             }
 
