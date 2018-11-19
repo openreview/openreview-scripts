@@ -5,6 +5,7 @@
 var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
 var SHORT_PHRASE = 'AKBC 2019';
 var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
+var ORIGINAL_INVITATION_ID = CONFERENCE_ID + '/-/Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
@@ -64,6 +65,8 @@ function load() {
     });
   });
 
+  var authoredNotesP = Webfield.getAll('/notes', {'content.authorids': user.profile.id, invitation:ORIGINAL_INVITATION_ID});
+
   var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(invitations) {
     return invitations.filter(function(invitation) {
       return invitation.invitees.length;
@@ -86,13 +89,19 @@ function load() {
     return metadataNotesMap;
   });
 
-  return $.when(notesP, tagInvitationsP, userScoresP);
+  return $.when(notesP, authoredNotesP, tagInvitationsP, userScoresP);
 }
 
 
 // Display the bid interface populated with loaded data
-function renderContent(validNotes, tagInvitations, metadataNotesMap) {
+function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesMap) {
+  var authoredNoteIds = _.map(authoredNotes, function(note){
+    return note.id;
+  });
 
+  validNotes = _.filter(validNotes, function(note){
+    return !_.includes(authoredNoteIds, note.original);
+  })
   validNotes = addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
