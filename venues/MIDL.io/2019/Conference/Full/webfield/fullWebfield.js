@@ -7,15 +7,16 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE = 'MIDL.amsterdam/2019/Abstract';
-var SUBTITLE = 'MIDL 2019 Conference';
+var CONFERENCE = 'MIDL.io/2019/Conference/Full';
+var SUBTITLE = 'MIDL 2019 Conference Full Paper';
 var TITLE = 'Medical Imaging with Deep Learning';
 var DEADLINE_STRING = '13th of December, 2018';
 var CONF_DATE_STRING = '8-10 July 2019';
-var WEBSITE = ' http://2019.midl.io';
+var WEBSITE = 'http://2019.midl.io';
 var LOCATION = 'London';
 var SUBMISSION_INVITATION = CONFERENCE+'/-/Submission';
-var INSTRUCTIONS = 'Extended abstracts are up to 3 pages (excluding references and acknowledgements) and can, for example, focus on preliminary novel methodological ideas without extensive validation. We also specifically accept extended abstracts of recently published or submitted journal and conference contributions to give authors the opportunity to present their work and obtain feedback from the community. All accepted abstracts will be presented as posters at the conference.';
+var INSTRUCTIONS = 'Full papers contain well-validated applications or methodological developments of deep learning algorithms in medical imaging. There is no strict limit on paper length. However, we strongly recommend keeping full papers at 8 pages (excluding references and acknowledgements). An appendix section can be added if needed with additional details but must be compiled into a single pdf. The appropriateness of using pages over the recommended page length will be judged by reviewers. All accepted papers will be presented as posters with a selection of these papers will also be invited for oral presentation.';
+
 
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 50;

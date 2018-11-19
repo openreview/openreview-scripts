@@ -1,7 +1,7 @@
 function(){
     var or3client = lib.or3client;
 
-    var SHORT_PHRASE = 'MIDL 2019 Abstract';
+    var SHORT_PHRASE = 'MIDL 2019 Conference Full Paper';
 
     var origNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token) : null;

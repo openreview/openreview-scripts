@@ -1,8 +1,8 @@
 function () {
   var or3client = lib.or3client;
 
-  var SHORT_PHRASE = 'MIDL 2019 Abstract';
-  var CONFERENCE_ID = 'MIDL.amsterdam/2019/Abstract';
+  var SHORT_PHRASE = 'MIDL 2019 Conference Full Paper';
+  var CONFERENCE_ID = 'MIDL.io/2019/Conference/Full';
 
     // send author a confirmation email
   var author_mail = {
@@ -28,6 +28,7 @@ function () {
             readers: invitation.reply.readers
         }
    };
+
   return or3client.or3request(or3client.mailUrl, author_mail, 'POST', token)
   .then(result => or3client.or3request(or3client.inviteUrl, revisionInvitation, 'POST', token))
   .then(result => done())

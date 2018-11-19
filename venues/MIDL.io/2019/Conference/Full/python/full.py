@@ -2,6 +2,8 @@
 
 import sys, os
 from openreview import tools
+sys.path.insert(0, "../../python")
+import config
 """
 GROUPS
 
@@ -17,14 +19,14 @@ Example:
 
 """
 
-CONFERENCE_ID = 'MIDL.amsterdam/2019/Abstract'
-PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs'
-AREA_CHAIRS = CONFERENCE_ID + '/Area_Chairs'
-REVIEWERS = CONFERENCE_ID + '/Reviewers'
+TRACK_NAME = "/Full"
+TRACK_ID = config.CONFERENCE_ID+TRACK_NAME
+REVIEWERS = TRACK_ID + '/Reviewers'
+
 #
-SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2019, month=4, day= 15, hour=23, minute=59)
+SUBMISSION_TIMESTAMP = tools.timestamp_GMT(2018, month=12, day= 14, hour=6, minute=59)
 # REVIEW_TIMESTAMP = tools.timestamp_GMT(2018, month=9, day= 30, hour=23, minute=59)
-WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/abstractWebfield.js')
+WEBPATH = os.path.join(os.path.dirname(__file__), '../webfield/fullWebfield.js')
 
 
 """
@@ -41,9 +43,8 @@ Example:
     --> my.conference/2017/-/Submission
 """
 
-SUBMISSION = CONFERENCE_ID + '/-/Submission'
-COMMENT = CONFERENCE_ID + '/-/Comment'
-
+SUBMISSION = TRACK_ID + '/-/Submission'
+COMMENT = TRACK_ID + '/-/Comment'
 
 """
 PARAMETERS
@@ -53,50 +54,43 @@ Dictionaries that represent argument combinations defining Group and Invitation 
 Example:
 
     restricted = {
-        'readers': [CONFERENCE_ID],
-        'writers': [CONFERENCE_ID],
-        'signatories': [CONFERENCE_ID],
+        'readers': [TRACK_ID],
+        'writers': [TRACK_ID],
+        'signatories': [TRACK_ID],
     }
 
-    The "restricted" configuration above will only allow the CONFERENCE_ID group to read, write, and sign
+    The "restricted" configuration above will only allow the TRACK_ID group to read, write, and sign
     for the newly created Group that uses it.
 """
-conference_params = {
-    'id': CONFERENCE_ID,
+track_params = {
+    'id': TRACK_ID,
     'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
+    'writers': [TRACK_ID],
     'signatures': [],
-    'signatories': [CONFERENCE_ID],
+    'signatories': [TRACK_ID],
     'members': []
 }
 
 group_params = {
-    'readers': [CONFERENCE_ID],
-    'writers': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID]
-}
-
-program_chairs_params = {
-    'readers': [CONFERENCE_ID, PROGRAM_CHAIRS],
-    'writers': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID, PROGRAM_CHAIRS],
-    'signatures': [CONFERENCE_ID],
+    'readers': [TRACK_ID],
+    'writers': [TRACK_ID],
+    'signatories': [TRACK_ID],
+    'signatures': [TRACK_ID]
 }
 
 submission_params = {
     'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
+    'writers': [TRACK_ID],
     'invitees': ['~'],
-    'signatures': [CONFERENCE_ID],
+    'signatures': [TRACK_ID],
     'process': os.path.join(os.path.dirname(__file__), '../process/submissionProcess.js')
 }
 
 comment_params = {
     'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
+    'writers': [TRACK_ID],
     'invitees': ['~'],
-    'signatures': [CONFERENCE_ID],
+    'signatures': [TRACK_ID],
     'process': os.path.join(os.path.dirname(__file__), '../process/commentProcess.js')
 }
 
@@ -131,15 +125,20 @@ submission_content = {
         'values-regex': "(^$)|[^;,\\n]+(,[^,\\n]+)*"
     },
     'pdf': {
-        'description': 'Upload a PDF file that ends with .pdf. Submissions can be up to three pages.',
+        'description': 'Upload a PDF file that ends with .pdf. There is no strict limit on paper length. However, we strongly recommend keeping the paper at 8 pages, plus 1 page for the references and as many pages as needed in an appendix section (all in a single pdf).',
         'order': 9,
         'value-regex': 'upload',
         'required': True
     },
-    'author affiliation': {
-        'description': 'Institution name(s) of the author(s)',
-        'order': 10,
-        'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
+    'code of conduct': {
+        'order': 11,
+        'description': config.code_of_conduct_text,
+        'value-checkbox': ['I have read and accept the code of conduct.'],
+        'required': True
+    },
+    'remove if rejected': {
+        'order': 12,
+        'value-checkbox': ['Remove submission if paper is rejected.'],
         'required': False
     }
 }
