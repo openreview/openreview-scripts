@@ -38,7 +38,7 @@ var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in re
   </ul>\
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
-    <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
+    <li>Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
     <li>Default bid on each paper is \"No Bid\".</li>\

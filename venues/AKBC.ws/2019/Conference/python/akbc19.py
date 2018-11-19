@@ -135,7 +135,7 @@ SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=17
 BLIND_SUBMISSION_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=23, hour=23)
 
 # add bid deadline is 2PM PST = 10PM GMT = 5PM EDT
-ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=30, hour=22)
+ADD_BID_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=12, day=1, hour=1)
 OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2019, month=1, day=9, hour=22)
 QUESTIONNAIRE_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=2, hour=22)
 QUESTIONNAIRE_EXPIRY = openreview.tools.timestamp_GMT(year=2018, month=10, day=20)
