@@ -2,7 +2,7 @@ function(){
     var or3client = lib.or3client;
 
     var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
-    var SHORT_PHRASE = "AKBc 2019";
+    var SHORT_PHRASE = "AKBC 2019";
     var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + note.number + '/Authors';
     var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note.number + '/Reviewers';
     var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note.number + '/Area_Chairs';
