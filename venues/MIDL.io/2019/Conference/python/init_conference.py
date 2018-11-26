@@ -112,18 +112,6 @@ def setup_track(track):
     submission_inv = client.post_invitation(submission_inv)
     print("posted invitation "+submission_inv.id)
 
-    comment_inv = invitations.Comment(
-        conference_id = track.TRACK_ID,
-        process='..' + track.TRACK_NAME + '/process/commentProcess.js',
-        invitation = track.SUBMISSION,
-    )
-    comment_inv.reply['nonreaders'] = {
-                'description': 'The users who will be allowed to read the above content.',
-                'values': ['everyone']
-            },
-    comment_inv = client.post_invitation(comment_inv)
-    print("posted invitation "+comment_inv.id)
-
 
 ##############################
 
