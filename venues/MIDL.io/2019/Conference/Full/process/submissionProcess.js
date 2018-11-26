@@ -53,7 +53,7 @@ function () {
         id: SAVED_PAPER_ID+'/Comment',
         readers: ['everyone'],
         writers: [CONFERENCE_ID],
-        invitees: ['~'],
+        invitees: ['everyone'],
         signatures: [CONFERENCE_ID],
         reply: {
             forum: note.forum,
