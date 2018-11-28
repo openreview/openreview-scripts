@@ -1,6 +1,7 @@
 import colt19
 import argparse
 import openreview
+import datetime
 
 if __name__ == '__main__':
     ## Argument handling
@@ -26,4 +27,5 @@ if __name__ == '__main__':
     builder.set_conference_type(openreview.builder.DoubleBlindConferenceType)
     builder.set_conference_reviewers_name(colt19.PROGRAM_CHAIRS_NAME)
     conference = builder.get_result()
+    conference.open_submissions(due_date = datetime.datetime(2019, 10, 5, 18, 00))
     print('DONE.')
