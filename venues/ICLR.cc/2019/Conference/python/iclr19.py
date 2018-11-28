@@ -147,7 +147,7 @@ OFFICIAL_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, d
 QUESTIONNAIRE_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=10, day=2, hour=22)
 QUESTIONNAIRE_EXPIRY = openreview.tools.timestamp_GMT(year=2018, month=10, day=20)
 META_REVIEW_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=11, day=7)
-
+REVIEW_RATING_DEADLINE = openreview.tools.timestamp_GMT(year=2018, month=12, day=31, hour=22)
 
 
 # Global group definitions
