@@ -61,8 +61,11 @@ function main() {
 // Perform all the required API calls
 function load() {
   var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
-    return allNotes.filter(function(note) {
-      return !note.content.hasOwnProperty('withdrawal');
+    return allNotes.map(function(note) {
+      note.details.tags = note.details.tags.filter(function(tag) {
+        return tag.tauthor;
+      });
+      return note;
     });
   });
 
