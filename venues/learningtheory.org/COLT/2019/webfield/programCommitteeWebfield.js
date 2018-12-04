@@ -14,11 +14,14 @@ var OFFICIAL_REVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Official_Review';
 var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 
-var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
+var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/.*Reviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Program_Committee.*';
 
 var ANONREVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee(\d+)/;
+var REVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers$/;
+var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Invited$/;
+var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Declined$/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
@@ -35,6 +38,8 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
     <em><strong>The bidding phase has not started yet.</strong><br/>\
     This section will be updated once the bidding phase begins.</em>\
   </p>';
+
+var invitedMap = {};
 
 // Main function is the entry point to the webfield code
 var main = function() {
@@ -66,6 +71,11 @@ var buildNoteMap = function(noteNumbers) {
   var noteMap = Object.create(null);
   for (var i = 0; i < noteNumbers.length; i++) {
     noteMap[noteNumbers[i]] = Object.create(null);
+    invitedMap[noteNumbers[i]] = {
+      accepted: [],
+      invited: [],
+      declined: []
+    };
   }
   return noteMap;
 };
@@ -165,8 +175,34 @@ var getReviewerGroups = function(noteNumbers) {
           noteMap[num][index] = g.members[0];
         }
       }
-    });
 
+      var matches = g.id.match(REVIEWER_REGEX);
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        if ((num in noteMap) && g.members.length) {
+          invitedMap[num]['accepted'] = g.members;
+        }
+      }
+
+      var matches = g.id.match(REVIEWER_INVITED_REGEX);
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        if ((num in noteMap) && g.members.length) {
+          invitedMap[num]['invited'] = g.members;
+        }
+      }
+
+      var matches = g.id.match(REVIEWER_DECLINED_REGEX);
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        if ((num in noteMap) && g.members.length) {
+          invitedMap[num]['declined'] = g.members;
+        }
+      }
+
+    });
+    console.log(noteMap);
+    console.log('invitedMap', invitedMap);
     return noteMap;
   });
 };
@@ -437,7 +473,31 @@ var renderTableRows = function(rows, container) {
     Handlebars.templates.noteSummary,
     function(data) {
       console.log(data);
-      return '<div class="reviewer-invite"><input data-note-id="' + data.noteId + '" data-note-number="' + data.noteNumber + '"></input><button class="btn invite">Invite</button></div>';
+      var accepted = '';
+      var declined = '';
+      var invited = '';
+      data.invited.accepted.forEach(function(r) {
+        accepted = accepted + '<tr><td>' + r + '<span class="text-muted">(accepted)</span></td></tr>';
+      })
+      data.invited.declined.forEach(function(r) {
+        declined = declined + '<tr><td>' + r + '<span class="text-muted">(declined)</span></td></tr>';
+      })
+      data.invited.invited.forEach(function(r) {
+        if (!data.invited.accepted.includes(r) && !data.invited.declined.includes(r)) {
+          invited = invited + '<tr><td>' + r + '<span class="text-muted">(invited)</span></td></tr>';
+        }
+      })
+      return '<div class="reviewer-invite"><input data-note-id="' + data.noteId + '" data-note-number="' + data.noteNumber +
+      '"></input><button class="btn invite">Invite</button></div>' +
+      '<div id="#rkllzQgm14-reviewers" class="collapse" style="display: block;">' +
+      '<table class="table table-condensed table-minimal">' +
+      '  <tbody>' +
+            accepted +
+            declined +
+            invited +
+       ' </tbody>' +
+      '</table>' +
+    '</div>';
     },
     Handlebars.templates.noteReviewers,
     function(data) {
@@ -556,7 +616,8 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
 
   var cell2 = {
     noteId: note.id,
-    noteNumber: note.number
+    noteNumber: note.number,
+    invited: invitedMap[note.number]
   }
 
   var cell3 = {
@@ -694,6 +755,7 @@ var inviteReviewer = function(noteId, noteNumber, reviewer, done) {
 
   var postData = {
     id: 'learningtheory.org/COLT/2019/Conference/-/Paper' + noteNumber + '/Recruit_Reviewers',
+    duedate: 1575488730000,
     super: 'learningtheory.org/COLT/2019/Conference/-/Recruit_Reviewers',
     reply: {
       forum: noteId
@@ -714,10 +776,16 @@ var inviteReviewer = function(noteId, noteNumber, reviewer, done) {
       message: 'accept: ' + acceptUrl + '\n reject: ' + declineUrl
     }
     return Webfield.post('/messages', email)
-    .then(function(response) {
-      console.log('Email sent');
-      done();
-    });
+  })
+  .then(function(response) {
+    console.log('Email sent');
+    return Webfield.put('/groups/members', {
+      id: 'learningtheory.org/COLT/2019/Conference/Paper' + noteNumber + '/Reviewers/Invited',
+      members: [reviewer] });
+  })
+  .then(function(response) {
+    console.log('User added to invited group');
+    done();
   });
 }
 
