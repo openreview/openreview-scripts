@@ -460,6 +460,33 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
 
 };
 
+var renderInvitedReviewers = function(data) {
+  console.log(data);
+  var accepted = '';
+  var declined = '';
+  var invited = '';
+  data.invited.accepted.forEach(function(r) {
+    accepted = accepted + '<tr><td>' + r + '<span class="text-muted">(accepted)</span></td></tr>';
+  })
+  data.invited.declined.forEach(function(r) {
+    declined = declined + '<tr><td>' + r + '<span class="text-muted">(declined)</span></td></tr>';
+  })
+  data.invited.invited.forEach(function(r) {
+    if (!data.invited.accepted.includes(r) && !data.invited.declined.includes(r)) {
+      invited = invited + '<tr><td>' + r + '<span class="text-muted">(invited)</span></td></tr>';
+    }
+  })
+  return '<div id= "' + data.noteId +'-invited-reviewers" class="collapse" style="display: block;">' +
+  '<table class="table table-condensed table-minimal">' +
+  '  <tbody>' +
+        accepted +
+        declined +
+        invited +
+    ' </tbody>' +
+  '</table>' +
+  '</div>';
+};
+
 var renderTableRows = function(rows, container) {
   var templateFuncs = [
     function(data) {
@@ -472,32 +499,9 @@ var renderTableRows = function(rows, container) {
     },
     Handlebars.templates.noteSummary,
     function(data) {
-      console.log(data);
-      var accepted = '';
-      var declined = '';
-      var invited = '';
-      data.invited.accepted.forEach(function(r) {
-        accepted = accepted + '<tr><td>' + r + '<span class="text-muted">(accepted)</span></td></tr>';
-      })
-      data.invited.declined.forEach(function(r) {
-        declined = declined + '<tr><td>' + r + '<span class="text-muted">(declined)</span></td></tr>';
-      })
-      data.invited.invited.forEach(function(r) {
-        if (!data.invited.accepted.includes(r) && !data.invited.declined.includes(r)) {
-          invited = invited + '<tr><td>' + r + '<span class="text-muted">(invited)</span></td></tr>';
-        }
-      })
       return '<div class="reviewer-invite"><input data-note-id="' + data.noteId + '" data-note-number="' + data.noteNumber +
       '"></input><button class="btn invite">Invite</button></div>' +
-      '<div id="#rkllzQgm14-reviewers" class="collapse" style="display: block;">' +
-      '<table class="table table-condensed table-minimal">' +
-      '  <tbody>' +
-            accepted +
-            declined +
-            invited +
-       ' </tbody>' +
-      '</table>' +
-    '</div>';
+      renderInvitedReviewers(data);
     },
     Handlebars.templates.noteReviewers,
     function(data) {
@@ -730,6 +734,18 @@ var registerEventHandlers = function() {
     console.log(reviewer);
     inviteReviewer(noteId, noteNumber, reviewer, function() {
       $parent.find('input').val('');
+      invitedMap[noteNumber].invited.push(reviewer);
+      var data = {
+        noteId: noteId,
+        noteNumber: noteNumber,
+        invited: {
+          accepted: invitedMap[noteNumber].accepted,
+          invited: invitedMap[noteNumber].invited,
+          declined: invitedMap[noteNumber].declined
+        }
+      }
+      $('#rkllzQgm14-invited-reviewers').html(renderInvitedReviewers(data));
+      console.log('Done');
     });
     return false;
   });
