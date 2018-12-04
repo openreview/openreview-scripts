@@ -566,6 +566,10 @@ var renderTableAndTasks = function(fetchedData) {
 
   registerEventHandlers();
 
+  //Set another table widths
+  $('.row-4').css('width', '25%');
+  $('.row-6').css('width', '11%');
+
   Webfield.ui.done();
 }
 
@@ -744,7 +748,7 @@ var registerEventHandlers = function() {
           declined: invitedMap[noteNumber].declined
         }
       }
-      $('#rkllzQgm14-invited-reviewers').html(renderInvitedReviewers(data));
+      $('#' + noteId + '-invited-reviewers').html(renderInvitedReviewers(data));
       console.log('Done');
     });
     return false;
