@@ -15,10 +15,10 @@ var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/ProgramCommittee.*';
+var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Program_Committee.*';
 
 var ANONREVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/ProgramCommittee(\d+)/;
+var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee(\d+)/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
@@ -43,7 +43,7 @@ var main = function() {
   renderHeader();
 
   Webfield.get('/groups', {
-    member: user.id, regex: CONFERENCE + '/Paper.*/ProgramCommittee.*'
+    member: user.id, regex: CONFERENCE + '/Paper.*/Program_Committee.*'
   })
   .then(loadData)
   .then(formatData)
@@ -421,6 +421,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     $(container).empty().append('<p class="empty-message">No assigned papers. ' +
       'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
   }
+
 };
 
 var renderTableRows = function(rows, container) {
@@ -434,6 +435,10 @@ var renderTableRows = function(rows, container) {
       return '<strong class="note-number">' + data.number + '</strong>';
     },
     Handlebars.templates.noteSummary,
+    function(data) {
+      console.log(data);
+      return '<div class="reviewer-invite"><input data-note-id="' + data.noteId + '" data-note-number="' + data.noteNumber + '"></input><button class="btn invite">Invite</button></div>';
+    },
     Handlebars.templates.noteReviewers,
     function(data) {
       return '<h4>Avg: ' + data.averageRating + '</h4><span>Min: ' + data.minRating + '</span>' +
@@ -442,8 +447,7 @@ var renderTableRows = function(rows, container) {
     function(data) {
       return '<h4>Avg: ' + data.averageConfidence + '</h4><span>Min: ' + data.minConfidence + '</span>' +
         '<br><span>Max: ' + data.maxConfidence + '</span>';
-    },
-    Handlebars.templates.noteMetaReviewStatus
+    }
   ];
 
   var rowsHtml = rows.map(function(row) {
@@ -455,7 +459,7 @@ var renderTableRows = function(rows, container) {
   var tableHtml = Handlebars.templates['components/table']({
     headings: [
       '<span class="glyphicon glyphicon-envelope"></span>', '#', 'Paper Summary',
-      'Review Progress', 'Rating', 'Confidence', 'Status'
+      'Reviewer Invite', 'Review Progress', 'Rating', 'Confidence'
     ],
     rows: rowsHtml,
     extraClasses: 'ac-console-table'
@@ -552,6 +556,11 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
 
   var cell2 = {
     noteId: note.id,
+    noteNumber: note.number
+  }
+
+  var cell3 = {
+    noteId: note.id,
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
@@ -559,38 +568,29 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   };
 
   // Rating cell
-  var cell3 = {
+  var cell4 = {
     averageRating: 'N/A',
     minRating: 'N/A',
     maxRating: 'N/A'
   };
   if (ratings.length) {
-    cell3.averageRating = _.round(_.sum(ratings) / ratings.length, 2);
-    cell3.minRating = _.min(ratings);
-    cell3.maxRating = _.max(ratings);
+    cell4.averageRating = _.round(_.sum(ratings) / ratings.length, 2);
+    cell4.minRating = _.min(ratings);
+    cell4.maxRating = _.max(ratings);
   }
 
   // Confidence cell
-  var cell4 = {
+  var cell5 = {
     averageConfidence: 'N/A',
     minConfidence: 'N/A',
     maxConfidence: 'N/A'
   };
   if (confidences.length) {
-    cell4.averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
-    cell4.minConfidence = _.min(confidences);
-    cell4.maxConfidence = _.max(confidences);
+    cell5.averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
+    cell5.minConfidence = _.min(confidences);
+    cell5.maxConfidence = _.max(confidences);
   }
 
-  // Status cell
-  var invitationUrlParams = {
-    id: note.forum,
-    noteId: note.id,
-    invitationId: CONFERENCE + '/-/Paper' + note.number + '/Meta_Review'
-  };
-  var cell5 = {
-    invitationUrl: '/forum?' + $.param(invitationUrlParams)
-  };
   if (metaReview) {
     cell5.recommendation = metaReview.content.recommendation;
     cell5.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
@@ -658,6 +658,20 @@ var registerEventHandlers = function() {
     }
     return false;
   });
+
+  $('#group-container').on('click', 'button.invite', function(e) {
+    $parent = $(this).parent();
+    noteId = $parent.find('input').data('noteId');
+    noteNumber = $parent.find('input').data('noteNumber');
+    reviewer = $parent.find('input').val();
+    console.log(noteId);
+    console.log(noteNumber);
+    console.log(reviewer);
+    inviteReviewer(noteId, noteNumber, reviewer, function() {
+      $parent.find('input').val('');
+    });
+    return false;
+  });
 };
 
 var postReviewerEmails = function(postData) {
@@ -675,5 +689,36 @@ var postReviewerEmails = function(postData) {
       }
     });
 };
+
+var inviteReviewer = function(noteId, noteNumber, reviewer, done) {
+
+  var postData = {
+    id: 'learningtheory.org/COLT/2019/Conference/-/Paper' + noteNumber + '/Recruit_Reviewers',
+    super: 'learningtheory.org/COLT/2019/Conference/-/Recruit_Reviewers',
+    reply: {
+      forum: noteId
+    },
+    signatures: ['learningtheory.org/COLT/2019/Conference/Paper' + noteNumber + '/Program_Committee'],
+    readers: ['everyone'],
+    writers: ['learningtheory.org/COLT/2019/Conference/Paper' + noteNumber + '/Program_Committee']
+  }
+  return Webfield.post('/invitations', postData)
+  .then(function(response) {
+    console.log('Invitation posted');
+    var key = CryptoJS.HmacSHA256(reviewer, '1234');
+    var acceptUrl = 'http://localhost:3000/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key +'&response=Yes';
+    var declineUrl = 'http://localhost:3000/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key + '&response=No';
+    var email = {
+      groups: [reviewer],
+      subject: 'Invitation to review paper ' + noteNumber,
+      message: 'accept: ' + acceptUrl + '\n reject: ' + declineUrl
+    }
+    return Webfield.post('/messages', email)
+    .then(function(response) {
+      console.log('Email sent');
+      done();
+    });
+  });
+}
 
 main();

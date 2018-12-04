@@ -12,7 +12,7 @@ function() {
   .then(result => {
     if (result && result.notes && result.notes.length) {
       var forum = result.notes[0];
-      var reviewersGroupId = CONFERENCE_ID + '/Paper' + forum.number + '/Program_Committee';
+      var reviewersGroupId = CONFERENCE_ID + '/Paper' + forum.number + '/Reviewers';
       var reviewersDeclinedGroupId = reviewersGroupId + '/Declined';
 
       if(hashKey == note.content.key) {
