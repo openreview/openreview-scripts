@@ -49,12 +49,7 @@ if __name__ == '__main__':
         reviewers.web = f.read()
         reviewers = client.post_group(reviewers)
 
-    with open('../webfield/areachairWebfieldBiddingEnabled.js','r') as f:
-        area_chairs = client.get_group(conference_config.AREA_CHAIRS_ID)
-        area_chairs.web = f.read()
-        area_chairs = client.post_group(area_chairs)
-
-    conference_config.add_bid.invitees = [conference_config.REVIEWERS_ID, conference_config.AREA_CHAIRS_ID]
+    conference_config.add_bid.invitees = [conference_config.REVIEWERS_ID]
     client.post_invitation(conference_config.add_bid)
 
     # set up User Score notes
@@ -63,14 +58,10 @@ if __name__ == '__main__':
         print('WARNING: not all reviewers have been converted to profile IDs. Members without profiles will not have metadata created.')
     valid_reviewer_ids = [r for r in reviewers.members if '~' in r]
 
-    if not all(['~' in member for member in area_chairs.members]):
-        print('WARNING: not all area chairs have been converted to profile IDs. Members without profiles will not have metadata created.')
-    valid_ac_ids = [r for r in area_chairs.members if '~' in r]
-
     client.post_invitation(conference_config.scores_inv)
     user_score_notes = {}
     for paper in openreview.tools.iterget_notes(client, invitation=conference_config.BLIND_SUBMISSION_ID):
-        for user_id in valid_reviewer_ids + valid_ac_ids:
+        for user_id in valid_reviewer_ids:
             if user_id not in user_score_notes:
                 user_score_notes[user_id] = openreview.Note.from_json({
                     'invitation': conference_config.SCORES_INV_ID,

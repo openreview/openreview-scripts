@@ -39,10 +39,11 @@ var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in re
   </ul>\
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
-    <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
+    <li>Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
-    <li>Default bid on each paper is \"No Bid\".</li>\
+    <li>Default bid on each paper is "No Bid".</li>\
+    <li>If you verified your <a href="/group?id=OpenReview.net/Archive">OpenReview Archive</a> before the start of the bidding stage, the papers below will be sorted by relevance to you. If they do not appear sorted, please contact <a href="mailto:info@openreview.net">info@openreview.net</a>.</li>\
   </ul><br>'
 
 // Main is the entry point to the webfield code and runs everything
@@ -60,8 +61,11 @@ function main() {
 // Perform all the required API calls
 function load() {
   var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
-    return allNotes.filter(function(note) {
-      return !note.content.hasOwnProperty('withdrawal');
+    return allNotes.map(function(note) {
+      note.details.tags = note.details.tags.filter(function(tag) {
+        return tag.tauthor;
+      });
+      return note;
     });
   });
 
