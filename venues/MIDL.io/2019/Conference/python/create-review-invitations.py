@@ -31,36 +31,14 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print("Connecting to "+client.baseurl)
 
-builder = openreview.conference.ConferenceBuilder(client)
-builder.set_conference_id(config.CONFERENCE_ID)
-builder.set_conference_name('Medical Imaging with Deep Learning')
-builder.set_conference_submission_name('Full_Submission')
-conference = builder.get_result()
+conference = config.get_conference(client)
 conference.set_authors()
 
-submissions = client.get_notes(invitation=config.CONFERENCE_ID+'/-/Full_Submission')
-for paper in submissions:
+iterator = tools.iterget_notes(client, invitation=conference.get_submission_id())
+for paper in iterator:
     paper_num = str(paper.number)
-    paperinv = config.CONFERENCE_ID + '/-/Paper' + paper_num
-    paperGroup = config.CONFERENCE_ID + '/Paper' + paper_num
-    print(paper_num)
-    ## Reviewer group - people that can see the review invitation
-    reviewerGroup = paperGroup + '/Reviewers'
-    try:
-        client.get_group(id=reviewerGroup)
-        print("Found " + reviewerGroup)
-    except openreview.OpenReviewException as e:
-        # is group not found, then make groups and invites
-        print(e.args[0][0])
-        if e.args[0][0].startswith('Group Not Found'):
-            client.post_group(openreview.Group(
-                id=reviewerGroup,
-                signatures=[config.CONFERENCE_ID],
-                writers=[config.CONFERENCE_ID],
-                members=[],
-                readers=[config.CONFERENCE_ID, conference.get_program_chairs_id(), paperGroup+'/AreaChairs'],
-                signatories=[]))
-
+    paperinv = conference.get_id() + '/-/Paper' + paper_num + '/Official_Review'
+    paperGroup = conference.get_id() + '/Paper' + paper_num
 
     ## Confidential Review
     review_reply = {
@@ -69,7 +47,7 @@ for paper in submissions:
         'writers': {'values-regex': '~.*|'+paperGroup + '/AnonReviewer[0-9]+'},
         'signatures': {'values-regex': '~.*|'+paperGroup + '/AnonReviewer[0-9]+'},
         'readers': {
-            'values': [config.CONFERENCE_ID, conference.get_program_chairs_id(), paperGroup+'/AreaChairs'],
+            'values': [conference.get_id(), conference.get_program_chairs_id(), paperGroup + '/Area_Chairs'],
             'description': 'The users who will be allowed to read the above content.'
         },
         'content': {
@@ -108,13 +86,13 @@ for paper in submissions:
 
     review_parameters = {
         'readers': ['everyone'],
-        'writers': [config.CONFERENCE_ID],
-        'signatures': [config.CONFERENCE_ID],
+        'writers': [conference.get_id()],
+        'signatures': [conference.get_id()],
         'duedate': tools.timestamp_GMT(2019, month=1, day= 29, hour=8, minute=0)
     }
     review_parameters['reply'] = review_reply
     review_parameters['invitees'] = [paperGroup + '/Reviewers']
-    invite = openreview.Invitation(paperinv + '/Official_Review', **review_parameters)
+    invite = openreview.Invitation(paperinv, **review_parameters)
     client.post_invitation(invite)
     print(invite.id)
 
