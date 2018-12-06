@@ -424,7 +424,85 @@ config_inv = openreview.Invitation.from_json({
         'readers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
         'writers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
         'signatures': {'values': [PROGRAM_CHAIRS_ID]},
-        'content': {}
+        'content': {
+            "label": {
+                "value-regex": ".{1,250}",
+                "required": True,
+                "description": "Title of the configuration.",
+                "order": 1
+            },
+            "max_users": {
+                "value-regex": "[0-9]+",
+                "required": True,
+                "description": "Max number of reviewers that can review a paper",
+                "order": 2
+            },
+            "min_users": {
+                "value-regex": "[0-9]+",
+                "required": True,
+                "description": "Min number of reviewers required to review a paper",
+                "order": 3
+            },
+            "max_papers": {
+                "value-regex": "[0-9]+",
+                "required": True,
+                "description": "Max number of reviews a person has to do",
+                "order": 4
+            },
+            "min_papers": {
+                "value-regex": "[0-9]+",
+                "required": True,
+                "description": "Min number of reviews a person should do",
+                "order": 5
+            },
+            "alternates": {
+                "value-regex": "[0-9]+",
+                "required": True,
+                "description": "Number of alternate reviewers for a paper",
+                "order": 6
+            },
+            "config_invitation": {
+                "value": CONFERENCE_ID,
+                "required": True,
+                "description": "Invitation to get the configuration note",
+                "order": 7
+            },
+            'paper_invitation': {"value": BLIND_SUBMISSION_ID,
+                                 "required": True,
+                                 "description": "Invitation to get the configuration note",
+                                 "order": 8
+                                 },
+            'metadata_invitation': {"value": METADATA_INV_ID,
+                                    "required": True,
+                                    "description": "Invitation to get the configuration note",
+                                    "order": 9
+                                    },
+            'assignment_invitation': {"value": ASSIGNMENT_INV_ID,
+                                      "required": True,
+                                      "description": "Invitation to get the configuration note",
+                                      "order": 10
+                                      },
+            'match_group': {"value": REVIEWERS_ID,
+                            "required": True,
+                            "description": "Invitation to get the configuration note",
+                            "order": 11
+                            },
+            "scores_names": {
+                "values-dropdown": ['affinity', 'bid'],
+                "required": True,
+                "description": "List of scores names",
+                "order": 12
+            },
+            "scores_weights": {
+                "values-regex": "\\d*\\.?\\d*", # decimal number allowed
+                "required": True,
+                "description": "Comma separated values of scores weigths, should follow the same order than scores_names",
+                "order": 13
+            },
+            "status": {
+                "value-dropdown": ['Initialized', 'Running', 'Error', 'Failure', 'Complete', 'Deployed']
+            }
+        }
     }
 
 })
