@@ -13,9 +13,9 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     builder = openreview.conference.ConferenceBuilder(client)
-    builder.set_conference_id(colt19.CONFERENCE_ID)
+    builder.set_conference_id('learningtheory.org/COLT/2019/Conference')
     builder.set_conference_name('Computational Learning Theory')
-    builder.set_conference_short_name(colt19.SHORT_PHRASE)
+    builder.set_conference_short_name('COLT 2019')
     builder.set_homepage_header({
     'title': 'COLT 2019',
     'subtitle': 'Computational Learning Theory',
@@ -24,8 +24,7 @@ if __name__ == '__main__':
     'website': 'http://learningtheory.org/colt2019/',
     'location': 'Phoenix, Arizona, United States'
     })
-    builder.set_conference_type(openreview.builder.DoubleBlindConferenceType)
-    builder.set_conference_reviewers_name(colt19.PROGRAM_CHAIRS_NAME)
+    builder.set_conference_area_chairs_name('Program_Committee')
     conference = builder.get_result()
-    conference.open_submissions(due_date = datetime.datetime(2019, 10, 5, 18, 00))
+    conference.open_submissions(due_date=datetime.datetime(2019, 10, 5, 18, 0), public = True)
     print('DONE.')
