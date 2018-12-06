@@ -181,7 +181,6 @@ submission_inv = invitations.Submission(
     id = SUBMISSION_ID,
     conference_id = CONFERENCE_ID,
     duedate = SUBMISSION_DEADLINE,
-    process = os.path.abspath('../process/submissionProcess.js'),
     reply_params = {
         'readers': {
             'values-copied': [
@@ -296,6 +295,7 @@ reviewer_metadata = openreview.Invitation(**{
         PROGRAM_CHAIRS_ID
     ],
     'writers': [CONFERENCE_ID],
+    'invitees': [],
     'signatures': [CONFERENCE_ID],
     'reply': {
         'forum': None,
@@ -323,6 +323,7 @@ assignment_inv = openreview.Invitation(**{
     'readers': [CONFERENCE_ID],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
+    'invitees': [],
     'reply': {
         'forum': None,
         'replyto': None,
@@ -341,6 +342,7 @@ config_inv = openreview.Invitation(**{
     'readers': [CONFERENCE_ID],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
+    'invitees': [],
     'reply': {
         'forum': None,
         'replyto': None,

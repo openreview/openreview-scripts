@@ -119,9 +119,5 @@ if __name__ == '__main__':
         paper_tpms_scores = paper_scores_by_id[blind_note.id]
         new_metadata_note = notes.post_metadata_note(client, blind_note, user_profiles, metadata_inv, paper_tpms_scores, manual_conflicts_by_id)
 
-    # senior_reviewer_ids, junior_reviewer_ids = split_reviewers_by_experience(client, reviewers_group)
-    # conference_config.senior_reviewers.members = senior_reviewer_ids
-    # conference_config.junior_reviewers.members = junior_reviewer_ids
-    # client.post_group(conference_config.senior_reviewers)
-    # client.post_group(conference_config.junior_reviewers)
+
 
