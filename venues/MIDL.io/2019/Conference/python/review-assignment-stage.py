@@ -13,6 +13,7 @@ import config
 import time
 import json
 import csv
+import random
 
 
 def clear(client, invitation):
@@ -66,7 +67,7 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, paper_tp
         if tpms_score:
             user_entry['scores']['affinity'] = float(tpms_score)
         else:
-             user_entry['scores']['affinity'] = 0.5
+             user_entry['scores']['affinity'] = random.random()
 
         manual_user_conflicts = manual_conflicts_by_id.get(profile.id, [])
         if manual_user_conflicts:
