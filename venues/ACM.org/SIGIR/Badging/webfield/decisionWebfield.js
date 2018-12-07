@@ -223,6 +223,23 @@ function renderContent(allNotes, tagInvitations) {
       fadeIn: false
     });
 
+    var index = 0;
+    $('ul.nav-tabs').children().each(function(i) {
+      if (index == 2) {
+        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/artifacts_available_dl.jpg" height="28" width="28">');
+      }
+      if (index == 3) {
+        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/artifacts_evaluated_functional_dl.jpg" height="28" width="28">');
+      }
+      if (index == 4) {
+        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/results_replicated_dl.jpg" height="28" width="28">');
+      }
+      if (index == 5) {
+        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/results_reproduced_dl.jpg" height="28" width="28">');
+      }
+      index = index + 1;
+    });
+
     $('#notes .spinner-container').remove();
     $('#notes .tabs-container').show();
   }
