@@ -123,7 +123,7 @@ function renderContent(allNotes, tagInvitations) {
         content: null
       },
       {
-        heading: 'No badges',
+        heading: 'No badge',
         headingCount: noBadges.length,
         id: 'noBadges',
         content: null
@@ -226,16 +226,16 @@ function renderContent(allNotes, tagInvitations) {
     var index = 0;
     $('ul.nav-tabs').children().each(function(i) {
       if (index == 2) {
-        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/artifacts_available_dl.jpg" height="28" width="28">');
+        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/artifacts_available_dl.jpg" style="margin-top: -2px;margin-right: 2px;height: 18px;width: 18px;">');
       }
       if (index == 3) {
-        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/artifacts_evaluated_functional_dl.jpg" height="28" width="28">');
+        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/artifacts_evaluated_functional_dl.jpg" style="margin-top: -2px;margin-right: 2px;height: 18px;width: 18px;">');
       }
       if (index == 4) {
-        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/results_replicated_dl.jpg" height="28" width="28">');
+        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/results_replicated_dl.jpg" style="margin-top: -2px;margin-right: 2px;height: 18px;width: 18px;">');
       }
       if (index == 5) {
-        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/results_reproduced_dl.jpg" height="28" width="28">');
+        $(this).find('a').prepend('<img src="https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/results_reproduced_dl.jpg" style="margin-top: -2px;margin-right: 2px;height: 18px;width: 18px;">');
       }
       index = index + 1;
     });
