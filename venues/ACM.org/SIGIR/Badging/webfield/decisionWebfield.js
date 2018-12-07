@@ -18,10 +18,7 @@ function main() {
 
   Webfield.ui.spinner('#notes', { inline: true });
 
-  OpenBanner.breadcrumbs([
-    { link: '/', text: 'Venues' },
-    { link: '/group?id=' + CONFERENCE, text: view.prettyId(CONFERENCE) }
-  ]);
+  OpenBanner.venueHomepageLink(CONFERENCE);
 
   load().then(renderContent).then(Webfield.ui.done);
 }
