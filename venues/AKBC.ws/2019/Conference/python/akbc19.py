@@ -564,7 +564,7 @@ config_inv = openreview.Invitation.from_json({
                             "order": 11
                             },
             "scores_names": {
-                "values-dropdown": ['affinity', 'bid', 'subject_area_score', 'areachair_score'],
+                "values-dropdown": ['affinity', 'bid', 'subjectArea', 'recommendation'],
                 "required": True,
                 "description": "List of scores names",
                 "order": 12
