@@ -46,10 +46,11 @@ function() {
         }
       }
     }
-  }
+  };
   var Conf_Chairs = CONF + '/Chairs';
   var reviewInvitation = {
     id: CONF + '/-/Paper' + note.number + '/Review',
+    duedate: 1575732251000,
     signatures: [CONF, Conf_Chairs],
     writers: [CONF, Conf_Chairs],
     invitees: [
@@ -100,7 +101,7 @@ function() {
     }
   }
 
-  
+
   or3client.or3request(or3client.mailUrl, authorMail, 'POST', token)
   .then(result => or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token))
   .then(result => or3client.or3request(or3client.inviteUrl, reviewInvitation, 'POST', token))
