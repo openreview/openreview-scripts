@@ -16,7 +16,7 @@ import groups
 import time
 import json
 import csv
-import matcher
+
 
 def clear(client, invitation):
     note_list = list(openreview.tools.iterget_notes(client, invitation = invitation))
@@ -95,15 +95,15 @@ if __name__ == '__main__':
     assignment_inv = client.post_invitation(conference_config.assignment_inv)
 
     # read in TPMS scores
-    paper_scores_by_number = {}
+    paper_scores_by_id = {}
     with open(args.scores_file) as f:
         for row in csv.reader(f):
-            paper_number = int(row[0])
+            paper_note_id = row[0]
             profile_id = row[1]
             score = row[2]
-            if paper_number not in paper_scores_by_number:
-                paper_scores_by_number[paper_number] = {}
-            paper_scores_by_number[paper_number][profile_id] = score
+            if paper_note_id not in paper_scores_by_id:
+                paper_scores_by_id[paper_note_id] = {}
+            paper_scores_by_id[paper_note_id][profile_id] = score
 
     # read in manual conflicts
     # manual_conflicts_by_id is keyed on tilde IDs, and values are each a list of domains.
@@ -116,12 +116,8 @@ if __name__ == '__main__':
                 manual_conflicts_by_id[id] = conflicts
 
     for blind_note in blind_submissions:
-        paper_tpms_scores = paper_scores_by_number[blind_note.number]
+        paper_tpms_scores = paper_scores_by_id[blind_note.id]
         new_metadata_note = notes.post_metadata_note(client, blind_note, user_profiles, metadata_inv, paper_tpms_scores, manual_conflicts_by_id)
 
-    senior_reviewer_ids, junior_reviewer_ids = split_reviewers_by_experience(client, reviewers_group)
-    conference_config.senior_reviewers.members = senior_reviewer_ids
-    conference_config.junior_reviewers.members = junior_reviewer_ids
-    client.post_group(conference_config.senior_reviewers)
-    client.post_group(conference_config.junior_reviewers)
+
 

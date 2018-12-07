@@ -13,7 +13,8 @@ python groups.py Reviewers --overwrite
 import openreview
 import argparse
 import akbc19 as conference_config
-from matcher import utils
+# from matcher import utils
+import openreview.tools
 import numpy as np
 import random
 
@@ -98,25 +99,24 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, paper_tp
 
         # find conflicts between the reviewer's profile and the paper's authors' profiles
         user_entry = {
-            'userId': profile.id,
+            'userid': profile.id,
             'scores': {}
         }
 
         if reviewer_bids:
             bid_score = bid_score_map.get(reviewer_bids[0]['tag'], 0.0)
             if bid_score != 0.0:
-                user_entry['scores']['bid_score'] = bid_score
+                user_entry['scores']['bid'] = bid_score
 
         if tpms_score:
-            user_entry['scores']['tpms_score'] = float(tpms_score)
+            user_entry['scores']['affinity'] = float(tpms_score)
 
         manual_user_conflicts = manual_conflicts_by_id.get(profile.id, [])
         if manual_user_conflicts:
             profile = _append_manual_conflicts(profile, manual_user_conflicts)
-        conflicts = utils.get_conflicts(author_profiles, profile)
+        conflicts = openreview.tools.get_conflicts(author_profiles, profile)
 
         if conflicts:
-            user_entry['scores']['conflict_score'] = '-inf'
             user_entry['conflicts'] = conflicts
 
         entries.append(user_entry)
