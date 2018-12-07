@@ -96,8 +96,6 @@ if __name__ == '__main__':
             score = row[2]
             scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'areachair_score': float(score)})
 
-    print(scores_by_reviewer_by_paper)
-
     # read in manual conflicts
     # manual_conflicts_by_id is keyed on tilde IDs, and values are each a list of domains.
     manual_conflicts_by_id = {}
