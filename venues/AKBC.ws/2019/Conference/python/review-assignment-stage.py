@@ -24,28 +24,6 @@ def clear(client, invitation):
     for note in note_list:
         client.delete_note(note)
 
-def split_reviewers_by_experience(client, reviewers_group):
-    questionnaire_responses = openreview.tools.iterget_notes(
-        client, invitation=conference_config.CONFERENCE_ID + '/-/Reviewer_Questionnaire_Response')
-
-    experience_by_signature = {r.signatures[0]: r.content['Reviewing Experience'] for r in questionnaire_responses}
-
-    senior_reviewers = []
-    junior_reviewers = []
-
-    valid_reviewer_ids = [r for r in reviewers_group.members if '~' in r]
-    for reviewer in valid_reviewer_ids:
-        experience = experience_by_signature.get(reviewer, '')
-        if experience in [
-            '5-10 times  - active community citizen',
-            '10+ times  - seasoned reviewer'
-        ]:
-            senior_reviewers.append(reviewer)
-        else:
-            junior_reviewers.append(reviewer)
-
-    return senior_reviewers, junior_reviewers
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('affinity_score_file')
