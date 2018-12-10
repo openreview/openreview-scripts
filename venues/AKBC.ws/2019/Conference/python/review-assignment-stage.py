@@ -74,6 +74,7 @@ if __name__ == '__main__':
     blind_submissions = openreview.tools.iterget_notes(client, invitation=conference_config.BLIND_SUBMISSION_ID)
 
     scores_by_reviewer_by_paper = {note.forum: defaultdict(dict) for note in blind_submissions}
+
     # read in TPMS scores
     with open(args.affinity_score_file) as f:
         for row in csv.reader(f):
@@ -87,14 +88,14 @@ if __name__ == '__main__':
             paper_note_id = row[0]
             profile_id = row[1]
             score = row[2]
-            scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'subject_area_score': float(score)})
+            scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'subjectArea': float(score)})
 
     with open(args.ac_score_file) as f:
         for row in csv.reader(f):
             paper_note_id = row[0]
             profile_id = row[1]
             score = row[2]
-            scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'areachair_score': float(score)})
+            scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'recommendation': float(score)})
 
     # read in manual conflicts
     # manual_conflicts_by_id is keyed on tilde IDs, and values are each a list of domains.
