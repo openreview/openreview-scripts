@@ -49,12 +49,13 @@ function() {
   };
 
   var Conf_Chairs = CONF + '/Chairs';
+  var Conf_Reviewers = CONF + '/Reviewers';
   var reviewInvitation = {
     id: CONF + '/-/Paper' + note.number + '/Review',
     duedate: 1575732251000,
     signatures: [CONF],
     writers: [CONF, Conf_Chairs],
-    invitees: [],
+    invitees: [Conf_Reviewers],
     readers: ['everyone'],
     reply: {
       forum: note.id,

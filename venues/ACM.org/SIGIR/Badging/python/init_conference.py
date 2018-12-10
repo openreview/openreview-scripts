@@ -64,11 +64,23 @@ submission_invitation = conference.open_submissions(due_date = datetime.datetime
         }
     }, include_keywords = False, include_TLDR = False)
 
+#Override process function
 with open('../process/submissionProcess.js') as f:
+    submission_invitation.readers = [conference.get_authors_id()]
     submission_invitation.process = f.read()
     client.post_invitation(submission_invitation)
 
-conference.set_program_chairs(emails = ['ferro@dei.unipd.it', 'mccallum@cs.umass.edu'])
+conference.set_program_chairs(emails = []) # paste real emails
+conference.set_reviewers(emails = []) # past real emails
+
+# Override author group
+author_group = openreview.Group(id = conference.get_authors_id(),
+    readers = [conference.get_program_chairs_id()],
+    writers = [conference.get_program_chairs_id()],
+    signatories = [[conference.get_authors_id()]],
+    signatures = [conference.get_id()],
+    members = ['spector@cs.umass.edu'])
+client.post_group(author_group)
 
 # Badging decision invitation for Chairs
 badging_decision_inv = openreview.Invitation(
