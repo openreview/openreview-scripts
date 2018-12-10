@@ -189,7 +189,7 @@ official_comment_template = {
         conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
         conference_config.PROGRAM_CHAIRS_ID
     ],
-    'noninvitees': [conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
+    # 'noninvitees': [conference_config.PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
     'signatures': [conference_config.CONFERENCE_ID],
     'multiReply': True,
     'reply': {
