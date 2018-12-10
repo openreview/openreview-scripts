@@ -79,7 +79,7 @@ author_group = openreview.Group(id = conference.get_authors_id(),
     writers = [conference.get_program_chairs_id()],
     signatories = [[conference.get_authors_id()]],
     signatures = [conference.get_id()],
-    members = ['spector@cs.umass.edu'])
+    members = [])
 client.post_group(author_group)
 
 # Badging decision invitation for Chairs
