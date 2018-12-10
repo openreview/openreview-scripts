@@ -128,6 +128,7 @@ The AKBC 2019 Program Chairs
 
 '''
 
+POST_BID_AREACHAIRS_SUBJECT = '[AKBC 2019]: Reviewing Timeline'
 POST_BID_AREACHAIRS_MESSAGE = '''Dear {firstname},
 
 Thank you for agreeing to serve as an Area Chair for AKBC 2019.
@@ -137,25 +138,26 @@ We wanted to give you a quick update on the conference, and describe the timelin
 Before we start the reviewing period next week, we wanted to give you a brief outline of the upcoming tasks.
 
 Reviewing Stage: December 11 - January 8
-Reviewers post their reviews privately
-Authors, ACs, and members of the public may post comments.
-Area chairs ensure reviews are submitted on time.
+- Reviewers post their reviews privately
+- Authors, ACs, and members of the public may post comments.
+- Area chairs ensure reviews are submitted on time.
 
 Rebuttal & Discussion Stage: January 9 - February 1
-All reviews are made public, and authors can respond
-ACs continue to facilitate discussion (e.g. ask reviewers to respond)
+- All reviews are made public, and authors can respond
+- ACs continue to facilitate discussion (e.g. ask reviewers to respond)
 
 Internal Discussion Stage: February 1-10
-Reviewers and ACs discuss the papers amongst themselves.
-Area chairs post Meta Reviews, which are not visible publicly.
+- Reviewers and ACs discuss the papers amongst themselves.
+- Area chairs post Meta Reviews, which are not visible publicly.
 
 Final Decision: February 15
-Final decisions and meta-reviews are communicated to authors.
+- Final decisions and meta-reviews are communicated to authors.
 
-Reminder, you can track the assigned papers, the status of reviewers assigned to them, and other such things from the Are Chair console, here: https://openreview.net/group?id=AKBC.ws/2019/Conference/Area_Chairs.
+You will be able to track the assigned papers, the status of reviewers assigned to them, and other such things from the Are Chair console, here (later this week): https://openreview.net/group?id=AKBC.ws/2019/Conference/Area_Chairs.
 If you have not signed up on openreview already, then please sign up (https://openreview.net/signup) using the address you are receiving this email on.
 
 Once again, thank you very much for your help!
+
 Isabelle Augenstein, Program Co-chair
 Sameer Singh, Program Co-chair
 Andrew McCallum, General Chair
@@ -176,11 +178,11 @@ We wanted to give you a quick update on the conference, and describe the timelin
 Before we start the reviewing period next week, we wanted to give you a brief outline of the upcoming tasks.
 
 Reviewing Stage: December 11 - January 8
-- Reviewers post their reviews privately
+- Reviewers post their reviews privately.
 - Authors, area chairs, and members of the public may post comments.
 
 Rebuttal & Discussion Stage: January 9 - February 1
-- All reviews are made public, authors can respond, and public can comment on reviews
+- All reviews are made public, authors can respond, and the public can comment on reviews
 - Reviewers discuss and revise their reviews
 
 Internal Discussion Stage: February 1-10
@@ -189,8 +191,9 @@ Internal Discussion Stage: February 1-10
 Final Decision: February 15
 - Final decisions and meta-reviews are communicated to authors.
 
-Reminder, you can track the assigned papers, the status of reviewers assigned to them, and other such things from the Program Committee console, here: https://openreview.net/group?id=AKBC.ws/2019/Conference/Reviewers.
-If you have not signed up on openreview already, then please sign up (https://openreview.net/signup) using the address you are receiving this email on.
+You will be able to track the papers assigned to you from the Reviewer Console, here: https://openreview.net/group?id=AKBC.ws/2019/Conference/Reviewers. Please enter your reviews by clicking on the “Official Review” button on the discussion page of each paper. If you cannot see this button, please contact info@openreview.net before proceeding. Please also note that you will not be able to see reviews submitted by other reviewers until you have submitted your own review, but you will be able to edit your review until the end of the reviewing period.
+
+If you have not signed up on OpenReview already, then please sign up (https://openreview.net/signup) using the address you are receiving this email on.
 
 Once again, thank you very much for your help!
 
