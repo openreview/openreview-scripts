@@ -24,7 +24,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-conference.open_submissions(due_date = datetime.datetime(2050, 1, 1, 22, 00), public = True, additional_fields = {
+submission_invitation = conference.open_submissions(due_date = datetime.datetime(2050, 1, 1, 22, 00), public = True, additional_fields = {
         'artifact type': {
             'fieldDisplayLabel': 'Artifact Type',
             'description': 'Type of the artifact.',
@@ -63,6 +63,10 @@ conference.open_submissions(due_date = datetime.datetime(2050, 1, 1, 22, 00), pu
             'required':False
         }
     }, include_keywords = False, include_TLDR = False)
+
+with open('../process/submissionProcess.js') as f:
+    submission_invitation.process = f.read()
+    client.post_invitation(submission_invitation)
 
 conference.set_program_chairs(emails = ['ferro@dei.unipd.it', 'mccallum@cs.umass.edu'])
 

@@ -47,16 +47,14 @@ function() {
       }
     }
   };
+
   var Conf_Chairs = CONF + '/Chairs';
   var reviewInvitation = {
     id: CONF + '/-/Paper' + note.number + '/Review',
     duedate: 1575732251000,
-    signatures: [CONF, Conf_Chairs],
+    signatures: [CONF],
     writers: [CONF, Conf_Chairs],
-    invitees: [
-      "srreviewer@acmtest.org",
-      "jrreviewer@acmtest.org"
-      ],
+    invitees: [],
     readers: ['everyone'],
     reply: {
       forum: note.id,
