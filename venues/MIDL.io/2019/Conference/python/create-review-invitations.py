@@ -44,8 +44,8 @@ for paper in iterator:
     review_reply = {
         'forum': paper.id,
         'replyto': paper.id,
-        'writers': {'values-regex': '~.*|'+paperGroup + '/AnonReviewer[0-9]+'},
-        'signatures': {'values-regex': '~.*|'+paperGroup + '/AnonReviewer[0-9]+'},
+        'writers': {'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
+        'signatures': {'values-regex': paperGroup + '/AnonReviewer[0-9]+'},
         'readers': {
             'values': [conference.get_id(), conference.get_program_chairs_id(), paperGroup + '/Area_Chairs'],
             'description': 'The users who will be allowed to read the above content.'
@@ -53,7 +53,7 @@ for paper in iterator:
         'content': {
             'review': {
                 'order': 1,
-                'value-regex': '[\\S\\s]{1,5000}',
+                'value-regex': '[\\S\\s]{1,500000}',
                 'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons. Remember that MIDL values both methodological contributions and application articles that present solid validation.',
                 'required': True
             },
@@ -79,6 +79,11 @@ for paper in iterator:
             'special_issue': {
                 'order': 4,
                 'value-checkbox': ['Special Issue Recommendation'],
+                'required': False
+            },
+            'oral_presentation': {
+                'order': 5,
+                'value-checkbox': ['Consider for oral presentation'],
                 'required': False
             }
         }
