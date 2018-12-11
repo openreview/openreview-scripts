@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     conference = config.get_conference(client)
-    conference.open_submissions(due_date = datetime.datetime(2019, 10, 5, 18, 00))
+    conference.open_submissions(due_date = datetime.datetime(2019, 10, 5, 18, 00), public = True)
     # Create super invitation
     recruit_invitation = openreview.Invitation(id = 'learningtheory.org/COLT/2019/Conference/-/Recruit_Reviewers',
                                             readers = ['everyone'],
