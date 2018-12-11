@@ -61,8 +61,8 @@ if __name__ == '__main__':
         })
     recruit_invitation = client.post_invitation(recruit_invitation)
 
-    conference.set_program_chairs(emails=['melisabok@gmail.com'])
-    area_chairs = conference.set_area_chairs(emails=['mccallum@cs.umass.edu', 'spector@cs.umass.edu'])
+    conference.set_program_chairs(emails=[])
+    area_chairs = conference.set_area_chairs(emails=[])
     with open(os.path.abspath('../webfield/programCommitteeWebfield.js')) as f:
         area_chairs.web = f.read()
         client.post_group(area_chairs)
