@@ -173,9 +173,9 @@ POST_BID_REVIEWERS_MESSAGE = '''Dear {firstname},
 
 Thank you for reviewing for AKBC 2019!
 
-We wanted to give you a quick update on the conference, and describe the timeline for upcoming events. We received 54 submissions, spanning many different topics. As you know, we’re past the bidding stage, and are working on the paper assignments.
+We wanted to give you a quick update on the conference, and describe the timeline for upcoming events. We received 54 submissions, spanning many different topics. As you know, we’re past the bidding stage, and have assigned you papers based (in part) on your bids.
 
-Before we start the reviewing period next week, we wanted to give you a brief outline of the upcoming tasks.
+Before we start the reviewing period this week, we wanted to give you a brief outline of the upcoming tasks.
 
 Reviewing Stage: December 11 - January 8
 - Reviewers post their reviews privately.
