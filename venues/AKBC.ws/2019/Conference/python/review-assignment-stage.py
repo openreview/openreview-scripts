@@ -16,38 +16,19 @@ import groups
 import time
 import json
 import csv
-import matcher
+from collections import defaultdict
+
 
 def clear(client, invitation):
     note_list = list(openreview.tools.iterget_notes(client, invitation = invitation))
     for note in note_list:
         client.delete_note(note)
 
-def split_reviewers_by_experience(client, reviewers_group):
-    questionnaire_responses = openreview.tools.iterget_notes(
-        client, invitation=conference_config.CONFERENCE_ID + '/-/Reviewer_Questionnaire_Response')
-
-    experience_by_signature = {r.signatures[0]: r.content['Reviewing Experience'] for r in questionnaire_responses}
-
-    senior_reviewers = []
-    junior_reviewers = []
-
-    valid_reviewer_ids = [r for r in reviewers_group.members if '~' in r]
-    for reviewer in valid_reviewer_ids:
-        experience = experience_by_signature.get(reviewer, '')
-        if experience in [
-            '5-10 times  - active community citizen',
-            '10+ times  - seasoned reviewer'
-        ]:
-            senior_reviewers.append(reviewer)
-        else:
-            junior_reviewers.append(reviewer)
-
-    return senior_reviewers, junior_reviewers
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('scores_file')
+    parser.add_argument('affinity_score_file')
+    parser.add_argument('ac_score_file')
+    parser.add_argument('subject_score_file')
     parser.add_argument('-c','--constraints_file')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
@@ -62,10 +43,6 @@ if __name__ == '__main__':
     clear(client, conference_config.CONFIG_INV_ID)
 
     # TODO: update the reviewer and AC consoles to indicate that the bidding phase is over
-
-    blind_submissions = openreview.tools.iterget_notes(client,
-        invitation=conference_config.BLIND_SUBMISSION_ID,
-        details='original,tags')
 
     # At this point, all reviewers & ACs should have been
     # converted to profile IDs and deduplicated.
@@ -94,16 +71,31 @@ if __name__ == '__main__':
     config_inv = client.post_invitation(conference_config.config_inv)
     assignment_inv = client.post_invitation(conference_config.assignment_inv)
 
+    blind_submissions = openreview.tools.iterget_notes(client, invitation=conference_config.BLIND_SUBMISSION_ID)
+
+    scores_by_reviewer_by_paper = {note.forum: defaultdict(dict) for note in blind_submissions}
+
     # read in TPMS scores
-    paper_scores_by_number = {}
-    with open(args.scores_file) as f:
+    with open(args.affinity_score_file) as f:
         for row in csv.reader(f):
-            paper_number = int(row[0])
+            paper_note_id = row[0]
             profile_id = row[1]
             score = row[2]
-            if paper_number not in paper_scores_by_number:
-                paper_scores_by_number[paper_number] = {}
-            paper_scores_by_number[paper_number][profile_id] = score
+            scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'affinity': float(score)})
+
+    with open(args.subject_score_file) as f:
+        for row in csv.reader(f):
+            paper_note_id = row[0]
+            profile_id = row[1]
+            score = row[2]
+            scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'subjectArea': float(score)})
+
+    with open(args.ac_score_file) as f:
+        for row in csv.reader(f):
+            paper_note_id = row[0]
+            profile_id = row[1]
+            score = row[2]
+            scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'recommendation': float(score)})
 
     # read in manual conflicts
     # manual_conflicts_by_id is keyed on tilde IDs, and values are each a list of domains.
@@ -115,13 +107,22 @@ if __name__ == '__main__':
                 conflicts = row[1:]
                 manual_conflicts_by_id[id] = conflicts
 
-    for blind_note in blind_submissions:
-        paper_tpms_scores = paper_scores_by_number[blind_note.number]
-        new_metadata_note = notes.post_metadata_note(client, blind_note, user_profiles, metadata_inv, paper_tpms_scores, manual_conflicts_by_id)
+    for blind_note in openreview.tools.iterget_notes(
+        client,
+        invitation=conference_config.BLIND_SUBMISSION_ID,
+        details='original,tags'
+        ):
 
-    senior_reviewer_ids, junior_reviewer_ids = split_reviewers_by_experience(client, reviewers_group)
-    conference_config.senior_reviewers.members = senior_reviewer_ids
-    conference_config.junior_reviewers.members = junior_reviewer_ids
-    client.post_group(conference_config.senior_reviewers)
-    client.post_group(conference_config.junior_reviewers)
+        scores_by_reviewer = scores_by_reviewer_by_paper[blind_note.id]
+
+        new_metadata_note = notes.post_metadata_note(
+            client,
+            blind_note,
+            user_profiles,
+            metadata_inv,
+            scores_by_reviewer,
+            manual_conflicts_by_id
+        )
+
+
 
