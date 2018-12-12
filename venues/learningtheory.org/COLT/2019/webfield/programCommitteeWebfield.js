@@ -8,7 +8,7 @@ var HEADER_TEXT = 'Program Committee Console';
 var SHORT_PHRASE = 'COLT 2019';
 var CONFERENCE = 'learningtheory.org/COLT/2019/Conference';
 
-var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Submission';
+var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Blind_Submission';
 
 var OFFICIAL_REVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Official_Review';
 var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';

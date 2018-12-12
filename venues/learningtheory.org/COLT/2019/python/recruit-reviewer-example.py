@@ -6,6 +6,30 @@ from Crypto.Hash import HMAC, SHA256
 hash_seed = "1234"
 
 
+def post_blind_note(client, original_note, conference):
+    blind_note = openreview.Note(
+        original= original_note.id,
+        invitation= conference.id + '/-/Blind_Submission',
+        forum= None,
+        signatures= [conference.id],
+        writers= [conference.id],
+        readers= ['everyone'],
+        content= {
+            "authors": ['Anonymous'],
+            "authorids": [],
+            "_bibtex": None
+        })
+
+    paper_group_id = conference.id + "/Paper{}".format(original_note.number)
+    author_group_id = conference.id + "/Paper{}/Authors".format(original_note.number)
+
+    blind_note.content = {
+        "authors": ['Anonymous'],
+        "authorids": [author_group_id],
+    }
+
+    return client.post_note(blind_note)
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
@@ -84,7 +108,13 @@ if __name__ == '__main__':
                                         signatures = [conference.get_id()],
                                         signatories = [conference.get_id()]))
 
-        official_review_invitation = client.post_invitation(openreview.Invitation.from_json(openreview.tools.fill_template(official_review_template, n)))
+        blind_note = post_blind_note(client, n, conference)
+
+        official_review_invitation = client.post_invitation(
+            openreview.Invitation.from_json(
+                openreview.tools.fill_template(official_review_template, blind_note)
+            )
+        )
 
         print(official_review_invitation.id)
 

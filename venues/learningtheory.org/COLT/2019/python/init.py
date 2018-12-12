@@ -1,5 +1,6 @@
 import argparse
 import openreview
+from openreview import invitations
 import datetime
 import os
 import config
@@ -16,15 +17,38 @@ if __name__ == '__main__':
     conference = config.get_conference(client)
     conference.open_submissions(
         due_date = datetime.datetime(2019, 2, 1, 18, 00),
-        public = True,
+        public = False,
         additional_fields = {
             'STOC_id': {
                 'description': 'If this submission (or its earlier version) is currently under consideration at STOC 2019, please enter its STOC identification number.',
                 'values-regex': '.*',
                 'required': False
             }
-        }
+        },
+        additional_readers = [conference.get_area_chairs_id()]
     )
+
+    # Create blind subission invitation
+    client.post_invitation(invitations.Submission(
+        id = conference.id + '/-/Blind_Submission',
+        conference_id = conference.id,
+        duedate = openreview.tools.timestamp_GMT(year=2019, month=2, day=1, hour=9),
+        mask = {
+            'authors': {
+                'values': ['Anonymous']
+            },
+            'authorids': {
+                'values-regex': '.*'
+            }
+        },
+        reply_params = {
+            'signatures': {
+                'values': [conference.id]},
+            'readers': {
+                'values': ['everyone']
+            }
+        }
+    ))
 
     # Create super invitation
     recruit_invitation = openreview.Invitation(
