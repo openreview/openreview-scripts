@@ -18,7 +18,7 @@ var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/.*Reviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Program_Committee.*';
 
 var ANONREVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee(\d+)/;
+var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)/;
 var REVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers$/;
 var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Invited$/;
 var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Declined$/;
@@ -774,7 +774,7 @@ var postReviewerEmails = function(postData) {
 var inviteReviewer = function(noteId, noteNumber, reviewer, done) {
 
   var postData = {
-    id: 'learningtheory.org/COLT/2019/Conference/-/Paper' + noteNumber + '/Recruit_Reviewers',
+    id: 'learningtheory.org/COLT/2019/Conference/Program_Committee/-/Paper' + noteNumber + '/Recruit_Reviewers',
     duedate: 1575488730000,
     super: 'learningtheory.org/COLT/2019/Conference/-/Recruit_Reviewers',
     reply: {
