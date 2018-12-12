@@ -317,7 +317,11 @@ review_rating_template = {
         },
         'signatures': {
             'description': 'How your identity will be displayed with the above content.',
-            'values-regex': iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX
+            'values-regex': '|'.join([
+                iclr19.PAPER_ANONREVIEWERS_TEMPLATE_REGEX,
+                iclr19.PAPER_AUTHORS_TEMPLATE_STR,
+                iclr19.PAPER_AREA_CHAIRS_TEMPLATE_REGEX
+            ])
         },
         'writers': {
             'description': 'Users that may modify this record.',
@@ -326,25 +330,14 @@ review_rating_template = {
             ]
         },
         'content': {
-            'Title': {
+            'title': {
                 'value': 'Review Rating',
                 'order': 1,
                 'required': True
             },
-            'Rate this review': {
-                'description': 'Please rate this review on a scale of 1 (worst) to 10 (best)',
-                'value-radio': [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10'
-                ],
+            'rating': {
+                'description': 'Please rate this review on a scale of 1 (worst) to 5 (best)',
+                'value-dropdown': ['5','4','3','2','1'],
                 'order': 2,
                 'required': True
             }

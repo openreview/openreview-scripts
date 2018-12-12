@@ -28,19 +28,20 @@ if __name__ == '__main__':
 
     counter = 0
     for paper in all_papers:
-        
+
         map_paper_to_anonrev_reviews = get_all_reviews(client, paper.number)
         all_submitted_reviewers = client.get_group("ICLR.cc/2019/Conference/Paper{}/Reviewers/Submitted".format(paper.number)).members
-        
+
         for anonrev, review_id in map_paper_to_anonrev_reviews.items():
             ## Create invitation for this paper-anonreview-review combination
             new_invitaton = invitations.enable_invitation("Review_Rating", paper)
 
-            # Update the invi before posting it 
+            # Update the invi before posting it
             new_invitaton.reply['replyto'] = review_id
             new_invitaton.id = new_invitaton.id.replace("{AnonReviewerNumber}", anonrev.split("/")[-1])
             new_invitaton.invitees = [reviewer for reviewer in all_submitted_reviewers if reviewer != anonrev]
-
+            new_invitaton.invitees.append('ICLR.cc/2019/Conference/Paper{}/Authors'.format(paper.number))
+            new_invitaton.invitees.append('ICLR.cc/2019/Conference/Paper{}/Area_Chairs'.format(paper.number))
             # Post the invitation
             client.post_invitation(new_invitaton).id
             counter += 1
