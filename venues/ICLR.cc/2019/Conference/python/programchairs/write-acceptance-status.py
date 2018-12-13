@@ -113,6 +113,14 @@ def output_paper_info(file_name, paper_info):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-o', '--outfile')
+    parser.add_argument('--baseurl', help="base URL")
+    parser.add_argument('--username')
+    parser.add_argument('--password')
+
+    args = parser.parse_args()
+
     ## Initialize the client library with username and password
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
@@ -121,8 +129,8 @@ def main():
 
     ## Initialize output file name
     file_name = "acceptances.csv"
-    if args.ofile!=None:
-        file_name = args.ofile
+    if args.outfile:
+        file_name = args.outfile
     output_paper_info(file_name, paper_info)
 
 if __name__ == "__main__":
