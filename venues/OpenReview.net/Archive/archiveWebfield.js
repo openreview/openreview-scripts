@@ -9,7 +9,14 @@
 // Constants
 var CONFERENCE_ID = 'OpenReview.net/Archive';
 var DIRECT_UPLOAD_ID = CONFERENCE_ID + '/-/Direct_Upload';
+var IMPORTED_RECORD_ID = CONFERENCE_ID + '/-/Imported_Record'
 // var HOMEPAGE_UPLOAD_ID = CONFERENCE_ID + '/-/Homepage_Upload';
+
+var paperDisplayOptions = {
+  pdfLink: true,
+  replyCount: true,
+  showContents: true
+};
 
 var HEADER = {
   title: 'OpenReview Archive',
@@ -76,7 +83,9 @@ function main() {
 
   renderConferenceTabs();
 
-  load().then(renderContent);
+  load().then(renderContent).then(function() {
+    $('.tabs-container a[href="#imported-papers"]').click();
+  });
 }
 
 // Load makes all the API calls needed to get the data to render the page
@@ -105,10 +114,15 @@ function load() {
       return result.notes;
     });
 
+  var tagInvitationsP = Webfield.getAll('/invitations', {replyInvitation: IMPORTED_RECORD_ID, tags: true}).then(function(invitations) {
+    return invitations.filter(function(invitation) {
+      return invitation.invitees.length;
+    });
+  });
 
 
   }
-  return $.when(authorNotesP, directUploadsP);
+  return $.when(authorNotesP, directUploadsP, tagInvitationsP);
 }
 
 
@@ -138,8 +152,12 @@ function renderSubmissionButton(INVITATION_ID) {
 function renderConferenceTabs() {
   var sections = [
     {
+      heading: 'Imported Papers',
+      id: 'imported-papers'
+    },
+    {
       heading: 'Your Papers',
-      id: 'user-uploaded-papers',
+      id: 'confirmed-papers',
     }
   ];
 
@@ -149,31 +167,74 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(authorNotes,directUploadNotes) {
-
-  var allNotes = _.unionBy(authorNotes, directUploadNotes, function(note){return note.id;});
-
-  if (allNotes.length) {
+/*
     var displayOptions = {
-      container: '#user-uploaded-papers',
+      container: '#imported-papers',
       user: user && user.profile,
       heading: null,
-      showActionButtons: true
+      showActionButtons: true,
+      showTags: true,
+      tagInvitations: tagInvitations
     };
 
     $(displayOptions.container).empty();
 
-    Webfield.ui.submissionList(allNotes, displayOptions);
+    var options = {
+      displayOptions: displayOptions
+    };
 
-    $('.tabs-container a[href="#user-uploaded-papers"]').parent().show();
+    Webfield.ui.submissionList(importedPapers, options);
+*/
+
+function renderContent(authorNotes, directUploadNotes, tagInvitations) {
+
+  var allNotes = _.unionBy(authorNotes, directUploadNotes, function(note){return note.id;});
+
+  var importedPapers = _.filter(allNotes, function(note){return note.invitation === IMPORTED_RECORD_ID;})
+  var confirmedPapers = _.filter(allNotes, function(note){return note.invitation != IMPORTED_RECORD_ID;})
+
+  // importedPapers tab
+  var importedPapersOptions = _.assign({}, paperDisplayOptions, {
+    showTags: true,
+    tagInvitations: tagInvitations,
+    container: '#imported-papers'
+  });
+
+  if (importedPapers.length) {
+    Webfield.ui.submissionList(importedPapers, {
+      heading: null,
+      container: '#imported-papers',
+      displayOptions: importedPapersOptions,
+      fadeIn: false
+    });
+
+    $('.tabs-container a[href="#your-consoles"]').parent().show();
   } else {
-    $('.tabs-container a[href="#user-uploaded-papers"]').parent().hide();
+    $('.tabs-container a[href="#your-consoles"]').parent().hide();
+  }
+
+  // All Submitted Papers tab
+  var confirmedPapersOptions = _.assign({}, paperDisplayOptions, {
+    showTags: false,
+    container: '#confirmed-papers'
+  });
+
+  $(confirmedPapersOptions.container).empty();
+
+  if (confirmedPapers.length){
+    Webfield.ui.submissionList(confirmedPapers, {
+      heading: null,
+      container: '#confirmed-papers',
+      displayOptions: confirmedPapersOptions,
+      fadeIn: false
+    });
+
+  } else {
+    $('.tabs-container a[href="#confirmed-papers"]').parent().hide();
   }
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  Webfield.ui.done();
 }
 
 // Go!
