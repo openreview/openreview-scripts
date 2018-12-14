@@ -61,7 +61,7 @@ direct_upload_invitation = openreview.Invitation(**{
     }
 })
 
-confirmation_tag_invitation = client.post_invitation(openreview.Invitation(**{
+confirmation_tag_invitation = openreview.Invitation(**{
     'id': 'OpenReview.net/Archive/-/Authorship_Claim',
     'duedate': 2538773200000,
     'expdate': None,
@@ -89,4 +89,4 @@ confirmation_tag_invitation = client.post_invitation(openreview.Invitation(**{
            }
         }
     }
-}))
+})
