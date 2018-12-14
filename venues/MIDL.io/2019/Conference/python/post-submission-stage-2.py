@@ -28,7 +28,6 @@ conference = config.get_conference(client)
 print('open comment invitations')
 conference.set_authors()
 conference.open_comments(name = 'Official_Comment', public = False, anonymous = True)
-conference.open_comments(name = 'Public_Comment', public = True, anonymous = False)
 
 print('replacing members with IDs')
 reviewers_group = client.get_group(conference.get_reviewers_id())
