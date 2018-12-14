@@ -10,7 +10,6 @@
 var CONFERENCE_ID = 'OpenReview.net/Archive';
 var DIRECT_UPLOAD_ID = CONFERENCE_ID + '/-/Direct_Upload';
 var IMPORTED_RECORD_ID = CONFERENCE_ID + '/-/Imported_Record'
-// var HOMEPAGE_UPLOAD_ID = CONFERENCE_ID + '/-/Homepage_Upload';
 
 var paperDisplayOptions = {
   pdfLink: true,
@@ -77,10 +76,7 @@ function main() {
   Webfield.ui.setup('#group-container', CONFERENCE_ID);  // required
 
   renderConferenceHeader();
-
   renderSubmissionButton(DIRECT_UPLOAD_ID);
-  // renderSubmissionButton(HOMEPAGE_UPLOAD_ID);
-
   renderConferenceTabs();
 
   load().then(renderContent).then(function() {
@@ -100,7 +96,6 @@ function load() {
   } else {
     authorNotesP = Webfield.get('/notes', {
       'content.authorids': user.profile.id,
-      // invitation: DIRECT_UPLOAD_ID,
       details: 'forumContent,writable'
     }).then(function(result) {
       return result.notes;
@@ -166,25 +161,6 @@ function renderConferenceTabs() {
     hidden: true
   });
 }
-
-/*
-    var displayOptions = {
-      container: '#imported-papers',
-      user: user && user.profile,
-      heading: null,
-      showActionButtons: true,
-      showTags: true,
-      tagInvitations: tagInvitations
-    };
-
-    $(displayOptions.container).empty();
-
-    var options = {
-      displayOptions: displayOptions
-    };
-
-    Webfield.ui.submissionList(importedPapers, options);
-*/
 
 function renderContent(authorNotes, directUploadNotes, tagInvitations) {
 
