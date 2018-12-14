@@ -23,32 +23,29 @@ var HEADER = {
   location: 'Global',
   date: 'Ongoing',
   website: 'https://openreview.net',
-  instructions: '<p><strong>Instructions</strong><br>\
-    The OpenReview paper-reviewer matching system uses the text from your submitted papers to match you with papers that are relevant to you.\
-    Listed below are your authored papers that we currently have on record.\
-    </p><p>\
-    If the papers below do not adequately represent your reviewing expertise, \n\
-    please upload a few papers that are representative of your work by clicking the \n\
-    "OpenReview Direct Upload" button below.\
-    </p><p>\
-    Your reviewing expertise for every submission is inferred from keywords \
-    in the text found in your recent publications, and is represented by an affinity score. \
-    For any given submission, your affinity score is based on the single publication \
-    that is most similar to the submission. \
-    While more publications are always better, breadth across your areas of expertise \
-    is the most important factor.\
-    </p><br>\
-    <strong>Important information:</strong>\
+  instructions: '<strong>General Information</strong><br>\
     <ul>\
-    <li>Once the paper-reviewer assignment process has begun, \
-    uploaded papers will become publicly visible in your profile. \
-    If you decide to upload an unpublished paper, it will be treated as a public preprint. \
-    <strong>Do not upload papers that you are not willing to share publicly.</strong></li>\
+    <li>The OpenReview paper-reviewer matching system uses the text from your authored publications to match you with relevant papers.</li>\
+    <li>Your reviewing expertise for every submission is inferred from keywords extracted from text of your publications, and is represented by an affinity score. </li> \
+    <li>For any given submission, your affinity score is based on the single publication that is most similar to the submission. </li>\
+    <li>While more publications are always better, breadth across your areas of expertise is the most important factor.</li>\
+    </ul>\
+    <strong>Updating your Expertise</strong><br>\
+    <ul>\
+    <li>Listed below are your authored papers that we currently have on record. </li> \
+    <li>If the papers listed do not adequately represent your reviewing expertise, please upload a few papers that are representative of your work by clicking the "OpenReview Direct Upload" button below.</li>\
+    <li><strong>Do not upload papers that you are not willing to share publicly.</strong> If you decide to upload an unpublished paper, it will be treated as a public preprint. </li>\
     <li>In the "pdf" field, please provide either a URL to a pdf file, <strong>or</strong> upload the PDF from your hard drive.</li>\
     <li>Please make sure that the original author order is preserved.</li>\
     <li>OpenReview will attempt to fill in missing fields from the contents of the PDF.</li>\
-    </ul><br>\
-    </p> \
+    </ul>\
+    <strong>Imported Papers</strong><br>\
+    <ul>\
+    <li>Some of the papers listed below have been automatically imported from records in other public repositories (e.g. SemanticScholar, arXiv, etc.).</li>\
+    <li>Imported Papers are visible only to you and the other inferred authors of the paper until they have been claimed.</li>\
+    <li>You can claim (or disavow, in the case of an incorrect authorship attribution) one of these records with the "Authorship Claim" option below each imported record.</li>\
+    <li>Please allow a couple days for incorrect authorships to be removed from your list; they will not be incorporated into your affinity scores. </li>\
+    </ul>\
     <p><strong>Questions?</strong><br> \
     Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
@@ -151,7 +148,7 @@ function renderConferenceTabs() {
       id: 'imported-papers'
     },
     {
-      heading: 'Your Papers',
+      heading: 'Confirmed Papers',
       id: 'confirmed-papers',
     }
   ];
