@@ -181,9 +181,9 @@ function renderContent(authorNotes, directUploadNotes, tagInvitations) {
       fadeIn: false
     });
 
-    $('.tabs-container a[href="#your-consoles"]').parent().show();
+    $('.tabs-container a[href="#imported-papers"]').parent().show();
   } else {
-    $('.tabs-container a[href="#your-consoles"]').parent().hide();
+    $('.tabs-container a[href="#imported-papers"]').parent().hide();
   }
 
   // All Submitted Papers tab
