@@ -140,7 +140,40 @@ meta_review_template = {
             'description': 'Users that may modify this record.',
             'values-regex': iclr19.PAPER_AREA_CHAIRS_TEMPLATE_REGEX
         },
-        'content': openreview.invitations.content.meta_review
+        'content': {
+            'title': {
+                'order': 1,
+                'value-regex': '.{1,500}',
+                'description': 'Brief summary of your review.',
+                'required': True
+            },
+            'metareview': {
+                'order': 2,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons.',
+                'required': True
+            },
+            'recommendation': {
+                'order': 3,
+                'value-dropdown': [
+                    'Accept (Oral)',
+                    'Accept (Poster)',
+                    'Reject'
+                ],
+                'required': True
+            },
+            'confidence': {
+                'order': 4,
+                'value-radio': [
+                    '5: The area chair is absolutely certain',
+                    '4: The area chair is confident but not absolutely certain',
+                    '3: The area chair is somewhat confident',
+                    '2: The area chair is not sure',
+                    '1: The area chair\'s evaluation is an educated guess'
+                ],
+                'required': True
+            }
+        }
     }
 }
 # with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js')) as f:
