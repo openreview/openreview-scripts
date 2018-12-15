@@ -127,7 +127,8 @@ meta_review_template = {
             'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
             'values': [
                 iclr19.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-                iclr19.PROGRAM_CHAIRS_ID
+                iclr19.PROGRAM_CHAIRS_ID,
+                iclr19.CONFERENCE_ID
             ]
 
         },
@@ -142,8 +143,8 @@ meta_review_template = {
         'content': openreview.invitations.content.meta_review
     }
 }
-with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js')) as f:
-    meta_review_template['process'] = f.read()
+# with open(os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js')) as f:
+#     meta_review_template['process'] = f.read()
 
 add_revision_template = {
     'id': iclr19.CONFERENCE_ID + '/-/Paper<number>/Revision',
