@@ -90,3 +90,41 @@ confirmation_tag_invitation = openreview.Invitation(**{
         }
     }
 })
+
+imported_record_invitation = openreview.Invitation(
+    id='OpenReview.net/-/Imported_Record',
+    signatures=['SemanticScholar.org'],
+    readers=['everyone'],
+    writers=['OpenReview.net'],
+    invitees=['OpenReview.net'],
+    reply={
+        'readers': {'values':['everyone']},
+        'writers': {'values': []},
+        'signatures': {'values': ['SemanticScholar.org']},
+        'content': {
+            'title': {
+                'value-regex': '.{1,300}',
+                'required': True,
+                'description': 'Title of paper.',
+                'order': 1
+            },
+            'abstract': {
+                'value-regex': '[\\S\\s]*',
+                'required': False,
+                'description': 'Abstract of paper.',
+                'order': 8
+            },
+            'authorids': {
+                'values-regex': '.*',
+                'required': True,
+                'description': "Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author's profile. Please provide real emails; identities will be anonymized.",
+                'order': 3
+            },
+            'authors': {
+                'values-regex': '[^;,\\n]+(,[^,\\n]+)*',
+                'required': True,
+                'description': 'Comma separated list of author names. Please provide real names; identities will be anonymized.',
+                'order': 2}
+        }
+    }
+)
