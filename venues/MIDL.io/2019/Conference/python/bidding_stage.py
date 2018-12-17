@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
             score_entry = {
                 'forum': paper.forum,
-                'tfidfScore': float(tfidf_score_by_id[paper.id].get(user_id,0.0))
+                'tfidfScore': float(tfidf_score_by_id.get(paper.id, {}).get(user_id,0.0))
             }
 
             score_note.content['scores'].append(score_entry)
