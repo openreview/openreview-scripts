@@ -61,35 +61,32 @@ direct_upload_invitation = openreview.Invitation(**{
     }
 })
 
-homepage_upload_invitation = openreview.Invitation(**{
-    'id': 'OpenReview.net/-/Homepage_Upload',
-    'readers': ['~'],
-    'writers': ['OpenReview.net'],
-    'signatures': ['OpenReview.net'],
+confirmation_tag_invitation = openreview.Invitation(**{
+    'id': 'OpenReview.net/Archive/-/Authorship_Claim',
+    'duedate': 2538773200000,
+    'expdate': None,
+    'readers': ['everyone'],
+    'writers': ['OpenReview.net/Archive'],
+    'signatures': ['OpenReview.net/Archive'],
     'invitees': ['~'],
-    'duedate': 2539795181000,
+    'multiReply': True,
     'reply': {
         'forum': None,
         'replyto': None,
+        'invitation': 'OpenReview.net/Archive/-/Imported_Record',
         'readers': {
-            'description': 'The users who will be allowed to read the above content.',
-            'values-copied': ['{signatures}']
+            'values': ['everyone']
         },
-        'signatures': {
-            'description': 'Your authorized identity to be associated with the above content.',
-            'values-regex': '~.*'
-        },
-        'writers': {
-            'values-regex': ['~.*']
-        },
+        'signatures': {'values-regex': '~.*'},
         'content': {
-            'homepage': {
-                'description': 'Enter the URL of your homepage containing links to paper PDFs.',
-                'order': 1,
-                'value-regex': '(http|https):\/\/.+',
-                'required': True
-            }
+            'tag': {
+                'value-dropdown': [
+                    'Yes, I am an author of this paper.',
+                    'No, I am not an author of this paper.',
+                ],
+                'required': True,
+                'description': 'Is this your paper?'
+           }
         }
-
     }
 })
