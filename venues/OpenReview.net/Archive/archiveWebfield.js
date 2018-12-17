@@ -9,7 +9,13 @@
 // Constants
 var CONFERENCE_ID = 'OpenReview.net/Archive';
 var DIRECT_UPLOAD_ID = CONFERENCE_ID + '/-/Direct_Upload';
-// var HOMEPAGE_UPLOAD_ID = CONFERENCE_ID + '/-/Homepage_Upload';
+var IMPORTED_RECORD_ID = CONFERENCE_ID + '/-/Imported_Record'
+
+var paperDisplayOptions = {
+  pdfLink: true,
+  replyCount: true,
+  showContents: true
+};
 
 var HEADER = {
   title: 'OpenReview Archive',
@@ -17,32 +23,29 @@ var HEADER = {
   location: 'Global',
   date: 'Ongoing',
   website: 'https://openreview.net',
-  instructions: '<p><strong>Instructions</strong><br>\
-    The OpenReview paper-reviewer matching system uses the text from your submitted papers to match you with papers that are relevant to you.\
-    Listed below are your authored papers that we currently have on record.\
-    </p><p>\
-    If the papers below do not adequately represent your reviewing expertise, \n\
-    please upload a few papers that are representative of your work by clicking the \n\
-    "OpenReview Direct Upload" button below.\
-    </p><p>\
-    Your reviewing expertise for every submission is inferred from keywords \
-    in the text found in your recent publications, and is represented by an affinity score. \
-    For any given submission, your affinity score is based on the single publication \
-    that is most similar to the submission. \
-    While more publications are always better, breadth across your areas of expertise \
-    is the most important factor.\
-    </p><br>\
-    <strong>Important information:</strong>\
+  instructions: '<strong>General Information</strong><br>\
     <ul>\
-    <li>Once the paper-reviewer assignment process has begun, \
-    uploaded papers will become publicly visible in your profile. \
-    If you decide to upload an unpublished paper, it will be treated as a public preprint. \
-    <strong>Do not upload papers that you are not willing to share publicly.</strong></li>\
+    <li>The OpenReview paper-reviewer matching system uses the text from your authored publications to match you with relevant papers.</li>\
+    <li>Your reviewing expertise for every submission is inferred from keywords extracted from text of your publications, and is represented by an affinity score. </li> \
+    <li>For any given submission, your affinity score is based on the single publication that is most similar to the submission. </li>\
+    <li>While more publications are always better, breadth across your areas of expertise is the most important factor.</li>\
+    </ul>\
+    <strong>Updating your Expertise</strong><br>\
+    <ul>\
+    <li>Listed below are your authored papers that we currently have on record. </li> \
+    <li>If the papers listed do not adequately represent your reviewing expertise, please upload a few papers that are representative of your work by clicking the "OpenReview Direct Upload" button below.</li>\
+    <li><strong>Do not upload papers that you are not willing to share publicly.</strong> If you decide to upload an unpublished paper, it will be treated as a public preprint. </li>\
     <li>In the "pdf" field, please provide either a URL to a pdf file, <strong>or</strong> upload the PDF from your hard drive.</li>\
     <li>Please make sure that the original author order is preserved.</li>\
     <li>OpenReview will attempt to fill in missing fields from the contents of the PDF.</li>\
-    </ul><br>\
-    </p> \
+    </ul>\
+    <strong>Imported Papers</strong><br>\
+    <ul>\
+    <li>Some of the papers listed below have been automatically imported from records in other public repositories (e.g. SemanticScholar, arXiv, etc.).</li>\
+    <li>Imported Papers are visible only to you and the other inferred authors of the paper until they have been claimed.</li>\
+    <li>You can claim (or disavow, in the case of an incorrect authorship attribution) one of these records with the "Authorship Claim" option below each imported record.</li>\
+    <li>Please allow a couple days for incorrect authorships to be removed from your list; they will not be incorporated into your affinity scores. </li>\
+    </ul>\
     <p><strong>Questions?</strong><br> \
     Please contact the OpenReview support team at \
     <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
@@ -70,13 +73,12 @@ function main() {
   Webfield.ui.setup('#group-container', CONFERENCE_ID);  // required
 
   renderConferenceHeader();
-
   renderSubmissionButton(DIRECT_UPLOAD_ID);
-  // renderSubmissionButton(HOMEPAGE_UPLOAD_ID);
-
   renderConferenceTabs();
 
-  load().then(renderContent);
+  load().then(renderContent).then(function() {
+    $('.tabs-container a[href="#imported-papers"]').click();
+  });
 }
 
 // Load makes all the API calls needed to get the data to render the page
@@ -91,8 +93,7 @@ function load() {
   } else {
     authorNotesP = Webfield.get('/notes', {
       'content.authorids': user.profile.id,
-      // invitation: DIRECT_UPLOAD_ID,
-      details: 'forumContent,writable'
+      details: 'forumContent,writable,tags'
     }).then(function(result) {
       return result.notes;
     });
@@ -105,10 +106,14 @@ function load() {
       return result.notes;
     });
 
-
+  var tagInvitationsP = Webfield.getAll('/invitations', {replyInvitation: IMPORTED_RECORD_ID, tags: true}).then(function(invitations) {
+    return invitations.filter(function(invitation) {
+      return invitation.invitees.length;
+    });
+  });
 
   }
-  return $.when(authorNotesP, directUploadsP);
+  return $.when(authorNotesP, directUploadsP, tagInvitationsP);
 }
 
 
@@ -138,8 +143,12 @@ function renderSubmissionButton(INVITATION_ID) {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'Your Papers',
-      id: 'user-uploaded-papers',
+      heading: 'Imported Papers',
+      id: 'imported-papers'
+    },
+    {
+      heading: 'Confirmed Papers',
+      id: 'confirmed-papers',
     }
   ];
 
@@ -149,31 +158,62 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(authorNotes,directUploadNotes) {
+function renderContent(authorNotes, directUploadNotes, tagInvitations) {
 
   var allNotes = _.unionBy(authorNotes, directUploadNotes, function(note){return note.id;});
 
-  if (allNotes.length) {
-    var displayOptions = {
-      container: '#user-uploaded-papers',
-      user: user && user.profile,
+  var isConfirmedImport = function(note){
+    return note.details.tags && note.details.tags.length > 0 && _.includes(note.details.tags[0].tag, 'Yes');
+  }
+
+  var importedPapers = _.filter(allNotes, function(note){
+    return note.invitation === IMPORTED_RECORD_ID && !isConfirmedImport(note);});
+
+  var confirmedPapers = _.filter(allNotes, function(note){
+    return note.invitation != IMPORTED_RECORD_ID || isConfirmedImport(note);});
+
+  // importedPapers tab
+  var importedPapersOptions = _.assign({}, paperDisplayOptions, {
+    showTags: true,
+    tagInvitations: tagInvitations,
+    container: '#imported-papers'
+  });
+
+  if (importedPapers.length) {
+    Webfield.ui.submissionList(importedPapers, {
       heading: null,
-      showActionButtons: true
-    };
+      container: '#imported-papers',
+      displayOptions: importedPapersOptions,
+      fadeIn: false
+    });
 
-    $(displayOptions.container).empty();
-
-    Webfield.ui.submissionList(allNotes, displayOptions);
-
-    $('.tabs-container a[href="#user-uploaded-papers"]').parent().show();
+    $('.tabs-container a[href="#imported-papers"]').parent().show();
   } else {
-    $('.tabs-container a[href="#user-uploaded-papers"]').parent().hide();
+    $('.tabs-container a[href="#imported-papers"]').parent().hide();
+  }
+
+  // All Submitted Papers tab
+  var confirmedPapersOptions = _.assign({}, paperDisplayOptions, {
+    showTags: false,
+    container: '#confirmed-papers'
+  });
+
+  $(confirmedPapersOptions.container).empty();
+
+  if (confirmedPapers.length){
+    Webfield.ui.submissionList(confirmedPapers, {
+      heading: null,
+      container: '#confirmed-papers',
+      displayOptions: confirmedPapersOptions,
+      fadeIn: false
+    });
+
+  } else {
+    $('.tabs-container a[href="#confirmed-papers"]').parent().hide();
   }
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  Webfield.ui.done();
 }
 
 // Go!

@@ -16,6 +16,17 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
         <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
       </ul>\
     </p>\
+    <h4>Bidding Phase</h4>\
+    <p>\
+      <em><strong>Please note that the bidding has begun. You are requested to do the\
+       following by 5:00 PM UTC, Friday, Dec 21 2018</strong></em>:\
+      <ul>\
+        <li>Provide your reviewing preferences by bidding on papers using the Bidding \
+        Interface.</li>\
+        <li><strong><a href="/invitation?id=MIDL.io/2019/Conference/-/Bid">Go to \
+        Bidding Interface</a></strong></li>\
+      </ul>\
+    </p>\
   <br>'
 
 var CONFERENCE = 'MIDL.io/2019/Conference';

@@ -13,7 +13,6 @@ python groups.py Reviewers --overwrite
 import openreview
 import argparse
 import akbc19 as conference_config
-# from matcher import utils
 import openreview.tools
 import numpy as np
 import random
