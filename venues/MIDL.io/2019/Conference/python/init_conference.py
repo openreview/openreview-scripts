@@ -34,7 +34,7 @@ conference.open_submissions(due_date = datetime.datetime(2018, 12, 14, 8, 00), p
         },
         "remove if rejected": {
             "order": 12,
-            "value-checkbox": "Remove submission if paper is rejected.",
+            "value-checkbox": "(optional) Remove submission if paper is rejected.",
             "required": False
         }
     })
