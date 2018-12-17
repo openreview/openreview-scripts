@@ -15,6 +15,31 @@ import random
 import csv
 import os
 
+
+def send_email(email, user, role):
+
+    subject = 'MIDL 2019: [Optional] Please Bid on Submissions'
+    message = '''
+        Dear {user},
+
+        Thank you again for agreeing to serve as {role} for the International Conference on Medical Imaging with Deep Learning (MIDL).
+
+        In an effort to ensure satisfactory paper assignments, we have decided this year to experiment with an optional bidding stage. You will have from the submission deadline on Monday, December 17th, until Thursday, December 20th to submit your reviewing preferences on any of the submitted papers.
+
+        Bidding is completely optional. That being said, it is in your interest to bid on as many papers as you can, because both positive and negative bids will be considered during the paper matching process.
+
+        To submit your bids, please visit https://openreview.net/invitation?id=MIDL.io/2019/Conference/-/Bid
+
+        If you have any other questions, please contact the program chairs at program-chairs@midl.io or the OpenReview support team at info@openreview.net.
+
+        Cheers!
+
+        Ipek Oguz, Gozde Unal and Ender Konukoglu
+        Program Chairs for Medical Imaging with Deep Learning 2019
+    '''.format(user = user, role = role)
+
+    return client.send_mail(subject, [email], message)
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
@@ -43,18 +68,22 @@ if __name__ == '__main__':
         return scores_by_id
 
     tfidf_score_by_id = read_scores(args.tfidf_score_file)
-    print(tfidf_score_by_id)
 
     with open('../webfield/reviewerWebfieldBiddingEnabled.js','r') as f:
         reviewers = client.get_group(conference.get_reviewers_id())
         reviewers.web = f.read()
         reviewers = client.post_group(reviewers)
 
-    area_chairs = client.get_group(conference.get_area_chairs_id())
+    with open('../webfield/areachairWebfieldBiddingEnabled.js','r') as f:
+        area_chairs = client.get_group(conference.get_area_chairs_id())
+        area_chairs.web = f.read()
+        area_chairs = client.post_group(area_chairs)
+
+
 
     bid_invitation = openreview.invitations.AddBid(
         conference_id = conference.get_id(),
-        duedate = 1545411600000,
+        duedate = 1545325200000,
         completion_count = 50,
         inv_params = {
             'readers': [
@@ -131,3 +160,10 @@ if __name__ == '__main__':
     for user_id, score_note in user_score_notes.items():
         print('posting score note for user {}'.format(user_id))
         client.post_note(score_note)
+
+    # Send emails
+    for member in reviewers.members:
+        send_email(member, 'Reviewer', 'a reviewer')
+
+    for member in area_chairs.members:
+        send_email(member, 'Area Chair', 'an area chair')

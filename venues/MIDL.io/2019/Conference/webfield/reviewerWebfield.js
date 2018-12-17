@@ -79,8 +79,8 @@ var getReviewRatings = function(noteNumbers) {
 
   if (!noteNumbers.length) {
     return $.Deferred().resolve([]);
-  }  
- 
+  }
+
   var dfd = $.Deferred();
 
   var noteMap = buildNoteMap(noteNumbers);
@@ -106,7 +106,7 @@ var getReviewerGroups = function(noteNumbers) {
 
   if (!noteNumbers.length) {
     return $.Deferred().resolve({});
-  } 
+  }
 
   var noteMap = buildNoteMap(noteNumbers);
 
@@ -176,7 +176,7 @@ var getOfficialReviews = function(noteNumbers) {
 
   if (!noteNumbers.length) {
     return $.Deferred().resolve({});
-  }  
+  }
 
   return $.getJSON('notes', { invitation: CONFERENCE + '/-/Paper.*/Official_Review', tauthor: true, noDetails: true })
     .then(function(result) {
@@ -209,7 +209,7 @@ var displayHeader = function(headerP) {
           id: 'assigned-papers',
           content: loadingMessage,
           active: true
-        },        
+        },
         {
           heading: 'Reviewer Schedule',
           id: 'reviewer-schedule',
