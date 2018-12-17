@@ -93,7 +93,7 @@ function load() {
   } else {
     authorNotesP = Webfield.get('/notes', {
       'content.authorids': user.profile.id,
-      details: 'forumContent,writable'
+      details: 'forumContent,writable,tags'
     }).then(function(result) {
       return result.notes;
     });
@@ -111,7 +111,6 @@ function load() {
       return invitation.invitees.length;
     });
   });
-
 
   }
   return $.when(authorNotesP, directUploadsP, tagInvitationsP);
