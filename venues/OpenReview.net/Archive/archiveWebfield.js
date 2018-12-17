@@ -162,8 +162,15 @@ function renderContent(authorNotes, directUploadNotes, tagInvitations) {
 
   var allNotes = _.unionBy(authorNotes, directUploadNotes, function(note){return note.id;});
 
-  var importedPapers = _.filter(allNotes, function(note){return note.invitation === IMPORTED_RECORD_ID;})
-  var confirmedPapers = _.filter(allNotes, function(note){return note.invitation != IMPORTED_RECORD_ID;})
+  var isConfirmedImport = function(note){
+    return note.details.tags && note.details.tags.length > 0 && _.includes(note.details.tags[0].tag, 'Yes');
+  }
+
+  var importedPapers = _.filter(allNotes, function(note){
+    return note.invitation === IMPORTED_RECORD_ID && !isConfirmedImport(note);});
+
+  var confirmedPapers = _.filter(allNotes, function(note){
+    return note.invitation != IMPORTED_RECORD_ID || isConfirmedImport(note);});
 
   // importedPapers tab
   var importedPapersOptions = _.assign({}, paperDisplayOptions, {
