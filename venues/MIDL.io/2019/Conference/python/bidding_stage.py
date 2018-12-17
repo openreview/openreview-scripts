@@ -20,22 +20,22 @@ def send_email(email, user, role):
 
     subject = 'MIDL 2019: [Optional] Please Bid on Submissions'
     message = '''
-        Dear {user},
+Dear {user},
 
-        Thank you again for agreeing to serve as {role} for the International Conference on Medical Imaging with Deep Learning (MIDL).
+Thank you again for agreeing to serve as {role} for the International Conference on Medical Imaging with Deep Learning (MIDL).
 
-        In an effort to ensure satisfactory paper assignments, we have decided this year to experiment with an optional bidding stage. You will have from the submission deadline on Monday, December 17th, until Thursday, December 20th to submit your reviewing preferences on any of the submitted papers.
+In an effort to ensure satisfactory paper assignments, we have decided this year to experiment with an optional bidding stage. You will have from the submission deadline on Monday, December 17th, until Thursday, December 20th to submit your reviewing preferences on any of the submitted papers.
 
-        Bidding is completely optional. That being said, it is in your interest to bid on as many papers as you can, because both positive and negative bids will be considered during the paper matching process.
+Bidding is completely optional. That being said, it is in your interest to bid on as many papers as you can, because both positive and negative bids will be considered during the paper matching process.
 
-        To submit your bids, please visit https://openreview.net/invitation?id=MIDL.io/2019/Conference/-/Bid
+To submit your bids, please visit https://openreview.net/invitation?id=MIDL.io/2019/Conference/-/Bid
 
-        If you have any other questions, please contact the program chairs at program-chairs@midl.io or the OpenReview support team at info@openreview.net.
+If you have any other questions, please contact the program chairs at program-chairs@midl.io or the OpenReview support team at info@openreview.net.
 
-        Cheers!
+Cheers!
 
-        Ipek Oguz, Gozde Unal and Ender Konukoglu
-        Program Chairs for Medical Imaging with Deep Learning 2019
+Ipek Oguz, Gozde Unal and Ender Konukoglu
+Program Chairs for Medical Imaging with Deep Learning 2019
     '''.format(user = user, role = role)
 
     return client.send_mail(subject, [email], message)
