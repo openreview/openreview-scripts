@@ -24,7 +24,7 @@ var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for MIDL 2019 Program Chairs. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p> \
   <a href="/assignments?venue=MIDL.io/2019/Conference">Area Chair and Reviewer Assignments</a></br> \
-  <a href="/group?id=MIDL.io/2019/Conference/Reviewers&mode=edit">Reviewers - suggested</a></br> \
+  <a href="/group?id=MIDL.io/2019/Conference/Reviewers/Suggested&mode=edit">Reviewers - suggested</a></br> \
   <a href="/groups?id=MIDL.io/2019/Conference/Reviewers/Accepted">Reviewers - accepted</a></br> \
   <a href="/groups?id=MIDL.io/2019/Conference/Reviewers/Declined">Reviewers - declined</a>';
 

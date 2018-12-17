@@ -12,7 +12,7 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Medical Imaging with Deep Learning',
     'subtitle': 'MIDL 2019 Conference',
-    'deadline': 'Submission Deadline: 13th of December, 2018, 23:59 PST',
+    'deadline': 'Submission Deadline: 17th of December, 2018, 17:00 UTC',
     'date': '8-10 July 2019',
     'website': 'http://2019.midl.io',
     'location': 'London',
