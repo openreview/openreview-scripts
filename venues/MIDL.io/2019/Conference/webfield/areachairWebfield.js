@@ -23,7 +23,7 @@ var AREACHAIR_REGEX = /^MIDL\.io\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for MIDL 2019 Area Chairs. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p> \
-  <a href="/group?id=MIDL.io/2019/Conference/Reviewers&mode=edit">Reviewers - suggested</a>';
+  <a href="/group?id=MIDL.io/2019/Conference/Reviewers/Suggested&mode=edit">Reviewers - suggested</a>';
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
