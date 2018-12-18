@@ -305,7 +305,8 @@ if __name__ == '__main__':
             paper_note_id = row[0]
             profile_id = row[1]
             score = row[2]
-            scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'affinity': float(score)})
+            if paper_note_id in scores_by_reviewer_by_paper:
+                scores_by_reviewer_by_paper[paper_note_id][profile_id].update({'affinity': float(score)})
 
 
     for note in submissions:
