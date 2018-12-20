@@ -23,7 +23,7 @@ var AREACHAIR_REGEX = /^MIDL\.io\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for MIDL 2019 Area Chairs. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p> \
-  <a href="/group?id=MIDL.io/2019/Conference/Reviewers/Suggested&mode=edit">Reviewers - suggested</a>';
+  <a href="/group?id=MIDL.io/2019/Conference/Reviewers/Accepted&mode=edit">Reviewers</a>';
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
@@ -39,8 +39,11 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
       <li>Bidding is closed.</li>\
     </ul>\
   </p>\
-  <h4>Review Phase</h4>\
-  <p><em><strong>21 December 2018 - 28 January 2019</strong></em>\
+  <h4>Reviewer Assignment Phase</h4>\
+  <p><em><strong>21 December 2018 - 3 January 2019</strong></em>\
+  </p>\
+  <h4>Review Period</h4>\
+  <p><em>4 - 28 January 2019</em>\
   </p>\
     <h4>Rebuttal Period</h4>\
   <p><em>28 January - 7 February 2019</em>\
@@ -230,6 +233,7 @@ var renderHeader = function() {
   Webfield.ui.header(HEADER_TEXT, INSTRUCTIONS);
 
   var loadingMessage = '<p class="empty-message">Loading...</p>';
+  var emptyMessage='<p class="empty-message">No outstanding tasks for this conference</p>';
   Webfield.ui.tabPanel([
     {
       heading: 'Assigned Papers',
@@ -246,7 +250,7 @@ var renderHeader = function() {
     {
       heading: 'Area Chair Tasks',
       id: 'areachair-tasks',
-      content: loadingMessage
+      content: emptyMessage
     }
   ]);
 };
@@ -502,7 +506,7 @@ var renderTasks = function(invitations, tagInvitations) {
 }
 
 var renderTableAndTasks = function(fetchedData) {
-  renderTasks(fetchedData.invitations, fetchedData.tagInvitations);
+  //renderTasks(fetchedData.invitations, fetchedData.tagInvitations);
 
   renderStatusTable(
     fetchedData.profiles,
@@ -572,7 +576,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
-    sendReminder: true
+    sendReminder: false
   };
 
   // Rating cell
