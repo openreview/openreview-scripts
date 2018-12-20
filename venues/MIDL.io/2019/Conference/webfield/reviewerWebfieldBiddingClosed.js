@@ -25,7 +25,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
     </ul>\
   </p>\
   <h4>Review Phase</h4>\
-  <p><em><strong>21 December 2018 - 28 January 2019</strong></em>\
+  <p><em>4 - 28 January 2019</em>\
     <ul>\
       <li>Submit reviews.</li>\
       <li>See Reviewer Tasks for your assigned papers.</li>\
@@ -223,12 +223,13 @@ var displayHeader = function(headerP) {
     );
 
     var loadingMessage = '<p class="empty-message">Loading...</p>';
+    var noPapersMessage = '<p class="no-papers-message">You have no assigned papers. Please check again after the paper assignment process. </p>';
     var tabsData = {
       sections: [
         {
           heading: 'Assigned Papers',
           id: 'assigned-papers',
-          content: loadingMessage,
+          content: noPapersMessage,
           active: true
         },
         {
@@ -239,7 +240,7 @@ var displayHeader = function(headerP) {
         {
           heading: 'Reviewer Tasks',
           id: 'reviewer-tasks',
-          content: loadingMessage,
+          content: noPapersMessage,
         }
       ]
     };
@@ -403,7 +404,7 @@ controller.addHandler('reviewers', {
             invitations: invitations,
             tagInvitations: tagInvitations
           }
-          renderTable();
+          //renderTable();
         });
 
       })
