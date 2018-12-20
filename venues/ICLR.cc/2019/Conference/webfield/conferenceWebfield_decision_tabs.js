@@ -40,17 +40,17 @@ function load() {
 // Render functions
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
-    title: 'ICLR 2019 Conference Track',
-    subtitle: '6th International Conference on Learning Representations',
-    location: 'Vancouver Convention Center, Vancouver, BC, Canada',
-    date: 'April 30 - May 3, 2019',
-    website: 'http://www.iclr.cc',
-    instructions: '<p><strong>Questions or Concerns:</strong><br> \
-      Please contact the OpenReview support team at \
-      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform. \</br> \
+    title: 'ICLR 2019',
+    subtitle: 'International Conference on Learning Representations',
+    location: 'New Orleans, Louisiana, United States',
+    date: 'May 6 - May 9, 2019',
+    website: 'https://iclr.cc/Conferences/2019',
+    instructions: '<p><strong>Questions or Concerns</strong></p>\
+      <p>Please contact the OpenReview support team at \
+      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>\
       Please contact the ICLR 2019 Program Chairs at \
-      <a href="mailto:iclr2019.programchairs@gmail.com">iclr2019.programchairs@gmail.com</a> with any questions or concerns about conference administration or policy. \</p>',
-    deadline: 'Submission Deadline: 5:00pm Eastern Standard Time, October 27, 2017'
+      <a href="mailto:iclr2019programchairs@googlegroups.com">iclr2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy.\
+      </p>'
   });
 
   Webfield.ui.spinner('#notes');
@@ -59,15 +59,15 @@ function renderConferenceHeader() {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'Oral Papers',
+      heading: 'Oral Presentations',
       id: 'accepted-oral-papers',
     },
     {
-      heading: 'Poster Papers',
+      heading: 'Poster Presentations',
       id: 'accepted-poster-papers',
     },
     {
-      heading: 'Rejected Papers',
+      heading: 'Submitted Papers',
       id: 'rejected-papers',
     },
     {
@@ -105,6 +105,11 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
       }
     }
   });
+
+  oralDecisions = _.sortBy(oralDecisions, function(o) { return o.id; });
+  posterDecisions = _.sortBy(posterDecisions, function(o) { return o.id; });
+  rejectDecisions = _.sortBy(rejectDecisions, function(o) { return o.id; });
+  withdrawnNotes = _.sortBy(withdrawnNotes, function(o) { return o.id; });
 
   var paperDisplayOptions = {
     pdfLink: true,
