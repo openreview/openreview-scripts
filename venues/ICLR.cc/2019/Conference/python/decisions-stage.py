@@ -113,6 +113,95 @@ def send_email(client, submission, metareview):
     else:
         print('Template error', submission)
 
+def update_invitations(client):
+    print('Update invitations...')
+    meta_reviews_invitations = list(openreview.tools.iterget_invitations(client, regex = 'ICLR.cc/2019/Conference/-/Paper.*/Meta_Review'))
+    for i in meta_reviews_invitations:
+        i.reply['readers']['values'] = ['everyone']
+        client.post_invitation(i)
+
+def publish_decisions(client):
+    print('Post decisions...')
+    meta_reviews = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Paper.*/Meta_Review'))
+    submissions = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Blind_Submission'))
+    submissions_dict = {}
+    for s in submissions:
+        submissions_dict[s.id] = s
+    for m in meta_reviews:
+        if m.forum in submissions_dict:
+            m.readers = ['everyone']
+            if m.content['recommendation'] == 'Invite to Workshop Track':
+                m.content['recommendation'] = 'Reject'
+            client.post_note(m)
+
+def release_author_names(client):
+    print('Release author names...')
+    meta_reviews = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Paper.*/Meta_Review'))
+    submissions = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Blind_Submission', details = 'original'))
+    submissions_dict = {}
+    for s in submissions:
+        submissions_dict[s.id] = s
+    for m in meta_reviews:
+        if m.forum in submissions_dict:
+            submission = submissions_dict[m.forum]
+            decision = m.content['recommendation']
+            original_note = openreview.Note.from_json(submission.details['original'])
+
+            if 'Reject' in decision:
+                accepted = False
+
+            if 'Oral' in decision:
+                accepted = True
+
+            if 'Poster' in decision:
+                accepted = True
+
+            overwriting_note = openreview.Note(
+                id = submission.id,
+                original = submission.original,
+                invitation = iclr19.BLIND_SUBMISSION_ID,
+                forum = submission.forum,
+                signatures = [iclr19.CONFERENCE_ID],
+                writers = [iclr19.CONFERENCE_ID],
+                readers = ['everyone'],
+                content = {
+                    '_bibtex': openreview.tools.get_bibtex(
+                        original_note,
+                        'International Conference on Learning Representations',
+                        '2019',
+                        url_forum=submission.forum,
+                        accepted=accepted,
+                        anonymous=False)
+                    })
+            client.post_note(overwriting_note)
+
+            if accepted:
+                revision_invitation = client.get_invitation(id = '{conference_id}/-/Paper{number}/Revision'.format(conference_id = iclr19.CONFERENCE_ID, number = submission.number))
+                revision_invitation.expdate = 1576843200000
+                client.post_invitation(revision_invitation)
+
+def update_homepage(client):
+    print('update home page...')
+    home_group = client.get_group(iclr19.CONFERENCE_ID)
+    with open('../webfield/conferenceWebfield_decision_tabs.js') as f:
+        content = f.read()
+        home_group.web = content
+        client.post_group(home_group)
+
+def send_emails_to_authors(client):
+    print('Send emails to authors...')
+    meta_reviews = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Paper.*/Meta_Review'))
+    submissions = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Blind_Submission'))
+    submissions_dict = {}
+    for s in submissions:
+        submissions_dict[s.id] = s
+
+    for m in meta_reviews:
+        if m.forum in submissions_dict:
+            submission = submissions_dict[m.forum]
+            send_email(client, submission, m)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--baseurl', help="base url")
@@ -122,83 +211,15 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    # print('Update invitations...')
-    # meta_reviews_invitations = list(openreview.tools.iterget_invitations(client, regex = 'ICLR.cc/2019/Conference/-/Paper.*/Meta_Review'))
-    # for i in meta_reviews_invitations:
-    #     i.reply['readers']['values'] = ['everyone']
-    #     client.post_invitation(i)
+    update_invitations(client)
+
+    publish_decisions(client)
+
+    release_author_names(client)
+
+    update_homepage(client)
+
+    send_emails_to_authors(client)
 
 
-    # print('Post decisions...')
-    meta_reviews = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Paper.*/Meta_Review'))
-    # submissions = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Blind_Submission', details = 'original'))
-    # submissions_dict = {}
-    # for s in submissions:
-    #     submissions_dict[s.id] = s
-    # for m in meta_reviews:
-    #     if m.forum in submissions_dict:
-    #         submission = submissions_dict[m.forum]
-    #         m.readers = ['everyone']
-    #         if m.content['recommendation'] == 'Invite to Workshop Track':
-    #             m.content['recommendation'] = 'Reject'
-    #         client.post_note(m)
-
-
-    # # Release authors names
-    # print('Release author names...')
-    # meta_reviews = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Paper.*/Meta_Review'))
-    # for m in meta_reviews:
-    #     if m.forum in submissions_dict:
-    #         submission = submissions_dict[m.forum]
-    #         decision = m.content['recommendation']
-    #         original_note = openreview.Note.from_json(submission.details['original'])
-    #         if 'Reject' in decision:
-    #             accepted = False
-
-    #         if decision in ['Oral', 'Poster']:
-    #             accepted = True
-
-    #         overwriting_note = openreview.Note(
-    #             id = submission.id,
-    #             original = submission.original,
-    #             invitation = iclr19.BLIND_SUBMISSION_ID,
-    #             forum = submission.forum,
-    #             signatures = [iclr19.CONFERENCE_ID],
-    #             writers = [iclr19.CONFERENCE_ID],
-    #             readers = ['everyone'],
-    #             content = {
-    #                 '_bibtex': openreview.tools.get_bibtex(
-    #                     original_note,
-    #                     'International Conference on Learning Representations',
-    #                     '2019',
-    #                     url_forum=submission.forum,
-    #                     accepted=accepted,
-    #                     anonymous=False)
-    #                 })
-    #         client.post_note(overwriting_note)
-
-    #         if accepted:
-    #             revision_invitation = client.get_invitation(id = '{conference_id}/-/Paper{number}/Revision'.format(conference_id = iclr19.CONFERENCE_ID, number = submission.number))
-    #             revision_invitation.expdate = 1576843200000
-    #             client.post_invitation(revision_invitation)
-
-    # # Update home page
-    # print('update home page...')
-    # home_group = client.get_group(iclr19.CONFERENCE_ID)
-    # with open('../webfield/conferenceWebfield_decision_tabs.js') as f:
-    #     content = f.read()
-    #     home_group.web = content
-    #     client.post_group(home_group)
-
-    # Send emails to authors
-    print('Send emails to authors...')
-    submissions = list(openreview.tools.iterget_notes(client, invitation = 'ICLR.cc/2019/Conference/-/Blind_Submission', details = 'original'))
-    submissions_dict = {}
-    for s in submissions:
-        submissions_dict[s.id] = s
-
-    for m in meta_reviews:
-        if m.forum in submissions_dict:
-            submission = submissions_dict[m.forum]
-            send_email(client, submission, m)
 
