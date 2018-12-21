@@ -25,7 +25,7 @@ We ask that you update your paper on OpenReview with this latest version no late
 https://openreview.net/forum?id={forum}&noteId={noteId}
 
 
-Please don't forget to make your travel arrangements. Registration for the conference will open in February, and you can register directly through the conference website https://iclr.cc/. There, you will also find suggestions for local accommodation.
+Please don't forget to make your travel arrangements. Registration for the conference will open on January 29, 2019, and you can register directly through the conference website https://iclr.cc/. There, you will also find suggestions for local accommodation.
 
 
 Note that at least one author for each paper must be registered for ICLR 2019.
@@ -59,7 +59,7 @@ We ask that you update your paper on OpenReview with this latest version no late
 https://openreview.net/forum?id={forum}&noteId={noteId}
 
 
-Please don't forget to make your travel arrangements. Registration for the conference will open in February, and you can register directly through the conference website https://iclr.cc/. There, you will also find suggestions for local accommodation.
+Please don't forget to make your travel arrangements. Registration for the conference will open on January 29, 2019, and you can register directly through the conference website https://iclr.cc/. There, you will also find suggestions for local accommodation.
 
 
 Note that at least one author for each paper must be registered for ICLR 2019.
