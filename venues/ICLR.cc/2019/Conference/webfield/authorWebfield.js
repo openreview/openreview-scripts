@@ -18,8 +18,6 @@ var paperDisplayOptions = {
   showContents: true
 };
 
-var initialPageLoad = true;
-
 HEADER_TEXT = 'ICLR 2019 Author Console';
 
 INSTRUCTIONS = '\

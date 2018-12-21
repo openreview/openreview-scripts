@@ -67,7 +67,6 @@ var commentDisplayOptions = {
   showContents: false,
   showParent: true
 };
-var initialPageLoad = true;
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -289,8 +288,6 @@ function renderContent(notes, withdrawnNotes, userGroups, activityNotes, authorN
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  Webfield.ui.done();
 }
 
 // Go!

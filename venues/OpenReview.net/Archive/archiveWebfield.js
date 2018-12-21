@@ -76,9 +76,7 @@ function main() {
   renderSubmissionButton(DIRECT_UPLOAD_ID);
   renderConferenceTabs();
 
-  load().then(renderContent).then(function() {
-    $('.tabs-container a[href="#imported-papers"]').click();
-  });
+  load().then(renderContent).then(Webfield.ui.done);
 }
 
 // Load makes all the API calls needed to get the data to render the page
