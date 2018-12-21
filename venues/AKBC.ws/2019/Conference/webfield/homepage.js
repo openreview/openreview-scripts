@@ -64,7 +64,6 @@ var commentDisplayOptions = {
   showContents: false,
   showParent: true
 };
-var initialPageLoad = true;
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -131,7 +130,7 @@ function renderSubmissionButton() {
 
           load().then(renderContent).then(function() {
             // Select the first available tab
-            $('.tabs-container ul.nav-tabs > li > a:visible').eq(0).click();
+            $('.tabs-container a[href="#your-consoles"]').click();
           });
         }
       });
@@ -157,10 +156,8 @@ function renderConferenceTabs() {
 }
 
 function renderContent(userGroups, activityNotes, authorNotes) {
-  
   // Your Consoles tab
   if (userGroups.length || authorNotes.length) {
-
     var $container = $('#your-consoles').empty();
     $container.append('<ul class="list-unstyled submissions-list">');
 
@@ -219,8 +216,6 @@ function renderContent(userGroups, activityNotes, authorNotes) {
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  Webfield.ui.done();
 }
 
 // Go!
