@@ -69,10 +69,6 @@ function renderConferenceTabs() {
     {
       heading: 'Submitted Papers',
       id: 'rejected-papers',
-    },
-    {
-      heading: 'Withdrawn Papers',
-      id: 'withdrawn-papers',
     }
   ];
 
@@ -91,7 +87,7 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
 
   var oralDecisions = [];
   var posterDecisions = [];
-  var rejectDecisions = [];
+  var submittedPapers = withdrawnNotes;
 
   _.forEach(decisionsNotes, function(d) {
 
@@ -101,15 +97,14 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
       } else if (d.content.recommendation === 'Accept (Poster)') {
         posterDecisions.push(notesDict[d.forum]);
       } else if (d.content.recommendation === 'Reject') {
-        rejectDecisions.push(notesDict[d.forum]);
+        submittedPapers.push(notesDict[d.forum]);
       }
     }
   });
 
   oralDecisions = _.sortBy(oralDecisions, function(o) { return o.id; });
   posterDecisions = _.sortBy(posterDecisions, function(o) { return o.id; });
-  rejectDecisions = _.sortBy(rejectDecisions, function(o) { return o.id; });
-  withdrawnNotes = _.sortBy(withdrawnNotes, function(o) { return o.id; });
+  submittedPapers = _.sortBy(submittedPapers, function(o) { return o.id; });
 
   var paperDisplayOptions = {
     pdfLink: true,
@@ -128,15 +123,9 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
   );
 
   Webfield.ui.searchResults(
-    rejectDecisions,
+    submittedPapers,
     _.assign({}, paperDisplayOptions, {showTags: false, container: '#rejected-papers'})
   );
-
-  Webfield.ui.searchResults(
-    withdrawnNotes,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#withdrawn-papers'})
-  );
-
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
