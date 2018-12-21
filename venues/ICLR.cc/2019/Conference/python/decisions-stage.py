@@ -201,6 +201,14 @@ def send_emails_to_authors(client):
             submission = submissions_dict[m.forum]
             send_email(client, submission, m)
 
+def expire_withdrawn_invitations(client):
+    print('Expire withdrawn invitations...')
+    withdrawn_invitations = list(openreview.tools.iterget_invitations(client, regex = 'ICLR.cc/2019/Conference/-/Paper.*/Withdraw_Submission'))
+    for i in withdrawn_invitations:
+        i.expdate = 1545403410000
+        client.post_invitation(i)
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -220,6 +228,8 @@ if __name__ == '__main__':
     update_homepage(client)
 
     send_emails_to_authors(client)
+
+    expire_withdrawn_invitations(client)
 
 
 
