@@ -15,8 +15,6 @@ var paperDisplayOptions = {
   showContents: true
 };
 
-var initialPageLoad = true;
-
 HEADER_TEXT = 'MIDL 2019 Author Console';
 
 INSTRUCTIONS = ' ';

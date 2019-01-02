@@ -17,9 +17,9 @@ var LOCATION = 'Montreal, Canada';
 var SUBMISSION_INVITATION = 'NIPS.cc/2018/Workshop/CDNNRIA/-/Submission';
 var BLIND_INVITATION = 'NIPS.cc/2018/Workshop/CDNNRIA/-/Blind_Submission';
 var ACCEPTED_INVITATION = 'NIPS.cc/2018/Workshop/CDNNRIA/-/Paper.*/Decision';
-var INSTRUCTIONS = 'This workshop aims to bring together researchers, educators,\
- practitioners who are interested in techniques as well as applications of making \
- compact and efficient neural network representations. <br/>\
+var INSTRUCTIONS = 'This workshop aims to bring together researchers, educators, \
+practitioners who are interested in techniques as well as applications of making \
+compact and efficient neural network representations. <br/>\
 One main theme of the workshop discussion is to build up consensus in this rapidly \
 developed field, and in particular, to establish close connection between \
 researchers in machine learning community and engineers in industry. \
@@ -45,7 +45,6 @@ https://nips.cc/Conferences/2018/Schedule?showEvent=10941</a><br/>';
 
 var BUFFER = 1000 * 60 * 30;  // 30 minutes
 var PAGE_SIZE = 50;
-var initialPageLoad = true;
 
 var paperDisplayOptions = {
   pdfLink: true,
@@ -60,7 +59,7 @@ function main() {
   renderConferenceHeader();
   renderWorkshopTabs();
 
-  load().then(renderContent);
+  load().then(renderContent).then(Webfield.ui.done);
 }
 
 // RenderConferenceHeader renders the static info at the top of the page. Since that content
@@ -142,12 +141,6 @@ function renderContent(notes, accepted) {
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  // Show first available tab
-  if (initialPageLoad) {
-    $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
-    initialPageLoad = false;
-  }
 }
 
 // Go!

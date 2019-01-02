@@ -6,10 +6,12 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE = 'ICLR.cc/2018/Conference';
+var CONFERENCE = 'ICLR.cc/2019/Conference';
 var INVITATION = CONFERENCE + '/-/Submission';
 var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
 var WITHDRAWN_INVITATION = CONFERENCE + '/-/Withdrawn_Submission';
+
+var initialPageLoad = true;
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -19,20 +21,17 @@ function main() {
 
   renderConferenceTabs();
 
-  load().then(renderContent).done(Webfield.ui.done);
+  load().then(renderContent).then(Webfield.ui.done);
 }
 
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-  var notesP = Webfield.api.getSubmissions(BLIND_INVITATION, { pageSize: 1000, details: 'replyCount' });
+  var notesP = Webfield.getAll('/notes', { invitation: BLIND_INVITATION, details: 'replyCount' });
 
-  var withdrawnNotesP = Webfield.api.getSubmissions(WITHDRAWN_INVITATION, { pageSize: 1000 , noDetails: true});
+  var withdrawnNotesP = Webfield.getAll('/notes', { invitation: WITHDRAWN_INVITATION, noDetails: true });
 
-  var decisionNotesP = Webfield.api.getSubmissions('ICLR.cc/2018/Conference/-/Acceptance_Decision', {
-    noDetails: true,
-    pageSize: 1000
-  });
+  var decisionNotesP = Webfield.getAll('/notes', { invitation: 'ICLR.cc/2019/Conference/-/Paper.*/Meta_Review', noDetails: true });
 
   return $.when(notesP, withdrawnNotesP, decisionNotesP);
 }
@@ -41,11 +40,17 @@ function load() {
 // Render functions
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
-    title: 'ICLR 2018 Conference Track',
-    subtitle: '6th International Conference on Learning Representations',
-    location: 'Vancouver Convention Center, Vancouver, BC, Canada',
-    date: 'April 30 - May 3, 2018',
-    website: 'http://www.iclr.cc'
+    title: 'ICLR 2019',
+    subtitle: 'International Conference on Learning Representations',
+    location: 'New Orleans, Louisiana, United States',
+    date: 'May 6 - May 9, 2019',
+    website: 'https://iclr.cc/Conferences/2019',
+    instructions: '<p><strong>Questions or Concerns</strong></p>\
+      <p>Please contact the OpenReview support team at \
+      <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>\
+      Please contact the ICLR 2019 Program Chairs at \
+      <a href="mailto:iclr2019programchairs@googlegroups.com">iclr2019programchairs@googlegroups.com</a> with any questions or concerns about conference administration or policy.\
+      </p>'
   });
 
   Webfield.ui.spinner('#notes');
@@ -54,24 +59,16 @@ function renderConferenceHeader() {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'Oral Papers',
+      heading: 'Oral Presentations',
       id: 'accepted-oral-papers',
     },
     {
-      heading: 'Poster Papers',
+      heading: 'Poster Presentations',
       id: 'accepted-poster-papers',
     },
     {
-      heading: 'Invited to submit to Workshop',
-      id: 'workshop-papers',
-    },
-    {
-      heading: 'Rejected Papers',
+      heading: 'Submitted Papers',
       id: 'rejected-papers',
-    },
-    {
-      heading: 'Withdrawn Papers',
-      id: 'withdrawn-papers',
     }
   ];
 
@@ -90,21 +87,24 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
 
   var oralDecisions = [];
   var posterDecisions = [];
-  var rejectDecisions = [];
-  var workshopDecisions = [];
+  var submittedPapers = withdrawnNotes;
 
   _.forEach(decisionsNotes, function(d) {
 
-    if (d.content.decision === 'Accept (Oral)') {
-      oralDecisions.push(notesDict[d.forum]);
-    } else if (d.content.decision === 'Accept (Poster)') {
-      posterDecisions.push(notesDict[d.forum]);
-    } else if (d.content.decision === 'Reject') {
-      rejectDecisions.push(notesDict[d.forum]);
-    } else if (d.content.decision === 'Invite to Workshop Track') {
-      workshopDecisions.push(notesDict[d.forum]);
+    if (_.has(notesDict, d.forum)) {
+      if (d.content.recommendation === 'Accept (Oral)') {
+        oralDecisions.push(notesDict[d.forum]);
+      } else if (d.content.recommendation === 'Accept (Poster)') {
+        posterDecisions.push(notesDict[d.forum]);
+      } else if (d.content.recommendation === 'Reject') {
+        submittedPapers.push(notesDict[d.forum]);
+      }
     }
   });
+
+  oralDecisions = _.sortBy(oralDecisions, function(o) { return o.id; });
+  posterDecisions = _.sortBy(posterDecisions, function(o) { return o.id; });
+  submittedPapers = _.sortBy(submittedPapers, function(o) { return o.id; });
 
   var paperDisplayOptions = {
     pdfLink: true,
@@ -123,22 +123,13 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
   );
 
   Webfield.ui.searchResults(
-    rejectDecisions,
+    submittedPapers,
     _.assign({}, paperDisplayOptions, {showTags: false, container: '#rejected-papers'})
-  );
-
-  Webfield.ui.searchResults(
-    workshopDecisions,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#workshop-papers'})
-  );
-
-  Webfield.ui.searchResults(
-    withdrawnNotes,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#withdrawn-papers'})
   );
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
+
 }
 
 // Go!
