@@ -44,7 +44,6 @@ if __name__ == '__main__':
     anonreviewerids_by_forum = defaultdict(list)
 
     for assignment_note in assignment_notes:
-        print(assignment_note.content['label'])
         if assignment_note.content['label'] == args.label:
             paper_number = get_number_from_details(assignment_note.details)
             assignment_entries = assignment_note.content['assignedGroups']
