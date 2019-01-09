@@ -50,7 +50,8 @@ official_review_template = {
             'values': [
                 conference_config.PROGRAM_CHAIRS_ID,
                 conference_config.PAPER_AREA_CHAIRS_TEMPLATE_STR,
-                conference_config.PAPER_REVIEWERS_TEMPLATE_STR
+                conference_config.PAPER_REVIEWERS_TEMPLATE_STR,
+                '~'
                 ]
         },
         'nonreaders': {
