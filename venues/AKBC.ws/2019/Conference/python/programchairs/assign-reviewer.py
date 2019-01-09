@@ -98,5 +98,8 @@ if __name__ == "__main__":
             client.add_members_to_group(client.get_group(unsubmittedGroupId),anonReviewerGroup)
         changed_groups_add.append(unsubmittedGroupId)
         
+        all_reviewers_grp = client.get_group(conference+"/Reviewers")
+        client.add_members_to_group(all_reviewers_grp, reviewer_to_add)
+
         for grp in changed_groups_add:
             print("{:40s} added to --> {}".format(reviewer_to_add, grp))
