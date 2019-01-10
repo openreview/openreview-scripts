@@ -31,25 +31,35 @@ if __name__ == '__main__':
         details='repliedNotes,replytoNote')
 
     for review_inv in official_review_invs:
-        review_inv.reply['readers']['values'] = ['everyone']
-        client.post_invitation(review_inv)
+        # review_inv.reply['readers']['values'] = ['everyone']
+        # client.post_invitation(review_inv)
         if review_inv.details and 'repliedNotes' in review_inv.details:
             official_reviews = [
                 openreview.Note.from_json(r) \
                 for r in review_inv.details['repliedNotes']]
 
             paper = openreview.Note.from_json(review_inv.details['replytoNote'])
+            paper_number = paper.number
             for review in official_reviews:
-                review.readers = ['everyone']
+                # review.readers = ['everyone']
                 review.writers = [conference_config.CONFERENCE_ID]
                 review = client.post_note(review)
 
                 reviewer_id = review.signatures[0].split('/')[4]
 
                 review_revision_inv = invitations.enable_invitation(
-                    'Revise_Review', target_paper=paper)
+                    'Review_Revision', target_paper=paper)
+
+                review_revision_inv.id = review_revision_inv.id.replace('<paper_number>', "Paper" + str(paper_number))
                 review_revision_inv.id = review_revision_inv.id.replace('<reviewer_id>', reviewer_id)
+
+                # review_revision_inv.reply['referent'] = review.id
                 review_revision_inv.reply['referent'] = review.id
+                review_revision_inv.reply['signatures'] = {
+                    'description': 'How your identity will be displayed with the above content.',
+                    'values-regex': conference_config.PAPER_ANONREVIEWERS_TEMPLATE_REGEX.replace('<number>',str(paper_number))
+                }
+
                 review_revision_inv.invitees = review.signatures
 
                 client.post_invitation(review_revision_inv)
@@ -57,6 +67,5 @@ if __name__ == '__main__':
     original_notes = openreview.tools.iterget_notes(client, invitation=conference_config.SUBMISSION_ID)
     for original in original_notes:
         client.post_invitation(
-            invitations.enable_invitation('Add_Revision', target_paper=original))
-        client.post_invitation(
-            invitations.enable_invitation('Withdraw_Submission', target_paper=original))
+            invitations.enable_invitation('Paper_Revision', target_paper=original))
+            
