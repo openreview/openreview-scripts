@@ -53,7 +53,6 @@ if __name__ == '__main__':
                 review_revision_inv.id = review_revision_inv.id.replace('<paper_number>', "Paper" + str(paper_number))
                 review_revision_inv.id = review_revision_inv.id.replace('<reviewer_id>', reviewer_id)
 
-                # review_revision_inv.reply['referent'] = review.id
                 review_revision_inv.reply['referent'] = review.id
                 review_revision_inv.reply['signatures'] = {
                     'description': 'How your identity will be displayed with the above content.',
@@ -64,8 +63,8 @@ if __name__ == '__main__':
 
                 client.post_invitation(review_revision_inv)
 
-    original_notes = openreview.tools.iterget_notes(client, invitation=conference_config.SUBMISSION_ID)
-    for original in original_notes:
+    blind_notes = openreview.tools.iterget_notes(client, invitation=conference_config.BLIND_SUBMISSION_ID)
+    for note in blind_notes:
         client.post_invitation(
-            invitations.enable_invitation('Paper_Revision', target_paper=original))
+            invitations.enable_invitation('Paper_Revision', target_paper=note))
             
