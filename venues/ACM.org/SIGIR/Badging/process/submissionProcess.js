@@ -125,7 +125,7 @@ function() {
     duedate: 1575732251000,
     signatures: [CONF],
     writers: [CONF, Conf_Chairs],
-    invitees: [Conf_Reviewers],
+    invitees: [],
     readers: ['everyone'],
     reply: {
       forum: note.id,
