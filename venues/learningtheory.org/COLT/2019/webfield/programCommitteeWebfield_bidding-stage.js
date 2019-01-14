@@ -24,8 +24,9 @@ var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Pape
 var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Declined$/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
-  updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
+  updates for COLT 2019 Program Committee. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p>';
+
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
     <ul>\
@@ -35,9 +36,17 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>\
   <h4>Bidding Phase</h4>\
   <p>\
-    <em><strong>The bidding phase has not started yet.</strong><br/>\
-    This section will be updated once the bidding phase begins.</em>\
+    <em><strong>Please note that bidding is now open. You are requested to do the\
+     following by 5:00 PM EDT, February 6, 2019</strong></em>:\
+    <ul>\
+      <li>Provide your reviewing preferences by bidding on papers using the Bidding \
+      Interface.</li>\
+      <li><strong><a href="/invitation?id=' + CONFERENCE + '/-/Bid' + '">Go to \
+      Bidding Interface</a></strong></li>\
+    </ul>\
   </p>';
+
+
 
 var invitedMap = {};
 
@@ -258,13 +267,13 @@ var renderHeader = function() {
       active: true
     },
     {
-      heading: 'Area Chair Schedule',
-      id: 'areachair-schedule',
+      heading: 'Program Committee Schedule',
+      id: 'program-committee-schedule',
       content: SCHEDULE_HTML
     },
     {
-      heading: 'Area Chair Tasks',
-      id: 'areachair-tasks',
+      heading: 'Program Committee Tasks',
+      id: 'program-committee-tasks',
       content: loadingMessage
     }
   ]);
@@ -536,7 +545,7 @@ var renderTableRows = function(rows, container) {
 var renderTasks = function(invitations, tagInvitations) {
   //  My Tasks tab
   var tasksOptions = {
-    container: '#areachair-tasks',
+    container: '#program-committee-tasks',
     emptyMessage: 'No outstanding tasks for this conference'
   }
   $(tasksOptions.container).empty();
@@ -549,7 +558,7 @@ var renderTasks = function(invitations, tagInvitations) {
   var areachairTagInvitations = _.filter(tagInvitations, filterFunc);
 
   Webfield.ui.newTaskList(areachairInvitations, areachairTagInvitations, tasksOptions);
-  $('.tabs-container a[href="#areachair-tasks"]').parent().show();
+  $('.tabs-container a[href="#program-committee-tasks"]').parent().show();
 }
 
 var renderTableAndTasks = function(fetchedData) {
