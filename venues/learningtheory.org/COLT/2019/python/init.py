@@ -23,6 +23,9 @@ if __name__ == '__main__':
                 'description': 'If this submission (or its earlier version) is currently under consideration at STOC 2019, please enter its STOC identification number.',
                 'values-regex': '.*',
                 'required': False
+            },
+            'dual_submission': {
+                'value-checkbox': 'This work is a short version of an unpublished paper that has been submitted to a journal.'
             }
         },
         additional_readers = [conference.get_area_chairs_id(), conference.get_program_chairs_id()]
