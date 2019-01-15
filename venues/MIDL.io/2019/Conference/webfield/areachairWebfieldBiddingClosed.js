@@ -40,10 +40,10 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
     </ul>\
   </p>\
   <h4>Reviewer Assignment Phase</h4>\
-  <p><em><strong>21 December 2018 - 3 January 2019</strong></em>\
+  <p><em>21 December 2018 - 3 January 2019</em>\
   </p>\
   <h4>Review Period</h4>\
-  <p><em>4 - 28 January 2019</em>\
+  <p><em><strong>4 - 28 January 2019</strong></em>\
   </p>\
     <h4>Rebuttal Period</h4>\
   <p><em>28 January - 7 February 2019</em>\
@@ -550,7 +550,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
         note: reviewObj.id,
         rating: reviewObj.rating,
         confidence: reviewObj.confidence,
-        reviewLength: reviewObj.content.review.length
+        reviewLength: reviewObj.content.pros.length
       };
       ratings.push(reviewObj.rating);
       confidences.push(reviewObj.confidence);

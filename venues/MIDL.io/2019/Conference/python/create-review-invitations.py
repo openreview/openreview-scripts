@@ -51,14 +51,19 @@ for paper in iterator:
             'description': 'The users who will be allowed to read the above content.'
         },
         'content': {
-            'review': {
+            'pros': {
                 'order': 1,
                 'value-regex': '[\\S\\s]{1,500000}',
                 'description': 'Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons. Remember that MIDL values both methodological contributions and application articles that present solid validation.',
                 'required': True
             },
-            'rating': {
+            'cons': {
                 'order': 2,
+                'value-regex': '[\\S\\s]{1,500000}',
+                'required': True
+            },
+            'rating': {
+                'order': 3,
                 'value-radio': [
                     '4: strong accept',
                     '3: accept',
@@ -68,7 +73,7 @@ for paper in iterator:
                 'required': True
             },
             'confidence': {
-                'order': 3,
+                'order': 4,
                 'value-radio': [
                     '3: The reviewer is absolutely certain that the evaluation is correct and very familiar with the relevant literature',
                     '2: The reviewer is fairly confident that the evaluation is correct',
@@ -77,12 +82,12 @@ for paper in iterator:
                 'required': True
             },
             'special_issue': {
-                'order': 4,
+                'order': 5,
                 'value-checkbox': ['Special Issue Recommendation'],
                 'required': False
             },
             'oral_presentation': {
-                'order': 5,
+                'order': 6,
                 'value-checkbox': ['Consider for oral presentation'],
                 'required': False
             }
@@ -93,7 +98,7 @@ for paper in iterator:
         'readers': ['everyone'],
         'writers': [conference.get_id()],
         'signatures': [conference.get_id()],
-        'duedate': tools.timestamp_GMT(2019, month=1, day= 29, hour=8, minute=0)
+        'duedate': tools.timestamp_GMT(2019, month=1, day= 28, hour=7, minute=0)
     }
     review_parameters['reply'] = review_reply
     review_parameters['invitees'] = [paperGroup + '/Reviewers']
