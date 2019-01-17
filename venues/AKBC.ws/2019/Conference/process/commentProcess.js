@@ -11,16 +11,6 @@ function(){
     var forumNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token) : null;
 
-    var checkReadersMatch = function(regex) {
-      for(reader of note.readers){
-        if(reader.match(regex)){
-          return true;
-        }
-      }
-      return false;
-    };
-
-
     Promise.all([
       forumNoteP,
       replytoNoteP
@@ -33,25 +23,25 @@ function(){
 
       var ac_mail = {
         'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs'],
-        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper in your area. Title: ' + forumNote.content.title,
+        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper in your area. Paper title: "' + forumNote.content.title + '"',
         'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var reviewer_mail = {
         'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Reviewers'],
-        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper you are reviewing. Title: ' + forumNote.content.title,
+        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper you are reviewing. Paper title: "' + forumNote.content.title + '"',
         'message': 'A comment was posted to a paper for which you are serving as reviewer.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var pc_mail = {
         'groups': [CONFERENCE_ID + '/Program_Chairs'],
-        'subject': '[' + SHORT_PHRASE + '] A Program Chair-only comment was posted. Title: ' + forumNote.content.title,
+        'subject': '[' + SHORT_PHRASE + '] A Program Chair-only comment was posted to paper title: "' + forumNote.content.title + '"',
         'message': 'A comment was posted to a paper with readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       author_mail = {
         'groups': forumNote.content.authorids,
-        'subject': 'Your submission to ' + SHORT_PHRASE + ' has received a comment',
+        'subject': '[' + SHORT_PHRASE + '] A comment was received on your submission: "' + forumNote.content.title + '"',
         'message': 'Your submission to ' + SHORT_PHRASE + ' has received a comment.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
@@ -70,9 +60,10 @@ function(){
       }
 
       // This rule arbitrarily invented by Michael.
-      // Sends a message to Program Chairs only if the message is readable by only PCs,
-      // or only ACs and PCs. This will prevent the PCs from being constantly spammed.
+      // Sends a message to Program Chairs only if the message is readable by only PCs.
+      // This will prevent the PCs from being constantly spammed.
       if(note.readers.includes(PROGRAM_CHAIRS) &&
+        !note.readers.includes(PAPER_AREACHAIRS) && 
         !note.readers.includes('everyone') &&
         !note.readers.includes(PAPER_REVIEWERS)
         ){
