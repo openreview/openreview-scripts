@@ -2,7 +2,7 @@ function(){
     var or3client = lib.or3client;
 
     var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
-    var SHORT_PHRASE = "AKBC 2019";
+    var SHORT_PHRASE = 'AKBC 2019';
     var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + note.number + '/Authors';
     var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note.number + '/Reviewers';
     var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note.number + '/Area_Chairs';
@@ -33,26 +33,26 @@ function(){
 
       var ac_mail = {
         'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chair'],
-        'subject': 'Comment posted to a paper in your area. Title: ' + forumNote.content.title,
+        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper in your area. Title: ' + forumNote.content.title,
         'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var reviewer_mail = {
         'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Reviewers'],
-        'subject': 'Comment posted to a paper you are reviewing. Title: ' + forumNote.content.title,
+        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper you are reviewing. Title: ' + forumNote.content.title,
         'message': 'A comment was posted to a paper for which you are serving as reviewer.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var pc_mail = {
         'groups': [CONFERENCE_ID + '/Program_Chairs'],
-        'subject': 'A Program Chair-only comment was posted',
+        'subject': '[' + SHORT_PHRASE + '] A Program Chair-only comment was posted. Title: ' + forumNote.content.title,
         'message': 'A comment was posted to a paper with readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       author_mail = {
-        "groups": forumNote.content.authorids,
-        "subject": "Your submission to " + SHORT_PHRASE + " has received a comment",
-        "message": "Your submission to " + SHORT_PHRASE + " has received a comment.\n\nComment title: " + note.content.title + "\n\nComment: " + note.content.comment + "\n\nTo view the comment, click here: " + baseUrl + "/forum?id=" + note.forum + '&noteId=' + note.id
+        'groups': forumNote.content.authorids,
+        'subject': 'Your submission to ' + SHORT_PHRASE + ' has received a comment',
+        'message': 'Your submission to ' + SHORT_PHRASE + ' has received a comment.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var promises = [];
