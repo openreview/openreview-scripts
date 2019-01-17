@@ -47,12 +47,13 @@ if __name__ == '__main__':
         if assignment_note.content['label'] == args.label:
             paper_number = get_number_from_details(assignment_note.details)
             assignment_entries = assignment_note.content['assignedGroups']
-
+            paper_specific_area_chairs = iclr19.CONFERENCE_ID + '/Paper{}'.format(paper_number) + "/Area_Chairs"
+            
             if args.type == 'reviewers':
                 parent_label = 'Reviewers'
                 individual_label = 'AnonReviewer'
                 individual_group_params = {'readers': [
-                    iclr19.AREA_CHAIRS_ID,
+                    paper_specific_area_chairs,
                     iclr19.PROGRAM_CHAIRS_ID
                 ]}
 
