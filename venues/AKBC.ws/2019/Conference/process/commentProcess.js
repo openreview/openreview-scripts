@@ -23,7 +23,7 @@ function(){
 
       var ac_mail = {
         'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs'],
-        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper in your area. Paper title: "' + forumNote.content.title + '"',
+        'subject': 'Comment posted to a paper in your area. Title: ' + forumNote.content.title,
         'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
