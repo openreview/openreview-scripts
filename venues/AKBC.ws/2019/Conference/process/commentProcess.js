@@ -60,8 +60,8 @@ function(){
       }
 
       // This rule arbitrarily invented by Michael.
-      // Sends a message to Program Chairs only if the message is readable by only PCs or PCs and ACs.
-      // This will prevent the PCs from being constantly spammed.
+      // Sends a message to Program Chairs only if the message is readable by only PCs,
+      // or only ACs and PCs. This will prevent the PCs from being constantly spammed.
       if(note.readers.includes(PROGRAM_CHAIRS) &&
         !note.readers.includes('everyone') &&
         !note.readers.includes(PAPER_REVIEWERS)
