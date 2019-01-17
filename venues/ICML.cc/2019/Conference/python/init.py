@@ -58,36 +58,6 @@ def main(client, processed_files_dir):
 
     posted_sac_bid_inv = client.post_invitation(icml.sac_bid_inv)
 
-    '''
-    post JrAC placeholders
-    '''
-    placeholders_by_jrac = {}
-    for jrac_id in areachairs.members:
-        jrac_placeholder = client.post_note(openreview.Note(**{
-            'invitation': icml.jrac_placeholder_inv.id,
-            'readers': [icml.CONFERENCE_ID],
-            'writers': [icml.CONFERENCE_ID],
-            'signatures': [icml.CONFERENCE_ID],
-            'forum': None,
-            'replyto': None,
-            'content': {
-                'title': jrac_id
-            }
-        }))
-
-        placeholders_by_jrac[jrac_id] = jrac_placeholder
-
-    with open(fullpath('sac_ac_bids.jsonl')) as f:
-        for line in f.readlines():
-            tag_obj = json.loads(line.rstrip())
-            jrac_id = tag_obj.pop('jrac_id')
-            placeholder_id = placeholders_by_jrac[jrac_id].id
-            tag_obj['forum'] = placeholder_id
-            tag_obj['replyto'] = placeholder_id
-            tag_obj['invitation'] = icml.sac_bid_inv.id
-            tag = openreview.Tag(**tag_obj)
-            client.post_tag(tag)
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--processed_files_dir', default='../data/icml-sheets-processed')
