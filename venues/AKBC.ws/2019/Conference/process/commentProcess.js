@@ -1,25 +1,11 @@
 function(){
     var or3client = lib.or3client;
-
     var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
     var SHORT_PHRASE = "AKBC 2019";
-    var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + note.number + '/Authors';
-    var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + note.number + '/Reviewers';
-    var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + note.number + '/Area_Chairs';
     var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs';
 
     var forumNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
     var replytoNoteP = note.replyto ? or3client.or3request(or3client.notesUrl + '?id=' + note.replyto, {}, 'GET', token) : null;
-
-    var checkReadersMatch = function(regex) {
-      for(reader of note.readers){
-        if(reader.match(regex)){
-          return true;
-        }
-      }
-      return false;
-    };
-
 
     Promise.all([
       forumNoteP,
@@ -31,6 +17,10 @@ function(){
       var replytoNoteSignatures = replytoNote ? replytoNote.signatures : [];
       var author_mail;
 
+      var PAPER_AUTHORS = CONFERENCE_ID + '/Paper' + forumNote.number + '/Authors';
+      var PAPER_REVIEWERS = CONFERENCE_ID + '/Paper' + forumNote.number + '/Reviewers';
+      var PAPER_AREACHAIRS = CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs';
+    
       var ac_mail = {
         'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs'],
         'subject': 'Comment posted to a paper in your area. Title: ' + forumNote.content.title,
