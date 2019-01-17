@@ -1,7 +1,7 @@
 function(){
     var or3client = lib.or3client;
     var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
-    var SHORT_PHRASE = "AKBC 2019";
+    var SHORT_PHRASE = 'AKBC 2019';
     var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs';
 
     var forumNoteP = or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token);
@@ -23,7 +23,7 @@ function(){
     
       var ac_mail = {
         'groups': [CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs'],
-        'subject': 'Comment posted to a paper in your area. Title: ' + forumNote.content.title,
+        'subject': '[' + SHORT_PHRASE + '] Comment posted to a paper in your area. Paper title: "' + forumNote.content.title + '"',
         'message': 'A comment was posted to a paper for which you are serving as Area Chair.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
@@ -36,7 +36,7 @@ function(){
       var pc_mail = {
         'groups': [CONFERENCE_ID + '/Program_Chairs'],
         'subject': '[' + SHORT_PHRASE + '] A Program Chair-only comment was posted to paper title: "' + forumNote.content.title + '"',
-        'message': 'A comment was posted to a paper with readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+        'message': 'A comment was posted to a paper with the comment\'s readership restricted to only the Program Chairs.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       author_mail = {
@@ -60,10 +60,9 @@ function(){
       }
 
       // This rule arbitrarily invented by Michael.
-      // Sends a message to Program Chairs only if the message is readable by only PCs.
+      // Sends a message to Program Chairs only if the message is readable by only PCs or PCs and ACs.
       // This will prevent the PCs from being constantly spammed.
       if(note.readers.includes(PROGRAM_CHAIRS) &&
-        !note.readers.includes(PAPER_AREACHAIRS) && 
         !note.readers.includes('everyone') &&
         !note.readers.includes(PAPER_REVIEWERS)
         ){
