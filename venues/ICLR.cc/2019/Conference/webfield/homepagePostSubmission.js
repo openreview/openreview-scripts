@@ -65,7 +65,6 @@ var commentDisplayOptions = {
   showContents: false,
   showParent: true
 };
-var initialPageLoad = true;
 
 // Main is the entry point to the webfield code and runs everything
 function main() {

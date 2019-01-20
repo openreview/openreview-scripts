@@ -30,7 +30,6 @@ var commentDisplayOptions = {
   showContents: false,
   showParent: true
 };
-var initialPageLoad = true;
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -43,7 +42,7 @@ function main() {
 
   renderConferenceTabs();
 
-  load().then(renderContent);
+  load().then(renderContent).then(Webfield.ui.done);
 }
 
 // Load makes all the API calls needed to get the data to render the page
@@ -353,12 +352,6 @@ function renderContent(notes, submittedNotes, assignedNotePairs, assignedNotes, 
 
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  // Show first available tab
-  if (initialPageLoad) {
-    $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
-    initialPageLoad = false;
-  }
 }
 
 // Helper functions

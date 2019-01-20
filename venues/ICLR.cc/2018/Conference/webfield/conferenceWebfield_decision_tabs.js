@@ -11,8 +11,6 @@ var INVITATION = CONFERENCE + '/-/Submission';
 var BLIND_INVITATION = CONFERENCE + '/-/Blind_Submission';
 var WITHDRAWN_INVITATION = CONFERENCE + '/-/Withdrawn_Submission';
 
-var initialPageLoad = true;
-
 // Main is the entry point to the webfield code and runs everything
 function main() {
   Webfield.ui.setup('#group-container', CONFERENCE);  // required
@@ -21,7 +19,7 @@ function main() {
 
   renderConferenceTabs();
 
-  load().then(renderContent);
+  load().then(renderContent).done(Webfield.ui.done);
 }
 
 // Load makes all the API calls needed to get the data to render the page
@@ -139,16 +137,8 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
     _.assign({}, paperDisplayOptions, {showTags: false, container: '#withdrawn-papers'})
   );
 
-
-
   $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
-  // Show first available tab
-  if (initialPageLoad) {
-    $('.tabs-container ul.nav-tabs li a:visible').eq(0).click();
-    initialPageLoad = false;
-  }
 }
 
 // Go!

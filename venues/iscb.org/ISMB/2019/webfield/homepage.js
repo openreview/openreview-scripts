@@ -12,7 +12,6 @@ var commentDisplayOptions = {
   showContents: false,
   showParent: true
 };
-var initialPageLoad = true;
 
 //<CONFERENCE>
 //<AREA_CHAIRS>

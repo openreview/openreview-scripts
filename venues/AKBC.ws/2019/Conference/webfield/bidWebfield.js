@@ -5,11 +5,29 @@
 var CONFERENCE_ID = 'AKBC.ws/2019/Conference';
 var SHORT_PHRASE = 'AKBC 2019';
 var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
+var ORIGINAL_INVITATION_ID = CONFERENCE_ID + '/-/Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
-var SEARCH_KEYWORDS = [
-'adversarial', 'adversarial attacks', 'adversarial examples', 'adversarial learning', 'adversarial training', 'attention', 'classification', 'cnn', 'computer vision', 'convolutional neural network', 'convolutional neural networks', 'deep generative models', 'deep learning', 'deep neural networks', 'deep reinforcement learning', 'domain adaptation', 'exploration', 'few-shot learning', 'gan', 'gans', 'generalization', 'generative adversarial network', 'generative adversarial networks', 'generative models', 'graph neural networks', 'imitation learning', 'information theory', 'interpretability', 'machine learning', 'machine translation', 'meta-learning', 'model compression', 'natural language processing', 'neural network', 'neural networks', 'non-convex optimization', 'optimization', 'quantization', 'recurrent neural networks', 'regularization', 'reinforcement learning', 'representation learning', 'robustness', 'semi-supervised learning', 'sgd', 'stochastic gradient descent', 'theory', 'transfer learning', 'unsupervised learning', 'vae', 'variational autoencoder', 'variational inference'
+var SUBJECT_AREAS = [
+  "Machine Learning",
+  "Natural Language Processing",
+  "Information Extraction",
+  "Question Answering",
+  "Reasoning",
+  "Databases",
+  "Information Integration",
+  "Knowledge Representation",
+  "Semantic Web",
+  "Search",
+  "Applications: Science",
+  "Applications: Biomedicine",
+  "Applications: Other",
+  "Relational AI",
+  "Fairness",
+  "Human computation",
+  "Crowd-sourcing",
+  "Other"
 ];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
@@ -21,10 +39,11 @@ var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in re
   </ul>\
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
-    <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
+    <li>Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
     <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
-    <li>Default bid on each paper is \"No Bid\".</li>\
+    <li>Default bid on each paper is "No Bid".</li>\
+    <li>If you verified your <a href="/group?id=OpenReview.net/Archive">OpenReview Archive</a> before the start of the bidding stage, the papers below will be sorted by relevance to you. If they do not appear sorted, please contact <a href="mailto:info@openreview.net">info@openreview.net</a>.</li>\
   </ul><br>'
 
 // Main is the entry point to the webfield code and runs everything
@@ -42,10 +61,15 @@ function main() {
 // Perform all the required API calls
 function load() {
   var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
-    return allNotes.filter(function(note) {
-      return !note.content.hasOwnProperty('withdrawal');
+    return allNotes.map(function(note) {
+      note.details.tags = note.details.tags.filter(function(tag) {
+        return tag.tauthor;
+      });
+      return note;
     });
   });
+
+  var authoredNotesP = Webfield.getAll('/notes', {'content.authorids': user.profile.id, invitation:ORIGINAL_INVITATION_ID});
 
   var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(invitations) {
     return invitations.filter(function(invitation) {
@@ -69,13 +93,19 @@ function load() {
     return metadataNotesMap;
   });
 
-  return $.when(notesP, tagInvitationsP, userScoresP);
+  return $.when(notesP, authoredNotesP, tagInvitationsP, userScoresP);
 }
 
 
 // Display the bid interface populated with loaded data
-function renderContent(validNotes, tagInvitations, metadataNotesMap) {
+function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesMap) {
+  var authoredNoteIds = _.map(authoredNotes, function(note){
+    return note.id;
+  });
 
+  validNotes = _.filter(validNotes, function(note){
+    return !_.includes(authoredNoteIds, note.original);
+  })
   validNotes = addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
@@ -265,7 +295,7 @@ function renderContent(validNotes, tagInvitations, metadataNotesMap) {
       search: {
         enabled: true,
         localSearch: true,
-        subjectAreas: SEARCH_KEYWORDS,
+        subjectAreas: SUBJECT_AREAS,
         subjectAreaDropdown: 'basic',
         sort: false,
         onResults: function(searchResults) {
@@ -326,14 +356,14 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
     var paperMetadataObj = metadataNotesMap.hasOwnProperty(note.id) ? metadataNotesMap[note.id] : {};
 
     note.metadata = {
-      tpmsScore: paperMetadataObj.hasOwnProperty('tpmsScore') ? paperMetadataObj['tpmsScore'] : 0,
+      tfidfScore: paperMetadataObj.hasOwnProperty('tfidfScore') ? paperMetadataObj['tfidfScore'] : 0,
       conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
 
-    note.content['TPMS Score'] = note.metadata.tpmsScore.toFixed(3);
+    note.content['TFIDF Score'] = note.metadata.tfidfScore.toFixed(3);
   }
 
-  return _.orderBy(validNotes, ['metadata.tpmsScore'], ['desc']);
+  return _.orderBy(validNotes, ['metadata.tfidfScore'], ['desc']);
 }
 
 // Go!

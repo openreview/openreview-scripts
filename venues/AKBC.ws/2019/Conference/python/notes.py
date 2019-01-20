@@ -13,7 +13,7 @@ python groups.py Reviewers --overwrite
 import openreview
 import argparse
 import akbc19 as conference_config
-from matcher import utils
+import openreview.tools
 import numpy as np
 import random
 
@@ -79,7 +79,7 @@ def _append_manual_conflicts(profile, manual_user_conflicts):
         profile.content['history'].append(manual_entry)
     return profile
 
-def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, paper_tpms_scores, manual_conflicts_by_id):
+def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, scores_by_reviewer, manual_conflicts_by_id):
     entries = []
     for profile in reviewer_profiles:
         bid_score_map = {
@@ -94,29 +94,25 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, paper_tp
         except TypeError as e:
             print(paper_bid_jsons)
             raise e
-        tpms_score = paper_tpms_scores.get(profile.id)
+        reviewer_scores = scores_by_reviewer.get(profile.id, {})
 
         # find conflicts between the reviewer's profile and the paper's authors' profiles
         user_entry = {
-            'userId': profile.id,
-            'scores': {}
+            'userid': profile.id,
+            'scores': reviewer_scores
         }
 
         if reviewer_bids:
             bid_score = bid_score_map.get(reviewer_bids[0]['tag'], 0.0)
             if bid_score != 0.0:
-                user_entry['scores']['bid_score'] = bid_score
-
-        if tpms_score:
-            user_entry['scores']['tpms_score'] = float(tpms_score)
+                user_entry['scores']['bid'] = bid_score
 
         manual_user_conflicts = manual_conflicts_by_id.get(profile.id, [])
         if manual_user_conflicts:
             profile = _append_manual_conflicts(profile, manual_user_conflicts)
-        conflicts = utils.get_conflicts(author_profiles, profile)
+        conflicts = openreview.tools.get_conflicts(author_profiles, profile)
 
         if conflicts:
-            user_entry['scores']['conflict_score'] = '-inf'
             user_entry['conflicts'] = conflicts
 
         entries.append(user_entry)
@@ -127,13 +123,18 @@ def post_metadata_note(client,
     blind_note,
     reviewer_profiles,
     metadata_inv,
-    paper_tpms_scores,
+    scores_by_reviewer,
     manual_conflicts_by_id):
 
     original_authorids = blind_note.details['original']['content']['authorids']
     paper_bid_jsons = blind_note.details['tags']
     paper_author_profiles = client.get_profiles(original_authorids)
-    entries = _build_entries(paper_author_profiles, reviewer_profiles, paper_bid_jsons, paper_tpms_scores, manual_conflicts_by_id)
+    entries = _build_entries(
+        paper_author_profiles,
+        reviewer_profiles,
+        paper_bid_jsons,
+        scores_by_reviewer,
+        manual_conflicts_by_id)
 
     new_metadata_note = openreview.Note(**{
         'forum': blind_note.id,

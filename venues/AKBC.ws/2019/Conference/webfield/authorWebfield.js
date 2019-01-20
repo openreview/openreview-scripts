@@ -14,11 +14,9 @@ var PAGE_SIZE = 50;
 
 var paperDisplayOptions = {
   pdfLink: true,
-  replyCount: true,
+  replyCount: false,
   showContents: true
 };
-
-var initialPageLoad = true;
 
 HEADER_TEXT = 'AKBC 2019 Author Console';
 
@@ -79,7 +77,7 @@ function load() {
       replyto: true,
       details:'replytoNote,repliedNotes'
     }).then(function(result) {return result.invitations;});
-    
+
     tagInvitationsP = Webfield.get('/invitations', {
       invitation: CONFERENCE_ID + '/-/.*',
       invitee: true,

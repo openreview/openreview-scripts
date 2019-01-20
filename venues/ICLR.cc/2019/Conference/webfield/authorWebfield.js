@@ -14,11 +14,9 @@ var PAGE_SIZE = 50;
 
 var paperDisplayOptions = {
   pdfLink: true,
-  replyCount: true,
+  replyCount: false,
   showContents: true
 };
-
-var initialPageLoad = true;
 
 HEADER_TEXT = 'ICLR 2019 Author Console';
 

@@ -41,18 +41,17 @@ if __name__ == '__main__':
         num = int(paper_num.split('Paper')[1])
         return num
 
-    anonreviewerids_by_forum = defaultdict(list)
-
     for assignment_note in assignment_notes:
         if assignment_note.content['label'] == args.label:
             paper_number = get_number_from_details(assignment_note.details)
             assignment_entries = assignment_note.content['assignedGroups']
+            paper_specific_area_chairs = conference_config.CONFERENCE_ID + '/Paper{}'.format(paper_number) + "/Area_Chairs"
 
             if args.type == 'reviewers':
                 parent_label = 'Reviewers'
                 individual_label = 'AnonReviewer'
                 individual_group_params = {'readers': [
-                    conference_config.AREA_CHAIRS_ID,
+                    paper_specific_area_chairs,
                     conference_config.PROGRAM_CHAIRS_ID
                 ]}
 
@@ -69,6 +68,4 @@ if __name__ == '__main__':
                     parent_label = parent_label,
                     individual_label = individual_label,
                     individual_group_params = individual_group_params)
-
-                if 'AnonReviewer' in new_assigned_group.id:
-                    anonreviewerids_by_forum[assignment_note.forum].append(new_assigned_group.id)
+                print('new_assigned_group', new_assigned_group)

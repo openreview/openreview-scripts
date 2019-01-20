@@ -1,4 +1,4 @@
-function(){
+function() {
     var or3client = lib.or3client;
 
     var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
@@ -43,25 +43,25 @@ function(){
 
       var author_mail = {
         groups: forumNote.content.authorids,
-        subject: '[' + SHORT_PHRASE + '] Comment posted on your submission: "' + forumNote.content.title + '"',
+        subject: '[' + SHORT_PHRASE + '] Your submission to ' + SHORT_PHRASE + ' has received a comment. Paper Title: \"' + forumNote.content.title + '\"',
         message: 'Your submission to ' + SHORT_PHRASE + ' has received a comment.\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
       };
 
       var promises = [];
 
-      if(note.readers.includes(PAPER_AUTHORS) || note.readers.includes('everyone')){
+      if (note.readers.includes(PAPER_AUTHORS) || note.readers.includes('everyone')) {
         promises.push(or3client.or3request(or3client.mailUrl, author_mail, 'POST', token));
       }
 
-      if(note.readers.includes(PAPER_REVIEWERS) || note.readers.includes('everyone')){
+      if (note.readers.includes(PAPER_REVIEWERS) || note.readers.includes('everyone')) {
         promises.push(or3client.or3request(or3client.mailUrl, reviewer_mail, 'POST', token));
       }
 
-      if(note.readers.includes(PAPER_AREACHAIRS) || note.readers.includes('everyone')){
+      if (note.readers.includes(PAPER_AREACHAIRS) || note.readers.includes('everyone')) {
         promises.push(or3client.or3request(or3client.mailUrl, ac_mail, 'POST', token));
       }
 
-      if(note.replyto != note.forum && replytoNoteSignatures != '(anonymous)'){
+      if (note.replyto !== note.forum && replytoNoteSignatures !== '(anonymous)') {
         var reply_mail = {
           groups: replytoNoteSignatures,
           subject: '[' + SHORT_PHRASE + '] Response received on your comment on submission "' + forumNote.content.title + '"',
@@ -73,11 +73,10 @@ function(){
       // This rule arbitrarily invented by Michael.
       // Sends a message to Program Chairs only if the message is readable by only PCs,
       // or only ACs and PCs. This will prevent the PCs from being constantly spammed.
-      if(note.readers.includes(PROGRAM_CHAIRS) &&
-        !note.readers.includes(PAPER_AREACHAIRS) &&
-        !note.readers.includes('everyone') &&
-        !note.readers.includes(PAPER_REVIEWERS)
-        ){
+      if (note.readers.includes(PROGRAM_CHAIRS) &&
+          !note.readers.includes(PAPER_AREACHAIRS) &&
+          !note.readers.includes('everyone') &&
+          !note.readers.includes(PAPER_REVIEWERS)) {
         promises.push(or3client.or3request(or3client.mailUrl, pc_mail, 'POST', token));
       }
 
