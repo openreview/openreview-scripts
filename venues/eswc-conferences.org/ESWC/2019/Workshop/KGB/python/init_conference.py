@@ -38,4 +38,17 @@ conference.open_submissions(due_date = datetime.datetime(2019, 3, 2, 9, 59), pub
             ],
             'required': True
         },
+        'html': {
+            'fieldDisplayLabel': 'Html',
+            'description': 'Either provide a direct url to your artifact (link must begin with http(s)) or upload a PDF file',
+            'order': 8,
+            'value-regex': '(http|https):\/\/.+',
+            'required':False
+        },
+        'pdf': {
+            'fieldDisplayLabel': 'PDF',
+            'order': 9,
+            'value-regex': 'upload',
+            'required':False
+        }
     })
