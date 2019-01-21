@@ -56,6 +56,7 @@ def main(client, processed_files_dir):
     posted_jrac_metadata_inv = client.post_invitation(icml.jrac_metadata_inv)
     posted_constraint_inv = client.post_invitation(icml.lock_tag_inv)
 
+    posted_bid_inv = client.post_invitation(icml.bid_inv)
     posted_sac_bid_inv = client.post_invitation(icml.sac_bid_inv)
 
 if __name__ == '__main__':

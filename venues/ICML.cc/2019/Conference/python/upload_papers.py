@@ -37,10 +37,11 @@ def upload_submissions(client):
             'signatures': [icml.CONFERENCE_ID],
             'invitation': icml.blind_submission_inv.id,
             'content': {
-                key: entry.get('value') or entry.get('values') \
-                for key, entry in icml.blind_submission_inv.reply['content'].items() \
-                if 'value' in entry or 'values' in entry
-           }
+                'title': 'Anonymous Submission',
+                'abstract': 'Redacted',
+                'authorids': ['Anonymous'],
+                'authors': ['Anonymous']
+            }
         }))
 
 if __name__ == '__main__':

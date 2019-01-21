@@ -128,16 +128,18 @@ blind_submission_inv = invitations.Submission(
     duedate = SUBMISSION_DEADLINE,
     mask = {
         'title': {
-            'value': 'Anonymous Submission',
+            'values-regex': '.*',
+            'required': False,
         },
         'abstract': {
-            'value': 'Abstract redacted.'
+            'values-regex': '.*',
+            'required': False
         },
         'authors': {
             'values': ['Anonymous']
         },
         'authorids': {
-            'values': []
+            'values': ['Anonymous']
         }
     },
     reply_params = {
@@ -173,21 +175,42 @@ jrac_placeholder_inv.reply['content'] = {
 
 
 # Configure bidding
-add_bid = invitations.AddBid(
-    conference_id = CONFERENCE_ID,
-    duedate = ADD_BID_DEADLINE,
-    completion_count = 50,
-    inv_params = {
-        'readers': [
-            CONFERENCE_ID,
-            PROGRAM_CHAIRS_ID,
-            REVIEWERS_ID,
-            AREA_CHAIRS_ID
-        ],
-        'invitees': [],
-        'web': os.path.abspath('../webfield/bidWebfield.js')
+bid_inv = openreview.Invitation(**{
+    'id': 'ICML.cc/2019/Conference/-/Bid',
+    'readers': ['everyone'],
+    'writers': ['ICML.cc/2019/Conference'],
+    'signatures': ['ICML.cc/2019/Conference'],
+    'invitees': [AREA_CHAIRS_ID],
+    'multiReply': True,
+    'expdate': 1549038307000,
+    'duedate': 1549038307000,
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': 'ICML.cc/2019/Conference/-/Blind_Submission',
+        'readers': {
+            'values': [
+                'ICML.cc/2019/Conference'
+            ]
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': {
+            'tag': {
+                'values-radio': [
+                  'Very High',
+                  'High',
+                  'Neutral',
+                  'Low',
+                  'Very Low',
+                  'No Bid'
+                ]
+            }
+        }
     },
-)
+    'web': os.path.abspath('../webfield/bidWebfield.js')
+})
 
 # Configure bidding
 sac_bid_inv = openreview.Invitation(**{
