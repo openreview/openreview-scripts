@@ -114,7 +114,8 @@ badging_decision_inv = openreview.Invitation(
             }
         }
     },
-    web = '../webfield/decisionWebfield.js'
+    web = '../webfield/decisionWebfield.js',
+    process = '../process/decisionNotification.js'
 )
 
 client.post_invitation(badging_decision_inv)
