@@ -21,7 +21,7 @@ function() {
       groups: forumNote.content.authorids,
       subject: '[' + SHORT_PHRASE + '] A new badge has been posted on your submission. Title : "' + forumNote.content.title + '"',
       message: 'Your submission to ' + SHORT_PHRASE + ' has received a new badge.\n\nSubmission title: ' + forumNote.content.title + 
-      '\n\nRequested Badges: ' + forumNote.content["requested badges"] + '\n\nAssigned Badges: ' + assignedBadges
+      '\n\nRequested Badges: ' + forumNote.content["requested badges"].join(', ') + '\n\nAssigned Badges: ' + assignedBadges.join(', ')
     };
     return or3client.or3request(or3client.mailUrl, authorMail, 'POST', token);
   })
