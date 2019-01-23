@@ -28,4 +28,4 @@ function() {
   .then(result => done())
   .catch(error => done(error));
   return true;
-};
+}
