@@ -26,6 +26,9 @@ if __name__ == '__main__':
             },
             'dual_submission': {
                 'value-checkbox': 'This work is a short version of an unpublished paper that has been submitted to a journal.'
+            },
+            'student_submission': {
+                'value-checkbox': 'The primary contributor is a full-time student at the time of submission.'
             }
         },
         additional_readers = [conference.get_area_chairs_id(), conference.get_program_chairs_id()]
