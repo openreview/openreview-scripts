@@ -14,12 +14,9 @@ SHORT_PHRASE = 'ICML 2019'
 
 PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs'
 AREA_CHAIRS_ID = CONFERENCE_ID + '/Area_Chairs'
-AREA_CHAIRS_INVITED_ID = AREA_CHAIRS_ID + '/Invited'
-AREA_CHAIRS_DECLINED_ID = AREA_CHAIRS_ID + '/Declined'
-
+SENIOR_AREA_CHAIRS_ID = CONFERENCE_ID + '/Senior_Area_Chairs'
+EXPERT_REVIEWERS_ID = CONFERENCE_ID + '/Expert_Reviewers'
 REVIEWERS_ID = CONFERENCE_ID + '/Reviewers'
-REVIEWERS_INVITED_ID = REVIEWERS_ID + '/Invited'
-REVIEWERS_DECLINED_ID = REVIEWERS_ID + '/Declined'
 
 # invitation ids
 SUBMISSION_ID = CONFERENCE_ID + '/-/Submission'
@@ -28,68 +25,17 @@ BLIND_SUBMISSION_ID = CONFERENCE_ID + '/-/Blind_Submission'
 RECRUIT_AREA_CHAIRS_ID = CONFERENCE_ID + '/-/Recruit_Area_Chairs'
 RECRUIT_REVIEWERS_ID = CONFERENCE_ID + '/-/Recruit_Reviewers'
 
-REVIEWER_METADATA_ID = CONFERENCE_ID + '/-/Reviewer_Metadata'
-AREA_CHAIR_METADATA_ID = CONFERENCE_ID + '/-/Area_Chair_Metadata'
+METADATA_ID = CONFERENCE_ID + '/-/Paper_Metadata'
 
 # template strings
 PAPER_TEMPLATE_STR = CONFERENCE_ID + '/Paper<number>'
 PAPER_REVIEWERS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Reviewers'
 PAPER_AREA_CHAIRS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Area_Chairs'
 PAPER_AUTHORS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Authors'
-PAPER_REVIEW_NONREADERS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Review_Nonreaders'
-PAPER_COMMENT_NONREADERS_TEMPLATE_STR = PAPER_TEMPLATE_STR + '/Comment_Nonreaders'
-
-PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR = PAPER_REVIEWERS_TEMPLATE_STR + '/Unsubmitted'
-PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR = PAPER_REVIEWERS_TEMPLATE_STR + '/Submitted'
-
-OPEN_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Open_Comment'
-OFFICIAL_COMMENT_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Comment'
-OFFICIAL_REVIEW_TEMPLATE_STR = CONFERENCE_ID + '/-/Paper<number>/Official_Review'
 
 # The groups corresponding to these regexes will get automatically created upon assignment
 PAPER_AREA_CHAIRS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/Area_Chair[0-9]+'
 PAPER_ANONREVIEWERS_TEMPLATE_REGEX = PAPER_TEMPLATE_STR + '/AnonReviewer[0-9]+'
-
-# Email templates
-HASH_SEED = "2810398440804348173"
-RECRUIT_MESSAGE_SUBJ = 'ICML 2019: Invitation to Review'
-RECRUIT_REVIEWERS_MESSAGE = '''Dear {name},
-
-You have been invited to serve as a reviewer for the ICML 2019 Conference.
-
-To ACCEPT the invitation, please click on the following link:
-
-{accept_url}
-
-To DECLINE the invitation, please click on the following link:
-
-{decline_url}
-
-We  hope you will be able to accept our invitation and help us select a high quality program for ICML 2019.
-
-Best regards,
-The ICML 2019 Program Chairs
-
-'''
-
-RECRUIT_AREA_CHAIRS_MESSAGE = '''Dear {name},
-
-You have been invited to serve as an area chair for the ICML 2019 Conference.
-
-To ACCEPT the invitation, please click on the following link:
-
-{accept_url}
-
-To DECLINE the invitation, please click on the following link:
-
-{decline_url}
-
-We  hope you will be able to accept our invitation and help us select a high quality program for ICML 2019.
-
-Best regards,
-The ICML 2019 Program Chairs
-
-'''
 
 
 # Deadlines
@@ -130,23 +76,15 @@ area_chairs = openreview.Group(**{
     'web': os.path.abspath('../webfield/areachairWebfield.js')
 })
 
-area_chairs_invited = openreview.Group(**{
-    'id': AREA_CHAIRS_INVITED_ID,
-    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
+senior_area_chairs = openreview.Group(**{
+    'id': SENIOR_AREA_CHAIRS_ID,
+    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID, SENIOR_AREA_CHAIRS_ID],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
     'signatories': [CONFERENCE_ID],
-    'members': [],
+    'members': []
 })
 
-area_chairs_declined = openreview.Group(**{
-    'id': AREA_CHAIRS_DECLINED_ID,
-    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
 
 reviewers = openreview.Group(**{
     'id': REVIEWERS_ID,
@@ -157,24 +95,14 @@ reviewers = openreview.Group(**{
     'members': [],
 })
 
-reviewers_invited = openreview.Group(**{
-    'id': REVIEWERS_INVITED_ID,
-    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
+expert_reviewers = openreview.Group(**{
+    'id': EXPERT_REVIEWERS_ID,
+    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID, AREA_CHAIRS_ID, EXPERT_REVIEWERS_ID],
     'writers': [CONFERENCE_ID],
     'signatures': [CONFERENCE_ID],
     'signatories': [CONFERENCE_ID],
     'members': [],
 })
-
-reviewers_declined = openreview.Group(**{
-    'id': REVIEWERS_DECLINED_ID,
-    'readers':[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
-
 
 # Configure paper submissions
 submission_inv = invitations.Submission(
@@ -183,11 +111,7 @@ submission_inv = invitations.Submission(
     duedate = SUBMISSION_DEADLINE,
     reply_params = {
         'readers': {
-            'values-copied': [
-                CONFERENCE_ID,
-                '{content.authorids}',
-                '{signatures}'
-            ]
+            'values-regex': '|'.join(['~.*', CONFERENCE_ID + '.*'])
         },
         'signatures': {
             'values-regex': '|'.join(['~.*', CONFERENCE_ID])
@@ -203,11 +127,19 @@ blind_submission_inv = invitations.Submission(
     conference_id = CONFERENCE_ID,
     duedate = SUBMISSION_DEADLINE,
     mask = {
+        'title': {
+            'values-regex': '.*',
+            'required': False,
+        },
+        'abstract': {
+            'values-regex': '.*',
+            'required': False
+        },
         'authors': {
             'values': ['Anonymous']
         },
         'authorids': {
-            'values-regex': '.*'
+            'values': ['Anonymous']
         }
     },
     reply_params = {
@@ -219,80 +151,120 @@ blind_submission_inv = invitations.Submission(
     }
 )
 
-
-# Configure AC and reviewer recruitment
-recruit_area_chairs = invitations.RecruitReviewers(
-    id = RECRUIT_AREA_CHAIRS_ID,
+jrac_placeholder_inv = invitations.Submission(
+    id = 'ICML.cc/2019/Conference/-/JrAC_Placeholder',
     conference_id = CONFERENCE_ID,
-    process = os.path.abspath('../process/recruitAreaChairsProcess.js'),
-    web = os.path.abspath('../webfield/recruitResponseWebfield.js')
+    duedate = SUBMISSION_DEADLINE,
+    reply_params = {
+        'readers': {
+            'values-regex': '|'.join(['~.*', CONFERENCE_ID + '.*'])
+        },
+        'signatures': {
+            'values-regex': '|'.join(['~.*', CONFERENCE_ID])
+        },
+        'writers': {
+            'values-regex': '|'.join(['~.*', CONFERENCE_ID])
+        }
+    }
 )
-
-recruit_reviewers = invitations.RecruitReviewers(
-    id = RECRUIT_REVIEWERS_ID,
-    conference_id = CONFERENCE_ID,
-    process = os.path.abspath('../process/recruitReviewersProcess.js'),
-    web = os.path.abspath('../webfield/recruitResponseWebfield.js')
-)
+jrac_placeholder_inv.reply['content'] = {
+    'title': {
+        'value-regex': '~.*'
+    }
+}
 
 
 # Configure bidding
-add_bid = invitations.AddBid(
-    conference_id = CONFERENCE_ID,
-    duedate = ADD_BID_DEADLINE,
-    completion_count = 50,
-    inv_params = {
-        'readers': [
-            CONFERENCE_ID,
-            PROGRAM_CHAIRS_ID,
-            REVIEWERS_ID,
-            AREA_CHAIRS_ID
-        ],
-        'invitees': [],
-        'web': os.path.abspath('../webfield/bidWebfield.js')
+bid_inv = openreview.Invitation(**{
+    'id': 'ICML.cc/2019/Conference/-/Bid',
+    'readers': ['everyone'],
+    'writers': ['ICML.cc/2019/Conference'],
+    'signatures': ['ICML.cc/2019/Conference'],
+    'invitees': [AREA_CHAIRS_ID],
+    'multiReply': True,
+    'expdate': 1549038307000,
+    'duedate': 1549038307000,
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': 'ICML.cc/2019/Conference/-/Blind_Submission',
+        'readers': {
+            'values': [
+                'ICML.cc/2019/Conference'
+            ]
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': {
+            'tag': {
+                'values-radio': [
+                  'Very High',
+                  'High',
+                  'Neutral',
+                  'Low',
+                  'Very Low',
+                  'No Bid'
+                ]
+            }
+        }
     },
+    'web': os.path.abspath('../webfield/bidWebfield.js')
+})
 
-)
-
-
-# Configure AC recommendations
-ac_recommendation_template = {
-        'id': CONFERENCE_ID + '/-/Paper<number>/Recommend_Reviewer',
-        'invitees': [],
-        'multiReply': True,
-        'readers': ['everyone'],
-        'writers': [CONFERENCE_ID],
-        'signatures': [CONFERENCE_ID],
-        'duedate': openreview.tools.timestamp_GMT(year=2018, month=6, day=6),
-        'reply': {
-            'forum': '<forum>',
-            'replyto': '<forum>',
-            'readers': {
-                'description': 'The users who will be allowed to read the above content.',
-                'values-copied': [CONFERENCE_ID, '{signatures}']
-            },
-            'signatures': {
-                'description': 'How your identity will be displayed with the above content.',
-                'values-regex': '~.*'
-            },
-            'content': {
-                'tag': {
-                    'description': 'Recommend a reviewer to review this paper',
-                    'order': 1,
-                    'required': True,
-                    'values-url': '/groups?id=' + REVIEWERS_ID
-                }
+# Configure bidding
+sac_bid_inv = openreview.Invitation(**{
+    'id': 'ICML.cc/2019/Conference/-/SAC_Bid',
+    'readers': ['everyone'],
+    'writers': ['ICML.cc/2019/Conference'],
+    'signatures': ['ICML.cc/2019/Conference'],
+    'invitees': ['OpenReview.net'],
+    'multiReply': True,
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': 'ICML.cc/2019/Conference/-/JrAC_Placeholder',
+        'readers': {
+            'values': [
+                'ICML.cc/2019/Conference'
+            ]
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': {
+            'tag': {
+                'values-radio': [
+                    '1 - Not Willing',
+                    '2 - Neutral',
+                    '3 - Willing',
+                    '4 - Eager'
+                ]
             }
         }
     }
+})
 
+scores_by_bid = {
+    '1 - Not Willing': -1.0,
+    '2 - Neutral': 0,
+    '3 - Willing': 0.5,
+    '4 - Eager': 1.0
+}
+
+bids_by_score = {
+    -1.0: '1 - Not Willing',
+    0: '2 - Neutral',
+    0.5: '3 - Willing',
+    1.0: '4 - Eager'
+}
 
 # Metadata and matching stuff
-reviewer_metadata = openreview.Invitation(**{
-    'id': REVIEWER_METADATA_ID,
+metadata_inv = openreview.Invitation(**{
+    'id': METADATA_ID,
     'readers': [
         CONFERENCE_ID,
-        PROGRAM_CHAIRS_ID
+        AREA_CHAIRS_ID
     ],
     'writers': [CONFERENCE_ID],
     'invitees': [],
@@ -304,7 +276,34 @@ reviewer_metadata = openreview.Invitation(**{
         'readers': {
             'values': [
                 CONFERENCE_ID,
-                PROGRAM_CHAIRS_ID
+                AREA_CHAIRS_ID
+            ]
+        },
+        'writers': {
+            'values': [CONFERENCE_ID]
+        },
+        'signatures': {
+            'values': [CONFERENCE_ID]},
+        'content': {}
+    }
+})
+
+# Metadata and matching stuff
+jrac_metadata_inv = openreview.Invitation(**{
+    'id': 'ICML.cc/2019/Conference/-/JrAC_Metadata',
+    'readers': [
+        CONFERENCE_ID
+    ],
+    'writers': [CONFERENCE_ID],
+    'invitees': [],
+    'signatures': [CONFERENCE_ID],
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': 'ICML.cc/2019/Conference/-/JrAC_Placeholder',
+        'readers': {
+            'values': [
+                CONFERENCE_ID
             ]
         },
         'writers': {
@@ -328,9 +327,18 @@ assignment_inv = openreview.Invitation(**{
         'forum': None,
         'replyto': None,
         'invitation': BLIND_SUBMISSION_ID,
-        'readers': {'values': [CONFERENCE_ID]},
-        'writers': {'values': [CONFERENCE_ID]},
-        'signatures': {'values': [CONFERENCE_ID]},
+        'readers': {
+            'values': [
+                'ICML.cc/2019/Conference',
+                'ICML.cc/2019/Conference/Area_Chairs'
+            ]
+        },
+        'writers': {
+            'values': [CONFERENCE_ID]
+        },
+        'signatures': {
+            'values': [CONFERENCE_ID]
+        },
         'content': {}
     }
 })
@@ -347,14 +355,147 @@ config_inv = openreview.Invitation(**{
         'forum': None,
         'replyto': None,
         'invitation': None,
-        'readers': {'values': [CONFERENCE_ID]},
-        'writers': {'values': [CONFERENCE_ID]},
-        'signatures': {'values': [CONFERENCE_ID]},
-        'content': {}
+        'readers': {
+            'values': [CONFERENCE_ID, AREA_CHAIRS_ID]
+        },
+        'writers': {
+            'values': [CONFERENCE_ID]
+        },
+        'signatures': {
+            'values': [CONFERENCE_ID]
+        },
+        'content': {
+            'label': {
+                'value-regex': '.{1,250}',
+                'required': True,
+                'description': 'Title of the configuration.',
+                'order': 1
+            },
+            'max_users': {
+                'value-regex': '[0-9]+',
+                'required': True,
+                'description': 'Max number of reviewers that can review a paper',
+                'order': 2
+            },
+            'min_users': {
+                'value-regex': '[0-9]+',
+                'required': True,
+                'description': 'Min number of reviewers required to review a paper',
+                'order': 3
+            },
+            'max_papers': {
+                'value-regex': '[0-9]+',
+                'required': True,
+                'description': 'Max number of reviews a person has to do',
+                'order': 4
+            },
+            'min_papers': {
+                'value-regex': '[0-9]+',
+                'required': True,
+                'description': 'Min number of reviews a person should do',
+                'order': 5
+            },
+            'alternates': {
+                'value-regex': '[0-9]+',
+                'required': True,
+                'description': 'Number of alternate reviewers for a paper',
+                'order': 6
+            },
+            'config_invitation': {
+                'value-regex': 'ICML.cc/2019/Conference/-/Assignment_Configuration',
+                'required': True,
+                'description': 'Invitation to get the configuration note',
+                'order': 7
+            },
+            'paper_invitation': {
+                'value-regex': 'ICML.cc/2019/Conference/.*',
+                'required': True,
+                'description': 'Invitation to get the configuration note',
+                'order': 8
+            },
+            'metadata_invitation': {
+                'value-regex': 'ICML.cc/2019/Conference/-/.*',
+                'required': True,
+                'description': 'Invitation to get the configuration note',
+                'order': 9
+            },
+            'assignment_invitation': {
+                'value': 'ICML.cc/2019/Conference/-/Paper_Assignment',
+                'required': True,
+                'description': 'Invitation to get the configuration note',
+                'order': 10
+            },
+            'constraints_invitation': {
+                'value': 'ICML.cc/2019/Conference/-/Assignment_Configuration/Lock',
+                'required': True,
+                'description': 'Invitation to get the configuration note',
+                'order': 10
+            },
+            'match_group': {
+                'value-regex': 'ICML.cc/2019/Conference/.*',
+                'required': True,
+                'description': 'Invitation to get the configuration note',
+                'order': 11
+            },
+            'scores_names': {
+                'values-dropdown': [
+                    'affinity',
+                    'bid',
+                    'subjectArea',
+                    'recommendation'
+                ],
+                'required': True,
+                'description': 'List of scores names',
+                'order': 12
+            },
+            'scores_weights': {
+                'values-regex': '\\d*\\.?\\d*',
+                'required': True,
+                'description': 'Comma separated values of scores weigths, should follow the same order than scores_names',
+                'order': 13
+            },
+            'status': {
+                'value-dropdown': [
+                    'Initialized',
+                    'Running',
+                    'Error',
+                    'Failure',
+                    'Complete',
+                    'Deployed'
+                ]
+                }
+            }
+        }
     }
+)
 
+lock_tag_inv = openreview.Invitation(**{
+    'id': 'ICML.cc/2019/Conference/-/Assignment_Configuration/Lock',
+    'readers': ['everyone'],
+    'writers': ['ICML.cc/2019/Conference'],
+    'signatures': ['ICML.cc/2019/Conference'],
+    'invitees': ['~'],
+    'multiReply': True,
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'invitation': 'ICML.cc/2019/Conference/-/Blind_Submission',
+        'readers': {
+            'values': [
+                'ICML.cc/2019/Conference/Area_Chairs',
+                'ICML.cc/2019/Conference'
+            ]
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': {
+            'tag': {
+                'value-regex': '.*'
+            }
+        }
+    }
 })
-
 
 # Per-paper group template definitions
 papergroup_template = openreview.Group(**{
@@ -365,7 +506,6 @@ papergroup_template = openreview.Group(**{
     'signatories': [CONFERENCE_ID],
     'members': [],
 })
-
 
 reviewers_template = openreview.Group(**{
     'id': PAPER_REVIEWERS_TEMPLATE_STR,
@@ -380,7 +520,7 @@ reviewers_template = openreview.Group(**{
 })
 
 area_chairs_template = openreview.Group(**{
-    'id': PAPER_REVIEWERS_TEMPLATE_STR,
+    'id': PAPER_AREA_CHAIRS_TEMPLATE_STR,
     'readers':[
         CONFERENCE_ID,
         PROGRAM_CHAIRS_ID
@@ -390,169 +530,3 @@ area_chairs_template = openreview.Group(**{
     'signatories': [CONFERENCE_ID],
     'members': [],
 })
-
-review_nonreaders_template = openreview.Group(**{
-    'id': PAPER_REVIEW_NONREADERS_TEMPLATE_STR,
-    'readers':[
-        CONFERENCE_ID,
-        PROGRAM_CHAIRS_ID
-    ],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
-
-comment_nonreaders_template = openreview.Group(**{
-    'id': PAPER_COMMENT_NONREADERS_TEMPLATE_STR,
-    'readers':[
-        CONFERENCE_ID,
-        PROGRAM_CHAIRS_ID
-    ],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
-
-reviewers_unsubmitted_template = openreview.Group(**{
-    'id': PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR,
-    'readers':[
-        CONFERENCE_ID,
-        PROGRAM_CHAIRS_ID,
-        PAPER_AREA_CHAIRS_TEMPLATE_STR
-    ],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
-
-reviewers_submitted_template = openreview.Group(**{
-    'id': PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR,
-    'readers':[
-        CONFERENCE_ID,
-        PROGRAM_CHAIRS_ID,
-        PAPER_AREA_CHAIRS_TEMPLATE_STR
-    ],
-    'writers': [CONFERENCE_ID],
-    'signatures': [CONFERENCE_ID],
-    'signatories': [CONFERENCE_ID],
-    'members': [],
-})
-
-
-# Configure the invitations that will be attached on a per-paper basis
-# These are constructed using templates.
-official_comment_template = {
-    'id': OFFICIAL_COMMENT_TEMPLATE_STR,
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'invitees': [
-        PAPER_REVIEWERS_TEMPLATE_STR,
-        PAPER_AUTHORS_TEMPLATE_STR,
-        PAPER_AREA_CHAIRS_TEMPLATE_STR,
-        PROGRAM_CHAIRS_ID
-    ],
-    'noninvitees': [PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR],
-    'signatures': [CONFERENCE_ID],
-    'process': os.path.abspath('../process/commentProcess.js'),
-    'reply': {
-        'forum': '<forum>',
-        'replyto': None,
-        'readers': {
-            'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
-            'values-dropdown': [
-                'everyone',
-                PAPER_AUTHORS_TEMPLATE_STR,
-                PAPER_REVIEWERS_TEMPLATE_STR,
-                PAPER_AREA_CHAIRS_TEMPLATE_STR,
-                PROGRAM_CHAIRS_ID
-            ]
-        },
-        'nonreaders': {
-            'values': [PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
-        },
-        'signatures': {
-            'description': '',
-            'values-regex': '|'.join([
-                PAPER_ANONREVIEWERS_TEMPLATE_REGEX,
-                PAPER_AUTHORS_TEMPLATE_STR,
-                PAPER_AREA_CHAIRS_TEMPLATE_REGEX,
-                PROGRAM_CHAIRS_ID,
-                CONFERENCE_ID
-            ]),
-        },
-        'writers': {
-            'description': 'Users that may modify this record.',
-            'values-copied':  [
-                CONFERENCE_ID,
-                '{signatures}'
-            ]
-        },
-        'content': invitations.content.comment
-    }
-}
-
-official_review_template = {
-    'id': OFFICIAL_REVIEW_TEMPLATE_STR,
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'invitees': [PAPER_REVIEWERS_TEMPLATE_STR],
-    'noninvitees': [PAPER_REVIEWERS_SUBMITTED_TEMPLATE_STR],
-    'signatures': [CONFERENCE_ID],
-    'duedate': OFFICIAL_REVIEW_DEADLINE,
-    'process': os.path.abspath('../process/officialReviewProcess.js'),
-    'reply': {
-        'forum': '<forum>',
-        'replyto': '<forum>',
-        'readers': {
-            'description': 'The users who will be allowed to read the reply content.',
-            'values': ['everyone']
-        },
-        'nonreaders': {
-            'values': [PAPER_REVIEWERS_UNSUBMITTED_TEMPLATE_STR]
-        },
-        'signatures': {
-            'description': 'How your identity will be displayed with the above content.',
-            'values-regex': PAPER_ANONREVIEWERS_TEMPLATE_REGEX
-        },
-        'writers': {
-            'description': 'Users that may modify this record.',
-            'values-copied':  [
-                CONFERENCE_ID,
-                '{signatures}'
-            ]
-        },
-        'content': invitations.content.review
-    }
-}
-
-meta_review_template = {
-    'id': CONFERENCE_ID + '/-/Paper<number>/Meta_Review',
-    'readers': ['everyone'],
-    'writers': [CONFERENCE_ID],
-    'invitees': [PAPER_AREA_CHAIRS_TEMPLATE_STR],
-    'noninvitees': [],
-    'signatures': [CONFERENCE_ID],
-    'process': os.path.join(os.path.dirname(__file__), '../process/metaReviewProcess.js'),
-    'reply': {
-        'forum': '<forum>',
-        'replyto': '<forum>',
-        'readers': {
-            'description': 'Select all user groups that should be able to read this comment. Selecting \'All Users\' will allow paper authors, reviewers, area chairs, and program chairs to view this comment.',
-            'values': [CONFERENCE_ID, PAPER_AREA_CHAIRS_TEMPLATE_STR, PROGRAM_CHAIRS_ID]
-
-        },
-        'signatures': {
-            'description': 'How your identity will be displayed with the above content.',
-            'values-regex': PAPER_AREA_CHAIRS_TEMPLATE_REGEX
-        },
-        'writers': {
-            'description': 'Users that may modify this record.',
-            'values-regex': PAPER_AREA_CHAIRS_TEMPLATE_REGEX
-        },
-        'content': invitations.content.review
-    }
-}
-
