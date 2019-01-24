@@ -525,7 +525,7 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
         note: reviewObj.id,
         rating: reviewObj.rating,
         confidence: reviewObj.confidence,
-        reviewLength: reviewObj.content.review.length
+        reviewLength: reviewObj.content.pros.length
       });
       ratings.push(reviewObj.rating);
       confidences.push(reviewObj.confidence);
