@@ -1,4 +1,3 @@
-
 import openreview
 import icml
 import argparse
@@ -40,7 +39,7 @@ def main(client):
     senior_areachairs_group = client.get_group(icml.SENIOR_AREA_CHAIRS_ID)
 
     for paper in client.get_notes(invitation='ICML.cc/2019/Conference/-/JrAC_Placeholder', details='tags'):
-        score_by_signature = {t['signatures'][0]:icml.bid_score_map[t['tag']] for t in paper.details['tags'] if t['invitation'] == 'ICML.cc/2019/Conference/-/SAC_Bid'}
+        score_by_signature = {t['signatures'][0]:icml.scores_by_bid[t['tag']] for t in paper.details['tags'] if t['invitation'] == 'ICML.cc/2019/Conference/-/SAC_Bid'}
         posted_metadata = client.post_note(openreview.Note(**{
             'forum': paper.id,
             'replyto': paper.id,

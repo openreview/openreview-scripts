@@ -245,11 +245,18 @@ sac_bid_inv = openreview.Invitation(**{
     }
 })
 
-bid_score_map = {
+scores_by_bid = {
     '1 - Not Willing': -1.0,
     '2 - Neutral': 0,
     '3 - Willing': 0.5,
     '4 - Eager': 1.0
+}
+
+bids_by_score = {
+    -1.0: '1 - Not Willing',
+    0: '2 - Neutral',
+    0.5: '3 - Willing',
+    1.0: '4 - Eager'
 }
 
 # Metadata and matching stuff
