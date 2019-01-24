@@ -1,32 +1,28 @@
 
 // Assumes the following pattern for meta reviews and official reviews:
-// CONFERENCE + '/-/Paper' + number + '/Meta_Review'
-// CONFERENCE + '/-/Paper' + number + '/Official_Review'
+// CONFERENCE_ID + '/-/Paper' + number + '/Meta_Review'
+// CONFERENCE_ID + '/-/Paper' + number + '/Official_Review'
 
 // Constants
 var HEADER_TEXT = 'Program Chairs Console';
 
-var CONFERENCE = 'MIDL.io/2019/Conference';
-var INVITATION = CONFERENCE + '/-/Full_Submission';
-var BLIND_INVITATION = CONFERENCE + '/-/Full_Submission';
-var RECRUIT_REVIEWERS = CONFERENCE + '/-/Recruit_Reviewers';
-var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
+var CONFERENCE_ID = 'learningtheory.org/COLT/2019/Conference';
+var INVITATION = CONFERENCE_ID + '/-/Submission';
+var BLIND_INVITATION = CONFERENCE_ID + '/-/Blind_Submission';
+var RECRUIT_REVIEWERS = CONFERENCE_ID + '/-/Recruit_Reviewers';
+var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
 var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official_Review';
 var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
 
-var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chairs';
+var ANONREVIEWER_WILDCARD = CONFERENCE_ID + '/Paper.*/AnonReviewer.*';
+var AREACHAIR_WILDCARD = CONFERENCE_ID + '/Paper.*/Area_Chairs';
 
-var ANONREVIEWER_REGEX = /^MIDL\.io\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^MIDL\.io\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
+var ANONREVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
-  updates for MIDL 2019 Program Chairs. It will be regularly updated as the conference \
-  progresses, so please check back frequently for news and other updates.</p> \
-  <a href="/assignments?venue=MIDL.io/2019/Conference">Area Chair and Reviewer Assignments</a></br> \
-  <a href="/group?id=MIDL.io/2019/Conference/Reviewers/Suggested&mode=edit">Reviewers - suggested</a></br> \
-  <a href="/groups?id=MIDL.io/2019/Conference/Reviewers/Accepted">Reviewers - accepted</a></br> \
-  <a href="/groups?id=MIDL.io/2019/Conference/Reviewers/Declined">Reviewers - declined</a>';
+  updates for COLT 2019 Program Chairs. It will be regularly updated as the conference \
+  progresses, so please check back frequently for news and other updates.</p>';
 
 // Ajax functions
 var getPaperNumbersfromGroups = function(groups) {
@@ -200,7 +196,7 @@ var getMetaReviews = function() {
 
 // Render functions
 var displayHeader = function() {
-  Webfield.ui.setup('#group-container', CONFERENCE);
+  Webfield.ui.setup('#group-container', CONFERENCE_ID);
   Webfield.ui.header(HEADER_TEXT, INSTRUCTIONS);
 
   var loadingMessage = '<p class="empty-message">Loading...</p>';
@@ -266,10 +262,10 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     if (areachairId) {
       areachairProfile = findProfile(profiles, areachairId);
     } else {
-      areachairProfile.name = view.prettyId(CONFERENCE + '/-/Paper' + note.number + '/Area_Chair');
+      areachairProfile.name = view.prettyId(CONFERENCE_ID + '/-/Paper' + note.number + '/Area_Chair');
       areachairProfile.email = '-';
     }
-    var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
+    var metaReview = _.find(metaReviews, ['invitation', CONFERENCE_ID + '/-/Paper' + note.number + '/Meta_Review']);
     return buildPaperTableRow(note, revIds, completedReviews[note.number], metaReview, areachairProfile);
   });
 
@@ -326,7 +322,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     displaySortPanel(container, sortOptions, sortResults);
     renderTable(container, rowData);
   } else {
-    $(container).empty().append('<p class="empty-message">No papers have been submitted. ' +
+    $(container).empty().append('<p class="empty-message">No reviewing data is available at this time. ' +
       'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
   }
 
@@ -347,7 +343,7 @@ var displaySPCStatusTable = function(profiles, notes, completedReviews, metaRevi
       if (note) {
         var reviewers = reviewerIds[number];
         var reviews = completedReviews[number];
-        var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + number + '/Meta_Review']);
+        var metaReview = _.find(metaReviews, ['invitation', CONFERENCE_ID + '/-/Paper' + number + '/Meta_Review']);
 
         papers.push({
           note: note,
@@ -437,7 +433,7 @@ var displayPCStatusTable = function(profiles, notes, completedReviews, metaRevie
 
         var reviews = completedReviews[number];
         var review = reviews[reviewerNum];
-        var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + number + '/Meta_Review']);
+        var metaReview = _.find(metaReviews, ['invitation', CONFERENCE_ID + '/-/Paper' + number + '/Meta_Review']);
 
         papers.push({
           note: note,
@@ -525,7 +521,7 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
         note: reviewObj.id,
         rating: reviewObj.rating,
         confidence: reviewObj.confidence,
-        reviewLength: reviewObj.content.pros.length
+        reviewLength: reviewObj.content.review.length
       });
       ratings.push(reviewObj.rating);
       confidences.push(reviewObj.confidence);
@@ -534,7 +530,7 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
         forumUrl: '/forum?' + $.param({
           id: note.forum,
           noteId: note.id,
-          invitationId: CONFERENCE + '/-/Paper' + note.number + '/Official_Review'
+          invitationId: CONFERENCE_ID + '/-/Paper' + note.number + '/Official_Review'
         })
       });
     }
@@ -779,8 +775,8 @@ $('#group-container').on('click', 'a.send-reminder-link', function(e) {
   var userId = $(this).data('userId');
   var forumUrl = $(this).data('forumUrl');
   var postData = {
-    subject: 'MIDL 2019 Reminder',
-    message: 'This is a reminder to please submit your official reviews for MIDL 2019. ' +
+    subject: '[COLT 2019] Review Reminder',
+    message: 'This is a reminder to please submit your official reviews for COLT 2019. ' +
       'Click on the link below to go to the review page:\n\n' + location.origin + forumUrl + '\n\nThank you.',
     groups: [userId]
   };
@@ -804,4 +800,4 @@ $('#group-container').on('click', 'a.collapse-btn', function(e) {
   return false;
 });
 
-OpenBanner.venueHomepageLink(CONFERENCE);
+OpenBanner.venueHomepageLink(CONFERENCE_ID);
