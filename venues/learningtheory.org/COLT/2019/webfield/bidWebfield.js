@@ -4,7 +4,7 @@
 
 var CONFERENCE_ID = 'learningtheory.org/COLT/2019/Conference';
 var SHORT_PHRASE = 'COLT 2019';
-var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Submission';
+var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Bid';
 var COI_CLAIM = CONFERENCE_ID + '/-/Conflict_of_Interest';
@@ -46,7 +46,7 @@ function main() {
 
 // Perform all the required API calls
 function load() {
-  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
+  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags,original'}).then(function(allNotes) {
     return allNotes.filter(function(note) {
       return !note.content.hasOwnProperty('withdrawal');
     });
