@@ -7,6 +7,7 @@ import argparse
 import openreview
 import xlsxwriter
 import requests
+import json
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -85,7 +86,7 @@ def main():
     col = 0
 
     # write the header
-    header = ['Unique Id', 'Title', 'Decision', 'Abstract', 'External URL', 
+    header = ['Unique Id', 'Paper Number', 'Title', 'Decision', 'Abstract', 'Keywords', 'External URL', 
             'Author Count', 'Last Name', 'Middle Initial', 'First Name',
               'Email', 'Institution', 'Department', 'Last Name', 'Middle Initial', 'First Name', 'Email', 'Institution',
               'Department']
@@ -100,27 +101,40 @@ def main():
             col = 0
             worksheet.write(row, col, note.forum)
             col += 1
+            worksheet.write(row, col, note.number)
+            col += 1
             worksheet.write(row, col, note.content['title'])
             col += 1
             worksheet.write(row, col, decision_info[note.forum])
             col += 1
             worksheet.write(row, col, note.content['abstract'])
             col += 1
+            worksheet.write(row, col, json.dumps(note.content['keywords']))
+            col += 1
             worksheet.write(row, col, note.content['pdf'])
             col += 1
             # author data
             worksheet.write(row, col, len(note.content['authorids']))
             col += 1
-            for author in note.content['authorids']:
+            for index, author in enumerate(note.content['authorids']):
                 if author not in profile_info:
                     ## A hack to get profiles that are missed by get_profiles
                     try:
-                        note = client.get_profile(author)
-                        profile = openreview.Profile(content = note.content)
+                        profile_note = client.get_profile(author)
+                        profile = openreview.Profile(content = profile_note.content)
                         profile_info = load_profile(profile_info, author, profile)
                     except openreview.OpenReviewException as e:
                         # cannot find author_id in profile notes
                         e =1
+                        name_elements = note.content['authors'][index].split(' ')
+                        profile_info[author] = {'first': '', 'mi': '', 'last': ''}
+                        profile_info[author]['first'] = name_elements[0]
+                        profile_info[author]['last'] = name_elements[-1]
+                        profile_info[author]['mi'] = ''
+                        profile_info[author]['email'] = author
+                        profile_info[author]['institute'] = ''
+                        if (len(name_elements) > 2):
+                            profile_info[author]['mi'] = ' '.join(name_elements[1:-1])
 
                 if author in profile_info:
                     worksheet.write(row, col, profile_info[author]['last'])
