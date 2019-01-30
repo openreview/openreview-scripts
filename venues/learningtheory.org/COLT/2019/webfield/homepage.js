@@ -8,7 +8,7 @@
 // Constants
 var CONFERENCE_ID = 'learningtheory.org/COLT/2019/Conference';
 var SUBMISSION_ID = 'learningtheory.org/COLT/2019/Conference/-/Submission';
-var BLIND_SUBMISSION_ID = 'learningtheory.org/COLT/2019/Conference/-/Blind_Submission';
+var BLIND_SUBMISSION_ID = 'learningtheory.org/COLT/2019/Conference/-/Submission';
 var REVIEWERS_NAME = 'Reviewers';
 var AREA_CHAIRS_NAME = 'Program_Committee';
 var AREA_CHAIRS_ID = 'learningtheory.org/COLT/2019/Conference/Program_Committee';
@@ -95,7 +95,7 @@ function load() {
 
   var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
     pageSize: PAGE_SIZE,
-    details: 'replyCount,original'
+    details: 'replyCount'
   });
 
   if (!user || _.startsWith(user.id, 'guest_')) {
