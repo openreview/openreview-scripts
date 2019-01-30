@@ -41,5 +41,5 @@ submission_invitation.reply['content']['abstract']['order'] = 6
 submission_invitation.reply['content']['pdf']['order'] = 7
 submission_invitation.reply['content']['pdf']['required'] = False
 submission_invitation.reply['content']['html']['order'] = 8
-submission_invitation.reply['readers'] = {'values': ['everyone']}
-print (client.post_invitation(submission_invitation))
+submission_invitation.reply['content']['pdf']['description'] = ['Upload a PDF file that ends with .pdf (Optional)']
+client.post_invitation(submission_invitation)
