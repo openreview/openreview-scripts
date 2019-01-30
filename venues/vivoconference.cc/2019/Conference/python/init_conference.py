@@ -26,12 +26,20 @@ print('connecting to {0}'.format(client.baseurl))
 conference = config.get_conference(client)
 
 # 12/17/18 17:00 UTC
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 5, 17, 00), public = False, additional_fields = {
+submission_invitation = conference.open_submissions(due_date = datetime.datetime(2019, 4, 14, 17, 00), public = True, additional_fields = {
         'html': {
-            'fieldDisplayLabel': 'Html',
             'description': 'Provide a direct url to your artifact (link must begin with http(s)) (Optional)',
-            'order': 7,
+            'order': 8,
             'value-regex': '(http|https):\/\/.+',
             'required':False
         }
     })
+
+submission_invitation.reply['content']['keywords']['order'] = 4
+submission_invitation.reply['content']['TL;DR']['order'] = 5
+submission_invitation.reply['content']['abstract']['order'] = 6
+submission_invitation.reply['content']['pdf']['order'] = 7
+submission_invitation.reply['content']['pdf']['required'] = False
+submission_invitation.reply['content']['html']['order'] = 8
+submission_invitation.reply['readers'] = {'values': ['everyone']}
+print (client.post_invitation(submission_invitation))
