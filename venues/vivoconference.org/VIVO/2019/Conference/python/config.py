@@ -6,7 +6,7 @@ def get_conference(client):
 
     builder = openreview.conference.ConferenceBuilder(client)
 
-    builder.set_conference_id('VIVO.org/2019/Conference')
+    builder.set_conference_id('vivoconference.org/VIVO/2019/Conference')
     builder.set_conference_name('VIVO 2019 Conference')
     builder.set_conference_short_name('VIVO 2019 Conference')
     builder.set_homepage_header({

@@ -4,7 +4,7 @@ var HEADER = {
   description: ''
 };
 var VENUE_LINKS = [
-  { url: '/group?id=VIVOCONFERENCE.org/2019/Conference', name: 'VIVO 2019 Conference' },
+  { url: '/group?id=VIVOConference.org/2019/Conference', name: 'VIVO 2019 Conference' },
   { type: 'divider' }
 ];
 
