@@ -17,17 +17,6 @@ if __name__ == '__main__':
     conference = config.get_conference(client)
     conference.close_submissions()
 
-    submissions = client.get_notes(invitation=conference.get_submission_id())
-
-    for paper in submissions:
-        client.post_group(openreview.Group(**{
-            'id': '/'.join([conference.get_id(), 'Paper{}'.format(paper.number)]),
-            'readers': ['everyone'],
-            'writers': [conference.get_id()],
-            'signatories': [],
-            'signatures': [conference.get_id()]
-        }))
-
     bid_invitation = openreview.Invitation(**{
         'id': '/'.join([conference.get_id(), '-', 'Bid']),
         'expdate': None, # todo
@@ -42,7 +31,7 @@ if __name__ == '__main__':
         'reply': {
             'forum': None,
             'replyto': None,
-            'invitation': conference.get_submission_id(),
+            'invitation': 'learningtheory.org/COLT/2019/Conference/-/Blind_Submission',
             'readers': {
                 'values-copied': [conference.get_id(), '{signatures}']
             },
