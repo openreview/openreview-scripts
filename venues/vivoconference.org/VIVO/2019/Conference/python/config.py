@@ -19,5 +19,3 @@ def get_conference(client):
     })
     builder.set_conference_submission_name('Submission')
     return builder.get_result()
-
-

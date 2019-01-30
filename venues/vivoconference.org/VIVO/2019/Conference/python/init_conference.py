@@ -42,4 +42,20 @@ submission_invitation.reply['content']['pdf']['order'] = 7
 submission_invitation.reply['content']['pdf']['required'] = False
 submission_invitation.reply['content']['html']['order'] = 8
 submission_invitation.reply['content']['pdf']['description'] = ['Upload a PDF file that ends with .pdf (Optional)']
+with open('../process/submissionProcess.js','r') as f:
+    submission_invitation.process = f.read()
 client.post_invitation(submission_invitation)
+
+conference.set_authors()
+
+pc_emails = ['muniyal@cs.umass.edu', 'melisabok@gmail.com']
+conference.set_program_chairs(pc_emails)
+
+reviewer_emails = []
+conference.set_reviewers(reviewer_emails)
+conference.recruit_reviewers()
+reviewer_grp = client.get_group('vivoconference.org/VIVO/2019/Conference/Reviewers')
+readers = reviewer_grp.readers
+readers.append('vivoconference.org/VIVO/2019/Conference/Program_Chairs')
+reviewer_grp.readers = readers
+client.post_group(reviewer_grp)
