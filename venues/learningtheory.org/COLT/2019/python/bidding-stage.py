@@ -20,7 +20,7 @@ if __name__ == '__main__':
     bid_invitation = openreview.Invitation(**{
         'id': '/'.join([conference.get_id(), '-', 'Bid']),
         'expdate': None, # todo
-        'duedate': None, # todo
+        'duedate': 1549425600000, # Tuesday, February 5, 2019 11:00:00 PM EST
         'web': os.path.abspath('../webfield/bidWebfield.js'), # todo
         'signatures': [conference.get_id()],
         'readers': [conference.get_id(), conference.get_program_chairs_id(), conference.get_area_chairs_id()],
