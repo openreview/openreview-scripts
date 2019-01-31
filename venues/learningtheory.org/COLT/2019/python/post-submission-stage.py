@@ -85,20 +85,19 @@ def post_blind_note(client, original_note, conference):
         signatories = [author_group_id]))
     client.post_group(openreview.Group(id = reviewer_group_id,
         readers = [reviewer_group_id, conference_id, conference_id + '/Program_Chairs', pc_group_id],
-        writers = [conference_id],
+        writers = [conference_id, pc_group_id],
         signatures = [conference_id],
         signatories = [reviewer_group_id]))
     client.post_group(openreview.Group(id = reviewer_group_invited_id,
         readers = [conference_id, conference_id + '/Program_Chairs', pc_group_id],
-        writers = [conference_id],
+        writers = [conference_id, pc_group_id],
         signatures = [conference_id],
         signatories = [reviewer_group_invited_id]))
     client.post_group(openreview.Group(id = reviewer_group_declined_id,
         readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id],
-        writers = [conference_id],
+        writers = [conference_id, pc_group_id],
         signatures = [conference_id],
         signatories = [reviewer_group_declined_id]))
-
 
     official_review_invitation = client.post_invitation(
         openreview.Invitation.from_json(
