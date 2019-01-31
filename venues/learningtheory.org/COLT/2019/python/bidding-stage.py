@@ -41,7 +41,7 @@ if __name__ == '__main__':
             'content': {
                 'tag': {
                     'value-radio': [
-                        'Very High','High', 'Neutral', 'Low', 'Very Low', 'No Bid'
+                        'Very High','High', 'Neutral', 'Low', 'Very Low', 'Conflict', 'No Bid'
                     ],
                     'required': True
                 }
