@@ -65,8 +65,10 @@ def post_blind_note(client, original_note, conference):
     posted_blind_note.readers = [
         conference.id + '/Program_Chairs',
         pc_group_id, 
-        paper_group_id,
+        author_group_id,
         reviewer_group_id,
+        reviewer_group_invited_id,
+        reviewer_group_declined_id,
         conference_id]
     posted_blind_note = client.post_note(posted_blind_note)
 
