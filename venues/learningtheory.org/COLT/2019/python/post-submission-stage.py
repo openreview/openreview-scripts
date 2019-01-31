@@ -53,7 +53,7 @@ def post_blind_note(client, original_note, conference):
     posted_blind_note = client.post_note(blind_note)
     conference_id = conference.get_id()
     
-    pc_group_id = "{conference_id}/Paper{number}/Program_Committee".format(conference_id = conference_id, number = posted_blind_note.number)
+    pc_group_id = "{conference_id}/Program_Committee".format(conference_id = conference_id)
     paper_group_id = "{conference_id}/Paper{number}".format(conference_id = conference_id, number = posted_blind_note.number)
     author_group_id = conference.id + "/Paper{}/Authors".format(posted_blind_note.number)
     reviewer_group_id = "{conference_id}/Paper{number}/Reviewers".format(conference_id = conference_id, number = posted_blind_note.number)
@@ -73,28 +73,28 @@ def post_blind_note(client, original_note, conference):
     posted_blind_note = client.post_note(posted_blind_note)
 
     client.post_group(openreview.Group(id = paper_group_id,
-        readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id],
+        readers = [conference_id, conference_id + '/Program_Chairs', pc_group_id],
         writers = [conference_id],
         signatures = [conference_id],
         signatories = []))
     client.post_group(openreview.Group(id = author_group_id,
-        readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id, author_group_id],
+        readers = [conference_id, conference_id + '/Program_Chairs', pc_group_id, author_group_id],
         writers = [conference_id],
         signatures = [conference_id],
         signatories = [author_group_id]))
     client.post_group(openreview.Group(id = reviewer_group_id,
-        readers = [reviewer_group_id, conference_id, conference.id + '/Program_Chairs', pc_group_id],
-        writers = [conference_id, pc_group_id],
+        readers = [reviewer_group_id, conference_id, conference_id + '/Program_Chairs', pc_group_id],
+        writers = [conference_id],
         signatures = [conference_id],
         signatories = [reviewer_group_id]))
     client.post_group(openreview.Group(id = reviewer_group_invited_id,
-        readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id],
-        writers = [conference_id, pc_group_id],
+        readers = [conference_id, conference_id + '/Program_Chairs', pc_group_id],
+        writers = [conference_id],
         signatures = [conference_id],
         signatories = [reviewer_group_invited_id]))
     client.post_group(openreview.Group(id = reviewer_group_declined_id,
         readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id],
-        writers = [conference_id, pc_group_id],
+        writers = [conference_id],
         signatures = [conference_id],
         signatories = [reviewer_group_declined_id]))
 
