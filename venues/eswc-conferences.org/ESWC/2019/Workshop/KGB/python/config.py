@@ -18,7 +18,7 @@ def get_conference(client):
     'location': 'Portorož, Slovenia',
     'instructions': ' '
     })
-    builder.set_conference_submission_name('Full_Submission')
+    builder.set_conference_submission_name('Submission')
     return builder.get_result()
 
 
