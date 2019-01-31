@@ -104,9 +104,17 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     conference = config.get_conference(client)
+
+    print ("Closing submissions")
     conference.close_submissions()
 
-    submissions = client.get_notes(invitation=conference.get_submission_id())
+    print ("Updating webfield for ", conference.id)
+    homepage = client.get_group(id = conference.id)
+    with open('../webfield/homepage.js', 'r') as f:
+        homepage.web = f.read()
+    client.post_group(homepage)
 
+    print ('Posting blinded notes')
+    submissions = list(openreview.tools.iterget_notes(client, invitation=conference.get_submission_id()))
     for paper in submissions:
         post_blind_note(client, paper, conference)
