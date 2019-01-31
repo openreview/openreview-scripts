@@ -60,7 +60,7 @@ def post_blind_note(client, original_note, conference):
     reviewer_group_invited_id = "{conference_id}/Paper{number}/Reviewers/Invited".format(conference_id = conference_id, number = posted_blind_note.number)
     reviewer_group_declined_id = "{conference_id}/Paper{number}/Reviewers/Declined".format(conference_id = conference_id, number = posted_blind_note.number)
 
-    # Reposting blind-note with correct authorid group and correct readers
+    # Reposting blind-note with correct authorid group, correct readers and updated bibtex
     posted_blind_note.content['authorids'] = [author_group_id]
     posted_blind_note.readers = [
         conference.id + '/Program_Chairs',
@@ -70,6 +70,7 @@ def post_blind_note(client, original_note, conference):
         reviewer_group_invited_id,
         reviewer_group_declined_id,
         conference_id]
+    posted_blind_note.content['_bibtex'] = "@inproceedings{\nanonymous2019" + original_note.content['title'].split(' ')[0] + ",\ntitle={" + original_note.content['title'] + "},\nauthor={Anonymous},    \nbooktitle={Submitted to Conference on Learning Theory},    \nyear={2019},    \nurl={https://openreview.net/forum?id=" + posted_blind_note.forum + "},    \nnote={under review}    \n}"
     posted_blind_note = client.post_note(posted_blind_note)
 
     client.post_group(openreview.Group(id = paper_group_id,
