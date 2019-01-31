@@ -46,10 +46,12 @@ with open('../process/submissionProcess.js','r') as f:
     submission_invitation.process = f.read()
 client.post_invitation(submission_invitation)
 
-conference.set_authors()
 
-pc_emails = ['muniyal@cs.umass.edu', 'melisabok@gmail.com']
+
+print ("Adding Program Chair group")
+pc_emails = ['muniyal@cs.umass.edu']
 conference.set_program_chairs(pc_emails)
+
 
 reviewer_emails = []
 conference.set_reviewers(reviewer_emails)

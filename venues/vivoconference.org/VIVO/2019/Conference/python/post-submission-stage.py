@@ -46,6 +46,9 @@ for comment_invi in public_comments:
 	comment_invi.reply['signatures']['values-regex'] = sign
 	client.post_invitation(comment_invi)
 
+print ("Adding per paper author groups")
+conference.set_authors()
+
 print('replacing members with IDs')
 reviewers_group = client.get_group(conference.get_reviewers_id())
 openreview.tools.replace_members_with_ids(client, reviewers_group)
