@@ -337,7 +337,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     }
 
     selectedRows.forEach(function(row) {
-      var users = _.values(row[3].reviewers);
+      var users = _.values(row[4].reviewers);
       if (filter === 'submitted') {
         users = users.filter(function(u) {
           return u.completedReview;
