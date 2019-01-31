@@ -2,32 +2,25 @@
 // Add Bid Interface
 // ------------------------------------
 
-var CONFERENCE_ID = 'learningtheory.org/COLT/2019/Conference';
-var SHORT_PHRASE = 'COLT 2019';
+var CONFERENCE_ID = 'ICLR.cc/2019/Conference';
+var SHORT_PHRASE = 'ICLR 2019';
 var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
-var ORIGINAL_INVITATION_ID = CONFERENCE_ID + '/-/Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
-var ADD_BID = CONFERENCE_ID + '/-/Bid';
+var ADD_BID = CONFERENCE_ID + '/-/Add_Bid';
 var PAGE_SIZE = 1000;
-var SUBJECT_AREAS = [
-  "Machine Learning",
-  "Natural Language Processing",
-  "Information Extraction",
-  "Question Answering",
-  "Reasoning",
-  "Databases",
-  "Information Integration",
-  "Knowledge Representation",
-  "Semantic Web",
-  "Search",
-  "Applications: Science",
-  "Applications: Biomedicine",
-  "Applications: Other",
-  "Relational AI",
-  "Fairness",
-  "Human computation",
-  "Crowd-sourcing",
-  "Other"
+var SEARCH_KEYWORDS = [
+  'adversarial', 'adversarial attacks', 'adversarial examples', 'adversarial learning',
+  'adversarial training', 'attention', 'classification', 'cnn', 'computer vision',
+  'convolutional neural network', 'convolutional neural networks', 'deep generative models',
+  'deep learning', 'deep neural networks', 'deep reinforcement learning', 'domain adaptation',
+  'exploration', 'few-shot learning', 'gan', 'gans', 'generalization', 'generative adversarial network',
+  'generative adversarial networks', 'generative models', 'graph neural networks',
+  'imitation learning', 'information theory', 'interpretability', 'machine learning',
+  'machine translation', 'meta-learning', 'model compression', 'natural language processing',
+  'neural network', 'neural networks', 'non-convex optimization', 'optimization', 'quantization',
+  'recurrent neural networks', 'regularization', 'reinforcement learning', 'representation learning',
+  'robustness', 'semi-supervised learning', 'sgd', 'stochastic gradient descent', 'theory',
+  'transfer learning', 'unsupervised learning', 'vae', 'variational autoencoder', 'variational inference'
 ];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
@@ -41,7 +34,7 @@ var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in re
   <ul>\
     <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
-    <li>If you think you may have a conflict of interest with a particular paper, please indicate this with the option "Conflict".</li>\
+    <li>Don\'t worry about suspected conflicts of interest during the bidding process. These will be accounted for during the paper matching process.</li>\
     <li>Default bid on each paper is \"No Bid\".</li>\
   </ul><br>'
 
@@ -53,22 +46,19 @@ function main() {
 
   Webfield.ui.spinner('#notes', { inline: true });
 
-  load().then(renderContent).then(Webfield.ui.done);
+  load().then(renderContent);
+
+  OpenBanner.venueHomepageLink(CONFERENCE_ID);
 }
 
 
 // Perform all the required API calls
 function load() {
-  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags,original'}).then(function(allNotes) {
-    return allNotes.map(function(note) {
-      note.details.tags = note.details.tags.filter(function(tag) {
-        return tag.tauthor;
-      });
-      return note;
+  var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags'}).then(function(allNotes) {
+    return allNotes.filter(function(note) {
+      return !note.content.hasOwnProperty('withdrawal');
     });
   });
-
-  var authoredNotesP = Webfield.getAll('/notes', {'content.authorids': user.profile.id, invitation:ORIGINAL_INVITATION_ID});
 
   var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(invitations) {
     return invitations.filter(function(invitation) {
@@ -92,19 +82,13 @@ function load() {
     return metadataNotesMap;
   });
 
-  return $.when(notesP, authoredNotesP, tagInvitationsP, userScoresP);
+  return $.when(notesP, tagInvitationsP, userScoresP);
 }
 
 
 // Display the bid interface populated with loaded data
-function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesMap) {
-  var authoredNoteIds = _.map(authoredNotes, function(note){
-    return note.id;
-  });
+function renderContent(validNotes, tagInvitations, metadataNotesMap) {
 
-  validNotes = _.filter(validNotes, function(note){
-    return !_.includes(authoredNoteIds, note.original);
-  })
   validNotes = addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
@@ -158,7 +142,6 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
       'Neutral': 'neutral',
       'Low': 'low',
       'Very Low': 'veryLow',
-      'Conflict': 'conflict',
       'No Bid': 'noBid'
     };
 
@@ -199,8 +182,7 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
       high: [],
       neutral: [],
       low: [],
-      veryLow: [],
-      conflict: []
+      veryLow: []
     };
 
     var bids, n;
@@ -221,8 +203,6 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
           binnedNotes.low.push(n);
         } else if (bids[0].tag === 'Very Low') {
           binnedNotes.veryLow.push(n);
-        } else if (bids[0].tag === 'Conflict') {
-          binnedNotes.conflict.push(n);
         } else {
           binnedNotes.noBid.push(n);
         }
@@ -232,7 +212,7 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
     }
 
     var bidCount = binnedNotes.veryHigh.length + binnedNotes.high.length +
-      binnedNotes.neutral.length + binnedNotes.low.length + binnedNotes.veryLow.length + binnedNotes.conflict.length;
+      binnedNotes.neutral.length + binnedNotes.low.length + binnedNotes.veryLow.length;
 
     $('#bidcount').remove();
     $('#header').append('<h4 id="bidcount">You have completed ' + bidCount + ' bids</h4>');
@@ -279,12 +259,6 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
         headingCount: binnedNotes.veryLow.length,
         id: 'veryLow',
         content: loadingContent
-      },
-      {
-        heading: 'Conflict',
-        headingCount: binnedNotes.conflict.length,
-        id: 'conflict',
-        content: loadingContent
       }
     ];
     sections[activeTab].active = true;
@@ -304,7 +278,7 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
       search: {
         enabled: true,
         localSearch: true,
-        subjectAreas: SUBJECT_AREAS,
+        subjectAreas: SEARCH_KEYWORDS,
         subjectAreaDropdown: 'basic',
         sort: false,
         onResults: function(searchResults) {
@@ -332,8 +306,7 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
       'high',
       'neutral',
       'low',
-      'veryLow',
-      'conflict'
+      'veryLow'
     ];
     var totalCount = 0;
 
@@ -366,14 +339,14 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
     var paperMetadataObj = metadataNotesMap.hasOwnProperty(note.id) ? metadataNotesMap[note.id] : {};
 
     note.metadata = {
-      tfidfScore: paperMetadataObj.hasOwnProperty('tfidfScore') ? paperMetadataObj['tfidfScore'] : 0,
+      tpmsScore: paperMetadataObj.hasOwnProperty('tpmsScore') ? paperMetadataObj['tpmsScore'] : 0,
       conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
 
-    note.content['TFIDF Score'] = note.metadata.tfidfScore.toFixed(3);
+    note.content['TPMS Score'] = note.metadata.tpmsScore.toFixed(3);
   }
 
-  return _.orderBy(validNotes, ['metadata.tfidfScore'], ['desc']);
+  return _.orderBy(validNotes, ['metadata.tpmsScore'], ['desc']);
 }
 
 // Go!
