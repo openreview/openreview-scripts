@@ -10,23 +10,6 @@ var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Bid';
 var PAGE_SIZE = 1000;
 var SUBJECT_AREAS = [
-  "Machine Learning",
-  "Natural Language Processing",
-  "Information Extraction",
-  "Question Answering",
-  "Reasoning",
-  "Databases",
-  "Information Integration",
-  "Knowledge Representation",
-  "Semantic Web",
-  "Search",
-  "Applications: Science",
-  "Applications: Biomedicine",
-  "Applications: Other",
-  "Relational AI",
-  "Fairness",
-  "Human computation",
-  "Crowd-sourcing",
   "Other"
 ];
 
@@ -34,14 +17,13 @@ var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in re
   the submitted papers below, on a scale from "Very Low" to "Very High".</p>\
   <p class="dark"><strong>Please note:</strong></p>\
   <ul>\
-    <li><strong>Conflict of interest will be taken into account at the next stage. So, please do not worry about that while bidding.</strong></li>\
     <li>Please update your Conflict of Interest details on your profile page, specifically "Emails", "Education and Career History" & "Advisors and Other Relations" fields.</li>\
   </ul>\
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
-    <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
+    <li>Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
-    <li>If you think you may have a conflict of interest with a particular paper, please indicate this with the option "Conflict".</li>\
+    <li>If you think you may have a conflict of interest with a particular paper, please indicate this with the option "Conflict of Interest".</li>\
     <li>Default bid on each paper is \"No Bid\".</li>\
   </ul><br>'
 
@@ -158,7 +140,7 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
       'Neutral': 'neutral',
       'Low': 'low',
       'Very Low': 'veryLow',
-      'Conflict': 'conflict',
+      'Conflict of Interest': 'conflict',
       'No Bid': 'noBid'
     };
 
@@ -221,7 +203,7 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
           binnedNotes.low.push(n);
         } else if (bids[0].tag === 'Very Low') {
           binnedNotes.veryLow.push(n);
-        } else if (bids[0].tag === 'Conflict') {
+        } else if (bids[0].tag === 'Conflict of Interest') {
           binnedNotes.conflict.push(n);
         } else {
           binnedNotes.noBid.push(n);
@@ -281,7 +263,7 @@ function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesM
         content: loadingContent
       },
       {
-        heading: 'Conflict',
+        heading: 'Conflict of Interest',
         headingCount: binnedNotes.conflict.length,
         id: 'conflict',
         content: loadingContent
