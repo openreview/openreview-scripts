@@ -10,7 +10,9 @@ var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Bid';
 var PAGE_SIZE = 1000;
 var SUBJECT_AREAS = [
-  "Other"
+  "neural-networks",
+  "deep learning theory",
+  "reinforcement learning"
 ];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
@@ -352,7 +354,7 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
       conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
 
-    note.content['TFIDF Score'] = note.metadata.tfidfScore.toFixed(3);
+    //note.content['TFIDF Score'] = note.metadata.tfidfScore.toFixed(3);
   }
 
   return _.orderBy(validNotes, ['metadata.tfidfScore'], ['desc']);
