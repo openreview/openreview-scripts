@@ -51,7 +51,7 @@ if __name__ == '__main__':
             'signatures': {
                 'values': [conference.id]},
             'readers': {
-                'values': ['everyone']
+                'values-regex': ['.*']
             }
         }
     ))

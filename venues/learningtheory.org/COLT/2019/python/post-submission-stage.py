@@ -43,49 +43,58 @@ def post_blind_note(client, original_note, conference):
         forum=None,
         signatures= [conference.id],
         writers= [conference.id],
-        readers= ['everyone'],
+        readers= [conference.id],
         content= {
             "authors": ['Anonymous'],
-            "authorids": [],
+            "authorids": [conference.id],
             "_bibtex": None
         })
 
-    paper_group_id = conference.id + "/Paper{}".format(original_note.number)
-    author_group_id = conference.id + "/Paper{}/Authors".format(original_note.number)
-
-    blind_note.content = {
-        "authors": ['Anonymous'],
-        "authorids": [author_group_id],
-    }
-
     posted_blind_note = client.post_note(blind_note)
+    conference_id = conference.get_id()
+    
+    pc_group_id = "{conference_id}/Paper{number}/Program_Committee".format(conference_id = conference_id, number = posted_blind_note.number)
+    paper_group_id = "{conference_id}/Paper{number}".format(conference_id = conference_id, number = posted_blind_note.number)
+    author_group_id = conference.id + "/Paper{}/Authors".format(posted_blind_note.number)
+    reviewer_group_id = "{conference_id}/Paper{number}/Reviewers".format(conference_id = conference_id, number = posted_blind_note.number)
+    reviewer_group_invited_id = "{conference_id}/Paper{number}/Reviewers/Invited".format(conference_id = conference_id, number = posted_blind_note.number)
+    reviewer_group_declined_id = "{conference_id}/Paper{number}/Reviewers/Declined".format(conference_id = conference_id, number = posted_blind_note.number)
 
-    pc_group_id = "{conference_id}/Paper{number}/Program_Committee".format(conference_id = conference.get_id(), number = posted_blind_note.number)
-    papergroup_id = "{conference_id}/Paper{number}".format(conference_id = conference.get_id(), number = posted_blind_note.number)
-    group_id = "{conference_id}/Paper{number}/Reviewers".format(conference_id = conference.get_id(), number = posted_blind_note.number)
-    group_invited_id = "{conference_id}/Paper{number}/Reviewers/Invited".format(conference_id = conference.get_id(), number = posted_blind_note.number)
-    group_declined_id = "{conference_id}/Paper{number}/Reviewers/Declined".format(conference_id = conference.get_id(), number = posted_blind_note.number)
+    # Reposting blind-note with correct authorid group and correct readers
+    posted_blind_note.content['authorids'] = [author_group_id]
+    posted_blind_note.readers = [
+        conference.id + '/Program_Chairs',
+        pc_group_id, 
+        paper_group_id,
+        reviewer_group_id,
+        conference_id]
+    posted_blind_note = client.post_note(posted_blind_note)
 
-    client.post_group(openreview.Group(id = papergroup_id,
-        readers = [conference.get_id(), pc_group_id],
-        writers = [conference.get_id(), pc_group_id],
-        signatures = [conference.get_id()],
+    client.post_group(openreview.Group(id = paper_group_id,
+        readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id],
+        writers = [conference_id],
+        signatures = [conference_id],
         signatories = []))
-    client.post_group(openreview.Group(id = group_id,
-        readers = [group_id, conference.get_id(), pc_group_id],
-        writers = [conference.get_id(), pc_group_id],
-        signatures = [conference.get_id()],
-        signatories = [group_id]))
-    client.post_group(openreview.Group(id = group_invited_id,
-        readers = [conference.get_id(), pc_group_id],
-        writers = [conference.get_id(), pc_group_id],
-        signatures = [conference.get_id()],
-        signatories = [conference.get_id()]))
-    client.post_group(openreview.Group(id = group_declined_id,
-        readers = [conference.get_id(), pc_group_id],
-        writers = [conference.get_id(), pc_group_id],
-        signatures = [conference.get_id()],
-        signatories = [conference.get_id()]))
+    client.post_group(openreview.Group(id = author_group_id,
+        readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id, author_group_id],
+        writers = [conference_id],
+        signatures = [conference_id],
+        signatories = [author_group_id]))
+    client.post_group(openreview.Group(id = reviewer_group_id,
+        readers = [reviewer_group_id, conference_id, conference.id + '/Program_Chairs', pc_group_id],
+        writers = [conference_id, pc_group_id],
+        signatures = [conference_id],
+        signatories = [reviewer_group_id]))
+    client.post_group(openreview.Group(id = reviewer_group_invited_id,
+        readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id],
+        writers = [conference_id, pc_group_id],
+        signatures = [conference_id],
+        signatories = [reviewer_group_invited_id]))
+    client.post_group(openreview.Group(id = reviewer_group_declined_id,
+        readers = [conference_id, conference.id + '/Program_Chairs', pc_group_id],
+        writers = [conference_id, pc_group_id],
+        signatures = [conference_id],
+        signatories = [reviewer_group_declined_id]))
 
 
     official_review_invitation = client.post_invitation(
@@ -117,4 +126,4 @@ if __name__ == '__main__':
     print ('Posting blinded notes')
     submissions = list(openreview.tools.iterget_notes(client, invitation=conference.get_submission_id()))
     for paper in submissions:
-        post_blind_note(client, paper, conference)
+        post_blind_note(client, paper, conference)  
