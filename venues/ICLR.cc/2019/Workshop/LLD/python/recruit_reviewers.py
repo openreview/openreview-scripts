@@ -75,10 +75,21 @@ with open(args.reviewer_file) as f:
     for row in csv.reader(f):
         suggested_reviewers.append(row[0])
 
-formatted_emails=[m.lower() if '@' in m else m for m in suggested_reviewers]
+formatted_emails=[m.lower() for m in suggested_reviewers]
 
-# create the Reviewers group before trying to create Invited group
-conference.set_reviewers([])
+ids = []
+for member in formatted_emails:
+    try:
+        profile = client.get_profile(member)
+        ids.append(profile.id)
+        formatted_emails.remove(member)
+    except openreview.OpenReviewException as e:
+        if 'Profile not found' not in e.args[0][0]:
+            raise e
 
-print('Reviewers to invite {0}'.format(len(formatted_emails)))
-conference.recruit_reviewers(emails = formatted_emails, title = title, message = message)
+
+members = ids + formatted_emails
+
+print(members)
+print('Reviewers to invite {0}'.format(len(members)))
+#conference.recruit_reviewers(emails = members, title = title, message = message)
