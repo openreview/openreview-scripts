@@ -800,7 +800,7 @@ var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
     var email = {
       groups: [reviewer],
       subject: SHORT_PHRASE + ': Invitation to review paper title: ' + noteName,
-      message: 'You have been invited to ' + SHORT_PHRASE + ' to review a paper. \n\nPaper title: ' + noteName + '\n\nTo accept please follow this link: ' + acceptUrl + '\n\nTo reject follow this link: ' + declineUrl
+      message: 'You have been invited to ' + SHORT_PHRASE + ' to review a paper. \n\nPaper title: ' + noteName + ' \n\n\n\nTo accept please follow this link: ' + acceptUrl + '\n\nTo reject follow this link: ' + declineUrl + '\n\nTo find more details about the paper please sign up on openreview.net using the address you received this email at and then follow this link: https://openreview.net/forum?id=' +  noteId
     }
     return Webfield.post('/messages', email)
   })
