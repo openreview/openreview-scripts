@@ -715,7 +715,7 @@ var registerEventHandlers = function() {
       defaultSubject: SHORT_PHRASE + ' Reminder',
       defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
         'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
-        '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
+        '\n\nThank you,\n' + SHORT_PHRASE + ' Program Committee',
     });
     $('#message-reviewers-modal').remove();
     $('body').append(modalHtml);
