@@ -7,6 +7,7 @@ import argparse
 import openreview
 import xlsxwriter
 import requests
+import json
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -19,7 +20,7 @@ args = parser.parse_args()
 
 # load in all acceptance decisions
 def load_decisions(client):
-    decisions = client.get_notes(invitation='ICLR.cc/2019/Conference/-/Paper.*/Meta_Review')
+    decisions = openreview.tools.iterget_notes(client, invitation='ICLR.cc/2019/Conference/-/Paper.*/Meta_Review')
     dec_info = {}
     for decision in decisions:
         if decision.content['recommendation'].startswith('Accept'):
@@ -30,17 +31,13 @@ def load_profile(profile_info, author, profile):
     profile_info[author] = {}
 
     profile_info[author]['first'] = profile.content['names'][0]['first']
-    if len(profile.content['names'][0]['middle']) > 0:
+    if profile.content['names'][0]['middle'] and len(profile.content['names'][0]['middle']) > 0:
         profile_info[author]['mi'] = profile.content['names'][0]['middle'][0]
     else:
         profile_info[author]['mi'] = " "
 
     profile_info[author]['last'] = profile.content['names'][0]['last']
-    # if preferred email isn't set, use email from form
-    if profile.content.get('preferredEmail', '') != "":
-        profile_info[author]['email'] = profile.content['preferredEmail']
-    else:
-        profile_info[author]['email'] = author
+    profile_info[author]['email'] = author
     # check for most recent entry in history
     end_date = 0
     profile_info[author]['institute'] = ""
@@ -54,7 +51,7 @@ def main():
     ## Initialize the client library with username and password
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    submissions = client.get_notes(invitation='ICLR.cc/2019/Conference/-/Blind_Submission')
+    submissions = list(openreview.tools.iterget_notes(client, invitation='ICLR.cc/2019/Conference/-/Blind_Submission'))
     decision_info = load_decisions(client)
     profile_info = {}
 
@@ -75,8 +72,6 @@ def main():
         if author not in profile_info:
             profile_info = load_profile(profile_info, author, profile)
 
-
-
     ## Initialize output file name
     file_name = 'ICLR_decisions.xlsx'
     if args.ofile!=None:
@@ -91,8 +86,8 @@ def main():
     col = 0
 
     # write the header
-    header = ['Unique Id', 'Paper Number', 'Title', 'Keywords', 'Type', 'Date', 'Start Time', 'End Time', 'Abstract',
-              'External URL', 'Poster ID', 'Location', 'Author Count', 'Last Name', 'Middle Initial', 'First Name',
+    header = ['Unique Id', 'Paper Number', 'Title', 'Decision', 'Abstract', 'Keywords', 'External URL',
+            'Author Count', 'Last Name', 'Middle Initial', 'First Name',
               'Email', 'Institution', 'Department', 'Last Name', 'Middle Initial', 'First Name', 'Email', 'Institution',
               'Department']
     for item in header:
@@ -105,30 +100,41 @@ def main():
             # paper data
             col = 0
             worksheet.write(row, col, note.forum)
-            col += 2 # Paper Number
+            col += 1
+            worksheet.write(row, col, note.number)
+            col += 1
             worksheet.write(row, col, note.content['title'])
-            col += 2 #Keywords
+            col += 1
             worksheet.write(row, col, decision_info[note.forum])
-            # skipping Date, StartTime, EndTime
-            col += 4
+            col += 1
             worksheet.write(row, col, note.content['abstract'])
             col += 1
+            worksheet.write(row, col, json.dumps(note.content['keywords']))
+            col += 1
             worksheet.write(row, col, note.content['pdf'])
-            # skipping PosterID, Location
-            col += 3
+            col += 1
             # author data
             worksheet.write(row, col, len(note.content['authorids']))
             col += 1
-            for author in note.content['authorids']:
+            for index, author in enumerate(note.content['authorids']):
                 if author not in profile_info:
                     ## A hack to get profiles that are missed by get_profiles
                     try:
-                        note = client.get_profile(author)
-                        profile = openreview.Profile(content = note.content)
+                        profile_note = client.get_profile(author)
+                        profile = openreview.Profile(content = profile_note.content)
                         profile_info = load_profile(profile_info, author, profile)
                     except openreview.OpenReviewException as e:
                         # cannot find author_id in profile notes
                         e =1
+                        name_elements = note.content['authors'][index].split(' ')
+                        profile_info[author] = {'first': '', 'mi': '', 'last': ''}
+                        profile_info[author]['first'] = name_elements[0]
+                        profile_info[author]['last'] = name_elements[-1]
+                        profile_info[author]['mi'] = ''
+                        profile_info[author]['email'] = author
+                        profile_info[author]['institute'] = ''
+                        if (len(name_elements) > 2):
+                            profile_info[author]['mi'] = ' '.join(name_elements[1:-1])
 
                 if author in profile_info:
                     worksheet.write(row, col, profile_info[author]['last'])
@@ -152,11 +158,6 @@ def main():
             row += 1
 
     workbook.close()
-
-
-
-
-
 
 if __name__ == "__main__":
     main()

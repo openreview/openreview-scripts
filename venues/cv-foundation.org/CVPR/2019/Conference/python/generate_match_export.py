@@ -7,7 +7,7 @@ from cvpr2019 import *
 # which provides the list of reviewers for each paper submission.  The output file is
 # ../data/reviewer_exports.xml
 
-client = openreview.Client(baseurl='http://openreview.localhost', username='OpenReview.net', password='d0ntf33dth3tr0lls')
+client = openreview.Client(baseurl='http://openreview.localhost', username='OpenReview.net', password='')
 print(client)
 
 
