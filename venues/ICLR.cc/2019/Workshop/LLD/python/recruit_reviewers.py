@@ -79,17 +79,13 @@ formatted_emails=[m.lower() for m in suggested_reviewers]
 
 ids = []
 for member in formatted_emails:
-    try:
-        profile = client.get_profile(member)
+    profile = tools.get_profile(client, member)
+    if profile:
         ids.append(profile.id)
         formatted_emails.remove(member)
-    except openreview.OpenReviewException as e:
-        if 'Profile not found' not in e.args[0][0]:
-            raise e
-
 
 members = ids + formatted_emails
 
-print(members)
+#print(members)
 print('Reviewers to invite {0}'.format(len(members)))
-#conference.recruit_reviewers(emails = members, title = title, message = message)
+conference.recruit_reviewers(emails = members, title = title, message = message)
