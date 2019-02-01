@@ -1,0 +1,132 @@
+function httpGet(url, queryOrBody, success, failure) {
+  controller.get(url, queryOrBody, success, failure);
+}
+
+function $attach(loc, viewFnName, viewFnArgs, append) {
+  var $container = $(loc);
+  var $el = view[viewFnName].apply(view, viewFnArgs);
+  if (append) {
+    $container.append($el);
+  } else {
+    $container.prepend($el);
+  }
+}
+
+var $containter = $('#group-container');
+$containter.append([
+  $('<div id = "header">'),
+  $('<div id = "invitation">'),
+  $('<div id = "notes">')
+]);
+
+$attach('#header', 'mkHostHeader', [
+  "ICLR 2017 - Conference Track",
+  "International Conference on Learning Representations",
+  "Toulon, France, April 24 - 26, 2017",
+  "http://www.iclr.cc",
+  ""
+], true);
+
+var sm = mkStateManager();
+
+var httpGetP = function(url, queryOrBody) {
+  var df = $.Deferred();
+  httpGet(url, queryOrBody,
+  function(result) {
+    df.resolve(result);
+  },
+  function(result) {
+    df.reject(result);
+  });
+  return df.promise();
+};
+
+var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/submission'}).then(function(result) {
+  return result.notes;
+},
+function(error){
+  return error
+});
+
+var decisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/paper.*/acceptance'}).then(function(result) {
+  return result.notes;
+},
+function(error){
+  return error
+});
+
+
+$.when(notesP, decisionsP).done(function(notes, decisions) {
+
+  sm.update('notes', {
+    notes: notes,
+    decisions: decisions
+  });
+
+  sm.addHandler('conference', {
+    notes: function(data) {
+      var notes = data.notes;
+      var decisions = data.decisions;
+
+      if (notes) {
+        var $panel = $('#notes');
+        $panel.empty();
+
+        var notesDict = {};
+        _.forEach(notes, function(n) {
+          notesDict[n.id] = n;
+        });
+
+        var oralDecisions = [];
+        var posterDecisions = [];
+        var rejectDecisions = [];
+        var workshopDecisions = [];
+
+        _.forEach(decisions, function(d) {
+
+          if (d.content.decision == 'Accept (Oral)') {
+            oralDecisions.push(d);
+          } else if (d.content.decision == 'Accept (Poster)') {
+            posterDecisions.push(d);
+          } else if (d.content.decision == 'Reject') {
+            rejectDecisions.push(d);
+          } else if (d.content.decision == 'Invite to Workshop Track') {
+            workshopDecisions.push(d);
+          }
+        });
+
+        displayNotes(notesDict, oralDecisions, $panel, 'Paper decision: Accept (Oral)', 'ICLR 2017 Conference Oral');
+        $panel.append($('<div>', { style: 'height: 50px;'}));
+        displayNotes(notesDict, posterDecisions, $panel, 'Paper decision: Accept (Poster)', 'ICLR 2017 Conference Poster');
+        $panel.append($('<div>', { style: 'height: 50px;'}));
+        displayNotes(notesDict, workshopDecisions, $panel, 'Paper decision: Invite to Workshop Track', 'ICLR 2017 Conference Invite to Workshop');
+        $panel.append($('<div>', { style: 'height: 50px;'}));
+        displayNotes(notesDict, rejectDecisions, $panel, 'Paper decision: Reject', 'ICLR 2017 Conference Reject');
+
+      }
+    }
+  });
+
+  function displayNotes(notes, decisions, $panel, text, summary) {
+    $panel.append($('<div>', { class: 'panel'}).append($('<h2>', { style: 'text-decoration: underline; '}).text(text)));
+
+      _.forEach(decisions, function(decision) {
+
+      var forum = notes[decision.forum];
+      if (forum) {
+        $attach('#notes', 'mkNotePanel', [forum, {
+          titleLink: 'HREF',
+          withReplyCount: true,
+          withSummary: summary
+        }], true);
+      } else {
+        console.log('Forum not found', decision.forum);
+      }
+
+    });
+  }
+
+})
+.fail(function(){
+  console.log("Decisions and/or notes not found")
+});

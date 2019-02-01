@@ -1,0 +1,154 @@
+function httpGet(url, queryOrBody, success, failure) {
+  controller.get(url, queryOrBody, success, failure);
+}
+
+function $attach(loc, viewFnName, viewFnArgs, append) {
+  var $container = $(loc);
+  var $el = view[viewFnName].apply(view, viewFnArgs);
+  if (append) {
+    $container.append($el);
+  } else {
+    $container.prepend($el);
+  }
+}
+
+var $containter = $('#group-container');
+$containter.append([
+  $('<div id = "header">'),
+  $('<div id = "invitation">'),
+  $('<div id = "notes">')
+]);
+
+$attach('#header', 'mkHostHeader', [
+  "ICLR 2017 - Workshop Track",
+  "International Conference on Learning Representations",
+  "Toulon, France, April 24 - 26, 2017",
+  "http://www.iclr.cc",
+  ""
+], true);
+
+var sm = mkStateManager();
+
+var httpGetP = function(url, queryOrBody) {
+  var df = $.Deferred();
+  httpGet(url, queryOrBody,
+  function(result) {
+    df.resolve(result);
+  },
+  function(result) {
+    df.reject(result);
+  });
+  return df.promise();
+};
+
+var notesP = httpGetP('notes', {invitation: 'ICLR.cc/2017/workshop/-/submission'}).then(function(result) {
+  return result.notes;
+},
+function(error){
+  return error
+});
+
+var conferenceDecisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/conference/-/paper.*/acceptance'}).then(function(result) {
+  return result.notes;
+},
+function(error){
+  return error
+});
+
+var workshopDecisionsP = httpGetP('notes', {invitation: 'ICLR.cc/2017/workshop/-/paper.*/acceptance'}).then(function(result) {
+  return result.notes;
+},
+function(error){
+  return error
+});
+
+
+$.when(notesP, conferenceDecisionsP, workshopDecisionsP).done(function(notes, conferenceDecisions, workshopDecisions) {
+
+  sm.update('notes', {
+    notes: notes,
+    conferenceDecisions: conferenceDecisions,
+    workshopDecisions: workshopDecisions
+  });
+
+  sm.addHandler('conference', {
+    notes: function(data) {
+      var notes = data.notes;
+      var conferenceDecisions = data.conferenceDecisions;
+      var workshopDecisions = data.workshopDecisions;
+
+      if (notes) {
+
+        var conferenceDecisionsDict = {};
+        _.forEach(conferenceDecisions, function(n) {
+          conferenceDecisionsDict[n.forum] = n;
+        });
+
+        var notesDict = {};
+        _.forEach(notes, function(n) {
+          notesDict[n.id] = n;
+        });
+
+        var $panel = $('#notes');
+        $('#notes').empty();
+
+
+        var conferenceNotes = getConferenceAcceptedNotes(notes, conferenceDecisionsDict);
+        $panel.append($('<div>', { class: 'panel'}).append($('<h2>', { style: 'text-decoration: underline; '}).text('Paper decision: Accept')));
+        _.forEach(conferenceNotes, function(note) {
+          $attach('#notes', 'mkNotePanel', [note, {
+            titleLink: 'HREF',
+            withReplyCount: true,
+            withOriginalLink: true,
+            withSummary: 'ICLR 2017 Conference Invite to Workshop'
+          }], true);
+        });
+
+        var acceptedNotes = getWorkshopNotes(notesDict, workshopDecisions, 'Accept');
+        _.forEach(acceptedNotes, function(note) {
+          $attach('#notes', 'mkNotePanel', [note, {
+            titleLink: 'HREF',
+            withReplyCount: true,
+            withOriginalLink: true,
+            withSummary: 'ICLR 2017 Workshop Accept'
+          }], true);
+        });
+
+        $panel.append($('<div>', { class: 'panel'}).append($('<h2>', { style: 'text-decoration: underline; '}).text('Paper decision: Reject')));
+
+        var rejectedNotes = getWorkshopNotes(notesDict, workshopDecisions, 'Reject');
+        _.forEach(rejectedNotes, function(note) {
+          $attach('#notes', 'mkNotePanel', [note, {
+            titleLink: 'HREF',
+            withReplyCount: true,
+            withOriginalLink: true,
+            withSummary: 'ICLR 2017 Workshop Reject'
+          }], true);
+        });
+      }
+    }
+  });
+
+
+  function getConferenceAcceptedNotes(notes, decisionsDict) {
+    return _.filter(notes, function(note) {
+      var decision = decisionsDict[note.original];
+      return (decision && decision.content.decision == 'Invite to Workshop Track');
+    });
+  }
+
+  function getWorkshopNotes(notesDict, decisions, decisionLabel) {
+    var decisionNotes = [];
+    _.forEach(decisions, function(d) {
+      if ((d.content.decision == decisionLabel)) {
+        decisionNotes.push(notesDict[d.forum]);
+      }
+    });
+    return decisionNotes;
+  }
+
+})
+.fail(function(){
+  console.log("Decisions and/or notes not found")
+});
+
