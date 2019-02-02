@@ -2,7 +2,8 @@ import openreview
 import config
 import argparse
 
-def post_blind_note(client, original_note, conference):
+def post_blind_note(client, original_note, conference, existing_blind_note):
+
     official_review_template = {
         'id': conference.id + '/-/Paper<number>/Official_Review',
         'readers': ['everyone'],
@@ -50,7 +51,11 @@ def post_blind_note(client, original_note, conference):
             "_bibtex": None
         })
 
+    if existing_blind_note:
+        blind_note.id = existing_blind_note
+
     posted_blind_note = client.post_note(blind_note)
+
     conference_id = conference.get_id()
     
     pc_group_id = "{conference_id}/Program_Committee".format(conference_id = conference_id)
@@ -125,7 +130,14 @@ if __name__ == '__main__':
         homepage.web = f.read()
     client.post_group(homepage)
 
+    print ('mapping existing blind notes')
+    map_original_to_blinds = {}
+    blind_notes = openreview.tools.iterget_notes(client, invitation=conference.id + '/-/Blind_Submission')
+    for blind_note in blind_notes:
+        map_original_to_blinds[blind_note.original] = blind_note.id
+
     print ('Posting blinded notes')
     submissions = list(openreview.tools.iterget_notes(client, invitation=conference.get_submission_id()))
     for paper in submissions:
-        post_blind_note(client, paper, conference)  
+        post_blind_note(client, paper, conference, map_original_to_blinds.get(paper.id, None))
+
