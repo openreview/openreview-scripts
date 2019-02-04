@@ -104,7 +104,7 @@ function load() {
     authorNotesP = $.Deferred().resolve([]);
   } else {
     activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
-      pageSize: PAGE_SIZE,
+      pageSize: 50,
       details: 'forumContent,original'
     });
 
@@ -116,7 +116,7 @@ function load() {
     });
 
     authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
-      pageSize: PAGE_SIZE,
+      pageSize: 50,
       'content.authorids': user.profile.id,
       details: 'noDetails'
     });
