@@ -18,8 +18,6 @@ def get_conference(client):
     'website': 'https://deep-gen-struct.github.io/index.html',
     'location': 'New Orleans, Louisiana, United States'
     })
+    builder.set_double_blind(True)
+    builder.set_override_homepage(True)
     return builder.get_result()
-
-
-
-BLIND_SUBMISSION = 'ICLR.cc/2019/Workshop/DeepGenStruct/-/Blind_Submission'
