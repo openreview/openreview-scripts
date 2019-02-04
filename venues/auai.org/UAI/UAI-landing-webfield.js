@@ -4,6 +4,7 @@ var HEADER = {
   description: ''
 };
 var VENUE_LINKS = [
+  { url: '/group?id=auai.org/UAI/2019', name: 'UAI 2019' },
   { url: '/group?id=auai.org/UAI/2018', name: 'UAI 2018' },
   { url: '/group?id=auai.org/UAI/2017', name: 'UAI 2017' }
 ];
