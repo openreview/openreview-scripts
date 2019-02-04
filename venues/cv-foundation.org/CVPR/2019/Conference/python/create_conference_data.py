@@ -100,10 +100,6 @@ print("Read", len(reviewer_emails), "email addresses")
 reviewers_group.members = reviewer_emails
 client.post_group(reviewers_group)
 
-# Add members to the reviewers group
-reviewers_group.members = reviewer_emails
-client.post_group(reviewers_group)
-
 # Papers
 
 def read_papers_file(path):
