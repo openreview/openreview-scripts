@@ -58,7 +58,7 @@ var HEADER = {
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
 var BUFFER = 1000 * 60;  // 1 minutes
-var PAGE_SIZE = 50;
+var PAGE_SIZE = 500;
 
 var paperDisplayOptions = {
   pdfLink: true,
@@ -104,8 +104,8 @@ function load() {
     authorNotesP = $.Deferred().resolve([]);
   } else {
     activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
-      pageSize: PAGE_SIZE,
-      details: 'forumContent,writable,original'
+      pageSize: 50,
+      details: 'forumContent,original'
     });
 
     userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
@@ -116,7 +116,7 @@ function load() {
     });
 
     authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
-      pageSize: PAGE_SIZE,
+      pageSize: 50,
       'content.authorids': user.profile.id,
       details: 'noDetails'
     });
@@ -235,7 +235,7 @@ function renderContent(notes, userGroups, activityNotes, authorNotes) {
       container: '#all-submissions',
       search: {
         enabled: true,
-        localSearch: false,
+        localSearch: true,
         onResults: function(searchResults) {
           var blindedSearchResults = searchResults.filter(function(note) {
             return note.invitation === BLIND_SUBMISSION_ID;
