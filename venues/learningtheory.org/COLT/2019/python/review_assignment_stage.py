@@ -288,6 +288,18 @@ if __name__ == '__main__':
                     "description": "Comma separated values of scores weights, should follow the same order than scores_names",
                     "order": 13
                 },
+                "constraints": {
+                    "value-dict": {}, # Add some json validation schema
+                    "required": False,
+                    "description": "Manually entered user/papers constraints",
+                    "order": 14
+                },
+                "custom_loads": {
+                    "value-dict": {},
+                    "required": False,
+                    "description": "Manually entered custom user maximun loads",
+                    "order": 15
+                },
                 "status": {
                     "value-dropdown": ['Initialized', 'Running', 'Error', 'No Solution', 'Complete', 'Deployed']
                 }
