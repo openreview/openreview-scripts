@@ -14,14 +14,14 @@ var OFFICIAL_REVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Official_Review';
 var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';
 var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 
-var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/.*Reviewer.*';
+var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/Program_Committee.*/Reviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Program_Committee.*';
 
 var ANONREVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
 var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)/;
-var REVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers$/;
-var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Invited$/;
-var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Declined$/;
+var REVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)\/Reviewers$/;
+var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)\/Reviewers_Invited$/;
+var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)\/Reviewers_Declined$/;
 
 var INSTRUCTIONS = '<p class="dark">\
   This page provides information and status \
@@ -69,7 +69,7 @@ var main = function() {
   renderHeader();
 
   Webfield.get('/groups', {
-    member: user.id, regex: CONFERENCE + '/Paper.*/Program_Committee.*'
+    member: user.id, regex: CONFERENCE + '/Paper.*/Program_Committee_Member.*'
   })
   .then(loadData)
   .then(formatData)
@@ -105,6 +105,7 @@ var buildNoteMap = function(noteNumbers) {
 // Ajax functions
 var loadData = function(result) {
   var noteNumbers = getPaperNumbersfromGroups(result.groups);
+  var individualGroupIds = _.map(result.groups, function(g) { return g.id; });
   var blindedNotesP;
   var metaReviewsP;
 
@@ -131,6 +132,7 @@ var loadData = function(result) {
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID);
 
   return $.when(
+    individualGroupIds,
     blindedNotesP,
     getOfficialReviews(noteNumbers),
     metaReviewsP,
@@ -226,7 +228,7 @@ var getReviewerGroups = function(noteNumbers) {
   });
 };
 
-var formatData = function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations) {
+var formatData = function(individualGroupIds, blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations) {
   var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
     return result.concat(_.values(idsObj));
   }, []));
@@ -234,6 +236,7 @@ var formatData = function(blindedNotes, officialReviews, metaReviews, noteToRevi
   return getUserProfiles(uniqueIds)
   .then(function(profiles) {
     return {
+      individualGroupIds: individualGroupIds,
       profiles: profiles,
       blindedNotes: blindedNotes,
       officialReviews: officialReviews,
@@ -289,8 +292,8 @@ var renderHeader = function() {
   ]);
 };
 
-var renderStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
-  var rows = _.map(notes, function(note) {
+var renderStatusTable = function(individualGroupIds, profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
+  var rows = _.map(notes, function(note, index) {
     var revIds = reviewerIds[note.number] || Object.create(null);
     for (var revNumber in revIds) {
       var uId = revIds[revNumber];
@@ -300,7 +303,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
     var noteCompletedReviews = completedReviews[note.number] || Object.create(null);
 
-    return buildTableRow(note, revIds, noteCompletedReviews, metaReview);
+    return buildTableRow(individualGroupIds[index], note, revIds, noteCompletedReviews, metaReview);
   });
 
   // Sort form handler
@@ -517,7 +520,7 @@ var renderTableRows = function(rows, container) {
     },
     Handlebars.templates.noteSummary,
     function(data) {
-      return '<div class="reviewer-invite"><input data-note-id="' + data.noteId + '" data-note-number="' + data.noteNumber +
+      return '<div class="reviewer-invite"><input data-individual-group-id="' + data.individualGroupId + '" data-note-id="' + data.noteId + '" data-note-number="' + data.noteNumber +
       '"></input><button class="btn invite">Invite</button></div>' +
       renderInvitedReviewers(data);
     },
@@ -574,6 +577,7 @@ var renderTableAndTasks = function(fetchedData) {
   renderTasks(fetchedData.invitations, fetchedData.tagInvitations);
 
   renderStatusTable(
+    fetchedData.individualGroupIds,
     fetchedData.profiles,
     fetchedData.blindedNotes,
     fetchedData.officialReviews,
@@ -591,7 +595,7 @@ var renderTableAndTasks = function(fetchedData) {
   Webfield.ui.done();
 }
 
-var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
+var buildTableRow = function(individualGroupId, note, reviewerIds, completedReviews, metaReview) {
   var cellCheck = { selected: false, noteId: note.id };
 
   // Paper number cell
@@ -643,6 +647,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   var cell2 = {
     noteId: note.id,
     noteNumber: note.number,
+    individualGroupId: individualGroupId,
     invited: invitedMap[note.number]
   }
 
@@ -750,11 +755,12 @@ var registerEventHandlers = function(blindedNotes) {
     $parent = $(this).parent();
     noteId = $parent.find('input').data('noteId');
     noteNumber = $parent.find('input').data('noteNumber');
+    invididualGroupId = $parent.find('input').data('individualGroupId');
     reviewer = $parent.find('input').val();
     noteObj = _.find(blindedNotes, {'id' : noteId});
     noteName = noteObj.content['title'];
 
-    inviteReviewer(noteId, noteNumber, noteName, reviewer, function() {
+    inviteReviewer(invididualGroupId, noteId, noteNumber, noteName, reviewer, function() {
       $parent.find('input').val('');
       invitedMap[noteNumber].invited.push(reviewer);
       var data = {
@@ -790,18 +796,18 @@ var postReviewerEmails = function(postData) {
     });
 };
 
-var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
+var inviteReviewer = function(invididualGroupId, noteId, noteNumber, noteName, reviewer, done) {
 
   var postData = {
-    id: 'learningtheory.org/COLT/2019/Conference/Program_Committee/-/Paper' + noteNumber + '/Recruit_Reviewers',
+    id: invididualGroupId + '/-/Recruit_Reviewers',
     duedate: 1575488730000,
     super: 'learningtheory.org/COLT/2019/Conference/-/Recruit_Reviewers',
     reply: {
       forum: noteId
     },
-    signatures: ['learningtheory.org/COLT/2019/Conference/Paper' + noteNumber + '/Program_Committee'],
+    signatures: [invididualGroupId],
     readers: ['everyone'],
-    writers: ['learningtheory.org/COLT/2019/Conference/Paper' + noteNumber + '/Program_Committee']
+    writers: [invididualGroupId]
   }
   return Webfield.post('/invitations', postData)
   .then(function(response) {
@@ -819,7 +825,7 @@ var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
   .then(function(response) {
     console.log('Email sent');
     return Webfield.put('/groups/members', {
-      id: 'learningtheory.org/COLT/2019/Conference/Paper' + noteNumber + '/Reviewers/Invited',
+      id: invididualGroupId + '/Reviewers_Invited',
       members: [reviewer] });
   })
   .then(function(response) {

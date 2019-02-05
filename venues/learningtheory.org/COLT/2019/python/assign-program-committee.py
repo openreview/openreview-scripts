@@ -87,3 +87,26 @@ if __name__ == "__main__":
         })
 
     print('result', result)
+
+    individual_group_id = result[1][0]
+    print('create individual reviewer groups', individual_group_id)
+
+    reviewer_group_id = individual_group_id + '/Reviewers'
+    reviewer_group_invited_id = individual_group_id + '/Reviewers_Invited'
+    reviewer_group_declined_id = individual_group_id + '/Reviewers_Declined'
+    client.post_group(openreview.Group(id = reviewer_group_id,
+        readers = [reviewer_group_id, conference_id, conference_id + '/Program_Chairs', individual_group_id],
+        writers = [conference_id, individual_group_id],
+        signatures = [conference_id],
+        signatories = [reviewer_group_id]))
+    client.post_group(openreview.Group(id = reviewer_group_invited_id,
+        readers = [conference_id, conference_id + '/Program_Chairs', individual_group_id],
+        writers = [conference_id, individual_group_id],
+        signatures = [conference_id],
+        signatories = [reviewer_group_invited_id]))
+    client.post_group(openreview.Group(id = reviewer_group_declined_id,
+        readers = [conference_id, conference.id + '/Program_Chairs', individual_group_id],
+        writers = [conference_id, individual_group_id],
+        signatures = [conference_id],
+        signatories = [reviewer_group_declined_id]))
+
