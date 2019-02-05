@@ -20,14 +20,24 @@ var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in re
   <p class="dark"><strong>Please note:</strong></p>\
   <ul>\
     <li>Please update your Conflict of Interest details on your profile page, specifically "Emails", "Education and Career History" & "Advisors and Other Relations" fields.</li>\
+    <li>The default bid on each paper is \"No Bid\".</li>\
   </ul>\
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
     <li>Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
     <li>If you think you may have a conflict of interest with a particular paper, please indicate this with the option "Conflict of Interest".</li>\
-    <li>Default bid on each paper is \"No Bid\".</li>\
+  </ul>\
+  <p class="dark"><strong>Bid Score Value Mapping:</strong></p>\
+  <ul>\
+    <li>Very high (+1.0)</li>\
+    <li>High (+0.5)</li>\
+    <li>Neutral, No Bid (0.0)</li>\
+    <li>Low (-0.5) </li>\
+    <li>Very Low (-1.0)</li>\
+    <li>Conflict of Interest (-Inf)\
   </ul><br>'
+
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
