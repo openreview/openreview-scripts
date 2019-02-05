@@ -255,7 +255,7 @@ if __name__ == '__main__':
                     "description": "Invitation to get the configuration note",
                     "order": 7
                 },
-                'paper_invitation': {"value": SUBMISSION_ID,
+                'paper_invitation': {"value": CONFERENCE_ID + "/-/Blind_Submission",
                                      "required": True,
                                      "description": "Invitation to get the configuration note",
                                      "order": 8
