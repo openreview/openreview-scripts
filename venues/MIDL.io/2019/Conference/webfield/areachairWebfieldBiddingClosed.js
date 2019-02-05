@@ -43,7 +43,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p><em>21 December 2018 - 3 January 2019</em>\
   </p>\
   <h4>Review Period</h4>\
-  <p><em><strong>4 - 28 January 2019</strong></em>\
+  <p><em>4 - 28 January 2019</em>\
   </p>\
     <h4>Rebuttal Period</h4>\
   <p><em>28 January - 7 February 2019</em>\

@@ -8,7 +8,7 @@
 // Constants
 var CONFERENCE_ID = 'learningtheory.org/COLT/2019/Conference';
 var SUBMISSION_ID = 'learningtheory.org/COLT/2019/Conference/-/Submission';
-var BLIND_SUBMISSION_ID = 'learningtheory.org/COLT/2019/Conference/-/Submission';
+var BLIND_SUBMISSION_ID = 'learningtheory.org/COLT/2019/Conference/-/Blind_Submission';
 var REVIEWERS_NAME = 'Reviewers';
 var AREA_CHAIRS_NAME = 'Program_Committee';
 var AREA_CHAIRS_ID = 'learningtheory.org/COLT/2019/Conference/Program_Committee';
@@ -58,7 +58,7 @@ var HEADER = {
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';
 var BUFFER = 1000 * 60;  // 1 minutes
-var PAGE_SIZE = 50;
+var PAGE_SIZE = 500;
 
 var paperDisplayOptions = {
   pdfLink: true,
@@ -95,7 +95,7 @@ function load() {
 
   var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
     pageSize: PAGE_SIZE,
-    details: 'replyCount'
+    details: 'replyCount,original'
   });
 
   if (!user || _.startsWith(user.id, 'guest_')) {
@@ -104,8 +104,8 @@ function load() {
     authorNotesP = $.Deferred().resolve([]);
   } else {
     activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
-      pageSize: PAGE_SIZE,
-      details: 'forumContent,writable'
+      pageSize: 50,
+      details: 'forumContent,original'
     });
 
     userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
@@ -116,7 +116,7 @@ function load() {
     });
 
     authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
-      pageSize: PAGE_SIZE,
+      pageSize: 50,
       'content.authorids': user.profile.id,
       details: 'noDetails'
     });
@@ -224,7 +224,10 @@ function renderContent(notes, userGroups, activityNotes, authorNotes) {
   // All Submitted Papers tab
   var submissionListOptions = _.assign({}, paperDisplayOptions, {
     showTags: false,
-    container: '#all-submissions'
+    container: '#all-submissions',
+    queryParams: {
+      details: 'replyCount,original'
+    }
   });
 
   $(submissionListOptions.container).empty();
@@ -235,7 +238,7 @@ function renderContent(notes, userGroups, activityNotes, authorNotes) {
       container: '#all-submissions',
       search: {
         enabled: true,
-        localSearch: false,
+        localSearch: true,
         onResults: function(searchResults) {
           var blindedSearchResults = searchResults.filter(function(note) {
             return note.invitation === BLIND_SUBMISSION_ID;

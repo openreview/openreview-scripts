@@ -23,9 +23,21 @@ var REVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/
 var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Invited$/;
 var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Declined$/;
 
-var INSTRUCTIONS = '<p class="dark">This page provides information and status \
+var INSTRUCTIONS = '<p class="dark">\
+  This page provides information and status \
   updates for COLT 2019 Program Committee. It will be regularly updated as the conference \
-  progresses, so please check back frequently for news and other updates.</p>';
+  progresses, so please check back frequently for news and other updates.\
+  </p>\
+  <p class="dark">\
+  <strong>Instructions for Managing Subreviewers:</strong>\
+  <ul>\
+  <li>Enter the email address of a subreviewer that you would like to invite to review a paper.</li>\
+  <li>Click the "Invite" button to send the invitation email to that subreviewer.</li>\
+  <li>Once the reviewer has been invited, their email address and response status will appear below the invitation box.</li>\
+  <li>It may take some time for the Review Progress column to update with the correct total number of reviewers (this is normal).</li>\
+  <li>This subreviewer management interface is a prototype system. If you have any issues or questions, please contact info@openreview.net as soon as possible.</li>\
+  </ul>\
+  </p>';
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
@@ -210,8 +222,6 @@ var getReviewerGroups = function(noteNumbers) {
       }
 
     });
-    console.log(noteMap);
-    console.log('invitedMap', invitedMap);
     return noteMap;
   });
 };
@@ -337,7 +347,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     }
 
     selectedRows.forEach(function(row) {
-      var users = _.values(row[3].reviewers);
+      var users = _.values(row[4].reviewers);
       if (filter === 'submitted') {
         users = users.filter(function(u) {
           return u.completedReview;
@@ -470,7 +480,6 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
 };
 
 var renderInvitedReviewers = function(data) {
-  console.log(data);
   var accepted = '';
   var declined = '';
   var invited = '';
@@ -573,7 +582,7 @@ var renderTableAndTasks = function(fetchedData) {
     '#assigned-papers'
   );
 
-  registerEventHandlers();
+  registerEventHandlers(fetchedData.blindedNotes);
 
   //Set another table widths
   $('.row-4').css('width', '25%');
@@ -679,7 +688,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
 
 
 // Event Handlers
-var registerEventHandlers = function() {
+var registerEventHandlers = function(blindedNotes) {
   $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
     var hiddenText = 'Show paper details';
     var visibleText = 'Hide paper details';
@@ -715,7 +724,7 @@ var registerEventHandlers = function() {
       defaultSubject: SHORT_PHRASE + ' Reminder',
       defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
         'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
-        '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
+        '\n\nThank you,\n' + SHORT_PHRASE + ' Program Committee',
     });
     $('#message-reviewers-modal').remove();
     $('body').append(modalHtml);
@@ -742,15 +751,16 @@ var registerEventHandlers = function() {
     noteId = $parent.find('input').data('noteId');
     noteNumber = $parent.find('input').data('noteNumber');
     reviewer = $parent.find('input').val();
-    console.log(noteId);
-    console.log(noteNumber);
-    console.log(reviewer);
-    inviteReviewer(noteId, noteNumber, reviewer, function() {
+    noteObj = _.find(blindedNotes, {'id' : noteId});
+    noteName = noteObj.content['title'];
+
+    inviteReviewer(noteId, noteNumber, noteName, reviewer, function() {
       $parent.find('input').val('');
       invitedMap[noteNumber].invited.push(reviewer);
       var data = {
         noteId: noteId,
         noteNumber: noteNumber,
+        noteName: noteName,
         invited: {
           accepted: invitedMap[noteNumber].accepted,
           invited: invitedMap[noteNumber].invited,
@@ -780,7 +790,7 @@ var postReviewerEmails = function(postData) {
     });
 };
 
-var inviteReviewer = function(noteId, noteNumber, reviewer, done) {
+var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
 
   var postData = {
     id: 'learningtheory.org/COLT/2019/Conference/Program_Committee/-/Paper' + noteNumber + '/Recruit_Reviewers',
@@ -797,12 +807,12 @@ var inviteReviewer = function(noteId, noteNumber, reviewer, done) {
   .then(function(response) {
     console.log('Invitation posted');
     var key = CryptoJS.HmacSHA256(reviewer, '1234');
-    var acceptUrl = 'http://localhost:3000/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key +'&response=Yes';
-    var declineUrl = 'http://localhost:3000/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key + '&response=No';
+    var acceptUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key +'&response=Yes';
+    var declineUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key + '&response=No';
     var email = {
       groups: [reviewer],
-      subject: 'Invitation to review paper ' + noteNumber,
-      message: 'accept: ' + acceptUrl + '\n reject: ' + declineUrl
+      subject: SHORT_PHRASE + ': Invitation to review paper title: ' + noteName,
+      message: 'You have been invited to ' + SHORT_PHRASE + ' to review a paper. \n\nPaper title: ' + noteName + ' \n\n\n\nTo accept please follow this link: ' + acceptUrl + '\n\nTo reject follow this link: ' + declineUrl + '\n\nTo find more details about the paper please sign up on openreview.net using the address you received this email at and then follow this link: https://openreview.net/forum?id=' +  noteId
     }
     return Webfield.post('/messages', email)
   })
