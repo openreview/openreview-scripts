@@ -23,9 +23,21 @@ var REVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/
 var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Invited$/;
 var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Declined$/;
 
-var INSTRUCTIONS = '<p class="dark">This page provides information and status \
+var INSTRUCTIONS = '<p class="dark">\
+  This page provides information and status \
   updates for COLT 2019 Program Committee. It will be regularly updated as the conference \
-  progresses, so please check back frequently for news and other updates.</p>';
+  progresses, so please check back frequently for news and other updates.\
+  </p>\
+  <p class="dark">\
+  <strong>Instructions for Managing Subreviewers:</strong>\
+  <ul>\
+  <li>Enter the email address of a subreviewer that you would like to invite to review a paper.</li>\
+  <li>Click the "Invite" button to send the invitation email to that subreviewer.</li>\
+  <li>Once the reviewer has been invited, their email address and response status will appear below the invitation box.</li>\
+  <li>It may take some time for the Review Progress column to update with the correct total number of reviewers (this is normal).</li>\
+  <li>This subreviewer management interface is a prototype system. If you have any issues or questions, please contact info@openreview.net as soon as possible.</li>\
+  </ul>\
+  </p>';
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
@@ -741,7 +753,7 @@ var registerEventHandlers = function(blindedNotes) {
     reviewer = $parent.find('input').val();
     noteObj = _.find(blindedNotes, {'id' : noteId});
     noteName = noteObj.content['title'];
-        
+
     inviteReviewer(noteId, noteNumber, noteName, reviewer, function() {
       $parent.find('input').val('');
       invitedMap[noteNumber].invited.push(reviewer);
