@@ -34,6 +34,6 @@ for r in reviewer_groups:
                        'learningtheory.org/COLT/2019/Conference/Paper{}/Program_Committee'.format(number)
                    ]
                },
-                use_profile=True)
+                use_profile=False)
 
             print('assignment', assigned_user, assigned_groups)
