@@ -38,9 +38,6 @@ def check_inputs (paper_notes):
     print("Bid (tags) that refer to a paper not in the submissions:", not_found_count)
 
 
-
-
-
 def clear(client, invitation):
     note_list = list(openreview.tools.iterget_notes(client, invitation = invitation))
     for note in note_list:
@@ -88,7 +85,7 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, scores_b
             tag = reviewer_bids[0]['tag']
             if tag == 'Conflict of Interest':
                 print("Conflict of Interest for", profile.id)
-                user_entry['conflicts'] = 1
+                user_entry['conflicts'] = ['self-declared COI']
             else:
                 bid_score = bid_score_map.get(tag, 0.0)
                 if bid_score != 0.0:
@@ -100,7 +97,7 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, scores_b
         conflicts = openreview.tools.get_conflicts(author_profiles, profile)
 
         if conflicts:
-            user_entry['conflicts'] = conflicts
+            user_entry['conflicts'] = conflicts + user_entry.get('conflicts', [])
 
         entries.append(user_entry)
 
@@ -277,13 +274,13 @@ if __name__ == '__main__':
                     "order": 11
                 },
                 "scores_names": {
-                    "values-dropdown": ['bid'],
+                    "values": ['bid'],
                     "required": True,
                     "description": "List of scores names",
                     "order": 12
                 },
                 "scores_weights": {
-                    "values-regex": "\\d*\\.?\\d*", # decimal number allowed
+                    "values": ['1.0'], # decimal number allowed
                     "required": True,
                     "description": "Comma separated values of scores weights, should follow the same order than scores_names",
                     "order": 13
