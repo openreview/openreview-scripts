@@ -18,6 +18,11 @@ def get_conference(client):
     'website': 'https://deep-gen-struct.github.io/index.html',
     'location': 'New Orleans, Louisiana, United States'
     })
+    builder.set_authorpage_header({
+        'title': 'Author Console',
+        'instructions': 'This are the instructions',
+        'schedule': 'To be Defined'
+    })
     builder.set_double_blind(True)
     builder.set_override_homepage(True)
     return builder.get_result()
