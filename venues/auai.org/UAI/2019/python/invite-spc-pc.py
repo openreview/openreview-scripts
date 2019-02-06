@@ -18,18 +18,8 @@ if __name__ == '__main__':
 
     print ('inviting SPC members now')
 
-    spc_emails = [
-        'prof@gatech.edu',
-        'airoldi@fas.harvard.edu',
-        'ninamf@cs.cmu.edu',
-        'dbatra@gatech.edu',
-        'joberant@cs.tau.ac.il']
-    spc_name = [
-        'Jacob', 
-        'Edoardo',
-        'Nina',
-        'Dhruv',
-        'Jonathan']
+    spc_emails = []
+    spc_name = []
     
     message = '''Dear {first name},
 
