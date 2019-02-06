@@ -278,13 +278,13 @@ if __name__ == '__main__':
                     'order': 11
                 },
                 'scores_names': {
-                    'values': ['bid'],
+                    'values-dropdown': ['bid'],
                     'required': True,
                     'description': 'List of scores names',
                     'order': 12
                 },
                 'scores_weights': {
-                    'values': ['1.0'], # decimal number allowed
+                    'values-regex': '\\d*\\.?\\d*', # decimal number allowed
                     'required': True,
                     'description': 'Comma separated values of scores weights, should follow the same order than scores_names',
                     'order': 13
