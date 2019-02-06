@@ -4,7 +4,7 @@ import config
 client = openreview.Client()
 conference = config.get_conference(client)
 
-reviewer_groups = list(openreview.tools.iterget_groups(client, '{}/Paper.*/Reviewers'.format(conference.id)))
+reviewer_groups = list(openreview.tools.iterget_groups(client, '{}/Paper.*/Reviewers$'.format(conference.id)))
 
 for r in reviewer_groups:
     if not any([suffix in r.id for suffix in ['/Invited', '/Declined']]):
