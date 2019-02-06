@@ -1,21 +1,6 @@
 function () {
   var or3client = lib.or3client;
 
-  //<CONSTANTS>
-  //<TITLE>
-  //<SUBTITLE>
-  //<LOCATION>
-  //<DATE>
-  //<WEBSITE>
-  //<DEADLINE>
-  //<CONFERENCE>
-  //<PROGRAM_CHAIRS>
-  //<REVIEWERS>
-  //<AREA_CHAIRS>
-  //<SUBMISSION_INVITATION>
-  //<BLIND_INVITATION>
-  //<RECRUIT_REVIEWERS>
-
   var PAPER_GROUP = CONFERENCE + '/Paper' + note.number
   var PAPER_AUTHORS = PAPER_GROUP + '/Authors';
 
