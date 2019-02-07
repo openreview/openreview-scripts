@@ -69,7 +69,7 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, scores_b
             'Very Low': -1.0
         }
         try:
-            reviewer_bids = sorted([t for t in [j for j in paper_bid_jsons if j['tcdate']] if profile.id in t['signatures']], key=lambda t: t.get('tcdate',0), reverse=True)
+            reviewer_bids = sorted([t for t in paper_bid_jsons if profile.id in t['signatures']], key=lambda t: t.get('tmdate',0), reverse=True)
         except TypeError as e:
             print(paper_bid_jsons)
             raise e
