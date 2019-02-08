@@ -34,7 +34,7 @@ function render() {
       $response.append([
         '<div class="panel">',
           '<div class="row">',
-            '<p>If you do not already have an OpenReview account, please sign up using the address you received this email.</p>',
+            '<p>If you do not already have an OpenReview account, please sign up using the address you received this email at.</p>',
             '<p>If you have an existing OpenReview account, please ensure that the email address that received this invitation is linked to your <a href="/profile?mode=edit">profile page</a> and has been confirmed.</p>',
             '<p>If you have any questions contact us at info@opereview.net.</p>',
           '</div>',
