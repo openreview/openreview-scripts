@@ -19,7 +19,7 @@ if __name__ == '__main__':
         'readers': ['everyone'],
         'writers': [conference.id],
         'invitees': [
-            conference.id + '/Paper<number>/Reviewers', 
+            conference.id + '/Paper<number>/Reviewers',
             conference.id + '/Paper<number>/Program_Committee'],
         'noninvitees': [],
         'signatures': [conference.id],
@@ -32,7 +32,7 @@ if __name__ == '__main__':
             'readers': {
                 'description': 'The users who will be allowed to read the reply content.',
                 'values': [
-                    conference.id + '/Paper<number>/Program_Committee',
+                    conference.id + '/Paper<number>/Program_Committee/Submitted',
                     conference.id + '/Program_Chairs'
                     ]
             },
