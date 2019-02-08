@@ -32,12 +32,28 @@ var INSTRUCTIONS = '<p class="dark">\
   <strong>Instructions for Managing Subreviewers:</strong>\
   <ul>\
   <li>Enter the email address of a subreviewer that you would like to invite to review a paper.</li>\
-  <li>Click the "Invite" button to send the invitation email to that subreviewer.</li>\
+  <li>Click the "Invite" button to send an invitation email to that subreviewer. (The content of this message is given below.)\
+  <ul>\
+  <li><em>Email subject</em>:COLT 2019: Invitation to review submission, titled: [Paper-Title]</li>\
+  <li><em>Email text</em>:<br/>\
+  I hope this email finds you well.<br/>\
+  As a Program Committee member of COLT 2019, I’d like to ask for your expert review of a submission, titled: <Paper-Title>.<br/>\
+  To find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the email address at which you received this message; once you have logged-in, please follow this link: [Paper-URL]<br/>\
+  (Signing up for an account is a fairly lightweight process.  If you already have an account, you can add this email address to your account by editing your profile.)<br/>\
+  I would need the review no later than 11pm EDT on March 20th, 2019.<br/>\
+  To accept this request, please follow this link: [Accept-URL]<br/>\
+  To decline, follow this link: [Reject-URL]<br/>\
+  I really hope you can help out with this!<br/>\
+  Many thanks,<br/>\
+  [PC-member-Name]\
+  </li>\
+  </ul>\
   <li>Once the reviewer has been invited, their email address and response status will appear below the invitation box.</li>\
-  <li>You will also see the email addresses and response statuses for subreviewers invited by other PC members.</li>\
-  <li>Unfortunately, OpenReview does not allow for a custom message. So, please also feel free to email your candidate subreviewer directly with a more personal request.</li>\
+  <li>You will see the email addresses and response statuses for subreviewers invited by all PC members for the papers you have been assigned.</li>\
+  <li>Unfortunately, OpenReview does not allow for a custom invitation message.  So, please also feel free to email your candidate subreviewer directly with a more personal request.</li>\
   <li>It may take some time for the Review Progress column to update with the correct total number of reviewers (this is normal).</li>\
-  <li>This subreviewer management interface is a prototype system. If you have any issues or questions, please contact info@openreview.net as soon as possible.</li>\
+  <li>This subreviewer management interface is a prototype system.  If you have any issues or questions, please contact info@openreview.net as soon as possible.</li>\
+  <li>Subreviewers will not be able to see the authors’ identities of a paper they have been invited to review.</li>\
   </ul>\
   </p>';
 
@@ -50,14 +66,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>\
   <h4>Bidding Phase</h4>\
   <p>\
-    <em><strong>Please note that bidding is now open. You are requested to do the\
-     following by 5:00 PM EDT, February 6, 2019</strong></em>:\
-    <ul>\
-      <li>Provide your reviewing preferences by bidding on papers using the Bidding \
-      Interface.</li>\
-      <li><strong><a href="/invitation?id=' + CONFERENCE + '/-/Bid' + '">Go to \
-      Bidding Interface</a></strong></li>\
-    </ul>\
+    <em><strong>Please note that bidding is now closed.</strong></em>\
   </p>';
 
 
@@ -848,11 +857,10 @@ var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
     var declineUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key + '&response=No' + '&invitedBy=' + user.profile.id;
     var email = {
       groups: [reviewer],
-      subject: SHORT_PHRASE + ': Invitation to review paper title: ' + noteName,
-      message: 'Hi, \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to ask for your expert review of a submission, titled: ' +
+      subject: SHORT_PHRASE + ': Invitation to review submission, titled : ' + noteName,
+      message: 'I hope this email finds you well. \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to ask for your expert review of a submission, titled: ' +
       noteName + ' \n\nTo find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + noteId +
-      '\n\n(Signing up for an account is a fairly lightweight process. If you already have an OpenReview account, you can add this e-mail address to your account by editing your profile.) \n\nTo accept this request, please follow this link: ' + acceptUrl + '\n\nTo reject, follow this link: '
-       + declineUrl + '\n\nMany thanks,\n' + view.prettyId(user.profile.id)
+      '\n\n(Signing up for an account is a fairly lightweight process. If you already have an OpenReview account, you can add this e-mail address to your account by editing your profile.) \n\nI would need the review no later than 11pm EDT on March 20th, 2019. \n\nTo accept this request, please follow this link: ' + acceptUrl + '\n\nTo decline, follow this link: ' + declineUrl + '\n\nI really hope you can help us with this! \n\nMany thanks,\n' + view.prettyId(user.profile.id)
     }
     return Webfield.post('/messages', email)
   })
