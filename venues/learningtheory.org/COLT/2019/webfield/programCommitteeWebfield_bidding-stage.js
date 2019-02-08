@@ -34,6 +34,8 @@ var INSTRUCTIONS = '<p class="dark">\
   <li>Enter the email address of a subreviewer that you would like to invite to review a paper.</li>\
   <li>Click the "Invite" button to send the invitation email to that subreviewer.</li>\
   <li>Once the reviewer has been invited, their email address and response status will appear below the invitation box.</li>\
+  <li>You will also see the email addresses and response statuses for subreviewers invited by other PC members.</li>\
+  <li>Unfortunately, OpenReview does not allow for a custom message. So, please also feel free to email your candidate subreviewer directly with a more personal request.</li>\
   <li>It may take some time for the Review Progress column to update with the correct total number of reviewers (this is normal).</li>\
   <li>This subreviewer management interface is a prototype system. If you have any issues or questions, please contact info@openreview.net as soon as possible.</li>\
   </ul>\
@@ -812,7 +814,10 @@ var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
     var email = {
       groups: [reviewer],
       subject: SHORT_PHRASE + ': Invitation to review paper title: ' + noteName,
-      message: 'You have been invited to ' + SHORT_PHRASE + ' to review a paper. \n\nPaper title: ' + noteName + ' \n\n\n\nTo accept please follow this link: ' + acceptUrl + '\n\nTo reject follow this link: ' + declineUrl + '\n\nTo find more details about the paper please sign up on openreview.net using the address you received this email at and then follow this link: https://openreview.net/forum?id=' +  noteId
+      message: 'Hi, \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to ask for your expert review of a submission, titled: ' + 
+      noteName + ' \n\nTo find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + noteId + 
+      '\n\n(Signing up for an account is a fairly lightweight process. If you already have an OpenReview account, you can add this e-mail address to your account by editing your profile.) \n\nTo accept this request, please follow this link: ' + acceptUrl + '\n\nTo reject, follow this link: '
+       + declineUrl + '\n\nMany thanks,\n' + view.prettyId(user.profile.id)
     }
     return Webfield.post('/messages', email)
   })
