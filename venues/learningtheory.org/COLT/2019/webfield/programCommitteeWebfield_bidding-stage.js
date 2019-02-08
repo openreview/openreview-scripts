@@ -778,7 +778,7 @@ var registerEventHandlers = function(blindedNotes) {
     $parent = $(this).parent();
     noteId = $parent.find('input').data('noteId');
     noteNumber = $parent.find('input').data('noteNumber');
-    reviewer = $parent.find('input').val();
+    reviewer = $parent.find('input').val().trim();
     noteObj = _.find(blindedNotes, {'id' : noteId});
     noteName = noteObj.content['title'];
 
@@ -787,22 +787,26 @@ var registerEventHandlers = function(blindedNotes) {
       return false;
     }
 
-    inviteReviewer(noteId, noteNumber, noteName, reviewer, function() {
-      $parent.find('input').val('');
-      invitedMap[noteNumber].invited.push(reviewer);
-      var data = {
-        noteId: noteId,
-        noteNumber: noteNumber,
-        noteName: noteName,
-        invited: {
-          accepted: invitedMap[noteNumber].accepted,
-          invited: invitedMap[noteNumber].invited,
-          declined: invitedMap[noteNumber].declined
+    if (reviewer) {
+      reviewer = reviewer.toLowerCase();
+      inviteReviewer(noteId, noteNumber, noteName, reviewer, function() {
+        $parent.find('input').val('');
+        invitedMap[noteNumber].invited.push(reviewer);
+        var data = {
+          noteId: noteId,
+          noteNumber: noteNumber,
+          noteName: noteName,
+          invited: {
+            accepted: invitedMap[noteNumber].accepted,
+            invited: invitedMap[noteNumber].invited,
+            declined: invitedMap[noteNumber].declined
+          }
         }
-      }
-      $('#' + noteId + '-invited-reviewers').html(renderInvitedReviewers(data));
-      console.log('Done');
-    });
+        $('#' + noteId + '-invited-reviewers').html(renderInvitedReviewers(data));
+        console.log('Done');
+      });
+    }
+
     return false;
   });
 };
@@ -840,8 +844,8 @@ var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
   .then(function(response) {
     console.log('Invitation posted');
     var key = CryptoJS.HmacSHA256(reviewer, '1234');
-    var acceptUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key +'&response=Yes';
-    var declineUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key + '&response=No';
+    var acceptUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key +'&response=Yes' + '&invitedBy=' + user.profile.id;
+    var declineUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key + '&response=No' + '&invitedBy=' + user.profile.id;
     var email = {
       groups: [reviewer],
       subject: SHORT_PHRASE + ': Invitation to review paper title: ' + noteName,

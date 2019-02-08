@@ -98,6 +98,12 @@ if __name__ == '__main__':
                     'order': 4,
                     'value-radio': ['Yes', 'No'],
                     'required':True
+                },
+                'invitedBy': {
+                    'description': 'Program Committee who invites the sub reviewer',
+                    'order': 5,
+                    'value-regex': '~.*',
+                    'required':True
                 }
             }
         })
