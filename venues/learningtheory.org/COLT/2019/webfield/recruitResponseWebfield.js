@@ -29,13 +29,14 @@ function render() {
 
     if (accepted) {
       // Display response text
-      var message = 'Thank you for accepting the invitation to review. Please <a href="/login">login</a> on openreview.net and check your <a href="/tasks">Tasks</a>.';
+      var message = 'Thank you for accepting the invitation to review. It will appear a task to write the official review in the Tasks view shortly.';
       $response.append('<div class="panel"><div class="row"><strong>' + message + '</strong></div></div>');
       $response.append([
         '<div class="panel">',
           '<div class="row">',
-            '<p>If you do not already have an OpenReview account, please sign up <a href="/signup">here</a> using the address you received this email at.</p>',
+            '<p>If you do not already have an OpenReview account, please sign up using the address you received this email.</p>',
             '<p>If you have an existing OpenReview account, please ensure that the email address that received this invitation is linked to your <a href="/profile?mode=edit">profile page</a> and has been confirmed.</p>',
+            '<p>If you have any questions contact us at info@opereview.net.</p>',
           '</div>',
         '</div>'
       ].join('\n'));
