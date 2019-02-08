@@ -13,11 +13,11 @@ def get_assignments(submissions):
 
     paper_by_forum = {n.forum: n for n in submissions}
 
-    config_notes = client.get_notes(invitation='learningtheory.org/COLT/2019/Conference/-/Assignment_Configuration', content = { 'label': 'ac-test'})
+    config_notes = client.get_notes(invitation='learningtheory.org/COLT/2019/Conference/-/Assignment_Configuration', content = { 'label': args.label})
     config_note = config_notes[0]
     added_constraints = config_note.content['constraints']
 
-    for assignment in openreview.tools.iterget_notes(client, invitation='learningtheory.org/COLT/2019/Conference/-/Paper_Assignment', content = { 'label': 'ac-test'}):
+    for assignment in openreview.tools.iterget_notes(client, invitation='learningtheory.org/COLT/2019/Conference/-/Paper_Assignment', content = { 'label': args.label}):
         assigned_groups = assignment.content['assignedGroups']
         paper_constraints = added_constraints.get(assignment.forum, {})
         paper_assigned = []
@@ -44,6 +44,7 @@ def get_assignments(submissions):
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
+    parser.add_argument('label')
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
