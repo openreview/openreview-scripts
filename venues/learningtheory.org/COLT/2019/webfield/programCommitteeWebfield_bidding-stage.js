@@ -169,7 +169,22 @@ var getOfficialReviews = function(noteNumbers) {
           confidenceMatch = n.content.confidence.match(ratingExp);
           n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
 
-          noteMap[num][index] = n;
+          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
+        }
+      }
+      var matches = n.signatures[0].match(AREACHAIR_REGEX);
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        index = parseInt(matches[2], 10);
+
+        if (num in noteMap) {
+          // Need to parse rating and confidence strings into ints
+          ratingMatch = n.content.rating.match(ratingExp);
+          n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+          confidenceMatch = n.content.confidence.match(ratingExp);
+          n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+
+          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
         }
       }
     });
@@ -185,7 +200,7 @@ var getReviewerGroups = function(noteNumbers) {
 
   var noteMap = buildNoteMap(noteNumbers);
 
-  return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
+  return Webfield.getAll('/groups', { id: 'learningtheory.org/COLT/2019/Conference/Paper.*' })
   .then(function(groups) {
     _.forEach(groups, function(g) {
       var matches = g.id.match(ANONREVIEWER_REGEX);
@@ -195,7 +210,18 @@ var getReviewerGroups = function(noteNumbers) {
         index = parseInt(matches[2], 10);
 
         if ((num in noteMap) && g.members.length) {
-          noteMap[num][index] = g.members[0];
+          noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = g.members[0];
+        }
+      }
+
+      var matches = g.id.match(AREACHAIR_REGEX);
+      var num, index;
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        index = parseInt(matches[2], 10);
+
+        if ((num in noteMap) && g.members.length) {
+          noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = g.members[0];
         }
       }
 
@@ -563,7 +589,7 @@ var renderTasks = function(invitations, tagInvitations) {
 
   // Filter out non-areachair tasks
   var filterFunc = function(inv) {
-    return _.some(inv.invitees, function(invitee) { return invitee.indexOf('Area_Chair') !== -1; });
+    return _.some(inv.invitees, function(invitee) { return invitee.indexOf('Program_Committee') !== -1; });
   };
   var areachairInvitations = _.filter(invitations, filterFunc);
   var areachairTagInvitations = _.filter(tagInvitations, filterFunc);
@@ -814,8 +840,8 @@ var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
     var email = {
       groups: [reviewer],
       subject: SHORT_PHRASE + ': Invitation to review paper title: ' + noteName,
-      message: 'Hi, \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to ask for your expert review of a submission, titled: ' + 
-      noteName + ' \n\nTo find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + noteId + 
+      message: 'Hi, \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to ask for your expert review of a submission, titled: ' +
+      noteName + ' \n\nTo find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + noteId +
       '\n\n(Signing up for an account is a fairly lightweight process. If you already have an OpenReview account, you can add this e-mail address to your account by editing your profile.) \n\nTo accept this request, please follow this link: ' + acceptUrl + '\n\nTo reject, follow this link: '
        + declineUrl + '\n\nMany thanks,\n' + view.prettyId(user.profile.id)
     }
