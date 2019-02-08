@@ -782,6 +782,11 @@ var registerEventHandlers = function(blindedNotes) {
     noteObj = _.find(blindedNotes, {'id' : noteId});
     noteName = noteObj.content['title'];
 
+    if (_.includes(invitedMap[noteNumber].invited, reviewer)) {
+      promptError(reviewer + ' was already invited');
+      return false;
+    }
+
     inviteReviewer(noteId, noteNumber, noteName, reviewer, function() {
       $parent.find('input').val('');
       invitedMap[noteNumber].invited.push(reviewer);
@@ -855,6 +860,7 @@ var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
   })
   .then(function(response) {
     console.log('User added to invited group');
+    promptMessage('An invitation email was sent to ' + reviewer);
     done();
   });
 }
