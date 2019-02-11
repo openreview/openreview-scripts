@@ -51,7 +51,7 @@ if __name__ == '__main__':
             'signatures': {
                 'values': [conference.id]},
             'readers': {
-                'values': ['everyone']
+                'values-regex': ['.*']
             }
         }
     ))
@@ -97,6 +97,12 @@ if __name__ == '__main__':
                     'description': 'Invitation response',
                     'order': 4,
                     'value-radio': ['Yes', 'No'],
+                    'required':True
+                },
+                'invitedBy': {
+                    'description': 'Program Committee who invites the sub reviewer',
+                    'order': 5,
+                    'value-regex': '~.*',
                     'required':True
                 }
             }

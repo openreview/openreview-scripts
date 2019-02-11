@@ -20,7 +20,7 @@ if __name__ == '__main__':
     bid_invitation = openreview.Invitation(**{
         'id': '/'.join([conference.get_id(), '-', 'Bid']),
         'expdate': None, # todo
-        'duedate': None, # todo
+        'duedate': 1549425600000, # Tuesday, February 5, 2019 11:00:00 PM EST
         'web': os.path.abspath('../webfield/bidWebfield.js'), # todo
         'signatures': [conference.get_id()],
         'readers': [conference.get_id(), conference.get_program_chairs_id(), conference.get_area_chairs_id()],
@@ -41,7 +41,7 @@ if __name__ == '__main__':
             'content': {
                 'tag': {
                     'value-radio': [
-                        'Very High','High', 'Neutral', 'Low', 'Very Low', 'No Bid'
+                        'Very High','High', 'Neutral', 'Low', 'Very Low', 'Conflict of Interest', 'No Bid'
                     ],
                     'required': True
                 }
@@ -49,39 +49,7 @@ if __name__ == '__main__':
         }
     })
     client.post_invitation(bid_invitation)
-
-    conflict_claim_invitation = openreview.Invitation(**{
-        'id': '/'.join([conference.get_id(), '-', 'Conflict_of_Interest']),
-        'duedate': None, #todo
-        'expdate': None, #todo
-        'readers': ['everyone'],
-        'writers': [conference.get_id()],
-        'signatures': [conference.get_id()],
-        'invitees': ['~'],
-        'multiReply': True,
-        'reply': {
-            'forum': None,
-            'replyto': None,
-            'invitation': conference.get_submission_id(),
-            'readers': {
-                'values': ['everyone']
-            },
-            'signatures': {'values-regex': '~.*'},
-            'content': {
-                'tag': {
-                    'value-dropdown': [
-                        'Yes: I am certain that I have a conflict of interest with this paper.',
-                        'Maybe: I believe that I may have a conflict of interest with this paper, but I am not certain.',
-                        'No: I do not have a conflict of interest with this paper.'
-                    ],
-                    'required': True,
-                    'description': 'Do you have a conflict of interest?'
-               }
-            }
-        }
-    })
-    client.post_invitation(conflict_claim_invitation)
-
+    
     area_chairs_group = client.get_group(conference.get_area_chairs_id())
     with open(os.path.abspath('../webfield/programCommitteeWebfield_bidding-stage.js')) as f:
         area_chairs_group.web = f.read()

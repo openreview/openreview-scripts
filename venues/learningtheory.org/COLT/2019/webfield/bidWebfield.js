@@ -5,30 +5,39 @@
 var CONFERENCE_ID = 'learningtheory.org/COLT/2019/Conference';
 var SHORT_PHRASE = 'COLT 2019';
 var BLIND_INVITATION_ID = CONFERENCE_ID + '/-/Blind_Submission';
+var ORIGINAL_INVITATION_ID = CONFERENCE_ID + '/-/Submission';
 var USER_SCORES_INVITATION_ID = CONFERENCE_ID + '/-/User_Scores';
 var ADD_BID = CONFERENCE_ID + '/-/Bid';
-var COI_CLAIM = CONFERENCE_ID + '/-/Conflict_of_Interest';
 var PAGE_SIZE = 1000;
-var SEARCH_KEYWORDS = [
-  'optimization methods',
-  'active learning',
-  'game theory'
+var SUBJECT_AREAS = [
+  "neural-networks",
+  "deep learning theory",
+  "reinforcement learning"
 ];
 
 var INSTRUCTIONS = '<p class="dark">Please indicate your level of interest in reviewing \
   the submitted papers below, on a scale from "Very Low" to "Very High".</p>\
   <p class="dark"><strong>Please note:</strong></p>\
   <ul>\
-    <li><strong>Conflict of interest will be taken into account at the next stage. So, please do not worry about that while bidding.</strong></li>\
     <li>Please update your Conflict of Interest details on your profile page, specifically "Emails", "Education and Career History" & "Advisors and Other Relations" fields.</li>\
+    <li>The default bid on each paper is \"No Bid\".</li>\
   </ul>\
   <p class="dark"><strong>A few tips:</strong></p>\
   <ul>\
-    <li>We expect <strong>approximately 50 bids per user</strong>. Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
+    <li>Please bid on as many papers as possible to ensure that your preferences are taken into account.</li>\
     <li>For the best bidding experience, <strong>it is recommended that you filter papers by Subject Area</strong> and search for key phrases in paper metadata using the search form.</li>\
-    <li>If you think you may have a conflict of interest with a particular paper, please indicate this on each applicable paper below your bid. If no option is selected, the paper will not be considered to be in conflict.</li>\
-    <li>Default bid on each paper is \"No Bid\".</li>\
+    <li>If you think you may have a conflict of interest with a particular paper, please indicate this with the option "Conflict of Interest".</li>\
+  </ul>\
+  <p class="dark"><strong>Bid Score Value Mapping:</strong></p>\
+  <ul>\
+    <li>Very high (+1.0)</li>\
+    <li>High (+0.5)</li>\
+    <li>Neutral, No Bid (0.0)</li>\
+    <li>Low (-0.5) </li>\
+    <li>Very Low (-1.0)</li>\
+    <li>Conflict of Interest (-Inf)\
   </ul><br>'
+
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -38,27 +47,24 @@ function main() {
 
   Webfield.ui.spinner('#notes', { inline: true });
 
-  load().then(renderContent);
-
-  OpenBanner.venueHomepageLink(CONFERENCE_ID);
+  load().then(renderContent).then(Webfield.ui.done);
 }
 
 
 // Perform all the required API calls
 function load() {
   var notesP = Webfield.getAll('/notes', {invitation: BLIND_INVITATION_ID, details: 'tags,original'}).then(function(allNotes) {
-    return allNotes.filter(function(note) {
-      return !note.content.hasOwnProperty('withdrawal');
+    return allNotes.map(function(note) {
+      note.details.tags = note.details.tags.filter(function(tag) {
+        return tag.tauthor;
+      });
+      return note;
     });
   });
 
-  var bidInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(invitations) {
-    return invitations.filter(function(invitation) {
-      return invitation.invitees.length;
-    });
-  });
+  var authoredNotesP = Webfield.getAll('/notes', {'content.authorids': user.profile.id, invitation:ORIGINAL_INVITATION_ID});
 
-  var coiInvitationsP = Webfield.getAll('/invitations', {id: COI_CLAIM}).then(function(invitations) {
+  var tagInvitationsP = Webfield.getAll('/invitations', {id: ADD_BID}).then(function(invitations) {
     return invitations.filter(function(invitation) {
       return invitation.invitees.length;
     });
@@ -80,29 +86,24 @@ function load() {
     return metadataNotesMap;
   });
 
-  return $.when(notesP, bidInvitationsP, coiInvitationsP, userScoresP);
+  return $.when(notesP, authoredNotesP, tagInvitationsP, userScoresP);
 }
 
-function updateTagDetails(tagDetails, tagObj) {
-  return _.map(tagDetails, function(t){
-    if (t.invitation === ADD_BID){
-      return tagObj;
-    } else {
-      return t;
-    }
-  })
-};
 
 // Display the bid interface populated with loaded data
-function renderContent(validNotes, bidInvitations, coiInvitations, metadataNotesMap) {
+function renderContent(validNotes, authoredNotes, tagInvitations, metadataNotesMap) {
+  var authoredNoteIds = _.map(authoredNotes, function(note){
+    return note.id;
+  });
 
+  validNotes = _.filter(validNotes, function(note){
+    return !_.includes(authoredNoteIds, note.original);
+  })
   validNotes = addMetadataToNotes(validNotes, metadataNotesMap);
 
   var activeTab = 0;
   var sections;
   var binnedNotes;
-
-  var tagInvitations = bidInvitations.concat(coiInvitations);
 
   var paperDisplayOptions = {
     pdfLink: true,
@@ -138,66 +139,50 @@ function renderContent(validNotes, bidInvitations, coiInvitations, metadataNotes
   });
 
   $('#invitation-container').on('bidUpdated', '.tag-widget', function(e, tagObj) {
-    if (tagObj.invitation === ADD_BID) {
-
-
-      var updatedNote = _.find(validNotes, ['id', tagObj.forum]);
-      if (!updatedNote) {
-        return;
-      }
-      if (_.has(updatedNote.details, 'tags')){
-        var prevBids = _.filter(updatedNote.details.tags, function(t){return t.invitation === ADD_BID;});
-        var prevVal;
-        if (prevBids.length){
-          prevVal = prevBids[0].tag;
-        } else {
-          prevVal = 'No Bid';
-        }
-
-        updatedNote.details.tags = updateTagDetails(updatedNote.details.tags, tagObj);
-
-      }
-      //var prevVal = _.has(updatedNote.details, 'tags[0].tag') ? updatedNote.details.tags[0].tag : 'No Bid';
-      //updatedNote.details.tags[0] = tagObj;
-
-      var tagToContainerId = {
-        'Very High': 'veryHigh',
-        'High': 'high',
-        'Neutral': 'neutral',
-        'Low': 'low',
-        'Very Low': 'veryLow',
-        'No Bid': 'noBid'
-      };
-      console.log('tagObj', tagObj);
-      var previousNoteList = binnedNotes[tagToContainerId[prevVal]];
-      var currentNoteList = binnedNotes[tagToContainerId[tagObj.tag]];
-
-      var currentIndex = _.findIndex(previousNoteList, ['id', tagObj.forum]);
-      if (currentIndex !== -1) {
-        var currentNote = previousNoteList[currentIndex];
-        //currentNote.details.tags[0] = tagObj;
-        currentNote.details.tags = updateTagDetails(currentNote.details.tags, tagObj);
-        previousNoteList.splice(currentIndex, 1);
-        currentNoteList.push(currentNote);
-      } else {
-        console.warn('Note not found!');
-      }
-
-      // If the current tab is not the All Papers tab remove the note from the DOM
-      if (activeTab) {
-        var $elem = $(e.target).closest('.note');
-        $elem.fadeOut('normal', function() {
-          $elem.remove();
-
-          var $container = $('#' + tagToContainerId[prevVal] + ' .submissions-list');
-          if (!$container.children().length) {
-            $container.append('<li><p class="empty-message">No papers to display at this time</p></li>');
-          }
-        });
-      }
-
-      updateCounts();
+    var updatedNote = _.find(validNotes, ['id', tagObj.forum]);
+    if (!updatedNote) {
+      return;
     }
+    var prevVal = _.has(updatedNote.details, 'tags[0].tag') ? updatedNote.details.tags[0].tag : 'No Bid';
+    updatedNote.details.tags[0] = tagObj;
+
+    var tagToContainerId = {
+      'Very High': 'veryHigh',
+      'High': 'high',
+      'Neutral': 'neutral',
+      'Low': 'low',
+      'Very Low': 'veryLow',
+      'Conflict of Interest': 'conflict',
+      'No Bid': 'noBid'
+    };
+
+    var previousNoteList = binnedNotes[tagToContainerId[prevVal]];
+    var currentNoteList = binnedNotes[tagToContainerId[tagObj.tag]];
+
+    var currentIndex = _.findIndex(previousNoteList, ['id', tagObj.forum]);
+    if (currentIndex !== -1) {
+      var currentNote = previousNoteList[currentIndex];
+      currentNote.details.tags[0] = tagObj;
+      previousNoteList.splice(currentIndex, 1);
+      currentNoteList.push(currentNote);
+    } else {
+      console.warn('Note not found!');
+    }
+
+    // If the current tab is not the All Papers tab remove the note from the DOM
+    if (activeTab) {
+      var $elem = $(e.target).closest('.note');
+      $elem.fadeOut('normal', function() {
+        $elem.remove();
+
+        var $container = $('#' + tagToContainerId[prevVal] + ' .submissions-list');
+        if (!$container.children().length) {
+          $container.append('<li><p class="empty-message">No papers to display at this time</p></li>');
+        }
+      });
+    }
+
+    updateCounts();
   });
 
   function updateNotes(notes) {
@@ -208,7 +193,8 @@ function renderContent(validNotes, bidInvitations, coiInvitations, metadataNotes
       high: [],
       neutral: [],
       low: [],
-      veryLow: []
+      veryLow: [],
+      conflict: []
     };
 
     var bids, n;
@@ -229,6 +215,8 @@ function renderContent(validNotes, bidInvitations, coiInvitations, metadataNotes
           binnedNotes.low.push(n);
         } else if (bids[0].tag === 'Very Low') {
           binnedNotes.veryLow.push(n);
+        } else if (bids[0].tag === 'Conflict of Interest') {
+          binnedNotes.conflict.push(n);
         } else {
           binnedNotes.noBid.push(n);
         }
@@ -238,7 +226,7 @@ function renderContent(validNotes, bidInvitations, coiInvitations, metadataNotes
     }
 
     var bidCount = binnedNotes.veryHigh.length + binnedNotes.high.length +
-      binnedNotes.neutral.length + binnedNotes.low.length + binnedNotes.veryLow.length;
+      binnedNotes.neutral.length + binnedNotes.low.length + binnedNotes.veryLow.length + binnedNotes.conflict.length;
 
     $('#bidcount').remove();
     $('#header').append('<h4 id="bidcount">You have completed ' + bidCount + ' bids</h4>');
@@ -285,6 +273,12 @@ function renderContent(validNotes, bidInvitations, coiInvitations, metadataNotes
         headingCount: binnedNotes.veryLow.length,
         id: 'veryLow',
         content: loadingContent
+      },
+      {
+        heading: 'Conflict of Interest',
+        headingCount: binnedNotes.conflict.length,
+        id: 'conflict',
+        content: loadingContent
       }
     ];
     sections[activeTab].active = true;
@@ -304,7 +298,7 @@ function renderContent(validNotes, bidInvitations, coiInvitations, metadataNotes
       search: {
         enabled: true,
         localSearch: true,
-        subjectAreas: SEARCH_KEYWORDS,
+        subjectAreas: SUBJECT_AREAS,
         subjectAreaDropdown: 'basic',
         sort: false,
         onResults: function(searchResults) {
@@ -332,7 +326,8 @@ function renderContent(validNotes, bidInvitations, coiInvitations, metadataNotes
       'high',
       'neutral',
       'low',
-      'veryLow'
+      'veryLow',
+      'conflict'
     ];
     var totalCount = 0;
 
@@ -365,14 +360,14 @@ function addMetadataToNotes(validNotes, metadataNotesMap) {
     var paperMetadataObj = metadataNotesMap.hasOwnProperty(note.id) ? metadataNotesMap[note.id] : {};
 
     note.metadata = {
-      tpmsScore: paperMetadataObj.hasOwnProperty('tpmsScore') ? paperMetadataObj['tpmsScore'] : 0,
+      tfidfScore: paperMetadataObj.hasOwnProperty('tfidfScore') ? paperMetadataObj['tfidfScore'] : 0,
       conflict: paperMetadataObj.hasOwnProperty('conflict')
     };
 
-    note.content['TPMS Score'] = note.metadata.tpmsScore.toFixed(3);
+    //note.content['TFIDF Score'] = note.metadata.tfidfScore.toFixed(3);
   }
 
-  return _.orderBy(validNotes, ['metadata.tpmsScore'], ['desc']);
+  return _.orderBy(validNotes, ['metadata.tfidfScore'], ['desc']);
 }
 
 // Go!
