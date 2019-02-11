@@ -153,7 +153,7 @@ var loadData = function(groups) {
   return $.when(
     individualGroupIds,
     blindedNotesP,
-    getOfficialReviews(noteNumbers),
+    getOfficialReviews(noteNumbers, individualGroupIds),
     metaReviewsP,
     getReviewerGroups(noteNumbers),
     invitationsP,
@@ -161,7 +161,7 @@ var loadData = function(groups) {
   );
 };
 
-var getOfficialReviews = function(noteNumbers) {
+var getOfficialReviews = function(noteNumbers, individualGroupIds) {
   if (!noteNumbers.length) {
     return $.Deferred().resolve({});
   }
@@ -197,6 +197,8 @@ var getOfficialReviews = function(noteNumbers) {
         index = parseInt(matches[2], 10);
 
         if (num in noteMap) {
+
+          if (_.includes(individualGroupIds, n.signatures[0])) {
           // Need to parse rating and confidence strings into ints
           ratingMatch = n.content.rating.match(ratingExp);
           n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
@@ -204,6 +206,8 @@ var getOfficialReviews = function(noteNumbers) {
           n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
 
           noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
+
+          }
         }
       }
     });
@@ -662,6 +666,7 @@ var buildTableRow = function(individualGroupId, note, reviewerIds, completedRevi
   var combinedObj = {};
   var ratings = [];
   var confidences = [];
+  var completedReviewCount = 0;
   for (var reviewerNum in reviewerIds) {
     var reviewer = reviewerIds[reviewerNum];
     if (reviewerNum in completedReviews) {
@@ -679,6 +684,7 @@ var buildTableRow = function(individualGroupId, note, reviewerIds, completedRevi
       };
       ratings.push(reviewObj.rating);
       confidences.push(reviewObj.confidence);
+      completedReviewCount += 1;
     } else {
       var forumUrl = 'https://openreview.net/forum?' + $.param({
         id: note.forum,
@@ -705,7 +711,7 @@ var buildTableRow = function(individualGroupId, note, reviewerIds, completedRevi
 
   var cell3 = {
     noteId: note.id,
-    numSubmittedReviews: Object.keys(completedReviews).length,
+    numSubmittedReviews: completedReviewCount,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
     sendReminder: true
