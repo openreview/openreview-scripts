@@ -20,8 +20,8 @@ def get_conference(client):
     })
     builder.set_authorpage_header({
         'title': 'Author Console',
-        'instructions': 'This are the instructions',
-        'schedule': 'To be Defined'
+        'instructions': '',
+        'schedule': 'To Be Defined'
     })
     builder.set_double_blind(True)
     builder.set_override_homepage(True)
