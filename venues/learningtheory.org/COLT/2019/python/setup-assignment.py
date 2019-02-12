@@ -16,15 +16,15 @@ import csv
 from collections import defaultdict
 
 def check_inputs (paper_notes):
-    print("There are ", len(paper_notes), "paper submissions")
+    print('There are ', len(paper_notes), 'paper submissions')
     papers_with_tags_count = 0
     for paper in paper_notes:
         if paper.details['tags'] != []:
             papers_with_tags_count += 1
-    print("There are ", papers_with_tags_count, "papers that have tags")
+    print('There are ', papers_with_tags_count, 'papers that have tags')
 
     d = {n.id: n for n in paper_notes}
-    tags = list(openreview.tools.iterget_tags(client, invitation=CONFERENCE_ID + "/-/Bid"))
+    tags = list(openreview.tools.iterget_tags(client, invitation=CONFERENCE_ID + '/-/Bid'))
     found_count = 0
     not_found_count = 0
     for tag in tags:
@@ -34,11 +34,8 @@ def check_inputs (paper_notes):
             found_count += 1
         else:
             not_found_count += 1
-    print("Bid (tags) that refer to a submitted paper:", found_count)
-    print("Bid (tags) that refer to a paper not in the submissions:", not_found_count)
-
-
-
+    print('Bid (tags) that refer to a submitted paper:', found_count)
+    print('Bid (tags) that refer to a paper not in the submissions:', not_found_count)
 
 
 def clear(client, invitation):
@@ -49,12 +46,12 @@ def clear(client, invitation):
 def _append_manual_conflicts(profile, manual_user_conflicts):
     for conflict_domain in manual_user_conflicts:
         manual_entry = {
-            "end": None,
-            "start": None,
-            "position": "Manual Entry",
-            "institution": {
-                "name": "Manual Entry",
-                "domain": conflict_domain
+            'end': None,
+            'start': None,
+            'position': 'Manual Entry',
+            'institution': {
+                'name': 'Manual Entry',
+                'domain': conflict_domain
             }
         }
         profile.content['history'].append(manual_entry)
@@ -72,7 +69,7 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, scores_b
             'Very Low': -1.0
         }
         try:
-            reviewer_bids = sorted([t for t in [j for j in paper_bid_jsons if j['tcdate']] if profile.id in t['signatures']], key=lambda t: t.get('tcdate',0), reverse=True)
+            reviewer_bids = sorted([t for t in paper_bid_jsons if profile.id in t['signatures']], key=lambda t: t.get('tmdate',0), reverse=True)
         except TypeError as e:
             print(paper_bid_jsons)
             raise e
@@ -83,12 +80,13 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, scores_b
             'userid': profile.id,
             'scores': reviewer_scores
         }
+
         # Bid can contain a 'Conflict of Interest' selection, so install in the entry if bid is set to that
         if reviewer_bids:
             tag = reviewer_bids[0]['tag']
             if tag == 'Conflict of Interest':
-                print("Conflict of Interest for", profile.id)
-                user_entry['conflicts'] = 1
+                print('Conflict of Interest for', profile.id)
+                user_entry['conflicts'] = ['self-declared COI']
             else:
                 bid_score = bid_score_map.get(tag, 0.0)
                 if bid_score != 0.0:
@@ -100,24 +98,24 @@ def _build_entries(author_profiles, reviewer_profiles, paper_bid_jsons, scores_b
         conflicts = openreview.tools.get_conflicts(author_profiles, profile)
 
         if conflicts:
-            user_entry['conflicts'] = conflicts
+            user_entry['conflicts'] = conflicts + user_entry.get('conflicts', [])
 
         entries.append(user_entry)
 
     return entries
 
 def post_metadata_note(client,
-                       note,
-                       reviewer_profiles,
-                       metadata_inv,
-                       paper_tpms_scores,
-                       manual_conflicts_by_id):
+    note,
+    reviewer_profiles,
+    metadata_inv,
+    paper_tpms_scores,
+    manual_conflicts_by_id):
 
     author_group = note.content['authorids']
     authorids = note.details['original']['content']['authorids']
     paper_bid_jsons = note.details['tags']
     paper_author_profiles = client.get_profiles(authorids)
-    print("Paper",note.id)
+    print('Paper',note.id)
     entries = _build_entries(paper_author_profiles, reviewer_profiles, paper_bid_jsons, paper_tpms_scores, manual_conflicts_by_id)
 
     new_metadata_note = openreview.Note(**{
@@ -138,7 +136,7 @@ def post_metadata_note(client,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # parser.add_argument('affinity_score_file')
-    parser.add_argument('--baseurl', help="base url")
+    parser.add_argument('--baseurl', help='base url')
     parser.add_argument('--username')
     parser.add_argument('--password')
     args = parser.parse_args()
@@ -213,95 +211,98 @@ if __name__ == '__main__':
             'writers': {'values': [CONFERENCE_ID, PROGRAM_CHAIRS_ID]},
             'signatures': {'values': [PROGRAM_CHAIRS_ID]},
             'content': {
-                "label": {
-                    "value-regex": ".{1,250}",
-                    "required": True,
-                    "description": "Title of the configuration.",
-                    "order": 1
+                'label': {
+                    'value-regex': '.{1,250}',
+                    'required': True,
+                    'description': 'Title of the configuration.',
+                    'order': 1
                 },
-                "max_users": {
-                    "value-regex": "[0-9]+",
-                    "required": True,
-                    "description": "Max number of reviewers that can review a paper",
-                    "order": 2
+                'max_users': {
+                    'value-regex': '[0-9]+',
+                    'required': True,
+                    'description': 'Max number of reviewers that can review a paper',
+                    'order': 2
                 },
-                "min_users": {
-                    "value-regex": "[0-9]+",
-                    "required": True,
-                    "description": "Min number of reviewers required to review a paper",
-                    "order": 3
+                'min_users': {
+                    'value-regex': '[0-9]+',
+                    'required': True,
+                    'description': 'Min number of reviewers required to review a paper',
+                    'order': 3
                 },
-                "max_papers": {
-                    "value-regex": "[0-9]+",
-                    "required": True,
-                    "description": "Max number of reviews a person has to do",
-                    "order": 4
+                'max_papers': {
+                    'value-regex': '[0-9]+',
+                    'required': True,
+                    'description': 'Max number of reviews a person has to do',
+                    'order': 4
                 },
-                "min_papers": {
-                    "value-regex": "[0-9]+",
-                    "required": True,
-                    "description": "Min number of reviews a person should do",
-                    "order": 5
+                'min_papers': {
+                    'value-regex': '[0-9]+',
+                    'required': True,
+                    'description': 'Min number of reviews a person should do',
+                    'order': 5
                 },
-                "alternates": {
-                    "value-regex": "[0-9]+",
-                    "required": True,
-                    "description": "Number of alternate reviewers for a paper",
-                    "order": 6
+                'alternates': {
+                    'value-regex': '[0-9]+',
+                    'required': True,
+                    'description': 'Number of alternate reviewers for a paper',
+                    'order': 6
                 },
-                "config_invitation": {
-                    "value": CONFERENCE_ID,
-                    "required": True,
-                    "description": "Invitation to get the configuration note",
-                    "order": 7
+                'config_invitation': {
+                    'value': CONFERENCE_ID,
+                    'required': True,
+                    'description': 'Invitation to get the configuration note',
+                    'order': 7
                 },
-                'paper_invitation': {"value": CONFERENCE_ID + "/-/Blind_Submission",
-                                     "required": True,
-                                     "description": "Invitation to get the configuration note",
-                                     "order": 8
-                                     },
-                'metadata_invitation': {"value": METADATA_INV_ID,
-                                        "required": True,
-                                        "description": "Invitation to get the configuration note",
-                                        "order": 9
-                                        },
-                'assignment_invitation': {"value": ASSIGNMENT_INV_ID,
-                                          "required": True,
-                                          "description": "Invitation to get the configuration note",
-                                          "order": 10
-                                          },
+                'paper_invitation': {
+                    'value': CONFERENCE_ID + '/-/Blind_Submission',
+                     'required': True,
+                     'description': 'Invitation to get the configuration note',
+                     'order': 8
+                 },
+                'metadata_invitation': {
+                    'value': METADATA_INV_ID,
+                    'required': True,
+                    'description': 'Invitation to get the configuration note',
+                    'order': 9
+                },
+                'assignment_invitation': {
+                    'value': ASSIGNMENT_INV_ID,
+                    'required': True,
+                    'description': 'Invitation to get the configuration note',
+                    'order': 10
+                },
                 'match_group': {
-                    "value-radio": [AREA_CHAIRS_ID],
-                    "required": True,
-                    "description": "Invitation to get the configuration note",
-                    "order": 11
+                    'value-radio': [AREA_CHAIRS_ID],
+                    'required': True,
+                    'description': 'Invitation to get the configuration note',
+                    'order': 11
                 },
-                "scores_names": {
-                    "values-dropdown": ['bid'],
-                    "required": True,
-                    "description": "List of scores names",
-                    "order": 12
+                'scores_names': {
+                    'values-dropdown': ['bid'],
+                    'required': True,
+                    'description': 'List of scores names',
+                    'order': 12
                 },
-                "scores_weights": {
-                    "values-regex": "\\d*\\.?\\d*", # decimal number allowed
-                    "required": True,
-                    "description": "Comma separated values of scores weights, should follow the same order than scores_names",
-                    "order": 13
+                'scores_weights': {
+                    'values-regex': '\\d*\\.?\\d*', # decimal number allowed
+                    'required': True,
+                    'description': 'Comma separated values of scores weights, should follow the same order than scores_names',
+                    'order': 13
                 },
-                "constraints": {
-                    "value-dict": {}, # Add some json validation schema
-                    "required": False,
-                    "description": "Manually entered user/papers constraints",
-                    "order": 14
+                'constraints': {
+                    'value-dict': {}, # Add some json validation schema
+                    'required': False,
+                    'description': 'Manually entered user/papers constraints',
+                    'order': 14
                 },
-                "custom_loads": {
-                    "value-dict": {},
-                    "required": False,
-                    "description": "Manually entered custom user maximun loads",
-                    "order": 15
+                'custom_loads': {
+                    'value-dict': {},
+                    'required': False,
+                    'description': 'Manually entered custom user maximun loads',
+                    'order': 15
                 },
-                "status": {
-                    "value-dropdown": ['Initialized', 'Running', 'Error', 'No Solution', 'Complete', 'Deployed']
+                'status': {
+                    'value-dropdown': ['Initialized', 'Running', 'Error', 'No Solution', 'Complete', 'Deployed']
                 }
             }
         }
@@ -331,8 +332,8 @@ if __name__ == '__main__':
     assignment_inv = client.post_invitation(assignment_inv)
 
     # We need to use Blind_Submissions in this conference.
-    submissions = list(openreview.tools.iterget_notes(client,
-                                                      invitation=CONFERENCE_ID + "/-/Blind_Submission", details='original,tags'))
+    submissions = list(openreview.tools.iterget_notes(
+        client, invitation=CONFERENCE_ID + '/-/Blind_Submission', details='original,tags'))
 
     scores_by_reviewer_by_paper = {note.forum: defaultdict(dict) for note in submissions}
 
