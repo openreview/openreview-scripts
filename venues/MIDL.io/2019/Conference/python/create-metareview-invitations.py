@@ -42,8 +42,8 @@ for paper in iterator:
     metareview_reply = {
         'forum': paper.id,
         'replyto': paper.id,
-        'writers': {'values-regex': paperGroup + '/Area_Chairs'},
-        'signatures': {'values-regex': paperGroup + '/Area_Chairs'},
+        'writers': {'values-regex': paperGroup + '/Area_Chair[0-9]+'},
+        'signatures': {'values-regex': paperGroup + '/Area_Chair[0-9]+'},
         'readers': {
             'values': [conference.get_id(), conference.get_program_chairs_id(), paperGroup + '/Area_Chairs'],
             'description': 'The users who will be allowed to read the above content.'
@@ -63,7 +63,7 @@ for paper in iterator:
             },
             'recommendation': {
                 'order': 3,
-                'value-dropdown': [
+                'value-radio': [
                     'Accept (Oral)',
                     'Accept (Poster)',
                     'Reject'
