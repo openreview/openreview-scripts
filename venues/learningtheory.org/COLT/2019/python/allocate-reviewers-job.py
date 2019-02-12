@@ -36,3 +36,9 @@ for r in reviewer_groups:
             use_profile=False)
 
         print('assignment', assigned_user, assigned_groups)
+
+        for g in assigned_groups:
+            if 'AnonReviewer' in g:
+                unsubmitted_group = client.get_group('learningtheory.org/COLT/2019/Conference/Paper{}/Program_Committee/Unsubmitted'.format(number))
+                print('add member', unsubmitted_group.id, g)
+                client.add_members_to_group(unsubmitted_group, g)
