@@ -25,6 +25,7 @@ request_inv = client.post_invitation(openreview.Invitation(**{
     'writers': [],
     'signatures': ['OpenReview.net/Service'],
     'invitees': ['everyone'],
+    'process': 'serviceProcess.js',
     'reply': {
         'readers': {
             'values': ['OpenReview.net']
@@ -59,7 +60,6 @@ request_inv = client.post_invitation(openreview.Invitation(**{
                 'value-regex': '[\\S\\s]{1,5000}',
                 'description': 'Please describe any other key dates that we should be aware of.'
             }
-
         }
     }
 }))
