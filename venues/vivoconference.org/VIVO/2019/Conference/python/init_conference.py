@@ -27,37 +27,23 @@ conference = config.get_conference(client)
 
 # 12/17/18 17:00 UTC
 submission_invitation = conference.open_submissions(due_date = datetime.datetime(2019, 4, 14, 17, 00), public = True, additional_fields = {
+        'ORCID': {
+            'value-regex': '.{0,500}',
+            'description': 'Author ORCID identifier',
+        },
         'html': {
-            'description': 'Provide a direct url to your artifact (link must begin with http(s)) (Optional)',
-            'order': 8,
+            'description': 'A link to more information (link must begin with http(s)) (Optional)',
             'value-regex': '(http|https):\/\/.+',
             'required':False
         }
     })
 
-submission_invitation.reply['content']['keywords']['order'] = 4
-submission_invitation.reply['content']['TL;DR']['order'] = 5
-submission_invitation.reply['content']['abstract']['order'] = 6
-submission_invitation.reply['content']['pdf']['order'] = 7
-submission_invitation.reply['content']['pdf']['required'] = False
+submission_invitation.reply['content']['ORCID']['order'] = 4
+submission_invitation.reply['content']['keywords']['order'] = 5
+submission_invitation.reply['content']['TL;DR']['order'] = 6
+submission_invitation.reply['content']['abstract']['order'] = 7
 submission_invitation.reply['content']['html']['order'] = 8
-submission_invitation.reply['content']['pdf']['description'] = ['Upload a PDF file that ends with .pdf (Optional)']
-with open('../process/submissionProcess.js','r') as f:
-    submission_invitation.process = f.read()
+
+del submission_invitation.reply['content']['pdf']
 client.post_invitation(submission_invitation)
 
-
-
-print ("Adding Program Chair group")
-pc_emails = ['muniyal@cs.umass.edu']
-conference.set_program_chairs(pc_emails)
-
-
-reviewer_emails = []
-conference.set_reviewers(reviewer_emails)
-conference.recruit_reviewers()
-reviewer_grp = client.get_group('vivoconference.org/VIVO/2019/Conference/Reviewers')
-readers = reviewer_grp.readers
-readers.append('vivoconference.org/VIVO/2019/Conference/Program_Chairs')
-reviewer_grp.readers = readers
-client.post_group(reviewer_grp)
