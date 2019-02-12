@@ -21,11 +21,6 @@ function(){
     }
   })
   .then(result => {
-    if(!(note.signatures[0].match(anonReviewerRegex))) {
-      console.log('Program Committee member submitted a review');
-    } else {
-      console.log('AnonReviewer submitted a review')
-    }
     console.log('attempting to remove from group ' + PAPER_PROGRAM_COMMITTEE + '/Unubmitted');
     return or3client.removeGroupMember(PAPER_PROGRAM_COMMITTEE + '/Unsubmitted', note.signatures[0], token);
   })
