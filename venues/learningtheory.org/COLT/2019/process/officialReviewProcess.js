@@ -5,17 +5,27 @@ function(){
   var PAPER_PROGRAM_COMMITTEE;
 
   var forumNote = or3client.or3request(or3client.notesUrl+'?id='+note.forum, {}, 'GET', token);
-
+  var anonReviewerRegex = /^.*AnonReviewer(\d+)$/;
   forumNote.then(function(result) {
     var forum = result.notes[0];
     var note_number = forum.number;
     PAPER_PROGRAM_COMMITTEE = CONFERENCE_ID + '/Paper' + note_number + '/Program_Committee';
   })
   .then(result => {
-    console.log('attempting to add to group ' + PAPER_PROGRAM_COMMITTEE + '/Submitted');
-    return or3client.addGroupMember(PAPER_PROGRAM_COMMITTEE + '/Submitted', note.signatures[0], token);
+    if(!(note.signatures[0].match(anonReviewerRegex))) {
+      console.log('Program Committee member submitted a review');
+      console.log('attempting to add to group ' + PAPER_PROGRAM_COMMITTEE + '/Submitted');
+      return or3client.addGroupMember(PAPER_PROGRAM_COMMITTEE + '/Submitted', note.signatures[0], token);
+    } else {
+      console.log('AnonReviewer submitted a review')
+    }
   })
   .then(result => {
+    if(!(note.signatures[0].match(anonReviewerRegex))) {
+      console.log('Program Committee member submitted a review');
+    } else {
+      console.log('AnonReviewer submitted a review')
+    }
     console.log('attempting to remove from group ' + PAPER_PROGRAM_COMMITTEE + '/Unubmitted');
     return or3client.removeGroupMember(PAPER_PROGRAM_COMMITTEE + '/Unsubmitted', note.signatures[0], token);
   })
