@@ -47,7 +47,7 @@ if __name__ == '__main__':
             },
             'signatures': {
                 'description': 'How your identity will be displayed with the above content.',
-                'values-regex': conference.id + '/Paper<number>/Program_Committee_Member[0-9]+'
+                'values-regex': conference.id + '/Paper<number>/Program_Committee_Member[0-9]+|' + conference.id + '/Program_Chairs'
             },
             'writers': {
                 'description': 'Users that may modify this record.',

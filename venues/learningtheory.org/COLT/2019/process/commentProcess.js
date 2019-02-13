@@ -21,6 +21,9 @@ function(){
           };
           return or3client.or3request(or3client.mailUrl, program_committee_mail, 'POST', token);
         }
+        else {
+          console.log('No members in submitted group: ', submitted_pc_grp.id);
+        }
         return Promise.resolve();
       })
     })
