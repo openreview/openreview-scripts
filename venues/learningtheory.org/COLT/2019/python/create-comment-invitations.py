@@ -19,13 +19,10 @@ if __name__ == '__main__':
     comment_template = {
         'id': conference.id + '/-/Paper<number>/Comment',
         'readers': [
-            conference.id,
             conference.get_program_chairs_id(),
             conference.id + '/Paper<number>/Program_Committee/Submitted'],
         'writers': [
-            conference.id,
-            conference.get_program_chairs_id(),
-            conference.id + '/Paper<number>/Program_Committee/Submitted'
+            conference.id
         ],
         'invitees': [
             conference.get_program_chairs_id(),
