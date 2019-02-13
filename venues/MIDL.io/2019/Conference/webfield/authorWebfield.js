@@ -40,8 +40,9 @@ var SCHEDULE_HTML = '<h4>Submission Period</h4>\
   <h4>Rebuttal Period</h4>\
   <p>\
     <ul>\
-      <li><strong>Rebuttal period ends on February 7, 2019</strong></li>\
-      <li>Authors can address reviewer comments via Official Reviews.</li>\
+      <li><strong>Rebuttal period ends on February 10, 2019</strong></li>\
+      <li>Authors may revise their paper, but revision history will be available to reviewers.</li>\
+      <li>Area chairs and reviewers reserve the right to ignore changes which are significant from the original scope of the paper.</li>\
     </ul>\
   </p>\
   <br>'

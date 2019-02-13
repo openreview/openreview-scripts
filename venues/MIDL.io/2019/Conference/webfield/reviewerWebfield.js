@@ -1,4 +1,3 @@
-
 // Assumes the following pattern for meta reviews and official reviews:
 // CONFERENCE + '/-/Paper' + number + '/Meta_Review'
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
@@ -16,12 +15,33 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
         <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
       </ul>\
     </p>\
-  <br>'
+  <h4>Bidding Phase</h4>\
+  <p>\
+    <ul>\
+      <li>Provide your reviewing preferences by bidding on papers using the Bidding \
+      Interface.</li>\
+      <li>Bidding is closed.</li>\
+    </ul>\
+  </p>\
+  <h4>Review Phase</h4>\
+  <p><em>8 - 28 January 2019</em>\
+    <ul>\
+      <li>Submit reviews.</li>\
+      <li>See Reviewer Tasks for your assigned papers.</li>\
+    </ul>\
+  </p>\
+  <h4>Rebuttal Period</h4>\
+  <p><em>28 January - 10 February 2019</em>\
+  </p>\
+    <h4>Decision Phase</h4>\
+  <p><em>11 February - 20 February 2019</em>\
+  </p>\
+  ';
 
 var CONFERENCE = 'MIDL.io/2019/Conference';
 
 
-var BLIND_SUBMISSION_ID = CONFERENCE + '/-/Full_Submission';
+var FULL_SUBMISSION_ID = CONFERENCE + '/-/Full_Submission';
 
 var OFFICIAL_REVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Official_Review';
 var METAREVIEW_INVITATION = CONFERENCE + '/-/Paper.*/Meta_Review';
@@ -42,14 +62,14 @@ var getPaperNumbersfromGroups = function(groups) {
   );
 };
 
-var getBlindedNotes = function(noteNumbers) {
+var getFullNotes = function(noteNumbers) {
   if (!noteNumbers.length) {
     return $.Deferred().resolve([]);
   }
 
   var noteNumbersStr = noteNumbers.join(',');
 
-  return $.getJSON('notes', { invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true })
+  return $.getJSON('notes', { invitation: FULL_SUBMISSION_ID, number: noteNumbersStr, noDetails: true })
     .then(function(result) {
       return result.notes;
     });
@@ -202,6 +222,7 @@ var displayHeader = function(headerP) {
     );
 
     var loadingMessage = '<p class="empty-message">Loading...</p>';
+    //var noPapersMessage = '<p class="no-papers-message">You have no assigned papers. Please check again after the paper assignment process. </p>';
     var tabsData = {
       sections: [
         {
@@ -230,9 +251,9 @@ var displayHeader = function(headerP) {
   });
 };
 
-var displayStatusTable = function(profiles, notes, completedRatings, officialReviews, reviewerIds, container, options) {
+var displayStatusTable = function(profiles, fullNotes, completedRatings, officialReviews, reviewerIds, container, options) {
   if (Object.keys(reviewerIds).length){
-    var rowData = _.map(notes, function(note) {
+    var rowData = _.map(fullNotes, function(note) {
       var revIds = reviewerIds[note.number];
       for (var revNumber in revIds) {
         var profile = findProfile(profiles, revIds[revNumber]);
@@ -341,7 +362,7 @@ controller.addHandler('reviewers', {
       .then(function(result) {
         var noteNumbers = getPaperNumbersfromGroups(result.groups);
         return $.when(
-          getBlindedNotes(noteNumbers),
+          getFullNotes(noteNumbers),
           getReviewRatings(noteNumbers),
           getOfficialReviews(noteNumbers),
           getReviewerGroups(noteNumbers),
@@ -366,7 +387,7 @@ controller.addHandler('reviewers', {
           headerLoaded
         );
       })
-      .then(function(blindedNotes, reviewRatings, officialReviews, noteToReviewerIds, invitations, tagInvitations, loaded) {
+      .then(function(fullNotes, reviewRatings, officialReviews, noteToReviewerIds, invitations, tagInvitations, loaded) {
         var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
           return result.concat(_.values(idsObj));
         }, []));
@@ -375,7 +396,7 @@ controller.addHandler('reviewers', {
         .then(function(profiles) {
           fetchedData = {
             profiles: profiles,
-            blindedNotes: blindedNotes,
+            fullNotes: fullNotes,
             reviewRatings: reviewRatings,
             officialReviews: officialReviews,
             noteToReviewerIds: noteToReviewerIds,
@@ -395,7 +416,7 @@ controller.addHandler('reviewers', {
 var renderTable = function() {
   displayStatusTable(
     fetchedData.profiles,
-    fetchedData.blindedNotes,
+    fetchedData.fullNotes,
     fetchedData.reviewRatings,
     fetchedData.officialReviews,
     _.cloneDeep(fetchedData.noteToReviewerIds), // Need to clone this dictionary because some values are missing after the first refresh
