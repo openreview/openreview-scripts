@@ -348,7 +348,7 @@ var renderHeader = function() {
 };
 
 var renderStatusTable = function(individualGroupIds, profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
-  var rows = _.map(notes, function(note, index) {
+  var rows = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number] || Object.create(null);
     for (var revNumber in revIds) {
       var uId = revIds[revNumber];
@@ -358,7 +358,8 @@ var renderStatusTable = function(individualGroupIds, profiles, notes, completedR
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
     var noteCompletedReviews = completedReviews[note.number] || Object.create(null);
 
-    return buildTableRow(individualGroupIds[index], note, revIds, noteCompletedReviews, metaReview);
+    var individualGroupId = _.find(individualGroupIds, function(id) { return id.indexOf('/Paper' + note.number + '/') !== -1;});
+    return buildTableRow(individualGroupId, note, revIds, noteCompletedReviews, metaReview);
   });
 
   // Sort form handler
