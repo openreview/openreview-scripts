@@ -13,7 +13,7 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Deep Reinforcement Learning Meets Structured Prediction',
     'subtitle': 'ICLR 2019 Workshop',
-    'deadline': 'Submission Deadline: 5 March 2019 11:59pm GMT',
+    'deadline': 'Submission Deadline: 15 March 2019 11:59pm GMT',
     'date': '6 May 2019',
     'website': 'https://sites.google.com/view/iclr2019-drlstructpred',
     'location': 'New Orleans, Louisiana, United States'
