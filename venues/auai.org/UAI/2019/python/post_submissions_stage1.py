@@ -17,36 +17,13 @@ if __name__ == '__main__':
     conference = config.get_conference(client)
 
     conference.close_submissions()
-    conference.set_authors()
 
-    #Create revision invitations
-    submissions = conference.get_submissions()
+    conference.open_revise_submissions(name = 'Revision', due_date = datetime.datetime(2019, 3, 9, 11, 59), public = False, additional_fields = {
+        'pdf': {
+            'description': 'Upload a PDF file that ends with .pdf',
+            'required': True,
+            'value-regex': 'upload',
+            'order': 99
+        }
+    }, remove_fields = ['title', 'pdf'])
 
-    for s in submissions:
-        client.post_invitation(openreview.Invitation(
-            id = conference.get_id() + '/-/Paper' + str(s.number) + '/Revision',
-            duedate = openreview.tools.datetime_millis(datetime.datetime(2019, 3, 9, 11, 59)),
-            readers = ['everyone'],
-            writers = [conference.get_id()],
-            signatures = [conference.get_id()],
-            invitees = [conference.get_authors_id(s.number)],
-            reply = {
-                'forum': s.id,
-                'referent': s.id,
-                'readers': {
-                    'values-copied': [conference.get_id(), '{content.authorids}', '{signatures}'],
-                },
-                'writers': {
-                    'values-copied': [conference.get_id(), '{content.authorids}', '{signatures}'],
-                },
-                'signatures': {
-                    'values-regex': '~.*',
-                },
-                'content': {
-                    'pdf': {
-                        'value-regex': 'upload',
-                        'required': True
-                    }
-                }
-            }
-        ))
