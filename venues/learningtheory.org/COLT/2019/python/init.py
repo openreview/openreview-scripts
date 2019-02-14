@@ -115,7 +115,7 @@ if __name__ == '__main__':
         client.post_group(program_chair_group)
 
     area_chairs_group = conference.set_area_chairs(emails=[])
-    with open(os.path.abspath('../webfield/programCommitteeWebfield_init.js')) as f:
+    with open(os.path.abspath('../webfield/programCommitteeWebfield_bidding-stage.js')) as f:
         area_chairs_group.web = f.read()
         area_chairs_group.signatories.append(area_chairs_group.id)
         client.post_group(area_chairs_group)
