@@ -16,7 +16,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 conference = 'learningtheory.org/COLT/2019/Conference'
 
 def run(args):
-    new_official_reviews = list(openreview.tools.iterget_notes(client, invitation = conference+'/-/Paper.*/Official_Review', mintcdate = args.tcdate))
+    new_official_reviews = list(openreview.tools.iterget_notes(client, invitation = conference+'/-/Paper[0-9]*/Official_Review', mintcdate = args.tcdate))
     
     for review in new_official_reviews:
         if 'AnonReviewer' in review.signatures[0]:
@@ -34,10 +34,11 @@ def run(args):
             submitted_pc_anon_groups = []
             for pc in submitted_pc_members:
                 grp = client.get_groups(
-                    regex = conference + '/Paper' + paper_number +'/Program_Committee_Member[0-9]*',
+                    regex = conference + '/Paper' + paper_number +'/Program_Committee_Member[0-9]*$',
                     member = pc)
                 if len(grp):
-                    submitted_pc_anon_groups.append(grp[0].id)
+                    if grp[0].id not in submitted_pc_anon_groups:
+                        submitted_pc_anon_groups.append(grp[0].id)
             
             if (len(submitted_pc_anon_groups)):
                 pc_submitted_group = client.get_group(id = conference + '/Paper' + paper_number + '/Program_Committee/Submitted')
@@ -47,6 +48,18 @@ def run(args):
                 client.add_members_to_group(pc_submitted_group, submitted_pc_anon_groups)
                 # Removing members from group: submitted_pc_anon_groups
                 client.remove_members_from_group(pc_unsubmitted_group, submitted_pc_anon_groups)
+            
+            # Modifying the sub-reviewer's review to be editable by the inviting PC member
+            review_copy =  openreview.Note(
+                invitation = review.invitation,
+                forum = review.forum,
+                signatures = submitted_pc_anon_groups,
+                writers = submitted_pc_anon_groups,
+                readers = review.readers,
+                nonreaders = review.nonreaders,
+                content = review.content
+            )
+            posted_review_copy = client.post_note(review_copy)
 
 def main():
     run(args)
