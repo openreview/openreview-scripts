@@ -15,10 +15,10 @@ var OFFICIAL_REVIEW_INVITATION = WILDCARD_INVITATION + '/Official_Review';
 var METAREVIEW_INVITATION = WILDCARD_INVITATION + '/Meta_Review';
 
 var ANONREVIEWER_WILDCARD = CONFERENCE_ID + '/Paper.*/AnonReviewer.*';
-var AREACHAIR_WILDCARD = CONFERENCE_ID + '/Paper.*/Area_Chairs';
+var AREACHAIR_WILDCARD = CONFERENCE_ID + '/Paper.*/Program_Committee_Member.*';
 
 var ANONREVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Area_Chair/;
+var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)$/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for COLT 2019 Program Chairs. It will be regularly updated as the conference \
@@ -64,7 +64,22 @@ var getOfficialReviews = function(noteNumbers) {
           confidenceMatch = n.content.confidence.match(ratingExp);
           n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
 
-          noteMap[num][index] = n;
+          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
+        }
+      }
+      var matches = n.signatures[0].match(AREACHAIR_REGEX);
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        index = parseInt(matches[2], 10);
+
+        if (num in noteMap) {
+          // Need to parse rating and confidence strings into ints
+          ratingMatch = n.content.rating.match(ratingExp);
+          n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+          confidenceMatch = n.content.confidence.match(ratingExp);
+          n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+
+          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
         }
       }
     });
@@ -77,13 +92,13 @@ var getReviewerGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
   var reviewerMap = {};
 
-  return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
+  return Webfield.getAll('/groups', { id: 'learningtheory.org/COLT/2019/Conference/Paper.*' })
     .then(function(groups) {
       var re = ANONREVIEWER_REGEX;
 
       _.forEach(groups, function(g) {
         var matches = g.id.match(re);
-        var num, index;
+        var num, index, reviewer;
         if (matches) {
           num = parseInt(matches[1], 10);
           index = parseInt(matches[2], 10);
@@ -91,16 +106,28 @@ var getReviewerGroups = function(noteNumbers) {
           if (g.members.length) {
             var reviewer = g.members[0];
             if ((num in noteMap)) {
-              noteMap[num][index] = reviewer;
+              noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = reviewer;
             }
 
-            if (!(reviewer in reviewerMap)) {
-              reviewerMap[reviewer] = [];
-            }
-
-            reviewerMap[reviewer].push(num);
           }
 
+        }
+        var matches = g.id.match(AREACHAIR_REGEX);
+        var num, index;
+        if (matches) {
+          num = parseInt(matches[1], 10);
+          index = parseInt(matches[2], 10);
+
+          if ((num in noteMap) && g.members.length) {
+            reviewer = g.members[0];
+            noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = reviewer;
+          }
+
+          if (!(reviewer in reviewerMap)) {
+            reviewerMap[reviewer] = [];
+          }
+
+          reviewerMap[reviewer].push(num);
         }
       });
       return {
@@ -209,13 +236,7 @@ var displayHeader = function() {
       active: true
     },
     {
-      heading: 'Area Chair Status',
-      id: 'areachair-status',
-      content: loadingMessage,
-      extraClasses: 'horizontal-scroll'
-    },
-    {
-      heading: 'Reviewer Status',
+      heading: 'Program Committee Status',
       id: 'reviewer-status',
       content: loadingMessage,
       extraClasses: 'horizontal-scroll'
@@ -305,11 +326,11 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
       var reviewHtml = Handlebars.templates.noteReviewers(d.reviewProgressData);
       var areachairHtml = Handlebars.templates.noteAreaChairs(d.areachairProgressData);
-      return [number, summaryHtml, reviewHtml, areachairHtml];
+      return [number, summaryHtml, reviewHtml];
     });
 
     var tableHTML = Handlebars.templates['components/table']({
-      headings: ['#', 'Paper Summary', 'Review Progress', 'Status'],
+      headings: ['#', 'Paper Summary', 'Review Progress'],
       rows: rowData,
       extraClasses: 'console-table paper-table'
     });
@@ -752,7 +773,7 @@ controller.addHandler('areachairs', {
       return getUserProfiles(uniqueIds)
       .then(function(profiles) {
         displayPaperStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byNotes, '#paper-status');
-        displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
+        //displaySPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, areaChairGroups.byAreaChairs, '#areachair-status');
         displayPCStatusTable(profiles, blindedNotes, officialReviews, metaReviews, reviewerGroups.byNotes, reviewerGroups.byReviewers, '#reviewer-status');
 
         Webfield.ui.done();

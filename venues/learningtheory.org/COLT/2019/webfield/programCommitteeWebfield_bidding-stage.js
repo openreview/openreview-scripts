@@ -18,9 +18,9 @@ var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/.*Reviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Program_Committee.*';
 
 var ANONREVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
-var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)/;
+var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)$/;
 var REVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers$/;
-var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Invited$/;
+var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)\/Reviewers_Invited$/;
 var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Declined$/;
 
 var INSTRUCTIONS = '<p class="dark">\
@@ -32,10 +32,28 @@ var INSTRUCTIONS = '<p class="dark">\
   <strong>Instructions for Managing Subreviewers:</strong>\
   <ul>\
   <li>Enter the email address of a subreviewer that you would like to invite to review a paper.</li>\
-  <li>Click the "Invite" button to send the invitation email to that subreviewer.</li>\
+  <li>Click the "Invite" button to send an invitation email to that subreviewer. (The content of this message is given below.)\
+  <ul>\
+  <li><em>Email subject</em>: COLT 2019: Invitation to review submission, titled: [Paper-Title]</li>\
+  <li><em>Email text</em>:<br/>\
+  I hope this email finds you well.<br/>\
+  As a Program Committee member of COLT 2019, I’d like to ask for your expert review of a submission, titled: [Paper-Title].<br/>\
+  To find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the email address at which you received this message; once you have logged-in, please follow this link: [Paper-URL]<br/>\
+  (Signing up for an account is a fairly lightweight process.  If you already have an account, you can add this email address to your account by editing your profile.)<br/>\
+  I would need the review no later than 11pm EDT on March 20th, 2019.<br/>\
+  To accept this request, please follow this link: [Accept-URL]<br/>\
+  To decline, follow this link: [Reject-URL]<br/>\
+  I really hope you can help out with this!<br/>\
+  Many thanks,<br/>\
+  [PC-member-Name]\
+  </li>\
+  </ul>\
   <li>Once the reviewer has been invited, their email address and response status will appear below the invitation box.</li>\
+  <li>You will see the email addresses and response statuses for subreviewers invited by all PC members for the papers you have been assigned.</li>\
+  <li>Unfortunately, OpenReview does not allow for a custom invitation message.  So, please also feel free to email your candidate subreviewer directly with a more personal request.</li>\
   <li>It may take some time for the Review Progress column to update with the correct total number of reviewers (this is normal).</li>\
-  <li>This subreviewer management interface is a prototype system. If you have any issues or questions, please contact info@openreview.net as soon as possible.</li>\
+  <li>This subreviewer management interface is a prototype system.  If you have any issues or questions, please contact info@openreview.net as soon as possible.</li>\
+  <li>Subreviewers will not be able to see the authors’ identities of a paper they have been invited to review.</li>\
   </ul>\
   </p>';
 
@@ -48,14 +66,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>\
   <h4>Bidding Phase</h4>\
   <p>\
-    <em><strong>Please note that bidding is now open. You are requested to do the\
-     following by 5:00 PM EDT, February 6, 2019</strong></em>:\
-    <ul>\
-      <li>Provide your reviewing preferences by bidding on papers using the Bidding \
-      Interface.</li>\
-      <li><strong><a href="/invitation?id=' + CONFERENCE + '/-/Bid' + '">Go to \
-      Bidding Interface</a></strong></li>\
-    </ul>\
+    <em><strong>Please note that bidding is now closed.</strong></em>\
   </p>';
 
 
@@ -68,7 +79,7 @@ var main = function() {
 
   renderHeader();
 
-  Webfield.get('/groups', {
+  Webfield.getAll('/groups', {
     member: user.id, regex: CONFERENCE + '/Paper.*/Program_Committee.*'
   })
   .then(loadData)
@@ -82,10 +93,16 @@ var main = function() {
 
 // Util functions
 var getPaperNumbersfromGroups = function(groups) {
-  return _.map(
-    _.filter(groups, function(g) { return AREACHAIR_REGEX.test(g.id); }),
-    function(fg) { return parseInt(fg.id.match(AREACHAIR_REGEX)[1], 10); }
+
+  var groupIds = _.map(_.filter(groups, function(g) { return AREACHAIR_REGEX.test(g.id); }), function(group) {
+    return group.id;
+  });
+
+  var paperNumbers = _.map(groupIds,
+    function(fg) { return parseInt(fg.match(AREACHAIR_REGEX)[1], 10); }
   );
+
+  return [groupIds, paperNumbers];
 };
 
 var buildNoteMap = function(noteNumbers) {
@@ -103,12 +120,15 @@ var buildNoteMap = function(noteNumbers) {
 
 
 // Ajax functions
-var loadData = function(result) {
-  var noteNumbers = getPaperNumbersfromGroups(result.groups);
+var loadData = function(groups) {
+  var result = getPaperNumbersfromGroups(groups);
+  var noteNumbers = result[1];
+  var individualGroupIds = result[0];
   var blindedNotesP;
   var metaReviewsP;
 
   if (noteNumbers.length) {
+
     var noteNumbersStr = noteNumbers.join(',');
 
     blindedNotesP = Webfield.getAll('/notes', {
@@ -131,8 +151,9 @@ var loadData = function(result) {
   var tagInvitationsP = Webfield.api.getTagInvitations(BLIND_SUBMISSION_ID);
 
   return $.when(
+    individualGroupIds,
     blindedNotesP,
-    getOfficialReviews(noteNumbers),
+    getOfficialReviews(noteNumbers, individualGroupIds),
     metaReviewsP,
     getReviewerGroups(noteNumbers),
     invitationsP,
@@ -140,7 +161,7 @@ var loadData = function(result) {
   );
 };
 
-var getOfficialReviews = function(noteNumbers) {
+var getOfficialReviews = function(noteNumbers, individualGroupIds) {
   if (!noteNumbers.length) {
     return $.Deferred().resolve({});
   }
@@ -167,7 +188,26 @@ var getOfficialReviews = function(noteNumbers) {
           confidenceMatch = n.content.confidence.match(ratingExp);
           n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
 
-          noteMap[num][index] = n;
+          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
+        }
+      }
+      var matches = n.signatures[0].match(AREACHAIR_REGEX);
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        index = parseInt(matches[2], 10);
+
+        if (num in noteMap) {
+
+          if (_.includes(individualGroupIds, n.signatures[0])) {
+          // Need to parse rating and confidence strings into ints
+          ratingMatch = n.content.rating.match(ratingExp);
+          n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+          confidenceMatch = n.content.confidence.match(ratingExp);
+          n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+
+          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
+
+          }
         }
       }
     });
@@ -183,7 +223,7 @@ var getReviewerGroups = function(noteNumbers) {
 
   var noteMap = buildNoteMap(noteNumbers);
 
-  return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
+  return Webfield.getAll('/groups', { id: 'learningtheory.org/COLT/2019/Conference/Paper.*' })
   .then(function(groups) {
     _.forEach(groups, function(g) {
       var matches = g.id.match(ANONREVIEWER_REGEX);
@@ -193,7 +233,18 @@ var getReviewerGroups = function(noteNumbers) {
         index = parseInt(matches[2], 10);
 
         if ((num in noteMap) && g.members.length) {
-          noteMap[num][index] = g.members[0];
+          noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = g.members[0];
+        }
+      }
+
+      var matches = g.id.match(AREACHAIR_REGEX);
+      var num, index;
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        index = parseInt(matches[2], 10);
+
+        if ((num in noteMap) && g.members.length && g.members[0] == user.profile.id) {
+          noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = g.members[0];
         }
       }
 
@@ -222,11 +273,23 @@ var getReviewerGroups = function(noteNumbers) {
       }
 
     });
+    //Filter out subreviewers that weren't invited by the user
+    _.forEach(_.keys(noteMap), function(num) {
+      var paperMap = noteMap[num];
+      _.forEach(_.keys(paperMap), function(user) {
+        var groupId = paperMap[user];
+        if (user.startsWith('r') && !_.includes(invitedMap[num].invited, groupId)) {
+          invitedMap[num].accepted = _.difference(invitedMap[num].accepted, [groupId]);
+          invitedMap[num].declined = _.difference(invitedMap[num].declined, [groupId]);
+          _.unset(noteMap[num], user);
+        }
+      })
+    })
     return noteMap;
   });
 };
 
-var formatData = function(blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations) {
+var formatData = function(individualGroupIds, blindedNotes, officialReviews, metaReviews, noteToReviewerIds, invitations, tagInvitations) {
   var uniqueIds = _.uniq(_.reduce(noteToReviewerIds, function(result, idsObj, noteNum) {
     return result.concat(_.values(idsObj));
   }, []));
@@ -234,6 +297,7 @@ var formatData = function(blindedNotes, officialReviews, metaReviews, noteToRevi
   return getUserProfiles(uniqueIds)
   .then(function(profiles) {
     return {
+      individualGroupIds: individualGroupIds,
       profiles: profiles,
       blindedNotes: blindedNotes,
       officialReviews: officialReviews,
@@ -248,17 +312,11 @@ var formatData = function(blindedNotes, officialReviews, metaReviews, noteToRevi
 var getUserProfiles = function(userIds) {
   var profileMap = {};
 
-  return Webfield.post('/user/profiles', { ids: userIds })
-  .then(function(result) {
-    _.forEach(result.profiles, function(profile) {
-      var name = _.find(profile.content.names, ['preferred', true]) || _.first(profile.content.names);
-      profile.name = _.isEmpty(name) ? view.prettyId(profile.id) : name.first + ' ' + name.last;
-      profile.email = profile.content.preferredEmail || profile.content.emails[0];
-      profileMap[profile.id] = profile;
-    });
-
-    return profileMap;
-  });
+  profileMap[user.profile.id] = {
+    name: user.profile.first + ' ' + user.profile.last,
+    email: user.profile.emails[0]
+  };
+  return $.Deferred().resolve(profileMap);
 };
 
 
@@ -289,7 +347,7 @@ var renderHeader = function() {
   ]);
 };
 
-var renderStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
+var renderStatusTable = function(individualGroupIds, profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
   var rows = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number] || Object.create(null);
     for (var revNumber in revIds) {
@@ -300,7 +358,8 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     var metaReview = _.find(metaReviews, ['invitation', CONFERENCE + '/-/Paper' + note.number + '/Meta_Review']);
     var noteCompletedReviews = completedReviews[note.number] || Object.create(null);
 
-    return buildTableRow(note, revIds, noteCompletedReviews, metaReview);
+    var individualGroupId = _.find(individualGroupIds, function(id) { return id.indexOf('/Paper' + note.number + '/') !== -1;});
+    return buildTableRow(individualGroupId, note, revIds, noteCompletedReviews, metaReview);
   });
 
   // Sort form handler
@@ -517,7 +576,8 @@ var renderTableRows = function(rows, container) {
     },
     Handlebars.templates.noteSummary,
     function(data) {
-      return '<div class="reviewer-invite"><input data-note-id="' + data.noteId + '" data-note-number="' + data.noteNumber +
+      return '<div class="reviewer-invite"><input data-individual-group-id="' + data.individualGroupId +
+      '" data-note-id="' + data.noteId + '" data-note-number="' + data.noteNumber +
       '"></input><button class="btn invite">Invite</button></div>' +
       renderInvitedReviewers(data);
     },
@@ -561,7 +621,7 @@ var renderTasks = function(invitations, tagInvitations) {
 
   // Filter out non-areachair tasks
   var filterFunc = function(inv) {
-    return _.some(inv.invitees, function(invitee) { return invitee.indexOf('Area_Chair') !== -1; });
+    return _.some(inv.invitees, function(invitee) { return invitee.indexOf('Program_Committee') !== -1; });
   };
   var areachairInvitations = _.filter(invitations, filterFunc);
   var areachairTagInvitations = _.filter(tagInvitations, filterFunc);
@@ -574,6 +634,7 @@ var renderTableAndTasks = function(fetchedData) {
   renderTasks(fetchedData.invitations, fetchedData.tagInvitations);
 
   renderStatusTable(
+    fetchedData.individualGroupIds,
     fetchedData.profiles,
     fetchedData.blindedNotes,
     fetchedData.officialReviews,
@@ -591,7 +652,7 @@ var renderTableAndTasks = function(fetchedData) {
   Webfield.ui.done();
 }
 
-var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
+var buildTableRow = function(individualGroupId, note, reviewerIds, completedReviews, metaReview) {
   var cellCheck = { selected: false, noteId: note.id };
 
   // Paper number cell
@@ -606,6 +667,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   var combinedObj = {};
   var ratings = [];
   var confidences = [];
+  var completedReviewCount = 0;
   for (var reviewerNum in reviewerIds) {
     var reviewer = reviewerIds[reviewerNum];
     if (reviewerNum in completedReviews) {
@@ -623,6 +685,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
       };
       ratings.push(reviewObj.rating);
       confidences.push(reviewObj.confidence);
+      completedReviewCount += 1;
     } else {
       var forumUrl = 'https://openreview.net/forum?' + $.param({
         id: note.forum,
@@ -643,12 +706,13 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   var cell2 = {
     noteId: note.id,
     noteNumber: note.number,
+    individualGroupId: individualGroupId,
     invited: invitedMap[note.number]
   }
 
   var cell3 = {
     noteId: note.id,
-    numSubmittedReviews: Object.keys(completedReviews).length,
+    numSubmittedReviews: completedReviewCount,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
     sendReminder: true
@@ -750,26 +814,36 @@ var registerEventHandlers = function(blindedNotes) {
     $parent = $(this).parent();
     noteId = $parent.find('input').data('noteId');
     noteNumber = $parent.find('input').data('noteNumber');
-    reviewer = $parent.find('input').val();
+    invididualGroupId = $parent.find('input').data('individualGroupId');
+    reviewer = $parent.find('input').val().trim();
     noteObj = _.find(blindedNotes, {'id' : noteId});
     noteName = noteObj.content['title'];
 
-    inviteReviewer(noteId, noteNumber, noteName, reviewer, function() {
-      $parent.find('input').val('');
-      invitedMap[noteNumber].invited.push(reviewer);
-      var data = {
-        noteId: noteId,
-        noteNumber: noteNumber,
-        noteName: noteName,
-        invited: {
-          accepted: invitedMap[noteNumber].accepted,
-          invited: invitedMap[noteNumber].invited,
-          declined: invitedMap[noteNumber].declined
+    if (_.includes(invitedMap[noteNumber].invited, reviewer)) {
+      promptError(reviewer + ' was already invited');
+      return false;
+    }
+
+    if (reviewer) {
+      reviewer = reviewer.toLowerCase();
+      inviteReviewer(invididualGroupId, noteId, noteNumber, noteName, reviewer, function() {
+        $parent.find('input').val('');
+        invitedMap[noteNumber].invited.push(reviewer);
+        var data = {
+          noteId: noteId,
+          noteNumber: noteNumber,
+          noteName: noteName,
+          invited: {
+            accepted: invitedMap[noteNumber].accepted,
+            invited: invitedMap[noteNumber].invited,
+            declined: invitedMap[noteNumber].declined
+          }
         }
-      }
-      $('#' + noteId + '-invited-reviewers').html(renderInvitedReviewers(data));
-      console.log('Done');
-    });
+        $('#' + noteId + '-invited-reviewers').html(renderInvitedReviewers(data));
+        console.log('Done');
+      });
+    }
+
     return false;
   });
 };
@@ -790,7 +864,7 @@ var postReviewerEmails = function(postData) {
     });
 };
 
-var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
+var inviteReviewer = function(invididualGroupId, noteId, noteNumber, noteName, reviewer, done) {
 
   var postData = {
     id: 'learningtheory.org/COLT/2019/Conference/Program_Committee/-/Paper' + noteNumber + '/Recruit_Reviewers',
@@ -807,23 +881,26 @@ var inviteReviewer = function(noteId, noteNumber, noteName, reviewer, done) {
   .then(function(response) {
     console.log('Invitation posted');
     var key = CryptoJS.HmacSHA256(reviewer, '1234');
-    var acceptUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key +'&response=Yes';
-    var declineUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key + '&response=No';
+    var acceptUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key +'&response=Yes' + '&invitedBy=' + user.profile.id;
+    var declineUrl = 'https://openreview.net/invitation?id=' + response.id + '&email=' + reviewer + '&key=' + key + '&response=No' + '&invitedBy=' + user.profile.id;
     var email = {
       groups: [reviewer],
-      subject: SHORT_PHRASE + ': Invitation to review paper title: ' + noteName,
-      message: 'You have been invited to ' + SHORT_PHRASE + ' to review a paper. \n\nPaper title: ' + noteName + ' \n\n\n\nTo accept please follow this link: ' + acceptUrl + '\n\nTo reject follow this link: ' + declineUrl + '\n\nTo find more details about the paper please sign up on openreview.net using the address you received this email at and then follow this link: https://openreview.net/forum?id=' +  noteId
+      subject: SHORT_PHRASE + ': Invitation to review submission, titled : ' + noteName,
+      message: 'I hope this email finds you well. \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to ask for your expert review of a submission, titled: ' +
+      noteName + ' \n\nTo find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + noteId +
+      '\n\n(Signing up for an account is a fairly lightweight process. If you already have an OpenReview account, you can add this e-mail address to your account by editing your profile.) \n\nI would need the review no later than 11pm EDT on March 20th, 2019. \n\nTo accept this request, please follow this link: ' + acceptUrl + '\n\nTo decline, follow this link: ' + declineUrl + '\n\nI really hope you can help us with this! \n\nMany thanks,\n' + view.prettyId(user.profile.id)
     }
     return Webfield.post('/messages', email)
   })
   .then(function(response) {
     console.log('Email sent');
     return Webfield.put('/groups/members', {
-      id: 'learningtheory.org/COLT/2019/Conference/Paper' + noteNumber + '/Reviewers/Invited',
+      id: invididualGroupId + '/Reviewers_Invited',
       members: [reviewer] });
   })
   .then(function(response) {
     console.log('User added to invited group');
+    promptMessage('An invitation email was sent to ' + reviewer);
     done();
   });
 }

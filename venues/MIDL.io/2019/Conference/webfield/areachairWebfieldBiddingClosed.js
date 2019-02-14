@@ -46,10 +46,10 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p><em>4 - 28 January 2019</em>\
   </p>\
     <h4>Rebuttal Period</h4>\
-  <p><em>28 January - 7 February 2019</em>\
+  <p><em>28 January - 10 February 2019</em>\
   </p>\
     <h4>Decision Phase</h4>\
-  <p><em>8 February - 20 February 2019</em>\
+  <p><em>11 February - 20 February 2019</em>\
     <ul>\
       <li>Submit suggested decisions.</li>\
     </ul>\
