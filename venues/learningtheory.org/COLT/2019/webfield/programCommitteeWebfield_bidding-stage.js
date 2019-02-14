@@ -899,6 +899,11 @@ var inviteReviewer = function(invididualGroupId, noteId, noteNumber, noteName, r
       members: [reviewer] });
   })
   .then(function(response) {
+    return Webfield.put('/groups/members', {
+      id: 'learningtheory.org/COLT/2019/Conference/Paper' + noteNumber + '/Reviewers/Invited',
+      members: [reviewer] });
+  })
+  .then(function(response) {
     console.log('User added to invited group');
     promptMessage('An invitation email was sent to ' + reviewer);
     done();
