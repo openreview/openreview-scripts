@@ -16,9 +16,9 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 conference = 'learningtheory.org/COLT/2019/Conference'
 
 def run(args):
-    new_official_reviews = list(openreview.tools.iterget_notes(client, invitation = conference+'/-/Paper[0-9]*/Official_Review', mintcdate = args.tcdate))
+    new_official_reviews = list(openreview.tools.iterget_notes(client, invitation = conference+'/-/Paper.*/Official_Review', mintcdate = args.tcdate))
     
-    for review in new_official_reviews:
+    for index, review in enumerate(new_official_reviews):
         if 'AnonReviewer' in review.signatures[0]:
             invited_reviewer = client.get_group(review.signatures[0]).members[0]
             paper_number = review.signatures[0].split('Paper')[1].split('/')[0]
@@ -60,6 +60,7 @@ def run(args):
                 content = review.content
             )
             posted_review_copy = client.post_note(review_copy)
+            print ('Processed ', index)
 
 def main():
     run(args)
