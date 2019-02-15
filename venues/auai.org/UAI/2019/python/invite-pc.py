@@ -48,13 +48,13 @@ if __name__ == '__main__':
 
     We really hope you will be able to accept our invitation and help us select a high quality program for UAI 2019!
 
-    Thanks in advance for your help. If you have any questions please contact us at chairs@uai2019.atlassian.net.
+    Thanks in advance for your help. If you have any questions please contact us at uai2019chairs@gmail.com.
 
     Best regards,
 
     Ryan Adams, Vibhav Gogate
     UAI 2019 Program Chairs
-    chairs@uai2019.atlassian.net
+    uai2019chairs@gmail.com
     '''
 
     for fname, email in zip (pc_name, pc_emails):
