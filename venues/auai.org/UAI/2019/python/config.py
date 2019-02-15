@@ -12,7 +12,7 @@ def get_conference(client):
     'title': 'UAI 2019',
     'subtitle': 'Conference on Uncertainty in Artificial Intelligence',
     'deadline': 'Abstract Submission Deadline: 11:59 pm Samoa Standard Time, March 4, 2019, Full Submission Deadline: 11:59 pm Samoa Standard Time, March 8, 2019',
-    'date': 'June 22 - June 26, 2019',
+    'date': 'June 22 - June 25, 2019',
     'website': 'http://auai.org/uai2019/',
     'location': 'Tel Aviv, Israel',
     'instructions': '''<p><strong>Important Information about Anonymity:</strong><br>
@@ -39,7 +39,6 @@ subject_areas = [
     "Algorithms: Exact Inference",
     "Algorithms: Graph Theory",
     "Algorithms: Heuristics",
-    "Algorithms: Lifted Inference",
     "Algorithms: MCMC methods",
     "Algorithms: Optimization",
     "Algorithms: Other",
@@ -52,6 +51,7 @@ subject_areas = [
     "Applications: Education",
     "Applications: General",
     "Applications: Medicine",
+    "Applications: Other",
     "Applications: Planning and Control",
     "Applications: Privacy and Security",
     "Applications: Robotics",
@@ -120,6 +120,7 @@ subject_areas = [
     "Representation: Fuzzy Logic",
     "Representation: Influence Diagrams",
     "Representation: Non-Probabilistic Frameworks",
-    "Representation: Probabilistic"
+    "Representation: Probabilistic",
+    "Representation: Other"
 ]
 
