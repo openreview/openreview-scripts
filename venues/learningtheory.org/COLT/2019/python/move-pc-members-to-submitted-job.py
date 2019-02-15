@@ -18,7 +18,7 @@ conference = 'learningtheory.org/COLT/2019/Conference'
 def run(args):
     new_official_reviews = list(openreview.tools.iterget_notes(client, invitation = conference+'/-/Paper.*/Official_Review', mintcdate = args.tcdate))
     
-    for index, review in enumerate(new_official_reviews):
+    for review in new_official_reviews:
         if 'AnonReviewer' in review.signatures[0]:
             invited_reviewer = client.get_group(review.signatures[0]).members[0]
             paper_number = review.signatures[0].split('Paper')[1].split('/')[0]
@@ -50,17 +50,19 @@ def run(args):
                 client.remove_members_from_group(pc_unsubmitted_group, submitted_pc_anon_groups)
             
             # Modifying the sub-reviewer's review to be editable by the inviting PC member
+            copy_review_writers = submitted_pc_anon_groups[:]
+            copy_review_writers.append(conference + '/Program_Chairs')
             review_copy =  openreview.Note(
                 invitation = review.invitation,
                 forum = review.forum,
                 signatures = submitted_pc_anon_groups,
-                writers = submitted_pc_anon_groups,
+                writers = copy_review_writers,
                 readers = review.readers,
                 nonreaders = review.nonreaders,
                 content = review.content
             )
             posted_review_copy = client.post_note(review_copy)
-            print ('Processed ', index)
+            print ('Processed the official reviewe with id: ', review.id)
 
 def main():
     run(args)
