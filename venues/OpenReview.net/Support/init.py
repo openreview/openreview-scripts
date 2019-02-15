@@ -9,14 +9,14 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-service_requests = client.post_group(openreview.Group(**{
-    'id': 'OpenReview.net/Service',
+support = client.post_group(openreview.Group(**{
+    'id': 'OpenReview.net/Support',
     'readers': ['everyone'],
-    'writers': [],
+    'writers': ['OpenReview.net/Support'],
     'signatures': ['OpenReview.net'],
-    'signatories': [],
+    'signatories': ['OpenReview.net/Support'],
     'members': [],
-    'web': './serviceRequestsWeb.js'
+    'web': './supportRequestsWeb.js'
 }))
 
 reader_options = [
@@ -145,15 +145,18 @@ request_content = {
 }
 
 request_inv = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Service/-/Request_Form',
+    'id': 'OpenReview.net/Support/-/Request_Form',
     'readers': ['everyone'],
     'writers': [],
-    'signatures': ['OpenReview.net/Service'],
+    'signatures': ['OpenReview.net/Support'],
     'invitees': ['everyone'],
-    'process': 'serviceProcess.js',
+    'process': 'supportProcess.js',
     'reply': {
         'readers': {
-            'values-copied': ['OpenReview.net', '{content["Program Chair Emails"]}']
+            'values-copied': [
+                'OpenReview.net/Support',
+                '{content["Program Chair Emails"]}'
+            ]
         },
         'writers': {
             'values-regex': '~.*',

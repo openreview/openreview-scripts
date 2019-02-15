@@ -68,7 +68,7 @@ Please contact the OpenReview support team at \
 <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns.</p>'
 
 // Constants
-var CONFERENCE = "OpenReview.net/Service";
+var CONFERENCE = "OpenReview.net/Support";
 var SUBMISSION = CONFERENCE + '/-/Request_Form';
 
 var SUBJECT_AREAS = [
@@ -98,8 +98,8 @@ function main() {
 // never changes, put it in its own function
 function renderConferenceHeader() {
   Webfield.ui.venueHeader({
-    title: "Service Requests",
-    subtitle: "Submit requests for conference or workshop management",
+    title: "Host a Venue",
+    subtitle: "Submit requests for conference or workshop hosting",
     location: "Amherst, MA",
     date: "Ongoing",
     website: "https://openreview.net",
