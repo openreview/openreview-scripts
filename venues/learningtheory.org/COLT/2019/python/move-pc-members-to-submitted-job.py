@@ -62,7 +62,7 @@ def run(args):
                 content = review.content
             )
             posted_review_copy = client.post_note(review_copy)
-            print ('Processed the official reviewe with id: ', review.id)
+            print ('Processed the official review with id: ', review.id)
 
 def main():
     run(args)
