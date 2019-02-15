@@ -21,7 +21,7 @@ def get_conference(client):
         The PDF in your submission should not contain the names of the authors. </p>
         <p><strong>Conflict of Interest:</strong><br>
         Please make sure that your current and previous affiliations listed on your OpenReview <a href=\"/profile\">profile page</a> is up-to-date to avoid conflict of interest.</p>
-        <p><strong>Questions or Concerns:</strong><br> Please contact the UAI 2019 Program chairs at <a href=\"mailto:chairs@uai2019.atlassian.net\">chairs@uai2019.atlassian.net</a>.
+        <p><strong>Questions or Concerns:</strong><br> Please contact the UAI 2019 Program chairs at <a href=\"mailto:uai2019chairs@gmail.com\">uai2019chairs@gmail.com</a>.
         <br>Please contact the OpenReview support team at <a href=\"mailto:info@openreview.net\">info@openreview.net</a> with any OpenReview related questions or concerns.
         </p>'''
     })

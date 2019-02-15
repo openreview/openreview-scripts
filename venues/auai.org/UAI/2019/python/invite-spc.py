@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     Ryan Adams, Vibhav Gogate
     UAI 2019 Program Chairs
-    chairs@uai2019.atlassian.net
+    uai2019chairs@gmail.com
     '''
 
     for fname, email in zip (spc_name, spc_emails):
