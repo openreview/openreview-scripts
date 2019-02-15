@@ -37,22 +37,6 @@ request_content = {
         'value-copied': '{content[\'Official Conference Name\']}',
         'description': 'Used for display purposes. Will be copied from the Official Conference Name'
     },
-#     'Data Sharing Agreement': {
-#         'values-checkbox': [
-#             'I agree to participate in the data annotation task',
-#             'I grant permission to OpenReview to publish data annotations',
-#             'I grant permission to OpenReview to publish anonymous paper-reviewer matching data'
-#         ],
-#         'description': 'As a condition of this free service, we ask that conference organizers agree to participate in a short (~1 hour) data annotation task \
-# to advance OpenReview\'s research objectives. \
-# This data will be used to support research  \
-# on paper-reviewer assignment optimization, natural language processing of scientific text, paper-reviewer affinity modeling, and improving the effectiveness of the peer review process, \
-# and will be made publicly available after collection.\
-# \n\n\
-# For users of the OpenReview Paper Matching System, we also ask that conference organizers grant us permission to publish data inputs to the matching system after acceptance decisions have been made. \
-# This data will be completely anonymous and will not jepoardize the anonymity of any conference participant.',
-#         'scroll': True
-#     },
     'Official Conference Name': {
         'description': 'This will appear on your conference\'s OpenReview page. Example: "Seventh International Conference on Learning Representations"',
         'value-regex': '.*',
