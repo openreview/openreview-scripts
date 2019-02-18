@@ -18,35 +18,9 @@ if __name__ == '__main__':
 
     print ('inviting reviewers now')
 
-    pc_emails = ['ssohrab@us.ibm.com',
- 'fratini.simone@gmail.com',
- 'alanlindsay100@gmail.com',
- 'amedeo.cesta@gmail.com',
- 's.parkinson@hud.ac.uk',
- 'andrea.orlandini@istc.cnr.it',
- 'dvrakas@csd.auth.gr',
- 'lee@hud.ac.uk',
- 'pat@cs.auckland.ac.nz',
- 'susana.fernandez@uc3m.es',
- 'dborrajo@ia.uc3m.es',
- 'bartak@ktiml.mff.cuni.cz',
- 'PGregory@slb.com',
- 'amanda.coles@kcl.ac.uk']
+    pc_emails = []
 
-    pc_name = ['Shirin Sohrabi',
- 'Simone Fratini',
- 'Alan Lindsay',
- 'Amedeo Cesta',
- 'Simon Parkinson',
- 'Andrea Orlandini',
- 'Dimitris Vrakas',
- 'Lee Mccluskey',
- 'Patricia Riddle',
- 'Susana Fernandez',
- 'Daniel Borrajo',
- 'Roman Barták',
- 'Peter Gregory',
- 'Amanda Coles']
+    pc_name = []
 
 
     message = ''''Dear {name},
