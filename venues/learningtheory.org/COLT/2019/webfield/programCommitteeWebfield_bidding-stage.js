@@ -41,6 +41,7 @@ var INSTRUCTIONS = '<p class="dark">\
   To find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the email address at which you received this message; once you have logged-in, please follow this link: [Paper-URL]<br/>\
   (Signing up for an account is a fairly lightweight process.  If you already have an account, you can add this email address to your account by editing your profile.)<br/>\
   I would need the review no later than 11pm EDT on March 20th, 2019.<br/>\
+  Please note that you will NOT be able to edit the review once you have submitted it, so please draft your review carefully before submitting it on openreview.net.<br/>\
   To accept this request, please follow this link: [Accept-URL]<br/>\
   To decline, follow this link: [Reject-URL]<br/>\
   I really hope you can help out with this!<br/>\
@@ -888,7 +889,7 @@ var inviteReviewer = function(invididualGroupId, noteId, noteNumber, noteName, r
       subject: SHORT_PHRASE + ': Invitation to review submission, titled : ' + noteName,
       message: 'I hope this email finds you well. \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to ask for your expert review of a submission, titled: ' +
       noteName + ' \n\nTo find more details about the paper (both the abstract and paper itself), please sign up on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + noteId +
-      '\n\n(Signing up for an account is a fairly lightweight process. If you already have an OpenReview account, you can add this e-mail address to your account by editing your profile.) \n\nI would need the review no later than 11pm EDT on March 20th, 2019. \n\nTo accept this request, please follow this link: ' + acceptUrl + '\n\nTo decline, follow this link: ' + declineUrl + '\n\nI really hope you can help us with this! \n\nMany thanks,\n' + view.prettyId(user.profile.id)
+      '\n\n(Signing up for an account is a fairly lightweight process. If you already have an OpenReview account, you can add this e-mail address to your account by editing your profile.) \n\nI would need the review no later than 11pm EDT on March 20th, 2019. \n\nPlease note that you will NOT be able to edit the review once you have submitted it, so please draft your review carefully before submitting it on openreview.net. \n\nTo accept this request, please follow this link: ' + acceptUrl + '\n\nTo decline, follow this link: ' + declineUrl + '\n\nI really hope you can help us with this! \n\nMany thanks,\n' + view.prettyId(user.profile.id)
     }
     return Webfield.post('/messages', email)
   })
