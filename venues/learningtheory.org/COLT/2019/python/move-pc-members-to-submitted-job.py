@@ -61,8 +61,13 @@ def run(args):
                 nonreaders = review.nonreaders,
                 content = review.content
             )
-            posted_review_copy = client.post_note(review_copy)
-            print ('Processed the official review with id: ', review.id)
+            client.post_note(review_copy)
+            
+            # update the review note to remove anonReviewer as a writer
+            review.writers = [conference]
+            client.post_note(review)
+
+            print ('Processed official review id: ', review.id)
 
 def main():
     run(args)
