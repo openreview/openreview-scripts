@@ -6,24 +6,25 @@ client = openreview.Client()
 conference = config.get_conference(client)
 
 stoc_review_invitation_template = {
-    'id' : 'learningtheory.org/COLT/2019/Conference/-/Paper<number>/STOC_Review',
+    'id' : conference.id + '/-/Paper<number>/STOC_Review',
     'invitees' : [
-        'learningtheory.org/COLT/2019/Conference/Program_Chairs'
+        conference.get_program_chairs_id()
     ],
     'duedate': 1553990400000,
     'signatures' : [conference.get_id()],
-    'readers' : ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
+    'readers' : [conference.get_program_chairs_id()],
     'writer' : [conference.get_id()],
     'reply' : {
         'forum': '<forum>',
         'replyto': '<forum>',
         'readers': {'values': [
             conference.id + '/Paper<number>/Authors',
-            conference.id + '/Paper<number>/Program_Committee/Submitted',
+            conference.id + '/Paper<number>/Program_Committee',
             conference.id + '/Program_Chairs']
         },
         'writers': {'values': [conference.id + '/Program_Chairs']},
         'signatures': {'values-regex': conference.id + '/Program_Chairs'},
+        'nonreaders': {'values': [conference.id + '/Paper<number>/Program_Committee/Unsubmitted']},
         'content': {
             'title': {
                 'order': 1,
@@ -42,31 +43,33 @@ stoc_review_invitation_template = {
 }
 
 stoc_rebuttal_invitation_template = {
-    'id' : 'learningtheory.org/COLT/2019/Conference/-/Paper<number>/Review_<review_number>/STOC_Rebuttal',
+    'id' : conference.id + '/-/Paper<number>/Review_<review_number>/STOC_Rebuttal',
     'invitees' : [
-        'learningtheory.org/COLT/2019/Conference/Program_Chairs',
-        'learningtheory.org/COLT/2019/Conference/Paper<number>/Authors'
+        conference.get_program_chairs_id(),
+        conference.id + '/Paper<number>/Authors'
     ],
     'duedate': 1553990400000,
     'signatures' : [conference.get_id()],
     'readers' : [
-        'learningtheory.org/COLT/2019/Conference/Program_Chairs',
-        'learningtheory.org/COLT/2019/Conference/Paper<number>/Authors'
+        conference.get_program_chairs_id(),
+        conference.id + '/Paper<number>/Program_Committee',
+        conference.id + '/Paper<number>/Authors'
     ],
     'writer' : [conference.get_id()],
     'reply' : {
         'forum': '<forum>',
         'replyto': None,
         'readers': {'values': [
-            'learningtheory.org/COLT/2019/Conference/Paper<number>/Authors',
-            'learningtheory.org/COLT/2019/Conference/Paper<number>/Program_Committee/Submitted',
-            'learningtheory.org/COLT/2019/Conference/Program_Chairs'
+            conference.id + '/Paper<number>/Authors',
+            conference.id + '/Paper<number>/Program_Committee',
+            conference.get_program_chairs_id()
             ]
         },
-        'writers': {'values': ['learningtheory.org/COLT/2019/Conference/Paper<number>/Authors']},
+        'writers': {'values': [conference.id + '/Paper<number>/Authors']},
         'signatures': {
             'values-regex': conference.id + '/Paper<number>/Authors'
         },
+        'nonreaders' : { 'values' : [conference.id + '/Paper<number>/Program_Committee/Unsubmitted'] },
         'content': {
             'title': {
                 'order': 1,
@@ -94,7 +97,7 @@ for review_data in data_loaded:
     for index, review in enumerate(reviews):
         # Post invitation for each paper
         blind_note = client.get_notes(
-            invitation = 'learningtheory.org/COLT/2019/Conference/-/Blind_Submission', 
+            invitation = conference.id + '/-/Blind_Submission', 
             number = paper_number
         )[0]
         
@@ -113,10 +116,11 @@ for review_data in data_loaded:
             'signatures'  :   [conference.get_program_chairs_id()],
             'writers'     :   [conference.get_program_chairs_id()],
             'readers'     :   [
-                'learningtheory.org/COLT/2019/Conference/Paper<number>/Authors',
-                'learningtheory.org/COLT/2019/Conference/Paper<number>/Program_Committee/Submitted',
-                'learningtheory.org/COLT/2019/Conference/Program_Chairs'
+                conference.id + '/Paper<number>/Authors',
+                conference.id + '/Paper<number>/Program_Committee',
+                conference.get_program_chairs_id()
             ],
+            'nonreaders'  :   [conference.id + '/Paper<number>/Program_Committee/Unsubmitted'],
             'content'     :   {
                 'title': 'STOC Review ' + str(index+1),
                 'review': review
