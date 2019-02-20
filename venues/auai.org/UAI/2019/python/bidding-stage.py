@@ -17,7 +17,11 @@ if __name__ == '__main__':
     conference = config.get_conference(client)
 
 
-    conference.open_bids(due_date = datetime.datetime(2019, 3, 11, 11, 59), request_count = 50, with_area_chairs = True)
+    conference.open_bids(due_date = datetime.datetime(2019, 3, 11, 11, 59),
+    request_count = 50,
+    with_area_chairs = True,
+    subject_areas = config.subject_areas)
+
     conference.set_reviewerpage_header({
         'instructions': '<p class="dark">This page provides information and status updates \
             for UAI 2019 reviewers. It will be regularly updated as the conference progresses, \

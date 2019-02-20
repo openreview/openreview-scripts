@@ -51,4 +51,4 @@ if __name__ == '__main__':
         </p>\
         <br>'
     })
-    conference.setup_matching()
+    conference.setup_matching(affinity_score_file = '../data/affinity_scores.csv')
