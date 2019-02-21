@@ -52,7 +52,6 @@ def run(args):
             # Modifying the sub-reviewer's review to be editable by the inviting PC member
             copy_review_writers = submitted_pc_anon_groups[:]
             copy_review_writers.append(conference + '/Program_Chairs')
-
             copy_review_readers = [conference + '/Program_Chairs', conference + '/Paper' + paper_number + '/Program_Committee']
 
             review_copy =  openreview.Note(
