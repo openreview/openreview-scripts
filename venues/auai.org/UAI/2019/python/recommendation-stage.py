@@ -17,7 +17,7 @@ if __name__ == '__main__':
     conference = config.get_conference(client)
 
     conference.set_assignments(assingment_title = 'area chairs')
-    conference.open_recommendations(due_date = datetime.datetime(2019, 3, 21, 11, 59), reviewer_assingment_title = 'reviewers')
+    conference.open_recommendations(due_date = datetime.datetime(2019, 3, 21, 11, 59), reviewer_assingment_title = 'reviewers', subject_areas = config.subject_areas)
 
     conference.set_areachairpage_header({
         'instructions': '<p class="dark">This page provides information and status updates \
