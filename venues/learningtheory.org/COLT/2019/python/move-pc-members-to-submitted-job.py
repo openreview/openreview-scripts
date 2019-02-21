@@ -52,19 +52,22 @@ def run(args):
             # Modifying the sub-reviewer's review to be editable by the inviting PC member
             copy_review_writers = submitted_pc_anon_groups[:]
             copy_review_writers.append(conference + '/Program_Chairs')
+            copy_review_readers = [conference + '/Program_Chairs', conference + '/Paper' + paper_number + '/Program_Committee']
+
             review_copy =  openreview.Note(
                 invitation = review.invitation,
                 forum = review.forum,
                 signatures = submitted_pc_anon_groups,
                 writers = copy_review_writers,
-                readers = review.readers,
+                readers = copy_review_readers,
                 nonreaders = review.nonreaders,
                 content = review.content
             )
             client.post_note(review_copy)
             
             # update the review note to remove anonReviewer as a writer
-            review.writers = [conference]
+            review.writers = [conference + '/Program_Chairs']
+            review.readers = copy_review_readers
             client.post_note(review)
 
             print ('Processed official review id: ', review.id)
