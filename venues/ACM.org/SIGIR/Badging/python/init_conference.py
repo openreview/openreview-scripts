@@ -24,7 +24,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-submission_invitation = conference.open_submissions(due_date = datetime.datetime(2050, 1, 1, 22, 00), public = True, additional_fields = {
+submission_invitation = conference.open_submissions(due_date = datetime.datetime(2050, 1, 1, 22, 00), additional_fields = {
         'artifact type': {
             'fieldDisplayLabel': 'Artifact Type',
             'description': 'Type of the artifact.',
@@ -62,7 +62,7 @@ submission_invitation = conference.open_submissions(due_date = datetime.datetime
             'value-regex': 'upload',
             'required':False
         }
-    }, include_keywords = False, include_TLDR = False)
+    }, remove_fields = ['keywords', 'TL;DR'])
 
 #Override process function
 with open('../process/submissionProcess.js') as f:

@@ -17,7 +17,6 @@ if __name__ == '__main__':
     conference = config.get_conference(client)
     conference.open_submissions(
         due_date = datetime.datetime(2019, 2, 2, 4, 00),
-        public = False,
         additional_fields = {
             'STOC_id': {
                 'description': 'If this submission (or its earlier version) is currently under consideration at STOC 2019, please enter its STOC identification number.',
@@ -30,8 +29,7 @@ if __name__ == '__main__':
             'student_submission': {
                 'value-checkbox': 'The primary contributor is a full-time student at the time of submission.'
             }
-        },
-        additional_readers = [conference.get_area_chairs_id(), conference.get_program_chairs_id()]
+        }
     )
 
     # Create blind subission invitation
