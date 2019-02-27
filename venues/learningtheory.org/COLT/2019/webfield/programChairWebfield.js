@@ -53,20 +53,6 @@ var getOfficialReviews = function(noteNumbers) {
 
     _.forEach(notes, function(n) {
       var num, index, ratingMatch;
-      var matches = n.signatures[0].match(ANONREVIEWER_REGEX);
-      if (matches) {
-        num = parseInt(matches[1], 10);
-        index = parseInt(matches[2], 10);
-
-        if (num in noteMap) {
-          ratingMatch = n.content.rating.match(ratingExp);
-          n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
-          confidenceMatch = n.content.confidence.match(ratingExp);
-          n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
-
-          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
-        }
-      }
       var matches = n.signatures[0].match(AREACHAIR_REGEX);
       if (matches) {
         num = parseInt(matches[1], 10);
@@ -97,21 +83,6 @@ var getReviewerGroups = function(noteNumbers) {
       var re = ANONREVIEWER_REGEX;
 
       _.forEach(groups, function(g) {
-        var matches = g.id.match(re);
-        var num, index, reviewer;
-        if (matches) {
-          num = parseInt(matches[1], 10);
-          index = parseInt(matches[2], 10);
-
-          if (g.members.length) {
-            var reviewer = g.members[0];
-            if ((num in noteMap)) {
-              noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = reviewer;
-            }
-
-          }
-
-        }
         var matches = g.id.match(AREACHAIR_REGEX);
         var num, index;
         if (matches) {
