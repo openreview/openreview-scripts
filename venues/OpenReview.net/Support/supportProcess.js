@@ -2,10 +2,16 @@ function(){
     var or3client = lib.or3client;
     var baseUrl = 'https://openreview.net'
 
+    var adminMessage = 'A request for service has been submitted. Check it here: ' + baseUrl + '/forum?id=' + note.forum + '\n'
+
+    for (key in note.content) {
+      adminMessage = adminMessage.concat('\n' + key + ': ' + note.content[key])
+    }
+
     var openreviewMailPayload = {
       'groups': ['info@openreview.net'],
       'subject': 'A request for service has been submitted',
-      'message': 'A request for service has been submitted. Check it here: ' + baseUrl + '/forum?id=' + note.forum
+      'message': adminMessage
     };
 
     var programchairMailPayload = {
