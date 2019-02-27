@@ -16,4 +16,4 @@ print ("Closing submissions")
 conference.close_submissions()
 
 print ("Create blind submissions")
-conference.create_blind_submissions(public = True)
+conference.create_blind_submissions()

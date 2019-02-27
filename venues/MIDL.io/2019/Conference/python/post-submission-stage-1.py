@@ -25,5 +25,5 @@ print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
 
-conference.close_submissions(freeze_submissions = True)
+conference.close_submissions()
 
