@@ -39,107 +39,107 @@ var getBlindedNotes = function() {
 };
 
 var getOfficialReviews = function(noteNumbers) {
-  if (!noteNumbers.length) {
-    return $.Deferred().resolve({});
-  }
-
-  var noteMap = buildNoteMap(noteNumbers);
-
-  return Webfield.getAll('/notes', {
-    invitation: OFFICIAL_REVIEW_INVITATION, noDetails: true
-  })
-  .then(function(notes) {
-    var ratingExp = /^(\d+): .*/;
-
-    _.forEach(notes, function(n) {
-      var num, index, ratingMatch;
-      var matches = n.signatures[0].match(ANONREVIEWER_REGEX);
-      if (matches) {
-        num = parseInt(matches[1], 10);
-        index = parseInt(matches[2], 10);
-
-        if (num in noteMap) {
-          ratingMatch = n.content.rating.match(ratingExp);
-          n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
-          confidenceMatch = n.content.confidence.match(ratingExp);
-          n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
-
-          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
-        }
-      }
-      var matches = n.signatures[0].match(AREACHAIR_REGEX);
-      if (matches) {
-        num = parseInt(matches[1], 10);
-        index = parseInt(matches[2], 10);
-
-        if (num in noteMap) {
-          // Need to parse rating and confidence strings into ints
-          ratingMatch = n.content.rating.match(ratingExp);
-          n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
-          confidenceMatch = n.content.confidence.match(ratingExp);
-          n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
-
-          noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
-        }
-      }
-    });
-
-    return noteMap;
-  });
-};
-
-var getReviewerGroups = function(noteNumbers) {
-  var noteMap = buildNoteMap(noteNumbers);
-  var reviewerMap = {};
-
-  return Webfield.getAll('/groups', { id: 'learningtheory.org/COLT/2019/Conference/Paper.*' })
-    .then(function(groups) {
-      var re = ANONREVIEWER_REGEX;
-
-      _.forEach(groups, function(g) {
-        var matches = g.id.match(re);
-        var num, index, reviewer;
+    if (!noteNumbers.length) {
+      return $.Deferred().resolve({});
+    }
+  
+    var noteMap = buildNoteMap(noteNumbers);
+  
+    return Webfield.getAll('/notes', {
+      invitation: OFFICIAL_REVIEW_INVITATION, noDetails: true
+    })
+    .then(function(notes) {
+      var ratingExp = /^(\d+): .*/;
+  
+      _.forEach(notes, function(n) {
+        var num, index, ratingMatch;
+        var matches = n.signatures[0].match(ANONREVIEWER_REGEX);
         if (matches) {
           num = parseInt(matches[1], 10);
           index = parseInt(matches[2], 10);
-
-          if (g.members.length) {
-            var reviewer = g.members[0];
-            if ((num in noteMap)) {
-              noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = reviewer;
-            }
-
+  
+          if (num in noteMap) {
+            ratingMatch = n.content.rating.match(ratingExp);
+            n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+            confidenceMatch = n.content.confidence.match(ratingExp);
+            n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+  
+            noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
           }
-
         }
-        var matches = g.id.match(AREACHAIR_REGEX);
-        var num, index;
+        var matches = n.signatures[0].match(AREACHAIR_REGEX);
         if (matches) {
           num = parseInt(matches[1], 10);
           index = parseInt(matches[2], 10);
-
-          if ((num in noteMap) && g.members.length) {
-            reviewer = g.members[0];
-            noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = reviewer;
+  
+          if (num in noteMap) {
+            // Need to parse rating and confidence strings into ints
+            ratingMatch = n.content.rating.match(ratingExp);
+            n.rating = ratingMatch ? parseInt(ratingMatch[1], 10) : null;
+            confidenceMatch = n.content.confidence.match(ratingExp);
+            n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
+  
+            noteMap[num][_.last(n.signatures[0].split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = n;
           }
-
-          if (!(reviewer in reviewerMap)) {
-            reviewerMap[reviewer] = [];
-          }
-
-          reviewerMap[reviewer].push(num);
         }
       });
-      return {
-        byNotes: noteMap,
-        byReviewers: reviewerMap
-      };
-    })
-    .fail(function(error) {
-      displayError();
-      return null;
+  
+      return noteMap;
     });
-};
+  };
+  
+  var getReviewerGroups = function(noteNumbers) {
+    var noteMap = buildNoteMap(noteNumbers);
+    var reviewerMap = {};
+  
+    return Webfield.getAll('/groups', { id: 'learningtheory.org/COLT/2019/Conference/Paper.*' })
+      .then(function(groups) {
+        var re = ANONREVIEWER_REGEX;
+  
+        _.forEach(groups, function(g) {
+          var matches = g.id.match(re);
+          var num, index, reviewer;
+          if (matches) {
+            num = parseInt(matches[1], 10);
+            index = parseInt(matches[2], 10);
+  
+            if (g.members.length) {
+              var reviewer = g.members[0];
+              if ((num in noteMap)) {
+                noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = reviewer;
+              }
+  
+            }
+  
+          }
+          var matches = g.id.match(AREACHAIR_REGEX);
+          var num, index;
+          if (matches) {
+            num = parseInt(matches[1], 10);
+            index = parseInt(matches[2], 10);
+  
+            if ((num in noteMap) && g.members.length) {
+              reviewer = g.members[0];
+              noteMap[num][_.last(g.id.split('/')).replace('Program_Committee_Member', 'p').replace('AnonReviewer', 'r')] = reviewer;
+            }
+  
+            if (!(reviewer in reviewerMap)) {
+              reviewerMap[reviewer] = [];
+            }
+  
+            reviewerMap[reviewer].push(num);
+          }
+        });
+        return {
+          byNotes: noteMap,
+          byReviewers: reviewerMap
+        };
+      })
+      .fail(function(error) {
+        displayError();
+        return null;
+      });
+  };
 
 var getAreaChairGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
@@ -298,6 +298,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
   var sortOptions = {
     Paper_Number: function(row) { return row.note.number; },
     Paper_Title: function(row) { return _.toLower(_.trim(row.note.content.title)); },
+    PC_Member_Contribution: function(row) { return row.pcContributionData.numSubmittedReviews; },
     Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
     Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
     Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
@@ -306,8 +307,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
     Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
     Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
-    Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
-    Meta_Review_Missing: function(row) { return row.areachairProgressData.numMetaReview; }
+    Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; }
   };
 
   var sortResults = function(newOption, switchOrder) {
@@ -325,12 +325,12 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
       var number = '<strong class="note-number">' + d.note.number + '</strong>';
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
       var reviewHtml = Handlebars.templates.noteReviewers(d.reviewProgressData);
-      var areachairHtml = Handlebars.templates.noteAreaChairs(d.areachairProgressData);
-      return [number, summaryHtml, reviewHtml];
+      var pcContributionHtml = Handlebars.templates.noteReviewers(d.pcContributionData);
+      return [number, summaryHtml, reviewHtml, pcContributionHtml];
     });
 
     var tableHTML = Handlebars.templates['components/table']({
-      headings: ['#', 'Paper Summary', 'Review Progress'],
+      headings: ['#', 'Paper Summary', 'Review Progress', 'PC Member Contribution'],
       rows: rowData,
       extraClasses: 'console-table paper-table'
     });
@@ -531,6 +531,7 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
   // Build Review Progress Cell
   var reviewObj;
   var combinedObj = {};
+  var combinedObjForPC = {};
   var ratings = [];
   var confidences = [];
   for (var reviewerNum in reviewerIds) {
@@ -546,6 +547,16 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
       });
       ratings.push(reviewObj.rating);
       confidences.push(reviewObj.confidence);
+      if (_.includes(reviewerNum,'p')){
+        combinedObjForPC[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
+        completedReview: true,
+        forum: reviewObj.forum,
+        note: reviewObj.id,
+        rating: reviewObj.rating,
+        confidence: reviewObj.confidence,
+        reviewLength: reviewObj.content.review.length
+        });
+      }
     } else {
       combinedObj[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
         forumUrl: '/forum?' + $.param({
@@ -554,6 +565,17 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
           invitationId: CONFERENCE_ID + '/-/Paper' + note.number + '/Official_Review'
         })
       });
+      if (_.includes(reviewerNum,'p')){
+        combinedObjForPC[reviewerNum] = _.assign({}, reviewerIds[reviewerNum], {
+          forumUrl: '/forum?' + $.param({
+            id: note.forum,
+            noteId: note.id,
+            invitationId: CONFERENCE_ID + '/-/Paper' + note.number + '/Official_Review'
+          })
+        });
+      }
+
+
     }
   }
   var averageRating = 'N/A';
@@ -587,16 +609,37 @@ var buildPaperTableRow = function(note, reviewerIds, completedReviews, metaRevie
     sendReminder: false
   };
 
-  var areachairProgressData = {
-    numMetaReview: metaReview ? 'One' : 'No',
-    areachair: areachairProfile,
-    metaReview: metaReview
+  var completedReviewsByPC = {};
+  Object.keys(completedReviews).forEach(function(key) {
+    if (_.includes(key,'p')){
+      completedReviewsByPC[key] = completedReviews[key];
+    }
+  });
+
+  var reviewerIdsForPC = {};
+  Object.keys(reviewerIds).forEach(function(key) {
+    if (_.includes(key,'p')){
+        reviewerIdsForPC[key] = reviewerIds[key];
+    }
+  });
+
+  var pcContributionData = {
+    numSubmittedReviews: Object.keys(completedReviewsByPC).length,
+    numReviewers: Object.keys(reviewerIdsForPC).length,
+    reviewers: combinedObjForPC,
+    averageRating: averageRating,
+    maxRating: maxRating,
+    minRating: minRating,
+    averageConfidence: averageConfidence,
+    minConfidence: minConfidence,
+    maxConfidence: maxConfidence,
+    sendReminder: false
   };
 
   return {
     note: note,
     reviewProgressData: reviewProgressData,
-    areachairProgressData: areachairProgressData
+    pcContributionData: pcContributionData
   }
 };
 
