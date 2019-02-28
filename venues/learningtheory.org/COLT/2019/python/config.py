@@ -17,4 +17,5 @@ def get_conference(client):
     'location': 'Phoenix, Arizona, United States'
     })
     builder.set_conference_area_chairs_name('Program_Committee')
+    builder.set_double_blind(area_chairs_read_original = True)
     return builder.get_result()

@@ -16,7 +16,5 @@ if __name__ == '__main__':
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     conference = config.get_conference(client)
 
-    conference.close_revise_submissions(name = 'Revision')
-
     conference.create_blind_submissions()
     conference.set_authors()

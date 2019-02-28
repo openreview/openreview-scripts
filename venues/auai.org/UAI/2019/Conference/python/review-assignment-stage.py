@@ -16,7 +16,6 @@ if __name__ == '__main__':
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     conference = config.get_conference(client)
 
-    conference.close_bids()
     conference.set_reviewerpage_header({
         'instructions': '<p class="dark">This page provides information and status updates \
             for UAI 2019 reviewers. It will be regularly updated as the conference progresses, \
