@@ -23,5 +23,6 @@ def get_conference(client):
     </p>'
     })
     builder.set_homepage_layout('simple')
+    builder.set_submissions_public(True)
     builder.set_conference_program_chairs_name('Chairs')
     return builder.get_result()

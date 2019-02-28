@@ -26,7 +26,7 @@ print('connecting to {0}'.format(client.baseurl))
 conference = config.get_conference(client)
 
 # 12/17/18 17:00 UTC
-submission_invitation = conference.open_submissions(due_date = datetime.datetime(2019, 4, 14, 17, 00), public = True, additional_fields = {
+submission_invitation = conference.open_submissions(due_date = datetime.datetime(2019, 4, 14, 17, 00), additional_fields = {
         'ORCID': {
             'value-regex': '.{0,500}',
             'description': 'Author ORCID identifier',

@@ -26,7 +26,7 @@ print('connecting to {0}'.format(client.baseurl))
 conference = config.get_conference(client)
 
 # 3/1/19 23:59 Hawaii time
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 2, 9, 59), public = True, additional_fields = {
+conference.open_submissions(due_date = datetime.datetime(2019, 3, 2, 9, 59), additional_fields = {
         'contribution': {
             'order': 5,
             'value-dropdown': [

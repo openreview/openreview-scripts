@@ -19,6 +19,7 @@ def get_conference(client):
     'instructions': ' '
     })
     builder.set_conference_submission_name('Submission')
+    builder.set_submissions_public(True)
     return builder.get_result()
 
 

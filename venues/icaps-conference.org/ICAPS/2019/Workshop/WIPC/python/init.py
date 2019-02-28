@@ -38,11 +38,6 @@ conference.open_submissions(due_date = datetime.datetime(2019, 3, 26, 11, 59), r
             'required': False,
             'value-regex': 'upload'
         },
-        'author_affiliation': {
-            'description': 'Comman separated value listing all the author affiliations',
-			'values-regex': "[^;,\\n]+(,[^,\\n]+)*",
-			'required':True
-        },
         'track': {
             'description': 'Track options',
 			'value-radio': ['long (30 minutes)', 'short (15 minutes)', 'discussion topic (5 minutes)'],
