@@ -12,14 +12,15 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Knowledge Graph Building Workshop',
     'subtitle': 'Co-located with the Extended Semantic Web Conference 2019',
-    'deadline': 'Submission Deadline: 1st of March, 2019, 23:59 Hawaii time',
+    'deadline': 'Submission Deadline: 11th of March, 2019, 23:59 Hawaii time',
     'date': '3 June 2019',
     'website': 'http://kgb-workshop.org/',
     'location': 'Portorož, Slovenia',
     'instructions': ' '
     })
     builder.set_conference_submission_name('Submission')
-    builder.set_submissions_public(True)
+    builder.set_override_homepage(True)
+
     return builder.get_result()
 
 
