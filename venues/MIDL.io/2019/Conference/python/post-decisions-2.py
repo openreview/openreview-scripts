@@ -83,6 +83,23 @@ def decision_invite_add_comment():
                 }
         client.post_invitation(invite)
 
+def hide_meta_reviews():
+    # make meta-reviews private again
+    # update invites
+    invites = client.get_invitations(regex=conference.get_id() + '/-/Paper.*/Meta_Review')
+    for invite in invites:
+        paper_num = invite.id.split('/Paper')[1].split('/')[0]
+        invite.reply['readers'] = [conference.get_id(), conference.get_program_chairs_id(),
+                                   (conference.get_id() + '/Paper' + paper_num + '/Area_Chairs')]
+        client.post_invitation(invite)
+    # update notes
+    notes = client.get_notes(invitation=conference.get_id() + '/-/Paper.*/Meta_Review')
+    for note in notes:
+        paper_num = note.invitation.split('/Paper')[1].split('/')[0]
+        note.readers = [conference.get_id(), conference.get_program_chairs_id(),
+                        (conference.get_id() + '/Paper' + paper_num + '/Area_Chairs')]
+        client.post_note(note)
+
 def was_rejected_and_removed(paper_num, decision):
     if paper_num not in submissions.keys():
         print("lost " + paper_num)
@@ -101,7 +118,7 @@ def revive_paper(paper_num):
     paper.readers = [conference.get_program_chairs_id(),
                      conference.get_id() + '/Paper' + paper_num + '/Authors']
     client.post_note(paper)
-    print("Revived "+paper.id)
+    print("Revived "+paper_num)
 
 
 def post_rejection(paper_num, add_text):
@@ -120,25 +137,23 @@ def post_rejection(paper_num, add_text):
                      'decision': 'Reject',
                      'comment': add_text}
         )
-        client.post_note(decision_note)
+        decisions[paper_num] = client.post_note(decision_note)
         print("Post decision "+paper_num)
 
 def add_meta_comment_to_decision(paper_num):
-    print(paper_num)
     if paper_num in meta_decisions.keys():
-        print("meta decision exists")
         decision = decisions[paper_num]
-        print(decision.content)
-        if 'comment' not in decision.content.keys():
+        if 'comment' not in decision.content.keys() or not decision.content['comment']:
             meta_note = meta_decisions[paper_num]
             decision.content['comment'] = meta_note.content['metareview']
-            print("Add comment to "+decision.forum)
+            print("Add comment to "+paper_num)
             client.post_note(decision)
 
 
 ##################################################################
 submission_invite_can_hide()
 decision_invite_add_comment()
+hide_meta_reviews()
 if args.assignments.endswith('.csv'):
     with open(args.assignments, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -146,8 +161,7 @@ if args.assignments.endswith('.csv'):
         next(reader,None)
         for row in reader:
             paper_number = row[1]
-            if len(row) >= 14:
-                decision = row[12]
+            decision = row[12]
             if len(row) >= 14:
                 add_text = row[13]
             else:
@@ -156,9 +170,9 @@ if args.assignments.endswith('.csv'):
                 revive_paper(paper_number)
                 post_rejection(paper_number, add_text)
                 # email removed paper authors
-                #response = client.send_mail(subject_line, [conference.get_area_chairs_id()+'/Paper'+paper_num+'/Authors'], message)
-            else:
-                add_meta_comment_to_decision(paper_number)
+                response = client.send_mail(subject_line, [conference.get_id()+'/Paper'+paper_num+'/Authors'], message)
+            # add meta_comment to all papers
+            add_meta_comment_to_decision(paper_number)
 else:
     paper_number = args.assignments.split(',')[1]
     decision = args.assignments.split(',')[0]
