@@ -12,7 +12,7 @@ def get_conference(client):
     'title': 'UAI 2019',
     'subtitle': 'Conference on Uncertainty in Artificial Intelligence',
     'deadline': 'Abstract Submission Deadline: 11:59 pm Samoa Standard Time, March 4, 2019, Full Submission Deadline: 11:59 pm Samoa Standard Time, March 8, 2019',
-    'date': 'June 22 - June 25, 2019',
+    'date': 'July 22 - July 25, 2019',
     'website': 'http://auai.org/uai2019/',
     'location': 'Tel Aviv, Israel',
     'instructions': '''<p><strong>Important Information about Anonymity:</strong><br>
