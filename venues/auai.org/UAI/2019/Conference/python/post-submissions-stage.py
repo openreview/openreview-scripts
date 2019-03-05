@@ -28,4 +28,25 @@ if __name__ == '__main__':
         }
     }, remove_fields = ['title', 'pdf'])
 
+    conference.set_authorpage_header({
+        'instructions': '<p class="dark">This page provides information and status updates \
+            for UAI 2019 Authors. It will be regularly updated as the conference progresses, \
+            so please check back frequently for news and other updates.</p>',
+        'schedule': '<h4>Submission Period</h4>\
+            <p>\
+                <em><strong>Abstract Submission deadline: March 4th, 2019, 11:59 pm SST (Samoa Standard Time)</strong></em>:\
+                <ul>\
+                    <li>Abtract submissions are closed now.</li>\
+                </ul>\
+            </p>\
+            <br>\
+            <p>\
+                <em><strong>Paper Submission deadline: March 8th, 2019, 11:59 pm SST (Samoa Standard Time)</strong></em>:\
+                <ul>\
+                    <li>Authors can make paper submissions by creating revisions of their papers as many times as needed up to the full paper submission deadline.</li>\
+                    <li>Please ensure that the email addresses of the corresponding authors are up-to-date in their profiles.</li>\
+                </ul>\
+            </p>'
+    })
+
     
