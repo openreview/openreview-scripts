@@ -2,7 +2,7 @@ import argparse
 import openreview
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--baseurl', help='base url')
 parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
@@ -155,7 +155,7 @@ request_inv = client.post_invitation(openreview.Invitation(**{
         'readers': {
             'values-copied': [
                 'OpenReview.net/Support',
-                '{content["Program Chair Emails"]}'
+                '{content["Contact Emails"]}'
             ]
         },
         'writers': {
@@ -167,3 +167,45 @@ request_inv = client.post_invitation(openreview.Invitation(**{
         'content': request_content
     }
 }))
+
+comment_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Comment',
+    'readers': ['everyone'],
+    'writers': ['OpenReview.net/Support'],
+    'signatures': ['OpenReview.net/Support'],
+    'invitees': ['everyone'],
+    'process': 'commentProcess.js',
+    'reply': {
+        'forum': None,
+        'replyto': None,
+        'readers': {
+            'description': 'Select all user groups that should be able to read this comment.',
+            'values': ['OpenReview.net/Support']
+        },
+        'writers': {
+            'values-copied': [
+                '{signatures}'
+            ]
+        },
+        'signatures': {
+            'values-regex': '~.*',
+            'description': 'How your identity will be displayed.'
+        },
+        'content': {
+            'title': {
+                'order': 0,
+                'value-regex': '.{1,500}',
+                'description': 'Brief summary of your comment.',
+                'required': True
+            },
+            'comment': {
+                'order': 1,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'description': 'Your comment or reply (max 5000 characters).',
+                'required': True
+            }
+        }
+    }
+}))
+
+
