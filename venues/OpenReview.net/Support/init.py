@@ -155,7 +155,7 @@ request_inv = client.post_invitation(openreview.Invitation(**{
         'readers': {
             'values-copied': [
                 'OpenReview.net/Support',
-                '{content["Program Chair Emails"]}'
+                '{content["Contact Emails"]}'
             ]
         },
         'writers': {
@@ -178,7 +178,6 @@ comment_inv = client.post_invitation(openreview.Invitation(**{
     'reply': {
         'forum': None,
         'replyto': None,
-        'invitation': 'OpenReview.net/Support/-/Request_Form',
         'readers': {
             'description': 'Select all user groups that should be able to read this comment.',
             'values': ['OpenReview.net/Support']
