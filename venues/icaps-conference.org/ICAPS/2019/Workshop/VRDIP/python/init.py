@@ -32,7 +32,7 @@ conference = config.get_conference(client)
 # from submissions, and some will be blinded in the normal fashion.
 conference.open_submissions(due_date = datetime.datetime(2019, 4, 15, 23, 59), additional_fields = {
         "anonymized": {
-            "order": 11,
+            "order": 4,
             "value-checkbox": "Anonymize author identities",
             "required": False
         }
