@@ -145,8 +145,8 @@ if __name__ == '__main__':
             'readers': [CONFERENCE_ID],
             'content': {
                 'title': config_note.content['title'],
-                'assignedGroups': [],
-                'alternateGroups': [{'conflicts': None, 'finalScore': 0.0, 'userId': userid, 'scores': {} } for userid in reviewers_group.members]
+                'assignedGroups': [{'conflicts': None, 'finalScore': 0.0, 'userId': userid, 'scores': {} } for userid in reviewers_group.members],
+                'alternateGroups': []
             }
         })
         client.post_note(assignment_note)
