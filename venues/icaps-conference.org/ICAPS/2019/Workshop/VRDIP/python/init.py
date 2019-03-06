@@ -38,5 +38,9 @@ conference.open_submissions(due_date = datetime.datetime(2019, 4, 15, 23, 59), a
         }
     })
 
-
+# doesn't seem to take the order information during init
+invite = client.get_invitation(id=conference.get_submission_id())
+invite.reply['content']['anonymized']['order'] = 4
+print(invite.reply['content'])
+client.post_invitation(invite)
 
