@@ -51,9 +51,9 @@ if args.assignments.endswith('.csv'):
         # skip header row
         next(reader,None)
         for row in reader:
-            paper_number = row[2]
+            paper_number = row[1]
             presentation = row[14]
-            if paper_number:
+            if presentation:
                 add_oral_poster_to_decision(paper_number, presentation)
 else:
     paper_number = args.assignments.split(',')[1]
