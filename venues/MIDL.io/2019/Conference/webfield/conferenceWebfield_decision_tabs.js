@@ -80,11 +80,11 @@ function renderConferenceTabs() {
       id: 'your-consoles',
     },
     {
-      heading: 'Full - Accept(Oral)',
+      heading: 'Full - Accept (Oral)',
       id: 'accepted-oral-papers',
     },
     {
-      heading: 'Full - Accept(Poster)',
+      heading: 'Full - Accept (Poster)',
       id: 'accepted-poster-papers',
     },
     {
