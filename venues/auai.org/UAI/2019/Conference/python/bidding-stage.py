@@ -17,11 +17,11 @@ if __name__ == '__main__':
     conference = config.get_conference(client)
 
 
-    conference.open_bids(due_date = datetime.datetime(2019, 3, 11, 11, 59), request_count = 50, with_area_chairs = True)
+    conference.open_bids(due_date = datetime.datetime(2019, 3, 15, 11, 59), request_count = 50, with_area_chairs = True)
     conference.set_reviewerpage_header({
         'instructions': '<p class="dark">This page provides information and status updates \
             for UAI 2019 reviewers. It will be regularly updated as the conference progresses, \
-            so please check back frequently for news and other updates.</p>',
+            so please check the "Reviewer Schedule" section frequently for news and other updates.</p>',
         'schedule': '<h4>Registration Phase</h4>\
             <p>\
             Update your profile to include your most up-to-date information, including emails,  \
@@ -32,7 +32,7 @@ if __name__ == '__main__':
         <h4>Bidding Phase</h4>\
             <p>\
             <em><strong>Please note that the bidding has begun. You are requested to do the\
-            following by 23:59 PM Samoa Time, Match 10th 2019</strong></em>:\
+            following by 23:59 PM Samoa Time, Match 15th 2019</strong></em>:\
             <ul>\
                 <li>Provide your reviewing preferences by bidding on papers using the Bidding \
                 Interface.</li>\
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     conference.set_areachairpage_header({
         'instructions': '<p class="dark">This page provides information and status updates \
             for UAI 2019 area chairs. It will be regularly updated as the conference progresses, \
-            so please check back frequently for news and other updates.</p>',
+            so please check the "Area Chair Schedule" section frequently for news and other updates.</p>',
         'schedule': '<h4>Registration Phase</h4>\
             <p>\
             Update your profile to include your most up-to-date information, including emails,  \
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         <h4>Bidding Phase</h4>\
             <p>\
             <em><strong>Please note that the bidding has begun. You are requested to do the\
-            following by 23:59 PM Samoa Time, Match 10th 2019</strong></em>:\
+            following by 23:59 PM Samoa Time, Match 15th 2019</strong></em>:\
             <ul>\
                 <li>Provide your reviewing preferences by bidding on papers using the Bidding \
                 Interface.</li>\
