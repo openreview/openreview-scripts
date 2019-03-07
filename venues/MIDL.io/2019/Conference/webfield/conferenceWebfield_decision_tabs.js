@@ -8,7 +8,13 @@
 // Constants
 var CONFERENCE = 'MIDL.io/2019/Conference';
 var INVITATION = CONFERENCE + '/-/Full_Submission';
-
+var SUBMISSION_ID = CONFERENCE + '/-/Abstract_Submission'
+var REVIEWERS_NAME = 'Reviewers';
+var REVIEWERS_ID = CONFERENCE + '/Reviewers'
+var AREA_CHAIRS_NAME = 'Area_Chairs'
+var AREA_CHAIRS_ID = CONFERENCE + '/'+AREA_CHAIRS_NAME;
+var PROGRAM_CHAIRS_ID = CONFERENCE+'/Program_Chairs';
+var AUTHORS_ID = CONFERENCE+'/Authors';
 var initialPageLoad = true;
 
 // Main is the entry point to the webfield code and runs everything
@@ -25,11 +31,31 @@ function main() {
 // Load makes all the API calls needed to get the data to render the page
 // It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
+  var authorNotesP;
+  var userGroupsP;
+
   var notesP = Webfield.getAll('/notes', { invitation: INVITATION, details: 'replyCount' });
 
   var decisionNotesP = Webfield.getAll('/notes', { invitation: CONFERENCE+'/-/Paper.*/Decision', noDetails: true });
 
-  return $.when(notesP, decisionNotesP);
+  if (!user || _.startsWith(user.id, 'guest_')) {
+    userGroupsP = $.Deferred().resolve([]);
+    authorNotesP = $.Deferred().resolve([]);
+  } else {
+    userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
+      return _.filter(
+        _.map(result.groups, function(g) { return g.id; }),
+        function(id) { return _.startsWith(id, CONFERENCE); }
+      );
+    });
+
+    authorNotesP = Webfield.api.getSubmissions(INVITATION, {
+      'content.authorids': user.profile.id,
+      details: 'noDetails'
+    });
+  }
+
+  return $.when(notesP, decisionNotesP, userGroupsP, authorNotesP);
 }
 
 
@@ -50,6 +76,10 @@ function renderConferenceHeader() {
 function renderConferenceTabs() {
   var sections = [
     {
+      heading: 'Your Consoles',
+      id: 'your-consoles',
+    },
+    {
       heading: 'Full - Accept(Oral)',
       id: 'accepted-oral-papers',
     },
@@ -69,7 +99,54 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notes, decisionsNotes) {
+function renderContent(notes, decisionsNotes, userGroups, authorNotes) {
+
+  // Your Consoles tab
+  if (userGroups.length || authorNotes.length) {
+
+    var $container = $('#your-consoles').empty();
+    $container.append('<ul class="list-unstyled submissions-list">');
+
+    if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    if (_.includes(userGroups, AREA_CHAIRS_ID)) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + AREA_CHAIRS_ID + '" >',
+          AREA_CHAIRS_NAME.replace(/_/g, ' ') + ' Console',
+          '</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    if (_.includes(userGroups, REVIEWERS_ID)) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + REVIEWERS_ID + '" >',
+          REVIEWERS_NAME.replace(/_/g, ' ') + ' Console',
+          '</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    if (authorNotes.length) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    $('.tabs-container a[href="#your-consoles"]').parent().show();
+  } else {
+    $('.tabs-container a[href="#your-consoles"]').parent().hide();
+  }
 
   var notesDict = {};
   _.forEach(notes, function(n) {
