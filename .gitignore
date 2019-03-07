@@ -8,3 +8,6 @@ npm-debug.log
 */.ipynb_checkpoints
 *.csv
 *.log
+*.xlsx
+*.txt
+*.docx
