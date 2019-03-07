@@ -31,7 +31,7 @@ if __name__ == '__main__':
         <br>\
         <h4>Bidding Phase</h4>\
             <p>\
-            <em><strong>Please note that the bidding has begun. You are requested to do the\
+            <em><strong>Please note that bidding has begun. You are requested to do the\
             following by 23:59 PM Samoa Time, Match 15th 2019</strong></em>:\
             <ul>\
                 <li>Provide your reviewing preferences by bidding on papers using the Bidding \
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         <br>\
         <h4>Bidding Phase</h4>\
             <p>\
-            <em><strong>Please note that the bidding has begun. You are requested to do the\
+            <em><strong>Please note that bidding has begun. You are requested to do the\
             following by 23:59 PM Samoa Time, Match 15th 2019</strong></em>:\
             <ul>\
                 <li>Provide your reviewing preferences by bidding on papers using the Bidding \
