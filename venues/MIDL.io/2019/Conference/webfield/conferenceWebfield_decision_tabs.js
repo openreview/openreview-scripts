@@ -50,16 +50,16 @@ function renderConferenceHeader() {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'Oral Presentations',
+      heading: 'Full - Accept(Oral)',
       id: 'accepted-oral-papers',
     },
     {
-      heading: 'Poster Presentations',
+      heading: 'Full - Accept(Poster)',
       id: 'accepted-poster-papers',
     },
     {
-      heading: 'Rejected Papers',
-      id: 'rejected-papers',
+      heading: 'Full Submissions',
+      id: 'all-papers',
     }
   ];
 
@@ -89,9 +89,8 @@ function renderContent(notes, decisionsNotes) {
         } else if (d.content.presentation === 'Poster'){
             posterDecisions.push(notesDict[d.forum]);
         }
-      } else if (d.content.decision === 'Reject') {
-        submittedPapers.push(notesDict[d.forum]);
       }
+      submittedPapers.push(notesDict[d.forum]);
     }
   });
 
@@ -117,7 +116,7 @@ function renderContent(notes, decisionsNotes) {
 
   Webfield.ui.searchResults(
     submittedPapers,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#rejected-papers'})
+    _.assign({}, paperDisplayOptions, {showTags: false, container: '#all-papers'})
   );
 
   $('#notes .spinner-container').remove();
