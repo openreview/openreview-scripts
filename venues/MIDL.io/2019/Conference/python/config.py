@@ -12,13 +12,13 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Medical Imaging with Deep Learning',
     'subtitle': 'MIDL 2019 Conference',
-    'deadline': 'Submission Deadline: 17th of December, 2018, 17:00 UTC',
+    'deadline': 'Abstract Submission Deadline: 12th of April, 2019, 17:00 UTC',
     'date': '8-10 July 2019',
     'website': 'http://2019.midl.io',
     'location': 'London',
-    'instructions': 'Full papers contain well-validated applications or methodological developments of deep learning algorithms in medical imaging. There is no strict limit on paper length. However, we strongly recommend keeping full papers at 8 pages (excluding references and acknowledgements). An appendix section can be added if needed with additional details but must be compiled into a single pdf. The appropriateness of using pages over the recommended page length will be judged by reviewers. All accepted papers will be presented as posters with a selection of these papers will also be invited for oral presentation.<br/><br/> <p><strong>Questions or Concerns</strong></p><p>Please contact the OpenReview support team at <a href=\"mailto:info@openreview.net\">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>    Please contact the MIDL 2019 Program Chairs at <a href=\"mailto:program-chairs@midl.io\">program-chairs@midl.io</a> with any questions or concerns about conference administration or policy.</p><p>We are aware that some email providers inadequately filter emails coming from openreview.net as spam so please check your spam folder regularly.</p>'
+    'instructions': 'Extended abstracts are up to 3 pages (excluding references and acknowledgements) and can, for example, focus on preliminary novel methodological ideas without extensive validation. We also specifically accept extended abstracts of recently published or submitted journal contributions to give authors the opportunity to present their work and obtain feedback from the community. Selection of abstracts is performed via a lightweight single-blind review process via OpenReview. All accepted abstracts will be presented as posters at the conference.</p>'
     })
-    builder.set_conference_submission_name('Full_Submission')
+    builder.set_conference_submission_name('Abstract_Submission')
     builder.set_submission_public(True)
     return builder.get_result()
 
