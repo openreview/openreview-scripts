@@ -178,22 +178,23 @@ function renderContent(notes, decisionsNotes, userGroups, authorNotes) {
   var paperDisplayOptions = {
     pdfLink: true,
     replyCount: true,
-    showContents: true
+    showContents: true,
+    showTags: false
   };
 
   Webfield.ui.searchResults(
     oralDecisions,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#accepted-oral-papers'})
+    _.assign({}, paperDisplayOptions, {container: '#accepted-oral-papers'})
   );
 
   Webfield.ui.searchResults(
     posterDecisions,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#accepted-poster-papers'})
+    _.assign({}, paperDisplayOptions, {container: '#accepted-poster-papers'})
   );
 
   Webfield.ui.searchResults(
     submittedPapers,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#all-papers'})
+    _.assign({}, paperDisplayOptions, {container: '#all-papers'})
   );
 
   $('#notes .spinner-container').remove();
