@@ -31,16 +31,16 @@ conference = config.get_conference(client)
 # When submissions are closed, some blinded notes will actually have all of the information
 # from submissions, and some will be blinded in the normal fashion.
 conference.open_submissions(due_date = datetime.datetime(2019, 4, 15, 23, 59), additional_fields = {
-        "anonymized": {
+        "author_identity_visibility": {
             "order": 4,
-            "value-checkbox": "Anonymize author identities",
+            "value-checkbox": "Reveal author identities to everyone",
             "required": False
         }
     })
 
 # doesn't seem to take the order information during init
 invite = client.get_invitation(id=conference.get_submission_id())
-invite.reply['content']['anonymized']['order'] = 4
+invite.reply['content']['author_identity_visibility']['order'] = 4
 print(invite.reply['content'])
 client.post_invitation(invite)
 
