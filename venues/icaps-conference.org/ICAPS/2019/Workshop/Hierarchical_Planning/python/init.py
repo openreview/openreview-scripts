@@ -27,7 +27,7 @@ print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
 # March 24 midnight anywhere on earth
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 25, 11, 59))
+conference.open_submissions(due_date = datetime.datetime(2019, 3, 25, 12, 00))
 
 
 
