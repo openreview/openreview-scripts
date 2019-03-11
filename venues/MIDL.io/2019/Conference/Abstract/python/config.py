@@ -16,10 +16,11 @@ def get_conference(client):
     'date': '8-10 July 2019',
     'website': 'http://2019.midl.io',
     'location': 'London',
-    'instructions': '<p>Extended abstracts are up to 3 pages (excluding references and acknowledgements) and can, for example, focus on preliminary novel methodological ideas without extensive validation. We also specifically accept extended abstracts of recently published or submitted journal contributions to give authors the opportunity to present their work and obtain feedback from the community. Selection of abstracts is performed via a lightweight single-blind review process via OpenReview. All accepted abstracts will be presented as posters at the conference.</p>'
+    'instructions': '<p>Extended abstracts are up to 3 pages (excluding references and acknowledgements) and can, for example, focus on preliminary novel methodological ideas without extensive validation. We also specifically accept extended abstracts of recently published or submitted journal contributions to give authors the opportunity to present their work and obtain feedback from the community. Selection of abstracts is performed via a lightweight single-blind review process via OpenReview. All accepted abstracts will be presented as posters at the conference. We note that not all dual submissions are allowed. For further information on the dual submission policy, please read <a href="http://2019.midl.io/submissions/" target="_blank">http://2019.midl.io/submissions/</a>.</p>'
     })
     builder.set_conference_submission_name('Submission')
     builder.set_submission_public(True)
+    builder.set_override_homepage(True)
     return builder.get_result()
 
 
