@@ -9,7 +9,6 @@
 var CONFERENCE = 'MIDL.io/2019/Conference';
 var FULL_SUBMISSION = CONFERENCE + '/-/Full_Submission';
 var ABSTRACT_SUBMISSION = CONFERENCE + '/Abstract/-/Submission'
-var BOTH_SUBMISSION = CONFERENCE + '/-/.*_Submission'
 var REVIEWERS_NAME = 'Reviewers';
 var REVIEWERS_ID = CONFERENCE + '/Reviewers'
 var AREA_CHAIRS_NAME = 'Area_Chairs'
@@ -41,22 +40,9 @@ function load() {
 
   var abstractsP = Webfield.getAll('/notes', { invitation: ABSTRACT_SUBMISSION, details: 'replyCount' });
 
-  if (!user || _.startsWith(user.id, 'guest_')) {
-    userGroupsP = $.Deferred().resolve([]);
-    authorNotesP = $.Deferred().resolve([]);
-  } else {
-    userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
-      return _.filter(
-        _.map(result.groups, function(g) { return g.id; }),
-        function(id) { return _.startsWith(id, CONFERENCE); }
-      );
-    });
+  userGroupsP = $.Deferred().resolve([]);
+  authorNotesP = $.Deferred().resolve([]);
 
-    authorNotesP = Webfield.api.getSubmissions(BOTH_SUBMISSION, {
-      'content.authorids': user.profile.id,
-      details: 'noDetails'
-    });
-  }
 
   return $.when(notesP, decisionNotesP, userGroupsP, authorNotesP, abstractsP);
 }
@@ -70,27 +56,18 @@ function renderConferenceHeader() {
     location: 'London',
     date: ' 8-10 July 2019',
     website: 'http://2019.midl.io',
-    instructions: 'Extended abstracts are up to 3 pages (excluding references and acknowledgements) and can, for example, focus on preliminary novel methodological ideas without extensive validation. We also specifically accept extended abstracts of recently published or submitted journal contributions to give authors the opportunity to present their work and obtain feedback from the community. Selection of abstracts is performed via a lightweight single-blind review process via OpenReview. All accepted abstracts will be presented as posters at the conference.</p><br/> <p><strong>Questions or Concerns</strong></p><p>Please contact the OpenReview support team at <a href=\"mailto:info@openreview.net\">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>    Please contact the MIDL 2019 Program Chairs at <a href=\"mailto:program-chairs@midl.io\">program-chairs@midl.io</a> with any questions or concerns about conference administration or policy.</p><p>We are aware that some email providers inadequately filter emails coming from openreview.net as spam so please check your spam folder regularly.</p>'
+    instructions: '<p>Extended abstracts are up to 3 pages (excluding references and acknowledgements) and can, for example, focus on preliminary novel methodological ideas without extensive validation. We also specifically accept extended abstracts of recently published or submitted journal contributions to give authors the opportunity to present their work and obtain feedback from the community. Selection of abstracts is performed via a lightweight single-blind review process via OpenReview. All accepted abstracts will be presented as posters at the conference.</p><br/> <p><strong>Questions or Concerns</strong></p><p>Please contact the OpenReview support team at <a href=\"mailto:info@openreview.net\">info@openreview.net</a> with any questions or concerns about the OpenReview platform.<br/>    Please contact the MIDL 2019 Program Chairs at <a href=\"mailto:program-chairs@midl.io\">program-chairs@midl.io</a> with any questions or concerns about conference administration or policy.</p><p>We are aware that some email providers inadequately filter emails coming from openreview.net as spam so please check your spam folder regularly.</p>'
    });
 
   Webfield.ui.spinner('#notes');
 }
 
 function renderSubmissionButton() {
-  Webfield.api.getSubmissionInvitation(ABSTRACT_SUBMISSION, {deadlineBuffer: 3000})
-    .then(function(invitation) {
-      Webfield.ui.submissionButton(invitation, user, {
-        onNoteCreated: function() {
-          // Callback function to be run when a paper has successfully been submitted (required)
-          promptMessage('Your submission is complete. Check your inbox for a confirmation email. ' +
-            'A list of all submissions will be available after the deadline');
-
-          load().then(renderContent).then(function() {
-            $('.tabs-container a[href="#your-consoles"]').click();
-          });
-        }
-      });
-    });
+  $('#invitation').append([
+    '<h4>',
+      '<a href="/group?id=MIDL.io/2019/Conference/Abstract">MIDL 2019 Conference Abstract Submisison</a>',
+    '</h4>'
+  ].join(''));
 }
 
 function renderConferenceTabs() {
