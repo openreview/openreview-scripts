@@ -19,6 +19,6 @@ def get_conference(client):
     'location': 'Berkeley, CA, USA'
     })
     builder.set_double_blind(True)
-    builder.set_submission_public(True)
+    
     return builder.get_result()
 
