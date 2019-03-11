@@ -7,7 +7,7 @@
 
 // Constants
 var CONFERENCE_ID = 'MIDL.io/2019/Conference';
-var SUBMISSION_ID = CONFERENCE_ID + '/-/Full_Submission';
+var SUBMISSION_ID = CONFERENCE_ID + '/-/.*_Submission';
 
 var paperDisplayOptions = {
   pdfLink: true,
@@ -22,30 +22,19 @@ INSTRUCTIONS = ' ';
 var SCHEDULE_HTML = '<h4>Submission Period</h4>\
   <p>\
     <ul>\
-      <li><strong>Submission deadline: December 13</strong></li>\
+      <li><strong>Submission deadline: April 12</strong></li>\
       <li>Authors can revise their paper as many times as needed up to the paper submission deadline.</li>\
       <li>Please ensure that the email addresses of the corresponding author are up-to-date in his or her profile.</li>\
       <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
     </ul>\
   </p>\
   <br>\
-  <h4>Reviewing Period</h4>\
+  <h4>Reviewing Period TBD</h4>\
   <p>\
     <ul>\
-      <li><strong>Reviews can be expected on January 28, 2019 </strong></li>\
       <li>During the review period, authors will not be allowed to revise their paper. </li>\
     </ul>\
-  </p>\
-  <br>\
-  <h4>Rebuttal Period</h4>\
-  <p>\
-    <ul>\
-      <li><strong>Rebuttal period ends on February 10, 2019</strong></li>\
-      <li>Authors may revise their paper, but revision history will be available to reviewers.</li>\
-      <li>Area chairs and reviewers reserve the right to ignore changes which are significant from the original scope of the paper.</li>\
-    </ul>\
-  </p>\
-  <br>'
+  </p>'
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
