@@ -41,7 +41,7 @@ conference.open_submissions(due_date = datetime.datetime(2019, 4, 12, 17, 00), a
         },
         "link": {
             "description": "If submitted elsewhere, provide link to the article.",
-            "value-regex": "[\\S\\s]{1,500}",
+            "value-regex": ".{1,500}",
             "required": False
         }
 
