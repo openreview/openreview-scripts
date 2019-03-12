@@ -314,6 +314,7 @@ var getUserProfiles = function(userIds) {
   var profileMap = {};
 
   profileMap[user.profile.id] = {
+    id : user.profile.id,
     name: user.profile.first + ' ' + user.profile.last,
     email: user.profile.emails[0]
   };
@@ -407,7 +408,13 @@ var renderStatusTable = function(individualGroupIds, profiles, notes, completedR
     }
 
     selectedRows.forEach(function(row) {
-      var users = _.values(row[4].reviewers);
+      var reviewers = row[4].reviewers;
+      var users = [];
+      _.forEach(_.keys(reviewers), function(key) {
+        if (key.startsWith('r')) {
+          users.push(reviewers[key]);
+        }
+      });
       if (filter === 'submitted') {
         users = users.filter(function(u) {
           return u.completedReview;
