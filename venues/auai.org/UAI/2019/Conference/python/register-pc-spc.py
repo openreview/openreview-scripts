@@ -75,12 +75,12 @@ if __name__ == '__main__':
 
     registration_parent = client.post_note(openreview.Note(**registration_parent_json))
     print ('posted :', registration_parent.id)
-    # registration invitation
     
+    # registration invitation
     registration_invitation = client.post_invitation(openreview.Invitation(
         id = conference.get_id() + '/-/Registration',
         duedate = tools.datetime_millis(datetime.datetime(2019, 3, 16, 10, 59)),
-        expdate = tools.datetime_millis(datetime.datetime(2019, 3, 16, 10, 59)),
+        expdate = tools.datetime_millis(datetime.datetime(2019, 4, 15, 10, 59)),
         readers = ['everyone'],
         writers = [conference.get_id()],
         signatures = [conference.get_id()],
