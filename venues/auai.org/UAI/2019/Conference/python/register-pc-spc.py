@@ -1,6 +1,6 @@
-import argparse
 import openreview
 import openreview.tools as tools
+import argparse
 import datetime
 import config
 
@@ -35,15 +35,15 @@ if __name__ == '__main__':
             'signatures': {'values': [conference.get_id()]},
             'content': {
                 'title': {'value': 'UAI 2019 Registration'},
-                'Subject Areas': {
+                'subject_areas': {
                     'value': subj_desc,
                     'order': 1
                 },
-                'Profile Confirmed': {
+                'profile confirmed': {
                     'value': coi_desc,
                     'order': 2
                 },
-                'TPMS Account Confirmed': {
+                'TPMS account confirmed': {
                     'value': tpms_desc,
                     'order': 3
                 }
@@ -67,9 +67,9 @@ if __name__ == '__main__':
             'forum': None,
             'content': {
                 'title': registration_parent_invitation.reply['content']['title']['value'],
-                'Subject Areas': registration_parent_invitation.reply['content']['Subject Areas']['value'],
-                'Profile Confirmed': registration_parent_invitation.reply['content']['Profile Confirmed']['value'],
-                'TPMS Account Confirmed': registration_parent_invitation.reply['content']['TPMS Account Confirmed']['value'],
+                'subject_areas': registration_parent_invitation.reply['content']['subject_areas']['value'],
+                'profile confirmed': registration_parent_invitation.reply['content']['profile confirmed']['value'],
+                'TPMS account confirmed': registration_parent_invitation.reply['content']['TPMS account confirmed']['value'],
             }
         })
 
@@ -113,18 +113,18 @@ if __name__ == '__main__':
                     'value': 'UAI 2019 Registration',
                     'order': 1
                 },
-                'Subject Areas': {
+                'subject_areas': {
                     'values-dropdown': conference.get_subject_areas(),
                     'required': True,
                     'order': 2
                 },
-                'Profile Confirmed': {
-                    'value-dropdown': ['Yes', 'No'],
+                'profile confirmed': {
+                    'value-radio': ['Yes', 'No'],
                     'required': True,
                     'order': 3
                 },
-                'TPMS Account Confirmed': {
-                    'value-dropdown': ['Yes', 'No'],
+                'TPMS account confirmed': {
+                    'value-radio': ['Yes', 'No'],
                     'required': True,
                     'order': 4
                 }
