@@ -411,7 +411,7 @@ var renderStatusTable = function(individualGroupIds, profiles, notes, completedR
       var reviewers = row[4].reviewers;
       var users = [];
       _.forEach(_.keys(reviewers), function(key) {
-        if (key.startsWith('r')) {
+        if (key.charAt(0) === 'r') {
           users.push(reviewers[key]);
         }
       });
