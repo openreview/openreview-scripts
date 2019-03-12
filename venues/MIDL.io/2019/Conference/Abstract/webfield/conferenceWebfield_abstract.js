@@ -40,8 +40,16 @@ function load() {
 
   var abstractsP = Webfield.getAll('/notes', { invitation: ABSTRACT_SUBMISSION, details: 'replyCount' });
 
-  userGroupsP = $.Deferred().resolve([]);
-  authorNotesP = $.Deferred().resolve([]);
+  userGroupsP = Webfield.get('/groups', { member: user.id, web: true, regex: 'MIDL.io/2019/Conference/(Reviewers|Area_Chairs|Program_Chairs)$' })
+  .then(function(result) {
+    return _.map(result.groups, function(g) { return g.id; });
+  });
+
+  authorNotesP = Webfield.api.getSubmissions(FULL_SUBMISSION, {
+    pageSize: 50,
+    'content.authorids': user.profile.id,
+    details: 'noDetails'
+  });
 
 
   return $.when(notesP, decisionNotesP, userGroupsP, authorNotesP, abstractsP);
