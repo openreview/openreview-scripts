@@ -131,18 +131,18 @@ def setup_recommendations():
             'writers': [CONFERENCE_ID],
             'readers': [CONFERENCE_ID],
             'content': {
-                'title': config_note.content['title'],
+                'title': 'Recommendation Test',
                 'assignedGroups': assigned_groups,
                 'alternateGroups': []
             }
         })
         client.post_note(assignment_note)
 
-    return true
+    return True
 
 
 if __name__ == '__main__':
     success = setup_recommendations()
 
-    if success is True
+    if success is True:
         print('Setup complete')
