@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     coi_desc = 'In order to avoid conflicts of interest in reviewing, we ask that all reviewers take a moment to update their OpenReview profiles with their latest information regarding work history and professional relationships. After you have updated your profile, please confirm that your OpenReview profile is up-to-date by selecting yes in the "Profile Confirmed" section.\n\n'
 
-    tpms_desc = 'In addition to subject areas, we will be using the Toronto Paper Matching System (TPMS) to compute paper-reviewer affinity scores. Please take a moment to sign up for TPMS and/or update your TPMS account with your latest papers. Then, please ensure that the email address that is affiliated with your TPMS account is linked to your OpenReview profile. After you have done this, please confirm that your TPMS account is up-to-date by selecting yes in the "TPMS Account Confirmed" section.\n\n'
+    tpms_desc = 'In addition to subject areas, we will be using the Toronto Paper Matching System (TPMS) to compute paper-reviewer affinity scores. Please take a moment to sign up for TPMS and/or update your TPMS account with your latest papers (Registration link - http://torontopapermatching.org/webapp/profileBrowser/login/). Then, please ensure that the email address that is affiliated with your TPMS account is linked to your OpenReview profile. After you have done this, please confirm that your TPMS account is up-to-date by selecting yes in the "TPMS Account Confirmed" section.\n\n'
 
     registration_parent_invitation = client.post_invitation(openreview.Invitation(
         id = conference.get_id() + '/-/Parent/Registration',
@@ -79,8 +79,8 @@ if __name__ == '__main__':
     # registration invitation
     registration_invitation = client.post_invitation(openreview.Invitation(
         id = conference.get_id() + '/-/Registration',
-        duedate = tools.datetime_millis(datetime.datetime(2019, 3, 16, 10, 59)),
-        expdate = tools.datetime_millis(datetime.datetime(2019, 4, 15, 10, 59)),
+        duedate = tools.datetime_millis(datetime.datetime(2019, 3, 19, 10, 59)),
+        expdate = tools.datetime_millis(datetime.datetime(2019, 4, 19, 10, 59)),
         readers = ['everyone'],
         writers = [conference.get_id()],
         signatures = [conference.get_id()],
