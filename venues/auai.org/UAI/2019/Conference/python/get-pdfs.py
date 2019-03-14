@@ -22,8 +22,5 @@ for submission in submissions:
     pdf_url = '{0}{1}'.format(client.baseurl, submission.content['pdf'])
     paper_id = submission.number
     print ('retrieving Paper{0} at {1}'.format(paper_id, pdf_url))
-    pdf_response = requests.get(pdf_url, stream=True)
-
     with open('uai2019-pdfs/Paper{0}.pdf'.format(paper_id), 'wb') as f:
-        f.write(pdf_response.content)
-
+        f.write(client.get_pdf(submission.id))
