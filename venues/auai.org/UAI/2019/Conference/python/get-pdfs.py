@@ -18,7 +18,7 @@ submissions = openreview.tools.iterget_notes(client, invitation=submission_invit
 if not os.path.exists('../pdfs'):
     os.makedirs('../pdfs')
 
-for submission in submissions[:20]:
+for submission in submissions:
     pdf_url = '{0}{1}'.format(client.baseurl, submission.content['pdf'])
     paper_id = submission.number
     print ('retrieving Paper{0} at {1}'.format(paper_id, pdf_url))
