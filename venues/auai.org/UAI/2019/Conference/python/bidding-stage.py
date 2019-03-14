@@ -21,18 +21,20 @@ if __name__ == '__main__':
     conference.set_reviewerpage_header({
         'instructions': '<p class="dark">This page provides information and status updates \
             for UAI 2019 reviewers. It will be regularly updated as the conference progresses, \
-            so please check the "Reviewer Schedule" section frequently for news and other updates.</p>',
+            so please check the "Reviewer Schedule" and "Review Tasks" section frequently for news and other updates.</p>',
         'schedule': '<h4>Registration Phase</h4>\
-            <p>\
-            Update your profile to include your most up-to-date information, including emails,  \
-                work history and relations, to ensure proper conflict-of-interest detection \
-                during the paper matching process.\
-            </p>\
-        <br>\
+        <p>\
+            <em><strong>Please do the following by 23:59 PM Samoa Time, Friday, March 18 2019</strong></em>:\
+            <ul>\
+                <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
+                <li>Complete the UAI 2019 registration form (found in your "Reviewer Tasks").</li>\
+                <li>Register subject areas indicating your expertise (through UAI 2019 registration form).</li>\
+            </ul>\
+        </p><br>\
         <h4>Bidding Phase</h4>\
-            <p>\
+        <p>\
             <em><strong>Please note that bidding has begun. You are requested to do the\
-            following by 23:59 PM Samoa Time, Match 15th 2019</strong></em>:\
+            following by 23:59 PM Samoa Time, March 18th 2019</strong></em>:\
             <ul>\
                 <li>Provide your reviewing preferences by bidding on papers using the Bidding \
                 Interface.</li>\
@@ -45,18 +47,21 @@ if __name__ == '__main__':
     conference.set_areachairpage_header({
         'instructions': '<p class="dark">This page provides information and status updates \
             for UAI 2019 area chairs. It will be regularly updated as the conference progresses, \
-            so please check the "Area Chair Schedule" section frequently for news and other updates.</p>',
+            so please check the "Area Chair Schedule" and "Area Chair Tasks" sections frequently for news and other updates.</p>',
         'schedule': '<h4>Registration Phase</h4>\
             <p>\
-            Update your profile to include your most up-to-date information, including emails,  \
-                work history and relations, to ensure proper conflict-of-interest detection \
-                during the paper matching process.\
+            <em><strong>Please do the following by 23:59 PM Samoa Time, Friday, March 18 2019</strong></em>:\
+            <ul>\
+                <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li> \
+                <li>Complete the UAI 2019 registration form (found in your "Area Chair Tasks").</li>\
+                <li>Register subject areas indicating your expertise (through UAI 2019 registration form).</li>\
+            </ul>\
             </p>\
         <br>\
         <h4>Bidding Phase</h4>\
             <p>\
             <em><strong>Please note that bidding has begun. You are requested to do the\
-            following by 23:59 PM Samoa Time, Match 15th 2019</strong></em>:\
+            following by 23:59 PM Samoa Time, March 18th 2019</strong></em>:\
             <ul>\
                 <li>Provide your reviewing preferences by bidding on papers using the Bidding \
                 Interface.</li>\
