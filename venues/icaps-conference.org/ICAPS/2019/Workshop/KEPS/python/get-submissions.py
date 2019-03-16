@@ -25,7 +25,7 @@ print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
 
-notes = conference.get_submissions()
+notes = client.get_notes(invitation=conference.get_id()+'/-/Submission')
 if args.output!=None:
     ext = args.output.split('.')[-1]
     if ext.lower()=='json':
@@ -41,7 +41,7 @@ if args.output!=None:
 
             for note in notes:
                 row = []
-                row.append('%s/forum?id=%s' % (args.baseurl,note.id))
+                row.append('%s/forum?id=%s' % (client.baseurl,note.id))
                 row.append(note.number)
                 row.append(note.tcdate)
                 row.append(note.content['title'])
