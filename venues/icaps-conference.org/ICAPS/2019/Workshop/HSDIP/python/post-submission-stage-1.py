@@ -50,5 +50,5 @@ Thank you!
 ICAPS HSDIP 2019 Program Chairs
 '''
 
-response = client.send_mail(subject, [conference.get_id()+'/Reviewers'], message)
+response = client.send_mail(subject, [conference.get_reviewers_id()], message)
 print(response)
