@@ -74,9 +74,7 @@ if __name__ == "__main__":
                 conference.get_id(),
                 conference.get_program_chairs_id(),
                 'learningtheory.org/COLT/2019/Conference/Paper{0}/Program_Committee'.format(paper_number)
-            ],
-            'signatories': ['learningtheory.org/COLT/2019/Conference/Paper{0}/Program_Committee'.format(paper_number)]
-            },
+            ]},
         parent_group_params = {
             'readers': [
                 conference.get_id(),
