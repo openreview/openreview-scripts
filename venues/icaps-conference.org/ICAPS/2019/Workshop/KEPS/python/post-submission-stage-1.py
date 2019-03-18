@@ -1,15 +1,13 @@
 #!/usr/bin/python
 
+
 import argparse
 import openreview
 from openreview import tools
-from openreview import invitations
 import config
-import datetime
 
 """
 OPTIONAL SCRIPT ARGUMENTS
-
 	baseurl -  the URL of the OpenReview server to connect to (live site: https://openreview.net)
  	username - the email address of the logging in user
 	password - the user's password
@@ -26,22 +24,12 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 26, 11, 59), additional_fields = {
-    "author_identity_visibility": {
-        "order": 4,
-        "value-checkbox": "Reveal author identities to reviewers",
-        "required": False
-    }
-})
 
-# doesn't seem to take the order information during init
-invite = client.get_invitation(id=conference.get_submission_id())
-invite.reply['content']['author_identity_visibility']['order'] = 4
-print(invite.reply['content'])
-client.post_invitation(invite)
+conference.close_submissions()
+conference.set_authors()
 
+print('replacing members with IDs')
+reviewers_group = client.get_group(conference.get_reviewers_id())
+openreview.tools.replace_members_with_ids(client, reviewers_group)
 
-
-
-
-
+conference.create_blind_submissions()
