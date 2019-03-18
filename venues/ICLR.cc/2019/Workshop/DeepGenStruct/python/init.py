@@ -26,4 +26,10 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 16, 0, 0))
+# March 23, 2019 9am EST
+conference.open_submissions(due_date = datetime.datetime(2019, 3, 23, 12, 0))
+invite = client.get_invitation(id=conference.get_submission_id())
+blind = client.get_invitation(id=conference.get_id()+'/-/Blind_Submission')
+blind.duedate=invite.duedate
+blind.expdate=invite.expdate
+client.post_invitation(blind)
