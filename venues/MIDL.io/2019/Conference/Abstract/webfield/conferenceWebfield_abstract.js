@@ -44,11 +44,9 @@ function load() {
     userGroupsP = $.Deferred().resolve([]);
     authorNotesP = $.Deferred().resolve([]);
   } else {
-    userGroupsP = Webfield.get('/groups', { member: user.id, web: true }).then(function(result) {
-      return _.filter(
-        _.map(result.groups, function(g) { return g.id; }),
-        function(id) { return _.startsWith(id, CONFERENCE); }
-      );
+    userGroupsP = Webfield.get('/groups', { member: user.id, web: true, regex: 'MIDL.io/2019/Conference/(Reviewers|Area_Chairs|Program_Chairs)$' })
+    .then(function(result) {
+      return _.map(result.groups, function(g) { return g.id; });
     });
 
     authorNotesP = Webfield.api.getSubmissions(FULL_SUBMISSION, {
