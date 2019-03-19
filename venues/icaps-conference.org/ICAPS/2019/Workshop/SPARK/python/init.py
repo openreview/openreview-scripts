@@ -26,10 +26,22 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-# March 23, 2019 9am EST
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 23, 12, 0))
+conference.open_submissions(due_date = datetime.datetime(2019, 3, 25, 23, 59), additional_fields = {
+    "author_identity_visibility": {
+        "order": 4,
+        "value-checkbox": "Reveal author identities to reviewers",
+        "required": False
+    }
+})
+
+# doesn't seem to take the order information during init
 invite = client.get_invitation(id=conference.get_submission_id())
-blind = client.get_invitation(id=conference.get_id()+'/-/Blind_Submission')
-blind.duedate=invite.duedate
-blind.expdate=invite.expdate
-client.post_invitation(blind)
+invite.reply['content']['author_identity_visibility']['order'] = 4
+print(invite.reply['content'])
+client.post_invitation(invite)
+
+conference.set_program_chairs(emails=[])
+
+
+
+
