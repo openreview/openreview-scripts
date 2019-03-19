@@ -148,8 +148,6 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
   $('#notes > .spinner-container').remove();
   $('.tabs-container').show();
 
-  Webfield.ui.done();
-
 }
 
 // Go!
