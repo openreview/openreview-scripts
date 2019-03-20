@@ -13,7 +13,7 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Deep Generative Models for Highly Structured Data ',
     'subtitle': 'ICLR 2019 Workshop',
-    'deadline': 'Submission Deadline: March 23, 2019 9am EST',
+    'deadline': 'Submission Deadline: March 27, 2019 9am EST',
     'date': 'May 6 - May 9, 2019',
     'website': 'https://deep-gen-struct.github.io/index.html',
     'location': 'New Orleans, Louisiana, United States'
