@@ -47,7 +47,7 @@ def get_conference(client):
           <li>During the review period, authors will not be allowed to revise their paper. </li>
         </ul></p>'''})
 
-    builder.set_submission_public(True)
+    builder.set_submission_public(False)
     return builder.get_result()
 
 
