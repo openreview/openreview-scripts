@@ -32,7 +32,7 @@ conference.set_program_chairs([
 conference.set_reviewers([
 #hideen
 ])
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 26, 11, 59), remove_fields = ['TL;DR'], additional_fields = {
+conference.open_submissions(due_date = datetime.datetime(2019, 4, 2, 11, 59), remove_fields = ['TL;DR'], additional_fields = {
         'pdf': {
             'description': 'Upload a PDF file that ends with .pdf',
             'required': False,

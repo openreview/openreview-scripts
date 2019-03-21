@@ -26,7 +26,12 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-conference.set_program_chairs(emails = [
+#conference.set_program_chairs(emails = [
 #hidden emails
-])
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 15, 23, 59))
+#])
+
+# March 22, 11:59pm AoE
+submission_inv = conference.open_submissions(due_date = datetime.datetime(2019, 3, 23, 11, 59))
+submission_inv.reply['content']['authorids']['description']+=" Please provide real emails; identities will be anonymized."
+submission_inv.reply['content']['authors']['description']+=" Please provide real names; identities will be anonymized."
+submission_inv = client.post_invitation(submission_inv)

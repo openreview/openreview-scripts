@@ -19,8 +19,6 @@ function main() {
 
   renderConferenceHeader();
 
-  renderConferenceTabs();
-
   load().then(renderContent).then(Webfield.ui.done);
 }
 
@@ -56,28 +54,6 @@ function renderConferenceHeader() {
   Webfield.ui.spinner('#notes');
 }
 
-function renderConferenceTabs() {
-  var sections = [
-    {
-      heading: 'Oral Presentations',
-      id: 'accepted-oral-papers',
-    },
-    {
-      heading: 'Poster Presentations',
-      id: 'accepted-poster-papers',
-    },
-    {
-      heading: 'Submitted Papers',
-      id: 'rejected-papers',
-    }
-  ];
-
-  Webfield.ui.tabPanel(sections, {
-    container: '#notes',
-    hidden: true
-  });
-}
-
 function renderContent(notes, withdrawnNotes, decisionsNotes) {
 
   var notesDict = {};
@@ -106,28 +82,70 @@ function renderContent(notes, withdrawnNotes, decisionsNotes) {
   posterDecisions = _.sortBy(posterDecisions, function(o) { return o.id; });
   submittedPapers = _.sortBy(submittedPapers, function(o) { return o.id; });
 
+  var papers = {
+    'accepted-oral-papers': oralDecisions,
+    'accepted-poster-papers': posterDecisions,
+    'rejected-papers': submittedPapers
+  }
+  
   var paperDisplayOptions = {
     pdfLink: true,
     replyCount: true,
     showContents: true
   };
 
+  var activeTab = 0;
+  var loadingContent = Handlebars.templates.spinner({ extraClasses: 'spinner-inline' });
+  var sections = [
+    {
+      heading: 'Oral Presentations',
+      id: 'accepted-oral-papers',
+      content: null
+    },
+    {
+      heading: 'Poster Presentations',
+      id: 'accepted-poster-papers',
+      content: loadingContent
+    },
+    {
+      heading: 'Submitted Papers',
+      id: 'rejected-papers',
+      content: loadingContent
+    }
+  ];
+
+  sections[activeTab].active = true;
+
+  $('#notes .tabs-container').remove();
+
+  Webfield.ui.tabPanel(sections, {
+    container: '#notes',
+    hidden: true
+  });
+
+  $('#group-container').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
+    activeTab = $(e.target).data('tabIndex');
+    var containerId = sections[activeTab].id;
+
+    setTimeout(function() {
+      Webfield.ui.searchResults(
+        papers[containerId],
+        _.assign({}, paperDisplayOptions, {showTags: false, container: '#' + containerId})
+      );
+    }, 100);
+  });
+
+  $('#group-container').on('hidden.bs.tab', 'ul.nav-tabs li a', function(e) {
+    var containerId = $(e.target).attr('href');
+    Webfield.ui.spinner(containerId, {inline: true});
+  });  
+
   Webfield.ui.searchResults(
     oralDecisions,
     _.assign({}, paperDisplayOptions, {showTags: false, container: '#accepted-oral-papers'})
   );
 
-  Webfield.ui.searchResults(
-    posterDecisions,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#accepted-poster-papers'})
-  );
-
-  Webfield.ui.searchResults(
-    submittedPapers,
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#rejected-papers'})
-  );
-
-  $('#notes .spinner-container').remove();
+  $('#notes > .spinner-container').remove();
   $('.tabs-container').show();
 
 }
