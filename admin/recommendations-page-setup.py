@@ -7,6 +7,8 @@ give us relevance judgments about
 '''
 
 from __future__ import print_function
+from random import uniform
+from random import sample
 import openreview
 
 CONFERENCE_ID = 'MIDL.amsterdam/2018/Conference'
@@ -117,12 +119,13 @@ def setup_recommendations():
 
     midl18_submissions = client.get_notes(invitation=SUBMISSION_ID)
     reviewers_group = client.get_group(REVIEWERS_ID)
-    assigned_groups = [
-        {'conflicts': None, 'finalScore': 0.0, 'userId': userid, 'scores': {}}
-        for userid in reviewers_group.members
-    ]
+    num_assigned = 5
 
     for paper in midl18_submissions:
+        assigned_groups = [
+            {'conflicts': None, 'finalScore': uniform(0, 10), 'userId': userid, 'scores': {}}
+            for userid in sample(reviewers_group.members, num_assigned)
+        ]
         assignment_note = openreview.Note(**{
             'invitation': ASSIGNMENT_INV_ID,
             'forum': paper.forum,
