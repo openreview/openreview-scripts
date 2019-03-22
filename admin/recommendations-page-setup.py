@@ -9,62 +9,20 @@ give us relevance judgments about
 from __future__ import print_function
 from random import uniform
 from random import sample
+import sys
 import openreview
 
 CONFERENCE_ID = 'MIDL.amsterdam/2018/Conference'
-CONFIG_INV_ID = CONFERENCE_ID + '/-/Recommendation'
 SUBMISSION_ID = CONFERENCE_ID + '/-/Submission'
-CONSTRAINTS_INV_ID = CONFIG_INV_ID + '/Value'
+GROUP_ID = 'MIDL.io/2019/Conference/Reviewers'
+TAG_INVITATION_ID = CONFERENCE_ID + '/-/Recommendation'
 ASSIGNMENT_INV_ID = CONFERENCE_ID + '/-/Paper_Assignment'
 
-## This is intentional! We're matching current MIDL reviewers with past papers.
-REVIEWERS_ID = 'MIDL.io/2019/Conference/Reviewers'
-
-def setup_recommendations():
-    config_inv = openreview.Invitation(**{
-        'id': CONFIG_INV_ID,
-        'readers': [CONFERENCE_ID],
-        'writers': [CONFERENCE_ID],
-        'signatures': [CONFERENCE_ID],
-        'reply': {
-            'forum': None,
-            'replyto': None,
-            'invitation': None,
-            'readers': {'values': [CONFERENCE_ID]},
-            'writers': {'values': [CONFERENCE_ID]},
-            'signatures': {'values': [CONFERENCE_ID]},
-            'content': {
-                'submission_invitation': {
-                    'value': SUBMISSION_ID
-                },
-                'recommendation_invitation': {
-                    'value': CONSTRAINTS_INV_ID
-                },
-                'assignment_invitation': {
-                    'value': ASSIGNMENT_INV_ID
-                },
-                'group': {
-                    'value': REVIEWERS_ID,
-                }
-            }
-        }
-    })
-
-    config_note = openreview.Note(**{
-        'invitation': CONFIG_INV_ID,
-        'readers': [CONFERENCE_ID],
-        'writers': [CONFERENCE_ID],
-        'signatures': [CONFERENCE_ID],
-        'content': {
-            'submission_invitation': SUBMISSION_ID,
-            'recommendation_invitation': CONSTRAINTS_INV_ID,
-            'assignment_invitation': ASSIGNMENT_INV_ID,
-            'group': REVIEWERS_ID
-        }
-    })
+def setup_recommendations(create_assignments=False):
+    client = openreview.Client()
 
     recommendation_tag_inv = openreview.Invitation(**{
-        'id': CONSTRAINTS_INV_ID,
+        'id': TAG_INVITATION_ID,
         'readers': ['everyone'],
         'writers': [CONFERENCE_ID],
         'signatures': [CONFERENCE_ID],
@@ -82,70 +40,65 @@ def setup_recommendations():
             },
             'content': {
                 'tag': {
+                    'description': 'Recommendation',
                     'value-regex': '.*'
                 }
             }
         }
     })
-
-    paper_assignment_inv = openreview.Invitation(**{
-        'id': ASSIGNMENT_INV_ID,
-        'readers': ['everyone'],
-        'writers': [CONFERENCE_ID],
-        'signatures': [CONFERENCE_ID],
-        'invitees': [CONFERENCE_ID],
-        'reply': {
-            'forum': None,
-            'replyto': None,
-            'invitation': SUBMISSION_ID,
-            'readers': {
-                'values': [CONFERENCE_ID]
-            },
-            'signatures': {
-                'values': [CONFERENCE_ID]
-            },
-            'content': {}
-        }
-    })
-
-    client = openreview.Client()
-
-    client.post_invitation(config_inv)
-    note_response = client.post_note(config_note)
     client.post_invitation(recommendation_tag_inv)
-    client.post_invitation(paper_assignment_inv)
 
-    print('Recommendation config note ID: ' + note_response.id)
-
-    midl18_submissions = client.get_notes(invitation=SUBMISSION_ID)
-    reviewers_group = client.get_group(REVIEWERS_ID)
-    num_assigned = 5
-
-    for paper in midl18_submissions:
-        assigned_groups = [
-            {'conflicts': None, 'finalScore': uniform(0, 10), 'userId': userid, 'scores': {}}
-            for userid in sample(reviewers_group.members, num_assigned)
-        ]
-        assignment_note = openreview.Note(**{
-            'invitation': ASSIGNMENT_INV_ID,
-            'forum': paper.forum,
-            'replyto': paper.forum,
-            'signatures': [CONFERENCE_ID],
+    if create_assignments is True:
+        paper_assignment_inv = openreview.Invitation(**{
+            'id': ASSIGNMENT_INV_ID,
+            'readers': ['everyone'],
             'writers': [CONFERENCE_ID],
-            'readers': [CONFERENCE_ID],
-            'content': {
-                'title': 'Recommendation Test',
-                'assignedGroups': assigned_groups,
-                'alternateGroups': []
+            'signatures': [CONFERENCE_ID],
+            'invitees': [CONFERENCE_ID],
+            'reply': {
+                'forum': None,
+                'replyto': None,
+                'invitation': SUBMISSION_ID,
+                'readers': {
+                    'values': [CONFERENCE_ID]
+                },
+                'signatures': {
+                    'values': [CONFERENCE_ID]
+                },
+                'content': {}
             }
         })
-        client.post_note(assignment_note)
+        client.post_invitation(paper_assignment_inv)
+
+        paper_submissions = client.get_notes(invitation=SUBMISSION_ID)
+        reviewers_group = client.get_group(GROUP_ID)
+        num_reviewers_to_assign = 5
+        for paper in paper_submissions:
+            assigned_groups = [
+                {'conflicts': None, 'finalScore': uniform(0, 10), 'userId': userid, 'scores': {}}
+                for userid in sample(reviewers_group.members, num_reviewers_to_assign)
+            ]
+            assignment_note = openreview.Note(**{
+                'invitation': ASSIGNMENT_INV_ID,
+                'forum': paper.forum,
+                'replyto': paper.forum,
+                'signatures': [CONFERENCE_ID],
+                'writers': [CONFERENCE_ID],
+                'readers': [CONFERENCE_ID],
+                'content': {
+                    'title': 'Recommendation Test',
+                    'assignedGroups': assigned_groups,
+                    'alternateGroups': []
+                }
+            })
+            client.post_note(assignment_note)
 
     return True
 
 
 if __name__ == '__main__':
-    success = setup_recommendations()
+    create_assignments = '--with-assignments' in sys.argv
+    success = setup_recommendations(create_assignments=create_assignments)
 
     if success is True:
         print('Setup complete')
