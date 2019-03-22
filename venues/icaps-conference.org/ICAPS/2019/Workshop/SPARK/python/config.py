@@ -13,12 +13,13 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Scheduling and Planning Applications Workshop',
     'subtitle': 'ICAPS 2019 Workshop',
-    'deadline': 'Submission Deadline: March 25, 2019 23:59 GMT',
+    'deadline': 'Submission Deadline: April 5, 2019 23:59 GMT',
     'date': 'July 11-15, 2019',
     'website': 'https://icaps19.icaps-conference.org/workshops/SPARK/index.html',
     'location': 'Berkeley, CA, USA'
     })
     builder.set_double_blind(True)
     builder.set_submission_public(True)
+    builder.set_override_homepage(True)
     return builder.get_result()
 
