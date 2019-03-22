@@ -16,7 +16,16 @@ def get_conference(client):
         'date': '13 - 15 Oct, 2019',
         'website': 'http://www.adai.ai',
         'location': 'Beijing China',
-        'instructions': ''
+        'instructions': '''<p><strong>Important Notes about Submitting a Paper:</strong>
+                <ul>
+                    <li>The paper length is limited to 6 pages, with 1 additional page containing only bibliographic references.</li>
+                    <li>All work must be original, i.e., it must not have appeared in a conference proceedings, book, or journal and may not be under review for another archival conference.</li>
+                    <li>The DAI 2019 review process is double blind. Please make sure that the submission does not disclose the author's identities or affiliation.</li>
+                    <li>Neither submissions nor the reviewing process will be public.</li>
+                </ul></p>
+                <p> <strong>Questions or Concerns:</strong> <br>
+Please contact the DAI 2019 Program chairs at <a href="mailto:dai2019chairs@gmail.com">dai2019chairs@gmail.com</a>.<br>
+Please contact the OpenReview support team at <a href="mailto:info@openreview.net">info@openreview.net</a> with any OpenReview related questions or concerns.</p>'''
     })
     builder.set_double_blind(True)
 
@@ -59,5 +68,7 @@ def get_conference(client):
           <li><strong>18th-20th of July, 2019(23:59 UTC-12) </strong></li>
           <li>Final review due 23rd July, 2019(23:59 UTC-12) </li>
         </ul></p>'''})
+
+    builder.set_override_homepage(True)
     return builder.get_result()
 
