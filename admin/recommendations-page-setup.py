@@ -3,7 +3,7 @@ Sets up the supporting data for developing the "recommendation browser."
 
 The scenario that this sets up is one where we're matching MIDL '19 reviewers
 to MIDL '18 papers. We're doing this so that the MIDL '19 program chairs can
-give us relevance judgments about
+give us relevance judgements.
 '''
 
 from __future__ import print_function
