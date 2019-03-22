@@ -1,15 +1,13 @@
 #!/usr/bin/python
 
+import sys, os
 import argparse
-import openreview
-from openreview import tools
-from openreview import invitations
-import config
 import datetime
+import openreview
+import config
 
 """
 OPTIONAL SCRIPT ARGUMENTS
-
 	baseurl -  the URL of the OpenReview server to connect to (live site: https://openreview.net)
  	username - the email address of the logging in user
 	password - the user's password
@@ -26,22 +24,21 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-conference.open_submissions(due_date = datetime.datetime(2019, 4, 5, 23, 59), additional_fields = {
-    "author_identity_visibility": {
-        "order": 4,
-        "value-checkbox": "Reveal author identities to reviewers",
-        "required": False
-    }
+conference.set_program_chairs([
+#hidden
+])
+conference.set_reviewers([
+#hidden
+])
+
+# May 27, 2019, 2019 23:59 AoE
+conference.open_submissions(due_date = datetime.datetime(2019, 5, 28, 11, 59), remove_fields = ['TL;DR'], additional_fields = {
+        'archival': {
+            'description': 'Archival grants OpenReview permission to post the paper publicly',
+            'required': True,
+            'value-radio': [
+                'Archival',
+                'Non-archival'
+            ]
+        }
 })
-
-# doesn't seem to take the order information during init
-invite = client.get_invitation(id=conference.get_submission_id())
-invite.reply['content']['author_identity_visibility']['order'] = 4
-print(invite.reply['content'])
-client.post_invitation(invite)
-
-conference.set_program_chairs(emails=[])
-
-
-
-
