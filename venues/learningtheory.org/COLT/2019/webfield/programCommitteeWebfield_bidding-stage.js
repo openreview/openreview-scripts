@@ -22,6 +22,7 @@ var AREACHAIR_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\
 var REVIEWER_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers$/;
 var REVIEWER_INVITED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Program_Committee_Member(\d+)\/Reviewers_Invited$/;
 var REVIEWER_DECLINED_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Declined$/;
+var REVIEWER_DISCUSSION_REGEX = /^learningtheory\.org\/COLT\/2019\/Conference\/Paper(\d+)\/Reviewers\/Discussion$/;
 
 var INSTRUCTIONS = '<p class="dark">\
   This page provides information and status \
@@ -113,7 +114,8 @@ var buildNoteMap = function(noteNumbers) {
     invitedMap[noteNumbers[i]] = {
       accepted: [],
       invited: [],
-      declined: []
+      declined: [],
+      discussion: []
     };
   }
   return noteMap;
@@ -270,6 +272,14 @@ var getReviewerGroups = function(noteNumbers) {
         num = parseInt(matches[1], 10);
         if ((num in noteMap) && g.members.length) {
           invitedMap[num]['declined'] = g.members;
+        }
+      }
+
+      var matches = g.id.match(REVIEWER_DISCUSSION_REGEX);
+      if (matches) {
+        num = parseInt(matches[1], 10);
+        if ((num in noteMap) && g.members.length) {
+          invitedMap[num]['discussion'] = g.members;
         }
       }
 
@@ -551,7 +561,12 @@ var renderInvitedReviewers = function(data) {
   var declined = '';
   var invited = '';
   data.invited.accepted.forEach(function(r) {
-    accepted = accepted + '<tr><td>' + r + '<span class="text-muted">(accepted)</span></td></tr>';
+    accepted = accepted + '<tr><td data-reviewer="' + r + '">' + r + '<span class="text-muted">(accepted)</span> ';
+    if (!data.invited.discussion.includes(r)) {
+      accepted = accepted + '<a href="#" class="add-member-to-discussion">(Add to Discussion)</a></td></tr>';
+    } else {
+      accepted = accepted + '<span class="text-muted">(Added to discussion)</span></td></tr>';
+    }
   })
   data.invited.declined.forEach(function(r) {
     declined = declined + '<tr><td>' + r + '<span class="text-muted">(declined)</span></td></tr>';
@@ -561,7 +576,7 @@ var renderInvitedReviewers = function(data) {
       invited = invited + '<tr><td>' + r + '<span class="text-muted">(invited)</span></td></tr>';
     }
   })
-  return '<div id= "' + data.noteId +'-invited-reviewers" class="collapse" style="display: block;">' +
+  return '<div id= "' + data.noteId +'-invited-reviewers" class="collapse" style="display: block;" data-note-number="' + data.noteNumber + '" data-note-forum="' + data.noteId + '">' +
   '<table class="table table-condensed table-minimal">' +
   '  <tbody>' +
         accepted +
@@ -844,7 +859,8 @@ var registerEventHandlers = function(blindedNotes) {
           invited: {
             accepted: invitedMap[noteNumber].accepted,
             invited: invitedMap[noteNumber].invited,
-            declined: invitedMap[noteNumber].declined
+            declined: invitedMap[noteNumber].declined,
+            discussion: invitedMap[noteNumber].discussion
           }
         }
         $('#' + noteId + '-invited-reviewers').html(renderInvitedReviewers(data));
@@ -852,6 +868,48 @@ var registerEventHandlers = function(blindedNotes) {
       });
     }
 
+    return false;
+  });
+
+  $('#group-container').on('click', 'a.add-member-to-discussion', function(e) {
+    $parent = $(this).parent();
+    var closestDiv = $(this).closest('div');
+    var idToAdd = $parent.data('reviewer');
+    var paperForum = closestDiv.data('noteForum');
+    var paperNumber = closestDiv.data('noteNumber');
+    var groupId = CONFERENCE + '/Paper' + paperNumber + '/Reviewers/Discussion';
+    var noteObj = _.find(blindedNotes, {'id' : paperForum});
+    var noteName = noteObj.content['title'];
+    var noteNumber = noteObj.number;
+
+    Webfield.put('/groups/members', { id: groupId, members: [idToAdd] })
+    .then(function(result) {
+      promptMessage(idToAdd + ' added to the Discussion Group for Paper ' + paperNumber);
+      var email = {
+        groups: [idToAdd],
+        subject: SHORT_PHRASE + ': Invitation to participate in discussion for paper : "' + noteName + '"',
+        message: 'I hope this email finds you well. \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to request you to contribute to the discussion for submission, titled: ' +
+        noteName + ' \n\nTo find more details about the paper and to comment on it, please log in on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + paperForum +
+        '\n\nMany thanks,\n' + view.prettyId(user.profile.id)
+      }
+      return Webfield.post('/messages', email);
+    })
+    .then(function(){
+      invitedMap[noteNumber].discussion.push(idToAdd);
+        var data = {
+          noteId: noteObj.id,
+          noteNumber: noteNumber,
+          noteName: noteName,
+          invited: {
+            accepted: invitedMap[noteNumber].accepted,
+            invited: invitedMap[noteNumber].invited,
+            declined: invitedMap[noteNumber].declined,
+            discussion: invitedMap[noteNumber].discussion
+          }
+        }
+        $('#' + noteObj.id + '-invited-reviewers').html(renderInvitedReviewers(data));
+        console.log('Done');
+    });
     return false;
   });
 };
