@@ -145,7 +145,5 @@ if __name__ == '__main__':
         if (index+1)%5 == 0 :
             print ('Processed paper ', index+1)
 
-        break
-
     print ('Processed ', paper_number)
 
