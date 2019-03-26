@@ -3,7 +3,6 @@ import argparse
 import sys
 import csv
 import openreview
-import config
 import re
 
 '''
@@ -53,17 +52,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-    conference = config.get_conference(client)
 
     paper_number = args.paper
     member_to_remove = args.remove
     member_to_add = args.add
 
-    conference_id = conference.get_id()
+    conference_id = 'learningtheory.org/COLT/2019/Conference'
 
     result = openreview.tools.assign(
         client=client,
-        conference=conference.get_id(),
+        conference='learningtheory.org/COLT/2019/Conference',
         paper_number=paper_number,
         reviewer_to_add=member_to_add,
         reviewer_to_remove=member_to_remove,
@@ -71,15 +69,15 @@ if __name__ == "__main__":
         individual_label = 'Program_Committee_Member',
         individual_group_params = {
             'readers': [
-                conference.get_id(),
-                conference.get_program_chairs_id(),
+                'learningtheory.org/COLT/2019/Conference',
+                'learningtheory.org/COLT/2019/Conference/Program_Chairs',
                 'learningtheory.org/COLT/2019/Conference/Paper{0}/Program_Committee'.format(paper_number)
             ]},
         parent_group_params = {
             'readers': [
-                conference.get_id(),
-                conference.get_program_chairs_id(),
-                    'learningtheory.org/COLT/2019/Conference/Paper{0}/Program_Committee'.format(paper_number)
+                'learningtheory.org/COLT/2019/Conference',
+                'learningtheory.org/COLT/2019/Conference/Program_Chairs',
+                'learningtheory.org/COLT/2019/Conference/Paper{0}/Program_Committee'.format(paper_number)
             ],
             'signatories': ['learningtheory.org/COLT/2019/Conference/Paper{0}/Program_Committee'.format(paper_number)]
         })
