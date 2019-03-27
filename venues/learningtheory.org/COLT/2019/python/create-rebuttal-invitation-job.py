@@ -71,7 +71,8 @@ for review in new_reviews:
             'readers': {'values': [
                 'learningtheory.org/COLT/2019/Conference/Paper' + paper_number + '/Authors',
                 'learningtheory.org/COLT/2019/Conference/Paper' + paper_number + '/Program_Committee',
-                'learningtheory.org/COLT/2019/Conference/Program_Chairs'
+                'learningtheory.org/COLT/2019/Conference/Program_Chairs',
+                'learningtheory.org/COLT/2019/Conference/Paper' + paper_number + '/Reviewers/Discussion'
                 ]
             },
             'writers': {
