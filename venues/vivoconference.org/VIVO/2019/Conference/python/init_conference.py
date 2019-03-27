@@ -31,6 +31,13 @@ submission_invitation = conference.open_submissions(due_date = datetime.datetime
             'value-regex': '.{0,500}',
             'description': 'Author ORCID identifier',
         },
+        'submission_type': {
+            'description': 'Submission type',
+            'value-radio': ['presentation proposal',
+                            'workshop proposal',
+                            'panel proposal',
+                            'poster'],
+        },
         'html': {
             'description': 'A link to more information (link must begin with http(s)) (Optional)',
             'value-regex': '(http|https):\/\/.+',
@@ -39,10 +46,11 @@ submission_invitation = conference.open_submissions(due_date = datetime.datetime
     })
 
 submission_invitation.reply['content']['ORCID']['order'] = 4
-submission_invitation.reply['content']['keywords']['order'] = 5
-submission_invitation.reply['content']['TL;DR']['order'] = 6
-submission_invitation.reply['content']['abstract']['order'] = 7
-submission_invitation.reply['content']['html']['order'] = 8
+submission_invitation.reply['content']['submission_type']['order'] = 5
+submission_invitation.reply['content']['keywords']['order'] = 6
+submission_invitation.reply['content']['TL;DR']['order'] = 7
+submission_invitation.reply['content']['abstract']['order'] = 8
+submission_invitation.reply['content']['html']['order'] = 9
 
 del submission_invitation.reply['content']['pdf']
 client.post_invitation(submission_invitation)
