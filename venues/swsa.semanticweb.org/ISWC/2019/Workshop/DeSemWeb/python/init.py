@@ -28,3 +28,5 @@ print('connecting to {0}'.format(client.baseurl))
 conference = config.get_conference(client)
 # midnight GMT 7/24
 conference.open_submissions(due_date = datetime.datetime(2019, 7, 25, 0, 0), remove_fields = ['TL;DR'])
+
+conference.set_program_chairs(emails = [])
