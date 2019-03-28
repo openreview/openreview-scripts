@@ -26,9 +26,11 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-# March 24 midnight anywhere on earth
-conference.open_submissions(due_date = datetime.datetime(2019, 3, 25, 12, 00))
-
+# Appearance of March 29 midnight anywhere on earth
+invitation = conference.open_submissions(due_date = datetime.datetime(2019, 3, 30, 12, 0))
+# while actually expiring 24 hours later
+invitation.expdate = tools.datetime_millis(datetime.datetime(2019, 3, 31, 12, 0))
+client.post_invitation(invitation)
 
 
 
