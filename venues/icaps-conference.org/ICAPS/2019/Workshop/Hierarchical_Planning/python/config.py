@@ -13,12 +13,12 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Second Workshop on Hierarchical Planning',
     'subtitle': 'ICAPS 2019 Workshop',
-    'deadline': 'Submission Deadline: March 24, 2019 midnight AoE',
+    'deadline': 'Submission Deadline: March 29, 2019 midnight AoE',
     'date': 'July 11-15, 2019',
     'website': 'https://icaps19.icaps-conference.org/workshops/Hierarchical-Planning/index.html',
     'location': 'Berkeley, CA, USA'
     })
     builder.set_double_blind(True)
-    
+    builder.set_override_homepage(True)
     return builder.get_result()
 
