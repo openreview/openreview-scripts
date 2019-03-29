@@ -9,7 +9,7 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-support = client.post_group(openreview.Group(**{
+support = openreview.Group(**{
     'id': 'OpenReview.net/Support',
     'readers': ['everyone'],
     'writers': ['OpenReview.net/Support'],
@@ -17,7 +17,7 @@ support = client.post_group(openreview.Group(**{
     'signatories': ['OpenReview.net/Support'],
     'members': [],
     'web': './supportRequestsWeb.js'
-}))
+})
 
 reader_options = [
     'Program Chairs',
@@ -76,15 +76,19 @@ request_content = {
         'required': True
     },
     'Submission Start Date': {
-        'description': 'When would you (ideally) like to have your OpenReview submission portal opened? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31). (Skip this if only requesting paper matching service)',
+        'description': 'When would you (ideally) like to have your OpenReview submission portal opened? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59). (Skip this if only requesting paper matching service)',
         'value-regex': '.*',
     },
     'Submission Deadline': {
         'value-regex': '.*',
-        'description': 'By when do authors need to submit their manuscripts? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31)',
+        'description': 'By when do authors need to submit their manuscripts? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
     },
     'Conference Start Date': {
         'description': 'What is the start date of conference itself? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31)',
+        'value-regex': '.*'
+    },
+    'Conference Location': {
+        'description': 'Where the conference is going to be held. For example: Amherst, Massachusetts, United States',
         'value-regex': '.*'
     },
     'Peer Review Management': {
@@ -207,5 +211,38 @@ comment_inv = client.post_invitation(openreview.Invitation(**{
         }
     }
 }))
+
+
+revision_content = request_content.copy()
+revision_content['conference_id'] =  {
+        'value-regex': '.*',
+        'description': 'Conference id'
+    }
+
+revision_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Revision',
+    'readers': ['everyone'],
+    'writers': [],
+    'signatures': ['OpenReview.net/Support'],
+    'invitees': ['OpenReview.net/Support'],
+    'reply': {
+        'readers': {
+            'values-copied': [
+                'OpenReview.net/Support',
+                '{content["Contact Emails"]}'
+            ]
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': revision_content
+    }
+}))
+
+client.post_invitation(request_inv)
+client.post_invitation(revision_inv)
 
 
