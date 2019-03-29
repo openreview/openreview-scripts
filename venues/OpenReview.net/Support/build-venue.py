@@ -1,6 +1,5 @@
 import argparse
 import openreview
-import datetime
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help='base url')
@@ -11,68 +10,31 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-note = client.get_note(args.id)
+conference = openreview.helpers.get_conference(client, args.id)
 
-if not note.content.get('conference_id'):
-    raise Exception('conference_id is not set')
+if conference.is_new():
+    subject = 'Your venue is available in OpenReview',
+    message = '''
+Hi Program Chairs,
 
-builder = openreview.conference.ConferenceBuilder(client)
+Thanks for submitting a venue request.
 
-conference_start_date_str = 'TBD'
-if note.content.get('Conference Start Date'):
-    try:
-        conference_start_date = datetime.datetime.strptime(note.content.get('Conference Start Date'), '%Y/%m/%d %H:%M')
-    except ValueError:
-        conference_start_date = datetime.datetime.strptime(note.content.get('Conference Start Date'), '%Y/%m/%d')
-    conference_start_date_str = conference_start_date.strftime('%b %d %Y')
+We have set up the venue based on the information that you provided here: https://openreview.net/forum?id={noteId}
 
-submission_start_date_str = ''
-submission_start_date = None
-if note.content.get('Submission Start Date'):
-    try:
-        submission_start_date = datetime.datetime.strptime(note.content.get('Submission Start Date'), '%Y/%m/%d %H:%M')
-    except ValueError:
-        submission_start_date = datetime.datetime.strptime(note.content.get('Submission Start Date'), '%Y/%m/%d')
-    submission_start_date_str = submission_start_date.strftime('%b %d %Y %I:%M%p')
+You can use the following links to access to the conference:
 
-submission_due_date_str = 'TBD'
-submission_due_date = None
-if note.content.get('Submission Deadline'):
-    try:
-        submission_due_date = datetime.datetime.strptime(note.content.get('Submission Deadline'), '%Y/%m/%d %H:%M')
-    except ValueError:
-        submission_due_date = datetime.datetime.strptime(note.content.get('Submission Deadline'), '%Y/%m/%d')
-    submission_due_date_str = submission_due_date.strftime('%b %d %Y %I:%M%p')
+Conference home page: https://openreview.net/group?id={conference_id}
+Conference Program Chairs console: https://openreview.net/group?id={program_chairs_id}
 
-builder.set_conference_id(note.content['conference_id'])
-builder.set_conference_name(note.content['Official Conference Name'])
-builder.set_conference_short_name(note.content['Abbreviated Conference Name'])
-builder.set_homepage_header({
-'title': note.content['title'],
-'subtitle': note.content['Abbreviated Conference Name'],
-'deadline': 'Submission Start: ' + submission_start_date_str + ', End: ' + submission_due_date_str,
-'date': conference_start_date_str,
-'website': note.content['Official Website URL'],
-'location': note.content.get('Conference Location')
-})
+If you need to make a change to the information provided in your request form, please edit it directly. We will update your venue accordingly.
 
-if 'Yes, our conference has Area Chairs' == note.content.get('Area Chairs (Metareviewers)', ''):
-    builder.has_area_chairs(True)
+If you need special features that are not included in your request form, please contact us at info@openreview.net and we will assist you.
 
-if 'Double-blind' == note.content.get('Author and Reviewer Anonymity', ''):
-    builder.set_double_blind(True)
+Thanks!
 
-if 'Submissions and reviews should both be public.' == note.content.get('Open Reviewing Policy', '') or \
-    'Submissions should be public, but reviews should be private.' == note.content.get('Open Reviewing Policy', '') :
-    builder.set_submission_public(True)
-
-
-builder.set_override_homepage(True)
-conference = builder.get_result()
-
-invitation = conference.open_submissions(start_date = submission_start_date, due_date = submission_due_date)
-pc_group = conference.set_program_chairs(emails = note.content['Contact Emails'])
+OpenReview Team
+    '''.format(noteId = args.id, conference_id = conference.get_id(), program_chairs_id = conference.get_program_chairs_id())
+    recipients = [conference.get_program_chairs_id()]
+    client.send_mail(subject, recipients, message)
 
 print('Conference: ', conference.get_id())
-print('Submission: ', invitation.id)
-print('Program Chairs:', pc_group.members)
