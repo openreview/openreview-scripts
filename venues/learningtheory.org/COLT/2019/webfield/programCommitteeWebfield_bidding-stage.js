@@ -66,7 +66,7 @@ var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <br>\
   <h4>Bidding Phase</h4>\
   <p>\
-    <em><strong>Please note that bidding is now closed.</strong></em>\
+    <strong>Please note that bidding is now closed.</strong>\
   </p>';
 
 
