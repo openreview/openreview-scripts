@@ -61,9 +61,7 @@ var INSTRUCTIONS = '<p class="dark">\
 
 var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
   <p>\
-    <ul>\
-      <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li>\
-    </ul>\
+    Update your profile to include your most up-to-date information, including work history and relations.</li>\
   </p>\
   <br>\
   <h4>Bidding Phase</h4>\
@@ -889,8 +887,7 @@ var registerEventHandlers = function(blindedNotes) {
         groups: [idToAdd],
         subject: SHORT_PHRASE + ': Invitation to participate in discussion for paper : "' + noteName + '"',
         message: 'I hope this email finds you well. \n\nAs a Program Committee member of ' + SHORT_PHRASE + ', I’d like to request you to contribute to the discussion for submission, titled: ' +
-        noteName + ' \n\nTo find more details about the paper and to comment on it, please log in on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + paperForum +
-        '\n\nMany thanks,\n' + view.prettyId(user.profile.id)
+        noteName + ' \n\nTo find more details about the paper and to comment on it, please log in on openreview.net using the e-mail address at which you received this message; once you have logged-in, please follow this link: https://openreview.net/forum?id=' + paperForum + '\n\nWhile comments will not be visible to the authors, please note that your comments and identity will be visible to other PC members assigned to the paper, as well as to other sub-reviewers who are participating in the discussion. (Likewise, you will see the other discussants\' comments and identities.) Please keep this in mind during the discussion, and please keep your comments about the submission at hand.\n\nMany thanks,\n' + view.prettyId(user.profile.id)
       }
       return Webfield.post('/messages', email);
     })
