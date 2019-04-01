@@ -13,7 +13,7 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Explainable Artificial Intelligence Planning',
     'subtitle': 'ICAPS 2019 Workshop on Explainable AI Planning (XAIP)',
-    'deadline': 'Submission Deadline: March 31, 2019',
+    'deadline': 'Submission Deadline: April 15, 2019',
     'date': 'July 11-15, 2019',
     'website': 'https://icaps19.icaps-conference.org/workshops/XAIP/',
     'location': 'Berkeley, CA, USA'

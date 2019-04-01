@@ -26,7 +26,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 conference = config.get_conference(client)
-conference.open_submissions(due_date = datetime.datetime(2019, 4, 1, 12, 00), additional_fields = {
+conference.open_submissions(due_date = datetime.datetime(2019, 4, 16, 12, 00), additional_fields = {
     "author_identity_visibility": {
         "order": 4,
         "value-checkbox": "Reveal author identities to reviewers",
