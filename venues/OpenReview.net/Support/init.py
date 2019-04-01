@@ -189,7 +189,7 @@ comment_inv = client.post_invitation(openreview.Invitation(**{
             ]
         },
         'signatures': {
-            'values-regex': '~.*',
+            'values-regex': '~.*|OpenReview.net/Support',
             'description': 'How your identity will be displayed.'
         },
         'content': {

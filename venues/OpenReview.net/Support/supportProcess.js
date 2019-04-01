@@ -9,7 +9,7 @@ function(){
     }
 
     var openreviewMailPayload = {
-      groups: ['info@openreview.net'],
+      groups: ['OpenReview.net/Support'],
       subject: 'A request for service has been submitted',
       message: adminMessage
     };
