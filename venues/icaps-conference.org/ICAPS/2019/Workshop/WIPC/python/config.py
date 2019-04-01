@@ -13,7 +13,7 @@ def get_conference(client):
     builder.set_homepage_header({
     'title': 'Workshop on the International Planning Competition',
     'subtitle': 'ICAPS Workshop',
-    'deadline': 'Submission Deadline: April 1st, 23:59 AoE',
+    'deadline': 'Submission Deadline: April 12th, midnight AoE',
     'date': 'July 11-12, 2019',
     'website': 'https://icaps19.icaps-conference.org/workshops/WIPC/index.html',
     'location': 'Berkeley, CA, USA'
