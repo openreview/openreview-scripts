@@ -44,8 +44,8 @@ function(){
     }
 
     var reviseInvitationSupportTeam = {
-      id: 'OpenReview.net/Support/-/Request' + note.number + '/Admin_Updates',
-      super: 'OpenReview.net/Support/-/Admin_Updates',
+      id: 'OpenReview.net/Support/-/Request' + note.number + '/Deploy',
+      super: 'OpenReview.net/Support/-/Deploy',
       reply: {
         referent: note.forum,
         forum: note.forum

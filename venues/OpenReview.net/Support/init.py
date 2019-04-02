@@ -233,14 +233,13 @@ revision_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
-revision_content = request_content.copy()
-revision_content['conference_id'] = {
+deploy_content = {
     'value-regex': '.*',
     'description': 'Conference id'
 }
 
 admin_revision_inv = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Admin_Updates',
+    'id': 'OpenReview.net/Support/-/Deploy',
     'readers': ['everyone'],
     'writers': [],
     'signatures': ['OpenReview.net/Support'],
@@ -258,7 +257,7 @@ admin_revision_inv = client.post_invitation(openreview.Invitation(**{
         'signatures': {
             'values-regex': '~.*'
         },
-        'content': revision_content
+        'content': deploy_content
     }
 }))
 
