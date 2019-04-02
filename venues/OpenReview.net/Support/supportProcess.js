@@ -43,10 +43,21 @@ function(){
       signatures: ['OpenReview.net/Support']
     }
 
+    var reviseInvitationSupportTeam = {
+      id: 'OpenReview.net/Support/-/Request' + note.number + '/Admin_Updates',
+      super: 'OpenReview.net/Support/-/Admin_Updates',
+      reply: {
+        referent: note.forum,
+        forum: note.forum
+      },
+      signatures: ['OpenReview.net/Support']
+    }
+
     or3client.or3request(or3client.mailUrl, openreviewMailPayload, 'POST', token)
     .then(result => or3client.or3request(or3client.mailUrl, programchairMailPayload, 'POST', token))
     .then(result => or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token))
     .then(result => or3client.or3request(or3client.inviteUrl, reviseInvitation, 'POST', token))
+    .then(result => or3client.or3request(or3client.inviteUrl, reviseInvitationSupportTeam, 'POST', token))
     .then(result => done())
     .catch(error => done(error));
 
