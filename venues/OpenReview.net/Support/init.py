@@ -7,7 +7,8 @@ parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
 
-client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+client = openreview.Client(
+    baseurl=args.baseurl, username=args.username, password=args.password)
 
 support = openreview.Group(**{
     'id': 'OpenReview.net/Support',
@@ -160,7 +161,10 @@ request_inv = client.post_invitation(openreview.Invitation(**{
             ]
         },
         'writers': {
-            'values-regex': '~.*',
+            'values-copied': [
+                'OpenReview.net/Support',
+                '{content["Contact Emails"]}'
+            ]
         },
         'signatures': {
             'values-regex': '~.*'
@@ -211,10 +215,10 @@ comment_inv = client.post_invitation(openreview.Invitation(**{
 
 
 revision_content = request_content.copy()
-revision_content['conference_id'] =  {
-        'value-regex': '.*',
-        'description': 'Conference id'
-    }
+revision_content['conference_id'] = {
+    'value-regex': '.*',
+    'description': 'Conference id'
+}
 
 revision_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Revision',
@@ -241,5 +245,3 @@ revision_inv = client.post_invitation(openreview.Invitation(**{
 
 client.post_invitation(request_inv)
 client.post_invitation(revision_inv)
-
-
