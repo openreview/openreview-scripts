@@ -9,19 +9,19 @@ openreview-py
 
 Usage:
 
-Use the --paper (-p) flag to specify the paper number.
-Use the --add (-a) flag to specify a username or email address to assign.
-Use the --remove (-r) flag to specify a username or email address to remove.
+Use the --paper (or -p) flag to specify the paper number.
+Use the --add (or -a) flag to specify a username or email address to assign.
+Use the --remove (or -r) flag to specify a username or email address to remove.
 
 The script processes removals before additions, and assigns the user to the
 lowest AnonReviewer# group that is empty.
 
 For example, after running the following:
 
-python reassign.py --paper 123 --remove ~Oriol_Vinyals1 --add ~MarcAurelio_Ranzato1 --baseurl https://openreview.net --username <> --password <>
+python reassign.py -p 123 -r ~Oriol_Vinyals1 -a ~MarcAurelio_Ranzato1 --baseurl https://openreview.net --username <> --password <>
 
 
-Paper123/Program_Committee = {
+Paper123/Reviewers = {
     AnonReviewer1: ~Tara_Sainath1
     AnonReviewer2: ~Oriol_Vinyals1
     AnonReviewer3: ~Iain_Murray1
@@ -29,7 +29,7 @@ Paper123/Program_Committee = {
 
 becomes
 
-Paper123/Program_Committee = {
+Paper123/Reviewers = {
     AnonReviewer1: ~Tara_Sainath1
     AnonReviewer2: ~MarcAurelio_Ranzato1
     AnonReviewer3: ~Iain_Murray1
