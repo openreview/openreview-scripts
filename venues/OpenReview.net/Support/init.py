@@ -150,7 +150,7 @@ request_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Request_Form',
     'readers': ['everyone'],
     'writers': [],
-    'signatures': ['OpenReview.net/Support'],
+    'signatures': ['OpenReview.net'],
     'invitees': ['everyone'],
     'process': 'supportProcess.js',
     'reply': {
@@ -230,7 +230,8 @@ revision_inv = client.post_invitation(openreview.Invitation(**{
             'values-regex': '~.*'
         },
         'content': request_content
-    }
+    },
+    'process': 'revisionProcess.py'
 }))
 
 deploy_content = {'conference_id': {
@@ -240,7 +241,7 @@ admin_revision_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Deploy',
     'readers': ['everyone'],
     'writers': [],
-    'signatures': ['OpenReview.net/Support'],
+    'signatures': ['OpenReview.net'],
     'invitees': ['OpenReview.net/Support'],
     'reply': {
         'readers': {
@@ -256,7 +257,8 @@ admin_revision_inv = client.post_invitation(openreview.Invitation(**{
             'values-regex': '~.*'
         },
         'content': deploy_content
-    }
+    },
+    'process': 'revisionProcess.py'
 }))
 
 client.post_invitation(request_inv)

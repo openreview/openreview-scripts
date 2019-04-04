@@ -50,7 +50,7 @@ function(){
         referent: note.forum,
         forum: note.forum
       },
-      signatures: ['OpenReview.net/Support']
+      signatures: ['OpenReview.net']
     }
 
     or3client.or3request(or3client.mailUrl, openreviewMailPayload, 'POST', token)
