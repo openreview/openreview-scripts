@@ -1,9 +1,9 @@
 function(){
     var or3client = lib.or3client;
-
     var CONFERENCE_ID = 'learningtheory.org/COLT/2019/Conference';
     var SHORT_PHRASE = 'COLT 2019';
     var PC_MEMBERS_SUBMITTED = 'Program_Committee/Submitted';
+    var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs';
 
     or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token)
     .then(function(result) {
@@ -25,6 +25,14 @@ function(){
           console.log('No members in submitted group: ', submitted_pc_grp.id);
         }
         return Promise.resolve();
+      })
+      .then(result => {
+        var program_chair_mail = {
+          groups: [PROGRAM_CHAIRS],
+          subject: '[' + SHORT_PHRASE + '] Comment posted to Paper Number: ' + forumNote.number + ', Paper Title: \"' + forumNote.content.title + '\"',
+          message: 'Following comment was posted:\n\nPaper Title: ' + forumNote.content.title + '\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+        };
+        return or3client.or3request(or3client.mailUrl, program_chair_mail, 'POST', token);
       })
     })
     .then(result => done())
