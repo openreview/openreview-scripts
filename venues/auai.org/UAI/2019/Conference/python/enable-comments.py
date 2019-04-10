@@ -16,4 +16,4 @@ if __name__ == '__main__':
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     conference = config.get_conference(client)
 
-    conference.open_comments(anonymous=True)
+    conference.open_comments(anonymous=True, email_pcs=False)
