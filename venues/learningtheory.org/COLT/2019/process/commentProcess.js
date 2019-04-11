@@ -10,7 +10,6 @@ function(){
     .then(function(result) {
       var forumNote = result.notes[0];
       DISCUSSION_GROUP = CONFERENCE_ID + '/Paper' + forumNote.number + DISCUSSION_GROUP;
-      console.log('updating disc grp:', DISCUSSION_GROUP);
       var paper_pc_submitted_grp = CONFERENCE_ID + '/Paper' + forumNote.number + '/' + PC_MEMBERS_SUBMITTED;
       return or3client.or3request(or3client.grpUrl + '?id=' + paper_pc_submitted_grp, {}, 'GET', token)
       .then(result => {
