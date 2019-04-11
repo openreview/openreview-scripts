@@ -150,13 +150,14 @@ request_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Request_Form',
     'readers': ['everyone'],
     'writers': [],
-    'signatures': ['OpenReview.net/Support'],
+    'signatures': ['OpenReview.net'],
     'invitees': ['everyone'],
     'process': 'supportProcess.js',
     'reply': {
         'readers': {
             'values-copied': [
                 'OpenReview.net/Support',
+                '{signatures}',
                 '{content["Contact Emails"]}'
             ]
         },
