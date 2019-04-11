@@ -4,15 +4,17 @@ function(){
     var SHORT_PHRASE = 'COLT 2019';
     var PC_MEMBERS_SUBMITTED = 'Program_Committee/Submitted';
     var PROGRAM_CHAIRS = CONFERENCE_ID + '/Program_Chairs';
+    var DISCUSSION_GROUP = '/Reviewers/Discussion';
 
     or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token)
     .then(function(result) {
       var forumNote = result.notes[0];
+      DISCUSSION_GROUP = CONFERENCE_ID + '/Paper' + forumNote.number + DISCUSSION_GROUP;
       var paper_pc_submitted_grp = CONFERENCE_ID + '/Paper' + forumNote.number + '/' + PC_MEMBERS_SUBMITTED;
       return or3client.or3request(or3client.grpUrl + '?id=' + paper_pc_submitted_grp, {}, 'GET', token)
       .then(result => {
         var submitted_pc_grp = result.groups[0];
-        members = submitted_pc_grp.members
+        members = submitted_pc_grp.members;
         if (members.length){
           var program_committee_mail = {
             groups: members,
@@ -33,6 +35,25 @@ function(){
           message: 'Following comment was posted:\n\nPaper Title: ' + forumNote.content.title + '\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
         };
         return or3client.or3request(or3client.mailUrl, program_chair_mail, 'POST', token);
+      })
+      .then(result => {
+        return or3client.or3request(or3client.grpUrl + '?id=' + DISCUSSION_GROUP, {}, 'GET', token)
+        .then(result => {
+          disc_group = result.groups[0];
+          members = disc_group.members;
+          if (members && members.length) {
+            var discussion_group_mail = {
+              groups: members,
+              subject: '[' + SHORT_PHRASE + '] Comment posted to a paper for which you are a discussion participant. Paper Number: ' + forumNote.number + ', Paper Title: \"' + forumNote.content.title + '\"',
+              message: 'A comment was posted to a paper for which you are nominated as a discussion participant.\n\nPaper Title: ' + forumNote.content.title + '\n\nComment title: ' + note.content.title + '\n\nComment: ' + note.content.comment + '\n\nTo view the comment, click here: ' + baseUrl + '/forum?id=' + note.forum + '&noteId=' + note.id
+            };
+            return or3client.or3request(or3client.mailUrl, discussion_group_mail, 'POST', token);
+          }
+          else {
+            console.log('No members in discussion group: ', DISCUSSION_GROUP);
+          }
+          return Promise.resolve();
+          });
       })
     })
     .then(result => done())
