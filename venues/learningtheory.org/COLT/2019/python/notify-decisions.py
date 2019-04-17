@@ -1,3 +1,6 @@
+# Script to email authors about paper decisions
+# Usage: python notify-decisions.py decisions.csv --username <your OpenReview login email> --password <OpenReview password>
+
 import openreview
 import argparse
 import csv
@@ -49,13 +52,13 @@ COLT 2019 Program Chairs
 
 if __name__ == '__main__':
 
-    program_chair_test_mode = True
-
     parser = argparse.ArgumentParser()
     parser.add_argument('csvfile')
     parser.add_argument('--baseurl', help="in most cases, this should be \"https://openreview.net\"")
     parser.add_argument('--username', help="the email address that you use to log into OpenReview")
     parser.add_argument('--password', help="your OpenReview account password")
+    parser.add_argument('--test', help="set to True to receive emails on Program chair address", default=False)
+
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
@@ -79,7 +82,7 @@ if __name__ == '__main__':
                     formatted_message = formatted_message.replace('<PAPER TITLE>', blind_note.content['title'])
                     confirmed_recipients = client.send_mail(
                         formatted_subject,
-                        original.content['authorids'] if not program_chair_test_mode else ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
+                        original.content['authorids'] if not args.test else ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
                         formatted_message
                     )
                     print('Paper: {0} --> Decision: {1}, Email sent to: {2}'.format(str(paper_number), decision, confirmed_recipients))
@@ -89,7 +92,7 @@ if __name__ == '__main__':
                     formatted_message = formatted_message.replace('<PAPER TITLE>', blind_note.content['title'])
                     confirmed_recipients = client.send_mail(
                         formatted_subject,
-                        original.content['authorids'] if not program_chair_test_mode else ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
+                        original.content['authorids'] if not args.test else ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
                         formatted_message
                     )
                     print('Paper: {0} --> Decision: {1}, Email sent to: {2}'.format(str(paper_number), decision, confirmed_recipients))
