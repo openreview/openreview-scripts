@@ -49,7 +49,7 @@ COLT 2019 Program Chairs
 
 if __name__ == '__main__':
 
-    test_mode = True
+    program_chair_test_mode = True
 
     parser = argparse.ArgumentParser()
     parser.add_argument('csvfile')
@@ -79,23 +79,22 @@ if __name__ == '__main__':
                     formatted_message = formatted_message.replace('<PAPER TITLE>', blind_note.content['title'])
                     confirmed_recipients = client.send_mail(
                         formatted_subject,
-                        original.content['authorids'] if not test_mode else ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
+                        original.content['authorids'] if not program_chair_test_mode else ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
                         formatted_message
                     )
-                    print('Paper: {0} --> Email sent to: {1}'.format(str(paper_number), confirmed_recipients))
+                    print('Paper: {0} --> Decision: {1}, Email sent to: {2}'.format(str(paper_number), decision, confirmed_recipients))
                 elif (decision == 'Reject'):
                     formatted_subject = rejection_subject.replace('<PAPER NUMBER>', str(blind_note.number))
                     formatted_message = rejection_message.replace('<PAPER NUMBER>', str(blind_note.number))
                     formatted_message = formatted_message.replace('<PAPER TITLE>', blind_note.content['title'])
                     confirmed_recipients = client.send_mail(
                         formatted_subject,
-                        original.content['authorids'] if not test_mode else ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
+                        original.content['authorids'] if not program_chair_test_mode else ['learningtheory.org/COLT/2019/Conference/Program_Chairs'],
                         formatted_message
                     )
-                    print('Paper: {0} --> Email sent to: {1}'.format(str(paper_number), confirmed_recipients))
+                    print('Paper: {0} --> Decision: {1}, Email sent to: {2}'.format(str(paper_number), decision, confirmed_recipients))
                 else:
                     print ('Invalid decision provided for paper number {0}. Decision should be "Accept" or "Reject"'.format(str(paper_number)))
 
             except Exception as e:
                 print ('An error occurred: ', e)
-
