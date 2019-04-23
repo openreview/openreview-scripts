@@ -1,6 +1,5 @@
 import argparse
 import openreview
-import openreview
 import config
 
 if __name__ == '__main__':
