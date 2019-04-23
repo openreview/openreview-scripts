@@ -1,8 +1,6 @@
 import argparse
 import openreview
-from openreview import invitations
-import datetime
-import os
+import openreview
 import config
 
 if __name__ == '__main__':
@@ -16,82 +14,97 @@ if __name__ == '__main__':
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     conference = config.get_conference(client)
 
-    map_review_to_quality = {}
-    all_reviews =
-    # This is the Conference level Invitation for all withdrawn submissions
-    withdrawn_submission_invitation = client.post_invitation(openreview.Invitation(
-        id = conference.get_id() + "/-/Withdrawn_Submission",
-        readers = ['everyone'],
-        writers = [conference.get_id()],
-        invitees = [conference.get_id()],
-        noninvitees = [],
-        signatures = [conference.get_id()],
-        reply = {
-           'forum': None,
-           'replyto': None,
-           'readers': {
-               'description': 'The users who will be allowed to read the reply content.',
-               'values-regex': conference.get_program_chairs_id() + '|' + conference.get_id() + '/Paper[0-9]*/Authors'
-           },
-           'signatures': {
-               'description': 'How your identity will be displayed with the above content.',
-               'values': [conference.get_id()]
-           },
-           'writers': {
-               'description': 'Users that may modify this record.',
-               'values':  [conference.get_id()]
-           },
-           'content': {}
-        },
-        nonreaders = []
+    all_reviews = list(openreview.tools.iterget_notes(
+        client,
+        invitation = conference.get_id() + '/-/Paper.*/Official_Review'
+    ))
+    all_quality_invis = list(openreview.tools.iterget_invitations(
+        client,
+        regex = conference.get_id() + '/-/Paper[0-9]+/Review[0-9]+/Review_Quality$'
     ))
 
-    # Template for per-paper withdraw submission invitation
-    withdraw_submission_template = {
-        'id': conference.get_id() + '/-/Paper<number>/Withdraw_Submission',
-        'readers': ['everyone'],
-        'writers': [conference.get_id()],
-        'invitees': [conference.get_id() + '/Paper<number>/Authors'],
-        'signatures': ['OpenReview.net'],
-        'multiReply': False,
-        'reply': {
-            'forum': '<forum>',
-            'replyto': '<forum>',
-            'readers': {
-                'description': 'Select all user groups that should be able to read this comment.',
-                'values': [conference.get_program_chairs_id(), conference.get_id() + '/Paper<number>/Authors']
-            },
-            'signatures': {
-                'description': '',
-                'values-regex': conference.get_id()+'/Paper<number>/Authors',
-            },
-            'writers': {
-                'description': 'Users that may modify this record.',
-                'values':  [conference.get_id()]
-            },
-            'content': {
-                'title': {
-                    'value': 'Submission Withdrawn by the Authors',
-                    'order': 1
+    map_paper_reviews = {}
+    for review in all_reviews:
+        paper_number = int(review.invitation.split('Paper')[1].split('/')[0])
+        if paper_number not in map_paper_reviews:
+            map_paper_reviews[paper_number] = {}
+        map_paper_reviews[paper_number][review.id] = review
+
+    map_paper_max_review_number = {}
+    map_paper_review_quality_invi = {}
+
+    for invitation in all_quality_invis:
+        paper_number = int(invitation.id.split('Paper')[1].split('/')[0])
+        invitation_serial = int(invitation.id.split('Review')[1].split('/')[0])
+        if (map_paper_max_review_number.get(paper_number, 0) < invitation_serial):
+            map_paper_max_review_number[paper_number] = invitation_serial
+
+        if paper_number not in map_paper_review_quality_invi:
+            map_paper_review_quality_invi[paper_number] = []
+        map_paper_review_quality_invi[paper_number].append(invitation.reply['replyto'])
+
+    new_reviews = {}
+
+    for paper_number in map_paper_reviews:
+        current_reviews = list(map_paper_reviews[paper_number].keys())
+        reviews_with_invitations = map_paper_review_quality_invi.get(paper_number)
+        if reviews_with_invitations:
+            new_review_ids = list(set(current_reviews) - set(reviews_with_invitations))
+        else:
+            new_review_ids = current_reviews
+        if new_review_ids:
+            for review in new_review_ids:
+                new_reviews[review] = map_paper_reviews[paper_number][review]
+
+    for review in new_reviews:
+        paper_number = str(new_reviews[review].invitation.split('Paper')[1].split('/')[0])
+
+        next_review_number = str(map_paper_max_review_number.get(int(paper_number),0) + 1)
+
+        # Post review quality invitation
+        review_quality_invitation = openreview.Invitation(
+            id = conference.get_id() + '/-/Paper' + paper_number + '/Review' + next_review_number + '/Review_Quality',
+            invitees = [
+                conference.get_id() + '/Paper' + paper_number + '/Area_Chairs'
+            ],
+            duedate = 1557788400000,
+            signatures = [conference.get_id()],
+            readers = [
+                conference.get_id() + '/Program_Chairs',
+                conference.get_id() + '/Paper' + paper_number + '/Area_Chairs'
+            ],
+            writers = [conference.get_id()],
+            multiReply = False,
+            reply = {
+                'forum': new_reviews[review].forum,
+                'replyto': new_reviews[review].id,
+                'readers': {'values': [
+                    conference.get_id() + '/Paper' + paper_number + '/Area_Chairs',
+                    conference.get_id() + '/Program_Chairs'
+                    ]
                 },
-                'withdrawal confirmation': {
-                    'description': withdrawal_statement,
-                    'value-radio': ['I have read and agree with the withdrawal statement on behalf of myself and my co-authors.'],
-                    'order': 2,
-                    'required': True
-                }
+                'writers': {
+                    'values': [conference.get_id() + '/Paper' + paper_number + '/Area_Chairs']
+                },
+                'signatures': {
+                    'values-regex': conference.get_id() + '/Paper' + paper_number + '/Area_Chair[0-9]+'
+                },
+                'content': {
+                    'title': {
+                        'order': 1,
+                        'value': 'Review Quality Evaluation',
+                        'description': 'Title',
+                        'required': True
+                    },
+                    'review quality': {
+                        'order': 2,
+                        'value-dropdown': ['Good review', 'Adequate Review', 'Poor Review'],
+                        'description': 'Select your best estimate of the review\'s quality',
+                        'required': True
+                    }
+                    }
             }
-        }
-    }
-    with open(os.path.abspath('../process/withdrawProcess.js')) as f:
-        withdraw_submission_template['process'] = f.read()
-
-    blind_notes = openreview.tools.iterget_notes(client, invitation=conference.get_blind_submission_id())
-    for index, note in enumerate(blind_notes):
-        client.post_invitation(openreview.Invitation.from_json(
-            openreview.tools.fill_template(withdraw_submission_template, note)
-        ))
-        if (index+1)%10 == 0:
-            print ('Processed ', index+1)
-
-    print ('Processed ', index+1)
+        )
+        map_paper_max_review_number[int(paper_number)] = int(next_review_number)
+        posted_review_quality_invitation = client.post_invitation(review_quality_invitation)
+        print ("Review quality invitation {} posted ".format(posted_review_quality_invitation.id))
