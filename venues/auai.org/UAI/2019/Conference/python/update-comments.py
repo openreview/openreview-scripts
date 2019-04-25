@@ -23,13 +23,18 @@ if __name__ == '__main__':
         number = invi.id.split('Paper')[1].split('/')[0]
         invi.reply['readers'] = {
             "description": "All user groups that will be able to read this comment.",
-            "value-dropdown-hierarchy": [
+            "values-dropdown": [
                 'auai.org/UAI/2019/Conference/Paper{}/Authors'.format(number),
                 'auai.org/UAI/2019/Conference/Paper{}/Reviewers/Submitted'.format(number),
                 'auai.org/UAI/2019/Conference/Paper{}/Area_Chairs'.format(number),
                 'auai.org/UAI/2019/Conference/Program_Chairs'
                 ]}
-        invi.reply['writers'] = {'values': 'auai.org/UAI/2019/Conference'}
+        invi.reply['writers'] = {
+            "values-copied": [
+                "auai.org/UAI/2019/Conference",
+                "{signatures}"
+            ]
+        }
         client.post_invitation(invi)
 
     comments = list(openreview.tools.iterget_notes(
@@ -38,5 +43,5 @@ if __name__ == '__main__':
     ))
     print ('Updating {} comments'.format(len(comments)))
     for comment in comments:
-        comment.writers = 'auai.org/UAI/2019/Conference'
+        comment.writers = ['auai.org/UAI/2019/Conference', comment.signatures[0]]
         client.post_note(comment)
