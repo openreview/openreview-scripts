@@ -235,8 +235,8 @@ revision_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
-deploy_content = {'conference_id': {
-    'value-regex': '.*', 'description': 'Conference id'}}
+deploy_content = {'venue_id': {
+    'value-regex': '.*', 'description': 'Venue id'}}
 
 deploy_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Deploy',
@@ -245,6 +245,7 @@ deploy_inv = client.post_invitation(openreview.Invitation(**{
     'signatures': ['OpenReview.net/Support'],
     'invitees': ['OpenReview.net/Support'],
     'process': 'deployProcess.py',
+    'multiReply': False,
     'reply': {
         'readers': {
             'values-copied': [
