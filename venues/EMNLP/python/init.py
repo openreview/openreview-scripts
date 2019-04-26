@@ -23,6 +23,9 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 print('connecting to {0}'.format(client.baseurl))
 
 emnlp_request_id = 'rylllwkbKN'
+start_date = datetime.datetime(2019, 4, 2, 13, 30)
+due_date = datetime.datetime(2019, 8, 19, 23, 59)
+
 conference = openreview.helpers.get_conference(client, emnlp_request_id)
 
 author_consent_agreement = (
@@ -45,5 +48,8 @@ additional_fields = {
     }
 }
 
-conference.open_submissions(additional_fields=additional_fields)
+conference.open_submissions(
+    start_date=start_date,
+    due_date=due_date,
+    additional_fields=additional_fields)
 
