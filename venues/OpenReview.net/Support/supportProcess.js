@@ -30,7 +30,7 @@ function(){
             values: note.content['Contact Emails'].concat(['OpenReview.net/Support'])
         }
       },
-      signatures: ['OpenReview.net']
+      signatures: ['OpenReview.net/Support']
     }
 
     var reviseInvitation = {
@@ -40,7 +40,7 @@ function(){
         referent: note.forum,
         forum: note.forum
       },
-      signatures: ['OpenReview.net']
+      signatures: ['OpenReview.net/Support']
     }
 
     var deployInvitation = {
