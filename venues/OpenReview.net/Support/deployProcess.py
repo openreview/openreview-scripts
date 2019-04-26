@@ -41,4 +41,8 @@ OpenReview Team
         )
         client.post_note(comment_note)
 
+        revision_invitation = client.get_invitation('OpenReview.net/Support/-/Request' + str(forum.number) + '/Revision')
+        revision_invitation.signatures = [conference.get_program_chairs_id()]
+        client.post_invitation(revision_invitation)
+
     print('Conference: ', conference.get_id())
