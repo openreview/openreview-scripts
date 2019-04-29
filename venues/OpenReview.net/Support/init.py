@@ -20,47 +20,35 @@ support = openreview.Group(**{
     'web': './supportRequestsWeb.js'
 })
 
-reader_options = [
-    'Program Chairs',
-    'Assigned Area Chairs/Metareviewers',
-    'Assigned Reviewers',
-    'All Area Chairs/Metareviewers',
-    'All Reviewers',
-    'All Authors',
-    'Everyone directly involved in the Conference',
-    'Logged-in OpenReview Users',
-    'General Public',
-    'Other'
-]
-
 request_content = {
     'title': {
         'value-copied': '{content[\'Official Conference Name\']}',
-        'description': 'Used for display purposes. Will be copied from the Official Conference Name'
+        'description': 'Used for display purposes. Will be copied from the Official Conference Name',
+        'order': 1
     },
     'Official Conference Name': {
         'description': 'This will appear on your conference\'s OpenReview page. Example: "Seventh International Conference on Learning Representations"',
         'value-regex': '.*',
         'required': True,
-        'order': 1
+        'order': 2
     },
     'Abbreviated Conference Name': {
         'description': 'Please include the year as well. This will be used to identify your conference on OpenReview and in email subject lines. Example: "ICLR 2019"',
         'value-regex': '.*',
         'required': True,
-        'order': 2
+        'order': 3
     },
     'Official Website URL': {
         'description': 'Please provide the official website URL of the conference.',
         'value-regex': '.*',
         'required': True,
-        'order': 3
+        'order': 4
     },
     'Contact Emails': {
         'description': 'Please provide the email addresses of all the Program Chairs or Organizers (comma-separated)',
         'values-regex': '.*',
         'required': True,
-        'order': 4
+        'order': 5
     },
     'Area Chairs (Metareviewers)': {
         'description': 'Does your conference have Area Chairs?',
@@ -70,27 +58,27 @@ request_content = {
             'Other (describe below)'
         ],
         'required': True,
-        'order': 5
+        'order': 6
     },
     'Submission Start Date': {
         'description': 'When would you (ideally) like to have your OpenReview submission portal opened? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59). (Skip this if only requesting paper matching service)',
         'value-regex': '.*',
-        'order': 6
+        'order': 7
     },
     'Submission Deadline': {
         'value-regex': '.*',
         'description': 'By when do authors need to submit their manuscripts? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
-        'order': 7
+        'order': 8
     },
     'Conference Start Date': {
         'description': 'What is the start date of conference itself? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31)',
         'value-regex': '.*',
-        'order': 8
+        'order': 9
     },
     'Conference Location': {
         'description': 'Where the conference is going to be held. For example: Amherst, Massachusetts, United States',
         'value-regex': '.*',
-        'order': 9
+        'order': 10
     },
     'Paper Matching': {
         'description': 'Choose options for assigning papers to reviewers. If using the OpenReview Paper Matching System, see the top of the page for a description of each feature type.',
@@ -102,7 +90,7 @@ request_content = {
             'TPMS',
             'Other (describe below)'
         ],
-        'order': 10
+        'order': 11
     },
     'Author and Reviewer Anonymity': {
         'description': 'What policy best describes your anonymity policy? (Select "Other" if none apply, and describe your request below)',
@@ -112,7 +100,7 @@ request_content = {
             'No anonymity',
             'Other (describe below)'
         ],
-        'order': 11
+        'order': 12
     },
     'Open Reviewing Policy': {
         'description': 'Should submitted papers and/or reviews be visible to the public? (This is independent of anonymity policy)',
@@ -122,7 +110,7 @@ request_content = {
             'Submissions and reviews should both be private.',
             'Other (describe below)'
         ],
-        'order': 12
+        'order': 13
     },
     'Public Commentary': {
         'description': 'Would you like to allow members of the public to comment on papers?',
@@ -132,17 +120,17 @@ request_content = {
             'No, do not allow public commentary.',
             'Other (describe below)'
         ],
-        'order': 13
+        'order': 14
     },
     'Other Important Information': {
         'value-regex': '[\\S\\s]{1,5000}',
         'description': 'Please use this space to clarify any questions above for which you responded "Other", and to clarify any other information that you think we may need.',
-        'order': 14
+        'order': 15
     },
     'How did you hear about us?': {
         'value-regex': '.*',
         'description': 'Please briefly describe how you heard about OpenReview.',
-        'order': 15
+        'order': 16
     }
 }
 
@@ -162,10 +150,14 @@ request_inv = client.post_invitation(openreview.Invitation(**{
             ]
         },
         'writers': {
-            'values': ['OpenReview.net/Support'],
+            'values-copied': [
+                'OpenReview.net/Support',
+                '{signatures}',
+                '{content["Contact Emails"]}'
+            ]
         },
         'signatures': {
-            'values-regex': '~.*'
+            'values-regex': '~.*|OpenReview.net/Support'
         },
         'content': request_content
     }
@@ -248,10 +240,7 @@ deploy_inv = client.post_invitation(openreview.Invitation(**{
     'multiReply': False,
     'reply': {
         'readers': {
-            'values-copied': [
-                'OpenReview.net/Support',
-                '{content["Contact Emails"]}'
-            ]
+            'values': ['OpenReview.net/Support']
         },
         'writers': {
             'values-regex': '~.*',
