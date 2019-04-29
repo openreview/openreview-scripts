@@ -36,6 +36,7 @@ function(){
     var reviseInvitation = {
       id: 'OpenReview.net/Support/-/Request' + note.number + '/Revision',
       super: 'OpenReview.net/Support/-/Revision',
+      invitees: [],
       reply: {
         referent: note.forum,
         forum: note.forum
