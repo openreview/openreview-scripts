@@ -48,9 +48,16 @@ if __name__ == '__main__':
     for comment_invi in all_comment_invitations:
         paper_number = comment_invi.id.split('Paper')[1].split('/')[0]
         author_grp = 'auai.org/UAI/2019/Conference/Paper{0}/Authors'.format(paper_number)
+        updated = False
         if author_grp in comment_invi.reply['readers']['values-dropdown']:
             comment_invi.reply['readers']['values-dropdown'].remove(author_grp)
+            updated = True
+        if author_grp in comment_invi.invitees:
+            comment_invi.invitees.remove(author_grp)
+            updated = True
+        if updated:
             client.post_invitation(comment_invi)
+
 
     #Post meta-review invitations:
     conference.open_meta_reviews(due_date=datetime.datetime(2019, 5, 7, 23, 59))
