@@ -29,7 +29,7 @@ You can use the following links to access to the conference:
 Conference home page: https://openreview.net/group?id={conference_id}
 Conference Program Chairs console: https://openreview.net/group?id={program_chairs_id}
 
-If you need to make a change to the information provided in your request form, please edit it directly. We will update your venue accordingly.
+If you need to make a change to the information provided in your request form, please edit/revise it directly. We will update your venue accordingly.
 
 If you need special features that are not included in your request form, you can create a comment here or contact us at info@openreview.net and we will assist you.
 
