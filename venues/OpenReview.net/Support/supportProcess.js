@@ -36,6 +36,7 @@ function(){
     var reviseInvitation = {
       id: 'OpenReview.net/Support/-/Request' + note.number + '/Revision',
       super: 'OpenReview.net/Support/-/Revision',
+      invitees: [],
       reply: {
         referent: note.forum,
         forum: note.forum
@@ -43,21 +44,21 @@ function(){
       signatures: ['OpenReview.net/Support']
     }
 
-    var reviseInvitationSupportTeam = {
+    var deployInvitation = {
       id: 'OpenReview.net/Support/-/Request' + note.number + '/Deploy',
       super: 'OpenReview.net/Support/-/Deploy',
       reply: {
         referent: note.forum,
         forum: note.forum
       },
-      signatures: ['OpenReview.net/Support']
+      signatures: ['OpenReview.net']
     }
 
     or3client.or3request(or3client.mailUrl, openreviewMailPayload, 'POST', token)
     .then(result => or3client.or3request(or3client.mailUrl, programchairMailPayload, 'POST', token))
     .then(result => or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token))
     .then(result => or3client.or3request(or3client.inviteUrl, reviseInvitation, 'POST', token))
-    .then(result => or3client.or3request(or3client.inviteUrl, reviseInvitationSupportTeam, 'POST', token))
+    .then(result => or3client.or3request(or3client.inviteUrl, deployInvitation, 'POST', token))
     .then(result => done())
     .catch(error => done(error));
 
