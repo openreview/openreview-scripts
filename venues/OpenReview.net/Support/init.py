@@ -198,6 +198,9 @@ comment_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
+remove_fields = ['Area Chairs (Metareviewers)', 'Author and Reviewer Anonymity', 'Open Reviewing Policy', 'Public Commentary']
+revision_content = {key: request_content[key] for key in request_content if key not in remove_fields}
+
 revision_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Revision',
     'readers': ['everyone'],
@@ -218,7 +221,7 @@ revision_inv = client.post_invitation(openreview.Invitation(**{
         'signatures': {
             'values-regex': '~.*'
         },
-        'content': request_content
+        'content': revision_content
     }
 }))
 
