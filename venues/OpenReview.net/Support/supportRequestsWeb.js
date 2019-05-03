@@ -10,7 +10,7 @@
 var instructionsHtml = '\
 <h3>Getting Started</h3>\
 <p class="dark">\
-If you would like to use OpenReview for your upcoming Journal, Conference, or Workshop, please fill out and submit the form below. \
+If you would like to use OpenReview for your upcoming venue such as a Journal, Conference, or Workshop, please fill out and submit the form below. \
 Please see the sections below for more details.\
 </p>\
 <h3>Frequently Asked Questions</h3>\
@@ -22,7 +22,7 @@ OpenReview is free, and will remain free for the foreseeable future. \
 <p class="dark">\
 The options provided in the form describe the most common set of variables that are requested. \
 That being said, OpenReview is built for flexibility, and it may be possible for us to accommodate special requests. \
-If you have a special request, please describe it in the text box at the end of the request form. \
+If you have a special request, please describe it in the text area at the end of the request form. \
 We are more likely to honor requests that are useful to many conferences, and that we can incorporate into our regular offerings.\
 </p>\
 <h3>Peer Review Management Options</h3>\
