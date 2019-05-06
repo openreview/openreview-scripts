@@ -70,12 +70,12 @@ request_content = {
         'order': 8
     },
     'Venue Start Date': {
-        'description': 'What is the start date of venue itself? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31)',
+        'description': 'What date does the venue start? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31)',
         'value-regex': '.*',
         'order': 9
     },
     'Location': {
-        'description': 'Where the event is being held. For example: Amherst, Massachusetts, United States',
+        'description': 'Where is the event being held. For example: Amherst, Massachusetts, United States',
         'value-regex': '.*',
         'order': 10
     },
