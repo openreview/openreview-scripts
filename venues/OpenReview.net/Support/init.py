@@ -22,24 +22,24 @@ support = openreview.Group(**{
 
 request_content = {
     'title': {
-        'value-copied': '{content[\'Official Conference Name\']}',
-        'description': 'Used for display purposes. Will be copied from the Official Conference Name',
+        'value-copied': '{content[\'Official Venue Name\']}',
+        'description': 'Used for display purposes. Will be copied from the Official Venue Name',
         'order': 1
     },
-    'Official Conference Name': {
-        'description': 'This will appear on your conference\'s OpenReview page. Example: "Seventh International Conference on Learning Representations"',
+    'Official Venue Name': {
+        'description': 'This will appear on your venue\'s OpenReview page. Example: "Seventh International Conference on Learning Representations"',
         'value-regex': '.*',
         'required': True,
         'order': 2
     },
-    'Abbreviated Conference Name': {
-        'description': 'Please include the year as well. This will be used to identify your conference on OpenReview and in email subject lines. Example: "ICLR 2019"',
+    'Abbreviated Venue Name': {
+        'description': 'Please include the year as well. This will be used to identify your venue on OpenReview and in email subject lines. Example: "ICLR 2019"',
         'value-regex': '.*',
         'required': True,
         'order': 3
     },
     'Official Website URL': {
-        'description': 'Please provide the official website URL of the conference.',
+        'description': 'Please provide the official website URL of the venue.',
         'value-regex': '.*',
         'required': True,
         'order': 4
@@ -51,11 +51,10 @@ request_content = {
         'order': 5
     },
     'Area Chairs (Metareviewers)': {
-        'description': 'Does your conference have Area Chairs?',
+        'description': 'Does your venue have Area Chairs?',
         'value-radio': [
-            'Yes, our conference has Area Chairs',
-            'No, our conference does not have Area Chairs',
-            'Other (describe below)'
+            'Yes, our venue has Area Chairs',
+            'No, our venue does not have Area Chairs'
         ],
         'required': True,
         'order': 6
@@ -70,13 +69,13 @@ request_content = {
         'description': 'By when do authors need to submit their manuscripts? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'order': 8
     },
-    'Conference Start Date': {
-        'description': 'What is the start date of conference itself? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31)',
+    'Venue Start Date': {
+        'description': 'What date does the venue start? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31)',
         'value-regex': '.*',
         'order': 9
     },
-    'Conference Location': {
-        'description': 'Where the conference is going to be held. For example: Amherst, Massachusetts, United States',
+    'Location': {
+        'description': 'Where is the event being held. For example: Amherst, Massachusetts, United States',
         'value-regex': '.*',
         'order': 10
     },
@@ -87,50 +86,51 @@ request_content = {
             'Reviewer Bid Scores',
             'Reviewer Recommendation Scores',
             'OpenReview Affinity',
-            'TPMS',
-            'Other (describe below)'
+            'TPMS'
         ],
         'order': 11
     },
     'Author and Reviewer Anonymity': {
-        'description': 'What policy best describes your anonymity policy? (Select "Other" if none apply, and describe your request below)',
+        'description': 'What policy best describes your anonymity policy? (If none of the options apply then please describe your request below)',
         'value-radio': [
             'Double-blind',
             'Single-blind (Reviewers are anonymous)',
-            'No anonymity',
-            'Other (describe below)'
+            'No anonymity'
         ],
         'order': 12
     },
     'Open Reviewing Policy': {
         'description': 'Should submitted papers and/or reviews be visible to the public? (This is independent of anonymity policy)',
         'value-radio': [
-            'Submissions and reviews should both be public.',
-            'Submissions should be public, but reviews should be private.',
             'Submissions and reviews should both be private.',
-            'Other (describe below)'
+            'Submissions should be public, but reviews should be private.',
+            'Submissions and reviews should both be public.'
         ],
         'order': 13
     },
     'Public Commentary': {
         'description': 'Would you like to allow members of the public to comment on papers?',
         'value-radio': [
-            'Yes, allow members of the public to comment anonymously.',
-            'Yes, allow members of the public to comment non-anonymously.',
             'No, do not allow public commentary.',
-            'Other (describe below)'
+            'Yes, allow members of the public to comment non-anonymously.',
+            'Yes, allow members of the public to comment anonymously.',
         ],
         'order': 14
     },
+    'Expected Submissions': {
+        'value-regex': '[0-9]*',
+        'description': 'How many submissions are expected in this venue? Please provide a number.',
+        'order': 15
+    },
     'Other Important Information': {
         'value-regex': '[\\S\\s]{1,5000}',
-        'description': 'Please use this space to clarify any questions above for which you responded "Other", and to clarify any other information that you think we may need.',
-        'order': 15
+        'description': 'Please use this space to clarify any questions above for which you could not use any of the provide options, and to clarify any other information that you think we may need.',
+        'order': 16
     },
     'How did you hear about us?': {
         'value-regex': '.*',
         'description': 'Please briefly describe how you heard about OpenReview.',
-        'order': 16
+        'order': 17
     }
 }
 
@@ -203,6 +203,9 @@ comment_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
+remove_fields = ['Area Chairs (Metareviewers)', 'Author and Reviewer Anonymity', 'Open Reviewing Policy', 'Public Commentary']
+revision_content = {key: request_content[key] for key in request_content if key not in remove_fields}
+
 revision_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Revision',
     'readers': ['everyone'],
@@ -223,7 +226,7 @@ revision_inv = client.post_invitation(openreview.Invitation(**{
         'signatures': {
             'values-regex': '~.*'
         },
-        'content': request_content
+        'content': revision_content
     }
 }))
 

@@ -26,8 +26,8 @@ We have set up the venue based on the information that you provided here: https:
 
 You can use the following links to access to the conference:
 
-Conference home page: https://openreview.net/group?id={conference_id}
-Conference Program Chairs console: https://openreview.net/group?id={program_chairs_id}
+Venue home page: https://openreview.net/group?id={conference_id}
+Venue Program Chairs console: https://openreview.net/group?id={program_chairs_id}
 
 If you need to make a change to the information provided in your request form, please edit/revise it directly. We will update your venue accordingly.
 
