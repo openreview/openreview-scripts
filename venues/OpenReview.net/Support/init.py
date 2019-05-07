@@ -117,15 +117,20 @@ request_content = {
         ],
         'order': 14
     },
+    'Expected Submissions': {
+        'value-regex': '[0-9]*',
+        'description': 'How many submissions are expected in this venue? Please provide a number.',
+        'order': 15
+    },
     'Other Important Information': {
         'value-regex': '[\\S\\s]{1,5000}',
         'description': 'Please use this space to clarify any questions above for which you could not use any of the provide options, and to clarify any other information that you think we may need.',
-        'order': 15
+        'order': 16
     },
     'How did you hear about us?': {
         'value-regex': '.*',
         'description': 'Please briefly describe how you heard about OpenReview.',
-        'order': 16
+        'order': 17
     }
 }
 
