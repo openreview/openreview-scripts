@@ -215,7 +215,7 @@ revision_inv = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Revision',
     'readers': ['everyone'],
     'writers': [],
-    'signatures': ['OpenReview.net/Support'],
+    'signatures': ['OpenReview.net'],
     'invitees': ['everyone'],
     'process': 'revisionProcess.py',
     'reply': {
