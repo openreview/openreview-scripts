@@ -5,6 +5,7 @@ import openreview
 def get_conference(client):
 
     builder = openreview.conference.ConferenceBuilder(client)
+    builder.use_legacy_invitation_id(True)
     builder.set_conference_id('auai.org/UAI/2019/Conference')
     builder.set_conference_name('Conference on Uncertainty in Artificial Intelligence')
     builder.set_conference_short_name('UAI 2019')
