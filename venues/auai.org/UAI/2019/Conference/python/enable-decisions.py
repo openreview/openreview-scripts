@@ -21,7 +21,12 @@ if __name__ == '__main__':
         start_date = datetime.datetime(2019, 5, 12, 11, 59),
         due_date = datetime.datetime(2019, 5, 14, 23, 59))
 
-    paper_number_to_decisions = {int(metarev.invitation.split('Paper')[1].split('/')[0]): metarev for metarev in \
+    paper_number_to_meta_review_invitation = {int(metarev.id.split('Paper')[1].split('/')[0]): metarev for metarev in \
+    openreview.tools.iterget_invitations(
+        client,
+        regex = conference.id + '/-/Paper[0-9]+/Meta_Review$'
+    )}
+    paper_number_to_decisions = {int(decision.invitation.split('Paper')[1].split('/')[0]): decision for decision in \
     openreview.tools.iterget_notes(
         client,
         invitation = conference.id + '/-/Paper.*/Decision'
@@ -50,15 +55,26 @@ if __name__ == '__main__':
                         )
 
                     # post decision note for this paper
-                    decision_note = client.post_note(openreview.Note(
-                        invitation = conference.id + '/-/Paper{0}/Decision'.format(paper_number),
-                        content = {
-                            'title' : 'Final Decision',
-                            'decision' : decision,
-                            'comment' : decision_text
-                        }
-                    ))
-                    new_decisions += 1
+                    try:
+                        decision_note = client.post_note(openreview.Note(
+                            invitation = conference.id + '/-/Paper{0}/Decision'.format(paper_number),
+                            forum = paper_number_to_meta_review_invitation[paper_number].reply['forum'],
+                            replyto = paper_number_to_meta_review_invitation[paper_number].reply['forum'],
+                            content = {
+                                'title' : 'Paper Decision',
+                                'decision' : decision,
+                                'comment' : decision_text
+                            },
+                            readers = [
+                                'auai.org/UAI/2019/Conference/Program_Chairs',
+                                'auai.org/UAI/2019/Conference/Paper{0}/Area_Chairs'.format(paper_number)],
+                            writers = ['auai.org/UAI/2019/Conference/Program_Chairs'],
+                            signatures = ['auai.org/UAI/2019/Conference/Program_Chairs'],
+                            nonreaders = ['auai.org/UAI/2019/Conference/Paper{0}/Authors'.format(paper_number)]
+                        ))
+                        new_decisions += 1
+                    except:
+                        pass
 
     print ('Posted {0} new decisions'.format(new_decisions))
-    print ('Failed to post decisions for ', ', '.join(failures))
+    print ('Failed to post decisions ({0}) for {1}'.format(len(failures), ', '.join(failures)))
