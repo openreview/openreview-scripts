@@ -35,7 +35,7 @@ if __name__ == '__main__':
     new_decisions = 0
     with open(args.decisions_file) as f:
         for row in csv.reader(f):
-            if row[0] and row[0] != 'Area Chair':
+            if len(row) > 0 and row[0] and row[0] != 'Area Chair':
                 paper_number = int(row[1])
                 if paper_number not in paper_number_to_decisions:
                     decision = row[6].strip()
