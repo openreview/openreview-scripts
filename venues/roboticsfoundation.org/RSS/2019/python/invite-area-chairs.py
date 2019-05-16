@@ -7,15 +7,16 @@ if __name__ == '__main__':
     parser.add_argument('--baseurl', help="base url")
     parser.add_argument('--username')
     parser.add_argument('--password')
+    parser.add_argument('request_id', help='enter request form id')
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-    conference = config.get_conference(client)
+    conference = openreview.helpers.get_conference(client, args.request_id)
 
     print ('inviting area chairs now')
 
-    area_chair_emails = []
-    area_chair_names = []
+    area_chair_emails = ['mohit@dummyemail.com', 'melisa@dummyemail.com']
+    area_chair_names = ['Mohit', 'Melisa']
 
     message = '''Dear {first_name},
 

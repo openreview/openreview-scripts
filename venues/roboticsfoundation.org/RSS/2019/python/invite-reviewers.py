@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     print ('inviting reviewers now')
 
-    reviewer_emails = ['muniyal@cs.umass.edu', 'mbok@cs.umass.edu']
+    reviewer_emails = ['mohit@dummyemail.conm', 'melisa@dummyemail.com']
     reviewer_names = ['Mohit', 'Melisa']
 
     message = '''Dear {first_name},
