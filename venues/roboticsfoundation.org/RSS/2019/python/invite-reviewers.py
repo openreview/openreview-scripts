@@ -11,12 +11,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-    conference = openreview.helpers.get_conference(client, request_id)
+    conference = openreview.helpers.get_conference(client, args.request_id)
 
     print ('inviting reviewers now')
 
-    reviewer_emails = []
-    reviewer_names = []
+    reviewer_emails = ['muniyal@cs.umass.edu', 'mbok@cs.umass.edu']
+    reviewer_names = ['Mohit', 'Melisa']
 
     message = '''Dear {first_name},
 
