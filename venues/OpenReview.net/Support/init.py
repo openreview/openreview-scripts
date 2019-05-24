@@ -264,46 +264,48 @@ reviewer_recruitment_content = {
     'Reviewer Emails': {
         'value-regex': '.*',
         'description': 'Please provide comma separated valid reviewer emails',
-        'required': True
+        'required': True,
+        'order': 1
     },
     'Reviewer Names': {
         'value-regex': '.*',
-        'description': 'Please provide comma separated reviewer names in the same order as emails.'
+        'description': 'Please provide comma separated reviewer names in the same order as emails.',
+        'order': 2
     },
     'Invitation Email': {
         'value-regex': '[\\S\\s]{1,10000}',
-        'description': 'Please carefully review the template below before you click submit to send out the  recruitment emails. Please make sure not to tamper with the special tokens.',
-        'default': 'Default text goes here!!'
-        # '''
-        # Email_Subject: [{Abbreviated_Venue_Name}] Invitation to serve as a reviewer
-        # Email_Content: Dear {invitee_name},
+        'description': 'Please carefully review the template below before you click submit to send out the  recruitment emails. Please make sure not to remove the special tokens.',
+        'order': 3,
+        'required': True,
+        'default': '''Email_Subject: [{Abbreviated_Venue_Name}] Invitation to serve as a reviewer
+Email_Content: Dear {invitee_name},
 
-        # You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as a reviewer.  As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
+You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as a reviewer.  As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
 
-        # Reviewers are also welcome to submit papers, so please also consider submitting to {Abbreviated_Venue_Name}!
+Reviewers are also welcome to submit papers, so please also consider submitting to {Abbreviated_Venue_Name}.
 
-        # We will be using OpenReview.net and a reviewing process that we hope will be engaging and inclusive of the whole community.
+We will be using OpenReview.net and a reviewing process that we hope will be engaging and inclusive of the whole community.
 
-        # The success of the {Abbreviated_Venue_Name} depends on the quality of the reviewing process and ultimately on the quality and dedication of the reviewers. We hope you will accept our invitation.
+The success of the {Abbreviated_Venue_Name} depends on the quality of the reviewing process and ultimately on the quality and dedication of the reviewers. We hope you will accept our invitation.
 
-        # To ACCEPT the invitation, please click on the following link:
+To ACCEPT the invitation, please click on the following link:
 
-        # {accept_url}
+{accept_url}
 
-        # To DECLINE the invitation, please click on the following link:
+To DECLINE the invitation, please click on the following link:
 
-        # {decline_url}
+{decline_url}
 
-        # Please answer within 10 days.
+Please answer within 10 days.
 
-        # If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.  Visit http://openreview.net/profile after logging in.
+If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.  Visit http://openreview.net/profile after logging in.
 
-        # If you have any questions, please contact us at info@openreview.net.
+If you have any questions, please contact us at info@openreview.net.
 
-        # Cheers!
+Cheers!
 
-        # Program Chairs
-        # '''
+Program Chairs
+'''
     }
 
 }
@@ -334,45 +336,47 @@ ac_recruitment_content = {
     'Area Chair Emails': {
         'value-regex': '.*',
         'description': 'Please provide comma separated valid area chair emails to be invited',
-        'required': True
+        'required': True,
+        'order': 1
     },
     'Area Chair Names': {
         'value-regex': '.*',
-        'description': 'Please provide comma separated area chair names in the same order as emails above.'
+        'description': 'Please provide comma separated area chair names in the same order as emails above.',
+        'order': 2
     },
     'Invitation Email': {
-        'value-regex': '[\\S\\s]{200,10000}',
-        'description': 'Please carefully review the template below before you click submit to send out the  recruitment emails. Please make sure not to tamper with the special tokens.',
-        'default': 'Default text goes here!!'
-        # '''
-        # Email_Subject: [{Abbreviated_Venue_Name}] Invitation to serve as an area chair
+        'value-regex': '[\\S\\s]{1,10000}',
+        'description': 'Please carefully review the template below before you click submit to send out the  recruitment emails. Please make sure not to remove the special tokens.',
+        'order': 3,
+        'required': True,
+        'default': '''Email_Subject: [{Abbreviated_Venue_Name}] Invitation to serve as an area chair
 
-        # Email_Content: Dear {invitee_name},
+Email_Content: Dear {invitee_name},
 
-        # You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as an area chair.  As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
+You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as an area chair.  As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
 
-        # Area chairs are also welcome to submit papers, so please also consider submitting to {Abbreviated_Venue_Name}!
+Area chairs are also welcome to submit papers, so please also consider submitting to {Abbreviated_Venue_Name}.
 
-        # We will be using OpenReview.net and a reviewing process that we hope will be engaging and inclusive of the whole community.
+We will be using OpenReview.net and a reviewing process that we hope will be engaging and inclusive of the whole community.
 
-        # To ACCEPT the invitation, please click on the following link:
+To ACCEPT the invitation, please click on the following link:
 
-        # {accept_url}
+{accept_url}
 
-        # To DECLINE the invitation, please click on the following link:
+To DECLINE the invitation, please click on the following link:
 
-        # {decline_url}
+{decline_url}
 
-        # Please answer within 10 days.
+Please answer within 10 days.
 
-        # If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.  Visit http://openreview.net/profile after logging in.
+If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.  Visit http://openreview.net/profile after logging in.
 
-        # If you have any questions, please contact us at info@openreview.net.
+If you have any questions, please contact us at info@openreview.net.
 
-        # Cheers!
+Cheers!
 
-        # Program Chairs
-        # '''
+Program Chairs
+'''
     }
 
 }
