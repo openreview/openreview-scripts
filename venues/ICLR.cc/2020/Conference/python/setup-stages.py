@@ -23,20 +23,20 @@ if __name__ == '__main__':
     conference.set_reviewers([])
 
     ## Stage: bids
-    conference.open_bids(due_date = datetime.datetime(2019, 6, 10, 0, 0), with_area_chairs = True)
+    conference.open_bids(due_date = datetime.datetime(2019, 9, 25, 0, 0), with_area_chairs = True)
 
     ## Stage: reviews
-    conference.open_reviews(due_date = datetime.datetime(2019, 6, 10, 0, 0))
+    conference.open_reviews(due_date = datetime.datetime(2019, 9, 25, 0, 0))
 
     ## Stage: discussion
     conference.open_comments(name = 'Official_Comment', public = False, anonymous = True, reader_selection = True)
     conference.open_comments(name = 'Public_Comment', public = True, anonymous = False)
 
     ## Area chair decisions
-    conference.open_meta_reviews(due_date = datetime.datetime(2019, 6, 10, 0, 0))
+    conference.open_meta_reviews(due_date = datetime.datetime(2019, 9, 25, 0, 0))
 
     ## Program Chairs decisions
-    conference.open_decisions(due_date = datetime.datetime(2019, 6, 10, 0, 0))
+    conference.open_decisions(due_date = datetime.datetime(2019, 9, 25, 0, 0))
 
     ## Camera ready revisions
     conference.open_revise_submissions()
