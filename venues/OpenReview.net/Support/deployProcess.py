@@ -55,7 +55,8 @@ OpenReview Team
         super = 'OpenReview.net/Support/-/Reviewer_Recruitment',
         invitees = readers,
         reply = {
-            'forum': forum.id
+            'forum': forum.id,
+            'replyto': forum.id
         },
         signatures = ['OpenReview.net/Support']
     ))
@@ -66,7 +67,8 @@ OpenReview Team
             super = 'OpenReview.net/Support/-/Area_Chair_Recruitment',
             invitees = readers,
             reply = {
-                'forum': forum.id
+                'forum': forum.id,
+                'replyto': forum.id
             },
             signatures = ['OpenReview.net/Support']
         ))
