@@ -31,8 +31,8 @@ conference.set_reviewers([
 #hidden
 ])
 
-# on May 31st, change pdf to required
-conference.open_submissions(due_date = datetime.datetime(2019, 6, 4, 23, 59), remove_fields = ['TL;DR'], additional_fields = {
+# on 6/12, change pdf to required
+conference.open_submissions(due_date = datetime.datetime(2019, 6, 16, 11, 59), remove_fields = ['TL;DR'], additional_fields = {
         'pdf': {
             'description': 'Upload a PDF file that ends with .pdf',
             'required': False,
