@@ -261,24 +261,35 @@ deploy_inv = client.post_invitation(openreview.Invitation(**{
 }))
 
 reviewer_recruitment_content = {
-    'Reviewer Emails': {
-        'value-regex': '.*',
-        'description': 'Please provide comma separated valid reviewer emails',
+    'title': {
+        'value': 'Reviewer recruitment',
         'required': True,
         'order': 1
     },
-    'Reviewer Names': {
+    'reviewer_emails': {
         'value-regex': '.*',
-        'description': 'Please provide comma separated reviewer names in the same order as emails.',
+        'description': 'Please provide comma separated valid reviewer emails. (e.g.  captain_rogers@marvel.com, black_widow@mcu.com)',
+        'required': True,
         'order': 2
     },
-    'Invitation Email': {
-        'value-regex': '[\\S\\s]{1,10000}',
-        'description': 'Please carefully review the template below before you click submit to send out the  recruitment emails. Please make sure not to remove the special tokens.',
-        'order': 3,
+    'reviewer_names': {
+        'value-regex': '.*',
+        'description': 'Please provide comma separated reviewer names in the *same order* as emails. (e.g. Steve Rogers, Natasha Romanoff)',
+        'order': 3
+    },
+    'invitation_email_subject': {
+        'value-regex': '.*',
+        'description': 'Please carefully review the email subject for the recruitment emails. Make sure not to remove the parenthesized tokens.',
+        'order': 4,
         'required': True,
-        'default': '''Email_Subject: [{Abbreviated_Venue_Name}] Invitation to serve as a reviewer
-Email_Content: Dear {invitee_name},
+        'default': '[{Abbreviated_Venue_Name}] Invitation to serve as a reviewer'
+    },
+    'invitation_email_content': {
+        'value-regex': '[\\S\\s]{1,10000}',
+        'description': 'Please carefully review the template below before you click submit to send out recruitment emails. Make sure not to remove the parenthesized tokens.',
+        'order': 5,
+        'required': True,
+        'default': '''Dear {name},
 
 You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as a reviewer.  As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
 
@@ -317,10 +328,10 @@ reviewer_recruitment_inv = client.post_invitation(openreview.Invitation(**{
     'signatures': ['OpenReview.net/Support'],
     'invitees': ['OpenReview.net/Support'],
     'process': 'reviewerRecruitmentProcess.py',
-    'multiReply': False,
+    'multiReply': True,
     'reply': {
         'readers': {
-            'values': ['OpenReview.net/Support']
+            'values': ['everyone']
         },
         'writers': {
             'values-regex': '~.*',
@@ -333,25 +344,35 @@ reviewer_recruitment_inv = client.post_invitation(openreview.Invitation(**{
 }))
 
 ac_recruitment_content = {
-    'Area Chair Emails': {
-        'value-regex': '.*',
-        'description': 'Please provide comma separated valid area chair emails to be invited',
+    'title': {
+        'value': 'Area chair recruitment',
         'required': True,
         'order': 1
     },
-    'Area Chair Names': {
+    'area_chair_emails': {
         'value-regex': '.*',
-        'description': 'Please provide comma separated area chair names in the same order as emails above.',
+        'description': 'Please provide comma separated valid area chair emails to be invited',
+        'required': True,
         'order': 2
     },
-    'Invitation Email': {
-        'value-regex': '[\\S\\s]{1,10000}',
-        'description': 'Please carefully review the template below before you click submit to send out the  recruitment emails. Please make sure not to remove the special tokens.',
-        'order': 3,
+    'area_chair_names': {
+        'value-regex': '.*',
+        'description': 'Please provide comma separated area chair names in the *same order* as emails above.',
+        'order': 3
+    },
+    'invitation_email_subject': {
+        'value-regex': '.*',
+        'description': 'Please carefully review the subject for the recruitment emails. Make sure not to remove the parenthesized tokens.',
+        'order': 4,
         'required': True,
-        'default': '''Email_Subject: [{Abbreviated_Venue_Name}] Invitation to serve as an area chair
-
-Email_Content: Dear {invitee_name},
+        'default': '[{Abbreviated_Venue_Name}] Invitation to serve as an area chair'
+    },
+    'invitation_email_content': {
+        'value-regex': '[\\S\\s]{1,10000}',
+        'description': 'Please carefully review the template below before you click submit to send out the recruitment emails. Make sure not to remove the parenthesized tokens.',
+        'order': 5,
+        'required': True,
+        'default': '''Dear {name},
 
 You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as an area chair.  As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
 
@@ -388,10 +409,10 @@ ac_recruitment_inv = client.post_invitation(openreview.Invitation(**{
     'signatures': ['OpenReview.net/Support'],
     'invitees': ['OpenReview.net/Support'],
     'process': 'areaChairRecruitmentProcess.py',
-    'multiReply': False,
+    'multiReply': True,
     'reply': {
         'readers': {
-            'values': ['OpenReview.net/Support']
+            'values': ['everyone']
         },
         'writers': {
             'values-regex': '~.*',
