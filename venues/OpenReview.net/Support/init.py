@@ -267,13 +267,13 @@ reviewer_recruitment_content = {
         'order': 1
     },
     'reviewer_emails': {
-        'value-regex': '.*',
+        'value-regex': '[\\S\\s]{1,20000}',
         'description': 'Please provide comma separated valid reviewer emails. (e.g.  captain_rogers@marvel.com, black_widow@mcu.com)',
         'required': True,
         'order': 2
     },
     'reviewer_names': {
-        'value-regex': '.*',
+        'value-regex': '[\\S\\s]{1,20000}',
         'description': 'Please provide comma separated reviewer names in the *same order* as emails. (e.g. Steve Rogers, Natasha Romanoff)',
         'order': 3
     },

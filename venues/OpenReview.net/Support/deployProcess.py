@@ -5,13 +5,13 @@ def process(client, note, invitation):
     conference = openreview.helpers.get_conference(client, note.forum)
     print(conference.get_id())
     forum = client.get_note(id=note.forum)
-    readers = forum.content['Contact Emails']
-    readers.append('OpenReview.net/Support')
+    comment_readers = forum.content['Contact Emails']
+    comment_readers.append('OpenReview.net/Support')
     comment_note = openreview.Note(
         invitation = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Comment',
         forum = forum.id,
         replyto = forum.id,
-        readers = readers,
+        readers = comment_readers,
         writers = ['OpenReview.net/Support'],
         signatures = ['OpenReview.net/Support'],
         content = {
@@ -40,6 +40,7 @@ OpenReview Team
     )
     client.post_note(comment_note)
 
+    readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
     revision_invitation = client.get_invitation(id= 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Revision')
     revision_invitation.reply['readers'] = {
         'values':  readers
@@ -56,7 +57,11 @@ OpenReview Team
         invitees = readers,
         reply = {
             'forum': forum.id,
-            'replyto': forum.id
+            'replyto': forum.id,
+            'readers' : {
+                'description': 'The users who will be allowed to read the above content.',
+                'values' : readers
+            }
         },
         signatures = ['OpenReview.net/Support']
     ))
@@ -68,7 +73,11 @@ OpenReview Team
             invitees = readers,
             reply = {
                 'forum': forum.id,
-                'replyto': forum.id
+                'replyto': forum.id,
+                'readers' : {
+                    'description': 'The users who will be allowed to read the above content.',
+                    'values' : readers
+                }
             },
             signatures = ['OpenReview.net/Support']
         ))
