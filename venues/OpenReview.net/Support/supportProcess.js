@@ -41,7 +41,7 @@ function(){
         referent: note.forum,
         forum: note.forum
       },
-      signatures: ['OpenReview.net/Support']
+      signatures: ['OpenReview.net']
     }
 
     var deployInvitation = {
