@@ -448,6 +448,15 @@ reviewer_recruitment_inv = client.post_invitation(openreview.Invitation(**{
     'process': 'reviewerRecruitmentProcess.py',
     'multiReply': True,
     'reply': {
+        'readers': {
+            'values': ['everyone']
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
         'content': reviewer_recruitment_content
     }
 }))
@@ -459,13 +468,13 @@ ac_recruitment_content = {
         'order': 1
     },
     'area_chair_emails': {
-        'value-regex': '.*',
+        'value-regex': '[\\S\\s]{1,20000}',
         'description': 'Please provide comma separated valid area chair emails to be invited',
         'required': True,
         'order': 2
     },
     'area_chair_names': {
-        'value-regex': '.*',
+        'value-regex': '[\\S\\s]{1,20000}',
         'description': 'Please provide comma separated area chair names in the *same order* as emails above.',
         'order': 3
     },
