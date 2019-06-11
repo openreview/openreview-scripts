@@ -23,7 +23,7 @@ support = openreview.Group(**{
 request_content = {
     'title': {
         'value-copied': '{content[\'Official Venue Name\']}',
-        'description': 'Used for display purposes. Will be copied from the Official Venue Name',
+        'description': 'Used for display purposes. This is copied from the Official Venue Name',
         'order': 1
     },
     'Official Venue Name': {
@@ -60,24 +60,39 @@ request_content = {
         'order': 6
     },
     'Submission Start Date': {
-        'description': 'When would you (ideally) like to have your OpenReview submission portal opened? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59). (Skip this if only requesting paper matching service)',
+        'description': 'When would you (ideally) like to have your OpenReview submission portal opened? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59). (Skip this if only requesting paper matching service)',
         'value-regex': '.*',
         'order': 7
     },
     'Submission Deadline': {
         'value-regex': '.*',
-        'description': 'By when do authors need to submit their manuscripts? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'description': 'By when do authors need to submit their manuscripts? Please use the following format (GMT Timezone): YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'order': 8
     },
     'Venue Start Date': {
-        'description': 'What date does the venue start? Please submit in the following format: YYYY/MM/DD (e.g. 2019/01/31)',
+        'description': 'What date does the venue start? Please use the following format: YYYY/MM/DD (e.g. 2019/01/31)',
         'value-regex': '.*',
         'order': 9
+    },
+    'Review Deadline (GMT)': {
+        'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 11
+    },
+    'Meta Review Deadline (GMT)': {
+        'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)  (Skip this if your venue does not have Area Chairs)',
+        'value-regex': '.*',
+        'order': 12
+    },
+    'Decision Deadline (GMT)': {
+        'description': 'By when should the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 13
     },
     'Location': {
         'description': 'Where is the event being held. For example: Amherst, Massachusetts, United States',
         'value-regex': '.*',
-        'order': 10
+        'order': 14
     },
     'Paper Matching': {
         'description': 'Choose options for assigning papers to reviewers. If using the OpenReview Paper Matching System, see the top of the page for a description of each feature type.',
@@ -88,7 +103,7 @@ request_content = {
             'OpenReview Affinity',
             'TPMS'
         ],
-        'order': 11
+        'order': 15
     },
     'Author and Reviewer Anonymity': {
         'description': 'What policy best describes your anonymity policy? (If none of the options apply then please describe your request below)',
@@ -97,7 +112,7 @@ request_content = {
             'Single-blind (Reviewers are anonymous)',
             'No anonymity'
         ],
-        'order': 12
+        'order': 16
     },
     'Open Reviewing Policy': {
         'description': 'Should submitted papers and/or reviews be visible to the public? (This is independent of anonymity policy)',
@@ -106,7 +121,7 @@ request_content = {
             'Submissions should be public, but reviews should be private.',
             'Submissions and reviews should both be public.'
         ],
-        'order': 13
+        'order': 17
     },
     'Public Commentary': {
         'description': 'Would you like to allow members of the public to comment on papers?',
@@ -115,22 +130,22 @@ request_content = {
             'Yes, allow members of the public to comment non-anonymously.',
             'Yes, allow members of the public to comment anonymously.',
         ],
-        'order': 14
+        'order': 18
     },
     'Expected Submissions': {
         'value-regex': '[0-9]*',
         'description': 'How many submissions are expected in this venue? Please provide a number.',
-        'order': 15
+        'order': 19
     },
     'Other Important Information': {
         'value-regex': '[\\S\\s]{1,5000}',
         'description': 'Please use this space to clarify any questions above for which you could not use any of the provide options, and to clarify any other information that you think we may need.',
-        'order': 16
+        'order': 20
     },
     'How did you hear about us?': {
         'value-regex': '.*',
         'description': 'Please briefly describe how you heard about OpenReview.',
-        'order': 17
+        'order': 21
     }
 }
 
@@ -263,3 +278,116 @@ deploy_inv = client.post_invitation(openreview.Invitation(**{
 client.post_invitation(request_inv)
 client.post_invitation(revision_inv)
 client.post_invitation(deploy_inv)
+
+anonymize_submissions_content = {
+    'title': {
+        'value': 'Anonymize Submissions',
+        'required': True,
+        'order': 1
+    },
+    'anonymize_submissions': {
+        'value-checkbox': 'Create anonymized versions of submissions',
+        'description': 'This will only create anonymized versions of submissions posted since this feature was used last. If this is being used for the first time, it will create anonymized copies of all submissions in your conference',
+        'required': True,
+        'order': 2
+    }
+}
+
+anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Anonymize_Submissions',
+    'readers': ['everyone'],
+    'writers': ['OpenReview.net/Support'],
+    'signatures': ['OpenReview.net'],
+    'invitees': ['OpenReview.net/Support'],
+    'process': 'anonymizeSubmissions.py',
+    'multiReply': True,
+    'reply': {
+        'readers': {
+            'values': ['everyone']
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': anonymize_submissions_content
+    }
+}))
+
+deanonymize_submissions_content = {
+    'title': {
+        'value': 'Deanonymize Submissions',
+        'required': True,
+        'order': 1
+    },
+    'deanonymize_submission': {
+        'value-checkbox': 'Deanonymize previously anonymized versions of submissions',
+        'description': 'This feature will deanonymized anonymized versions of submissions created earlier in the conference to reveal author names to the readers of the submissions. Use this with care because you are revealing author information with this and the process is irreversible.',
+        'required': True,
+        'order': 2
+    }
+}
+
+deanonymize_submissions_invitation = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Deanonymize_Submission',
+    'readers': ['everyone'],
+    'writers': ['OpenReview.net/Support'],
+    'signatures': ['OpenReview.net/Support'],
+    'invitees': ['OpenReview.net/Support'],
+    'process': 'deanonymizeSubmissions.py',
+    'multiReply': False,
+    'reply': {
+        'readers': {
+            'values': ['everyone']
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': deanonymize_submissions_content
+    }
+}))
+
+bid_invitation_content = {
+    'title': {
+        'value': 'Configure Bidding',
+        'required': True,
+        'order': 1
+    },
+    'bidding_enabled_for': {
+        'values-checkbox': ['Reviewers', 'Area Chairs'],
+        'description': 'Select who should bid on submissions. Please only select reviewers if your venue does not have Area Chairs',
+        'default': ['Reviewers'],
+        'required': True,
+        'order': 2
+    },
+    'bid_deadline_(GMT)': {
+        'description': 'When does bidding on submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if you are not using paper matching with reviewer bid scores)',
+        'value-regex': '.*',
+        'order': 10
+    },
+}
+
+bid_invitation = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Configure_Bidding',
+    'readers': ['everyone'],
+    'writers': ['OpenReview.net/Support'],
+    'signatures': ['OpenReview.net/Support'],
+    'invitees': ['OpenReview.net/Support'],
+    'multiReply': False,
+    'reply': {
+        'readers': {
+            'values': ['everyone']
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': bid_invitation_content
+    }
+}))
