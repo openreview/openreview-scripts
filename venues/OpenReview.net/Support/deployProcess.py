@@ -4,20 +4,19 @@ def process(client, note, invitation):
     print('invitation:', invitation.id)
     conference = openreview.helpers.get_conference(client, note.forum)
     print(conference.get_id())
-    if conference.is_new():
-        forum = client.get_note(id=note.forum)
-        readers = forum.content['Contact Emails']
-        readers.append('OpenReview.net/Support')
-        comment_note = openreview.Note(
-            invitation = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Comment',
-            forum = forum.id,
-            replyto = forum.id,
-            readers = readers,
-            writers = ['OpenReview.net/Support'],
-            signatures = ['OpenReview.net/Support'],
-            content = {
-                'title': 'Your venue is available in OpenReview',
-                'comment': '''
+    forum = client.get_note(id=note.forum)
+    readers = forum.content['Contact Emails']
+    readers.append('OpenReview.net/Support')
+    comment_note = openreview.Note(
+        invitation = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Comment',
+        forum = forum.id,
+        replyto = forum.id,
+        readers = readers,
+        writers = ['OpenReview.net/Support'],
+        signatures = ['OpenReview.net/Support'],
+        content = {
+            'title': 'Your venue is available in OpenReview',
+            'comment': '''
 Hi Program Chairs,
 
 Thanks for submitting a venue request.
@@ -36,19 +35,36 @@ If you need special features that are not included in your request form, you can
 Thanks!
 
 OpenReview Team
-                '''.format(noteId = forum.id, conference_id = conference.get_id(), program_chairs_id = conference.get_program_chairs_id())
-            }
-        )
-        client.post_note(comment_note)
-
-        revision_invitation = client.get_invitation(id= 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Revision')
-        revision_invitation.reply['readers'] = {
-            'values':  readers
+            '''.format(noteId = forum.id, conference_id = conference.get_id(), program_chairs_id = conference.get_program_chairs_id())
         }
-        revision_invitation.invitees = readers
-        client.post_invitation(revision_invitation)
+    )
+    client.post_note(comment_note)
 
-        forum.writers = ['OpenReview.net']
-        client.post_note(forum)
+    revision_invitation = client.get_invitation(id= 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Revision')
+    revision_invitation.reply['readers'] = {
+        'values':  readers
+    }
+    revision_invitation.invitees = readers
+    client.post_invitation(revision_invitation)
 
-    print('Conference: ', conference.get_id())
+    forum.writers = ['OpenReview.net']
+    forum_readers_list = forum.signatures[:]
+    forum_readers_list.extend(['OpenReview.net/Support', conference.get_program_chairs_id()])
+    forum.readers = forum_readers_list
+    client.post_note(forum)
+
+    if forum.content.get('Author and Reviewer Anonymity', None) == 'Double-blind':
+        anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(
+            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Anonymize_Submissions',
+            super = 'OpenReview.net/Support/-/Anonymize_Submissions',
+            invitees = readers,
+            reply = {
+                'forum': forum.id,
+                'replyto': forum.id,
+                'readers' : {
+                    'description': 'The users who will be allowed to read the above content.',
+                    'values' : readers
+                }
+            },
+            signatures = [conference.get_program_chairs_id()]
+        ))
