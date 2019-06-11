@@ -5,7 +5,7 @@ def process(client, note, invitation):
     conference = openreview.helpers.get_conference(client, note.forum)
     print(conference.get_id())
     forum = client.get_note(id=note.forum)
-    comment_readers = forum.content['Contact Emails']
+    comment_readers = forum.content['Contact Emails'][:]
     comment_readers.append('OpenReview.net/Support')
     comment_note = openreview.Note(
         invitation = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Comment',
@@ -41,6 +41,7 @@ OpenReview Team
     client.post_note(comment_note)
 
     readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
+    readers.extend(forum.signatures[:])
     revision_invitation = client.get_invitation(id= 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Revision')
     revision_invitation.reply['readers'] = {
         'values':  readers
@@ -49,6 +50,7 @@ OpenReview Team
     client.post_invitation(revision_invitation)
 
     forum.writers = ['OpenReview.net']
+    forum.readers = readers
     client.post_note(forum)
 
     reviewer_recruitment_invitation = client.post_invitation(openreview.Invitation(
@@ -81,12 +83,6 @@ OpenReview Team
             },
             signatures = ['OpenReview.net/Support']
         ))
-
-    forum.writers = ['OpenReview.net']
-    forum_readers_list = forum.signatures[:]
-    forum_readers_list.extend(['OpenReview.net/Support', conference.get_program_chairs_id()])
-    forum.readers = forum_readers_list
-    client.post_note(forum)
 
     if forum.content.get('Author and Reviewer Anonymity', None) == 'Double-blind':
         anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(
