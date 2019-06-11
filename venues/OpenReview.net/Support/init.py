@@ -374,7 +374,9 @@ bid_invitation = client.post_invitation(openreview.Invitation(**{
     'signatures': ['OpenReview.net/Support'],
     'invitees': ['OpenReview.net/Support'],
     'multiReply': False,
-    'content': bid_invitation_content
+    'reply': {
+        'content': bid_invitation_content
+    }
 }))
 
 reviewer_recruitment_content = {
@@ -435,7 +437,6 @@ Cheers!
 Program Chairs
 '''
     }
-
 }
 
 reviewer_recruitment_inv = client.post_invitation(openreview.Invitation(**{
@@ -446,7 +447,8 @@ reviewer_recruitment_inv = client.post_invitation(openreview.Invitation(**{
     'invitees': ['OpenReview.net/Support'],
     'process': 'reviewerRecruitmentProcess.py',
     'multiReply': True,
-    'content': reviewer_recruitment_content
+    'reply': {
+        'content': reviewer_recruitment_content
     }
 }))
 
