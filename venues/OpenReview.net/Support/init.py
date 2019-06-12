@@ -394,122 +394,47 @@ bid_invitation = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
-reviewer_recruitment_content = {
+recruitment_content = {
     'title': {
-        'value': 'Reviewer recruitment',
+        'value': 'Recruitment',
         'required': True,
         'order': 1
     },
-    'reviewer_emails': {
-        'value-regex': '[\\S\\s]{1,20000}',
-        'description': 'Please provide comma separated valid reviewer emails. (e.g.  captain_rogers@marvel.com, black_widow@mcu.com)',
+    'invitee_role': {
+        'description': 'Please select the role of the invitees in the conference.',
+        'value-radio': ['reviewer', 'area chair'],
+        'default': 'reviewer',
         'required': True,
         'order': 2
     },
-    'reviewer_names': {
+    'invitee_emails': {
         'value-regex': '[\\S\\s]{1,20000}',
-        'description': 'Please provide comma separated reviewer names in the *same order* as emails. (e.g. Steve Rogers, Natasha Romanoff)',
+        'description': 'Please provide comma separated valid emails. (e.g.  captain_rogers@marvel.com, black_widow@mcu.com)',
+        'required': True,
         'order': 3
+    },
+    'invitee_names': {
+        'value-regex': '[\\S\\s]{1,20000}',
+        'description': 'Please provide comma separated names in the *same order* as emails. (e.g. Steve Rogers, John, Natasha Romanoff)',
+        'order': 4
     },
     'invitation_email_subject': {
         'value-regex': '.*',
         'description': 'Please carefully review the email subject for the recruitment emails. Make sure not to remove the parenthesized tokens.',
-        'order': 4,
+        'order': 5,
         'required': True,
-        'default': '[{Abbreviated_Venue_Name}] Invitation to serve as a reviewer'
+        'default': '[{Abbreviated_Venue_Name}] Invitation to serve as {invitee_role}'
     },
     'invitation_email_content': {
         'value-regex': '[\\S\\s]{1,10000}',
         'description': 'Please carefully review the template below before you click submit to send out recruitment emails. Make sure not to remove the parenthesized tokens.',
-        'order': 5,
+        'order': 6,
         'required': True,
         'default': '''Dear {name},
 
-You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as a reviewer.  As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
+You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as {invitee_role}. As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
 
-Reviewers are also welcome to submit papers, so please also consider submitting to {Abbreviated_Venue_Name}.
-
-We will be using OpenReview.net and a reviewing process that we hope will be engaging and inclusive of the whole community.
-
-The success of the {Abbreviated_Venue_Name} depends on the quality of the reviewing process and ultimately on the quality and dedication of the reviewers. We hope you will accept our invitation.
-
-To ACCEPT the invitation, please click on the following link:
-
-{accept_url}
-
-To DECLINE the invitation, please click on the following link:
-
-{decline_url}
-
-Please answer within 10 days.
-
-If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.  Visit http://openreview.net/profile after logging in.
-
-If you have any questions, please contact us at info@openreview.net.
-
-Cheers!
-
-Program Chairs
-'''
-    }
-}
-
-reviewer_recruitment_inv = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Reviewer_Recruitment',
-    'readers': ['everyone'],
-    'writers': [],
-    'signatures': ['OpenReview.net/Support'],
-    'invitees': ['OpenReview.net/Support'],
-    'process': 'reviewerRecruitmentProcess.py',
-    'multiReply': True,
-    'reply': {
-        'readers': {
-            'values': ['everyone']
-        },
-        'writers': {
-            'values-regex': '~.*',
-        },
-        'signatures': {
-            'values-regex': '~.*'
-        },
-        'content': reviewer_recruitment_content
-    }
-}))
-
-ac_recruitment_content = {
-    'title': {
-        'value': 'Area chair recruitment',
-        'required': True,
-        'order': 1
-    },
-    'area_chair_emails': {
-        'value-regex': '[\\S\\s]{1,20000}',
-        'description': 'Please provide comma separated valid area chair emails to be invited',
-        'required': True,
-        'order': 2
-    },
-    'area_chair_names': {
-        'value-regex': '[\\S\\s]{1,20000}',
-        'description': 'Please provide comma separated area chair names in the *same order* as emails above.',
-        'order': 3
-    },
-    'invitation_email_subject': {
-        'value-regex': '.*',
-        'description': 'Please carefully review the subject for the recruitment emails. Make sure not to remove the parenthesized tokens.',
-        'order': 4,
-        'required': True,
-        'default': '[{Abbreviated_Venue_Name}] Invitation to serve as an area chair'
-    },
-    'invitation_email_content': {
-        'value-regex': '[\\S\\s]{1,10000}',
-        'description': 'Please carefully review the template below before you click submit to send out the recruitment emails. Make sure not to remove the parenthesized tokens.',
-        'order': 5,
-        'required': True,
-        'default': '''Dear {name},
-
-You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as an area chair.  As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
-
-Area chairs are also welcome to submit papers, so please also consider submitting to {Abbreviated_Venue_Name}.
+You are also welcome to submit papers, so please also consider submitting to {Abbreviated_Venue_Name}.
 
 We will be using OpenReview.net and a reviewing process that we hope will be engaging and inclusive of the whole community.
 
@@ -532,16 +457,15 @@ Cheers!
 Program Chairs
 '''
     }
-
 }
 
-ac_recruitment_inv = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Area_Chair_Recruitment',
+recruitment_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Recruitment',
     'readers': ['everyone'],
     'writers': [],
     'signatures': ['OpenReview.net/Support'],
     'invitees': ['OpenReview.net/Support'],
-    'process': 'areaChairRecruitmentProcess.py',
+    'process': 'recruitmentProcess.py',
     'multiReply': True,
     'reply': {
         'readers': {
@@ -553,7 +477,7 @@ ac_recruitment_inv = client.post_invitation(openreview.Invitation(**{
         'signatures': {
             'values-regex': '~.*'
         },
-        'content': ac_recruitment_content
+        'content': recruitment_content
     }
 }))
 
@@ -569,18 +493,21 @@ configure_review_content = {
         'order': 11
     },
     'Release Reviews to Authors': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s author? Default is "No"',
-        'value-radio': ["Yes", "No"],
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s author?',
+        'value-radio': ['Yes', 'No'],
+        'default': 'No',
         'order': 24
     },
     'Release Reviews to Reviewers': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Default is "No"',
-        'value-radio': ["Yes", "No"],
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not?',
+        'value-radio': ['Yes', 'No'],
+        'default': 'No',
         'order': 25
     },
     'Email Program Chairs': {
-        'description': 'Should Program Chairs be emailed when each review is posted? Default is "No"',
-        'value-radio': ["Yes", "No"],
+        'description': 'Should Program Chairs be emailed when each review is posted?',
+        'value-radio': ['Yes', 'No'],
+        'default': 'No',
         'order': 26
     },
     'Additional Review Options' : {
@@ -626,8 +553,9 @@ configure_meta_review_content = {
         'order': 13
     },
     'Make Meta Reviews Public': {
-        'description': 'Should the meta reviews be visible publicly immediately upon creation? Deafult is "No"',
-        'value-radio': ["Yes", "No"],
+        'description': 'Should the meta reviews be visible publicly immediately upon creation?',
+        'value-radio': ['Yes', 'No'],
+        'default': 'No',
         'order': 28
     },
     'Additional Meta Review Options' : {
@@ -678,18 +606,21 @@ configure_decision_content = {
         'order': 30
     },
     'Release Decisions to Authors': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s author? Default is "No"',
-        'value-radio': ["Yes", "No"],
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s author?',
+        'value-radio': ['Yes', 'No'],
+        'default': 'No',
         'order': 31
     },
     'Release Decision to Reviewers': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Deafult is "No"',
-        'value-radio': ["Yes", "No"],
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not?',
+        'value-radio': ['Yes', 'No'],
+        'default': 'No',
         'order': 32
     },
     'Make Decisions Public': {
-        'description': 'Should the decisions be visible publicly immediately upon creation? Deafult is "No"',
-        'value-radio': ["Yes", "No"],
+        'description': 'Should the decisions be visible publicly immediately upon creation?',
+        'value-radio': ['Yes', 'No'],
+        'default': 'No',
         'order': 33
     },
     'Additional Review Options' : {
