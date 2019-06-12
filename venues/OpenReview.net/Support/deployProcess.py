@@ -84,6 +84,21 @@ OpenReview Team
             signatures = ['OpenReview.net/Support']
         ))
 
+        configure_metareviews_invitation = client.post_invitation(openreview.Invitation(
+            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Configure_Meta_Reviews',
+            super = 'OpenReview.net/Support/-/Configure_Meta_Reviews',
+            invitees = readers,
+            reply = {
+                'forum': forum.id,
+                'referent': forum.id,
+                'readers' : {
+                    'description': 'The users who will be allowed to read the above content.',
+                    'values' : readers
+                }
+            },
+            signatures = [conference.get_program_chairs_id()]
+        ))
+
     if forum.content.get('Author and Reviewer Anonymity', None) == 'Double-blind':
         anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(
             id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Anonymize_Submissions',
@@ -99,3 +114,33 @@ OpenReview Team
             },
             signatures = [conference.get_program_chairs_id()]
         ))
+
+    configure_reviews_invitation = client.post_invitation(openreview.Invitation(
+        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Configure_Reviews',
+        super = 'OpenReview.net/Support/-/Configure_Reviews',
+        invitees = readers,
+        reply = {
+            'forum': forum.id,
+            'referent': forum.id,
+            'readers' : {
+                'description': 'The users who will be allowed to read the above content.',
+                'values' : readers
+            }
+        },
+        signatures = [conference.get_program_chairs_id()]
+    ))
+
+    configure_decisions_invitation = client.post_invitation(openreview.Invitation(
+        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Configure_Decisions',
+        super = 'OpenReview.net/Support/-/Configure_Decisions',
+        invitees = readers,
+        reply = {
+            'forum': forum.id,
+            'referent': forum.id,
+            'readers' : {
+                'description': 'The users who will be allowed to read the above content.',
+                'values' : readers
+            }
+        },
+        signatures = [conference.get_program_chairs_id()]
+    ))
