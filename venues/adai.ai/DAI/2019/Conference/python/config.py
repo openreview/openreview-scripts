@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import openreview
+import datetime
 
 def get_conference(client):
 
@@ -27,7 +28,13 @@ def get_conference(client):
 Please contact the DAI 2019 Program chairs at <a href="mailto:dai2019chairs@gmail.com">dai2019chairs@gmail.com</a>.<br>
 Please contact the OpenReview support team at <a href="mailto:info@openreview.net">info@openreview.net</a> with any OpenReview related questions or concerns.</p>'''
     })
-    builder.set_double_blind(True)
+    builder.set_submission_stage(double_blind = True, due_date = datetime.datetime(2019, 6, 16, 23, 59), remove_fields = ['TL;DR'], additional_fields = {
+        'pdf': {
+            'description': 'Upload a PDF file that ends with .pdf',
+            'required': False,
+            'value-regex': 'upload'
+        }
+    })
 
     builder.set_authorpage_header({'schedule':
       '''<h4>Submission Period</h4>
