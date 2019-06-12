@@ -42,16 +42,25 @@ OpenReview Team
 
     readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
     readers.extend(forum.signatures[:])
-    revision_invitation = client.get_invitation(id= 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Revision')
-    revision_invitation.reply['readers'] = {
-        'values':  readers
-    }
-    revision_invitation.invitees = readers
-    client.post_invitation(revision_invitation)
 
     forum.writers = ['OpenReview.net']
     forum.readers = readers
     client.post_note(forum)
+
+    revision_invitation = client.post_invitation(openreview.Invitation(
+        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Revision',
+        super = 'OpenReview.net/Support/-/Revision',
+        invitees = readers,
+        reply = {
+            'forum': forum.id,
+            'referent': forum.id,
+            'readers' : {
+                'description': 'The users who will be allowed to read the above content.',
+                'values' : readers
+            }
+        },
+        signatures = ['OpenReview.net/Support']
+    ))
 
     reviewer_recruitment_invitation = client.post_invitation(openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Reviewer_Recruitment',
