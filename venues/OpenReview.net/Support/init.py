@@ -66,7 +66,7 @@ request_content = {
     },
     'Submission Deadline': {
         'value-regex': '.*',
-        'description': 'By when do authors need to submit their manuscripts? Please use the following format (GMT Timezone): YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'description': 'By when do authors need to submit their manuscripts? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'order': 8
     },
     'Venue Start Date': {
@@ -74,25 +74,40 @@ request_content = {
         'value-regex': '.*',
         'order': 9
     },
-    'Review Deadline (GMT)': {
+    'Review Start Date': {
+        'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 10
+    },
+    'Review Deadline': {
         'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
         'order': 11
     },
-    'Meta Review Deadline (GMT)': {
-        'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)  (Skip this if your venue does not have Area Chairs)',
+    'Meta Review Start Date': {
+        'description': 'When does the meta reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
         'value-regex': '.*',
         'order': 12
     },
-    'Decision Deadline (GMT)': {
-        'description': 'By when should the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+    'Meta Review Deadline': {
+        'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
         'value-regex': '.*',
         'order': 13
+    },
+    'Decision Start Date': {
+        'description': 'When does the decision be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 14
+    },
+    'Decision Deadline': {
+        'description': 'By when should the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 15
     },
     'Location': {
         'description': 'Where is the event being held. For example: Amherst, Massachusetts, United States',
         'value-regex': '.*',
-        'order': 14
+        'order': 16
     },
     'Paper Matching': {
         'description': 'Choose options for assigning papers to reviewers. If using the OpenReview Paper Matching System, see the top of the page for a description of each feature type.',
@@ -103,7 +118,7 @@ request_content = {
             'OpenReview Affinity',
             'TPMS'
         ],
-        'order': 15
+        'order': 17
     },
     'Author and Reviewer Anonymity': {
         'description': 'What policy best describes your anonymity policy? (If none of the options apply then please describe your request below)',
@@ -112,7 +127,7 @@ request_content = {
             'Single-blind (Reviewers are anonymous)',
             'No anonymity'
         ],
-        'order': 16
+        'order': 18
     },
     'Open Reviewing Policy': {
         'description': 'Should submitted papers and/or reviews be visible to the public? (This is independent of anonymity policy)',
@@ -121,7 +136,7 @@ request_content = {
             'Submissions should be public, but reviews should be private.',
             'Submissions and reviews should both be public.'
         ],
-        'order': 17
+        'order': 19
     },
     'Public Commentary': {
         'description': 'Would you like to allow members of the public to comment on papers?',
@@ -130,22 +145,22 @@ request_content = {
             'Yes, allow members of the public to comment non-anonymously.',
             'Yes, allow members of the public to comment anonymously.',
         ],
-        'order': 18
+        'order': 20
     },
     'Expected Submissions': {
         'value-regex': '[0-9]*',
         'description': 'How many submissions are expected in this venue? Please provide a number.',
-        'order': 19
+        'order': 21
     },
     'Other Important Information': {
         'value-regex': '[\\S\\s]{1,5000}',
         'description': 'Please use this space to clarify any questions above for which you could not use any of the provide options, and to clarify any other information that you think we may need.',
-        'order': 20
+        'order': 22
     },
     'How did you hear about us?': {
         'value-regex': '.*',
         'description': 'Please briefly describe how you heard about OpenReview.',
-        'order': 21
+        'order': 23
     }
 }
 
@@ -319,14 +334,14 @@ deanonymize_submissions_content = {
     },
     'deanonymize_submissions': {
         'value-checkbox': 'Deanonymize previously anonymized versions of submissions',
-        'description': 'This feature will deanonymized anonymized versions of submissions created earlier in the conference to reveal author names to the readers of the submissions. Use this with care because you are revealing author information with this and the process is irreversible.',
+        'description': 'This feature will deanonymize the anonymized versions of submissions created earlier to reveal author names to the readers of the submissions. Use this with care because you are revealing author information with this and the process is irreversible.',
         'required': True,
         'order': 2
     }
 }
 
 deanonymize_submissions_invitation = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Deanonymize_Submission',
+    'id': 'OpenReview.net/Support/-/Deanonymize_Submissions',
     'readers': ['everyone'],
     'writers': ['OpenReview.net/Support'],
     'signatures': ['OpenReview.net/Support'],
@@ -539,5 +554,171 @@ ac_recruitment_inv = client.post_invitation(openreview.Invitation(**{
             'values-regex': '~.*'
         },
         'content': ac_recruitment_content
+    }
+}))
+
+configure_review_content = {
+    'Review Start Date': {
+        'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 10
+    },
+    'Review Deadline': {
+        'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 11
+    },
+    'Release Reviews to Authors': {
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s author? Default is "No"',
+        'value-radio': ["Yes", "No"],
+        'order': 24
+    },
+    'Release Reviews to Reviewers': {
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Deafult is "No"',
+        'value-radio': ["Yes", "No"],
+        'order': 25
+    },
+    'Email Program Chairs': {
+        'description': 'Should Program Chairs be emailed for each posted review?',
+        'value-radio': ["Yes", "No"],
+        'order': 26
+    },
+    'Additional Review Options' : {
+        'order' : 27,
+        'value-regex': '[\\S\\s]{1,10000}',
+        'description': 'Configure additional options in the review form. Valid JSON expected.'
+    }
+}
+
+configure_review_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Configure_Reviews',
+    'readers': ['everyone'],
+    'writers': [],
+    'signatures': ['OpenReview.net'],
+    'invitees': ['everyone'],
+    'process': 'revisionProcess.py',
+    'reply': {
+        'readers': {
+            'values-copied': [
+                'OpenReview.net/Support',
+                '{content["Contact Emails"]}'
+            ]
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': configure_review_content
+    }
+}))
+
+configure_meta_review_content = {
+    'Meta Review Start Date': {
+        'description': 'When does the meta reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
+        'value-regex': '.*',
+        'order': 12
+    },
+    'Meta Review Deadline': {
+        'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
+        'value-regex': '.*',
+        'order': 13
+    },
+    'Make Meta Reviews Public': {
+        'description': 'Should the meta reviews be visible publicly immediately upon creation? Deafult is "No"',
+        'value-radio': ["Yes", "No"],
+        'order': 28
+    },
+    'Additional Meta Review Options' : {
+        'order' : 29,
+        'value-regex': '[\\S\\s]{1,10000}',
+        'description': 'Configure additional options in the meta review form. Valid JSON expected.'
+    }
+}
+
+configure_meta_review_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Configure_Meta_Reviews',
+    'readers': ['everyone'],
+    'writers': [],
+    'signatures': ['OpenReview.net'],
+    'invitees': ['everyone'],
+    'process': 'revisionProcess.py',
+    'reply': {
+        'readers': {
+            'values-copied': [
+                'OpenReview.net/Support',
+                '{content["Contact Emails"]}'
+            ]
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': configure_meta_review_content
+    }
+}))
+
+configure_decision_content = {
+    'Decision Start Date': {
+        'description': 'When does the decision be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 14
+    },
+    'Decision Deadline': {
+        'description': 'By when should the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'value-regex': '.*',
+        'order': 15
+    },
+    'Decision Options': {
+        'description': 'What are the decision options (provide comma separated values, e.g. Accept (Best Paper), Accept, Reject)? Default options are "Accept (Oral)", "Accept (Poster)", "Reject"',
+        'value-regex': '.*',
+        'order': 30
+    },
+    'Release Decisions to Authors': {
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s author? Default is "No"',
+        'value-radio': ["Yes", "No"],
+        'order': 31
+    },
+    'Release Decision to Reviewers': {
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Deafult is "No"',
+        'value-radio': ["Yes", "No"],
+        'order': 32
+    },
+    'Make Decisions Public': {
+        'description': 'Should the decisions be visible publicly immediately upon creation? Deafult is "No"',
+        'value-radio': ["Yes", "No"],
+        'order': 33
+    },
+    'Additional Review Options' : {
+        'value-regex': '[\\S\\s]{1,10000}',
+        'description': 'Configure additional options in the submission form. Valid JSON expected.',
+        'order' : 34
+    }
+}
+
+configure_decision_inv = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Configure_Decisions',
+    'readers': ['everyone'],
+    'writers': [],
+    'signatures': ['OpenReview.net'],
+    'invitees': ['everyone'],
+    'process': 'revisionProcess.py',
+    'reply': {
+        'readers': {
+            'values-copied': [
+                'OpenReview.net/Support',
+                '{content["Contact Emails"]}'
+            ]
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': configure_decision_content
     }
 }))
