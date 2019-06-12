@@ -574,12 +574,12 @@ configure_review_content = {
         'order': 24
     },
     'Release Reviews to Reviewers': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Deafult is "No"',
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Default is "No"',
         'value-radio': ["Yes", "No"],
         'order': 25
     },
     'Email Program Chairs': {
-        'description': 'Should Program Chairs be emailed for each posted review?',
+        'description': 'Should Program Chairs be emailed when each review is posted? Default is "No"',
         'value-radio': ["Yes", "No"],
         'order': 26
     },
