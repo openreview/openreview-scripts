@@ -63,9 +63,9 @@ OpenReview Team
     ))
 
     if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
-        configure_metareviews_invitation = client.post_invitation(openreview.Invitation(
-            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Configure_Meta_Reviews',
-            super = 'OpenReview.net/Support/-/Configure_Meta_Reviews',
+        metareview_stage_invitation = client.post_invitation(openreview.Invitation(
+            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Meta_Review_Stage',
+            super = 'OpenReview.net/Support/-/Meta_Review_Stage',
             invitees = readers,
             reply = {
                 'forum': forum.id,
@@ -170,25 +170,25 @@ Program Chairs'''
         signatures = ['OpenReview.net/Support']
     ))
 
-    if forum.content.get('Author and Reviewer Anonymity', None) == 'Double-blind':
-        anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(
-            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Anonymize_Submissions',
-            super = 'OpenReview.net/Support/-/Anonymize_Submissions',
-            invitees = readers,
-            reply = {
-                'forum': forum.id,
-                'replyto': forum.id,
-                'readers' : {
-                    'description': 'The users who will be allowed to read the above content.',
-                    'values' : readers
-                }
-            },
-            signatures = [conference.get_program_chairs_id()]
-        ))
+    # if forum.content.get('Author and Reviewer Anonymity', None) == 'Double-blind':
+    #     anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(
+    #         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Anonymize_Submissions',
+    #         super = 'OpenReview.net/Support/-/Anonymize_Submissions',
+    #         invitees = readers,
+    #         reply = {
+    #             'forum': forum.id,
+    #             'replyto': forum.id,
+    #             'readers' : {
+    #                 'description': 'The users who will be allowed to read the above content.',
+    #                 'values' : readers
+    #             }
+    #         },
+    #         signatures = [conference.get_program_chairs_id()]
+    #     ))
 
-    configure_reviews_invitation = client.post_invitation(openreview.Invitation(
-        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Configure_Reviews',
-        super = 'OpenReview.net/Support/-/Configure_Reviews',
+    review_stage_invitation = client.post_invitation(openreview.Invitation(
+        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Review_Stage',
+        super = 'OpenReview.net/Support/-/Review_Stage',
         invitees = readers,
         reply = {
             'forum': forum.id,
@@ -201,9 +201,9 @@ Program Chairs'''
         signatures = [conference.get_program_chairs_id()]
     ))
 
-    configure_decisions_invitation = client.post_invitation(openreview.Invitation(
-        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Configure_Decisions',
-        super = 'OpenReview.net/Support/-/Configure_Decisions',
+    decision_stage_invitation = client.post_invitation(openreview.Invitation(
+        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Decision_Stage',
+        super = 'OpenReview.net/Support/-/Decision_Stage',
         invitees = readers,
         reply = {
             'forum': forum.id,

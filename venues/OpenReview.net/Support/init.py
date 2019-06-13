@@ -74,36 +74,36 @@ request_content = {
         'value-regex': '.*',
         'order': 9
     },
-    'Review Start Date': {
-        'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-        'value-regex': '.*',
-        'order': 10
-    },
-    'Review Deadline': {
-        'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-        'value-regex': '.*',
-        'order': 11
-    },
-    'Meta Review Start Date': {
-        'description': 'When does the meta reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
-        'value-regex': '.*',
-        'order': 12
-    },
-    'Meta Review Deadline': {
-        'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
-        'value-regex': '.*',
-        'order': 13
-    },
-    'Decision Start Date': {
-        'description': 'When does the decision be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
-        'value-regex': '.*',
-        'order': 14
-    },
-    'Decision Deadline': {
-        'description': 'By when should the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
-        'value-regex': '.*',
-        'order': 15
-    },
+    # 'Review Start Date': {
+    #     'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+    #     'value-regex': '.*',
+    #     'order': 10
+    # },
+    # 'Review Deadline': {
+    #     'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+    #     'value-regex': '.*',
+    #     'order': 11
+    # },
+    # 'Meta Review Start Date': {
+    #     'description': 'When does the meta reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
+    #     'value-regex': '.*',
+    #     'order': 12
+    # },
+    # 'Meta Review Deadline': {
+    #     'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
+    #     'value-regex': '.*',
+    #     'order': 13
+    # },
+    # 'Decision Start Date': {
+    #     'description': 'When does the decision be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+    #     'value-regex': '.*',
+    #     'order': 14
+    # },
+    # 'Decision Deadline': {
+    #     'description': 'By when should the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+    #     'value-regex': '.*',
+    #     'order': 15
+    # },
     'Location': {
         'description': 'Where is the event being held. For example: Amherst, Massachusetts, United States',
         'value-regex': '.*',
@@ -164,7 +164,7 @@ request_content = {
     }
 }
 
-request_inv = client.post_invitation(openreview.Invitation(**{
+request_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Request_Form',
     'readers': ['everyone'],
     'writers': [],
@@ -193,7 +193,7 @@ request_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
-comment_inv = client.post_invitation(openreview.Invitation(**{
+comment_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Comment',
     'readers': ['everyone'],
     'writers': ['OpenReview.net/Support'],
@@ -241,7 +241,7 @@ revision_content['Additional Submission Options'] = {
     'description': 'Configure additional options in the submission form. Valid JSON expected.'
 }
 
-revision_inv = client.post_invitation(openreview.Invitation(**{
+revision_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Revision',
     'readers': ['everyone'],
     'writers': [],
@@ -268,7 +268,7 @@ revision_inv = client.post_invitation(openreview.Invitation(**{
 deploy_content = {'venue_id': {
     'value-regex': '.*', 'description': 'Venue id'}}
 
-deploy_inv = client.post_invitation(openreview.Invitation(**{
+deploy_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Deploy',
     'readers': ['everyone'],
     'writers': [],
@@ -290,109 +290,109 @@ deploy_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
-anonymize_submissions_content = {
-    'title': {
-        'value': 'Anonymize Submissions',
-        'required': True,
-        'order': 1
-    },
-    'anonymize_submissions': {
-        'value-checkbox': 'Create anonymized versions of submissions',
-        'description': 'This will only create anonymized versions of submissions posted since this feature was used last. If this is being used for the first time, it will create anonymized copies of all submissions in your conference',
-        'required': True,
-        'order': 2
-    }
-}
+# anonymize_submissions_content = {
+#     'title': {
+#         'value': 'Anonymize Submissions',
+#         'required': True,
+#         'order': 1
+#     },
+#     'anonymize_submissions': {
+#         'value-checkbox': 'Create anonymized versions of submissions',
+#         'description': 'This will only create anonymized versions of submissions posted since this feature was used last. If this is being used for the first time, it will create anonymized copies of all submissions in your conference',
+#         'required': True,
+#         'order': 2
+#     }
+# }
 
-anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Anonymize_Submissions',
-    'readers': ['everyone'],
-    'writers': ['OpenReview.net/Support'],
-    'signatures': ['OpenReview.net'],
-    'invitees': ['OpenReview.net/Support'],
-    'process': 'anonymizeSubmissions.py',
-    'multiReply': True,
-    'reply': {
-        'readers': {
-            'values': ['everyone']
-        },
-        'writers': {
-            'values-regex': '~.*',
-        },
-        'signatures': {
-            'values-regex': '~.*'
-        },
-        'content': anonymize_submissions_content
-    }
-}))
+# anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(**{
+#     'id': 'OpenReview.net/Support/-/Anonymize_Submissions',
+#     'readers': ['everyone'],
+#     'writers': ['OpenReview.net/Support'],
+#     'signatures': ['OpenReview.net'],
+#     'invitees': ['OpenReview.net/Support'],
+#     'process': 'anonymizeSubmissions.py',
+#     'multiReply': True,
+#     'reply': {
+#         'readers': {
+#             'values': ['everyone']
+#         },
+#         'writers': {
+#             'values-regex': '~.*',
+#         },
+#         'signatures': {
+#             'values-regex': '~.*'
+#         },
+#         'content': anonymize_submissions_content
+#     }
+# }))
 
-deanonymize_submissions_content = {
-    'title': {
-        'value': 'Deanonymize Submissions',
-        'required': True,
-        'order': 1
-    },
-    'deanonymize_submissions': {
-        'value-checkbox': 'Deanonymize previously anonymized versions of submissions',
-        'description': 'This feature will deanonymize the anonymized versions of submissions created earlier to reveal author names to the readers of the submissions. Use this with care because you are revealing author information with this and the process is irreversible.',
-        'required': True,
-        'order': 2
-    }
-}
+# deanonymize_submissions_content = {
+#     'title': {
+#         'value': 'Deanonymize Submissions',
+#         'required': True,
+#         'order': 1
+#     },
+#     'deanonymize_submissions': {
+#         'value-checkbox': 'Deanonymize previously anonymized versions of submissions',
+#         'description': 'This feature will deanonymize the anonymized versions of submissions created earlier to reveal author names to the readers of the submissions. Use this with care because you are revealing author information with this and the process is irreversible.',
+#         'required': True,
+#         'order': 2
+#     }
+# }
 
-deanonymize_submissions_invitation = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Deanonymize_Submissions',
-    'readers': ['everyone'],
-    'writers': ['OpenReview.net/Support'],
-    'signatures': ['OpenReview.net/Support'],
-    'invitees': ['OpenReview.net/Support'],
-    'process': 'deanonymizeSubmissions.py',
-    'multiReply': False,
-    'reply': {
-        'readers': {
-            'values': ['everyone']
-        },
-        'writers': {
-            'values-regex': '~.*',
-        },
-        'signatures': {
-            'values-regex': '~.*'
-        },
-        'content': deanonymize_submissions_content
-    }
-}))
+# deanonymize_submissions_invitation = client.post_invitation(openreview.Invitation(**{
+#     'id': 'OpenReview.net/Support/-/Deanonymize_Submissions',
+#     'readers': ['everyone'],
+#     'writers': ['OpenReview.net/Support'],
+#     'signatures': ['OpenReview.net/Support'],
+#     'invitees': ['OpenReview.net/Support'],
+#     'process': 'deanonymizeSubmissions.py',
+#     'multiReply': False,
+#     'reply': {
+#         'readers': {
+#             'values': ['everyone']
+#         },
+#         'writers': {
+#             'values-regex': '~.*',
+#         },
+#         'signatures': {
+#             'values-regex': '~.*'
+#         },
+#         'content': deanonymize_submissions_content
+#     }
+# }))
 
-bid_invitation_content = {
-    'title': {
-        'value': 'Configure Bidding',
-        'required': True,
-        'order': 1
-    },
-    'bidding_enabled_for': {
-        'values-checkbox': ['Reviewers', 'Area Chairs'],
-        'description': 'Select who should bid on submissions. Please only select reviewers if your venue does not have Area Chairs',
-        'default': ['Reviewers'],
-        'required': True,
-        'order': 2
-    },
-    'bid_deadline_(GMT)': {
-        'description': 'When does bidding on submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if you are not using paper matching with reviewer bid scores)',
-        'value-regex': '.*',
-        'order': 10
-    },
-}
+# bid_invitation_content = {
+#     'title': {
+#         'value': 'Configure Bidding',
+#         'required': True,
+#         'order': 1
+#     },
+#     'bidding_enabled_for': {
+#         'values-checkbox': ['Reviewers', 'Area Chairs'],
+#         'description': 'Select who should bid on submissions. Please only select reviewers if your venue does not have Area Chairs',
+#         'default': ['Reviewers'],
+#         'required': True,
+#         'order': 2
+#     },
+#     'bid_deadline_(GMT)': {
+#         'description': 'When does bidding on submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if you are not using paper matching with reviewer bid scores)',
+#         'value-regex': '.*',
+#         'order': 10
+#     },
+# }
 
-bid_invitation = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Configure_Bidding',
-    'readers': ['everyone'],
-    'writers': ['OpenReview.net/Support'],
-    'signatures': ['OpenReview.net/Support'],
-    'invitees': ['OpenReview.net/Support'],
-    'multiReply': False,
-    'reply': {
-        'content': bid_invitation_content
-    }
-}))
+# bid_invitation = client.post_invitation(openreview.Invitation(**{
+#     'id': 'OpenReview.net/Support/-/Configure_Bidding',
+#     'readers': ['everyone'],
+#     'writers': ['OpenReview.net/Support'],
+#     'signatures': ['OpenReview.net/Support'],
+#     'invitees': ['OpenReview.net/Support'],
+#     'multiReply': False,
+#     'reply': {
+#         'content': bid_invitation_content
+#     }
+# }))
 
 recruitment_content = {
     'title': {
@@ -459,7 +459,7 @@ Program Chairs
     }
 }
 
-recruitment_inv = client.post_invitation(openreview.Invitation(**{
+recruitment_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Recruitment',
     'readers': ['everyone'],
     'writers': [],
@@ -481,7 +481,7 @@ recruitment_inv = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
-configure_review_content = {
+review_stage_content = {
     'Review Start Date': {
         'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
@@ -493,19 +493,19 @@ configure_review_content = {
         'order': 11
     },
     'Release Reviews to Authors': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s author?',
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s author? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 24
     },
     'Release Reviews to Reviewers': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not?',
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 25
     },
     'Email Program Chairs': {
-        'description': 'Should Program Chairs be emailed when each review is posted?',
+        'description': 'Should Program Chairs be emailed when each review is posted? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 26
@@ -517,8 +517,8 @@ configure_review_content = {
     }
 }
 
-configure_review_inv = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Configure_Reviews',
+review_stage_invitation = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Review_Stage',
     'readers': ['everyone'],
     'writers': [],
     'signatures': ['OpenReview.net'],
@@ -537,11 +537,11 @@ configure_review_inv = client.post_invitation(openreview.Invitation(**{
         'signatures': {
             'values-regex': '~.*'
         },
-        'content': configure_review_content
+        'content': review_stage_content
     }
 }))
 
-configure_meta_review_content = {
+meta_review_stage_content = {
     'Meta Review Start Date': {
         'description': 'When does the meta reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
         'value-regex': '.*',
@@ -553,7 +553,7 @@ configure_meta_review_content = {
         'order': 13
     },
     'Make Meta Reviews Public': {
-        'description': 'Should the meta reviews be visible publicly immediately upon creation?',
+        'description': 'Should the meta reviews be visible publicly immediately upon creation? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 28
@@ -565,8 +565,8 @@ configure_meta_review_content = {
     }
 }
 
-configure_meta_review_inv = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Configure_Meta_Reviews',
+meta_review_stage_invitation = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Meta_Review_Stage',
     'readers': ['everyone'],
     'writers': [],
     'signatures': ['OpenReview.net'],
@@ -585,11 +585,11 @@ configure_meta_review_inv = client.post_invitation(openreview.Invitation(**{
         'signatures': {
             'values-regex': '~.*'
         },
-        'content': configure_meta_review_content
+        'content': meta_review_stage_content
     }
 }))
 
-configure_decision_content = {
+decision_stage_content = {
     'Decision Start Date': {
         'description': 'When does the decision be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
@@ -606,19 +606,19 @@ configure_decision_content = {
         'order': 30
     },
     'Release Decisions to Authors': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s author?',
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s author? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 31
     },
     'Release Decision to Reviewers': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not?',
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 32
     },
     'Make Decisions Public': {
-        'description': 'Should the decisions be visible publicly immediately upon creation?',
+        'description': 'Should the decisions be visible publicly immediately upon creation? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 33
@@ -630,8 +630,8 @@ configure_decision_content = {
     }
 }
 
-configure_decision_inv = client.post_invitation(openreview.Invitation(**{
-    'id': 'OpenReview.net/Support/-/Configure_Decisions',
+decision_stage_invitation = client.post_invitation(openreview.Invitation(**{
+    'id': 'OpenReview.net/Support/-/Decision_Stage',
     'readers': ['everyone'],
     'writers': [],
     'signatures': ['OpenReview.net'],
@@ -650,6 +650,6 @@ configure_decision_inv = client.post_invitation(openreview.Invitation(**{
         'signatures': {
             'values-regex': '~.*'
         },
-        'content': configure_decision_content
+        'content': decision_stage_content
     }
 }))
