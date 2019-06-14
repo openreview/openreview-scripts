@@ -348,22 +348,17 @@ recruitment_invitation = client.post_invitation(openreview.Invitation(**{
 }))
 
 bid_stage_content = {
-    'title': {
-        'value': 'Bid Stage',
-        'required': True,
-        'order': 1
+    'bid_start_date': {
+        'description': 'When does bidding on submissions begin? Please use the format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+        'value-regex': '.*'
     },
-    'enable_bidding_for': {
-        'values-checkbox': ['Reviewers', 'Area Chairs'],
-        'description': 'Select who should bid on submissions. Please only select reviewers if your venue does not have Area Chairs',
-        'default': ['Reviewers'],
-        'required': True,
-        'order': 2
+    'bid_due_date': {
+        'description': 'When does bidding on submissions end? Please use the format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+        'value-regex': '.*'
     },
-    'bid_deadline': {
-        'description': 'When does bidding on submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if you are not using paper matching with reviewer bid scores)',
-        'value-regex': '.*',
-        'order': 10
+    'bid_count': {
+        'description': 'Minimum bids a person needs to make to mark bidding task as completed for them. Default is 50.',
+        'value-regex': '.*'
     }
 }
 
@@ -372,9 +367,22 @@ bid_stage_invitation = client.post_invitation(openreview.Invitation(**{
     'readers': ['everyone'],
     'writers': ['OpenReview.net/Support'],
     'signatures': ['OpenReview.net/Support'],
-    'invitees': ['OpenReview.net/Support'],
-    'multiReply': False,
+    'invitees': ['everyone'],
+    'multiReply': True,
+    'process': 'revisionProcess.py',
     'reply': {
+        'readers': {
+            'values-copied': [
+                'OpenReview.net/Support',
+                '{content["Contact Emails"]}'
+            ]
+        },
+        'writers': {
+            'values-regex': '~.*',
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
         'content': bid_stage_content
     }
 }))
@@ -418,7 +426,7 @@ review_stage_content = {
 review_stage_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Review_Stage',
     'readers': ['everyone'],
-    'writers': [],
+    'writers': ['OpenReview.net/Support'],
     'signatures': ['OpenReview.net'],
     'invitees': ['everyone'],
     'process': 'revisionProcess.py',

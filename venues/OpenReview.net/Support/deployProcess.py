@@ -118,7 +118,7 @@ OpenReview Team
                 },
                 'invitee_emails': {
                     'value-regex': '[\\S\\s]{1,20000}',
-                    'description': 'Please provide comma separated valid emails. (e.g.  captain_rogers@marvel.com, black_widow@mcu.com)',
+                    'description': 'Please provide comma separated valid emails. (e.g.  captain_rogers@marvel.com, john@wick.com, black_widow@mcu.com)',
                     'required': True,
                     'order': 3
                 },
@@ -170,21 +170,21 @@ Program Chairs'''
         signatures = ['OpenReview.net/Support']
     ))
 
-    # if forum.content.get('Author and Reviewer Anonymity', None) == 'Double-blind':
-    #     anonymize_submissions_invitation = client.post_invitation(openreview.Invitation(
-    #         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Anonymize_Submissions',
-    #         super = 'OpenReview.net/Support/-/Anonymize_Submissions',
-    #         invitees = readers,
-    #         reply = {
-    #             'forum': forum.id,
-    #             'replyto': forum.id,
-    #             'readers' : {
-    #                 'description': 'The users who will be allowed to read the above content.',
-    #                 'values' : readers
-    #             }
-    #         },
-    #         signatures = [conference.get_program_chairs_id()]
-    #     ))
+    if 'Reviewer Bid Scores' in forum.content.get('Paper Matching', []):
+        bid_stage_invitation = client.post_invitation(openreview.Invitation(
+        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Bid_Stage',
+        super = 'OpenReview.net/Support/-/Bid_Stage',
+        invitees = readers,
+        reply = {
+            'forum': forum.id,
+            'referent': forum.id,
+            'readers' : {
+                'description': 'The users who will be allowed to read the above content.',
+                'values' : readers
+            }
+        },
+        signatures = [conference.get_program_chairs_id()]
+    ))
 
     review_stage_invitation = client.post_invitation(openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Review_Stage',
