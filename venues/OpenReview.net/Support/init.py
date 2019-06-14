@@ -512,7 +512,7 @@ decision_stage_content = {
         'order': 30
     },
     'make_decisions_public': {
-        'description': 'Should the decisions be visible publicly immediately upon creation? Default is "No". If "Yes", then answers to next 2 questions will not matter.',
+        'description': 'Should the decisions be visible publicly immediately upon creation? Default is "No". If "Yes", then next 2 questions need not be answered.',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 31
