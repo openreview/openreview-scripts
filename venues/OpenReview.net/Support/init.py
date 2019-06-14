@@ -388,35 +388,35 @@ bid_stage_invitation = client.post_invitation(openreview.Invitation(**{
 }))
 
 review_stage_content = {
-    'Review Start Date': {
+    'review_start_date': {
         'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
         'order': 10
     },
-    'Review Deadline': {
+    'review_deadline': {
         'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
         'order': 11
     },
-    'Release Reviews to Authors': {
+    'release_reviews_to_authors': {
         'description': 'Should the reviews be visible immediately upon posting to paper\'s author? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 24
     },
-    'Release Reviews to Reviewers': {
+    'release_reviews_to_reviewers': {
         'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 25
     },
-    'Email Program Chairs about Reviews': {
+    'email_program_chairs_about_reviews': {
         'description': 'Should Program Chairs be emailed when each review is posted? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 26
     },
-    'Additional Review Options' : {
+    'additional_review_options' : {
         'order' : 27,
         'value-regex': '[\\S\\s]{1,10000}',
         'description': 'Configure additional options in the review form. Valid JSON expected.'
@@ -448,23 +448,23 @@ review_stage_invitation = client.post_invitation(openreview.Invitation(**{
 }))
 
 meta_review_stage_content = {
-    'Meta Review Start Date': {
+    'meta_review_start_date': {
         'description': 'When does the meta reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
         'value-regex': '.*',
         'order': 12
     },
-    'Meta Review Deadline': {
+    'meta_review_deadline': {
         'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
         'value-regex': '.*',
         'order': 13
     },
-    'Make Meta Reviews Public': {
+    'make_meta_reviews_public': {
         'description': 'Should the meta reviews be visible publicly immediately upon creation? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 28
     },
-    'Additional Meta Review Options' : {
+    'additional_meta_review_options' : {
         'order' : 29,
         'value-regex': '[\\S\\s]{1,10000}',
         'description': 'Configure additional options in the meta review form. Valid JSON expected.'
@@ -496,40 +496,40 @@ meta_review_stage_invitation = client.post_invitation(openreview.Invitation(**{
 }))
 
 decision_stage_content = {
-    'Decision Start Date': {
+    'decision_start_date': {
         'description': 'When does the decision be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
         'order': 14
     },
-    'Decision Deadline': {
+    'decision_deadline': {
         'description': 'By when should the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
         'order': 15
     },
-    'Decision Options': {
+    'decision_options': {
         'description': 'What are the decision options (provide comma separated values, e.g. Accept (Best Paper), Accept, Reject)? Leave empty for default options - "Accept (Oral)", "Accept (Poster)", "Reject"',
         'value-regex': '.*',
         'order': 30
     },
-    'Make Decisions Public': {
+    'make_decisions_public': {
         'description': 'Should the decisions be visible publicly immediately upon creation? Default is "No". If "Yes", then answers to next 2 questions will not matter.',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 31
     },
-    'Release Decisions to Authors': {
+    'release_decisions_to_authors': {
         'description': 'Should the decisions be visible immediately upon posting to paper\'s author? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 32
     },
-    'Release Decision to Reviewers': {
+    'release_decision_to_reviewers': {
         'description': 'Should the decisions be visible immediately upon posting to paper\'s reviewers? Default is "No".',
         'value-radio': ['Yes', 'No'],
         'default': 'No',
         'order': 33
     },
-    'Additional Decision Options' : {
+    'additional_decision_options' : {
         'value-regex': '[\\S\\s]{1,10000}',
         'description': 'Configure additional options in the decision form. Valid JSON expected.',
         'order' : 34
