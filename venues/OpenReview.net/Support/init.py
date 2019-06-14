@@ -267,7 +267,7 @@ recruitment_content = {
         'order': 1
     },
     'invitee_role': {
-        'description': 'Please select the role of the invitees in the conference.',
+        'description': 'Please select the role of the invitees in the venue.',
         'value-radio': ['reviewer', 'area chair'],
         'default': 'reviewer',
         'required': True,
