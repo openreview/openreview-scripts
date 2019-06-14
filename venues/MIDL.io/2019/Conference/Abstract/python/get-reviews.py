@@ -17,7 +17,7 @@ args = parser.parse_args()
 ## Initialize the client library with username and password
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print("Connecting to "+client.baseurl)
-conference = config.get_conference(client)
+conference_id = 'MIDL.io/2019/Conference/Abstract'
 
 def get_number(id_string):
     return id_string.split('/Paper')[1].split('/')[0]
@@ -27,7 +27,7 @@ with open(args.output, 'w') as outfile:
     fieldnames = ['id', 'number', 'review title', 'review', 'rating', 'confidence', 'reviewer']
     csvwriter.writerow(fieldnames)
 
-    notes = client.get_notes(invitation=conference.get_id() + '/-/Paper.*/Official_Review')
+    notes = client.get_notes(invitation=conference_id + '/-/Paper.*/Official_Review')
     for note in notes:
         row = []
         row.append('%s/forum?id=%s' % (client.baseurl, note.id))
