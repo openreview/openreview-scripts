@@ -212,19 +212,19 @@ Program Chairs'''.format(Abbreviated_Venue_Name = conference.get_short_name())
 
     if 'Reviewer Bid Scores' in forum.content.get('Paper Matching', []):
         bid_stage_invitation = client.post_invitation(openreview.Invitation(
-        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Bid_Stage',
-        super = 'OpenReview.net/Support/-/Bid_Stage',
-        invitees = readers,
-        reply = {
-            'forum': forum.id,
-            'referent': forum.id,
-            'readers' : {
-                'description': 'The users who will be allowed to read the above content.',
-                'values' : readers
-            }
-        },
-        signatures = [conference.get_program_chairs_id()]
-    ))
+            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Bid_Stage',
+            super = 'OpenReview.net/Support/-/Bid_Stage',
+            invitees = readers,
+            reply = {
+                'forum': forum.id,
+                'referent': forum.id,
+                'readers' : {
+                    'description': 'The users who will be allowed to read the above content.',
+                    'values' : readers
+                }
+            },
+            signatures = [conference.get_program_chairs_id()]
+        ))
 
     review_stage_invitation = client.post_invitation(openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Review_Stage',

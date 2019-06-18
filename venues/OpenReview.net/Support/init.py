@@ -217,6 +217,7 @@ revision_invitation = client.post_invitation(openreview.Invitation(**{
     'writers': [],
     'signatures': ['OpenReview.net'],
     'invitees': ['everyone'],
+    'multiReply': True,
     'process': 'revisionProcess.py',
     'reply': {
         'readers': {
@@ -424,6 +425,7 @@ review_stage_invitation = client.post_invitation(openreview.Invitation(**{
     'writers': ['OpenReview.net/Support'],
     'signatures': ['OpenReview.net'],
     'invitees': ['everyone'],
+    'multiReply': True,
     'process': 'revisionProcess.py',
     'reply': {
         'readers': {
@@ -472,6 +474,7 @@ meta_review_stage_invitation = client.post_invitation(openreview.Invitation(**{
     'writers': [],
     'signatures': ['OpenReview.net'],
     'invitees': ['everyone'],
+    'multiReply': True,
     'process': 'revisionProcess.py',
     'reply': {
         'readers': {
@@ -537,6 +540,7 @@ decision_stage_invitation = client.post_invitation(openreview.Invitation(**{
     'writers': [],
     'signatures': ['OpenReview.net'],
     'invitees': ['everyone'],
+    'multiReply': True,
     'process': 'revisionProcess.py',
     'reply': {
         'readers': {
