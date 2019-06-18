@@ -273,28 +273,23 @@ recruitment_content = {
         'required': True,
         'order': 2
     },
-    'invitee_emails': {
-        'value-regex': '[\\S\\s]{1,20000}',
-        'description': 'Please provide comma separated valid emails. (e.g.  captain_rogers@marvel.com, black_widow@mcu.com)',
+    'invitee_details': {
+        'value-regex': '[\\S\\s]{1,50000}',
+        'description': 'Please provide line separated invitee details where each line has the pair - email,name. E.g. captain_rogers@marvel.com, Captain America',
         'required': True,
         'order': 3
-    },
-    'invitee_names': {
-        'value-regex': '[\\S\\s]{1,20000}',
-        'description': 'Please provide comma separated names in the *same order* as emails. (e.g. Steve Rogers, John, Natasha Romanoff)',
-        'order': 4
     },
     'invitation_email_subject': {
         'value-regex': '.*',
         'description': 'Please carefully review the email subject for the recruitment emails. Make sure not to remove the parenthesized tokens.',
-        'order': 5,
+        'order': 4,
         'required': True,
         'default': '[{Abbreviated_Venue_Name}] Invitation to serve as {invitee_role}'
     },
     'invitation_email_content': {
         'value-regex': '[\\S\\s]{1,10000}',
         'description': 'Please carefully review the template below before you click submit to send out recruitment emails. Make sure not to remove the parenthesized tokens.',
-        'order': 6,
+        'order': 5,
         'required': True,
         'default': '''Dear {name},
 
