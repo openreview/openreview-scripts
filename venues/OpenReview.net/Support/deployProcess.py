@@ -40,12 +40,13 @@ OpenReview Team
     )
     client.post_note(comment_note)
 
-    readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
-    readers.extend(forum.signatures[:])
+    forum.writers = []
+    forum_readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
+    forum_readers.extend(forum.signatures)
+    forum.readers = forum_readers
+    forum = client.post_note(forum)
 
-    forum.writers = ['OpenReview.net']
-    forum.readers = readers
-    client.post_note(forum)
+    readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
 
     revision_invitation = client.post_invitation(openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Revision',
@@ -62,14 +63,14 @@ OpenReview Team
         signatures = [conference.get_program_chairs_id()]
     ))
 
-    recruitment_email_subject = '[{Abbreviated_Venue_Name}] Invitation to serve as {invitee_role}'.format(Abbreviated_Venue_Name = conference.get_short_name())
+    recruitment_email_subject = '[{Abbreviated_Venue_Name}] Invitation to serve as {invitee_role}'.replace('{Abbreviated_Venue_Name}', conference.get_short_name())
     recruitment_email_body = '''Dear {name},
 
 You have been nominated by the program chair committee of {Abbreviated_Venue_Name} to serve as {invitee_role}. As a respected researcher in the area, we hope you will accept and help us make {Abbreviated_Venue_Name} a success.
 
 You are also welcome to submit papers, so please also consider submitting to {Abbreviated_Venue_Name}.
 
-We will be using OpenReview.net and a reviewing process that we hope will be engaging and inclusive of the whole community.
+We will be using OpenReview.net with the intention of have an engaging reviewing process inclusive of the whole community.
 
 To ACCEPT the invitation, please click on the following link:
 
@@ -83,11 +84,11 @@ Please answer within 10 days.
 
 If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.  Visit http://openreview.net/profile after logging in.
 
-If you have any questions, please contact us at info@openreview.net.
+If you have any questions, please contact info@openreview.net.
 
 Cheers!
 
-Program Chairs'''.format(Abbreviated_Venue_Name = conference.get_short_name())
+Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name())
 
     if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
         metareview_stage_invitation = client.post_invitation(openreview.Invitation(
@@ -117,7 +118,7 @@ Program Chairs'''.format(Abbreviated_Venue_Name = conference.get_short_name())
             },
             'writers' : {
                 'description' : 'The users who will be allowed to edit the above content',
-                'values' : [conference.get_program_chairs_id(), 'OpenReview.net/Support']
+                'values' : readers
             },
             'content': {
                 'title': {
@@ -170,7 +171,7 @@ Program Chairs'''.format(Abbreviated_Venue_Name = conference.get_short_name())
             },
             'writers' : {
                 'description' : 'The users who will be allowed to edit the above content',
-                'values' : [conference.get_program_chairs_id(), 'OpenReview.net/Support']
+                'values' : readers
             },
             'content': {
                 'title': {

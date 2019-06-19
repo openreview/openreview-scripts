@@ -310,7 +310,7 @@ To DECLINE the invitation, please click on the following link:
 
 Please answer within 10 days.
 
-If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using.  Visit http://openreview.net/profile after logging in.
+If you accept, please make sure that your OpenReview account is updated and lists all the emails you are using. Visit http://openreview.net/profile after logging in.
 
 If you have any questions, please contact us at info@openreview.net.
 
@@ -334,10 +334,10 @@ recruitment_invitation = client.post_invitation(openreview.Invitation(**{
             'values': ['everyone']
         },
         'writers': {
-            'values-regex': '~.*',
+            'values-copied': ['{signatures}'],
         },
         'signatures': {
-            'values-regex': '~.*'
+            'values-regex': '~.*|OpenReview.net/Support'
         },
         'content': recruitment_content
     }
@@ -435,10 +435,10 @@ review_stage_invitation = client.post_invitation(openreview.Invitation(**{
             ]
         },
         'writers': {
-            'values-regex': '~.*',
+            'values-copied': ['{signatures}'],
         },
         'signatures': {
-            'values-regex': '~.*'
+            'values-regex': '~.*|OpenReview.net/Support'
         },
         'content': review_stage_content
     }
@@ -484,10 +484,10 @@ meta_review_stage_invitation = client.post_invitation(openreview.Invitation(**{
             ]
         },
         'writers': {
-            'values-regex': '~.*',
+            'values-copied': ['{signatures}'],
         },
         'signatures': {
-            'values-regex': '~.*'
+            'values-regex': '~.*|OpenReview.net/Support'
         },
         'content': meta_review_stage_content
     }
@@ -495,12 +495,12 @@ meta_review_stage_invitation = client.post_invitation(openreview.Invitation(**{
 
 decision_stage_content = {
     'decision_start_date': {
-        'description': 'When does the decision be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'description': 'When will the program chairs start posting decisions? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
         'order': 14
     },
     'decision_deadline': {
-        'description': 'By when should the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'description': 'By when should all the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'value-regex': '.*',
         'order': 15
     },
@@ -550,10 +550,10 @@ decision_stage_invitation = client.post_invitation(openreview.Invitation(**{
             ]
         },
         'writers': {
-            'values-regex': '~.*',
+            'values-copied': ['{signatures}'],
         },
         'signatures': {
-            'values-regex': '~.*'
+            'values-regex': '~.*|OpenReview.net/Support'
         },
         'content': decision_stage_content
     }
