@@ -236,8 +236,13 @@ revision_invitation = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
-deploy_content = {'venue_id': {
-    'value-regex': '.*', 'description': 'Venue id'}}
+deploy_content = {
+    'venue_id': {
+        'value-regex': '.*',
+        'required': True,
+        'description': 'Venue id'
+    }
+}
 
 deploy_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Deploy',
@@ -394,28 +399,44 @@ review_stage_content = {
         'value-regex': '.*',
         'order': 11
     },
-    'release_reviews_to_authors': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s author? Default is "No".',
-        'value-radio': ['Yes', 'No'],
-        'default': 'No',
+    'make_reviews_public': {
+        'description': 'Should the reviews be made public immediately upon posting? Default is "No, reviews should NOT be revealed publicly when they are posted".',
+        'value-radio': [
+            'Yes, reviews should be revealed publicly when they are posted',
+            'No, reviews should NOT be revealed publicly when they are posted'
+        ],
+        'required': True,
+        'default': 'No, reviews should NOT be revealed publicly when they are posted',
         'order': 24
     },
-    'release_reviews_to_reviewers': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their reviews or not? Default is "No".',
-        'value-radio': ['Yes', 'No'],
-        'default': 'No',
+    'release_reviews_to_authors': {
+        'description': 'Should the reviews be visible to paper\'s authors immediately upon posting? Default is "No, reviews should NOT be revealed when they are posted to the paper\'s authors".',
+        'value-radio': [
+            'Yes, reviews should be revealed when they are posted to the paper\'s authors',
+            'No, reviews should NOT be revealed when they are posted to the paper\'s authors'
+        ],
+        'required': True,
+        'default': 'No, reviews should NOT be revealed when they are posted to the paper\'s authors',
         'order': 25
     },
-    'email_program_chairs_about_reviews': {
-        'description': 'Should Program Chairs be emailed when each review is posted? Default is "No".',
-        'value-radio': ['Yes', 'No'],
-        'default': 'No',
+    'release_reviews_to_reviewers': {
+        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their review or not? Default is "No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper".',
+        'value-radio': [
+            'Yes, reviews should be immediately revealed to the all paper\'s reviewers',
+            'No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper'
+        ],
+        'required': True,
+        'default': 'No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper',
         'order': 26
     },
-    'additional_review_options' : {
-        'order' : 27,
-        'value-regex': '[\\S\\s]{1,10000}',
-        'description': 'Configure additional options in the review form. Valid JSON expected.'
+    'email_program_chairs_about_reviews': {
+        'description': 'Should Program Chairs be emailed when each review is received? Default is "No".',
+        'value-radio': [
+            'Yes, email program chairs for each review received',
+            'No, do not email program chairs about received reviews'],
+        'required': True,
+        'default': 'No',
+        'order': 27
     }
 }
 
@@ -456,15 +477,14 @@ meta_review_stage_content = {
         'order': 13
     },
     'make_meta_reviews_public': {
-        'description': 'Should the meta reviews be visible publicly immediately upon creation? Default is "No".',
-        'value-radio': ['Yes', 'No'],
-        'default': 'No',
+        'description': 'Should the meta reviews be visible publicly immediately upon posting? Default is "No, meta reviews should NOT be revealed publicly when they are posted".',
+        'value-radio': [
+            'Yes, meta reviews should be revealed publicly when they are posted',
+            'No, meta reviews should NOT be revealed publicly when they are posted'
+        ],
+        'required': True,
+        'default': 'No, meta reviews should NOT be revealed publicly when they are posted',
         'order': 28
-    },
-    'additional_meta_review_options' : {
-        'order' : 29,
-        'value-regex': '[\\S\\s]{1,10000}',
-        'description': 'Configure additional options in the meta review form. Valid JSON expected.'
     }
 }
 
@@ -509,28 +529,34 @@ decision_stage_content = {
         'value-regex': '.*',
         'order': 30
     },
-    'make_decisions_public': {
-        'description': 'Should the decisions be visible publicly immediately upon creation? Default is "No". If "Yes", then next 2 questions need not be answered.',
-        'value-radio': ['Yes', 'No'],
-        'default': 'No',
+    'make_decisions_public': {'description': 'Should the decisions be made public immediately upon posting? Default is "No, decisions should NOT be revealed publicly when they are posted".',
+        'value-radio': [
+            'Yes, decisions should be revealed publicly when they are posted',
+            'No, decisions should NOT be revealed publicly when they are posted'
+        ],
+        'required': True,
+        'default': 'No, decisions should NOT be revealed publicly when they are posted',
         'order': 31
     },
     'release_decisions_to_authors': {
-        'description': 'Should the decisions be visible immediately upon posting to paper\'s author? Default is "No".',
-        'value-radio': ['Yes', 'No'],
-        'default': 'No',
+        'description': 'Should the decisions be visible to paper\'s authors immediately upon posting? Default is "No, decisions should NOT be revealed when they are posted to the paper\'s authors".',
+        'value-radio': [
+            'Yes, decisions should be revealed when they are posted to the paper\'s authors',
+            'No, decisions should NOT be revealed when they are posted to the paper\'s authors'
+        ],
+        'required': True,
+        'default': 'No, decisions should NOT be revealed when they are posted to the paper\'s authors',
         'order': 32
     },
     'release_decision_to_reviewers': {
-        'description': 'Should the decisions be visible immediately upon posting to paper\'s reviewers? Default is "No".',
-        'value-radio': ['Yes', 'No'],
-        'default': 'No',
+        'description': 'Should the decisions be immediately revealed to paper\'s reviewers? Default is "No, decisions should not be immediately revealed to the paper\'s reviewers"',
+        'value-radio': [
+            'Yes, decisions should be immediately revealed to the paper\'s reviewers',
+            'No, decisions should not be immediately revealed to the paper\'s reviewers'
+        ],
+        'required': True,
+        'default': 'No, decisions should not be immediately revealed to the paper\'s reviewers',
         'order': 33
-    },
-    'additional_decision_options' : {
-        'value-regex': '[\\S\\s]{1,10000}',
-        'description': 'Configure additional options in the decision form. Valid JSON expected.',
-        'order' : 34
     }
 }
 
