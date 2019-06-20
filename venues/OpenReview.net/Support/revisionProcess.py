@@ -9,15 +9,15 @@ def process(client, note, invitation):
         conference.set_authors()
 
     if invitation_type == 'Bid_Stage':
-        conference.set_bid_stage(openreview.helpers.get_bid_stage(client, note.forum))
+        conference.set_bid_stage(openreview.helpers.get_bid_stage(client, forum_note))
 
     elif invitation_type == 'Review_Stage':
-        conference.set_review_stage(openreview.helpers.get_review_stage(client, note.forum))
+        conference.set_review_stage(openreview.helpers.get_review_stage(client, forum_note))
 
     elif invitation_type == 'Meta_Review_Stage':
-        conference.set_meta_review_stage(openreview.helpers.get_meta_review_stage(client, note.forum))
+        conference.set_meta_review_stage(openreview.helpers.get_meta_review_stage(client, forum_note))
 
     elif invitation_type == 'Decision_Stage':
-        conference.set_decision_stage(openreview.helpers.get_decision_stage(client, note.forum))
+        conference.set_decision_stage(openreview.helpers.get_decision_stage(client, forum_note))
 
     print('Conference: ', conference.get_id())
