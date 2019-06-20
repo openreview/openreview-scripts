@@ -116,10 +116,6 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
                 'description': 'The users who will be allowed to read the above content.',
                 'values' : readers
             },
-            'writers' : {
-                'description' : 'The users who will be allowed to edit the above content',
-                'values' : readers
-            },
             'content': {
                 'title': {
                     'value': 'Recruitment',
@@ -167,10 +163,6 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
             'replyto': forum.id,
             'readers' : {
                 'description': 'The users who will be allowed to read the above content.',
-                'values' : readers
-            },
-            'writers' : {
-                'description' : 'The users who will be allowed to edit the above content',
                 'values' : readers
             },
             'content': {

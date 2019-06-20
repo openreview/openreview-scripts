@@ -334,7 +334,7 @@ recruitment_invitation = client.post_invitation(openreview.Invitation(**{
             'values': ['everyone']
         },
         'writers': {
-            'values-copied': ['{signatures}'],
+            'values':[],
         },
         'signatures': {
             'values-regex': '~.*|OpenReview.net/Support'
