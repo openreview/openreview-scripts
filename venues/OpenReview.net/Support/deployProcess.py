@@ -116,6 +116,9 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
                 'description': 'The users who will be allowed to read the above content.',
                 'values' : readers
             },
+            'writers': {
+                'values':[],
+            },
             'content': {
                 'title': {
                     'value': 'Recruitment',
@@ -164,6 +167,8 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
             'readers' : {
                 'description': 'The users who will be allowed to read the above content.',
                 'values' : readers
+            },'writers': {
+                'values':[],
             },
             'content': {
                 'title': {
