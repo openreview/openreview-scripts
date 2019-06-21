@@ -430,12 +430,12 @@ review_stage_content = {
         'order': 26
     },
     'email_program_chairs_about_reviews': {
-        'description': 'Should Program Chairs be emailed when each review is received? Default is "No".',
+        'description': 'Should Program Chairs be emailed when each review is received? Default is "No, do not email program chairs about received reviews".',
         'value-radio': [
             'Yes, email program chairs for each review received',
             'No, do not email program chairs about received reviews'],
         'required': True,
-        'default': 'No',
+        'default': 'No, do not email program chairs about received reviews',
         'order': 27
     }
 }

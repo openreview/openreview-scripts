@@ -224,6 +224,60 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
             signatures = [conference.get_program_chairs_id()]
         ))
 
+    review_stage_content = None
+    if forum.content.get('Open Reviewing Policy', None) == 'Submissions and reviews should both be public.':
+        review_stage_content = {
+            'review_start_date': {
+                'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+                'value-regex': '.*',
+                'order': 10
+            },
+            'review_deadline': {
+                'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
+                'value-regex': '.*',
+                'order': 11
+            },
+            'make_reviews_public': {
+                'description': 'Should the reviews be made public immediately upon posting? Based on your earlier selections, default is "Yes, reviews should be revealed publicly when they are posted".',
+                'value-radio': [
+                    'Yes, reviews should be revealed publicly when they are posted',
+                    'No, reviews should NOT be revealed publicly when they are posted'
+                ],
+                'required': True,
+                'default': 'Yes, reviews should be revealed publicly when they are posted',
+                'order': 24
+            },
+            'release_reviews_to_authors': {
+                'description': 'Should the reviews be visible to paper\'s authors immediately upon posting? Based on your earlier selections, default is "Yes, reviews should be revealed publicly when they are posted".',
+                'value-radio': [
+                    'Yes, reviews should be revealed when they are posted to the paper\'s authors',
+                    'No, reviews should NOT be revealed when they are posted to the paper\'s authors'
+                ],
+                'required': True,
+                'default': 'Yes, reviews should be revealed publicly when they are posted',
+                'order': 25
+            },
+            'release_reviews_to_reviewers': {
+                'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have reviewed the paper or not? Based on your earlier selections, default is "Yes, reviews should be immediately revealed to the all paper\'s reviewers".',
+                'value-radio': [
+                    'Yes, reviews should be immediately revealed to the all paper\'s reviewers',
+                    'No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper'
+                ],
+                'required': True,
+                'default': 'Yes, reviews should be immediately revealed to the all paper\'s reviewers',
+                'order': 26
+            },
+            'email_program_chairs_about_reviews': {
+                'description': 'Should Program Chairs be emailed when each review is received? Default is "No, do not email program chairs about received reviews".',
+                'value-radio': [
+                    'Yes, email program chairs for each review received',
+                    'No, do not email program chairs about received reviews'],
+                'required': True,
+                'default': 'No, do not email program chairs about received reviews',
+                'order': 27
+            }
+        }
+
     review_stage_invitation = client.post_invitation(openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Review_Stage',
         super = 'OpenReview.net/Support/-/Review_Stage',
@@ -231,10 +285,11 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
         reply = {
             'forum': forum.id,
             'referent': forum.id,
-            'readers' : {
+            'readers': {
                 'description': 'The users who will be allowed to read the above content.',
                 'values' : readers
-            }
+            },
+            'content': review_stage_content
         },
         signatures = [conference.get_program_chairs_id()]
     ))
