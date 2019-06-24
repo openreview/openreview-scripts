@@ -281,7 +281,7 @@ recruitment_content = {
     },
     'invitee_details': {
         'value-regex': '[\\S\\s]{1,50000}',
-        'description': 'Please provide line separated invitee details where each line has the pair - email,name. E.g. captain_rogers@marvel.com, Captain America',
+        'description': 'Email,Name pairs expected with each line having only one invitee\'s details. E.g. captain_rogers@marvel.com, Captain America',
         'required': True,
         'order': 3
     },
