@@ -5,8 +5,7 @@ def process(client, note, invitation):
     conference = openreview.helpers.get_conference(client, note.forum)
     print(conference.get_id())
     forum = client.get_note(id=note.forum)
-    comment_readers = forum.content['Contact Emails'][:]
-    comment_readers.append('OpenReview.net/Support')
+    comment_readers = forum.content['Contact Emails'] + ['OpenReview.net/Support']
     comment_note = openreview.Note(
         invitation = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Comment',
         forum = forum.id,
@@ -41,9 +40,7 @@ OpenReview Team
     client.post_note(comment_note)
 
     forum.writers = []
-    forum_readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
-    forum_readers.extend(forum.signatures)
-    forum.readers = forum_readers
+    forum.readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support'] + forum.signatures
     forum = client.post_note(forum)
 
     readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
@@ -90,74 +87,7 @@ Cheers!
 
 Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name())
 
-    if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
-        metareview_stage_invitation = client.post_invitation(openreview.Invitation(
-            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Meta_Review_Stage',
-            super = 'OpenReview.net/Support/-/Meta_Review_Stage',
-            invitees = readers,
-            reply = {
-                'forum': forum.id,
-                'referent': forum.id,
-                'readers' : {
-                    'description': 'The users who will be allowed to read the above content.',
-                    'values' : readers
-                }
-            },
-            signatures = [conference.get_program_chairs_id()]
-        ))
-        recruitment_invitation = client.post_invitation(openreview.Invitation(
-        id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Recruitment',
-        super = 'OpenReview.net/Support/-/Recruitment',
-        invitees = readers,
-        reply = {
-            'forum': forum.id,
-            'replyto': forum.id,
-            'readers' : {
-                'description': 'The users who will be allowed to read the above content.',
-                'values' : readers
-            },
-            'writers': {
-                'values':[],
-            },
-            'content': {
-                'title': {
-                    'value': 'Recruitment',
-                    'required': True,
-                    'order': 1
-                },
-                'invitee_role': {
-                    'description': 'Please select the role of the invitees in the venue.',
-                    'value-radio': ['reviewer', 'area chair'],
-                    'default': 'reviewer',
-                    'required': True,
-                    'order': 2
-                },
-                'invitee_details': {
-                    'value-regex': '[\\S\\s]{1,50000}',
-                    'description': 'Please provide line separated invitee details where each line has the pair - email,name. E.g. captain_rogers@marvel.com, Captain America',
-                    'required': True,
-                    'order': 3
-                },
-                'invitation_email_subject': {
-                    'value-regex': '.*',
-                    'description': 'Please carefully review the email subject for the recruitment emails. Make sure not to remove the parenthesized tokens.',
-                    'order': 4,
-                    'required': True,
-                    'default': recruitment_email_subject
-                },
-                'invitation_email_content': {
-                    'value-regex': '[\\S\\s]{1,10000}',
-                    'description': 'Please carefully review the template below before you click submit to send out recruitment emails. Make sure not to remove the parenthesized tokens.',
-                    'order': 5,
-                    'required': True,
-                    'default': recruitment_email_body
-                }
-            }
-        },
-        signatures = [conference.get_program_chairs_id()]
-    ))
-    else:
-        recruitment_invitation = client.post_invitation(openreview.Invitation(
+    recruitment_invitation = openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Recruitment',
         super = 'OpenReview.net/Support/-/Recruitment',
         invitees = readers,
@@ -185,7 +115,7 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
                 },
                 'invitee_details': {
                     'value-regex': '[\\S\\s]{1,50000}',
-                    'description': 'Please provide line separated invitee details where each line has the pair - email,name. E.g. captain_rogers@marvel.com, Captain America',
+                    'description': 'Email,Name pairs expected with each line having only one invitee\'s details. E.g. captain_rogers@marvel.com, Captain America',
                     'required': True,
                     'order': 3
                 },
@@ -206,7 +136,27 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
             }
         },
         signatures = [conference.get_program_chairs_id()]
-    ))
+    )
+
+    if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
+        metareview_stage_invitation = client.post_invitation(openreview.Invitation(
+            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Meta_Review_Stage',
+            super = 'OpenReview.net/Support/-/Meta_Review_Stage',
+            invitees = readers,
+            reply = {
+                'forum': forum.id,
+                'referent': forum.id,
+                'readers' : {
+                    'description': 'The users who will be allowed to read the above content.',
+                    'values' : readers
+                }
+            },
+            signatures = [conference.get_program_chairs_id()]
+        ))
+
+        recruitment_invitation.reply['content']['invitee_role']['value-radio'] = ['reviewer', 'area chair']
+
+    posted_recruitment_invitation = client.post_invitation(recruitment_invitation)
 
     if 'Reviewer Bid Scores' in forum.content.get('Paper Matching', []):
         bid_stage_invitation = client.post_invitation(openreview.Invitation(
