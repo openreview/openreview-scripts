@@ -7,6 +7,9 @@ def process(client, note, invitation):
         if conference.submission_stage.double_blind:
             conference.create_blind_submissions()
         conference.set_authors()
+        conference.set_reviewers()
+        if conference.use_area_chairs:
+            conference.set_area_chairs()
 
     if invitation_type == 'Bid_Stage':
         conference.set_bid_stage(openreview.helpers.get_bid_stage(client, forum_note))

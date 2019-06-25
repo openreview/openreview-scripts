@@ -24,6 +24,7 @@ def process(client, note, invitation):
     conference.recruit_reviewers(
         emails = invitee_emails,
         invitee_names = invitee_names,
+        reviewers_name = 'Area_Chairs' if note.content['invitee_role'].strip() == 'area chair' else 'Reviewers',
         title = note.content['invitation_email_subject'].strip(),
         message = note.content['invitation_email_content'].strip()
     )
