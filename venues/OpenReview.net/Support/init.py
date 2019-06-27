@@ -203,7 +203,7 @@ comment_invitation = client.post_invitation(openreview.Invitation(**{
     }
 }))
 
-remove_fields = ['Area Chairs (Metareviewers)', 'Author and Reviewer Anonymity', 'Open Reviewing Policy', 'Public Commentary']
+remove_fields = ['Area Chairs (Metareviewers)', 'Author and Reviewer Anonymity', 'Open Reviewing Policy', 'Public Commentary', 'Paper Matching']
 revision_content = {key: request_content[key] for key in request_content if key not in remove_fields}
 revision_content['Additional Submission Options'] = {
     'order' : 18,
