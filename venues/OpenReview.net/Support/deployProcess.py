@@ -139,21 +139,6 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
     )
 
     if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
-        metareview_stage_invitation = client.post_invitation(openreview.Invitation(
-            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Meta_Review_Stage',
-            super = 'OpenReview.net/Support/-/Meta_Review_Stage',
-            invitees = readers,
-            reply = {
-                'forum': forum.id,
-                'referent': forum.id,
-                'readers' : {
-                    'description': 'The users who will be allowed to read the above content.',
-                    'values' : readers
-                }
-            },
-            signatures = [conference.get_program_chairs_id()]
-        ))
-
         recruitment_invitation.reply['content']['invitee_role']['value-radio'] = ['reviewer', 'area chair']
 
     posted_recruitment_invitation = client.post_invitation(recruitment_invitation)
@@ -179,12 +164,13 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
         review_stage_content = {
             'review_start_date': {
                 'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-                'value-regex': '.*',
+                'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
                 'order': 10
             },
             'review_deadline': {
                 'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-                'value-regex': '.*',
+                'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
+                'required': True,
                 'order': 11
             },
             'make_reviews_public': {
@@ -243,6 +229,22 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
         },
         signatures = [conference.get_program_chairs_id()]
     ))
+
+    if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
+        metareview_stage_invitation = client.post_invitation(openreview.Invitation(
+            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Meta_Review_Stage',
+            super = 'OpenReview.net/Support/-/Meta_Review_Stage',
+            invitees = readers,
+            reply = {
+                'forum': forum.id,
+                'referent': forum.id,
+                'readers' : {
+                    'description': 'The users who will be allowed to read the above content.',
+                    'values' : readers
+                }
+            },
+            signatures = [conference.get_program_chairs_id()]
+        ))
 
     decision_stage_invitation = client.post_invitation(openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Decision_Stage',
