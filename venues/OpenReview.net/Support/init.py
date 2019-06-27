@@ -45,8 +45,8 @@ request_content = {
         'order': 4
     },
     'Contact Emails': {
-        'description': 'Please provide the email addresses of all the Program Chairs or Organizers (comma-separated)',
-        'values-regex': '.*',
+        'description': 'Please provide *lower-cased* email addresses of all the Program Chairs or Organizers (comma-separated) including yourself.',
+        'values-regex': '([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})',
         'required': True,
         'order': 5
     },
@@ -65,13 +65,13 @@ request_content = {
         'order': 7
     },
     'Submission Deadline': {
-        'value-regex': '.*',
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'description': 'By when do authors need to submit their manuscripts? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'order': 8
     },
     'Venue Start Date': {
         'description': 'What date does the venue start? Please use the following format: YYYY/MM/DD (e.g. 2019/01/31)',
-        'value-regex': '.*',
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'order': 9
     },
     'Location': {
@@ -124,7 +124,7 @@ request_content = {
     },
     'Other Important Information': {
         'value-regex': '[\\S\\s]{1,5000}',
-        'description': 'Please use this space to clarify any questions above for which you could not use any of the provide options, and to clarify any other information that you think we may need.',
+        'description': 'Please use this space to clarify any questions for which you could not use any of the provided options, and to clarify any other information that you think we may need.',
         'order': 22
     },
     'How did you hear about us?': {
@@ -351,15 +351,16 @@ recruitment_invitation = client.post_invitation(openreview.Invitation(**{
 bid_stage_content = {
     'bid_start_date': {
         'description': 'When does bidding on submissions begin? Please use the format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-        'value-regex': '.*'
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$'
     },
     'bid_due_date': {
         'description': 'When does bidding on submissions end? Please use the format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-        'value-regex': '.*'
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
+        'required': True
     },
     'bid_count': {
-        'description': 'Minimum bids a person needs to make to mark bidding task as completed for them. Default is 50.',
-        'value-regex': '.*'
+        'description': 'Minimum bids one should make to mark bidding task completed for them. Default is 50.',
+        'value-regex': '[0-9]*'
     }
 }
 
@@ -391,12 +392,13 @@ bid_stage_invitation = client.post_invitation(openreview.Invitation(**{
 review_stage_content = {
     'review_start_date': {
         'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-        'value-regex': '.*',
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'order': 10
     },
     'review_deadline': {
         'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-        'value-regex': '.*',
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
+        'required': True,
         'order': 11
     },
     'make_reviews_public': {
@@ -468,12 +470,12 @@ review_stage_invitation = client.post_invitation(openreview.Invitation(**{
 meta_review_stage_content = {
     'meta_review_start_date': {
         'description': 'When does the meta reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
-        'value-regex': '.*',
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'order': 12
     },
     'meta_review_deadline': {
         'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
-        'value-regex': '.*',
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'order': 13
     },
     'make_meta_reviews_public': {
@@ -516,12 +518,12 @@ meta_review_stage_invitation = client.post_invitation(openreview.Invitation(**{
 decision_stage_content = {
     'decision_start_date': {
         'description': 'When will the program chairs start posting decisions? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
-        'value-regex': '.*',
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'order': 14
     },
     'decision_deadline': {
         'description': 'By when should all the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
-        'value-regex': '.*',
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'order': 15
     },
     'decision_options': {
