@@ -179,12 +179,13 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
         review_stage_content = {
             'review_start_date': {
                 'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-                'value-regex': '.*',
+                'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
                 'order': 10
             },
             'review_deadline': {
                 'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-                'value-regex': '.*',
+                'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
+                'required': True,
                 'order': 11
             },
             'make_reviews_public': {
