@@ -139,21 +139,6 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
     )
 
     if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
-        metareview_stage_invitation = client.post_invitation(openreview.Invitation(
-            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Meta_Review_Stage',
-            super = 'OpenReview.net/Support/-/Meta_Review_Stage',
-            invitees = readers,
-            reply = {
-                'forum': forum.id,
-                'referent': forum.id,
-                'readers' : {
-                    'description': 'The users who will be allowed to read the above content.',
-                    'values' : readers
-                }
-            },
-            signatures = [conference.get_program_chairs_id()]
-        ))
-
         recruitment_invitation.reply['content']['invitee_role']['value-radio'] = ['reviewer', 'area chair']
 
     posted_recruitment_invitation = client.post_invitation(recruitment_invitation)
@@ -244,6 +229,22 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
         },
         signatures = [conference.get_program_chairs_id()]
     ))
+
+    if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
+        metareview_stage_invitation = client.post_invitation(openreview.Invitation(
+            id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Meta_Review_Stage',
+            super = 'OpenReview.net/Support/-/Meta_Review_Stage',
+            invitees = readers,
+            reply = {
+                'forum': forum.id,
+                'referent': forum.id,
+                'readers' : {
+                    'description': 'The users who will be allowed to read the above content.',
+                    'values' : readers
+                }
+            },
+            signatures = [conference.get_program_chairs_id()]
+        ))
 
     decision_stage_invitation = client.post_invitation(openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Decision_Stage',
