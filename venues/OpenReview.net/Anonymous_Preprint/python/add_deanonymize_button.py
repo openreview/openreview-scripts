@@ -6,19 +6,23 @@ import openreview
 import config
 
 def create_deanonymize_invitation(note):
-  invitation = openreview.Invitation(**{
-      'id': f'{config.CONF}/-/Paper{note.number}/Deanonymize',
-      'signatures': [config.CONF],
-      'writers': [config.CONF],
-      'invitees': [f'OpenReview.net/Anonymous_Preprint/Paper{note.number}/Authors'],
-      'noninvitees': [],
-      'readers': ['everyone'],
-      'process': os.path.join(os.path.dirname(__file__), '../process/deanonymize_process.py'),
-      'reply': {
-        'forum': note.id,
-        'referent': note.id,
-        'signatures': config.submission_params['reply']['signatures'],
-        'writers': config.submission_params['reply']['writers'],
+  invitation = openreview.Invitation(
+      id = f'{config.CONF}/-/Paper{note.number}/Deanonymize',
+      signatures = [config.CONF],
+      writers = [config.CONF],
+      invitees = [f'OpenReview.net/Anonymous_Preprint/Paper{note.number}/Authors'],
+      readers = ['everyone'],
+      process = os.path.join(os.path.dirname(__file__), '../process/deanonymizeProcess.py'),
+      multiReply = False,
+      reply = {
+        'forum': note.original,
+        'referent': note.original,
+        'signatures': {
+          'values': [f'OpenReview.net/Anonymous_Preprint/Paper{note.number}/Authors']
+        },
+        'writers': {
+          'values': [f'OpenReview.net/Anonymous_Preprint/Paper{note.number}/Authors']
+        },
         'readers': config.submission_params['reply']['readers'],
         'content': {
           'deanonymize': {
@@ -28,8 +32,7 @@ def create_deanonymize_invitation(note):
             'required': True
           }
         }
-      }
-    })
+      })
 
   return invitation
 
@@ -43,5 +46,6 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 for note in openreview.tools.iterget_notes(client, invitation='OpenReview.net/Anonymous_Preprint/-/Blind_Submission'):
+  #if 'Anonymous' in note.content['authors']:
   invitation = create_deanonymize_invitation(note)
   client.post_invitation(invitation)
