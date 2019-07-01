@@ -257,10 +257,10 @@ deploy_invitation = client.post_invitation(openreview.Invitation(**{
             'values': ['OpenReview.net/Support']
         },
         'writers': {
-            'values-regex': '~.*',
+            'values-regex': '~.*'
         },
         'signatures': {
-            'values-regex': '~.*'
+            'values': ['OpenReview.net/Support']
         },
         'content': deploy_content
     }
