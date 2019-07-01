@@ -22,14 +22,14 @@ Thanks for submitting a venue request.
 
 We have set up the venue based on the information that you provided here: {baseurl}/forum?id={noteId}
 
-You can use the following links to access to the conference:
+You can use the following links to access to the venue:
 
 Venue home page: {baseurl}/group?id={conference_id}
 Venue Program Chairs console: {baseurl}/group?id={program_chairs_id}
 
-If you need to make a change to the information provided in your request form, please edit/revise it directly. We will update your venue accordingly.
+If you need to make a change to the information provided in your request form, please feel free to revise it directly. You can also control several stages of your venue by using the Stage buttons. Note that any change you make will be immediately applied to your venue.
 
-If you need special features that are not included in your request form, you can create a comment here or contact us at info@openreview.net and we will assist you.
+If you need special features that are not included in your request form, you can post a comment here or contact us at info@openreview.net and we will assist you.
 
 Thanks!
 
