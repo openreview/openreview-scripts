@@ -1,4 +1,3 @@
-
 // Assumes the following pattern for meta reviews and official reviews:
 // CONFERENCE + '/-/Paper' + number + '/Meta_Review'
 // CONFERENCE + '/-/Paper' + number + '/Official_Review'
@@ -16,25 +15,23 @@ var WILDCARD_INVITATION = CONFERENCE + '/-/.*';
 
 var ANONREVIEWER_WILDCARD = CONFERENCE + '/Paper.*/AnonReviewer.*';
 var AREACHAIR_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*';
+var AREACHAIR_ASSIGNEE_WILDCARD = CONFERENCE + '/Paper.*/Area_Chair.*/Assigned';
 
-var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)/;
+var ANONREVIEWER_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/AnonReviewer(\d+)$/;
 var AREACHAIR_REGEX = /^ICLR\.cc\/2019\/Conference\/Paper(\d+)\/Area_Chair(\d+)/;
 
 var INSTRUCTIONS = '<p class="dark">This page provides information and status \
   updates for ICLR 2019 Area Chairs. It will be regularly updated as the conference \
   progresses, so please check back frequently for news and other updates.</p>';
-var SCHEDULE_HTML = '<h4>Registration Phase</h4>\
+
+var SCHEDULE_HTML = '<h4>Rebuttal Phase</h4>\
   <p>\
     <ul>\
-      <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li>\
+      <li>Please note that the rebuttal phase is going on from Nov 5 2018 to Nov 21 2018.</li>\
     </ul>\
-  </p>\
-  <br>\
-  <h4>Bidding Phase</h4>\
-  <p>\
-    <em><strong>The bidding phase has not started yet.</strong><br/>\
-    This section will be updated once the bidding phase begins.</em>\
   </p>';
+
+var reviewerSummaryMap = {};
 
 // Main function is the entry point to the webfield code
 var main = function() {
@@ -66,6 +63,7 @@ var buildNoteMap = function(noteNumbers) {
   var noteMap = Object.create(null);
   for (var i = 0; i < noteNumbers.length; i++) {
     noteMap[noteNumbers[i]] = Object.create(null);
+    reviewerSummaryMap[noteNumbers[i]] = Object.create(null);
   }
   return noteMap;
 };
@@ -80,8 +78,11 @@ var loadData = function(result) {
   if (noteNumbers.length) {
     var noteNumbersStr = noteNumbers.join(',');
 
-    blindedNotesP = Webfield.getAll('/notes', {
+    blindedNotesP = Webfield.get('/notes', {
       invitation: BLIND_SUBMISSION_ID, number: noteNumbersStr, noDetails: true
+    })
+    .then(function(result) {
+      return result.notes;
     });
 
     metaReviewsP = Webfield.getAll('/notes', {
@@ -102,6 +103,7 @@ var loadData = function(result) {
   return $.when(
     blindedNotesP,
     getOfficialReviews(noteNumbers),
+    // getAreaChairAssigneeGroups(noteNumbers),
     metaReviewsP,
     getReviewerGroups(noteNumbers),
     invitationsP,
@@ -153,8 +155,8 @@ var getReviewerGroups = function(noteNumbers) {
   var noteMap = buildNoteMap(noteNumbers);
 
   return Webfield.getAll('/groups', { id: ANONREVIEWER_WILDCARD })
-  .then(function(groups) {
-    _.forEach(groups, function(g) {
+  .then(function(result) {
+    _.forEach(result, function(g) {
       var matches = g.id.match(ANONREVIEWER_REGEX);
       var num, index;
       if (matches) {
@@ -234,7 +236,7 @@ var renderHeader = function() {
   ]);
 };
 
-var renderStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
+var renderStatusTable = function(profiles, notes, completedReviews, acAssignees, metaReviews, reviewerIds, container) {
   var rows = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number] || Object.create(null);
     for (var revNumber in revIds) {
@@ -491,6 +493,7 @@ var renderTableAndTasks = function(fetchedData) {
     fetchedData.profiles,
     fetchedData.blindedNotes,
     fetchedData.officialReviews,
+    fetchedData.areaChairAssignees,
     fetchedData.metaReviews,
     _.cloneDeep(fetchedData.noteToReviewerIds), // Need to clone this dictionary because some values are missing after the first refresh
     '#assigned-papers'
@@ -544,19 +547,26 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
         id: reviewer.id,
         name: reviewer.name,
         email: reviewer.email,
+        forum: note.forum,
         forumUrl: forumUrl,
-        lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString() : lastReminderSent
+        lastReminderSent: lastReminderSent ? new Date(parseInt(lastReminderSent)).toLocaleDateString() : lastReminderSent,
+        paperNumber: note.number,
+        reviewerNumber: reviewerNum
       };
     }
   }
 
   var cell2 = {
     noteId: note.id,
+    paperNumber: note.number,
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
-    sendReminder: true
+    sendReminder: true,
+    expandReviewerList: false
   };
+
+  reviewerSummaryMap[note.number] = cell2;
 
   // Rating cell
   var cell3 = {
@@ -599,7 +609,9 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
   return [cellCheck, cell0, cell1, cell2, cell3, cell4, cell5];
 };
 
+var findNextAnonGroupNumber = function(paperNumber){
 
+}
 // Event Handlers
 var registerEventHandlers = function() {
   $('#group-container').on('click', 'a.note-contents-toggle', function(e) {
@@ -636,8 +648,8 @@ var registerEventHandlers = function() {
       forumUrl: forumUrl,
       defaultSubject: SHORT_PHRASE + ' Reminder',
       defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
-        'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
-        '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
+      'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
+      '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
     });
     $('#message-reviewers-modal').remove();
     $('body').append(modalHtml);
@@ -649,14 +661,65 @@ var registerEventHandlers = function() {
     return false;
   });
 
+  $('#group-container').on('click', 'button.btn.assign-reviewer-button', function(e) {
+    var $link = $(this);
+    var $parent = $link.parent();
+    var closestDiv = $link.closest('div');
+    console.log(closestDiv);
+    var paperNumber = closestDiv.data('paper-number');
+    console.log(paperNumber);
+    userToAdd = $parent.find('input').val().trim();
+    console.log(userToAdd);
+
+    $.when(
+      Webfield.put('/groups/members', {
+        id: CONFERENCE + '/Paper' + paperNumber + '/Reviewers',
+        members: [userToAdd]
+      }),
+      // Webfield.put('/groups/members', {
+      //   id: CONFERENCE + '/Paper' + paperNumber + '/AnonReviewer' + reviewerNumber,
+      //   members: [userToAdd]
+      // }),
+      promptMessage('Reviewer ' + view.prettyId(reviewer) + ' has been assigned to paper ' + paperNumber)
+    );
+    return false;
+  });
+
+  $('#group-container').on('click', 'a.unassign-reviewer-link', function(e) {
+    var $link = $(this);
+    var userId = $link.data('userId');
+    var paperNumber = $link.data('paperNumber');
+    var paperForum = $link.data('paperForum');
+    var reviewerNumber = $link.data('reviewerNumber');
+
+    var $curr = $('#' + paperForum + '-reviewer-progress');
+    delete reviewerSummaryMap[paperNumber].reviewers[reviewerNumber];
+    reviewerSummaryMap[paperNumber].numReviewers = reviewerSummaryMap[paperNumber].numReviewers ? reviewerSummaryMap[paperNumber].numReviewers - 1 : 0;
+    reviewerSummaryMap[paperNumber].expandReviewerList = true;
+    $curr.html(Handlebars.templates.noteReviewers(reviewerSummaryMap[paperNumber]));
+
+    $.when(
+      Webfield.delete('/groups/members', {
+        id: CONFERENCE + '/Paper' + paperNumber + '/Reviewers',
+        members: [userId]
+      }),
+      Webfield.delete('/groups/members', {
+        id: CONFERENCE + '/Paper' + paperNumber + '/AnonReviewer' + reviewerNumber,
+        members: [userId]
+      }),
+      promptMessage('Reviewer ' + view.prettyId(userId) + ' has been unassigned for paper ' + paperNumber)
+    );
+    return false;
+  });
+
   $('#group-container').on('click', 'a.collapse-btn', function(e) {
-    $(this).next().slideToggle();
+    // $(this).next().slideToggle();
     if ($(this).text() === 'Show reviewers') {
       $(this).text('Hide reviewers');
     } else {
       $(this).text('Show reviewers');
     }
-    return false;
+    // return false;
   });
 };
 
