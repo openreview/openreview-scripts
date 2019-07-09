@@ -103,7 +103,6 @@ var loadData = function(result) {
   return $.when(
     blindedNotesP,
     getOfficialReviews(noteNumbers),
-    // getAreaChairAssigneeGroups(noteNumbers),
     metaReviewsP,
     getReviewerGroups(noteNumbers),
     invitationsP,
@@ -236,7 +235,7 @@ var renderHeader = function() {
   ]);
 };
 
-var renderStatusTable = function(profiles, notes, completedReviews, acAssignees, metaReviews, reviewerIds, container) {
+var renderStatusTable = function(profiles, notes, completedReviews, metaReviews, reviewerIds, container) {
   var rows = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number] || Object.create(null);
     for (var revNumber in revIds) {
@@ -493,7 +492,6 @@ var renderTableAndTasks = function(fetchedData) {
     fetchedData.profiles,
     fetchedData.blindedNotes,
     fetchedData.officialReviews,
-    fetchedData.areaChairAssignees,
     fetchedData.metaReviews,
     _.cloneDeep(fetchedData.noteToReviewerIds), // Need to clone this dictionary because some values are missing after the first refresh
     '#assigned-papers'
@@ -610,7 +608,15 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
 };
 
 var findNextAnonGroupNumber = function(paperNumber){
-
+  nextAnonNumber = 1;
+  paperReviewerNums = Object.keys(reviewerSummaryMap[paperNumber].reviewers);
+  for (var i = 1;; i++) {
+    if (paperReviewerNums.indexOf(i.toString()) === -1) {
+      nextAnonNumber = i;
+      break;
+    }
+  }
+  return nextAnonNumber;
 }
 // Event Handlers
 var registerEventHandlers = function() {
@@ -663,25 +669,56 @@ var registerEventHandlers = function() {
 
   $('#group-container').on('click', 'button.btn.assign-reviewer-button', function(e) {
     var $link = $(this);
-    var $parent = $link.parent();
-    var closestDiv = $link.closest('div');
-    console.log(closestDiv);
-    var paperNumber = closestDiv.data('paper-number');
+    var paperNumber = $link.data('paperNumber');
+    var paperForum = $link.data('paperForum');
     console.log(paperNumber);
-    userToAdd = $parent.find('input').val().trim();
+    console.log(paperForum);
+    var $currDiv = $('#' + paperForum + '-add-reviewer');
+    console.log($currDiv);
+    userToAdd = $currDiv.find('input').val().trim();
     console.log(userToAdd);
-
+    nextAnonNumber = findNextAnonGroupNumber(paperNumber);
+    console.log(nextAnonNumber);
     $.when(
       Webfield.put('/groups/members', {
         id: CONFERENCE + '/Paper' + paperNumber + '/Reviewers',
         members: [userToAdd]
       }),
-      // Webfield.put('/groups/members', {
-      //   id: CONFERENCE + '/Paper' + paperNumber + '/AnonReviewer' + reviewerNumber,
-      //   members: [userToAdd]
-      // }),
-      promptMessage('Reviewer ' + view.prettyId(reviewer) + ' has been assigned to paper ' + paperNumber)
+      Webfield.post('/groups', {
+        id: CONFERENCE + '/Paper' + paperNumber + '/AnonReviewer' + nextAnonNumber,
+        members: [userToAdd],
+        readers: [
+          CONFERENCE + '/Program_Chairs',
+          CONFERENCE + '/Paper' + paperNumber + '/Area_Chairs',
+          CONFERENCE + '/Paper' + paperNumber + '/AnonReviewer' + nextAnonNumber],
+        writers: [
+          CONFERENCE + '/Program_Chairs',
+          CONFERENCE + '/Paper' + paperNumber + '/Area_Chairs'],
+        signatures: [CONFERENCE],
+        signatories: [CONFERENCE + '/Paper' + paperNumber + '/AnonReviewer' + nextAnonNumber]
+      }),
+      promptMessage('Reviewer ' + view.prettyId(userToAdd) + ' has been assigned to paper ' + paperNumber)
     );
+    var forumUrl = 'https://openreview.net/forum?' + $.param({
+        id: paperForum,
+        noteId: paperForum,
+        invitationId: CONFERENCE + '/-/Paper' + paperNumber + '/Official_Review'
+      });
+    var lastReminderSent = localStorage.getItem(forumUrl + '|' + userToAdd);
+    reviewerSummaryMap[paperNumber].reviewers[nextAnonNumber] = {
+      id: userToAdd,
+      name: '',
+      email: userToAdd,
+      forum: paperForum,
+      forumUrl: forumUrl,
+      lastReminderSent: lastReminderSent,
+      paperNumber: paperNumber,
+      reviewerNumber: nextAnonNumber
+    };
+    reviewerSummaryMap[paperNumber].numReviewers = reviewerSummaryMap[paperNumber].numReviewers ? reviewerSummaryMap[paperNumber].numReviewers + 1 : 1;
+    reviewerSummaryMap[paperNumber].expandReviewerList = true;
+    var $revProgressDiv = $('#' + paperForum + '-reviewer-progress')
+    $revProgressDiv.html(Handlebars.templates.noteReviewers(reviewerSummaryMap[paperNumber]));
     return false;
   });
 
@@ -692,11 +729,11 @@ var registerEventHandlers = function() {
     var paperForum = $link.data('paperForum');
     var reviewerNumber = $link.data('reviewerNumber');
 
-    var $curr = $('#' + paperForum + '-reviewer-progress');
+    var $revProgressDiv = $('#' + paperForum + '-reviewer-progress');
     delete reviewerSummaryMap[paperNumber].reviewers[reviewerNumber];
     reviewerSummaryMap[paperNumber].numReviewers = reviewerSummaryMap[paperNumber].numReviewers ? reviewerSummaryMap[paperNumber].numReviewers - 1 : 0;
     reviewerSummaryMap[paperNumber].expandReviewerList = true;
-    $curr.html(Handlebars.templates.noteReviewers(reviewerSummaryMap[paperNumber]));
+    $revProgressDiv.html(Handlebars.templates.noteReviewers(reviewerSummaryMap[paperNumber]));
 
     $.when(
       Webfield.delete('/groups/members', {
