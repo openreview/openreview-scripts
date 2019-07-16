@@ -28,11 +28,10 @@ def get_conference(client):
 Please contact the DAI 2019 Program chairs at <a href="mailto:dai2019chairs@gmail.com">dai2019chairs@gmail.com</a>.<br>
 Please contact the OpenReview support team at <a href="mailto:info@openreview.net">info@openreview.net</a> with any OpenReview related questions or concerns.</p>'''
     })
-
-    #builder.set_submission_stage(double_blind = True, due_date = datetime.datetime(2019, 6, 19, 11, 59), remove_fields = ['TL;DR'])
-    #builder.set_bid_stage(due_date=datetime.datetime(2019,7,5,11,59), request_count = 30)
-    #builder.set_review_stage(start_date =datetime.datetime(2019,7,6,11,59), due_date = datetime.datetime(2019,7,27,11,59))
-    #builder.set_decision_stage(start_date = datetime.datetime(2019,7,27,11,59))
+    builder.set_submission_stage(double_blind = True, due_date = datetime.datetime(2019, 6, 19, 11, 59), remove_fields = ['TL;DR'])
+    builder.set_bid_stage(due_date=datetime.datetime(2019,7,5,11,59), request_count = 30)
+    builder.set_review_stage(start_date =datetime.datetime(2019,7,6,11,59), due_date = datetime.datetime(2019,7,27,11,59))
+    builder.set_decision_stage(start_date = datetime.datetime(2019,7,27,11,59))
     builder.set_comment_stage(reader_selection=True)
     builder.set_authorpage_header({'schedule':
       '''<h4>Submission Period</h4>
