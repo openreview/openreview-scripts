@@ -60,13 +60,13 @@ request_content = {
         'order': 6
     },
     'Submission Start Date': {
-        'description': 'When would you (ideally) like to have your OpenReview submission portal opened? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59). (Skip this if only requesting paper matching service)',
+        'description': 'When would you (ideally) like to have your OpenReview submission portal opened? Please submit in the following format for the GMT time zone: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59). (Skip this if only requesting paper matching service)',
         'value-regex': '.*',
         'order': 7
     },
     'Submission Deadline': {
         'value-regex': '.*',
-        'description': 'By when do authors need to submit their manuscripts? Please submit in the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
+        'description': 'By when do authors need to submit their manuscripts? Please submit in the following format for the GMT time zone: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'order': 8
     },
     'Venue Start Date': {
