@@ -13,7 +13,7 @@ def get_conference(client):
     builder.set_homepage_header({
         'title': 'Conference on Distributed Artificial Intelligence',
         'subtitle': '',
-        'deadline': 'Submission Deadline: 15th of June, 2019 (23:59 UTC-12)',
+        'deadline': 'Submission Deadline: 18th of June, 2019 (23:59 UTC-12)',
         'date': '13 - 15 Oct, 2019',
         'website': 'http://www.adai.ai',
         'location': 'Beijing China',
@@ -28,12 +28,14 @@ def get_conference(client):
 Please contact the DAI 2019 Program chairs at <a href="mailto:dai2019chairs@gmail.com">dai2019chairs@gmail.com</a>.<br>
 Please contact the OpenReview support team at <a href="mailto:info@openreview.net">info@openreview.net</a> with any OpenReview related questions or concerns.</p>'''
     })
-    builder.set_submission_stage(double_blind = True, due_date = datetime.datetime(2019, 6, 16, 23, 59), remove_fields = ['TL;DR'])
-
+    builder.set_submission_stage(double_blind = True, due_date = datetime.datetime(2019, 6, 19, 11, 59), remove_fields = ['TL;DR'])
+    builder.set_bid_stage(due_date=datetime.datetime(2019,7,5,11,59), request_count = 30)
+    builder.set_review_stage(start_date =datetime.datetime(2019,7,6,11,59), due_date = datetime.datetime(2019,7,27,11,59))
+    builder.set_decision_stage(start_date = datetime.datetime(2019,7,27,11,59))
     builder.set_authorpage_header({'schedule':
       '''<h4>Submission Period</h4>
         <p><ul>
-          <li><strong>Submission deadline: 15th of June, 2019</strong></li>
+          <li><strong>Submission deadline: 18th of June, 2019</strong></li>
           <li>Authors can revise their paper as many times as needed up to the paper submission deadline.</li>
           <li>Authors can submit an abstract without a paper through 12th of June. After that the pdf is required to create a submission.</li>
           <li>Please ensure that the email addresses of the corresponding author are up-to-date in his or her profile.</li>
@@ -54,7 +56,7 @@ Please contact the OpenReview support team at <a href="mailto:info@openreview.ne
     builder.set_reviewerpage_header({'schedule':
       '''<h4>Submission Period</h4>
         <p><ul>
-          <li><strong>Submission deadline: June 15th, 2019</strong></li>
+          <li><strong>Submission deadline: June 18th, 2019</strong></li>
           <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li>
         </ul></p>
       <br>
