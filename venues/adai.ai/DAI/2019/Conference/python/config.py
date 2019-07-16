@@ -33,6 +33,7 @@ Please contact the OpenReview support team at <a href="mailto:info@openreview.ne
     #builder.set_bid_stage(due_date=datetime.datetime(2019,7,5,11,59), request_count = 30)
     #builder.set_review_stage(start_date =datetime.datetime(2019,7,6,11,59), due_date = datetime.datetime(2019,7,27,11,59))
     #builder.set_decision_stage(start_date = datetime.datetime(2019,7,27,11,59))
+    builder.set_comment_stage(reader_selection=True)
     builder.set_authorpage_header({'schedule':
       '''<h4>Submission Period</h4>
         <p><ul>
