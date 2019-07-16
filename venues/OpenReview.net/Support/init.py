@@ -70,7 +70,7 @@ request_content = {
         'order': 8
     },
     'Venue Start Date': {
-        'description': 'What does the venue start? Please use the following format: YYYY/MM/DD (e.g. 2019/01/31)',
+        'description': 'What date does the venue start? Please use the following format: YYYY/MM/DD (e.g. 2019/01/31)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'order': 9
     },
