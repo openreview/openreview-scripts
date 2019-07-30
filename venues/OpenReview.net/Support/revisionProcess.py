@@ -9,7 +9,8 @@ def process(client, note, invitation):
         conference.set_authors()
         conference.set_reviewers()
         if conference.use_area_chairs:
-            conference.set_area_chairs()
+            conference.set_area_chairs(enable_reviewer_reassignment = True if "OpenReview Affinity" in forum_note.content.get("Paper Matching", []) else False)
+        conference.set_program_chairs(enable_reviewer_reassignment = True if "OpenReview Affinity" in forum_note.content.get("Paper Matching", []) else False)
 
     if invitation_type == 'Bid_Stage':
         conference.set_bid_stage(openreview.helpers.get_bid_stage(client, forum_note))
