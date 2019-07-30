@@ -2,6 +2,13 @@ def process(client, note, invitation):
     import datetime
     conference = openreview.helpers.get_conference(client, note.forum)
     forum_note = client.get_note(note.forum)
+
+    comment_readers = forum_note.content['Contact Emails'] + ['OpenReview.net/Support']
+    comment_invitation = client.get_invitation('OpenReview.net/Support/-/Request' + str(forum_note.number) + '/Comment')
+    if comment_readers != comment_invitation.reply['readers']['values']:
+        comment_invitation.reply['readers']['values'] = comment_readers
+        updated_comment_invitaiton = client.post_invitation(comment_invitation)
+
     invitation_type = invitation.id.split('/')[-1]
     if invitation_type in ['Bid_Stage', 'Review_Stage', 'Meta_Review_Stage', 'Decision_Stage']:
         if conference.submission_stage.double_blind:
