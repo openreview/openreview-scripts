@@ -9,6 +9,7 @@ def process(client, note, invitation):
         comment_invitation.reply['readers']['values'] = comment_readers
         updated_comment_invitaiton = client.post_invitation(comment_invitation)
 
+    conference.set_reviewer_reassignment(enabled = True)
     invitation_type = invitation.id.split('/')[-1]
     if invitation_type in ['Bid_Stage', 'Review_Stage', 'Meta_Review_Stage', 'Decision_Stage']:
         if conference.submission_stage.double_blind:
@@ -16,8 +17,8 @@ def process(client, note, invitation):
         conference.set_authors()
         conference.set_reviewers()
         if conference.use_area_chairs:
-            conference.set_area_chairs(enable_reviewer_reassignment = True)
-        conference.set_program_chairs(enable_reviewer_reassignment = True)
+            conference.set_area_chairs()
+        conference.set_program_chairs()
 
     if invitation_type == 'Bid_Stage':
         conference.set_bid_stage(openreview.helpers.get_bid_stage(client, forum_note))
