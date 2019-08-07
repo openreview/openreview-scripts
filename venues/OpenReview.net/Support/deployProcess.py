@@ -3,7 +3,10 @@ def process(client, note, invitation):
     print('note:', note.id)
     print('invitation:', invitation.id)
     conference = openreview.helpers.get_conference(client, note.forum)
-    print(conference.get_id())
+    conference_group = client.get_group(conference.get_id())
+    print(conference_group.id)
+    client.add_members_to_group(conference_group, "OpenReview.net/Support")
+
     forum = client.get_note(id=note.forum)
     comment_readers = forum.content['Contact Emails'] + ['OpenReview.net/Support']
     comment_note = openreview.Note(
