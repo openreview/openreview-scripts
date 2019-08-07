@@ -9,7 +9,6 @@ def process(client, note, invitation):
         comment_invitation.reply['readers']['values'] = comment_readers
         updated_comment_invitaiton = client.post_invitation(comment_invitation)
 
-    conference.set_reviewer_reassignment(enabled = True)
     invitation_type = invitation.id.split('/')[-1]
     if invitation_type in ['Bid_Stage', 'Review_Stage', 'Meta_Review_Stage', 'Decision_Stage']:
         if conference.submission_stage.double_blind:
