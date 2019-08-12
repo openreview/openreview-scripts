@@ -32,6 +32,7 @@ Please contact the OpenReview support team at <a href="mailto:info@openreview.ne
     builder.set_bid_stage(due_date=datetime.datetime(2019,7,5,11,59), request_count = 30)
     builder.set_review_stage(start_date =datetime.datetime(2019,7,6,11,59), due_date = datetime.datetime(2019,7,27,11,59))
     builder.set_decision_stage(start_date = datetime.datetime(2019,7,27,11,59))
+    builder.set_comment_stage(reader_selection=True)
     builder.set_authorpage_header({'schedule':
       '''<h4>Submission Period</h4>
         <p><ul>
@@ -40,12 +41,6 @@ Please contact the OpenReview support team at <a href="mailto:info@openreview.ne
           <li>Authors can submit an abstract without a paper through 12th of June. After that the pdf is required to create a submission.</li>
           <li>Please ensure that the email addresses of the corresponding author are up-to-date in his or her profile.</li>
           <li>Update your profile to include your most up-to-date information, including work history and relations, to ensure proper conflict-of-interest detection during the paper matching process.</li>
-        </ul></p>
-      <br>
-      <h4>Rebuttal/Discussion Period</h4>
-        <p><ul>
-          <li><strong>19th-20th of July, 2019 (23:59 UTC-12) </strong></li>
-          <li>During the review period, authors will not be allowed to revise their paper. </li>
         </ul></p>
       <br>
       <h4>Decisions</h4>
@@ -62,16 +57,10 @@ Please contact the OpenReview support team at <a href="mailto:info@openreview.ne
       <br>
       <h4>Reviewing Period</h4>
         <p><ul>
-          <li><strong>Due: 18th of July, 2019(23:59 UTC-12) </strong></li>
+          <li><strong>Due: 26th of July, 2019(23:59 UTC-12) </strong></li>
           <li>During the review period, authors will not be allowed to revise their paper. </li>
-        </ul></p>
-      <br>
-      <h4>Rebuttal/Discussion Period</h4>
-        <p><ul>
-          <li><strong>19th-20th of July, 2019(23:59 UTC-12) </strong></li>
-          <li>Final review due 23rd July, 2019(23:59 UTC-12) </li>
         </ul></p>'''})
 
-    builder.set_override_homepage(True)
+    #builder.set_override_homepage(True)
     return builder.get_result()
 
