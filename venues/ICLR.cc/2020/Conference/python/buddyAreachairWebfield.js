@@ -570,7 +570,7 @@ var renderTableRows = function(rows, container) {
       return '<h4>Avg: ' + data.averageConfidence + '</h4><span>Min: ' + data.minConfidence + '</span>' +
         '<br><span>Max: ' + data.maxConfidence + '</span>';
     },
-    Handlebars.templates.noteMetaReviewStatus
+    Handlebars.templates.noteMetaReviewStatusBuddy
   ];
 
   var rowsHtml = rows.map(function(row) {
@@ -582,7 +582,7 @@ var renderTableRows = function(rows, container) {
   var tableHtml = Handlebars.templates['components/table']({
     headings: [
       '<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary',
-      'Review Progress', 'Rating', 'Confidence', 'Status'
+      'Review Progress', 'Rating', 'Confidence', 'Meta Review Status'
     ],
     rows: rowsHtml,
     extraClasses: 'ac-console-table'

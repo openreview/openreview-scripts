@@ -18,54 +18,74 @@ if __name__ == '__main__':
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
     conference = openreview.helpers.get_conference(client, 'SkxpQPWdA4')
 
-    # update_homepage(conference)
-
     conference_id = conference.get_id()
-    ac_group = client.get_group(conference.get_area_chairs_id())
 
-    buddy_ac_group = client.post_group(
-        openreview.Group(
-            id = conference_id + '/' + buddy_ac_parent_group_name,
-            readers = [
-                conference_id,
-                conference.get_program_chairs_id(),
-                conference.get_area_chairs_id()],
-            signatories = [conference_id + '/' + buddy_ac_parent_group_name],
-            signatures = [conference.get_id()],
-            writers = [conference.get_id()],
-            web = 'buddyAreachairWebfield.js',
-            members = ac_group.members
+    buddy_ac_parent_group = client.get_groups(regex = conference_id + '/' + buddy_ac_parent_group_name)
+
+    if not buddy_ac_parent_group:
+        ac_group = client.get_group(conference.get_area_chairs_id())
+
+        buddy_ac_group = client.post_group(
+            openreview.Group(
+                id = conference_id + '/' + buddy_ac_parent_group_name,
+                readers = [
+                    conference_id,
+                    conference.get_program_chairs_id(),
+                    conference.get_area_chairs_id()
+                ],
+                signatories = [conference_id + '/' + buddy_ac_parent_group_name],
+                signatures = [conference_id],
+                writers = [conference_id],
+                web = 'buddyAreachairWebfield.js',
+                members = ac_group.members
+            )
         )
-    )
+
+    map_meta_review_invitations = {invitation.id.split('Paper')[1].split('/')[0]: invitation for invitation in openreview.tools.iterget_invitations(client, regex = conference_id + '/Paper[0-9]+/-/Meta_Review')}
+
+    map_paper_ac_groups = {group.id.split('Paper')[1].split('/')[0]: group for group in openreview.tools.iterget_groups(client, regex = conference_id + '/Paper[0-9]+/Area_Chairs$')}
 
     submissions = conference.get_submissions()
     for paper in submissions:
         paper_number = str(paper.number)
-        individual_group_id = conference_id + '/Paper' + paper_number + '/' + buddy_ac_individual_group_name
-        print (individual_group_id)
+        individual_buddy_group_id = conference_id + '/Paper' + paper_number + '/' + buddy_ac_individual_group_name
+
+        ## Create buddy ac group for this paper
         individual_buddy_group = client.post_group(
             openreview.Group(
-                id = individual_group_id,
+                id = individual_buddy_group_id,
                 readers = [
                     conference_id,
                     conference.get_program_chairs_id(),
-                    individual_group_id],
+                    individual_buddy_group_id],
                 nonreaders = [conference_id + '/Paper' + paper_number + '/Authors'],
-                signatories = [individual_group_id],
+                signatories = [individual_buddy_group_id],
                 signatures = [conference.get_id()],
                 writers = [conference.get_id()],
                 members = ['~Mohit_Uniyal1']
             )
         )
 
+        # Add paper's buddy AC as member to paper's AC group
+        paper_ac_group = map_paper_ac_groups[paper_number]
+        client.add_members_to_group(paper_ac_group, individual_buddy_group_id)
+
+        # Add paper's buddy AC as non-invitee for paper's meta-review invitation
+        paper_meta_rev_invitation = map_meta_review_invitations[paper_number]
+        paper_meta_rev_invitation.noninvitees
+
+        ## Post AC & AC-Buddy only Comment invitation for this paper
         ac_conversation_invitation = openreview.Invitation(
             id = conference_id + '/Paper' + paper_number + '/-/Area_Chair_Only_Comment',
-            # super = 'ICLR.cc/2020/Conference/-/Area_Chair_Internal_Comment',
-            readers = ['everyone'],
+            readers = [
+                conference.get_area_chairs_id(number = paper_number),
+                individual_buddy_group_id,
+                conference_id
+            ],
             writers = [conference_id],
             signatures = [conference_id],
             invitees = [
-                conference.get_area_chairs_id(number = paper_number), individual_group_id
+                conference.get_area_chairs_id(number = paper_number), individual_buddy_group_id
             ],
             reply = {
                 "forum" : paper.forum,
@@ -107,8 +127,7 @@ if __name__ == '__main__':
     all_anon_revs = openreview.tools.iterget_groups(client, regex = 'ICLR.cc/2020/Conference/Paper[0-9]+/AnonReviewer[0-9]+')
     for anon_rev in all_anon_revs:
         paper_number = str(anon_rev.id.split('Paper')[1].split('/')[0])
-        individual_group_id = conference_id + '/Paper' + paper_number + '/' + buddy_ac_individual_group_name
-        if individual_group_id not in anon_rev.readers:
-            anon_rev.readers.append(individual_group_id)
-
+        individual_buddy_group_id = conference_id + '/Paper' + paper_number + '/' + buddy_ac_individual_group_name
+        if individual_buddy_group_id not in anon_rev.readers:
+            anon_rev.readers.append(individual_buddy_group_id)
         upd_anon = client.post_group(anon_rev)
