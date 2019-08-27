@@ -62,7 +62,7 @@ if __name__ == '__main__':
                 signatories = [individual_buddy_group_id],
                 signatures = [conference.get_id()],
                 writers = [conference.get_id()],
-                members = ['~Mohit_Uniyal1']
+                members = []
             )
         )
 
