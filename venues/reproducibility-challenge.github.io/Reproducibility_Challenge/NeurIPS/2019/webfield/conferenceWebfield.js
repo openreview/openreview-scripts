@@ -37,8 +37,8 @@ function main() {
 function load() {
   var neuripsNotesP = Webfield.getAll('/notes', { invitation: NEURIPS_SUBMISSION_ID, details: 'replyCount,original' });
   var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_ID, noDetails: true });
-
-  return $.when(neuripsNotesP, claimNotesP);
+  var reportNotesP = Webfield.getAll('/notes', { invitation: REPORT_SUBMISSION_ID, noDetails: true });
+  return $.when(neuripsNotesP, claimNotesP, reportNotesP);
 }
 
 function renderConferenceHeader() {
@@ -67,7 +67,7 @@ function renderReportButton() {
     });
 }
 
-function renderContent(neuripsNotes, claimNotes) {
+function renderContent(neuripsNotes, claimNotes, reportNotes) {
 
   var claimsDict = {};
   _.forEach(claimNotes, function(n) {
@@ -117,6 +117,11 @@ function renderContent(neuripsNotes, claimNotes) {
       heading: 'Claimed',
       id: 'claimed',
       content: loadingContent
+    },
+    {
+      heading: 'Reports',
+      id: 'reports',
+      content: loadingContent
     }
   ];
 
@@ -155,10 +160,17 @@ function renderContent(neuripsNotes, claimNotes) {
     Webfield.ui.spinner(containerId, {inline: true});
   });
 
-  Webfield.ui.searchResults(
-    paperByClaim[sections[activeTab].id],
-    _.assign({}, paperDisplayOptions, {showTags: false, container: '#' + sections[activeTab].id})
-  );
+  if (activeTab == 'claimed' || activeTab == 'unclaimed') {
+      Webfield.ui.searchResults(
+        paperByClaim[sections[activeTab].id],
+        _.assign({}, paperDisplayOptions, {showTags: false, container: '#' + sections[activeTab].id})
+      );
+  }
+  else if (activeTab == 'reports') {
+       Webfield.ui.searchResults(
+        reportNotes,
+        _.assign({}, paperDisplayOptions, {showTags: false, container: '#' + sections[activeTab].id}));
+  }
 
   $('#notes > .spinner-container').remove();
   $('.tabs-container').show();
