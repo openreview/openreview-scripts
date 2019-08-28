@@ -93,6 +93,12 @@ del submission_inv.reply['content']['TL;DR']
 del submission_inv.reply['content']['pdf']
 del submission_inv.reply['content']['keywords']
 del submission_inv.reply['content']['authorids']
+submission_inv.reply['content']['codelink'] = {'description': 'url for source code',
+                                               'value-regex': '.*',
+                                               'required': False}
+submission_inv.reply['content']['pdf_link'] = {'description': 'url for camera ready submission',
+                                               'value-regex': '.*',
+                                               'required': False}
 submission_inv.id = conference_id+"/-/NeurIPS_Submission"
 submission_inv.invitees = [conference_id+'/Program_Chairs']
 submission_inv.reply['signatures'] = {'values':[conference_id+'/Program_Chairs']}
@@ -100,11 +106,11 @@ submission_inv = client.post_invitation(submission_inv)
 
 client.post_group(openreview.Group(
     id=conference_id+'/Claimants',
-    readers=[conference_id+'Program_Chairs'],
+    readers=[conference_id, conference_id+'/Program_Chairs'],
     nonreaders=[],
     writers=[conference_id],
     signatories=[conference_id],
-    signatures=['~Super_User1'],
+    signatures=[conference_id],
     members=[],
     details={ 'writable': True })
 )
@@ -113,6 +119,7 @@ claim_inv = client.post_invitation(openreview.Invitation(
     id='{}/-/Claim'.format(conference_id),
     readers=['everyone'],
     invitees=['~'],
+    nonreaders=[conference_id+'/Claimants'],
     writers=[conference_id],
     signatures=[conference_id],
     reply={
@@ -132,7 +139,12 @@ claim_inv = client.post_invitation(openreview.Invitation(
                 'order': 2,
                 'required': True,
                 'value-regex': '.{1,100}'
-            }
+            },
+            'compute_resources': {'description': 'Do you need compute resources?',
+                 'order': 3,
+                 'required': True,
+                 'value-radio': ['yes','no']
+             }
         },
         'invitation': '{}/-/NeurIPS_Submission'.format(conference_id),
         'signatures': {
@@ -176,3 +188,14 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
         }
     }
 ))
+
+
+#TODO PAM fix duedate
+# add start date
+report_invite = invitations.Submission(conference_id=conference_id,
+                                       duedate = tools.datetime_millis(datetime.datetime(2019, 12, 2, 12, 0)))
+report_invite.invitees = [conference_id+'/Claimants']
+report_invite.readers = [conference_id+'/Claimants']
+report_invite.reply['readers']['values'] = [conference_id+'/Program_Chairs']
+report_invite.id = conference_id+'/-/Report_Submission'
+client.post_invitation(report_invite)

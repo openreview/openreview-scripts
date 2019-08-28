@@ -13,6 +13,7 @@ var DECISION_INVITATION_REGEX = '';
 var DECISION_HEADING_MAP = {};
 var NEURIPS_SUBMISSION_ID = CONFERENCE_ID + '/-/NeurIPS_Submission'
 var CLAIM_ID = CONFERENCE_ID + '/-/Claim_Hold'
+var REPORT_SUBMISSION_ID = CONFERENCE_ID+'/-/Report_Submission'
 
 var HEADER = {
   title: 'NeurIPS 2019 Reproducibility Challenge',
@@ -28,7 +29,7 @@ function main() {
   Webfield.ui.setup('#group-container', CONFERENCE_ID);  // required
 
   renderConferenceHeader();
-
+  renderReportButton();
   load().then(renderContent).then(Webfield.ui.done);
 }
 
@@ -53,6 +54,18 @@ function renderConferenceHeader() {
     .toLowerCase();
  }
 
+function renderReportButton() {
+  Webfield.api.getSubmissionInvitation(REPORT_SUBMISSION_ID)
+    .then(function(invitation) {
+      Webfield.ui.submissionButton(invitation, user, {
+        onNoteCreated: function() {
+          // Callback funtion to be run when a paper has successfully been submitted (required)
+          promptMessage('Your artifact submission is complete. Check your inbox for a confirmation email.');
+          load().then(renderContent).then(Webfield.ui.done);
+        }
+      });
+    });
+}
 
 function renderContent(neuripsNotes, claimNotes) {
 
