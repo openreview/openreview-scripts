@@ -6,15 +6,22 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE_ID = '';
+var CONFERENCE_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019';
 var BLIND_SUBMISSION_ID = '';
 var WITHDRAWN_INVITATION = '';
 var DECISION_INVITATION_REGEX = '';
 var DECISION_HEADING_MAP = {};
-var CLAIM_ID = CONFERENCE_ID+'/Paper.*/-/Claim'
+var NEURIPS_SUBMISSION_ID = CONFERENCE_ID + '/-/NeurIPS_Submission'
+var CLAIM_ID = CONFERENCE_ID + '/-/Claim_Hold'
 
+var HEADER = {
+  title: 'NeurIPS 2019 Reproducibility Challenge',
+  deadline: 'Submission Claims Start: August 7, 2019 GMT, End: November 1, 2019 GMT',
+  date: 'December 13/14, 2019',
+  website: 'https://reproducibility-challenge.github.io/neurips2019/dates/',
+  location: 'Vancouver, Canada'
+};
 
-var HEADER = {};
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
@@ -26,17 +33,11 @@ function main() {
 }
 
 // Load makes all the API calls needed to get the data to render the page
-// It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
-  var notesP = Webfield.getAll('/notes', { invitation: BLIND_SUBMISSION_ID, details: 'replyCount,original' });
-
-  var withdrawnNotesP = WITHDRAWN_INVITATION ? Webfield.getAll('/notes', { invitation: WITHDRAWN_INVITATION, noDetails: true }) : Promise.resolve({ notes: []});
-
-  var decisionNotesP = Webfield.getAll('/notes', { invitation: DECISION_INVITATION_REGEX, noDetails: true });
-
+  var neuripsNotesP = Webfield.getAll('/notes', { invitation: NEURIPS_SUBMISSION_ID, details: 'replyCount,original' });
   var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_ID, noDetails: true });
 
-  return $.when(notesP, claimNotesP, withdrawnNotesP, decisionNotesP);
+  return $.when(neuripsNotesP, claimNotesP);
 }
 
 function renderConferenceHeader() {
@@ -53,31 +54,36 @@ function renderConferenceHeader() {
  }
 
 
-function renderContent(notes, claimNotes, withdrawnNotes, decisionsNotes) {
+function renderContent(neuripsNotes, claimNotes) {
 
   var claimsDict = {};
   _.forEach(claimNotes, function(n) {
-    claimsDict[n.id] = n;
+    claimsDict[n.forum] = n;
   });
 
-  var paperByClaim = {};
+  var paperByDecision = {};
+  var paperByClaim = {
+    claimed: [],
+    unclaimed: []
+  };
 
   for (var decision in DECISION_HEADING_MAP) {
-    paperByClaim[decision] = [];
+    paperByDecision[decision] = [];
   }
 
-  _.forEach(notes, function(n) {
+  _.forEach(neuripsNotes, function(n) {
     if (_.has(claimsDict, n.forum)) {
-      paperByClaim['Claimed'].push(n);
+      paperByClaim['claimed'].push(n);
     }
     else {
-        paperByClaim['Unclaimed'].push(n);
+      paperByClaim['unclaimed'].push(n);
     }
-
   });
 
+  console.log('paperByClaim', paperByClaim);
+
   for (var decision in DECISION_HEADING_MAP) {
-    paperByClaim[getElementId(decision)] = _.sortBy(paperByClaim[decision], function(o) { return o.id; });
+    paperByDecision[getElementId(decision)] = _.sortBy(paperByDecision[decision], function(o) { return o.id; });
   }
 
   var paperDisplayOptions = {
@@ -88,7 +94,18 @@ function renderContent(notes, claimNotes, withdrawnNotes, decisionsNotes) {
 
   var activeTab = 0;
   var loadingContent = Handlebars.templates.spinner({ extraClasses: 'spinner-inline' });
-  var sections = [];
+  var sections = [
+    {
+      heading: 'Unclaimed',
+      id: 'unclaimed',
+      content: loadingContent
+    },
+    {
+      heading: 'Claimed',
+      id: 'claimed',
+      content: loadingContent
+    }
+  ];
 
   for (var decision in DECISION_HEADING_MAP) {
     sections.push({

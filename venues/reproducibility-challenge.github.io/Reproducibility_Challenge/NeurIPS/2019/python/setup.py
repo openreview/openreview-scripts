@@ -3,6 +3,7 @@
 # creates NIPS_Submission invitation
 
 
+import argparse
 import openreview
 from openreview import tools
 from openreview import invitations
@@ -10,39 +11,17 @@ import os
 import json
 import datetime
 
-# live
-#client = openreview.Client(baseurl='https://openreview.net')
-# dev site
-#client = openreview.Client(baseurl='https://dev.openreview.net', username='OpenReview.net', password='OpenReview_dev')
-client = openreview.Client()
-print(client.baseurl)
-conference_id='reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019'
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl', help="base url")
+parser.add_argument('--username')
+parser.add_argument('--password')
+args = parser.parse_args()
 
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-def build_groups(conference_id):
-    path_components = conference_id.split('/')
-    paths = ['/'.join(path_components[0:index + 1]) for index, path in enumerate(path_components)]
-    groups = []
+conference_id = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019'
 
-    for p in paths:
-        group = tools.get_group(client, id=p)
-        if group is None:
-            group = client.post_group(openreview.Group(
-                id=p,
-                readers=['everyone'],
-                nonreaders=[],
-                writers=[p],
-                signatories=[p],
-                signatures=['~Super_User1'],
-                members=[],
-                details={'writable': True})
-            )
-
-        groups.append(group)
-
-    return groups
-
-def set_landing_page(group):
+def set_landing_page(client, group):
     if not group.web:
         # create new webfield using template
         children_groups = client.get_groups(regex = group.id + '/[^/]+/?$')
@@ -65,63 +44,38 @@ def set_landing_page(group):
             group.web = content
             return client.post_group(group)
 
-
 # create challenge groups
-groups = build_groups(conference_id)
+groups = openreview.tools.build_groups(conference_id)
 for group in groups:
-    set_landing_page(group)
+    set_landing_page(client, group)
 
 home_group = groups[-1]
 print(home_group.id)
 
 # add group to Active Venues
-active = client.get_group(id = 'active_venues')
-client.add_members_to_group(active, [conference_id])
+active_venues_group = client.get_group(id='active_venues')
+client.add_members_to_group(active_venues_group, [conference_id])
 
 # create PCs and add to home group
 client.post_group(openreview.Group(
-                id = conference_id+'/Program_Chairs',
-                readers = [conference_id, conference_id+'/Program_Chairs'],
-                writers = [conference_id, conference_id+'/Program_Chairs'],
-                signatures = [conference_id],
-                signatories = [conference_id+'/Program_Chairs'],
-                members = ['pca@email.com']))
+    id=conference_id+'/Program_Chairs',
+    readers=[conference_id, conference_id+'/Program_Chairs'],
+    writers=[conference_id, conference_id+'/Program_Chairs'],
+    signatures=[conference_id],
+    signatories=[conference_id+'/Program_Chairs'],
+    members=['pca@email.com']
+))
+
 home_group.members.append(conference_id+'/Program_Chairs')
+
+with open(os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')) as f:
+    home_group.web = f.read()
+
 home_group = client.post_group(home_group)
 
 
-
-submission_start_date_str = "August 7, 2019"
-submission_due_date_str = "November 1, 2019"
-conference_start_date_str = "December 13/14, 2019"
-
-with open(os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')) as f:
-    file_content = f.read()
-
-    content = file_content.replace("var CONFERENCE_ID = '';", "var CONFERENCE_ID = '" + conference_id + "';")
-    content = content.replace("var HEADER = {};", "var HEADER = " + json.dumps({
-        'title': 'Reproducibility Challenge 2019',
-        'subtitle': 'A NeurIPS Workshop',
-        'deadline': 'Submission Claims Start: ' + submission_start_date_str + ' GMT, End: ' + submission_due_date_str+' GMT',
-        'date': conference_start_date_str,
-        'website': 'https://reproducibility-challenge.github.io/neurips2019/dates/',
-        'location': 'Vancouver, Canada'
-        }) + ";")
-    content = content.replace("var REVIEWERS_NAME = '';", "var REVIEWERS_NAME = '"+conference_id+"/Reviewers';")
-    content = content.replace("var SUBMISSION_ID = '';", "var SUBMISSION_ID = '"+conference_id+"/-/NeurIPS_Submission';")
-    content = content.replace("var BLIND_SUBMISSION_ID = '';", "var BLIND_SUBMISSION_ID = '"+conference_id+"/-/NeurIPS_Submission';")
-    content = content.replace("var DECISION_INVITATION_REGEX = '';", "var DECISION_INVITATION_REGEX = '"+conference_id+"/-/Decision';")
-    content = content.replace("var REVIEWERS_ID = '';", "var REVIEWERS_ID = '"+conference_id+"/Reviewers';")
-    content = content.replace("var PROGRAM_CHAIRS_ID = '';", "var PROGRAM_CHAIRS_ID = '"+conference_id+"/Program_Chairs';")
-    content = content.replace("var AUTHORS_ID = '';", "var AUTHORS_ID = '"+conference_id+"/Authors';")
-    content = content.replace("var DECISION_HEADING_MAP = {};", "var DECISION_HEADING_MAP = {'Unclaimed':'Unclaimed', 'Claimed':'Claimed'};")
-    home_group.web = content
-    home_group = client.post_group(home_group)
-
-
-
 # NIPS_Submission invitation
-
+# TODO: use the regular openreview.Invitation class instead
 submission_inv = invitations.Submission(
     conference_id = conference_id,
     duedate = tools.datetime_millis(datetime.datetime(2019, 9, 10, 12, 0)),
@@ -142,6 +96,83 @@ del submission_inv.reply['content']['authorids']
 submission_inv.id = conference_id+"/-/NeurIPS_Submission"
 submission_inv.invitees = [conference_id+'/Program_Chairs']
 submission_inv.reply['signatures'] = {'values':[conference_id+'/Program_Chairs']}
-submission_inv =client.post_invitation(submission_inv)
+submission_inv = client.post_invitation(submission_inv)
+
+client.post_group(openreview.Group(
+    id=conference_id+'/Claimants',
+    readers=[conference_id+'Program_Chairs'],
+    nonreaders=[],
+    writers=[conference_id],
+    signatories=[conference_id],
+    signatures=['~Super_User1'],
+    members=[],
+    details={ 'writable': True })
+)
+
+claim_inv = client.post_invitation(openreview.Invitation(
+    id='{}/-/Claim'.format(conference_id),
+    readers=['everyone'],
+    invitees=['~'],
+    writers=[conference_id],
+    signatures=[conference_id],
+    reply={
+        'content': {
+            'title': {
+                'value': 'Claim',
+                'order': 0,
+                'required': True
+            },
+            'plan': {'description': 'Your plan to reproduce results(max 5000 chars).',
+                'order': 1,
+                'required': True,
+                'value-regex': '[\\S\\s]{1,5000}'
+            },
+            'institution': {
+                'description': 'Your institution or organization(max 100 chars).',
+                'order': 2,
+                'required': True,
+                'value-regex': '.{1,100}'
+            }
+        },
+        'invitation': '{}/-/NeurIPS_Submission'.format(conference_id),
+        'signatures': {
+            'description': 'Your authorized identity to be associated with the above content.',
+            'values-regex': '~.*'
+        },
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values-copied': [conference_id + '/Program_Chairs', '{signatures}']
+        },
+        'writers': {
+            'values-copied': [conference_id,'{signatures}']
+        }
+    },
+    process='../process/claimProcess.py'
+))
 
 
+claim_hold_inv = client.post_invitation(openreview.Invitation(
+    id='{}/-/Claim_Hold'.format(conference_id),
+    readers=[],
+    invitees=['~'],
+    writers=[conference_id],
+    signatures=[conference_id],
+    reply={
+        'content': {
+            'title': {
+                'value-regex': '.{1,120}',
+                'order': 0,
+                'required': True
+            }
+        },
+        'invitation': '{}/-/NeurIPS_Submission'.format(conference_id),
+        'signatures': {'values': [conference_id]},
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['everyone']
+        },
+        'writers': {
+            'values-copied': [conference_id]
+        }
+    }
+))
