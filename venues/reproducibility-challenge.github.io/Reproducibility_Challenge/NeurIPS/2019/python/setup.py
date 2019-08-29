@@ -33,6 +33,11 @@ builder.set_homepage_header({
     'location': 'Vancouver, Canada',
     'instructions': '<strong>Here are some instructions</strong>'
 })
+
+# WARNING: this submission stage is being set as "Public", even though it really shouldn't be.
+# We're doing this because there are some behaviors that we don't understand about the builder
+# that happen when you set public=False.
+# The Report invitation is being made private manually below.
 builder.set_submission_stage(name='Report', double_blind=False, public=True)
 builder.set_override_homepage(True)
 conference = builder.get_result()
