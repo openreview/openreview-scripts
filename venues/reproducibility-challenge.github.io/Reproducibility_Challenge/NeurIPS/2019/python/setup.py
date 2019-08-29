@@ -21,105 +21,92 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 conference_id = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019'
 
-def set_landing_page(client, group):
-    if not group.web:
-        # create new webfield using template
-        children_groups = client.get_groups(regex = group.id + '/[^/]+/?$')
+builder = openreview.builder.ConferenceBuilder(client)
+builder.set_conference_id(conference_id)
+builder.set_conference_name('NeurIPS 2019 Reproducibility Challenge')
 
-        links = []
-        for children in children_groups:
-            if not group.web or (group.web and children.id not in group.web):
-                links.append({ 'url': '/group?id=' + children.id, 'name': children.id})
+builder.set_homepage_header({
+    'title': 'NeurIPS 2019 Reproducibility Challenge',
+    'deadline': 'Submission Claims accepted from 2019-AUG-7, to 2019-NOV-1 (GMT)',
+    'date': 'December 13-14, 2019',
+    'website': 'https://reproducibility-challenge.github.io/neurips2019/dates/',
+    'location': 'Vancouver, Canada',
+    'instructions': '<strong>Here are some instructions</strong>'
+})
+builder.set_submission_stage(name='Report', double_blind=False, public=False)
+builder.set_override_homepage(True)
+conference = builder.get_result()
 
-        default_header = {
-            'title': group.id,
-            'description': ''
-        }
+# replace the builder-generated webfield with the custom webfield
+with open('../webfield/conferenceWebfield.js') as f:
+    homepage_webfield = f.read()
 
-        with open(os.path.join(os.path.dirname(__file__), '../webfield/landingWebfield.js')) as f:
-            content = f.read()
-            content = content.replace("var GROUP_ID = '';", "var GROUP_ID = '" + group.id + "';")
-            content = content.replace("var HEADER = {};", "var HEADER = " + json.dumps(default_header) + ";")
-            content = content.replace("var VENUE_LINKS = [];", "var VENUE_LINKS = " + json.dumps(links) + ";")
-            group.web = content
-            return client.post_group(group)
+conference_group = client.get_group(conference.get_id())
+conference_group.web = homepage_webfield
+conference_group = client.post_group(conference_group)
 
-# create challenge groups
-groups = openreview.tools.build_groups(conference_id)
-for group in groups:
-    set_landing_page(client, group)
+program_chairs = conference.set_program_chairs(['koustuv.sinha@mail.mcgill.ca'])
 
-home_group = groups[-1]
-print(home_group.id)
-
-# add group to Active Venues
-active_venues_group = client.get_group(id='active_venues')
-client.add_members_to_group(active_venues_group, [conference_id])
-
-# create PCs and add to home group
+# add the "Claimants" group
 client.post_group(openreview.Group(
-    id=conference_id+'/Program_Chairs',
-    readers=[conference_id, conference_id+'/Program_Chairs'],
-    writers=[conference_id, conference_id+'/Program_Chairs'],
-    signatures=[conference_id],
-    signatories=[conference_id+'/Program_Chairs'],
-    members=['pca@email.com']
-))
-
-home_group.members.append(conference_id+'/Program_Chairs')
-
-with open(os.path.join(os.path.dirname(__file__), '../webfield/conferenceWebfield.js')) as f:
-    home_group.web = f.read()
-
-home_group = client.post_group(home_group)
-
-
-# NIPS_Submission invitation
-# TODO: use the regular openreview.Invitation class instead
-submission_inv = invitations.Submission(
-    conference_id = conference_id,
-    duedate = tools.datetime_millis(datetime.datetime(2019, 9, 10, 12, 0)),
-    reply_params={
-        'readers': {'values': ['everyone']},
-        'writers': {
-                        'values-copied': [
-                            conference_id,
-                            '{signatures}'
-                        ]
-                    }
-    }
-)
-del submission_inv.reply['content']['TL;DR']
-del submission_inv.reply['content']['pdf']
-del submission_inv.reply['content']['keywords']
-del submission_inv.reply['content']['authorids']
-submission_inv.reply['content']['codelink'] = {'description': 'url for source code',
-                                               'value-regex': '.*',
-                                               'required': False}
-submission_inv.reply['content']['pdf_link'] = {'description': 'url for camera ready submission',
-                                               'value-regex': '.*',
-                                               'required': False}
-submission_inv.id = conference_id+"/-/NeurIPS_Submission"
-submission_inv.invitees = [conference_id+'/Program_Chairs']
-submission_inv.reply['signatures'] = {'values':[conference_id+'/Program_Chairs']}
-submission_inv = client.post_invitation(submission_inv)
-
-client.post_group(openreview.Group(
-    id=conference_id+'/Claimants',
-    readers=[conference_id, conference_id+'/Program_Chairs'],
+    id=conference_id + '/Claimants',
+    readers=[conference_id, conference.get_program_chairs_id()],
     nonreaders=[],
     writers=[conference_id],
     signatories=[conference_id],
     signatures=[conference_id],
-    members=[],
-    details={ 'writable': True })
+    members=[])
 )
+
+# modify the "Report" invitation such that only claimants can post
+report_invitation = client.get_invitation(conference.get_submission_id())
+report_invitation.invitees = [conference_id+'/Claimants']
+report_invitation.readers = [conference_id+'/Claimants']
+# report_invitation.reply['readers']['values'] = [conference_id+'/Program_Chairs']
+
+report_invitation = client.post_invitation(report_invitation)
+
+# post the invitation used to upload accepted NeurIPS papers
+neurips_submission_invitation = client.post_invitation(openreview.Invitation(**{
+    'id': '{}/-/NeurIPS_Submission'.format(conference_id),
+    'invitees': [conference.get_program_chairs_id()],
+    'readers': ['everyone'],
+    'writers': [conference.get_id()],
+    'signatures': [conference.get_id()],
+    'reply': {
+        'content': {
+            'title': {
+                'value-regex': '.*',
+                'required': True,
+            },
+            'abstract': {
+                'value-regex': '.*',
+                'required': True
+            },
+            'authors': {
+                'values-regex': '.*',
+                'required': True
+            }
+        },
+        'forum': None,
+        'replyto': None,
+        'signatures': {
+            'values': [conference.get_program_chairs_id()]
+        },
+        'writers': {
+            'values': [conference.get_id()]
+        },
+        'readers': {
+            'values': ['everyone']
+        }
+    }
+}))
 
 claim_inv = client.post_invitation(openreview.Invitation(
     id='{}/-/Claim'.format(conference_id),
     readers=['everyone'],
     invitees=['~'],
-    nonreaders=[conference_id+'/Claimants'],
+    noninvitees=[conference_id + '/Claimants'],
     writers=[conference_id],
     signatures=[conference_id],
     reply={
@@ -139,12 +126,7 @@ claim_inv = client.post_invitation(openreview.Invitation(
                 'order': 2,
                 'required': True,
                 'value-regex': '.{1,100}'
-            },
-            'compute_resources': {'description': 'Do you need compute resources?',
-                 'order': 3,
-                 'required': True,
-                 'value-radio': ['yes','no']
-             }
+            }
         },
         'invitation': '{}/-/NeurIPS_Submission'.format(conference_id),
         'signatures': {
@@ -189,13 +171,7 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
     }
 ))
 
-
-#TODO PAM fix duedate
-# add start date
-report_invite = invitations.Submission(conference_id=conference_id,
-                                       duedate = tools.datetime_millis(datetime.datetime(2019, 12, 2, 12, 0)))
-report_invite.invitees = [conference_id+'/Claimants']
-report_invite.readers = [conference_id+'/Claimants']
-report_invite.reply['readers']['values'] = [conference_id+'/Program_Chairs']
-report_invite.id = conference_id+'/-/Report_Submission'
-client.post_invitation(report_invite)
+with open('../webfield/pcWebfield.js') as f:
+    program_chairs = client.get_group(conference.get_program_chairs_id())
+    program_chairs.web = f.read()
+    program_chairs = client.post_group(program_chairs)

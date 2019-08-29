@@ -1,5 +1,5 @@
 // ------------------------------------
-// Advanced venue homepage template
+// Venue homepage template
 //
 // This webfield displays the conference header (#header), the submit button (#invitation),
 // and a tabbed interface for viewing various types of notes.
@@ -7,174 +7,368 @@
 
 // Constants
 var CONFERENCE_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019';
-var BLIND_SUBMISSION_ID = '';
-var WITHDRAWN_INVITATION = '';
-var DECISION_INVITATION_REGEX = '';
-var DECISION_HEADING_MAP = {};
-var NEURIPS_SUBMISSION_ID = CONFERENCE_ID + '/-/NeurIPS_Submission'
-var CLAIM_ID = CONFERENCE_ID + '/-/Claim_Hold'
-var REPORT_SUBMISSION_ID = CONFERENCE_ID+'/-/Report_Submission'
+var SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report';
+var BLIND_SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report';
+var REVIEWERS_NAME = 'Reviewers';
+var AREA_CHAIRS_NAME = 'Area_Chairs';
+var AREA_CHAIRS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Area_Chairs';
+var REVIEWERS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers';
+var PROGRAM_CHAIRS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs';
+var AUTHORS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Authors';
 
-var HEADER = {
-  title: 'NeurIPS 2019 Reproducibility Challenge',
-  deadline: 'Submission Claims Start: August 7, 2019 GMT, End: November 1, 2019 GMT',
-  date: 'December 13/14, 2019',
-  website: 'https://reproducibility-challenge.github.io/neurips2019/dates/',
-  location: 'Vancouver, Canada'
+var NEURIPS_SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/NeurIPS_Submission'
+var CLAIM_HOLD_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Claim_Hold'
+
+var HEADER = {"title": "NeurIPS 2019 Reproducibility Challenge", "subtitle": null, "location": "Vancouver, Canada", "date": "December 13-14, 2019", "website": "https://reproducibility-challenge.github.io/neurips2019/dates/", "instructions": "<strong>Here are some instructions</strong>", "deadline": "Submission Claims accepted from 2019-AUG-7, to 2019-NOV-1 (GMT)", "reviewers_name": "Reviewers", "area_chairs_name": "Area_Chairs", "reviewers_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers", "authors_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Authors", "program_chairs_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs", "area_chairs_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Area_Chairs", "submission_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report", "blind_submission_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report"};
+
+var WILDCARD_INVITATION = CONFERENCE_ID + '/.*';
+var BUFFER = 0;  // deprecated
+var PAGE_SIZE = 50;
+
+var paperDisplayOptions = {
+  pdfLink: true,
+  replyCount: true,
+  showContents: true,
+  showTags: false
 };
-
+var commentDisplayOptions = {
+  pdfLink: false,
+  replyCount: true,
+  showContents: false,
+  showParent: true
+};
 
 // Main is the entry point to the webfield code and runs everything
 function main() {
   Webfield.ui.setup('#group-container', CONFERENCE_ID);  // required
 
   renderConferenceHeader();
-  renderReportButton();
+
+  renderSubmissionButton();
+
+  renderConferenceTabs();
+
   load().then(renderContent).then(Webfield.ui.done);
 }
 
 // Load makes all the API calls needed to get the data to render the page
+// It returns a jQuery deferred object: https://api.jquery.com/category/deferred-object/
 function load() {
+
+  var activityNotesP;
+  var authorNotesP;
+  var userGroupsP;
+
+  var notesP = Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
+    pageSize: PAGE_SIZE,
+    details: 'replyCount,original',
+    includeCount: true
+  });
+
+  if (!user || _.startsWith(user.id, 'guest_')) {
+    activityNotesP = $.Deferred().resolve([]);
+    userGroupsP = $.Deferred().resolve([]);
+    authorNotesP = $.Deferred().resolve([]);
+  } else {
+    activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
+      pageSize: PAGE_SIZE,
+      details: 'forumContent,writable'
+    });
+
+    userGroupsP = Webfield.getAll('/groups', { member: user.id, web: true })
+      .then(function(groups) {
+        return _.filter(
+          _.map(groups, function(g) { return g.id; }),
+          function(id) { return _.startsWith(id, CONFERENCE_ID); }
+        );
+      });
+
+    authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
+      pageSize: PAGE_SIZE,
+      'content.authorids': user.profile.id,
+      details: 'noDetails'
+    });
+  }
+
   var neuripsNotesP = Webfield.getAll('/notes', { invitation: NEURIPS_SUBMISSION_ID, details: 'replyCount,original' });
-  var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_ID, noDetails: true });
-  var reportNotesP = Webfield.getAll('/notes', { invitation: REPORT_SUBMISSION_ID, noDetails: true });
-  return $.when(neuripsNotesP, claimNotesP, reportNotesP);
+  var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_HOLD_ID, noDetails: true });
+
+  return $.when(notesP, userGroupsP, activityNotesP, authorNotesP, neuripsNotesP, claimNotesP);
 }
 
+// Render functions
 function renderConferenceHeader() {
-    Webfield.ui.venueHeader(HEADER);
+  Webfield.ui.venueHeader(HEADER);
 
-    Webfield.ui.spinner('#notes', { inline: true });
- }
+  Webfield.ui.spinner('#notes', { inline: true });
+}
 
- function getElementId(decision) {
-   return decision.replace(' ', '-')
-    .replace('(', '')
-    .replace(')', '')
-    .toLowerCase();
- }
-
-function renderReportButton() {
-  Webfield.api.getSubmissionInvitation(REPORT_SUBMISSION_ID)
+function renderSubmissionButton() {
+  Webfield.api.getSubmissionInvitation(SUBMISSION_ID, {deadlineBuffer: BUFFER})
     .then(function(invitation) {
       Webfield.ui.submissionButton(invitation, user, {
         onNoteCreated: function() {
           // Callback funtion to be run when a paper has successfully been submitted (required)
-          promptMessage('Your artifact submission is complete. Check your inbox for a confirmation email.');
-          load().then(renderContent).then(Webfield.ui.done);
+          promptMessage('Your submission is complete. Check your inbox for a confirmation email. ' +
+            'A list of all submissions will be available after the deadline');
+
+          load().then(renderContent).then(function() {
+            $('.tabs-container a[href="#your-consoles"]').click();
+          });
         }
       });
     });
 }
 
-function renderContent(neuripsNotes, claimNotes, reportNotes) {
-
-  var claimsDict = {};
-  _.forEach(claimNotes, function(n) {
-    claimsDict[n.forum] = n;
-  });
-
-  var paperByDecision = {};
-  var paperByClaim = {
-    claimed: [],
-    unclaimed: []
-  };
-
-  for (var decision in DECISION_HEADING_MAP) {
-    paperByDecision[decision] = [];
-  }
-
-  _.forEach(neuripsNotes, function(n) {
-    if (_.has(claimsDict, n.forum)) {
-      paperByClaim['claimed'].push(n);
-    }
-    else {
-      paperByClaim['unclaimed'].push(n);
-    }
-  });
-
-  console.log('paperByClaim', paperByClaim);
-
-  for (var decision in DECISION_HEADING_MAP) {
-    paperByDecision[getElementId(decision)] = _.sortBy(paperByDecision[decision], function(o) { return o.id; });
-  }
-
-  var paperDisplayOptions = {
-    pdfLink: true,
-    replyCount: true,
-    showContents: true
-  };
-
-  var activeTab = 0;
-  var loadingContent = Handlebars.templates.spinner({ extraClasses: 'spinner-inline' });
+function renderConferenceTabs() {
   var sections = [
+    {
+      heading: 'Your Consoles',
+      id: 'your-consoles',
+    },
     {
       heading: 'Unclaimed',
       id: 'unclaimed',
-      content: loadingContent
     },
     {
       heading: 'Claimed',
       id: 'claimed',
-      content: loadingContent
     },
     {
-      heading: 'Reports',
-      id: 'reports',
-      content: loadingContent
+      heading: 'All Reports',
+      id: 'all-submissions',
+    },
+    {
+      heading: 'Recent Activity',
+      id: 'recent-activity',
     }
   ];
-
-  for (var decision in DECISION_HEADING_MAP) {
-    sections.push({
-      heading: DECISION_HEADING_MAP[decision],
-      id: getElementId(decision),
-      content: loadingContent
-    });
-  }
-
-  sections[activeTab].active = true;
-  sections[activeTab].content = null;
-
-  $('#notes .tabs-container').remove();
 
   Webfield.ui.tabPanel(sections, {
     container: '#notes',
     hidden: true
   });
+}
 
-  $('#group-container').on('shown.bs.tab', 'ul.nav-tabs li a', function(e) {
-    activeTab = $(e.target).data('tabIndex');
-    var containerId = sections[activeTab].id;
+function renderContent(notesResponse, userGroups, activityNotes, authorNotes, neuripsNotes, claimNotes) {
 
-    setTimeout(function() {
-      Webfield.ui.searchResults(
-        paperByClaim[containerId],
-        _.assign({}, paperDisplayOptions, {showTags: false, container: '#' + containerId})
-      );
-    }, 100);
-  });
+  // Your Consoles tab
+  if (userGroups.length || authorNotes.length) {
 
-  $('#group-container').on('hidden.bs.tab', 'ul.nav-tabs li a', function(e) {
-    var containerId = $(e.target).attr('href');
-    Webfield.ui.spinner(containerId, {inline: true});
-  });
+    var $container = $('#your-consoles').empty();
+    $container.append('<ul class="list-unstyled submissions-list">');
 
-  if (activeTab == 'claimed' || activeTab == 'unclaimed') {
-      Webfield.ui.searchResults(
-        paperByClaim[sections[activeTab].id],
-        _.assign({}, paperDisplayOptions, {showTags: false, container: '#' + sections[activeTab].id})
-      );
+    if (_.includes(userGroups, PROGRAM_CHAIRS_ID)) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + PROGRAM_CHAIRS_ID + '">Program Chair Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    if (_.includes(userGroups, AREA_CHAIRS_ID)) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + AREA_CHAIRS_ID + '" >',
+          AREA_CHAIRS_NAME.replace(/_/g, ' ') + ' Console',
+          '</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    if (_.includes(userGroups, REVIEWERS_ID)) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + REVIEWERS_ID + '" >',
+          REVIEWERS_NAME.replace(/_/g, ' ') + ' Console',
+          '</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    if (authorNotes.length) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
+    $('.tabs-container a[href="#your-consoles"]').parent().show();
+  } else {
+    $('.tabs-container a[href="#your-consoles"]').parent().hide();
   }
-  else if (activeTab == 'reports') {
-       Webfield.ui.searchResults(
-        reportNotes,
-        _.assign({}, paperDisplayOptions, {showTags: false, container: '#' + sections[activeTab].id}));
+
+  // Unclaimed NeurIPS papers tab
+  if (neuripsNotes.length) {
+    console.log('neuripsNotes.length', neuripsNotes.length);
+    var $unclaimedContainer = $('#unclaimed').empty();
+    $unclaimedContainer.append('<ul class="list-unstyled submissions-list">');
+
+    var $claimedContainer = $('#claimed').empty();
+    $claimedContainer.append('<ul class="list-unstyled submissions-list">');
+
+    var claimsDict = {};
+    _.forEach(claimNotes, function(n) {
+      claimsDict[n.forum] = n;
+    });
+
+    var paperByClaim = {
+      claimed: [],
+      unclaimed: []
+    };
+
+    _.forEach(neuripsNotes, function(n) {
+      if (_.has(claimsDict, n.forum)) {
+        paperByClaim['claimed'].push(n);
+      }
+      else {
+        paperByClaim['unclaimed'].push(n);
+      }
+    });
+
+    console.log('paperByClaim', paperByClaim);
+
+    var unclaimedResultListOptions = _.assign({}, paperDisplayOptions, {
+      container: '#unclaimed',
+      autoLoad: false
+    });
+
+    Webfield.ui.submissionList(paperByClaim['unclaimed'], {
+      heading: null,
+      container: '#unclaimed',
+      search: {
+        enabled: true,
+        localSearch: false,
+        invitation: NEURIPS_SUBMISSION_ID,
+        onResults: function(searchResults) {
+          Webfield.ui.searchResults(_.filter(searchResults, note=>!_.has(claimsDict, note.forum)), unclaimedResultListOptions);
+        },
+        onReset: function() {
+          Webfield.ui.searchResults(paperByClaim['unclaimed'], unclaimedResultListOptions);
+          $('#unclaimed').append(view.paginationLinks(paperByClaim['unclaimed'].length, PAGE_SIZE, 1));
+        }
+      },
+      displayOptions: paperDisplayOptions,
+      autoLoad: false,
+      noteCount: paperByClaim['unclaimed'].length,
+      pageSize: PAGE_SIZE,
+      onPageClick: function(offset) {
+        return Webfield.api.getSubmissions(NEURIPS_SUBMISSION_ID, {
+          details: 'replyCount,original',
+          pageSize: PAGE_SIZE,
+          offset: offset
+        });
+      },
+      fadeIn: false
+    });
+
+    var claimedResultListOptions = _.assign({}, paperDisplayOptions, {
+      container: '#claimed',
+      autoLoad: false
+    });
+
+    Webfield.ui.submissionList(paperByClaim['claimed'], {
+      heading: null,
+      container: '#claimed',
+      search: {
+        enabled: true,
+        localSearch: false,
+        invitation: NEURIPS_SUBMISSION_ID,
+        onResults: function(searchResults) {
+          Webfield.ui.searchResults(_.filter(searchResults, note=>_.has(claimsDict, note.forum)), claimedResultListOptions);
+        },
+        onReset: function() {
+          Webfield.ui.searchResults(paperByClaim['claimed'], claimedResultListOptions);
+          $('#claimed').append(view.paginationLinks(paperByClaim['claimed'].length, PAGE_SIZE, 1));
+        }
+      },
+      displayOptions: paperDisplayOptions,
+      autoLoad: false,
+      noteCount: paperByClaim['claimed'].length,
+      pageSize: PAGE_SIZE,
+      onPageClick: function(offset) {
+        return Webfield.api.getSubmissions(NEURIPS_SUBMISSION_ID, {
+          details: 'replyCount,original',
+          pageSize: PAGE_SIZE,
+          offset: offset
+        });
+      },
+      fadeIn: false
+    });
+
+    $('.tabs-container a[href="#unclaimed"]').parent().show();
+    $('.tabs-container a[href="#claimed"]').parent().show();
+
+  } else {
+    $('.tabs-container a[href="#unclaimed"]').parent().hide();
+    $('.tabs-container a[href="#claimed"]').parent().hide();
   }
 
-  $('#notes > .spinner-container').remove();
+
+  // All Submitted Papers tab
+  var notes = notesResponse.notes || [];
+  var noteCount = notesResponse.count || 0;
+
+  $('#all-submissions').empty();
+
+  if (noteCount && _.includes(userGroups, PROGRAM_CHAIRS_ID)) {
+    var searchResultsListOptions = _.assign({}, paperDisplayOptions, {
+      container: '#all-submissions',
+      autoLoad: false
+    });
+
+    Webfield.ui.submissionList(notes, {
+      heading: null,
+      container: '#all-submissions',
+      search: {
+        enabled: true,
+        localSearch: false,
+        invitation: BLIND_SUBMISSION_ID,
+        onResults: function(searchResults) {
+          Webfield.ui.searchResults(searchResults, searchResultsListOptions);
+        },
+        onReset: function() {
+          Webfield.ui.searchResults(notes, searchResultsListOptions);
+          $('#all-submissions').append(view.paginationLinks(noteCount, PAGE_SIZE, 1));
+        }
+      },
+      displayOptions: paperDisplayOptions,
+      autoLoad: false,
+      noteCount: noteCount,
+      pageSize: PAGE_SIZE,
+      onPageClick: function(offset) {
+        return Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
+          details: 'replyCount,original',
+          pageSize: PAGE_SIZE,
+          offset: offset
+        });
+      },
+      fadeIn: false
+    });
+  } else {
+    $('.tabs-container a[href="#all-submissions"]').parent().hide();
+  }
+
+  // Activity Tab
+  if (activityNotes.length) {
+    var displayOptions = {
+      container: '#recent-activity',
+      user: user && user.profile,
+      showActionButtons: true
+    };
+
+    $(displayOptions.container).empty();
+
+    Webfield.ui.activityList(activityNotes, displayOptions);
+
+    $('.tabs-container a[href="#recent-activity"]').parent().show();
+  } else {
+    $('.tabs-container a[href="#recent-activity"]').parent().hide();
+  }
+
+  $('#notes .spinner-container').remove();
   $('.tabs-container').show();
-
 }
 
 // Go!
