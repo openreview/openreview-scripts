@@ -33,7 +33,7 @@ builder.set_homepage_header({
     'location': 'Vancouver, Canada',
     'instructions': '<strong>Here are some instructions</strong>'
 })
-builder.set_submission_stage(name='Report', double_blind=False, public=False)
+builder.set_submission_stage(name='Report', double_blind=False, public=True)
 builder.set_override_homepage(True)
 conference = builder.get_result()
 
@@ -62,7 +62,15 @@ client.post_group(openreview.Group(
 report_invitation = client.get_invitation(conference.get_submission_id())
 report_invitation.invitees = [conference_id+'/Claimants']
 report_invitation.readers = [conference_id+'/Claimants']
-# report_invitation.reply['readers']['values'] = [conference_id+'/Program_Chairs']
+report_invitation.reply['readers'] = {
+    'values-copied': [
+        "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019",
+        "{content.authorids}",
+        "{signatures}",
+        "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers",
+        "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs"
+    ]
+}
 
 report_invitation = client.post_invitation(report_invitation)
 

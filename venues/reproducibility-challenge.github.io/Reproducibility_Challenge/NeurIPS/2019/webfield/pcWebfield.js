@@ -597,7 +597,7 @@ var displayClaimStatusTable = function(profiles, notes, completedReviews, metaRe
       rows.push(number);
       rows.push(summaryHtml);
       rows.push(claimsHtml);
-      rows.push('');
+      // rows.push('');
       return rows;
     });
 
@@ -605,12 +605,6 @@ var displayClaimStatusTable = function(profiles, notes, completedReviews, metaRe
     if (SHOW_AC_TAB) {
       headings.push('Status');
     }
-    if (data.useClaims) {
-      headings.push('Claims')
-    } else {
-      headings.push('Decisions');
-    }
-
 
     var tableHTML = Handlebars.templates['components/table']({
       headings: headings,

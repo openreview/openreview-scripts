@@ -152,6 +152,8 @@ function renderConferenceTabs() {
 
 function renderContent(notesResponse, userGroups, activityNotes, authorNotes, neuripsNotes, claimNotes) {
 
+  console.log('userGroups', userGroups);
+  console.log('authorNotes', authorNotes);
   // Your Consoles tab
   if (userGroups.length || authorNotes.length) {
 
@@ -186,6 +188,7 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, ne
       ].join(''));
     }
 
+    console.log('authorNotes', authorNotes);
     if (authorNotes.length) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
