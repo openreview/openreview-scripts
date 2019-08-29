@@ -38,7 +38,9 @@ builder.set_homepage_header({
 # We're doing this because there are some behaviors that we don't understand about the builder
 # that happen when you set public=False.
 # The Report invitation is being made private manually below.
+## PAM TODO set start time to Nov 1
 builder.set_submission_stage(name='Report', double_blind=False, public=True)
+builder.set_review_stage()
 builder.set_override_homepage(True)
 conference = builder.get_result()
 
@@ -50,7 +52,13 @@ conference_group = client.get_group(conference.get_id())
 conference_group.web = homepage_webfield
 conference_group = client.post_group(conference_group)
 
-program_chairs = conference.set_program_chairs(['koustuv.sinha@mail.mcgill.ca'])
+program_chairs = conference.set_program_chairs(['pca@email.com'])
+
+# add venue to active because it doesn't have an invitation open to everyone
+# so it won't show up under Open for Submission
+active_venues = client.get_group("active_venues")
+active_venues.members.append(conference_id)
+client.post_group(active_venues)
 
 # add the "Claimants" group
 client.post_group(openreview.Group(
@@ -69,11 +77,11 @@ report_invitation.invitees = [conference_id+'/Claimants']
 report_invitation.readers = [conference_id+'/Claimants']
 report_invitation.reply['readers'] = {
     'values-copied': [
-        "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019",
+        conference_id,
         "{content.authorids}",
         "{signatures}",
-        "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers",
-        "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs"
+        conference_id+"/Reviewers",
+        conference.get_program_chairs_id()
     ]
 }
 
@@ -99,7 +107,17 @@ neurips_submission_invitation = client.post_invitation(openreview.Invitation(**{
             'authors': {
                 'values-regex': '.*',
                 'required': True
-            }
+            },
+            'code_link': {
+                'description': 'url for source code',
+                'values-regex': '.*',
+                'required': False
+            },
+            'pdf_link': {
+                'description': 'url for camera ready submission',
+                'values-regex': '.*',
+                'required': False
+            },
         },
         'forum': None,
         'replyto': None,
@@ -139,6 +157,11 @@ claim_inv = client.post_invitation(openreview.Invitation(
                 'order': 2,
                 'required': True,
                 'value-regex': '.{1,100}'
+            },
+            'compute_resources': {'description': 'Do you need compute resources?',
+                 'order': 3,
+                 'required': True,
+                 'value-radio': ['yes','no']
             }
         },
         'invitation': '{}/-/NeurIPS_Submission'.format(conference_id),
