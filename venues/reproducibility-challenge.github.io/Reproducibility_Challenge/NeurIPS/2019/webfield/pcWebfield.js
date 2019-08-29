@@ -455,8 +455,7 @@ var displayPaperStatusTable = function(profiles, notes, completedReviews, metaRe
     Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
     Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
     Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
-    Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
-    Meta_Review_Missing: function(row) { return row.areachairProgressData.numMetaReview; }
+    Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; }
   };
 
   var sortResults = function(newOption, switchOrder) {
@@ -561,16 +560,7 @@ var displayClaimStatusTable = function(profiles, notes, completedReviews, metaRe
   var sortOptions = {
     Paper_Number: function(row) { return row.note.number; },
     Paper_Title: function(row) { return _.toLower(_.trim(row.note.content.title)); },
-    Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
-    Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
-    Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
-    Average_Confidence: function(row) { return toNumber(row.reviewProgressData.averageConfidence); },
-    Max_Confidence: function(row) { return toNumber(row.reviewProgressData.maxConfidence); },
-    Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
-    Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
-    Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
-    Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
-    Meta_Review_Missing: function(row) { return row.areachairProgressData.numMetaReview; }
+    Claims: function(row) { return row.claimants; }
   };
 
   var sortResults = function(newOption, switchOrder) {

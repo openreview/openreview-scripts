@@ -74,6 +74,7 @@ client.post_group(openreview.Group(
 # modify the "Report" invitation such that only claimants can post
 report_invitation = client.get_invitation(conference.get_submission_id())
 report_invitation.invitees = [conference_id+'/Claimants']
+report_invitation.noninvitees = [conference_id+'/Authors']
 report_invitation.readers = [conference_id+'/Claimants']
 report_invitation.reply['readers'] = {
     'values-copied': [
@@ -84,6 +85,9 @@ report_invitation.reply['readers'] = {
         conference.get_program_chairs_id()
     ]
 }
+
+with open('../process/reportProcess.py') as f:
+    report_invitation.process = f.read()
 
 report_invitation = client.post_invitation(report_invitation)
 
