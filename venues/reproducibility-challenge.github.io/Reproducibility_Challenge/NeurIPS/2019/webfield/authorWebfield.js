@@ -94,13 +94,9 @@ function load() {
 function renderConferenceTabs() {
   var sections = [
     {
-      heading: 'Your Claims',
-      id: 'your-claims',
-      active: true
-    },
-    {
-      heading: 'Your Reports',
+      heading: 'Your Submissions',
       id: 'your-submissions',
+      active: true
     },
     {
       heading: 'Author Tasks',
@@ -125,17 +121,15 @@ function renderContent(authorNotes, invitations, tagInvitations, authorClaims) {
 
   Webfield.ui.newTaskList(invitations, tagInvitations, tasksOptions);
 
-  // Your Private Versions and Your Anonymous Versions tabs
-  Webfield.ui.submissionList(authorNotes, {
-    heading: null,
-    container: '#your-submissions',
-    search: { enabled: false },
-    displayOptions: paperDisplayOptions
-  });
+  // Your Submissions
+  // combine claims and reports
+   _.forEach(authorNotes, function(n) {
+      authorClaims.push(n);
+   });
 
   Webfield.ui.submissionList(authorClaims, {
     heading: null,
-    container: '#your-claims',
+    container: '#your-submissions',
     search: { enabled: false },
     displayOptions: paperDisplayOptions
   });
