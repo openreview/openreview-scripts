@@ -18,8 +18,9 @@ var AUTHORS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/
 
 var NEURIPS_SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/NeurIPS_Submission'
 var CLAIM_HOLD_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Claim_Hold'
+var CLAIM_ID = CONFERENCE_ID+'/-/Claim'
 
-var HEADER = {"title": "NeurIPS 2019 Reproducibility Challenge", "subtitle": null, "location": "Vancouver, Canada", "date": "December 13-14, 2019", "website": "https://reproducibility-challenge.github.io/neurips2019/dates/", "instructions": "<strong>Here are some instructions</strong>", "deadline": "Submission Claims accepted from 2019-AUG-7, to 2019-NOV-1 (GMT)", "reviewers_name": "Reviewers", "area_chairs_name": "Area_Chairs", "reviewers_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers", "authors_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Authors", "program_chairs_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs", "area_chairs_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Area_Chairs", "submission_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report", "blind_submission_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report"};
+var HEADER = {"title": "NeurIPS 2019 Reproducibility Challenge", "subtitle": null, "location": "Vancouver, Canada", "date": "December 13-14, 2019", "website": "https://reproducibility-challenge.github.io/neurips2019/dates/", "instructions": "<strong>Here are some instructions</strong>", "deadline": "Submission Claims accepted from 2019 Aug 7 to 2019 Nov 1 (GMT)", "reviewers_name": "Reviewers", "area_chairs_name": "Area_Chairs", "reviewers_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers", "authors_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Authors", "program_chairs_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs", "area_chairs_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Area_Chairs", "submission_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report", "blind_submission_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report"};
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/.*';
 var BUFFER = 0;  // deprecated
@@ -68,7 +69,6 @@ function load() {
   if (!user || _.startsWith(user.id, 'guest_')) {
     activityNotesP = $.Deferred().resolve([]);
     userGroupsP = $.Deferred().resolve([]);
-    authorNotesP = $.Deferred().resolve([]);
   } else {
     activityNotesP = Webfield.api.getSubmissions(WILDCARD_INVITATION, {
       pageSize: PAGE_SIZE,
@@ -82,18 +82,12 @@ function load() {
           function(id) { return _.startsWith(id, CONFERENCE_ID); }
         );
       });
-
-    authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
-      pageSize: PAGE_SIZE,
-      'content.authorids': user.profile.id,
-      details: 'noDetails'
-    });
   }
 
   var neuripsNotesP = Webfield.getAll('/notes', { invitation: NEURIPS_SUBMISSION_ID, details: 'replyCount,original' });
   var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_HOLD_ID, noDetails: true });
-
-  return $.when(notesP, userGroupsP, activityNotesP, authorNotesP, neuripsNotesP, claimNotesP);
+  var myClaimsP = Webfield.getAll('/notes', { invitation: CLAIM_ID, noDetails: true });
+  return $.when(notesP, userGroupsP, activityNotesP, neuripsNotesP, claimNotesP, myClaimsP);
 }
 
 // Render functions
@@ -150,12 +144,12 @@ function renderConferenceTabs() {
   });
 }
 
-function renderContent(notesResponse, userGroups, activityNotes, authorNotes, neuripsNotes, claimNotes) {
+function renderContent(notesResponse, userGroups, activityNotes, neuripsNotes, claimNotes, myClaims) {
 
   console.log('userGroups', userGroups);
-  console.log('authorNotes', authorNotes);
+
   // Your Consoles tab
-  if (userGroups.length || authorNotes.length) {
+  if (userGroups.length || myClaims.length) {
 
     var $container = $('#your-consoles').empty();
     $container.append('<ul class="list-unstyled submissions-list">');
@@ -188,8 +182,8 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, ne
       ].join(''));
     }
 
-    console.log('authorNotes', authorNotes);
-    if (authorNotes.length) {
+    console.log('claimNotes', claimNotes);
+    if (myClaims.length) {
       $('#your-consoles .submissions-list').append([
         '<li class="note invitation-link">',
           '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
