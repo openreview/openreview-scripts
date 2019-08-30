@@ -39,7 +39,13 @@ builder.set_homepage_header({
 # that happen when you set public=False.
 # The Report invitation is being made private manually below.
 ## PAM TODO set start time to Nov 1
-builder.set_submission_stage(name='Report', double_blind=False, public=True)
+builder.set_submission_stage(name='Report', double_blind=True, public=True, additional_fields = { 'track': {
+                   'required': True,
+                   'value-dropdown': ['Baseline', 'Ablation', 'Replicability']
+            }, 'NeurIPS_paper_id': {
+                   'required': False,
+                   'value-regex': '.*'
+            }}, remove_fields = ['keywords','TL;DR'])
 builder.set_review_stage()
 builder.set_override_homepage(True)
 conference = builder.get_result()
@@ -110,8 +116,14 @@ neurips_submission_invitation = client.post_invitation(openreview.Invitation(**{
                 'required': True
             },
             'authors': {
+                'description': 'Comma separated list of author names.',
                 'values-regex': '.*',
                 'required': True
+            },
+            'authorsids': {
+                'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
+                'values-regex': "([a-z0-9_\-\.]{1,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{1,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+                'required': False
             },
             'code_link': {
                 'description': 'url for source code',
@@ -163,8 +175,13 @@ claim_inv = client.post_invitation(openreview.Invitation(
                 'required': True,
                 'value-regex': '.{1,100}'
             },
+            'track': {
+                   'order': 3,
+                   'required': True,
+                   'value-dropdown': ['Baseline', 'Ablation', 'Replicability']
+            },
             'compute_resources': {'description': 'Do you need compute resources?',
-                 'order': 3,
+                 'order': 4,
                  'required': True,
                  'value-radio': ['yes','no']
             }
@@ -210,6 +227,44 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
             'values-copied': [conference_id]
         }
     }
+))
+
+comment_inv = client.post_invitation(openreview.Invitation(
+    id='{}/-/Comment'.format(conference_id),
+    readers=['everyone'],
+    invitees=['~'],
+    writers=[conference_id],
+    signatures=[conference_id],
+    reply={
+        'forum': None,
+        'replyto': None,
+        'content': {
+            'title': {
+                'value-regex': '.*',
+                'order': 0,
+                'required': True
+            },
+            'comment': {
+                'description': 'Your comment or reply (max 5000 characters).',
+                'order': 1,
+                'required': True,
+                'value-regex': '[\\S\\s]{1,5000}'
+            }
+        },
+        'signatures': {
+            'description': 'Your authorized identity to be associated with the above content.',
+            'values-regex': '~.*'
+        },
+        'readers': {
+            'description': 'The users who will be allowed to read the above content.',
+            'values': ['everyone']
+        },
+        'writers': {
+            'values-copied': [conference_id,'{signatures}']
+        }
+    },
+    # TODO who should the commentProcess email
+    # process='../process/commentProcess.py'
 ))
 
 with open('../webfield/pcWebfield.js') as f:
