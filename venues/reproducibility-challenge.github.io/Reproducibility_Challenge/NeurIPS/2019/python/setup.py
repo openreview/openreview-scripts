@@ -76,6 +76,7 @@ report_invitation = client.get_invitation(conference.get_submission_id())
 report_invitation.invitees = [conference_id+'/Claimants']
 report_invitation.noninvitees = [conference_id+'/Authors']
 report_invitation.readers = [conference_id+'/Claimants']
+report_invitation.nonreaders = [conference_id+'/Authors']
 report_invitation.reply['readers'] = {
     'values-copied': [
         conference_id,
@@ -215,3 +216,8 @@ with open('../webfield/pcWebfield.js') as f:
     program_chairs = client.get_group(conference.get_program_chairs_id())
     program_chairs.web = f.read()
     program_chairs = client.post_group(program_chairs)
+
+with open('../webfield/authorWebfield.js') as f:
+    authors = client.get_group(conference.get_authors_id())
+    authors.web = f.read()
+    authors = client.post_group(authors)
