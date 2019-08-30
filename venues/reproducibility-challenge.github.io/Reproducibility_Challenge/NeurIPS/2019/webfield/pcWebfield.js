@@ -276,14 +276,14 @@ var displayHeader = function() {
       active: true
     },
     {
-      heading: 'Reports Status',
-      id: 'report-status',
+      heading: 'Claims Status',
+      id: 'claims-status',
       content: loadingMessage,
       extraClasses: 'horizontal-scroll'
     },
     {
-      heading: 'Claims Status',
-      id: 'claims-status',
+      heading: 'Reports Status',
+      id: 'report-status',
       content: loadingMessage,
       extraClasses: 'horizontal-scroll'
     }
