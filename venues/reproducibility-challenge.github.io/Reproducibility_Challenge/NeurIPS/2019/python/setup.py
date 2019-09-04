@@ -38,18 +38,17 @@ builder.set_homepage_header({
 # We're doing this because there are some behaviors that we don't understand about the builder
 # that happen when you set public=False.
 # The Report invitation is being made private manually below.
-## PAM TODO set start time to Nov 1
 builder.set_submission_stage(name='Report', double_blind=True, public=True, additional_fields = { 'track': {
-                   'required': True,
-                   'value-dropdown': ['Baseline', 'Ablation', 'Replicability']
-            }, 'NeurIPS_paper_id': {
-                   'required': False,
-                   'value-regex': '.*'
-            }}, remove_fields = ['keywords','TL;DR'])
-builder.set_review_stage(start_date = datetime.datetime(2019, 12, 2), due_date = datetime.datetime(2019, 12, 6, 12),
-                         release_to_authors = True)
-builder.set_decision_stage(options=['Accept','Reject'], start_date = datetime.datetime(2019, 12, 5),
-                           release_to_authors = True, release_to_reviewers = True)
+                                   'required': True,
+                                   'value-dropdown': ['Baseline', 'Ablation', 'Replicability']
+                                },
+                                'NeurIPS_paper_id': {
+                                       'required': False,
+                                       'value-regex': '.*'
+                             }},
+                             remove_fields = ['keywords','TL;DR'],
+                             start_date = datetime.datetime(2019, 11, 1),
+                             due_date = datetime.datetime(2019, 12, 2, 12))
 builder.set_override_homepage(True)
 conference = builder.get_result()
 
@@ -61,7 +60,7 @@ conference_group = client.get_group(conference.get_id())
 conference_group.web = homepage_webfield
 conference_group = client.post_group(conference_group)
 
-program_chairs = conference.set_program_chairs(['pca@email.com'])
+program_chairs = conference.set_program_chairs([])
 
 # add venue to active because it doesn't have an invitation open to everyone
 # so it won't show up under Open for Submission
