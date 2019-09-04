@@ -14,15 +14,19 @@ if __name__ == '__main__':
 
     conference = openreview.helpers.get_conference(client, 'SkxpQPWdA4')
 
-    pc_names_list = [
-        'Shakir Mohamed',
-        'Martha White',
-        'Kyunghyun Cho',
-        'Dawn Song'
-    ]
+    pc_group = client.get_group(conference.get_program_chairs_id())
+    updated_pc_group = openreview.tools.replace_members_with_ids(client, pc_group)
+    pc_names_list = []
+    for pc_id in updated_pc_group.members:
+        if '@' in pc_id:
+            pc_names_list.append(pc_id)
+        elif pc_id.startswith('~'):
+            pc_names_list.append(pc_id[1:-1].strip('.').replace('_', ' '))
+
 
     tag_invitation_id = conference.get_id() + '/-/Assigned_to_PC'
     tag_invitation = client.get_invitations(regex = tag_invitation_id, tags = True)
+    map_forum_tag = {}
     if len(tag_invitation):
         existing_tags = openreview.tools.iterget_tags(
             client,
@@ -80,7 +84,7 @@ if __name__ == '__main__':
                     tag = pc_selected
                 )
             )
-            print (paper.forum, ' assign to PC ', pc_selected)
+            print (paper.forum, ' assigned to PC ', pc_selected)
         else:
-            print (paper.forum, ' already assigned to PC ', map_forum_tag[paper.forum].tag)
+            print (paper.forum, ' was already assigned to PC ', map_forum_tag[paper.forum].tag)
 
