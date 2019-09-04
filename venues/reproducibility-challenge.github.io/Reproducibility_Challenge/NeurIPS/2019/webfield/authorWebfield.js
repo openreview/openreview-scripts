@@ -79,7 +79,7 @@ function load() {
     claimsP = Webfield.get('/notes', {
       'tauthor': user.profile.id,
       invitation: CLAIM_ID,
-      details: 'replyCount,writable'
+      details: 'replyCount,writable,forumContent'
     }).then(function(result) {
       return result.notes;
     });

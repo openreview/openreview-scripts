@@ -86,7 +86,7 @@ function load() {
 
   var neuripsNotesP = Webfield.getAll('/notes', { invitation: NEURIPS_SUBMISSION_ID, details: 'replyCount,original' });
   var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_HOLD_ID, noDetails: true });
-  var myClaimsP = Webfield.getAll('/notes', { invitation: CLAIM_ID, noDetails: true });
+  var myClaimsP = Webfield.getAll('/notes', { invitation: CLAIM_ID, noDetails: true, tauthor: true });
   return $.when(notesP, userGroupsP, activityNotesP, neuripsNotesP, claimNotesP, myClaimsP);
 }
 
