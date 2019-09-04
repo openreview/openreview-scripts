@@ -7,7 +7,7 @@ parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
 
-#client = openreview.Client(baseurl='https://openreview.net', username=args.username, password='theindiankinginvitesthepatriarch')
+#client = openreview.Client(baseurl='https://openreview.net', username=args.username, password='')
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 neurips_papers = client.get_notes(invitation='dblp.org/-/record', content={'venueid': 'dblp.org/conf/NIPS/2018'})
 
