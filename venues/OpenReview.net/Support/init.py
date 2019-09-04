@@ -207,7 +207,7 @@ remove_fields = ['Area Chairs (Metareviewers)', 'Author and Reviewer Anonymity',
 revision_content = {key: request_content[key] for key in request_content if key not in remove_fields}
 revision_content['Additional Submission Options'] = {
     'order' : 18,
-    'value-regex': '[\\S\\s]{1,10000}',
+    'value-dict': {},
     'description': 'Configure additional options in the submission form. Valid JSON expected.'
 }
 
