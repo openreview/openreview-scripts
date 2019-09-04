@@ -27,11 +27,11 @@ builder.set_conference_name('NeurIPS 2019 Reproducibility Challenge')
 
 builder.set_homepage_header({
     'title': 'NeurIPS 2019 Reproducibility Challenge',
-    'deadline': 'Submission Claims accepted from 2019-AUG-7, to 2019-NOV-1 (GMT)',
+    'deadline': 'Submission Claims accepted from 2019-Sept-7, to 2019-Nov-1 (GMT)',
     'date': 'December 13-14, 2019',
     'website': 'https://reproducibility-challenge.github.io/neurips2019/dates/',
     'location': 'Vancouver, Canada',
-    'instructions': '<strong>Here are some instructions</strong>'
+
 })
 
 # WARNING: this submission stage is being set as "Public", even though it really shouldn't be.
@@ -46,7 +46,10 @@ builder.set_submission_stage(name='Report', double_blind=True, public=True, addi
                    'required': False,
                    'value-regex': '.*'
             }}, remove_fields = ['keywords','TL;DR'])
-builder.set_review_stage()
+builder.set_review_stage(start_date = datetime.datetime(2019, 12, 2), due_date = datetime.datetime(2019, 12, 6, 12),
+                         release_to_authors = True)
+builder.set_decision_stage(options=['Accept','Reject'], start_date = datetime.datetime(2019, 12, 5),
+                           release_to_authors = True, release_to_reviewers = True)
 builder.set_override_homepage(True)
 conference = builder.get_result()
 
@@ -229,43 +232,6 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
     }
 ))
 
-comment_inv = client.post_invitation(openreview.Invitation(
-    id='{}/-/Comment'.format(conference_id),
-    readers=['everyone'],
-    invitees=['~'],
-    writers=[conference_id],
-    signatures=[conference_id],
-    reply={
-        'forum': None,
-        'replyto': None,
-        'content': {
-            'title': {
-                'value-regex': '.*',
-                'order': 0,
-                'required': True
-            },
-            'comment': {
-                'description': 'Your comment or reply (max 5000 characters).',
-                'order': 1,
-                'required': True,
-                'value-regex': '[\\S\\s]{1,5000}'
-            }
-        },
-        'signatures': {
-            'description': 'Your authorized identity to be associated with the above content.',
-            'values-regex': '~.*'
-        },
-        'readers': {
-            'description': 'The users who will be allowed to read the above content.',
-            'values': ['everyone']
-        },
-        'writers': {
-            'values-copied': [conference_id,'{signatures}']
-        }
-    },
-    # TODO who should the commentProcess email
-    # process='../process/commentProcess.py'
-))
 
 with open('../webfield/pcWebfield.js') as f:
     program_chairs = client.get_group(conference.get_program_chairs_id())
