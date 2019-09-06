@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-conference_id = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019'
+conference_id = 'NeurIPS.cc/2019/Reproducibility_Challenge'
 
 builder = openreview.builder.ConferenceBuilder(client)
 builder.set_conference_id(conference_id)
@@ -38,19 +38,29 @@ builder.set_homepage_header({
 # We're doing this because there are some behaviors that we don't understand about the builder
 # that happen when you set public=False.
 # The Report invitation is being made private manually below.
-builder.set_submission_stage(name='Report', double_blind=True, public=True, additional_fields = { 'track': {
-                                   'required': True,
-                                   'value-dropdown': ['Baseline', 'Ablation', 'Replicability']
-                                },
-                                'NeurIPS_paper_id': {
-                                       'required': False,
-                                       'value-regex': '.*'
-                             }},
-                             remove_fields = ['keywords','TL;DR'],
-                             start_date = datetime.datetime(2019, 11, 1),
-                             due_date = datetime.datetime(2019, 12, 2, 12))
+builder.set_submission_stage(
+    name='Report',
+    double_blind=True,
+    public=True,
+    additional_fields={
+        'track': {
+           'required': True,
+           'value-dropdown': ['Baseline', 'Ablation', 'Replicability']
+        },
+        'NeurIPS_paper_id': {
+               'required': False,
+               'value-regex': '.*'
+        }
+    },
+    remove_fields=['keywords', 'TL;DR'],
+    start_date=datetime.datetime(2019, 11, 1),
+    due_date=datetime.datetime(2019, 12, 2, 12)
+)
+
 builder.set_override_homepage(True)
 conference = builder.get_result()
+
+# ~ Everything below is custom to the "Claims" mechanism(s) ~
 
 # replace the builder-generated webfield with the custom webfield
 with open('../webfield/conferenceWebfield.js') as f:
@@ -122,10 +132,14 @@ neurips_submission_invitation = client.post_invitation(openreview.Invitation(**{
                 'values-regex': '.*',
                 'required': True
             },
-            'authorsids': {
+            'authorids': {
                 'description': 'Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author\'s profile.',
-                'values-regex': "([a-z0-9_\-\.]{1,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{1,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})",
+                'values-regex': ".*",
                 'required': False
+            },
+            'venue': {
+                'value': 'NeurIPS 2019',
+                'required': True
             },
             'code_link': {
                 'description': 'url for source code',
@@ -144,7 +158,7 @@ neurips_submission_invitation = client.post_invitation(openreview.Invitation(**{
             'values': [conference.get_program_chairs_id()]
         },
         'writers': {
-            'values': [conference.get_id()]
+            'values': [conference.get_id(), conference.get_program_chairs_id()]
         },
         'readers': {
             'values': ['everyone']
