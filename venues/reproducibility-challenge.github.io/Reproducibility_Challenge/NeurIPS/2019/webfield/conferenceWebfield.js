@@ -6,21 +6,21 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019';
-var SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report';
-var BLIND_SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report';
+var CONFERENCE_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge';
+var SUBMISSION_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/-/Report';
+var BLIND_SUBMISSION_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/-/Report';
 var REVIEWERS_NAME = 'Reviewers';
 var AREA_CHAIRS_NAME = 'Area_Chairs';
-var AREA_CHAIRS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Area_Chairs';
-var REVIEWERS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers';
-var PROGRAM_CHAIRS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs';
-var AUTHORS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Authors';
+var AREA_CHAIRS_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/Area_Chairs';
+var REVIEWERS_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/Reviewers';
+var PROGRAM_CHAIRS_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/Program_Chairs';
+var AUTHORS_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/Authors';
 
-var NEURIPS_SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/NeurIPS_Submission'
-var CLAIM_HOLD_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Claim_Hold'
+var NEURIPS_SUBMISSION_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/-/NeurIPS_Submission'
+var CLAIM_HOLD_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/-/Claim_Hold'
 var CLAIM_ID = CONFERENCE_ID+'/-/Claim'
 
-var HEADER = {"title": "NeurIPS 2019 Reproducibility Challenge", "subtitle": null, "location": "Vancouver, Canada", "date": "December 13-14, 2019", "website": "https://reproducibility-challenge.github.io/neurips2019/dates/", "instructions": "<strong>Here are some instructions</strong>", "deadline": "Submission Claims accepted from 2019 Aug 7 to 2019 Nov 1 (GMT)", "reviewers_name": "Reviewers", "area_chairs_name": "Area_Chairs", "reviewers_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers", "authors_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Authors", "program_chairs_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs", "area_chairs_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Area_Chairs", "submission_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report", "blind_submission_id": "reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report"};
+var HEADER = {"title": "NeurIPS 2019 Reproducibility Challenge", "subtitle": null, "location": "Vancouver, Canada", "date": "December 13-14, 2019", "website": "https://reproducibility-challenge.github.io/neurips2019/dates/", "instructions": "<strong>Here are some instructions</strong>", "deadline": "Submission Claims accepted from 2019 Aug 7 to 2019 Nov 1 (GMT)", "reviewers_name": "Reviewers", "area_chairs_name": "Area_Chairs", "reviewers_id": "NeurIPS.cc/2019/Reproducibility_Challenge/Reviewers", "authors_id": "NeurIPS.cc/2019/Reproducibility_Challenge/Authors", "program_chairs_id": "NeurIPS.cc/2019/Reproducibility_Challenge/Program_Chairs", "area_chairs_id": "NeurIPS.cc/2019/Reproducibility_Challenge/Area_Chairs", "submission_id": "NeurIPS.cc/2019/Reproducibility_Challenge/-/Report", "blind_submission_id": "NeurIPS.cc/2019/Reproducibility_Challenge/-/Report"};
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/.*';
 var BUFFER = 0;  // deprecated
