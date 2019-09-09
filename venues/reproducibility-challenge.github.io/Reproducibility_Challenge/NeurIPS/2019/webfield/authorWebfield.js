@@ -6,8 +6,8 @@
 // ------------------------------------
 
 // Constants
-var CONFERENCE_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019';
-var SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report';
+var CONFERENCE_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge';
+var SUBMISSION_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/-/Report';
 var CLAIM_ID = CONFERENCE_ID+'/-/Claim'
 var HEADER = {'title': 'Authors Console'};
 

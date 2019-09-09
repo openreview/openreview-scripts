@@ -1,8 +1,8 @@
 
 // Constants
-var CONFERENCE_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019';
-var SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report';
-var BLIND_SUBMISSION_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/-/Report';
+var CONFERENCE_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge';
+var SUBMISSION_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/-/Report';
+var BLIND_SUBMISSION_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/-/Report';
 var HEADER = {"title": "Program Chairs Console", "instructions": "<p class=\"dark\">This page provides information and status             updates for the . It will be regularly updated as the conference             progresses, so please check back frequently for news and other updates.</p>"};
 var SHOW_AC_TAB = false;
 var LEGACY_INVITATION_ID = false;
@@ -11,10 +11,10 @@ var OFFICIAL_META_REVIEW_NAME = 'Meta_Review';
 var DECISION_NAME = 'Decision';
 var BID_NAME = 'Bid';
 var COMMENT_NAME = 'Comment';
-var AUTHORS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Authors';
-var REVIEWERS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Reviewers';
-var AREA_CHAIRS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Area_Chairs';
-var PROGRAM_CHAIRS_ID = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019/Program_Chairs';
+var AUTHORS_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/Authors';
+var REVIEWERS_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/Reviewers';
+var AREA_CHAIRS_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/Area_Chairs';
+var PROGRAM_CHAIRS_ID = 'NeurIPS.cc/2019/Reproducibility_Challenge/Program_Chairs';
 var REQUEST_FORM_ID = '';
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/-/.*';

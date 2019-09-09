@@ -1,5 +1,5 @@
 def process(client, note, invitation):
-    conference_id = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019'
+    conference_id = 'NeurIPS.cc/2019/Reproducibility_Challenge'
     # create and post claim_hold note
     hold_invite_id = invitation.id.replace('Claim', 'Claim_Hold')
     client.post_note(openreview.Note(

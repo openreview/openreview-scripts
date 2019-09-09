@@ -1,5 +1,5 @@
 def process(client, note, invitation):
-    conference_id = 'reproducibility-challenge.github.io/Reproducibility_Challenge/NeurIPS/2019'
+    conference_id = 'NeurIPS.cc/2019/Reproducibility_Challenge'
 
     # send confirmation email
     msg = 'Your report submission to NeurIPS 2019 Reproducibility Challenge has been posted. \n\nTitle: {title}'.format(
