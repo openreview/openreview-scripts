@@ -71,8 +71,10 @@ if __name__ == '__main__':
         client.add_members_to_group(paper_ac_group, individual_buddy_group_id)
 
         # Add paper's buddy AC as non-invitee for paper's meta-review invitation
-        paper_meta_rev_invitation = map_meta_review_invitations[paper_number]
-        paper_meta_rev_invitation.noninvitees
+        paper_meta_rev_invitation = map_meta_review_invitations.get(paper_number, None)
+        if (paper_meta_rev_invitation):
+            paper_meta_rev_invitation.noninvitees = individual_buddy_group_id
+            client.post_invitation(paper_meta_rev_invitation)
 
         ## Post AC & AC-Buddy only Comment invitation for this paper
         ac_conversation_invitation = openreview.Invitation(

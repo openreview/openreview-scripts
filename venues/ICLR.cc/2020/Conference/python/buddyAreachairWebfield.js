@@ -570,7 +570,7 @@ var renderTableRows = function(rows, container) {
       return '<h4>Avg: ' + data.averageConfidence + '</h4><span>Min: ' + data.minConfidence + '</span>' +
         '<br><span>Max: ' + data.maxConfidence + '</span>';
     },
-    Handlebars.templates.noteMetaReviewStatusBuddy
+    Handlebars.templates.noteMetaReviewStatus
   ];
 
   var rowsHtml = rows.map(function(row) {
@@ -729,6 +729,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     invitationId: getInvitationId('Meta_Review', note.number)
   };
   var cell5 = {
+    isBuddyAC : true,
     invitationUrl: '/forum?' + $.param(invitationUrlParams)
   };
   if (metaReview) {
