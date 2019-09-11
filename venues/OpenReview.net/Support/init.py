@@ -439,6 +439,12 @@ review_stage_content = {
         'required': True,
         'default': 'No, do not email program chairs about received reviews',
         'order': 27
+    },
+    'additional_review_form_options': {
+        'order' : 28,
+        'value-dict': {},
+        'required': False,
+        'description': 'Configure additional options in the review form. Valid JSON expected.'
     }
 }
 
