@@ -220,6 +220,12 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
                 'value-dict': {},
                 'required': False,
                 'description': 'Configure additional options in the review form. Valid JSON expected.'
+            },
+            'remove_review_form_options': {
+                'order': 29,
+                'value-regex': '^[^,]+(,\s*[^,]*)*$',
+                'required': False,
+                'description': 'Comma separated list of fields that you want removed from the review form.'
             }
         }
 
