@@ -450,7 +450,7 @@ review_stage_content = {
         'order': 29,
         'value-regex': '^[^,]+(,\s*[^,]*)*$',
         'required': False,
-        'description': 'Comma separated list of fields that you want removed from the review form.'
+        'description': 'Comma separated list of fields (review, rating, confidence) that you want removed from the review form.'
     }
 }
 
