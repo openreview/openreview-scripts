@@ -176,16 +176,6 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
                 'required': True,
                 'order': 11
             },
-            'make_reviews_public': {
-                'description': 'Should the reviews be made public immediately upon posting? Based on your earlier selections, default is "Yes, reviews should be revealed publicly when they are posted".',
-                'value-radio': [
-                    'Yes, reviews should be revealed publicly when they are posted',
-                    'No, reviews should NOT be revealed publicly when they are posted'
-                ],
-                'required': True,
-                'default': 'Yes, reviews should be revealed publicly when they are posted',
-                'order': 24
-            },
             'release_reviews_to_authors': {
                 'description': 'Should the reviews be visible to paper\'s authors immediately upon posting? Based on your earlier selections, default is "Yes, reviews should be revealed publicly when they are posted".',
                 'value-radio': [
