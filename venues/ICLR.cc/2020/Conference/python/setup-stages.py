@@ -12,31 +12,29 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-    conference = openreview.helpers.get_conference(client, 'Skli7GteaN')
+    conference = openreview.helpers.get_conference(client, 'SkxpQPWdA4')
 
     ## Anonymize current submissions
     conference.create_blind_submissions()
 
-    ## Setup committee consoles
-    conference.set_authors()
-    conference.set_area_chairs([])
-    conference.set_reviewers([])
-
     ## Stage: bids
-    conference.open_bids(due_date = datetime.datetime(2019, 9, 25, 0, 0), with_area_chairs = True)
+    conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)))
+
+    conference.setup_matching()
+
+    conference.set_assignments('reviewers-1')
 
     ## Stage: reviews
-    conference.open_reviews(due_date = datetime.datetime(2019, 9, 25, 0, 0))
+    conference.set_review_stage(openreview.ReviewStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)))
 
     ## Stage: discussion
-    conference.open_comments(name = 'Official_Comment', public = False, anonymous = True, reader_selection = True)
-    conference.open_comments(name = 'Public_Comment', public = True, anonymous = False)
+    conference.set_comment_stage(openreview.CommentStage(allow_public_comments = True, unsubmitted_reviewers = True, reader_selection = True, email_pcs = True))
 
     ## Area chair decisions
-    conference.open_meta_reviews(due_date = datetime.datetime(2019, 9, 25, 0, 0))
+    conference.set_meta_review_stage(openreview.MetaReviewStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)))
 
     ## Program Chairs decisions
-    conference.open_decisions(due_date = datetime.datetime(2019, 9, 25, 0, 0))
+    conference.set_decision_stage(openreview.DecisionStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)))
 
     ## Camera ready revisions
     conference.open_revise_submissions()
