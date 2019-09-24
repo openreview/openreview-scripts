@@ -732,10 +732,7 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     noteId: note.id,
     invitationId: getInvitationId('Meta_Review', note.number)
   };
-  var cell5 = {
-    isBuddyAC : true,
-    invitationUrl: '/forum?' + $.param(invitationUrlParams)
-  };
+  var cell5 = {};
   if (metaReview) {
     cell5.recommendation = metaReview.content.recommendation;
     cell5.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
