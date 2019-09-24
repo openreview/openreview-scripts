@@ -471,13 +471,10 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
 
     var defaultBody = '';
     if (filter === 'msg-unsubmitted-reviewers'){
-      defaultBody = 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
-      'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
-      '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair';
-    } else {
-      defaultBody = 'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
-      '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair';
+      defaultBody = 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '.\n\n';
     }
+    defaultBody += 'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
+    '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair';
 
     var modalHtml = Handlebars.templates.messageReviewersModalFewerOptions({
       filter: filter,
@@ -786,7 +783,7 @@ var registerEventHandlers = function() {
       reviewerId: userId,
       forumUrl: forumUrl,
       defaultSubject: SHORT_PHRASE + ' Reminder',
-      defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '. ' +
+      defaultBody: 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '.\n\n' +
         'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
         '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair',
     });
@@ -849,11 +846,14 @@ var registerEventHandlers = function() {
       return Webfield.post('/groups', {
         id: CONFERENCE_ID + '/Paper' + paperNumber + '/AnonReviewer' + nextAnonNumber,
         members: [reviewerProfile.id],
+        nonreaders: [CONFERENCE_ID + '/Paper' + paperNumber + '/Authors'],
         readers: [
+          CONFERENCE_ID,
           CONFERENCE_ID + '/Program_Chairs',
           CONFERENCE_ID + '/Paper' + paperNumber + '/Area_Chairs',
           CONFERENCE_ID + '/Paper' + paperNumber + '/AnonReviewer' + nextAnonNumber],
         writers: [
+          CONFERENCE_ID,
           CONFERENCE_ID + '/Program_Chairs',
           CONFERENCE_ID + '/Paper' + paperNumber + '/Area_Chairs'],
         signatures: [CONFERENCE_ID + '/Paper' + paperNumber + '/Area_Chairs'],
@@ -913,12 +913,12 @@ var registerEventHandlers = function() {
 
     Webfield.delete('/groups/members', {
       id: CONFERENCE_ID + '/Paper' + paperNumber + '/Reviewers',
-      members: [userId]
+      members: [reviewerSummaryMap[paperNumber].reviewers[reviewerNumber].id, reviewerSummaryMap[paperNumber].reviewers[reviewerNumber].email]
     })
     .then(function(result) {
       return Webfield.delete('/groups/members', {
         id: CONFERENCE_ID + '/Paper' + paperNumber + '/AnonReviewer' + reviewerNumber,
-        members: [userId]
+        members: [reviewerSummaryMap[paperNumber].reviewers[reviewerNumber].id, reviewerSummaryMap[paperNumber].reviewers[reviewerNumber].email]
       });
     })
     .then(function(result) {
