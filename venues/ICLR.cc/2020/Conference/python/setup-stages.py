@@ -17,6 +17,12 @@ if __name__ == '__main__':
     ## Anonymize current submissions
     conference.create_blind_submissions()
 
+    ## Create withdraw invitations
+    conference.create_withdraw_invitations()
+
+    ## Stage: discussion
+    conference.set_comment_stage(openreview.CommentStage(allow_public_comments = True, unsubmitted_reviewers = True, reader_selection = True, email_pcs = False))
+
     ## Stage: bids
     conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)))
 
@@ -26,9 +32,6 @@ if __name__ == '__main__':
 
     ## Stage: reviews
     conference.set_review_stage(openreview.ReviewStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)))
-
-    ## Stage: discussion
-    conference.set_comment_stage(openreview.CommentStage(allow_public_comments = True, unsubmitted_reviewers = True, reader_selection = True, email_pcs = True))
 
     ## Area chair decisions
     conference.set_meta_review_stage(openreview.MetaReviewStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)))
