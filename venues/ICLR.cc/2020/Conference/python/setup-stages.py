@@ -31,9 +31,10 @@ if __name__ == '__main__':
     conference.set_comment_stage(openreview.CommentStage(allow_public_comments = True, unsubmitted_reviewers = True, reader_selection = True, email_pcs = False))
 
     ## Stage: bids
-    conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)))
+    conference.setup_matching(affinity_score_file='path-to-scores.csv')
+    conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 9, 25, 0, 0)), use_affinity_score = True)
 
-    conference.setup_matching()
+    conference.setup_matching(affinity_score_file='path-to-re-created-scores.csv')
 
     conference.set_assignments('reviewers-1')
 
