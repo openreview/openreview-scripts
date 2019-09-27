@@ -31,12 +31,15 @@ if __name__ == '__main__':
     conference.set_comment_stage(openreview.CommentStage(allow_public_comments = True, unsubmitted_reviewers = True, reader_selection = True, email_pcs = False))
 
     ## Stage: bids
-    conference.setup_matching(affinity_score_file='path-to-scores.csv')
-    conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 10, 2, 14, 59)), use_affinity_score = True)
+    conference.setup_matching(affinity_score_file='reviewer-path-to-scores.csv')
+    conference.setup_matching(is_area_chair = True, affinity_score_file='ac-path-to-scores.csv')
+
+    conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 10, 2, 14, 59), use_affinity_score = True))
 
     conference.setup_matching(affinity_score_file='path-to-re-created-scores.csv')
 
     conference.set_assignments('reviewers-1')
+    conference.set_assignments('acs-1')
 
     ## Stage: reviews
     conference.set_review_stage(openreview.ReviewStage(due_date = datetime.datetime(2019, 10, 23, 14, 59)))
