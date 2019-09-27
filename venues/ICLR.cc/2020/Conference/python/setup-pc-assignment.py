@@ -24,7 +24,7 @@ if __name__ == '__main__':
             pc_names_list.append(pc_id[1:-1].strip('.').replace('_', ' '))
 
 
-    tag_invitation_id = conference.get_id() + '/-/Assigned_to_PC'
+    tag_invitation_id = conference.get_program_chairs_id() + '/-/Paper_Assignment'
     tag_invitation = client.get_invitations(regex = tag_invitation_id, tags = True)
     map_forum_tag = {}
     if len(tag_invitation):
@@ -41,8 +41,8 @@ if __name__ == '__main__':
                 id = tag_invitation_id,
                 signatures = ['OpenReview.net/Support'],
                 writers = ['OpenReview.net/Support'],
-                duedate = 1577750340000,
-                expdate = 1577750340000,
+                duedate = 1593392400000,
+                expdate = 1593392400000,
                 multiReply = False,
                 reply = {
                     'invitation' : conference.get_submission_id(),
