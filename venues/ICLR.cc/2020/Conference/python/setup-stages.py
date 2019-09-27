@@ -14,6 +14,13 @@ if __name__ == '__main__':
 
     conference = openreview.helpers.get_conference(client, 'SkxpQPWdA4')
 
+    ## Create reviewer registration tasks
+    conference.invitation_builder.set_registration_invitation(conference, due_date = datetime.datetime(2019, 9, 25, 14, 59))
+
+    ## Enable expertise selection interface
+    expertise = conference.set_expertise_selection_stage(openreview.ExpertiseSelectionStage(due_date = datetime.datetime(2019, 9, 25, 14, 59)))
+
+
     ## Anonymize current submissions
     conference.create_blind_submissions()
 
