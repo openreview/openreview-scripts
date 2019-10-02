@@ -27,6 +27,9 @@ if __name__ == '__main__':
     ## Create withdraw invitations
     conference.create_withdraw_invitations()
 
+    ## Create desk reject invitations
+    conference.create_desk_reject_invitations()
+
     ## Stage: discussion
     conference.set_comment_stage(openreview.CommentStage(allow_public_comments = True, unsubmitted_reviewers = True, reader_selection = True, email_pcs = False))
 
