@@ -39,7 +39,9 @@ if __name__ == '__main__':
 
     conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 10, 2, 14, 59), use_affinity_score = True))
 
-    conference.setup_matching(affinity_score_file='path-to-re-created-scores.csv')
+    ## Stage: paper matching
+    conference.setup_matching(affinity_score_file='path-to-re-created-scores-reviewers.csv')
+    conference.setup_matching(is_area_chair = True, affinity_score_file='path-to-re-created-scores-ac.csv')
 
     conference.set_assignments('reviewers-1')
     conference.set_assignments('acs-1')
