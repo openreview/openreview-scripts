@@ -47,7 +47,82 @@ if __name__ == '__main__':
     conference.set_assignments('acs-1')
 
     ## Stage: reviews
-    conference.set_review_stage(openreview.ReviewStage(due_date = datetime.datetime(2019, 10, 23, 14, 59)))
+    remove_review_fields = ['review', 'confidence']
+    additional_review_fields = {
+        'title': {
+            'order': 1,
+            'value-regex': 'Official Blind Review #[0-9]+',
+            'default': 'Official Blind Review #NUM',
+            'description': 'Please replace NUM with your AnonReviewer number (it is the number following "AnonReviewer" in your signatures below)',
+            'required': True
+        },
+        'rating': {
+            'order': 2,
+            'value-dropdown': [
+                '1: Reject',
+                '2: Weak Reject',
+                '3: Weak Accept',
+                '4: Accept'
+            ],
+            'required': True
+        },
+        'does the paper support its claims and contributions': {
+            'order': 3,
+            'value-radio': ['Yes', 'No'],
+            'required': True
+        },
+        'experience assessment': {
+            'order': 4,
+            'value-radio': [
+                'I have published in this field for several years.',
+                'I have published one or two papers in this area.',
+                'I have read many papers in this area.',
+                'I do not know much about this area.'
+            ],
+            'description': 'Please make a selection that represents your experience correctly',
+            'required': True
+        },
+        'review assessment: thoroughness in paper reading': {
+            'order': 5,
+            'values-checkbox': [
+                'I read the paper thoroughly.',
+                'I read the paper at least twice and used my best judgement in assessing the paper.',
+                'I made a quick assessment of this paper.',
+                'N/A'
+            ],
+            'description': 'Check a box or select N/A if it\'s not applicable',
+            'required': True
+        },
+        'review assessment: checking correctness of derivations and theory': {
+            'order': 6,
+            'values-checkbox': [
+                'I carefully checked the derivations and theory.',
+                'I assessed the sensibility of the derivations and theory.',
+                'I did not assess the derivations or theory.',
+                'N/A'
+            ],
+            'description': 'Check a box or select N/A if no derivations or theory',
+            'required': True
+        },
+        'review assessment: checking correctness of experiments': {
+            'order': 7,
+            'values-checkbox': [
+                'I carefully checked the experiments.',
+                'I assessed the sensibility of the experiments.',
+                'I did not assess the experiments.',
+                'N/A'
+            ],
+            'description': 'Check a box or select N/A if no experiments',
+            'required': True
+        }
+    }
+
+    review_stage = openreview.ReviewStage(
+        due_date = datetime.datetime(2019, 10, 23, 14, 59),
+        additional_fields = additional_review_fields,
+        remove_fields = remove_review_fields
+    )
+    conference.set_review_stage(review_stage)
 
     ## Area chair decisions
     conference.set_meta_review_stage(openreview.MetaReviewStage(due_date = datetime.datetime(2019, 12, 6, 14, 59)))
