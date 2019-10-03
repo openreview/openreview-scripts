@@ -2,6 +2,120 @@ import openreview
 import argparse
 import datetime
 
+remove_review_fields = ['confidence']
+additional_review_fields = {
+    'title': {
+        'order': 1,
+        'value-regex': 'Official Blind Review #[0-9]+',
+        'default': 'Official Blind Review #NUM',
+        'description': 'Please replace NUM with your AnonReviewer number (it is the number following "AnonReviewer" in your signatures below)',
+        'required': True
+    },
+    'review': {
+        'order': 2,
+        'value-regex': '[\\S\\s]{500,200000}',
+        'description': 'Provide your complete review here (500 - 200000 characters). For guidance in a good review, see this brief reviewer guide (https://iclr.cc/Conferences/2020/ReviewerGuide) with three key bullet points.',
+        'required': True
+    },
+    'rating': {
+        'order': 3,
+        'value-dropdown': [
+            '1: Reject',
+            '3: Weak Reject',
+            '6: Weak Accept',
+            '8: Accept'
+        ],
+        'required': True
+    },
+    'experience assessment': {
+        'order': 4,
+        'value-radio': [
+            'I have published in this field for several years.',
+            'I have published one or two papers in this area.',
+            'I have read many papers in this area.',
+            'I do not know much about this area.'
+        ],
+        'description': 'Please make a selection that represents your experience correctly',
+        'required': True
+    },
+    'review assessment: thoroughness in paper reading': {
+        'order': 5,
+        'value-radio': [
+            'I read the paper thoroughly.',
+            'I read the paper at least twice and used my best judgement in assessing the paper.',
+            'I made a quick assessment of this paper.',
+            'N/A'
+        ],
+        'description': 'Check a box or select N/A if it\'s not applicable',
+        'required': True
+    },
+    'review assessment: checking correctness of derivations and theory': {
+        'order': 6,
+        'value-radio': [
+            'I carefully checked the derivations and theory.',
+            'I assessed the sensibility of the derivations and theory.',
+            'I did not assess the derivations or theory.',
+            'N/A'
+        ],
+        'description': 'Check a box or select N/A if no derivations or theory',
+        'required': True
+    },
+    'review assessment: checking correctness of experiments': {
+        'order': 7,
+        'value-radio': [
+            'I carefully checked the experiments.',
+            'I assessed the sensibility of the experiments.',
+            'I did not assess the experiments.',
+            'N/A'
+        ],
+        'description': 'Check a box or select N/A if no experiments',
+        'required': True
+    }
+}
+
+def get_tag_invitation(conference, note, due_date):
+    return openreview.Invitation(
+        readers = [conference.get_reviewers_id(note.number), conference.get_program_chairs_id()],
+        invitees = [conference.get_reviewers_id(note.number)],
+        id = conference.get_invitation_id(name = 'Support_Desk_Rejection', number = note.number),
+        signatures = [conference.get_id()],
+        writers = [conference.get_id()],
+        duedate = openreview.tools.datetime_millis(due_date),
+        expdate = openreview.tools.datetime_millis(due_date),
+        multiReply = False,
+        reply = {
+            'forum' : note.forum,
+            'replyto' : note.forum,
+            "invitation" : conference.get_blind_submission_id(),
+            "readers" : {
+                "description": "The users who will be allowed to read the above content.",
+                "values-copied": [
+                    conference.get_program_chairs_id(),
+                    '{signatures}'
+                ]
+            },
+            "signatures" : {
+                "description": "How your identity will be displayed with the above content.",
+                "values-regex": "~.*"
+            },
+            "writers": {
+                "values-regex": "~.*"
+            },
+            "content": {
+                "tag": {
+                    "description": "Should this paper have been desk rejected? (Note, this information will remain private, and is not visible to the authors)",
+                    "order": 1,
+                    "value-dropdown": [
+                        "No",
+                        "Yes"
+                    ],
+                    "required": True
+                }
+            }
+        }
+    )
+
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
@@ -19,7 +133,6 @@ if __name__ == '__main__':
 
     ## Enable expertise selection interface
     expertise = conference.set_expertise_selection_stage(openreview.ExpertiseSelectionStage(due_date = datetime.datetime(2019, 9, 28, 14, 59)))
-
 
     ## Anonymize current submissions
     conference.create_blind_submissions()
@@ -47,82 +160,19 @@ if __name__ == '__main__':
     conference.set_assignments('acs-1')
 
     ## Stage: reviews
-    remove_review_fields = ['review', 'confidence']
-    additional_review_fields = {
-        'title': {
-            'order': 1,
-            'value-regex': 'Official Blind Review #[0-9]+',
-            'default': 'Official Blind Review #NUM',
-            'description': 'Please replace NUM with your AnonReviewer number (it is the number following "AnonReviewer" in your signatures below)',
-            'required': True
-        },
-        'rating': {
-            'order': 2,
-            'value-dropdown': [
-                '1: Reject',
-                '2: Weak Reject',
-                '3: Weak Accept',
-                '4: Accept'
-            ],
-            'required': True
-        },
-        'does the paper support its claims and contributions': {
-            'order': 3,
-            'value-radio': ['Yes', 'No'],
-            'required': True
-        },
-        'experience assessment': {
-            'order': 4,
-            'value-radio': [
-                'I have published in this field for several years.',
-                'I have published one or two papers in this area.',
-                'I have read many papers in this area.',
-                'I do not know much about this area.'
-            ],
-            'description': 'Please make a selection that represents your experience correctly',
-            'required': True
-        },
-        'review assessment: thoroughness in paper reading': {
-            'order': 5,
-            'values-checkbox': [
-                'I read the paper thoroughly.',
-                'I read the paper at least twice and used my best judgement in assessing the paper.',
-                'I made a quick assessment of this paper.',
-                'N/A'
-            ],
-            'description': 'Check a box or select N/A if it\'s not applicable',
-            'required': True
-        },
-        'review assessment: checking correctness of derivations and theory': {
-            'order': 6,
-            'values-checkbox': [
-                'I carefully checked the derivations and theory.',
-                'I assessed the sensibility of the derivations and theory.',
-                'I did not assess the derivations or theory.',
-                'N/A'
-            ],
-            'description': 'Check a box or select N/A if no derivations or theory',
-            'required': True
-        },
-        'review assessment: checking correctness of experiments': {
-            'order': 7,
-            'values-checkbox': [
-                'I carefully checked the experiments.',
-                'I assessed the sensibility of the experiments.',
-                'I did not assess the experiments.',
-                'N/A'
-            ],
-            'description': 'Check a box or select N/A if no experiments',
-            'required': True
-        }
-    }
-
+    # - Enable review invitations
     review_stage = openreview.ReviewStage(
         due_date = datetime.datetime(2019, 10, 23, 14, 59),
         additional_fields = additional_review_fields,
         remove_fields = remove_review_fields
     )
     conference.set_review_stage(review_stage)
+
+    # - Enable reviewers to post tags for the desk-reject question
+    blind_notes = conference.get_submissions()
+    tag_due_date = datetime.datetime(2019, 10, 23, 14, 59)
+    for note in blind_notes:
+        tag_invi = client.post_invitation(get_tag_invitation(conference, note, tag_due_date))
 
     ## Area chair decisions
     conference.set_meta_review_stage(openreview.MetaReviewStage(due_date = datetime.datetime(2019, 12, 6, 14, 59)))
