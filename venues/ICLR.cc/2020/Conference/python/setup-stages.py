@@ -27,48 +27,48 @@ additional_review_fields = {
         ],
         'required': True
     },
-    'experience assessment': {
+    'experience_assessment': {
         'order': 4,
         'value-radio': [
-            'I have published in this field for several years.',
-            'I have published one or two papers in this area.',
-            'I have read many papers in this area.',
-            'I do not know much about this area.'
+            '5: I have published in this field for several years.',
+            '4: I have published one or two papers in this area.',
+            '3: I have read many papers in this area.',
+            '1: I do not know much about this area.'
         ],
         'description': 'Please make a selection that represents your experience correctly',
         'required': True
     },
-    'review assessment: thoroughness in paper reading': {
+    'review_assessment:_thoroughness_in_paper_reading': {
         'order': 5,
         'value-radio': [
-            'I read the paper thoroughly.',
-            'I read the paper at least twice and used my best judgement in assessing the paper.',
-            'I made a quick assessment of this paper.',
-            'N/A'
+            '5: I read the paper thoroughly.',
+            '3: I read the paper at least twice and used my best judgement in assessing the paper.',
+            '1: I made a quick assessment of this paper.',
+            '0: N/A'
         ],
-        'description': 'Check a box or select N/A if it\'s not applicable',
+        'description': 'If this is not applicable, please select N/A',
         'required': True
     },
-    'review assessment: checking correctness of derivations and theory': {
+    'review_assessment:_checking_correctness_of_derivations_and_theory': {
         'order': 6,
         'value-radio': [
-            'I carefully checked the derivations and theory.',
-            'I assessed the sensibility of the derivations and theory.',
-            'I did not assess the derivations or theory.',
-            'N/A'
+            '5: I carefully checked the derivations and theory.',
+            '3: I assessed the sensibility of the derivations and theory.',
+            '0: I did not assess the derivations or theory.',
+            '0: N/A'
         ],
-        'description': 'Check a box or select N/A if no derivations or theory',
+        'description': 'If no derivations or theory, please select N/A',
         'required': True
     },
-    'review assessment: checking correctness of experiments': {
+    'review_assessment:_checking_correctness_of_experiments': {
         'order': 7,
         'value-radio': [
-            'I carefully checked the experiments.',
-            'I assessed the sensibility of the experiments.',
-            'I did not assess the experiments.',
-            'N/A'
+            '5: I carefully checked the experiments.',
+            '3: I assessed the sensibility of the experiments.',
+            '0: I did not assess the experiments.',
+            '0: N/A'
         ],
-        'description': 'Check a box or select N/A if no experiments',
+        'description': 'If no experiments, please select N/A',
         'required': True
     }
 }
