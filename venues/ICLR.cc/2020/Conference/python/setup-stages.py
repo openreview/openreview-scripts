@@ -86,7 +86,6 @@ def get_tag_invitation(conference, note, due_date):
         reply = {
             'forum' : note.forum,
             'replyto' : note.forum,
-            "invitation" : conference.get_blind_submission_id(),
             "readers" : {
                 "description": "The users who will be allowed to read the above content.",
                 "values-copied": [
