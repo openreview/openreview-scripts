@@ -14,7 +14,7 @@ additional_review_fields = {
     'review': {
         'order': 2,
         'value-regex': '[\\S\\s]{500,200000}',
-        'description': 'Provide your complete review here (500 - 200000 characters). For guidance in a good review, see this brief reviewer guide (https://iclr.cc/Conferences/2020/ReviewerGuide) with three key bullet points.',
+        'description': 'Provide your complete review here (500 - 200000 characters). For guidance in writing a good review, see this brief reviewer guide (https://iclr.cc/Conferences/2020/ReviewerGuide) with three key bullet points.',
         'required': True
     },
     'rating': {
@@ -156,11 +156,10 @@ if __name__ == '__main__':
     conference.setup_matching(affinity_score_file='path-to-re-created-scores-reviewers.csv')
     conference.setup_matching(is_area_chair = True, affinity_score_file='path-to-re-created-scores-ac.csv')
 
-    conference.set_assignments('reviewers-1')
-    conference.set_assignments('acs-1')
+    conference.set_assignments('reviewers-bids-elmo-final')
+    conference.set_assignments('areachairs-bids-elmo', is_area_chair=True)
 
-    ## Stage: reviews
-    # - Enable review invitations
+    ## Stage: reviews - Enable review invitations
     review_stage = openreview.ReviewStage(
         due_date = datetime.datetime(2019, 10, 23, 14, 59),
         additional_fields = additional_review_fields,
@@ -168,7 +167,7 @@ if __name__ == '__main__':
     )
     conference.set_review_stage(review_stage)
 
-    # - Enable reviewers to post tags for the desk-reject question
+    ## Stage: reviews  - Enable reviewers to post tags for the desk-reject question
     blind_notes = conference.get_submissions()
     tag_due_date = datetime.datetime(2019, 10, 23, 14, 59)
     for note in blind_notes:
