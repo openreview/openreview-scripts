@@ -59,7 +59,6 @@ if __name__ == "__main__":
 
     conference = 'ICLR.cc/2020/Conference'
     paperUrl = "ICLR.cc/2020/Conference/Paper{}".format(paper_number)
-    unsubmittedGroupId = paperUrl + "/Reviewers/Unsubmitted"
     anonReviewerRegex = re.compile(paperUrl+"/AnonReviewer.*")
 
     if reviewer_to_remove :
