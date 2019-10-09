@@ -25,7 +25,7 @@ for note in notes:
         readers=[conference_id], writers=[conference_id]))
 
     notify_inv = openreview.Invitation(
-        id='{}/NeurIPS{}/-/Notification'.format(conference_id, note.number),
+        id='{}/NeurIPS{}/-/Comment_Notification'.format(conference_id, note.number),
         readers=['everyone'],
         invitees=['~'],
         writers=[conference_id],

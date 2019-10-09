@@ -1,7 +1,7 @@
 def process(client, note, invitation):
     SHORT_PHRASE = "NeurIPS Reproducibility Challenge"
     # get all notification tags for this paper
-    notify_inv = invitation.id.replace('Comment', 'Notification')
+    notify_inv = invitation.id.replace('Comment', 'Comment_Notification')
     # TODO change to iterget
     notifications = client.get_tags(invitation=notify_inv)
 
@@ -14,24 +14,6 @@ def process(client, note, invitation):
 
     # get submission author and add to email list if author hasn't set a notification tag
     forumNote = client.get_note(id=note.forum)
-    profile = None
-    # if there is a primary author id, and it is not on the list already, add it
-    if forumNote.content['authorids'][0]:
-        try:
-            if forumNote.content['authorids'][0]:
-                profile = client.get_profile(forumNote.content['authorids'][0])
-        except openreview.OpenReviewException as e:
-            # throw an error if it is something other than "not found"
-            if e.args[0][0] != 'Profile not found':
-                raise e
-        if profile:
-            # if submission author not in list, then add to immediate
-            print("Profile ID: "+profile.id)
-            if profile.id not in all_notifiers and profile.id not in email_list:
-                email_list.append(profile.id)
-        else:
-            # if submission author doesn't have profile, add email to email_list
-            email_list.append(forumNote.content['authorids'][0])
 
     if email_list:
         # send email to those in the immediate notification group
@@ -42,11 +24,11 @@ def process(client, note, invitation):
 
         response = client.send_mail(subject, email_list, formatted_msg)
 
-    # if comment author is not the paper author and doesn't have notifications set up,
+    # if comment author doesn't have notifications set up,
     # send email on how to set notifications
-    if profile and (note.signatures[0] != profile.id) and (note.signatures[0] not in all_notifiers):
+    if note.signatures[0] not in all_notifiers:
         print("comment author needs instructions")
         subject = '[' + SHORT_PHRASE + '] Paper Title: "' + forumNote.content['title'] + '" received your comment'
         message = "If you wish to receive email when people comment on this paper, go to "+client.baseurl + '/forum?id=' + note.forum + \
-            " and select the Notification frequency."
+            " and select the Comment Notification frequency."
         response = client.send_mail(subject, [note.signatures[0]], message)
