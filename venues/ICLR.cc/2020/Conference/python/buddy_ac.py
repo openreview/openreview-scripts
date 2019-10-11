@@ -108,11 +108,11 @@ if __name__ == '__main__':
                     ]
                     },
                 'writers': {
-                    'values-regex': conference_id + '/Paper' + paper_number + '/(Buddy_)*Area_Chair[0-9]+',
+                    'values-regex': conference_id + '/Paper' + paper_number + '/(Buddy_)*Area_Chair[0-9]+$',
                     'description': 'How your identity will be displayed.'
                 },
                 'signatures': {
-                    'values-regex': conference_id + '/Paper' + paper_number + '/(Buddy_)*Area_Chair[0-9]+',
+                    'values-regex': conference_id + '/Paper' + paper_number + '/(Buddy_)*Area_Chair[0-9]+$',
                     'description': 'How your identity will be displayed.'
                 },
                 'content': {
