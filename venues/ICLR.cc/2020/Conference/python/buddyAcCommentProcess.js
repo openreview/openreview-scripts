@@ -8,7 +8,7 @@ function(){
     .then(function(result) {
 
       var forumNote = result.notes[0];
-      var AREA_CHAIRS_ID = CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chairs';
+      var AREA_CHAIRS_ID = CONFERENCE_ID + '/Paper' + forumNote.number + '/Area_Chair1';
       var BUDDY_AREA_CHAIRS_ID = CONFERENCE_ID + '/Paper' + forumNote.number + '/Buddy_Area_Chair1';
       var buddy_ac_regex = /Buddy/;
 
