@@ -25,7 +25,7 @@ if __name__ == '__main__':
     if not buddy_ac_parent_group:
         ac_group = client.get_group(conference.get_area_chairs_id())
 
-        buddy_ac_group = client.post_group(
+        print('Posted ', client.post_group(
             openreview.Group(
                 id = conference_id + '/' + buddy_ac_parent_group_name,
                 readers = [
@@ -39,7 +39,7 @@ if __name__ == '__main__':
                 web = 'buddyAreachairWebfield.js',
                 members = ac_group.members
             )
-        )
+        ).id)
 
     map_meta_review_invitations = {invitation.id.split('Paper')[1].split('/')[0]: invitation for invitation in openreview.tools.iterget_invitations(client, regex = conference_id + '/Paper[0-9]+/-/Meta_Review')}
 
@@ -56,21 +56,20 @@ if __name__ == '__main__':
 
         ## Create buddy ac group for this paper
         if paper_number not in map_paper_buddy_ac_groups:
-            individual_buddy_group = client.post_group(
+            print('Posted ', client.post_group(
                 openreview.Group(
                     id = individual_buddy_group_id,
                     readers = [
                         conference_id,
                         conference.get_program_chairs_id(),
-                        conference.get_area_chairs_id(paper_number),
-                        individual_buddy_group_id],
+                        conference.get_area_chairs_id(paper_number)],
                     nonreaders = [conference_id + '/Paper' + paper_number + '/Authors'],
                     signatories = [individual_buddy_group_id],
                     signatures = [conference.get_id()],
                     writers = [conference.get_id()],
                     members = []
                 )
-            )
+            ).id)
 
         paper_ac_individual_group = map_paper_ac_individual_groups.get(paper_number)
         if paper_ac_individual_group and (individual_buddy_group_id not in paper_ac_individual_group.readers):
@@ -113,7 +112,7 @@ if __name__ == '__main__':
                     'description': 'How your identity will be displayed.'
                 },
                 'signatures': {
-                    'values-regex': conference_id + '/Paper6/(Buddy_)*Area_Chair[0-9]+',
+                    'values-regex': conference_id + '/Paper' + paper_number + '/(Buddy_)*Area_Chair[0-9]+',
                     'description': 'How your identity will be displayed.'
                 },
                 'content': {
