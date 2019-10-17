@@ -5,8 +5,7 @@ var SUBMISSION_ID = 'ICLR.cc/2020/Conference/-/Submission';
 var BLIND_SUBMISSION_ID = 'ICLR.cc/2020/Conference/-/Blind_Submission';
 var HEADER = {
   'title': 'Buddy Area Chairs Console',
-  'instructions': '<p class=\"dark\">This page provides information and status             updates for the Papers assigned to you in your role as a Buddy Area Chair for ICLR 2020.</p>',
-  'schedule': '<h4>Coming Soon</h4>            <p>                <em><strong>Please check back later for updates.</strong></em>            </p>'
+  'instructions': '<p class=\"dark\">This page provides information and status             updates for the Papers assigned to you in your role as a Buddy Area Chair for ICLR 2020.</p>'
 };
 var AREA_CHAIR_NAME = 'Area_Chairs';
 var BUDDY_AREA_CHAIR_NAME = 'Buddy_Area_Chairs';
@@ -35,7 +34,7 @@ var main = function() {
   })
   .then(loadData)
   .then(formatData)
-  .then(renderTableAndTasks)
+  .then(renderTable)
   .fail(function() {
     Webfield.ui.errorMessage();
   });
@@ -133,13 +132,6 @@ var loadData = function(result) {
     details: 'replytoNote,repliedNotes'
   });
 
-  var edgeInvitationsP = Webfield.getAll('/invitations', {
-    regex: WILDCARD_INVITATION,
-    invitee: true,
-    duedate: true,
-    type: 'edges'
-  });
-
   if (ENABLE_REVIEWER_REASSIGNMENT) {
     allReviewersP = Webfield.get('/groups', { id: REVIEWER_GROUP })
     .then(function(result) {
@@ -155,7 +147,6 @@ var loadData = function(result) {
     metaReviewsP,
     getReviewerGroups(noteNumbers),
     invitationsP,
-    edgeInvitationsP,
     allReviewersP
   );
 };
@@ -289,16 +280,6 @@ var renderHeader = function() {
       content: loadingMessage,
       extraClasses: 'horizontal-scroll',
       active: true
-    },
-    {
-      heading: 'Buddy AC Schedule',
-      id: 'areachair-schedule',
-      content: HEADER.schedule
-    },
-    {
-      heading: 'Buddy AC Tasks',
-      id: 'areachair-tasks',
-      content: loadingMessage
     }
   ]);
 };
@@ -602,27 +583,7 @@ var renderTableRows = function(rows, container) {
   }
 }
 
-var renderTasks = function(invitations, edgeInvitations) {
-  //  My Tasks tab
-  var tasksOptions = {
-    container: '#areachair-tasks',
-    emptyMessage: 'No outstanding tasks for this conference'
-  }
-  $(tasksOptions.container).empty();
-
-  // Filter out non-areachair tasks
-  var filterFunc = function(inv) {
-    return _.some(inv.invitees, function(invitee) { return invitee.indexOf(BUDDY_AREA_CHAIR_NAME) !== -1; });
-  };
-  var areachairInvitations = _.filter(invitations, filterFunc);
-  var areachairEdgeInvitations = _.filter(edgeInvitations, filterFunc);
-
-  Webfield.ui.newTaskList(areachairInvitations, areachairEdgeInvitations, tasksOptions);
-  $('.tabs-container a[href="#areachair-tasks"]').parent().show();
-}
-
-var renderTableAndTasks = function(fetchedData) {
-  renderTasks(fetchedData.invitations, fetchedData.edgeInvitations);
+var renderTable = function(fetchedData) {
 
   renderStatusTable(
     fetchedData.profiles,
