@@ -127,6 +127,31 @@ if __name__ == '__main__':
 
     conference = openreview.helpers.get_conference(client, 'SkxpQPWdA4')
 
+    ## Update Instruction page for reviewers and ACs
+    conference.set_reviewerpage_header(
+        {
+            "schedule": "<p><ul>\
+            <li>Reviews due : 23 October 2019, 6PM East Africa Time</li>\
+            <li>Discussion & rebuttal period starts : 4 November 2019, 6PM East Africa Time</li>\
+            <li>Rebuttal period ends : 15 November 2019, 6PM East Africa Time</li>\
+            <li>Meta-Reviews due : 6 December 2019, 6PM East Africa Time</li>\
+            </ul></p>"
+        }
+    )
+
+    conference.set_areachairpage_header(
+        {
+            "schedule": "<p><ul>\
+            <li>Reviews due : 23 October 2019, 6PM East Africa Time</li>\
+            <li>Discussion & rebuttal period starts : 4 November 2019, 6PM East Africa Time</li>\
+            <li>Rebuttal period ends : 15 November 2019, 6PM East Africa Time</li>\
+            <li>AC-Reviewer discussion ends : 22 November 2019, 6PM East Africa Time</li>\
+            <li>Meta-Reviewing period starts : 25 December 2019, 6PM East Africa Time</li>\
+            <li>Meta-Reviews due : 6 December 2019, 6PM East Africa Time</li>\
+            </ul></p>"
+        }
+    )
+
     ## Create reviewer registration tasks
     conference.invitation_builder.set_registration_invitation(conference, due_date = datetime.datetime(2019, 9, 25, 14, 59))
 
