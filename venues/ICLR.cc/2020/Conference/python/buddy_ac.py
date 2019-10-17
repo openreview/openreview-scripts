@@ -49,6 +49,8 @@ if __name__ == '__main__':
 
     map_paper_buddy_ac_groups = {group.id.split('Paper')[1].split('/')[0]: group for group in openreview.tools.iterget_groups(client, regex = conference_id + '/Paper[0-9]+/' + buddy_ac_individual_group_name + '$')}
 
+    map_paper_to_official_comment_invitations = {invitation.id.split('Paper')[1].split('/')[0]: invitation for invitation in openreview.tools.iterget_invitations(client, regex = conference_id + '/Paper[0-9]+/-/Official_Comment')}
+
     submissions = conference.get_submissions()
     for paper in submissions:
         paper_number = str(paper.number)
@@ -86,50 +88,8 @@ if __name__ == '__main__':
             paper_meta_rev_invitation.noninvitees = [individual_buddy_group_id]
             client.post_invitation(paper_meta_rev_invitation)
 
-        ## Post AC & AC-Buddy only Comment invitation for this paper
-        ac_conversation_invitation = openreview.Invitation(
-            id = conference_id + '/Paper' + paper_number + '/-/Area_Chair_Only_Comment',
-            readers = [
-                conference.get_area_chairs_id(number = paper_number),
-                conference_id
-            ],
-            writers = [conference_id],
-            signatures = [conference_id],
-            invitees = [
-                conference.get_area_chairs_id(number = paper_number)
-            ],
-            reply = {
-                'forum' : paper.forum,
-                'readers': {
-                    'description': 'Select all user groups that should be able to read this comment.',
-                    'values': [
-                        conference.get_area_chairs_id(number = paper_number),
-                        conference.get_program_chairs_id()
-                    ]
-                    },
-                'writers': {
-                    'values-regex': conference_id + '/Paper' + paper_number + '/(Buddy_)*Area_Chair[0-9]+$',
-                    'description': 'How your identity will be displayed.'
-                },
-                'signatures': {
-                    'values-regex': conference_id + '/Paper' + paper_number + '/(Buddy_)*Area_Chair[0-9]+$',
-                    'description': 'How your identity will be displayed.'
-                },
-                'content': {
-                    'comment': {
-                        'value-regex': '[\\S\\s]{1,5000}',
-                        'required': True,
-                        'order': 1,
-                        'description': 'Your comment or reply (max 5000 characters).'
-                    },
-                    'title': {
-                        'value-regex': '.{1,500}',
-                        'required': True,
-                        'order': 0,
-                        'description': 'Brief summary of your comment.'
-                    }
-                }
-            },
-            process = 'buddyAcCommentProcess.js'
-        )
-        client.post_invitation(ac_conversation_invitation)
+        ## Update Official Comment invitation for this paper
+        for paper_number in map_paper_to_official_comment_invitations:
+            official_comment_invitation = map_paper_to_official_comment_invitations[paper_number]
+            official_comment_invitation.reply['signatures']['values-regex'] += '|' + conference.get_id() + '/Paper' + paper_number + '/' + buddy_ac_individual_group_name
+            client.post_invitation(official_comment_invitation)
