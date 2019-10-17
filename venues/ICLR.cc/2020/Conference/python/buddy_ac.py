@@ -89,7 +89,6 @@ if __name__ == '__main__':
             client.post_invitation(paper_meta_rev_invitation)
 
         ## Update Official Comment invitation for this paper
-        for paper_number in map_paper_to_official_comment_invitations:
-            official_comment_invitation = map_paper_to_official_comment_invitations[paper_number]
-            official_comment_invitation.reply['signatures']['values-regex'] += '|' + conference.get_id() + '/Paper' + paper_number + '/' + buddy_ac_individual_group_name
-            client.post_invitation(official_comment_invitation)
+        official_comment_invitation = map_paper_to_official_comment_invitations[paper_number]
+        official_comment_invitation.reply['signatures']['values-regex'] += '|' + conference.get_id() + '/Paper' + paper_number + '/' + buddy_ac_individual_group_name
+        client.post_invitation(official_comment_invitation)
