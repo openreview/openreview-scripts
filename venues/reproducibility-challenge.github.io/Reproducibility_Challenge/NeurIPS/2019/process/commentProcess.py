@@ -1,9 +1,7 @@
 def process(client, note, invitation):
     SHORT_PHRASE = "NeurIPS Reproducibility Challenge"
     # get all notification tags for this paper
-    notify_inv = invitation.id.replace('Comment', 'Notification_Subscription')
-    # TODO change to iterget
-    notifications = client.get_tags(invitation=notify_inv)
+    notifications = client.get_tags(forum=note.forum)
 
     email_list = [tag.signatures[0] for tag in notifications if tag.tag == 'Immediate']
     all_notifiers = [tag.signatures[0] for tag in notifications]

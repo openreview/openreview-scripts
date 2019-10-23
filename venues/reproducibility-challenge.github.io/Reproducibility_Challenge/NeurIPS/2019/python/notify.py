@@ -1,5 +1,6 @@
 
 import argparse
+import datetime
 import openreview
 from openreview import tools
 
@@ -8,7 +9,6 @@ parser.add_argument('--baseurl', help="base url")
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--freq', required=True, help="Daily or Weekly")
-parser.add_argument('--tcdate', required=True, help="Time in msec of last update")
 parser.add_argument('--notify_author', default=False)
 args = parser.parse_args()
 
@@ -37,7 +37,16 @@ def get_author_id(forumNote):
 
 
 # load recent comments
-comments = tools.iterget_notes(client, mintcdate = args.tcdate, invitation = conference_id+'/.*/-/Comment')
+min_date = datetime.datetime.utcnow().timestamp()*1000
+if args.freq == "Daily":
+    min_date -= 24*60*60*1000
+elif args.freq == "Weekly":
+    min_date -= 7*24*60*60*1000
+else:
+    print("Invalid freq: "+args.freq)
+    quit()
+
+comments = tools.iterget_notes(client, mintcdate = min_date, invitation = conference_id+'/.*/-/Comment')
 comment_by_forum = {}
 for comment in comments:
     if comment.forum not in comment_by_forum:
