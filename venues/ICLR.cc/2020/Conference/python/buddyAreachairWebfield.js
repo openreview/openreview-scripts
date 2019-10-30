@@ -5,7 +5,7 @@ var SUBMISSION_ID = 'ICLR.cc/2020/Conference/-/Submission';
 var BLIND_SUBMISSION_ID = 'ICLR.cc/2020/Conference/-/Blind_Submission';
 var HEADER = {
   'title': 'Buddy Area Chairs Console',
-  'instructions': '<p class=\"dark\">This page provides information and status             updates for the Papers assigned to you in your role as a Buddy Area Chair for ICLR 2020.</p>'
+  'instructions': '<p class=\"dark\">This page provides information and status updates for the Papers assigned to you in your role as a Buddy Area Chair for ICLR 2020.</p>'
 };
 var AREA_CHAIR_NAME = 'Area_Chairs';
 var BUDDY_AREA_CHAIR_NAME = 'Buddy_Area_Chairs';
@@ -305,13 +305,10 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     Paper_Title: function(row) { return _.toLower(_.trim(row[2].content.title)); },
     Number_of_Reviews_Submitted: function(row) { return row[3].numSubmittedReviews; },
     Number_of_Reviews_Missing: function(row) { return row[3].numReviewers - row[3].numSubmittedReviews; },
-    Average_Rating: function(row) { return row[4].averageRating === 'N/A' ? 0 : row[4].averageRating; },
-    Max_Rating: function(row) { return row[4].maxRating === 'N/A' ? 0 : row[4].maxRating; },
-    Min_Rating: function(row) { return row[4].minRating === 'N/A' ? 0 : row[4].minRating; },
-    Average_Confidence: function(row) { return row[5].averageConfidence === 'N/A' ? 0 : row[5].averageConfidence; },
-    Max_Confidence: function(row) { return row[5].maxConfidence === 'N/A' ? 0 : row[5].maxConfidence; },
-    Min_Confidence: function(row) { return row[5].minConfidence === 'N/A' ? 0 : row[5].minConfidence; },
-    Meta_Review_Rating: function(row) { return row[6].recommendation ? _.toInteger(row[6].recommendation.split(':')[0]) : 0; }
+    Average_Rating: function(row) { return row[3].averageRating === 'N/A' ? 0 : row[3].averageRating; },
+    Max_Rating: function(row) { return row[3].maxRating === 'N/A' ? 0 : row[3].maxRating; },
+    Min_Rating: function(row) { return row[3].minRating === 'N/A' ? 0 : row[3].minRating; },
+    Meta_Review_Rating: function(row) { return row[4].recommendation ? _.toInteger(row[4].recommendation.split(':')[0]) : 0; }
   };
   var sortResults = function(newOption, switchOrder) {
     if (switchOrder) {
@@ -483,7 +480,7 @@ var renderStatusTable = function(profiles, notes, completedReviews, metaReviews,
     renderTableRows(rows, container);
   } else {
     $(container).empty().append('<p class="empty-message">No assigned papers. ' +
-      'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
+    'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
   }
 };
 
@@ -547,14 +544,6 @@ var renderTableRows = function(rows, container) {
     },
     Handlebars.templates.noteSummary,
     Handlebars.templates.noteReviewers,
-    function(data) {
-      return '<h4>Avg: ' + data.averageRating + '</h4><span>Min: ' + data.minRating + '</span>' +
-        '<br><span>Max: ' + data.maxRating + '</span>';
-    },
-    function(data) {
-      return '<h4>Avg: ' + data.averageConfidence + '</h4><span>Min: ' + data.minConfidence + '</span>' +
-        '<br><span>Max: ' + data.maxConfidence + '</span>';
-    },
     Handlebars.templates.noteMetaReviewStatus
   ];
 
@@ -567,7 +556,7 @@ var renderTableRows = function(rows, container) {
   var tableHtml = Handlebars.templates['components/table']({
     headings: [
       '<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary',
-      'Review Progress', 'Rating', 'Confidence', 'Meta Review Status'
+      'Review Progress', 'Meta Review Status'
     ],
     rows: rowsHtml,
     extraClasses: 'ac-console-table'
@@ -651,41 +640,41 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     }
   }
 
+  var averageRating = 'N/A';
+  var minRating = 'N/A';
+  var maxRating = 'N/A';
+  if (ratings.length) {
+    averageRating = _.round(_.sum(ratings) / ratings.length, 2);
+    minRating = _.min(ratings);
+    maxRating = _.max(ratings);
+  }
+
+  var averageConfidence = 'N/A';
+  var minConfidence = 'N/A';
+  var maxConfidence = 'N/A';
+  if (confidences.length) {
+    averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
+    minConfidence = _.min(confidences);
+    maxConfidence = _.max(confidences);
+  }
+
   var cell2 = {
     noteId: note.id,
     paperNumber: note.number,
     numSubmittedReviews: Object.keys(completedReviews).length,
     numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
+    averageRating: averageRating,
+    maxRating: maxRating,
+    minRating: minRating,
+    averageConfidence: averageConfidence,
+    minConfidence: minConfidence,
+    maxConfidence: maxConfidence,
     sendReminder: true,
     expandReviewerList: false,
     enableReviewerReassignment : ENABLE_REVIEWER_REASSIGNMENT
   };
   reviewerSummaryMap[note.number] = cell2;
-
-  // Rating cell
-  var cell3 = {
-    averageRating: 'N/A',
-    minRating: 'N/A',
-    maxRating: 'N/A'
-  };
-  if (ratings.length) {
-    cell3.averageRating = _.round(_.sum(ratings) / ratings.length, 2);
-    cell3.minRating = _.min(ratings);
-    cell3.maxRating = _.max(ratings);
-  }
-
-  // Confidence cell
-  var cell4 = {
-    averageConfidence: 'N/A',
-    minConfidence: 'N/A',
-    maxConfidence: 'N/A'
-  };
-  if (confidences.length) {
-    cell4.averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
-    cell4.minConfidence = _.min(confidences);
-    cell4.maxConfidence = _.max(confidences);
-  }
 
   // Status cell
   var invitationUrlParams = {
@@ -693,13 +682,13 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview) {
     noteId: note.id,
     invitationId: getInvitationId('Meta_Review', note.number)
   };
-  var cell5 = {};
+  var cell3 = {};
   if (metaReview) {
-    cell5.recommendation = metaReview.content.recommendation;
-    cell5.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
+    cell3.recommendation = metaReview.content.recommendation;
+    cell3.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id;
   }
 
-  return [cellCheck, cell0, cell1, cell2, cell3, cell4, cell5];
+  return [cellCheck, cell0, cell1, cell2, cell3];
 };
 
 var findNextAnonGroupNumber = function(paperNumber){
