@@ -8,9 +8,14 @@ def process(client, note, invitation):
     client.add_members_to_group(conference_group, "OpenReview.net/Support")
 
     forum = client.get_note(id=note.forum)
-    comment_readers = forum.content['Contact Emails'] + ['OpenReview.net/Support']
+    ## Add conference program chairs to the request form's comment invitation
+    comment_readers = [conference.get_program_chairs_id(), 'OpenReview.net/Support']
+    comment_invitation = client.get_invitation(id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Comment')
+    comment_invitation.reply['readers']['values'] = comment_readers
+    comment_invitation = client.post_invitation(comment_invitation)
+
     comment_note = openreview.Note(
-        invitation = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Comment',
+        invitation = comment_invitation.id,
         forum = forum.id,
         replyto = forum.id,
         readers = comment_readers,
@@ -162,73 +167,6 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
             signatures = [conference.get_program_chairs_id()]
         ))
 
-    review_stage_content = None
-    if forum.content.get('Open Reviewing Policy', None) == 'Submissions and reviews should both be public.':
-        review_stage_content = {
-            'review_start_date': {
-                'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-                'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-                'order': 10
-            },
-            'review_deadline': {
-                'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-                'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-                'required': True,
-                'order': 11
-            },
-            'make_reviews_public': {
-                'description': 'Should the reviews be made public immediately upon posting? Based on your earlier selections, default is "Yes, reviews should be revealed publicly when they are posted".',
-                'value-radio': [
-                    'Yes, reviews should be revealed publicly when they are posted',
-                    'No, reviews should NOT be revealed publicly when they are posted'
-                ],
-                'required': True,
-                'default': 'Yes, reviews should be revealed publicly when they are posted',
-                'order': 24
-            },
-            'release_reviews_to_authors': {
-                'description': 'Should the reviews be visible to paper\'s authors immediately upon posting? Based on your earlier selections, default is "Yes, reviews should be revealed publicly when they are posted".',
-                'value-radio': [
-                    'Yes, reviews should be revealed when they are posted to the paper\'s authors',
-                    'No, reviews should NOT be revealed when they are posted to the paper\'s authors'
-                ],
-                'required': True,
-                'default': 'Yes, reviews should be revealed publicly when they are posted',
-                'order': 25
-            },
-            'release_reviews_to_reviewers': {
-                'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have reviewed the paper or not? Based on your earlier selections, default is "Yes, reviews should be immediately revealed to the all paper\'s reviewers".',
-                'value-radio': [
-                    'Yes, reviews should be immediately revealed to the all paper\'s reviewers',
-                    'No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper'
-                ],
-                'required': True,
-                'default': 'Yes, reviews should be immediately revealed to the all paper\'s reviewers',
-                'order': 26
-            },
-            'email_program_chairs_about_reviews': {
-                'description': 'Should Program Chairs be emailed when each review is received? Default is "No, do not email program chairs about received reviews".',
-                'value-radio': [
-                    'Yes, email program chairs for each review received',
-                    'No, do not email program chairs about received reviews'],
-                'required': True,
-                'default': 'No, do not email program chairs about received reviews',
-                'order': 27
-            },
-            'additional_review_form_options': {
-                'order' : 28,
-                'value-dict': {},
-                'required': False,
-                'description': 'Configure additional options in the review form. Valid JSON expected.'
-            },
-            'remove_review_form_options': {
-                'order': 29,
-                'value-regex': '^[^,]+(,\s*[^,]*)*$',
-                'required': False,
-                'description': 'Comma separated list of fields (review, rating, confidence) that you want removed from the review form.'
-            }
-        }
-
     review_stage_invitation = client.post_invitation(openreview.Invitation(
         id = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Review_Stage',
         super = 'OpenReview.net/Support/-/Review_Stage',
@@ -239,8 +177,7 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
             'readers': {
                 'description': 'The users who will be allowed to read the above content.',
                 'values' : readers
-            },
-            'content': review_stage_content
+            }
         },
         signatures = [conference.get_program_chairs_id()]
     ))

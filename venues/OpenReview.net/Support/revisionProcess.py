@@ -3,12 +3,6 @@ def process(client, note, invitation):
     conference = openreview.helpers.get_conference(client, note.forum)
     forum_note = client.get_note(note.forum)
 
-    comment_readers = forum_note.content['Contact Emails'] + ['OpenReview.net/Support']
-    comment_invitation = client.get_invitation('OpenReview.net/Support/-/Request' + str(forum_note.number) + '/Comment')
-    if comment_readers != comment_invitation.reply['readers']['values']:
-        comment_invitation.reply['readers']['values'] = comment_readers
-        updated_comment_invitaiton = client.post_invitation(comment_invitation)
-
     invitation_type = invitation.id.split('/')[-1]
     if invitation_type in ['Bid_Stage', 'Review_Stage', 'Meta_Review_Stage', 'Decision_Stage']:
         if conference.submission_stage.double_blind:
@@ -22,7 +16,12 @@ def process(client, note, invitation):
         conference.set_bid_stage(openreview.helpers.get_bid_stage(client, forum_note))
 
     elif invitation_type == 'Review_Stage':
-        conference.set_review_stage(openreview.helpers.get_review_stage(client, forum_note))
+        review_stage = openreview.helpers.get_review_stage(client, forum_note)
+        conference.set_review_stage(review_stage)
+        for review_note in openreview.tools.iterget_notes(client, invitation = conference.get_invitation_id(name = conference.review_stage.name, number='.*')):
+            paper_number = review_note.invitation.split('Paper')[1].split('/')[0]
+            review_note.readers = review_stage.get_readers(conference, paper_number)
+            client.post_note(review_note)
 
     elif invitation_type == 'Meta_Review_Stage':
         conference.set_meta_review_stage(openreview.helpers.get_meta_review_stage(client, forum_note))

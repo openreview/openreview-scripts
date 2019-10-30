@@ -351,16 +351,19 @@ recruitment_invitation = client.post_invitation(openreview.Invitation(**{
 bid_stage_content = {
     'bid_start_date': {
         'description': 'When does bidding on submissions begin? Please use the format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
-        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$'
+        'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
+        'order': 6
     },
     'bid_due_date': {
         'description': 'When does bidding on submissions end? Please use the format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-        'required': True
+        'required': True,
+        'order': 7
     },
     'bid_count': {
         'description': 'Minimum bids one should make to mark bidding task completed for them. Default is 50.',
-        'value-regex': '[0-9]*'
+        'value-regex': '[0-9]*',
+        'order': 8
     }
 }
 
@@ -393,43 +396,13 @@ review_stage_content = {
     'review_start_date': {
         'description': 'When does reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-        'order': 10
+        'order': 9
     },
     'review_deadline': {
         'description': 'When does reviewing of submissions end? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'required': True,
-        'order': 11
-    },
-    'make_reviews_public': {
-        'description': 'Should the reviews be made public immediately upon posting? Default is "No, reviews should NOT be revealed publicly when they are posted".',
-        'value-radio': [
-            'Yes, reviews should be revealed publicly when they are posted',
-            'No, reviews should NOT be revealed publicly when they are posted'
-        ],
-        'required': True,
-        'default': 'No, reviews should NOT be revealed publicly when they are posted',
-        'order': 24
-    },
-    'release_reviews_to_authors': {
-        'description': 'Should the reviews be visible to paper\'s authors immediately upon posting? Default is "No, reviews should NOT be revealed when they are posted to the paper\'s authors".',
-        'value-radio': [
-            'Yes, reviews should be revealed when they are posted to the paper\'s authors',
-            'No, reviews should NOT be revealed when they are posted to the paper\'s authors'
-        ],
-        'required': True,
-        'default': 'No, reviews should NOT be revealed when they are posted to the paper\'s authors',
-        'order': 25
-    },
-    'release_reviews_to_reviewers': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their review or not? Default is "No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper".',
-        'value-radio': [
-            'Yes, reviews should be immediately revealed to the all paper\'s reviewers',
-            'No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper'
-        ],
-        'required': True,
-        'default': 'No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper',
-        'order': 26
+        'order': 10
     },
     'email_program_chairs_about_reviews': {
         'description': 'Should Program Chairs be emailed when each review is received? Default is "No, do not email program chairs about received reviews".',
@@ -438,19 +411,28 @@ review_stage_content = {
             'No, do not email program chairs about received reviews'],
         'required': True,
         'default': 'No, do not email program chairs about received reviews',
-        'order': 27
+        'order': 11
+    },
+    'review_readership': {
+        'description': 'Select the readers for reviews. PROGRAM CHAIRS, PAPER\'S AREA CHAIRS and PAPER\'S SUBMITTED REVIEWERS are review readers by default. NOTE that you CAN CHANGE this selection later to reveal reviews to a different set of users. Selecting "everyone" allow public access to all the reviews. (Example: Selecting "Authors of the Paper" will reveal a paper\'s reviews to the paper\'s authors, Selecting "All Reviewers of the Paper" will reveal a paper\'s reviews to all its assigned Reviewers while deselecting this will reveal reviews only to Submitted reviewers of the paper)',
+        'values-checkbox': [
+            'everyone',
+            'All Reviewers of the Paper',
+            'Authors of the Paper'
+        ],
+        'order': 12
     },
     'additional_review_form_options': {
-        'order' : 28,
+        'description': 'Configure additional options in the review form. Valid JSON expected.',
         'value-dict': {},
         'required': False,
-        'description': 'Configure additional options in the review form. Valid JSON expected.'
+        'order' : 13
     },
     'remove_review_form_options': {
-        'order': 29,
+        'description': 'Comma separated list of fields (review, rating, confidence) that you want removed from the review form.',
         'value-regex': '^[^,]+(,\s*[^,]*)*$',
         'required': False,
-        'description': 'Comma separated list of fields (review, rating, confidence) that you want removed from the review form.'
+        'order': 14
     }
 }
 
@@ -483,22 +465,23 @@ meta_review_stage_content = {
     'meta_review_start_date': {
         'description': 'When does the meta reviewing of submissions begin? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-        'order': 12
+        'order': 15
     },
     'meta_review_deadline': {
         'description': 'By when should the meta-reviews be in the system? Please use the following format: YYYY/MM/DD HH:MM (e.g. 2019/01/31 23:59) (Skip this if your venue does not have Area Chairs)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-        'order': 13
+        'order': 16
     },
-    'make_meta_reviews_public': {
-        'description': 'Should the meta reviews be visible publicly immediately upon posting? Default is "No, meta reviews should NOT be revealed publicly when they are posted".',
-        'value-radio': [
-            'Yes, meta reviews should be revealed publicly when they are posted',
-            'No, meta reviews should NOT be revealed publicly when they are posted'
+    'meta_review_readership': {
+        'description': 'Please select the readers for meta-reviews. Note that you CAN change this selection later to reveal meta-reviews to a different set of users. Program Chairs are readers by default. Selecting "everyone" allow public access to the meta-reviews. (Example: Selecting "All Area Chairs" will reveal paper\'s meta-reviews to all Area Chairs in the venue, Selecting "Submitted Reviewers of the Paper" will reveal the paper\'s reviews only to its assigned Reviewers who have submitted their own review)',
+        'values-checkbox': [
+            'everyone',
+            'Area Chairs of the Paper',
+            'All Reviewers of the Paper',
+            'Submitted Reviewers of the Paper',
+            'Authors of the Paper'
         ],
-        'required': True,
-        'default': 'No, meta reviews should NOT be revealed publicly when they are posted',
-        'order': 28
+        'order': 17
     }
 }
 
@@ -531,46 +514,32 @@ decision_stage_content = {
     'decision_start_date': {
         'description': 'When will the program chairs start posting decisions? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-        'order': 14
+        'order': 19
     },
     'decision_deadline': {
         'description': 'By when should all the decisions be in the system? Please use the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-        'order': 15
+        'order': 20
     },
-    'decision_options': {
-        'description': 'What are the decision options (provide comma separated values, e.g. Accept (Best Paper), Accept, Reject)? Leave empty for default options - "Accept (Oral)", "Accept (Poster)", "Reject"',
+    'decision_options_for_acceptance': {
+        'description': 'What are the decision options for accepting a paper (provide comma separated values, e.g. Accept (Best Paper), Accept)? Leave empty for default - "Accept (Oral)", "Accept (Poster)"',
         'value-regex': '.*',
-        'order': 30
+        'order': 21
     },
-    'make_decisions_public': {'description': 'Should the decisions be made public immediately upon posting? Default is "No, decisions should NOT be revealed publicly when they are posted".',
-        'value-radio': [
-            'Yes, decisions should be revealed publicly when they are posted',
-            'No, decisions should NOT be revealed publicly when they are posted'
-        ],
-        'required': True,
-        'default': 'No, decisions should NOT be revealed publicly when they are posted',
-        'order': 31
+    'decision_options_for_rejection': {
+        'description': 'What are the decision options for rejecting a paper (provide comma separated values, e.g. Weak Reject, Strong Reject)? Leave empty for default option - "Reject"',
+        'value-regex': '.*',
+        'order': 22
     },
-    'release_decisions_to_authors': {
-        'description': 'Should the decisions be visible to paper\'s authors immediately upon posting? Default is "No, decisions should NOT be revealed when they are posted to the paper\'s authors".',
-        'value-radio': [
-            'Yes, decisions should be revealed when they are posted to the paper\'s authors',
-            'No, decisions should NOT be revealed when they are posted to the paper\'s authors'
+    'decision_readership': {
+        'description': 'Please select the readers for decision notes. Note that you CAN change this selection later to reveal decisions to a different set of users. Program Chairs are readers by default. Selecting "everyone" allow public access to the decisions. (Example: Selecting "All Area Chairs" will reveal a paper\'s decisions to all Area Chairs in the venue, Selecting "Area Chairs of the Paper" will reveal a paper\'s decision only to its assigned Area Chairs)',
+        'values-checkbox': [
+            'everyone',
+            'Area Chairs of the Paper',
+            'Reviewers of the Paper',
+            'Authors of the Paper'
         ],
-        'required': True,
-        'default': 'No, decisions should NOT be revealed when they are posted to the paper\'s authors',
-        'order': 32
-    },
-    'release_decision_to_reviewers': {
-        'description': 'Should the decisions be immediately revealed to paper\'s reviewers? Default is "No, decisions should not be immediately revealed to the paper\'s reviewers"',
-        'value-radio': [
-            'Yes, decisions should be immediately revealed to the paper\'s reviewers',
-            'No, decisions should not be immediately revealed to the paper\'s reviewers'
-        ],
-        'required': True,
-        'default': 'No, decisions should not be immediately revealed to the paper\'s reviewers',
-        'order': 33
+        'order': 23
     }
 }
 
