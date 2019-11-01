@@ -200,6 +200,18 @@ claim_inv = client.post_invitation(openreview.Invitation(
                  'order': 4,
                  'required': True,
                  'value-radio': ['yes','no']
+            },
+            "team_members": {
+                "description": "Comma separated list of team member names.",
+                "values-regex": ".*",
+                "order": 1,
+                "required": False
+            },
+            "team_emails": {
+                "description": "Comma separated list of team member email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author's profile.",
+                "values-regex": ".*",
+                "order": 2,
+                "required": False
             }
         },
         'invitation': '{}/-/NeurIPS_Submission'.format(conference_id),

@@ -53,13 +53,40 @@ client.post_invitation(notify_inv)
 
 # for each submission, create group (so sub invites can be published)
 # create invite for comment
-notes = tools.iterget_notes(client,invitation=conference_id+"/-/NeurIPS_Submission")
+notes = tools.iterget_notes(client,invitation=conference_id+'/-/NeurIPS_Submission')
+claims = tools.iterget_notes(client, invitation=conference_id+'/-/Claim')
+claims_by_forum = {}
+for claim in claims:
+    if claim.forum not in claims_by_forum:
+        claims_by_forum[claim.forum] = []
+    claimants = set()
+    claimants.add(claim.tauthor)
+    if 'team_emails' in claim.content:
+        for t in claim.content['team_emails']:
+            claimants.add(t)
+    claims_by_forum[claim.forum].append(claimants)
+
 for note in notes:
     # need paper group to publish sub-groups
     paper_group = client.post_group(openreview.Group(
         id='{conference_id}/{number}'.format(conference_id=conference_id, number=note.number),
         signatures=[conference_id], signatories=[conference_id],
         readers=[conference_id], writers=[conference_id]))
+
+    # paper claimants group
+    claimants = claims_by_forum.get(note.forum, [])
+
+    for index, claimant in enumerate(claimants):
+        group_id = paper_group.id + '/Claimants' + str(index+1)
+        claimants_paper_group = client.post_group(openreview.Group(
+            id = group_id,
+            members = list(claimant),
+            readers = [conference_id, group_id],
+            writers = [conference_id],
+            signatures = [conference_id],
+            signatories = [group_id]
+        ))
+        print(claimants_paper_group.id)
 
     # add comment invite
     comment_inv = openreview.Invitation(
@@ -86,7 +113,7 @@ for note in notes:
             },
             'signatures': {
                 'description': 'Your authorized identity to be associated with the above content.',
-                'values-regex': '~.*'
+                'values-regex': '~.*|' + paper_group.id + '/Claimants.*'
             },
             'readers': {
                 'description': 'The users who will be allowed to read the above content.',
