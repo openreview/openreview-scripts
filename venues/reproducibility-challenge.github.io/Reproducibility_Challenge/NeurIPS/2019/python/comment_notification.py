@@ -77,7 +77,7 @@ for note in notes:
     claimants = claims_by_forum.get(note.forum, [])
 
     for index, claimant in enumerate(claimants):
-        group_id = paper_group.id + '/Claimants' + str(index+1)
+        group_id = paper_group.id + '/Claimant' + str(index+1)
         claimants_paper_group = client.post_group(openreview.Group(
             id = group_id,
             members = list(claimant),
@@ -113,7 +113,7 @@ for note in notes:
             },
             'signatures': {
                 'description': 'Your authorized identity to be associated with the above content.',
-                'values-regex': '~.*|' + paper_group.id + '/Claimants.*'
+                'values-regex': '~.*|' + paper_group.id + '/Claimant.*'
             },
             'readers': {
                 'description': 'The users who will be allowed to read the above content.',
