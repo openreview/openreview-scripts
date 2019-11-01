@@ -81,7 +81,9 @@ for forum in comment_by_forum.keys():
         if comment_index >= max_comment:
             message += "  ...\n\n"
 
-        message +='To view all comments, click here: ' +client.baseurl + '/forum?id=' + forum + '\n\nIf you wish to change your email notification preferences for comments on this paper, log into OpenReview.net, visit the link above and change the Notification Subscription frequency.'
+        message += 'To view all comments, click here: ' +client.baseurl + '/forum?id=' + forum
+        message += '\n\nIf you wish to change your email notification preferences for comments on this paper, log into OpenReview.net, visit the link above and change the Notification Subscription frequency.'
+        message += '\nIf you do not have an OpenReview account and want to stop receiving this email, send "Unsubscribe" to info@openreview.net'
         print(email_list)
         print('Subject:'+subject)
         print('Body:'+message)
