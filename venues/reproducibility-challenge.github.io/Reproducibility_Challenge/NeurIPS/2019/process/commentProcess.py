@@ -11,7 +11,7 @@ def process(client, note, invitation):
 
     # add comment author to email list if does not have a tag
     if note.signatures[0] and note.signatures[0] not in all_notifiers:
-        email_list.append[note.signatures[0]]
+        email_list.append(note.signatures[0])
 
     if email_list:
         # send email to those in the immediate notification group

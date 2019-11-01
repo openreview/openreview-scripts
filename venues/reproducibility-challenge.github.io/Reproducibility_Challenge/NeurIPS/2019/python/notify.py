@@ -62,25 +62,24 @@ for forum in comment_by_forum.keys():
     if args.notify_author:
         # add paper author if they haven't set a notification frequency
         author_id = get_author_id(forumNote)
-        notify = tools.iterget_tags(client, invitation=conference_id+'/-/Notification_Subscription', forum=forum, signature=author_id)
+        notify = client.get_tags(invitation=conference_id+'/-/Notification_Subscription', forum=forum, signature=author_id)
         if author_id and not notify:
             email_list.append(author_id)
 
     if email_list:
         # get paper info
-        subject = '[NeurIPS Reproducibility Challenge] "' + forumNote.content['title'] + '" received a comment'
+        subject = '[NeurIPS Reproducibility Challenge] Paper Title: "' + forumNote.content['title'] + '" comment ' + args.freq + ' report'
         message = 'NeurIPS paper "'+forumNote.content['title']+'" received the following comments: \n\n'
         # show at most 3 comments
         max_comment = 3
         # assemble all comments into text
         comment_index = 0
-        for comment in comment_by_forum[forum]:
-            if comment_index >= max_comment:
-                message += '  ...\n\n'
-                break
-            else:
-                message += "  "+comment.signatures[0]+" - "+comment.content['title']+"\n  Comment: " + comment.content['comment']+"\n\n"
+        for comment in comment_by_forum[forum][:max_comment]:
+            message += "  "+comment.signatures[0]+" - "+comment.content['title']+"\n  Comment: " + comment.content['comment']+"\n\n"
             comment_index += 1
+
+        if comment_index >= max_comment:
+            message += "  ...\n\n"
 
         message +='To view all comments, click here: ' +client.baseurl + '/forum?id=' + forum + '\n\nIf you wish to change your email notification preferences for comments on this paper, log into OpenReview.net, visit the link above and change the Notification Subscription frequency.'
         print(email_list)
