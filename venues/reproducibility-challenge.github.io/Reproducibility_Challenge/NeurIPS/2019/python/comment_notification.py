@@ -42,7 +42,7 @@ notify_inv = openreview.Invitation(
         },
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values': [conference_id, conference_id+'/Program_Chairs', '{signatures}']
+            'values-copied': [conference_id, conference_id+'/Program_Chairs', '{signatures}']
         },
         'writers': {
             'values-copied': [conference_id, '{signatures}']
