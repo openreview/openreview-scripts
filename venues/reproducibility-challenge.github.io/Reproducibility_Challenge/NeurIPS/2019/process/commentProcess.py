@@ -1,7 +1,7 @@
 def process(client, note, invitation):
     SHORT_PHRASE = "NeurIPS Reproducibility Challenge"
     # get all notification tags for this paper
-    notifications = client.get_tags(forum=note.forum)
+    notifications = client.get_tags(forum=note.forum, invitation='NeurIPS.cc/2019/Reproducibility_Challenge/-/Notification_Subscription')
 
     email_list = [tag.signatures[0] for tag in notifications if tag.tag == 'Immediate']
     all_notifiers = [tag.signatures[0] for tag in notifications]
@@ -20,4 +20,4 @@ def process(client, note, invitation):
                         + note.content['title'] + '\n\nComment: ' + note.content['comment'] + '\n\nTo view the comment, click here: ' + \
                         client.baseurl + '/forum?id=' + note.forum + '&noteId=' + note.id + '\n\nIf you wish to change your email notification preferences for comments on this paper, log into OpenReview.net, visit the link above and change the Notification Subscription frequency.'
 
-        response = client.send_mail(subject, email_list, formatted_msg)
+        client.send_mail(subject, email_list, formatted_msg)
