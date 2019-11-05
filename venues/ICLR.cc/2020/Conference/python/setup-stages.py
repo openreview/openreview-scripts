@@ -132,7 +132,7 @@ if __name__ == '__main__':
         {
             "schedule": "<p><ul>\
             <li>Reviews due : 23 October 2019, 6PM East Africa Time</li>\
-            <li>Discussion & rebuttal period starts : 6 November 2019, 6PM East Africa Time</li>\
+            <li>Discussion & rebuttal period starts : 5 November 2019, 6PM East Africa Time</li>\
             <li>Rebuttal period ends : 15 November 2019, 6PM East Africa Time</li>\
             <li>Meta-Reviews due : 6 December 2019, 6PM East Africa Time</li>\
             </ul></p>"
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         {
             "schedule": "<p><ul>\
             <li>Reviews due : 23 October 2019, 6PM East Africa Time</li>\
-            <li>Discussion & rebuttal period starts : 6 November 2019, 6PM East Africa Time</li>\
+            <li>Discussion & rebuttal period starts : 5 November 2019, 6PM East Africa Time</li>\
             <li>Rebuttal period ends : 15 November 2019, 6PM East Africa Time</li>\
             <li>AC-Reviewer discussion ends : 22 November 2019, 6PM East Africa Time</li>\
             <li>Meta-Reviewing period starts : 25 December 2019, 6PM East Africa Time</li>\
