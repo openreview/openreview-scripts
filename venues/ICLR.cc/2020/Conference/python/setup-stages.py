@@ -152,36 +152,36 @@ if __name__ == '__main__':
         }
     )
 
-    # ## Create reviewer registration tasks
-    # conference.invitation_builder.set_registration_invitation(conference, due_date = datetime.datetime(2019, 9, 25, 14, 59))
+    ## Create reviewer registration tasks
+    conference.invitation_builder.set_registration_invitation(conference, due_date = datetime.datetime(2019, 9, 25, 14, 59))
 
-    # ## Enable expertise selection interface
-    # expertise = conference.set_expertise_selection_stage(openreview.ExpertiseSelectionStage(due_date = datetime.datetime(2019, 9, 28, 14, 59)))
+    ## Enable expertise selection interface
+    expertise = conference.set_expertise_selection_stage(openreview.ExpertiseSelectionStage(due_date = datetime.datetime(2019, 9, 28, 14, 59)))
 
-    # ## Anonymize current submissions
-    # conference.create_blind_submissions()
+    ## Anonymize current submissions
+    conference.create_blind_submissions()
 
-    # ## Create withdraw invitations
-    # conference.create_withdraw_invitations()
+    ## Create withdraw invitations
+    conference.create_withdraw_invitations()
 
-    # ## Create desk reject invitations
-    # conference.create_desk_reject_invitations()
+    ## Create desk reject invitations
+    conference.create_desk_reject_invitations()
 
-    # ## Stage: discussion
-    # conference.set_comment_stage(openreview.CommentStage(allow_public_comments = True, unsubmitted_reviewers = True, reader_selection = True, email_pcs = False))
+    ## Stage: discussion
+    conference.set_comment_stage(openreview.CommentStage(allow_public_comments = True, unsubmitted_reviewers = True, reader_selection = True, email_pcs = False))
 
-    # ## Stage: bids
-    # conference.setup_matching(affinity_score_file='reviewer-path-to-scores.csv')
-    # conference.setup_matching(is_area_chair = True, affinity_score_file='ac-path-to-scores.csv')
+    ## Stage: bids
+    conference.setup_matching(affinity_score_file='reviewer-path-to-scores.csv')
+    conference.setup_matching(is_area_chair = True, affinity_score_file='ac-path-to-scores.csv')
 
-    # conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 10, 2, 14, 59), use_affinity_score = True))
+    conference.set_bid_stage(openreview.BidStage(due_date = datetime.datetime(2019, 10, 2, 14, 59), use_affinity_score = True))
 
-    # ## Stage: paper matching
-    # conference.setup_matching(affinity_score_file='path-to-re-created-scores-reviewers.csv')
-    # conference.setup_matching(is_area_chair = True, affinity_score_file='path-to-re-created-scores-ac.csv')
+    ## Stage: paper matching
+    conference.setup_matching(affinity_score_file='path-to-re-created-scores-reviewers.csv')
+    conference.setup_matching(is_area_chair = True, affinity_score_file='path-to-re-created-scores-ac.csv')
 
-    # conference.set_assignments('reviewers-bids-elmo-final')
-    # conference.set_assignments('areachairs-bids-elmo', is_area_chair=True)
+    conference.set_assignments('reviewers-bids-elmo-final')
+    conference.set_assignments('areachairs-bids-elmo', is_area_chair=True)
 
     ## Stage: reviews - Enable review invitations
     review_stage = openreview.ReviewStage(
@@ -204,6 +204,7 @@ if __name__ == '__main__':
             map_paper_to_review[paper_number] = []
         map_paper_to_review[paper_number].append(review)
 
+    ## Stage: reviews  - Reveal reviews and update tags for the desk-reject question
     tag_due_date = datetime.datetime(2019, 11, 30, 14, 59)
     for note in blind_notes:
         tag_invi = client.post_invitation(get_tag_invitation(conference, note, tag_due_date))
@@ -215,17 +216,11 @@ if __name__ == '__main__':
             except:
                 print ('Error posting review: ', review.id)
 
-    # ## Stage: reviews  - Enable reviewers to post tags for the desk-reject question
-    # blind_notes = conference.get_submissions()
-    # tag_due_date = datetime.datetime(2019, 11, 2, 14, 59)
-    # for note in blind_notes:
-    #     tag_invi = client.post_invitation(get_tag_invitation(conference, note, tag_due_date))
+    ## Area chair decisions
+    conference.set_meta_review_stage(openreview.MetaReviewStage(due_date = datetime.datetime(2019, 12, 6, 14, 59)))
 
-    # ## Area chair decisions
-    # conference.set_meta_review_stage(openreview.MetaReviewStage(due_date = datetime.datetime(2019, 12, 6, 14, 59)))
-
-    # ## Program Chairs decisions
-    # conference.set_decision_stage(openreview.DecisionStage(due_date = datetime.datetime(2019, 12, 12, 14, 59)))
+    ## Program Chairs decisions
+    conference.set_decision_stage(openreview.DecisionStage(due_date = datetime.datetime(2019, 12, 12, 14, 59)))
 
     ## Camera ready revisions
     conference.open_revise_submissions()
