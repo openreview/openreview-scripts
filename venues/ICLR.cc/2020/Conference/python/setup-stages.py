@@ -30,10 +30,10 @@ additional_review_fields = {
     'experience_assessment': {
         'order': 4,
         'value-radio': [
-            '5: I have published in this field for several years.',
-            '4: I have published one or two papers in this area.',
-            '3: I have read many papers in this area.',
-            '1: I do not know much about this area.'
+            'I have published in this field for several years.',
+            'I have published one or two papers in this area.',
+            'I have read many papers in this area.',
+            'I do not know much about this area.'
         ],
         'description': 'Please make a selection that represents your experience correctly',
         'required': True
@@ -41,10 +41,10 @@ additional_review_fields = {
     'review_assessment:_thoroughness_in_paper_reading': {
         'order': 5,
         'value-radio': [
-            '5: I read the paper thoroughly.',
-            '3: I read the paper at least twice and used my best judgement in assessing the paper.',
-            '1: I made a quick assessment of this paper.',
-            '0: N/A'
+            'I read the paper thoroughly.',
+            'I read the paper at least twice and used my best judgement in assessing the paper.',
+            'I made a quick assessment of this paper.',
+            'N/A'
         ],
         'description': 'If this is not applicable, please select N/A',
         'required': True
@@ -52,10 +52,10 @@ additional_review_fields = {
     'review_assessment:_checking_correctness_of_derivations_and_theory': {
         'order': 6,
         'value-radio': [
-            '5: I carefully checked the derivations and theory.',
-            '3: I assessed the sensibility of the derivations and theory.',
-            '0: I did not assess the derivations or theory.',
-            '0: N/A'
+            'I carefully checked the derivations and theory.',
+            'I assessed the sensibility of the derivations and theory.',
+            'I did not assess the derivations or theory.',
+            'N/A'
         ],
         'description': 'If no derivations or theory, please select N/A',
         'required': True
@@ -63,10 +63,10 @@ additional_review_fields = {
     'review_assessment:_checking_correctness_of_experiments': {
         'order': 7,
         'value-radio': [
-            '5: I carefully checked the experiments.',
-            '3: I assessed the sensibility of the experiments.',
-            '0: I did not assess the experiments.',
-            '0: N/A'
+            'I carefully checked the experiments.',
+            'I assessed the sensibility of the experiments.',
+            'I did not assess the experiments.',
+            'N/A'
         ],
         'description': 'If no experiments, please select N/A',
         'required': True
@@ -132,7 +132,7 @@ if __name__ == '__main__':
         {
             "schedule": "<p><ul>\
             <li>Reviews due : 23 October 2019, 6PM East Africa Time</li>\
-            <li>Discussion & rebuttal period starts : 4 November 2019, 6PM East Africa Time</li>\
+            <li>Discussion & rebuttal period starts : 5 November 2019, 6PM East Africa Time</li>\
             <li>Rebuttal period ends : 15 November 2019, 6PM East Africa Time</li>\
             <li>Meta-Reviews due : 6 December 2019, 6PM East Africa Time</li>\
             </ul></p>"
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         {
             "schedule": "<p><ul>\
             <li>Reviews due : 23 October 2019, 6PM East Africa Time</li>\
-            <li>Discussion & rebuttal period starts : 4 November 2019, 6PM East Africa Time</li>\
+            <li>Discussion & rebuttal period starts : 5 November 2019, 6PM East Africa Time</li>\
             <li>Rebuttal period ends : 15 November 2019, 6PM East Africa Time</li>\
             <li>AC-Reviewer discussion ends : 22 November 2019, 6PM East Africa Time</li>\
             <li>Meta-Reviewing period starts : 25 December 2019, 6PM East Africa Time</li>\
@@ -185,17 +185,37 @@ if __name__ == '__main__':
 
     ## Stage: reviews - Enable review invitations
     review_stage = openreview.ReviewStage(
-        due_date = datetime.datetime(2019, 10, 23, 14, 59),
+        due_date = datetime.datetime(2019, 11, 2, 14, 59),
         additional_fields = additional_review_fields,
-        remove_fields = remove_review_fields
+        remove_fields = remove_review_fields,
+        public = True
     )
     conference.set_review_stage(review_stage)
 
-    ## Stage: reviews  - Enable reviewers to post tags for the desk-reject question
     blind_notes = conference.get_submissions()
-    tag_due_date = datetime.datetime(2019, 10, 23, 14, 59)
+    official_reviews = openreview.tools.iterget_notes(
+        client,
+        invitation = conference.id + '/Paper[0-9]+/-/Official_Review$'
+    )
+    map_paper_to_review = {}
+    for review in official_reviews:
+        paper_number = review.invitation.split('Paper')[1].split('/')[0]
+        if paper_number not in map_paper_to_review:
+            map_paper_to_review[paper_number] = []
+        map_paper_to_review[paper_number].append(review)
+
+    ## Stage: reviews  - Reveal reviews and update tags for the desk-reject question
+    tag_due_date = datetime.datetime(2019, 11, 30, 14, 59)
     for note in blind_notes:
         tag_invi = client.post_invitation(get_tag_invitation(conference, note, tag_due_date))
+        for review in map_paper_to_review.get(str(note.number), []):
+            review.readers = ['everyone']
+            review.nonreaders = []
+            try:
+                client.post_note(review)
+                print ('Posted correctly for paper: ', str(note.number))
+            except:
+                print ('Error posting review: ', review.id)
 
     ## Area chair decisions
     conference.set_meta_review_stage(openreview.MetaReviewStage(due_date = datetime.datetime(2019, 12, 6, 14, 59)))
@@ -203,5 +223,5 @@ if __name__ == '__main__':
     ## Program Chairs decisions
     conference.set_decision_stage(openreview.DecisionStage(due_date = datetime.datetime(2019, 12, 12, 14, 59)))
 
-    ## Camera ready revisions
+    # Camera ready revisions
     conference.open_revise_submissions()
