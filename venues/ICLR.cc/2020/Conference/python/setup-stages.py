@@ -30,10 +30,10 @@ additional_review_fields = {
     'experience_assessment': {
         'order': 4,
         'value-radio': [
-            '5: I have published in this field for several years.',
-            '4: I have published one or two papers in this area.',
-            '3: I have read many papers in this area.',
-            '1: I do not know much about this area.'
+            'I have published in this field for several years.',
+            'I have published one or two papers in this area.',
+            'I have read many papers in this area.',
+            'I do not know much about this area.'
         ],
         'description': 'Please make a selection that represents your experience correctly',
         'required': True
@@ -41,10 +41,10 @@ additional_review_fields = {
     'review_assessment:_thoroughness_in_paper_reading': {
         'order': 5,
         'value-radio': [
-            '5: I read the paper thoroughly.',
-            '3: I read the paper at least twice and used my best judgement in assessing the paper.',
-            '1: I made a quick assessment of this paper.',
-            '0: N/A'
+            'I read the paper thoroughly.',
+            'I read the paper at least twice and used my best judgement in assessing the paper.',
+            'I made a quick assessment of this paper.',
+            'N/A'
         ],
         'description': 'If this is not applicable, please select N/A',
         'required': True
@@ -52,10 +52,10 @@ additional_review_fields = {
     'review_assessment:_checking_correctness_of_derivations_and_theory': {
         'order': 6,
         'value-radio': [
-            '5: I carefully checked the derivations and theory.',
-            '3: I assessed the sensibility of the derivations and theory.',
-            '0: I did not assess the derivations or theory.',
-            '0: N/A'
+            'I carefully checked the derivations and theory.',
+            'I assessed the sensibility of the derivations and theory.',
+            'I did not assess the derivations or theory.',
+            'N/A'
         ],
         'description': 'If no derivations or theory, please select N/A',
         'required': True
@@ -63,10 +63,10 @@ additional_review_fields = {
     'review_assessment:_checking_correctness_of_experiments': {
         'order': 7,
         'value-radio': [
-            '5: I carefully checked the experiments.',
-            '3: I assessed the sensibility of the experiments.',
-            '0: I did not assess the experiments.',
-            '0: N/A'
+            'I carefully checked the experiments.',
+            'I assessed the sensibility of the experiments.',
+            'I did not assess the experiments.',
+            'N/A'
         ],
         'description': 'If no experiments, please select N/A',
         'required': True
@@ -213,6 +213,7 @@ if __name__ == '__main__':
             review.nonreaders = []
             try:
                 client.post_note(review)
+                print ('Posted correctly for paper: ', str(note.number))
             except:
                 print ('Error posting review: ', review.id)
 
@@ -222,5 +223,5 @@ if __name__ == '__main__':
     ## Program Chairs decisions
     conference.set_decision_stage(openreview.DecisionStage(due_date = datetime.datetime(2019, 12, 12, 14, 59)))
 
-    ## Camera ready revisions
+    # Camera ready revisions
     conference.open_revise_submissions()
