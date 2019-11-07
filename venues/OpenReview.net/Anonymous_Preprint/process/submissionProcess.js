@@ -11,6 +11,7 @@ function() {
     var withdrawProcess = `function() {
         var or3client = lib.or3client;
         var milliseconds = (new Date).getTime();
+        var CONF = 'OpenReview.net/Anonymous_Preprint';
 
         or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token)
         .then(result => {
@@ -24,6 +25,17 @@ function() {
                 return or3client.or3request(or3client.notesUrl, blindedNote, 'POST', token);
             } else {
                 return Promise.reject('No blinded notes with the original ' + note.forum + ' were found');
+            }
+        })
+        .then(result => or3client.or3request(or3client.notesUrl + '?id=' + result.original, {}, 'GET', token))
+        .then(result => {
+            if (result.notes.length > 0){
+                var originalNote = result.notes[0];
+                originalNote.ddate = milliseconds;
+                originalNote.signatures = [CONF];
+                return or3client.or3request(or3client.notesUrl, originalNote, 'POST', token);
+            } else {
+                return Promise.reject('No notes with the id ' + note.original + ' were found');
             }
         })
         .then(result => done())
@@ -72,7 +84,7 @@ function() {
         writers: [CONF],
         members: [],
         readers: [CONF],
-        signatories: []
+        signatories: [CONF]
       };
       return or3client.or3request(or3client.grpUrl, paperGroup, 'POST', token)
       .then(savedPaperGroup => {
@@ -88,7 +100,7 @@ function() {
         };
 
         var withdrawPaperInvitation = {
-          id: CONF + '/-/Paper' + savedNote.number + '/Withdraw',
+          id: savedPaperGroup.id + '/-/Withdraw',
           signatures: [CONF],
           writers: [CONF],
           invitees: [authorGroupId],
@@ -128,7 +140,7 @@ function() {
         }
 
         var addRevisionInvitation = {
-          id: CONF + '/-/Paper' + savedNote.number + '/Revision',
+          id: savedPaperGroup.id + '/-/Revision',
           signatures: [CONF],
           writers: [CONF],
           invitees: [authorGroupId],
