@@ -92,7 +92,7 @@ submission_params = {
         },
         'signatures': {
             'description': 'Your authorized identity to be associated with the above content.',
-            'values-regex': '~.*|' + CONF
+            'values-regex': '~.*|^' + CONF + '$'
         },
         'writers': {
             'values': [CONF]

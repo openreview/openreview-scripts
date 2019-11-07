@@ -43,15 +43,12 @@ function renderConferenceHeader() {
     instructions: '<p><strong>Important Information about Anonymity:</strong><br>\
           When you post a submission to this anonymous preprint server, please provide the real names and email addresses of authors in the submission form below.\
           An anonymous record of your paper will appear in the list below, and will be visible to the public. \
-          The <em>original</em> record of your submission will be private, and will contain your real name(s); \
-          originals can be found in your OpenReview <a href="/tasks">Tasks page</a>.\
-          You can also access the original record of your paper by clicking the "Modifiable Original" \
-          link in the discussion forum page of your paper. The PDF in your submission should not contain the names of the authors. </p>\
-          <p><strong>Posting Revisions to Submissions:</strong><br>\
-          To post a revision to your paper, navigate to the original version, and click on the "Add Revision" button. \
-          Revisions on originals propagate all changes to anonymous copies, while maintaining anonymity.</p> \
-          <p><strong>Withdrawing Submissions:</strong><br>\
-          To withdraw your paper, navigate to the anonymous record of your submission and click on the "Withdraw" button. You will be asked to confirm your withdrawal. \
+          The real name(s) are privately revealed to you and all the co-authors. \
+          The PDF in your submission should not contain the names of the authors. </p>\
+          <p><strong>Revise your paper:</strong><br>\
+          To add a new version of your paper, go to the forum page of your paper and click on the "Revision" button. \
+          <p><strong>Withdraw your paper:</strong><br>\
+          To withdraw your paper, navigate to the forum page and click on the "Withdraw" button. You will be asked to confirm your withdrawal. \
           Withdrawn submissions will be removed from the system entirely. \
           <p><strong>Questions or Concerns:</strong><br> \
           Please contact the OpenReview support team at \

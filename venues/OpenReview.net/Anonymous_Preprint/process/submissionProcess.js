@@ -10,33 +10,20 @@ function() {
 
     var withdrawProcess = `function() {
         var or3client = lib.or3client;
+        var milliseconds = (new Date).getTime();
 
-        var CONF = 'OpenReview.net/Anonymous_Preprint';
-        var BLIND_INVITATION = CONF + '/-/Blind_Submission';
-
-        or3client.or3request(or3client.notesUrl + '?id=' + note.referent, {}, 'GET', token)
+        or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token)
         .then(result => {
             if (result.notes.length > 0){
                 var blindedNote = result.notes[0];
-
-                var milliseconds = (new Date).getTime();
-                blindedNote.ddate = milliseconds
+                blindedNote.ddate = milliseconds;
+                blindedNote.content = {
+                  authors: blindedNote.content.authors,
+                  authorids: blindedNote.content.authorids
+                }
                 return or3client.or3request(or3client.notesUrl, blindedNote, 'POST', token);
             } else {
-                return Promise.reject('No notes with the id ' + note.referent + ' were found');
-            }
-        })
-        .then(result => or3client.or3request(or3client.notesUrl + '?id=' + result.original, {}, 'GET', token))
-        .then(result => {
-            if (result.notes.length > 0){
-                var originalNote = result.notes[0];
-
-                var milliseconds = (new Date).getTime();
-                originalNote.ddate = milliseconds;
-                originalNote.signatures = [CONF];
-                return or3client.or3request(or3client.notesUrl, originalNote, 'POST', token);
-            } else {
-                return Promise.reject('No notes with the id ' + note.original + ' were found');
+                return Promise.reject('No blinded notes with the original ' + note.forum + ' were found');
             }
         })
         .then(result => done())
@@ -45,55 +32,32 @@ function() {
     }`
 
     var getBibtex = function(note) {
+      var now = new Date();
+      var year = now.getFullYear();
       var firstWord = note.content.title.split(' ')[0].toLowerCase();
 
       return '@unpublished{\
-          \nanonymous2018' + firstWord + ',\
+          \nanonymous' + year + firstWord + ',\
           \ntitle={' + note.content.title + '},\
           \nauthor={Anonymous},\
           \njournal={OpenReview Preprint},\
-          \nyear={2018},\
+          \nyear={' + year + '},\
           \nnote={anonymous preprint under review}\
       \n}'
     };
 
-
-    var addRevisionInvitation = {
-      id: CONF + '/-/Paper' + note.number + '/Add_Revision',
-      signatures: [CONF],
-      writers: [CONF],
-      invitees: note.content.authorids.concat(note.signatures),
-      noninvitees: [],
-      readers: ['everyone'],
-      reply: {
-        forum: note.id,
-        referent: note.id,
-        signatures: invitation.reply.signatures,
-        writers: invitation.reply.writers,
-        readers: invitation.reply.readers,
-        content: invitation.reply.content
-      }
-    }
-
     var blindSubmission = {
       original: note.id,
       invitation: BLIND_SUBMISSION,
-      forum: null,
-      parent: null,
       signatures: [CONF],
       writers: [CONF],
       readers: ['everyone'],
       content: {
-        authors: ['Anonymous'],
-        authorids: ['Anonymous'],
-        _bibtex: getBibtex(note)
+        authors: ['Anonymous']
       }
     }
 
-
-
-    or3client.or3request(or3client.inviteUrl, addRevisionInvitation, 'POST', token)
-    .then(result => or3client.or3request(or3client.notesUrl, blindSubmission, 'POST', token))
+    or3client.or3request(or3client.notesUrl, blindSubmission, 'POST', token)
     .then(savedNote => {
       //Send an email to the author of the submitted note, confirming its receipt
       var mail = {
@@ -124,32 +88,65 @@ function() {
         };
 
         var withdrawPaperInvitation = {
-          id: CONF + '/-/Paper' + savedNote.number + '/Withdraw_Paper',
+          id: CONF + '/-/Paper' + savedNote.number + '/Withdraw',
           signatures: [CONF],
           writers: [CONF],
           invitees: [authorGroupId],
           noninvitees: [],
           readers: ['everyone'],
           process: withdrawProcess,
+          multiReply: false,
           reply: {
             forum: savedNote.id,
-            referent: savedNote.id,
-            signatures: invitation.reply.signatures,
-            writers: invitation.reply.writers,
+            replyto: savedNote.id,
+            signatures: {
+              'values-regex': authorGroupId,
+              description: 'How your identity will be displayed.'
+            },
+            writers: {
+              'values-copied': [
+                CONF,
+                '{signatures}'
+              ]
+            },
             readers: invitation.reply.readers,
             content: {
-              withdrawal: {
-                description: 'Confirm your withdrawal. The blind record of your paper will be deleted. Your identity will NOT be revealed. This cannot be undone.',
-                order: 1,
-                'value-radio': ['Confirmed'],
-                required: true
+              title: {
+                value: 'Submission Withdrawn by the Authors',
+                order: 1
+              },
+              withdrawal_confirmation: {
+                  description: 'Please confirm to withdraw.',
+                  'value-radio': [
+                      'I want to withdraw the anonymous submission on behalf of myself and my co-authors.'
+                  ],
+                  order: 2,
+                  required: true
               }
             }
           }
         }
 
+        var addRevisionInvitation = {
+          id: CONF + '/-/Paper' + savedNote.number + '/Revision',
+          signatures: [CONF],
+          writers: [CONF],
+          invitees: [authorGroupId],
+          noninvitees: [],
+          readers: ['everyone'],
+          reply: {
+            forum: note.id,
+            referent: note.id,
+            signatures: invitation.reply.signatures,
+            writers: invitation.reply.writers,
+            readers: invitation.reply.readers,
+            content: invitation.reply.content
+          }
+        }
+
         var batchPromises = Promise.all([
           or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
+          or3client.or3request(or3client.inviteUrl, addRevisionInvitation, 'POST', token),
           or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
           or3client.or3request(or3client.mailUrl, mail, 'POST', token)
         ]);
