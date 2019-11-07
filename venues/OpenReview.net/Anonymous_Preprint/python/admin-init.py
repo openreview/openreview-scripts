@@ -38,8 +38,8 @@ openreview_groups = [openreview.Group(**{
 groups.append(openreview.Group(config.AUTHORS, **config.group_params))
 
 conf_group = [n for n in openreview_groups if n.id == config.CONF][0]
-conf_group.signatures = [client.signature]
 conf_group.add_webfield(config.WEBPATH)
+print("Posting group: ", conf_group.id)
 client.post_group(conf_group)
 
 invitations = []
@@ -52,10 +52,9 @@ invitations.append(openreview.Invitation(
 # public comments are disabled for now
 
 for g in groups:
-    print "Posting group: ", g.id
-    print g
+    print("Posting group: ", g.id)
     client.post_group(g)
 
 for i in invitations:
-    print "Posting invitation: ", i.id
+    print("Posting invitation: ", i.id)
     client.post_invitation(i)
