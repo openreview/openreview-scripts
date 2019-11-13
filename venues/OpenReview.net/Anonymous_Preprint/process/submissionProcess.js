@@ -21,6 +21,7 @@ function() {
 
                 var milliseconds = (new Date).getTime();
                 blindedNote.ddate = milliseconds
+                blindedNote.content = {authorids: blindedNote.content.authorids, authors: blindedNote.content.author, _bibtex: blindedNote.content._bibtex}
                 return or3client.or3request(or3client.notesUrl, blindedNote, 'POST', token);
             } else {
                 return Promise.reject('No notes with the id ' + note.referent + ' were found');
