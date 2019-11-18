@@ -8,41 +8,6 @@ function() {
     var AUTHORS = CONF + '/Authors';
     var BLIND_SUBMISSION = CONF + '/-/Blind_Submission';
 
-    var withdrawProcess = `function() {
-        var or3client = lib.or3client;
-        var milliseconds = (new Date).getTime();
-        var CONF = 'OpenReview.net/Anonymous_Preprint';
-
-        or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token)
-        .then(result => {
-            if (result.notes.length > 0){
-                var blindedNote = result.notes[0];
-                blindedNote.ddate = milliseconds;
-                blindedNote.content = {
-                  authors: blindedNote.content.authors,
-                  authorids: blindedNote.content.authorids
-                }
-                return or3client.or3request(or3client.notesUrl, blindedNote, 'POST', token);
-            } else {
-                return Promise.reject('No blinded notes with the original ' + note.forum + ' were found');
-            }
-        })
-        .then(result => or3client.or3request(or3client.notesUrl + '?id=' + result.original, {}, 'GET', token))
-        .then(result => {
-            if (result.notes.length > 0){
-                var originalNote = result.notes[0];
-                originalNote.ddate = milliseconds;
-                originalNote.signatures = [CONF];
-                return or3client.or3request(or3client.notesUrl, originalNote, 'POST', token);
-            } else {
-                return Promise.reject('No notes with the id ' + note.original + ' were found');
-            }
-        })
-        .then(result => done())
-        .catch(error => done(error));
-        return true;
-    }`
-
     var getBibtex = function(note) {
       var now = new Date();
       var year = now.getFullYear();
@@ -67,7 +32,7 @@ function() {
       content: {
         authors: ['Anonymous']
       }
-    }
+    };
 
     or3client.or3request(or3client.notesUrl, blindSubmission, 'POST', token)
     .then(savedNote => {
@@ -99,67 +64,76 @@ function() {
           signatories: [authorGroupId]
         };
 
-        var withdrawPaperInvitation = {
-          id: savedPaperGroup.id + '/-/Withdraw',
+        var addRevisionInvitation = {
+          id: savedPaperGroup.id + '/-/Revision',
+          super: CONF + '/-/Revision',
+          invitees: [authorGroupId],
           signatures: [CONF],
+          reply: {
+            forum: note.id,
+            referent: note.id,
+            signatures: {
+              'values-regex': authorGroupId,
+              'description': 'How your identity will be displayed.'
+            }
+          }
+        };
+
+        var commentInvitation = {
+          id: savedPaperGroup.id + '/-/Public_Comment',
+          super: CONF+ '/-/Public_Comment',
           writers: [CONF],
           invitees: [authorGroupId],
-          noninvitees: [],
-          readers: ['everyone'],
-          process: withdrawProcess,
-          multiReply: false,
+          signatures: [CONF],
+          reply: {
+            forum: savedNote.id,
+            signatures: {
+              'values-regex': "~.*|"+authorGroupId,
+              'description': 'How your identity will be displayed.'
+            }
+          }
+        };
+
+
+        var revealInvitation = {
+          id: savedPaperGroup.id + '/-/Reveal_Authors',
+          super: CONF+ '/-/Reveal_Authors',
+          writers: [CONF],
+          invitees: [authorGroupId],
+          signatures: [CONF],
           reply: {
             forum: savedNote.id,
             replyto: savedNote.id,
             signatures: {
-              'values-regex': authorGroupId,
-              description: 'How your identity will be displayed.'
-            },
-            writers: {
-              'values-copied': [
-                CONF,
-                '{signatures}'
-              ]
-            },
-            readers: invitation.reply.readers,
-            content: {
-              title: {
-                value: 'Submission Withdrawn by the Authors',
-                order: 1
-              },
-              withdrawal_confirmation: {
-                  description: 'Please confirm to withdraw.',
-                  'value-radio': [
-                      'I want to withdraw the anonymous submission on behalf of myself and my co-authors.'
-                  ],
-                  order: 2,
-                  required: true
-              }
+              'values-regex': "~.*",
+              'description': 'How your identity will be displayed.'
             }
           }
-        }
+        };
 
-        var addRevisionInvitation = {
-          id: savedPaperGroup.id + '/-/Revision',
-          signatures: [CONF],
+        var withdrawPaperInvitation = {
+          id: savedPaperGroup.id + '/-/Withdraw',
+          super: CONF+ '/-/Withdraw',
           writers: [CONF],
           invitees: [authorGroupId],
-          noninvitees: [],
-          readers: ['everyone'],
+          signatures: [CONF],
           reply: {
-            forum: note.id,
-            referent: note.id,
-            signatures: invitation.reply.signatures,
-            writers: invitation.reply.writers,
-            readers: invitation.reply.readers,
-            content: invitation.reply.content
+            forum: savedNote.id,
+            replyto: savedNote.id,
+            signatures: {
+              'values-regex': "~.*|"+authorGroupId,
+              'description': 'How your identity will be displayed.'
+            }
           }
-        }
+        };
+
 
         var batchPromises = Promise.all([
           or3client.or3request(or3client.grpUrl, authorGroup, 'POST', token),
           or3client.or3request(or3client.inviteUrl, addRevisionInvitation, 'POST', token),
+          or3client.or3request(or3client.inviteUrl, revealInvitation, 'POST', token),
           or3client.or3request(or3client.inviteUrl, withdrawPaperInvitation, 'POST', token),
+          or3client.or3request(or3client.inviteUrl, commentInvitation, 'POST', token),
           or3client.or3request(or3client.mailUrl, mail, 'POST', token)
         ]);
 
