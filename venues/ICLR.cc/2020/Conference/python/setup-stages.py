@@ -76,8 +76,7 @@ additional_review_fields = {
 meta_review_fields = {
     'title': {
         'order': 1,
-        'value': 'Meta Review',
-        'description': 'Brief summary of your meta review.',
+        'value': 'Meta Review by Area Chair1',
         'required': True
     },
     'metareview': {
@@ -275,5 +274,5 @@ if __name__ == '__main__':
     ## Program Chairs decisions
     conference.set_decision_stage(openreview.DecisionStage(due_date = datetime.datetime(2019, 12, 12, 14, 59)))
 
-    # Camera ready revisions
+    ## Camera ready revisions
     conference.open_revise_submissions()
