@@ -73,6 +73,47 @@ additional_review_fields = {
     }
 }
 
+meta_review_fields = {
+    'metareview': {
+        'order': 1,
+        'value-regex': '[\\S\\s]{1,5000}',
+        'description': 'This section will be released to the authors and the public as part of the paper\'s review. Please see iclr.cc/Conferences/2020/MetareviewGuide for guidance on writing this meta-review. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$',
+        'required': True
+    },
+    'recommendation': {
+        'order': 2,
+        'value-dropdown': [
+            'Accept (Oral)',
+            'Accept (Poster)',
+            'Reject'
+        ],
+        'required': True
+    },
+    'confidence': {
+        'order': 3,
+        'value-radio': [
+            '4: The area chair is absolutely certain',
+            '3: The area chair is confident but not absolutely certain',
+            '2: The area chair is not sure',
+            '1: The area chair\'s evaluation is an educated guess'
+        ],
+        'required': True
+    },
+    'message_to_program_chairs': {
+        'order': 4,
+        'value-regex': '[\\S\\s]{0,200000}',
+        'description': 'This section is kept private and is only seen by the PCs. You can raise any concerns about this paper, share performance of your reviewers (good and bad), or any other comments related to this paper here.',
+        'required': False
+    },
+    'nominate_for_best_paper': {
+        'order': 5,
+        'value-radio': ['Yes', 'No'],
+        'default': 'No',
+        'description': 'Do you want to recommend this paper for Best Paper award? All nominated papers are collected and assessed later by a separate selection committee.',
+        'required': True
+    }
+}
+
 def get_tag_invitation(conference, note, due_date):
     return openreview.Invitation(
         readers = [conference.get_reviewers_id(note.number), conference.get_program_chairs_id()],
@@ -218,10 +259,15 @@ if __name__ == '__main__':
                 print ('Error posting review: ', review.id)
 
     ## Area chair decisions
-    conference.set_meta_review_stage(openreview.MetaReviewStage(due_date = datetime.datetime(2019, 12, 6, 14, 59)))
+    conference.set_meta_review_stage(
+        openreview.MetaReviewStage(
+            due_date = datetime.datetime(2019, 12, 6, 14, 59),
+            additional_fields = meta_review_fields
+        )
+    )
 
     ## Program Chairs decisions
     conference.set_decision_stage(openreview.DecisionStage(due_date = datetime.datetime(2019, 12, 12, 14, 59)))
 
-    # Camera ready revisions
+    ## Camera ready revisions
     conference.open_revise_submissions()
