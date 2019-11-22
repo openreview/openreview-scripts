@@ -43,9 +43,9 @@ for invite in invites:
     client.post_invitation(invite)
 
 print("Creating super invites.")
-# parent Public comment invite
+# parent Comment invite
 super_comment = client.post_invitation(openreview.Invitation(
-        id = config.CONF+'/-/Public_Comment',
+        id = config.CONF+'/-/Comment',
         signatures = [config.CONF],
         readers = ["everyone"],
         writers = [config.CONF],
@@ -200,7 +200,7 @@ for note in notes:
                      'signatures': {"values-regex": "~.*|"+config.CONF+"/Paper"+str(note.number)+"/Authors",
                                   "description": "How your identity will be displayed."}}
     comment_invite = client.post_invitation(openreview.Invitation(
-            id = config.CONF+'/Paper'+str(note.number)+'/-/Public_Comment',
+            id = config.CONF+'/Paper'+str(note.number)+'/-/Comment',
             super = super_comment.id,
             signatures = [config.CONF],
             reply = comment_reply

@@ -2,15 +2,13 @@ def process(client, note, invitation):
     # create new reference with only the updated bibtex
     import datetime
 
-    # This note points to the original submission,
-    # need to get the blinded submission in order to reveal info
-    # and update the bibtex.
-    # update bibtex with author info
+    # Get the blinded submission in order to reveal author info
     blind_note = client.get_note(id=note.forum)
     blind_note.content={'_bibtex': blind_note.content['_bibtex']}
-    client.post_note(blind_note)
+    # Post blinded note w/o covering author info
+    blind_note = client.post_note(blind_note)
 
-    blind_note = client.get_note(id=note.forum)
+    # then use author info to update bibtex
     first_word = blind_note.content['title'].split(' ')[0].lower()
     year = str(datetime.datetime.now().year)
     first_author = blind_note.content['authors'][0]

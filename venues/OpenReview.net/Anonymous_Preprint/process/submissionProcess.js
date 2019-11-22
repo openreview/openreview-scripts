@@ -80,8 +80,8 @@ function() {
         };
 
         var commentInvitation = {
-          id: savedPaperGroup.id + '/-/Public_Comment',
-          super: CONF+ '/-/Public_Comment',
+          id: savedPaperGroup.id + '/-/Comment',
+          super: CONF+ '/-/Comment',
           writers: [CONF],
           invitees: [authorGroupId],
           signatures: [CONF],
