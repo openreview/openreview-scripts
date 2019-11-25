@@ -261,7 +261,6 @@ if __name__ == '__main__':
     ## Area chair decisions
     with open('meta_review_process.js', 'r') as f:
         process_str = f.read()
-        print (process_str)
         conference.set_meta_review_stage(
             openreview.MetaReviewStage(
                 due_date = datetime.datetime(2019, 12, 6, 14, 59),
