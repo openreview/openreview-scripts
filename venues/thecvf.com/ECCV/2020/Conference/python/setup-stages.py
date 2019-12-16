@@ -80,7 +80,15 @@ if __name__ == '__main__':
             'required': True,
             'description': 'Please confirm that you will adhere to the reviewer instructions available at https://docs.google.com/document/d/1ifx0sIOnCQ2lCjBxy6IQun4xjZlSNyozTQexcMzcN9o/edit?usp=sharing.',
             'value-radio': ['Yes'],
-            'order': 5}
+            'order': 5},
+        'emergency_review' : {
+            'required': True,
+            'description': 'Will you be able to serve as emergency reviewer? If yes, make sure that you are able to review papers within 72-96 hours in the time from May 15 to May 19.',
+            'value-radio': [
+                'Yes, I can provide 2 emergency reviews',
+                'Yes, I can provide 1 emergency review',
+                'No, I can not serve as an emergency reviewer'],
+            'order': 6}
     }
     conference.open_registration(
         due_date = datetime.datetime(2020, 3, 5, 14, 59),
