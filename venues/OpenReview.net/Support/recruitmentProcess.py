@@ -22,7 +22,7 @@ def process(client, note, invitation):
                 invitee_emails.append(email)
                 invitee_names.append(name)
     conference.recruit_reviewers(
-        emails = invitee_emails,
+        invitees = invitee_emails,
         invitee_names = invitee_names,
         reviewers_name = 'Area_Chairs' if note.content['invitee_role'].strip() == 'area chair' else 'Reviewers',
         title = note.content['invitation_email_subject'].strip(),
