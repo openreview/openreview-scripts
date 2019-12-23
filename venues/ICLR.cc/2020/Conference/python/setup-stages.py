@@ -259,12 +259,15 @@ if __name__ == '__main__':
                 print ('Error posting review: ', review.id)
 
     ## Area chair decisions
-    conference.set_meta_review_stage(
-        openreview.MetaReviewStage(
-            due_date = datetime.datetime(2019, 12, 6, 14, 59),
-            additional_fields = meta_review_fields
+    with open('meta_review_process.js', 'r') as f:
+        process_str = f.read()
+        conference.set_meta_review_stage(
+            openreview.MetaReviewStage(
+                due_date = datetime.datetime(2019, 12, 6, 14, 59),
+                additional_fields = meta_review_fields
+            ),
+            process = process_str
         )
-    )
 
     ## Program Chairs decisions
     conference.set_decision_stage(openreview.DecisionStage(due_date = datetime.datetime(2019, 12, 12, 14, 59)))
