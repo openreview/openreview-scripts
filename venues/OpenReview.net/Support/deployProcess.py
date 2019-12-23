@@ -138,7 +138,7 @@ Program Chairs'''.replace('{Abbreviated_Venue_Name}', conference.get_short_name(
                 }
             }
         },
-        signatures = ['~Super_User1'] ##Temporally use the super user, until we can get a way to send email to invitees
+        signatures = ['~Super_User1'] ##Temporarily use the super user, until we can get a way to send email to invitees
     )
 
     if (forum.content['Area Chairs (Metareviewers)'] == "Yes, our venue has Area Chairs") :
