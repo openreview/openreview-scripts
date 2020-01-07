@@ -31,7 +31,7 @@ def get_profile_list(input_list):
         if tilde in all_tildes_dict:
             result_profiles.append(all_tildes_dict[tilde])
         else:
-            print ('Error::: Not found tilde:', tilde)
+            print ('Error - Tilde ({}) not found'.format(tilde))
 
     return result_profiles
 
@@ -93,14 +93,17 @@ ECCV 2020 Program Chairs
     suggested_reviewers = client.get_group(conference.get_reviewers_id() + '/Suggested').members
     invited_reviewers = client.get_group(conference.get_reviewers_id() + '/Invited').members
 
-    print ('looking in suggestions')
     suggested_reviewer_profiles = get_profile_list(suggested_reviewers)
-    print ('looking in invited list')
     invited_reviewer_profiles = get_profile_list(invited_reviewers)
 
     new_invitees = list(set(suggested_reviewer_profiles) - set(invited_reviewer_profiles))
-    print (len(new_invitees))
+    print ('Inviting {} reviewers'.format(len(new_invitees)))
+
     conference.set_recruitment_reduced_load(['4','5','6','7'])
 
-    conference.recruit_reviewers(invitees= new_invitees, title = title , message = message)
-    print (new_invitees)
+    conference.recruit_reviewers(
+        invitees= new_invitees,
+        title = title,
+        message = message,
+        baseurl = 'https://openreview.net'
+    )
