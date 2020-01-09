@@ -211,6 +211,12 @@ revision_content['Additional Submission Options'] = {
     'description': 'Configure additional options in the submission form. Valid JSON expected.'
 }
 
+revision_content['homepage_override'] = {
+    'order' : 19,
+    'value-dict': {},
+    'description': 'Override homepage defaults: title, subtitle, deadline, date, website, location. Valid JSON expected.'
+}
+
 revision_invitation = client.post_invitation(openreview.Invitation(**{
     'id': 'OpenReview.net/Support/-/Revision',
     'readers': ['everyone'],
