@@ -499,6 +499,11 @@ meta_review_stage_content = {
         'required': True,
         'default': 'No, meta reviews should NOT be revealed publicly when they are posted',
         'order': 28
+    },
+    'recommendation_options': {
+        'description': 'What are the meta review recommendation options (provide comma separated values, e.g. Accept (Best Paper), Accept, Reject)? Leave empty for default options - "Accept (Oral)", "Accept (Poster)", "Reject"',
+        'value-regex': '.*',
+        'order': 28
     }
 }
 
