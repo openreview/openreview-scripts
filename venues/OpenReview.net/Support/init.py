@@ -503,7 +503,7 @@ meta_review_stage_content = {
     'recommendation_options': {
         'description': 'What are the meta review recommendation options (provide comma separated values, e.g. Accept (Best Paper), Accept, Reject)? Leave empty for default options - "Accept (Oral)", "Accept (Poster)", "Reject"',
         'value-regex': '.*',
-        'order': 28
+        'order': 29
     }
 }
 
