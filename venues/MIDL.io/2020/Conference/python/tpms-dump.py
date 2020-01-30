@@ -8,6 +8,7 @@
 import argparse
 import openreview
 import csv
+from openreview import tools
 
 ## Argument handling
 parser = argparse.ArgumentParser()
@@ -27,11 +28,7 @@ rows = []
 count = 0
 for email in reviewers_group.members:
     row = []
-    profile = None
-    try:
-        profile = client.get_profile(email_or_id = email)
-    except:
-        pass
+    profile = openreview.tools.get_profile(client, email)
     if(profile):
         preferred_email = profile.content.get('preferred_email', None)
         emails = profile.content.get('emails')
@@ -46,7 +43,6 @@ for email in reviewers_group.members:
         row.append(lastname)
         for email in [e for e in emails if e != preferred_email]:
             row.append(email)
-        
     else:
         count+=1
         row.append(email)
