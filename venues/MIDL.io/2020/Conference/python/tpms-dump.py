@@ -3,13 +3,6 @@
 
     - in csv format: ReviewerEmail,FirstName,LastName,<comma-separated-additional-emails>
 
-2) Papers: Once the deadline has passed you package and provide TPMS
-with all of the submissions, in pdf format. The simplest, given the
-size of that file, is probably for me to download that package from
-some server.
-
-  - papers should be given a numeric ID and files should be named:
-      paperID.pdf (e.g., paper134.pdf)
 '''
 
 import argparse
