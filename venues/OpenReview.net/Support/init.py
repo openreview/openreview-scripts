@@ -44,11 +44,17 @@ request_content = {
         'required': True,
         'order': 4
     },
-    'Contact Emails': {
+    'program_chair_emails': {
         'description': 'Please provide *lower-cased* email addresses of all the Program Chairs or Organizers (comma-separated) including yourself.',
         'values-regex': '([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})',
         'required': True,
         'order': 5
+    },
+    'contact_email': {
+        'description': 'Single point of contact email address which will be displayed on the venue page. For example: pc@venue.org',
+        'value-regex': '([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})',
+        'required': True,
+        'order': 6
     },
     'Area Chairs (Metareviewers)': {
         'description': 'Does your venue have Area Chairs?',
@@ -57,22 +63,22 @@ request_content = {
             'No, our venue does not have Area Chairs'
         ],
         'required': True,
-        'order': 6
+        'order': 7
     },
     'Submission Start Date': {
         'description': 'When would you (ideally) like to have your OpenReview submission portal opened? Please specify the date and time in GMT using the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59). (Skip this if only requesting paper matching service)',
         'value-regex': '.*',
-        'order': 7
+        'order': 8
     },
     'Submission Deadline': {
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
         'description': 'By when do authors need to submit their manuscripts? Please specify the due date in GMT using the following format: YYYY/MM/DD HH:MM(e.g. 2019/01/31 23:59)',
-        'order': 8
+        'order': 9
     },
     'Venue Start Date': {
         'description': 'What date does the venue start? Please use the following format: YYYY/MM/DD (e.g. 2019/01/31)',
         'value-regex': '^[0-9]{4}\/([1-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])(\s+)?((2[0-3]|[01][0-9]|[0-9]):[0-5][0-9])?(\s+)?$',
-        'order': 9,
+        'order': 10,
         'required': True
     },
     'Location': {
