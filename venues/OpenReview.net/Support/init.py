@@ -51,7 +51,7 @@ request_content = {
         'order': 5
     },
     'contact_email': {
-        'description': 'Contact email address displayed in the venue page. For example: pc@venue.org',
+        'description': 'Single point of contact email address which will be displayed in the venue page. For example: pc@venue.org',
         'value-regex': '([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,},){0,}([a-z0-9_\-\.]{2,}@[a-z0-9_\-\.]{2,}\.[a-z]{2,})',
         'required': True,
         'order': 6
