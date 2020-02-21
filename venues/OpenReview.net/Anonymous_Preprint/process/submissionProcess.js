@@ -107,6 +107,9 @@ function() {
             signatures: {
               'values-regex': "~.*",
               'description': 'How your identity will be displayed.'
+            },
+            readers: {
+              values: [CONF, authorGroupId]
             }
           }
         };
@@ -123,6 +126,9 @@ function() {
             signatures: {
               'values-regex': "~.*|"+authorGroupId,
               'description': 'How your identity will be displayed.'
+            },
+            readers: {
+              values: [CONF, authorGroupId]
             }
           }
         };
