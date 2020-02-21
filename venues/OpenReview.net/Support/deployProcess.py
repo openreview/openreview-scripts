@@ -8,7 +8,7 @@ def process(client, note, invitation):
     client.add_members_to_group(conference_group, "OpenReview.net/Support")
 
     forum = client.get_note(id=note.forum)
-    comment_readers = forum.content['Contact Emails'] + ['OpenReview.net/Support']
+    comment_readers = forum.content['program_chair_emails'] + ['OpenReview.net/Support']
     comment_note = openreview.Note(
         invitation = 'OpenReview.net/Support/-/Request' + str(forum.number) + '/Comment',
         forum = forum.id,

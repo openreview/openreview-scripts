@@ -15,7 +15,7 @@ note = client.get_note(args.id)
 conference = openreview.helpers.get_conference(client, note.id)
 
 if conference.is_new():
-    readers = note.content['Contact Emails']
+    readers = note.content['program_chair_emails']
     readers.append('OpenReview.net/Support')
     comment_note = openreview.Note(
         invitation = 'OpenReview.net/Support/-/Request' + str(note.number) + '/Comment',
