@@ -153,14 +153,14 @@ request_invitation = client.post_invitation(openreview.Invitation(**{
             'values-copied': [
                 'OpenReview.net/Support',
                 '{signatures}',
-                '{content["Contact Emails"]}'
+                '{content["program_chair_emails"]}'
             ]
         },
         'writers': {
             'values-copied': [
                 'OpenReview.net/Support',
                 '{signatures}',
-                '{content["Contact Emails"]}'
+                '{content["program_chair_emails"]}'
             ]
         },
         'signatures': {
@@ -236,7 +236,7 @@ revision_invitation = client.post_invitation(openreview.Invitation(**{
         'readers': {
             'values-copied': [
                 'OpenReview.net/Support',
-                '{content["Contact Emails"]}'
+                '{content["program_chair_emails"]}'
             ]
         },
         'writers': {
@@ -389,7 +389,7 @@ bid_stage_invitation = client.post_invitation(openreview.Invitation(**{
         'readers': {
             'values-copied': [
                 'OpenReview.net/Support',
-                '{content["Contact Emails"]}'
+                '{content["program_chair_emails"]}'
             ]
         },
         'writers': {
@@ -479,7 +479,7 @@ review_stage_invitation = client.post_invitation(openreview.Invitation(**{
         'readers': {
             'values-copied': [
                 'OpenReview.net/Support',
-                '{content["Contact Emails"]}'
+                '{content["program_chair_emails"]}'
             ]
         },
         'writers': {
@@ -532,7 +532,7 @@ meta_review_stage_invitation = client.post_invitation(openreview.Invitation(**{
         'readers': {
             'values-copied': [
                 'OpenReview.net/Support',
-                '{content["Contact Emails"]}'
+                '{content["program_chair_emails"]}'
             ]
         },
         'writers': {
@@ -604,7 +604,7 @@ decision_stage_invitation = client.post_invitation(openreview.Invitation(**{
         'readers': {
             'values-copied': [
                 'OpenReview.net/Support',
-                '{content["Contact Emails"]}'
+                '{content["program_chair_emails"]}'
             ]
         },
         'writers': {

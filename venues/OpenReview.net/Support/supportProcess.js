@@ -15,7 +15,7 @@ function(){
     };
 
     var programchairMailPayload = {
-      groups: note.content['Contact Emails'],
+      groups: note.content['program_chair_emails'],
       subject: 'Your request for OpenReview service has been received.',
       message: 'You recently requested conference management services from OpenReview. A member of our support team will contact you shortly. You can view the request here: ' + baseUrl + '/forum?id=' + note.forum
     };
@@ -27,7 +27,7 @@ function(){
         forum: note.forum,
         replyto: null,
         readers: {
-            values: note.content['Contact Emails'].concat(['OpenReview.net/Support'])
+            values: note.content['program_chair_emails'].concat(['OpenReview.net/Support'])
         }
       },
       signatures: ['OpenReview.net/Support']
