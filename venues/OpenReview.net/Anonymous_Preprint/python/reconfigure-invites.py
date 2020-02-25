@@ -122,7 +122,6 @@ super_withdraw = client.post_invitation(openreview.Invitation(
             "description": "The users who will be allowed to read the above content.",
             "values-copied": [
                 config.CONF,
-                "{content.authorids}",
                 "{signatures}"
             ]
         },
@@ -163,7 +162,6 @@ super_reveal = client.post_invitation(openreview.Invitation(
             "description": "The users who will be allowed to read the above content.",
             "values-copied": [
                 config.CONF,
-                "{content.authorids}",
                 "{signatures}"
             ]
         },
