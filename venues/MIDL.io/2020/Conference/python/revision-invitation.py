@@ -20,13 +20,24 @@ if __name__ == '__main__':
     conference.set_authors()
 
     conference.open_revise_submissions(name = 'Revision', start_date = datetime.datetime(2020, 1, 25, 12), 
-                                   due_date = datetime.datetime(2020, 1, 31, 14, 59), 
+                                   due_date = datetime.datetime(2020, 1, 31, 11, 59), 
                                    additional_fields = {
         'pdf': {
             'description': 'Upload a PDF file that ends with .pdf',
             'required': True,
             'value-regex': 'upload',
             'order': 99
+        }, 
+        'supplementary_material': {
+            'description': 'Supplementary material (e.g. code or video). All supplementary material must be self-contained and zipped into a single file.',
+            'order': 100,
+            'value-file': {
+                'fileTypes': [
+                    'zip'
+                ],
+                'size': 50
+            },
+            'required': false
         }
     }, remove_fields = ['pdf'])
 
