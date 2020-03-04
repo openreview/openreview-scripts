@@ -109,7 +109,7 @@ for reviewer in tqdm(reviewer_group.members):
                 'emergency_review_count', '0'))
 
         edge = openreview.Edge(
-            head = None, #Not sure what to use for head
+            head = 'thecvf.com/ECCV/2020/Conference/Reviewers',
             tail = profile.id,
             invitation = 'thecvf.com/ECCV/2020/Conference/Reviewers/-/Custom_Load',
             readers = [
