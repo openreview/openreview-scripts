@@ -2,14 +2,7 @@ from __future__ import print_function
 import requests
 import openreview
 import argparse
-
-
-'''
-Modify the out_dir variable
-'''
-out_dir = '../data/eccv2020_pdfs'
-
-submission_invitation = 'thecvf.com/ECCV/2020/Conference/-/Submission'
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base url")
@@ -18,15 +11,21 @@ parser.add_argument('--password')
 args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+print ('connecting to {0}'.format(client.baseurl))
 
-submissions = openreview.tools.iterget_notes(client, invitation = submission_invitation)
+submission_invitation = 'thecvf.com/ECCV/2020/Conference/-/Submission'
 
-for note in submissions:
-	pdf_name = note.content.get('pdf')
-	if pdf_name:
-		pdf_url = 'https://openreview.net{0}'.format(pdf_name)
-		paper_number = note.number
-		print("retrieving paper{0} at {1}".format(paper_number, pdf_url))
-		pdf_response = client.get_pdf(note.id)
-		with open('{}/paper{}.pdf'.format(out_dir, paper_number), 'wb') as f:
-			f.write(pdf_response)
+submissions = openreview.tools.iterget_notes(client, invitation=submission_invitation, details='original')
+
+if not os.path.exists('eccv2020_pdfs'):
+	os.makedirs('eccv2020_pdfs')
+
+for submission in submissions:
+	if 'pdf' in submission.details['original']['content']:
+		pdf_url = '{0}{1}'.format(client.baseurl, submission.details['original']['content']['pdf'])
+		paper_id = submission.number
+		print ('retrieving Paper{0} at {1}'.format(paper_id, pdf_url))
+		with open('eccv2020_pdfs/Paper{0}.pdf'.format(paper_id), 'wb') as f:
+			f.write(client.get_pdf(submission.details['original']['id']))
+	else:
+		print('Paper number {0} has no pdf'.format(submission.number))
