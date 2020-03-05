@@ -3,6 +3,7 @@ import requests
 import openreview
 import argparse
 import os
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base url")
@@ -20,12 +21,18 @@ submissions = openreview.tools.iterget_notes(client, invitation=submission_invit
 if not os.path.exists('eccv2020_pdfs'):
 	os.makedirs('eccv2020_pdfs')
 
-for submission in submissions:
+submissions_without_pdf = 0
+
+for submission in tqdm(submissions):
 	if 'pdf' in submission.content:
 		pdf_url = '{0}{1}'.format(client.baseurl, submission.content['pdf'])
-		paper_id = submission.number
-		print ('retrieving Paper{0} at {1}'.format(paper_id, pdf_url))
-		with open('eccv2020_pdfs/Paper{0}.pdf'.format(paper_id), 'wb') as f:
-			f.write(client.get_pdf(submission.id))
+		paper_number = submission.number
+		try:
+			with open('eccv2020_pdfs/Paper{0}.pdf'.format(paper_number), 'wb') as f:
+				f.write(client.get_pdf(submission.id))
+		except Exception as e:
+			print ('Error during pdf download for paper number {}, error: {}'.format(submission.number, e))
 	else:
-		print('Paper number {0} has no pdf'.format(submission.number))
+		submissions_without_pdf += 1
+		
+print('{0} papers have no pdfs'.format(submissions_without_pdf))
