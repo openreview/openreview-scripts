@@ -22,7 +22,8 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 iclr_reviewers = client.get_group('ICLR.cc/2020/Conference/Reviewers')
-eccv_reviewers = client.get_group('thecvf.com/ECCV/2020/Conference/Reviewers')
+eccv_reviewers = client.get_group('thecvf.com/ECCV/2020/Conference/Reviewers/Invited')
+eccv_acs = client.get_group('thecvf.com/ECCV/2020/Conference/Area_Chairs/Invited')
 
 cv_venues = [
     'dblp.org/conf/ECCV',
@@ -49,9 +50,9 @@ for reviewer in tqdm(iclr_reviewers.members):
 
 print('Total reviewers', len(cv_reviewers))
 
-cv_invite_reviewers = list(set(cv_reviewers) - set(eccv_reviewers.members))
+cv_invite_reviewers = list(set(cv_reviewers) - set(eccv_reviewers.members + eccv_acs.members))
 
 print('Reviewers to invite', len(cv_invite_reviewers))
 
-
-
+for c in cv_invite_reviewers:
+    print(c)
