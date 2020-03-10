@@ -217,9 +217,13 @@ revision_content['Additional Submission Options'] = {
     'value-dict': {},
     'description': 'Configure additional options in the submission form. Valid JSON expected.'
 }
-
-revision_content['homepage_override'] = {
+revision_content['remove_submission_options'] = {
     'order' : 19,
+    'values-dropdown':  ['keywords', 'pdf', 'TL;DR'],
+    'description': 'Fields to remove from the default form: keywords, pdf, TL;DR'
+}
+revision_content['homepage_override'] = {
+    'order' : 20,
     'value-dict': {},
     'description': 'Override homepage defaults: title, subtitle, deadline, date, website, location. Valid JSON expected.'
 }
