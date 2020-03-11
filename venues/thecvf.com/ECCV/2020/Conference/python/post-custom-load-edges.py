@@ -98,34 +98,31 @@ if __name__ == '__main__':
         if profile:
             ids = profile.content['emailsConfirmed'] + [ n['username'] for n in profile.content['names'] if 'username' in n]
             for i in ids:
-                if i in confirmations:
-                    confirmation=confirmations[i]
-                if i in custom_loads:
-                    custom_load=custom_loads[i]
+                if not confirmation and i in confirmations:
+                    confirmation = confirmations[i]
+                if not custom_load and i in custom_loads:
+                    custom_load = custom_loads[i]
 
-        output=[]
+        output = []
         output.append(reviewer)
         
-        if confirmation:
-            if custom_load:
-                review_capacity = int(custom_load.content['reviewer_load']) - int(confirmation.content.get(
-                    'emergency_review_count', '0'))
-            else:
-                review_capacity = 7 - int(confirmation.content.get(
-                    'emergency_review_count', '0'))
-            
+        if custom_load:
+            review_capacity = int(custom_load.content['reviewer_load']) - (int(confirmation.content.get('emergency_review_count', '0')) if confirmation else 0)
+        else:
+            review_capacity = 7 - (int(confirmation.content.get('emergency_review_count', '0')) if confirmation else 0)
+
+        if review_capacity != 7:
             edge = openreview.Edge(
-                head = 'thecvf.com/ECCV/2020/Conference/' + reviewer_group_name,
-                tail = profile.id,
-                invitation = 'thecvf.com/ECCV/2020/Conference/{}/-/Custom_Load'.format(reviewer_group_name),
-                readers = [
+                head='thecvf.com/ECCV/2020/Conference/' + reviewer_group_name,
+                tail=profile.id,
+                invitation='thecvf.com/ECCV/2020/Conference/{}/-/Custom_Load'.format(reviewer_group_name),
+                readers=[
                     'thecvf.com/ECCV/2020/Conference',
                     'thecvf.com/ECCV/2020/Conference/Area_Chairs',
-                    profile.id
-                    ],
-                writers = ['thecvf.com/ECCV/2020/Conference'],
-                signatures = ['thecvf.com/ECCV/2020/Conference'],
-                weight = review_capacity
+                    profile.id],
+                writers=['thecvf.com/ECCV/2020/Conference'],
+                signatures=['thecvf.com/ECCV/2020/Conference'],
+                weight=review_capacity
             )
             custom_load_edges.append(edge)
 
