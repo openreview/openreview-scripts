@@ -30,21 +30,21 @@ if __name__ == '__main__':
 
     print ('Confirmations received: ', len(confirmations))
 
-    custom_loads = {}
+    reduced_loads = {}
     custom_load_notes = openreview.tools.iterget_notes(
         client,
         invitation='thecvf.com/ECCV/2020/Conference/-/Reduced_Load')
 
     for note in tqdm(custom_load_notes):
         # Check if this user has posted multiple reduced load notes
-        if note.content['user'] in custom_loads:
+        if note.content['user'] in reduced_loads:
             # Check if note is a newer confirmation
-            if note.tcdate > custom_loads[note.content['user']].tcdate:
-                custom_loads[note.content['user']] = note
+            if note.tcdate > reduced_loads[note.content['user']].tcdate:
+                reduced_loads[note.content['user']] = note
         else:
-            custom_loads[note.tauthor] = note
+            reduced_loads[note.content['user']] = note
 
-    print ('Reduced loads received: ', len(custom_loads))
+    print ('Reduced loads received: ', len(reduced_loads))
 
     profile_map = {}
 
@@ -76,13 +76,10 @@ if __name__ == '__main__':
         else:
             inactives.append(member)
 
-
     print ('Number of active profiles:', active)
     print ('Number of inactive profiles:', len(inactives))
 
-    miss = 0
-    total_review_capacity = 0
-
+    users_without_profiles = []
     custom_load_edges = []
 
     for reviewer in tqdm(reviewer_group.members):
@@ -90,26 +87,25 @@ if __name__ == '__main__':
         
         profile = profile_map.get(reviewer, None)
         if not profile:
-            miss += 1
-            profile = openreview.tools.get_profile(client, reviewer)
-
+            users_without_profiles.append(reviewer)
+            continue
+        
         confirmation = None
         custom_load = None
-        if profile:
-            ids = profile.content['emailsConfirmed'] + [ n['username'] for n in profile.content['names'] if 'username' in n]
-            for i in ids:
-                if not confirmation and i in confirmations:
-                    confirmation = confirmations[i]
-                if not custom_load and i in custom_loads:
-                    custom_load = custom_loads[i]
-
-        output = []
-        output.append(reviewer)
         
+        ids = profile.content['emailsConfirmed'] + [ n['username'] for n in profile.content['names'] if 'username' in n]
+        for i in ids:
+            if not confirmation and (i in confirmations):
+                confirmation = confirmations[i]
+            if not custom_load and (i in reduced_loads):
+                custom_load = reduced_loads[i]
+        
+        emergency_review_count = int(confirmation.content.get('emergency_review_count', '0')) if confirmation else 0
+
         if custom_load:
-            review_capacity = int(custom_load.content['reviewer_load']) - (int(confirmation.content.get('emergency_review_count', '0')) if confirmation else 0)
+            review_capacity = int(custom_load.content['reviewer_load']) - emergency_review_count
         else:
-            review_capacity = 7 - (int(confirmation.content.get('emergency_review_count', '0')) if confirmation else 0)
+            review_capacity = 7 - emergency_review_count
 
         if review_capacity != 7:
             edge = openreview.Edge(
@@ -130,4 +126,4 @@ if __name__ == '__main__':
     posted_edges = openreview.tools.post_bulk_edges(client, custom_load_edges)
     print ('Posted {0} edges'.format(len(posted_edges)))
 
-    print ('Users with no profiles: ', miss)
+    print ('Users with no profiles:', users_without_profiles)
