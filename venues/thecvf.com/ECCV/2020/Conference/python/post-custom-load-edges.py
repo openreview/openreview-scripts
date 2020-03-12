@@ -11,14 +11,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-    reviewer_group_name = 'Reviewers'
-
-    reviewer_group = client.get_group('thecvf.com/ECCV/2020/Conference/' + reviewer_group_name)
-
+    
+    reviewer_group = client.get_group('thecvf.com/ECCV/2020/Conference/Reviewers')
     confirmations = {}
     confirmation_notes = openreview.tools.iterget_notes(
                 client,
-                invitation='thecvf.com/ECCV/2020/Conference/{grp}/-/Profile_Confirmation'.format(grp=reviewer_group_name))
+                invitation='thecvf.com/ECCV/2020/Conference/Reviewers/-/Profile_Confirmation')
     for note in tqdm(confirmation_notes):
         # Check if this user has posted multiple confirmations
         if note.tauthor in confirmations:
@@ -31,11 +29,11 @@ if __name__ == '__main__':
     print ('Confirmations received: ', len(confirmations))
 
     reduced_loads = {}
-    custom_load_notes = openreview.tools.iterget_notes(
+    reduced_load_notes = openreview.tools.iterget_notes(
         client,
         invitation='thecvf.com/ECCV/2020/Conference/-/Reduced_Load')
 
-    for note in tqdm(custom_load_notes):
+    for note in tqdm(reduced_load_notes):
         # Check if this user has posted multiple reduced load notes
         if note.content['user'] in reduced_loads:
             # Check if note is a newer confirmation
@@ -47,34 +45,20 @@ if __name__ == '__main__':
     print ('Reduced loads received: ', len(reduced_loads))
 
     profile_map = {}
-
-    emails = []
     tildes = []
-    for ac in reviewer_group.members:
-        if ac.startswith('~'):
-            tildes.append(ac)
-        else:
-            emails.append(ac)
+    for member in reviewer_group.members:
+        if member.startswith('~'):
+            tildes.append(member)
 
     active = 0
     tilde_profiles=client.search_profiles(ids=tildes)
-    email_profiles=client.search_profiles(emails=emails)
-
     inactives = []
-
     for profile in tilde_profiles:
         profile_map[profile.id] = profile
         if profile.active and profile.password:
             active+=1
         else:
             inactives.append(profile.id)
-
-    for member in email_profiles:
-        profile_map[member] = email_profiles[member]
-        if profile_map[member].active and profile_map[member].password:
-            active+=1
-        else:
-            inactives.append(member)
 
     print ('Number of active profiles:', active)
     print ('Number of inactive profiles:', len(inactives))
@@ -109,9 +93,9 @@ if __name__ == '__main__':
 
         if review_capacity != 7:
             edge = openreview.Edge(
-                head='thecvf.com/ECCV/2020/Conference/' + reviewer_group_name,
+                head='thecvf.com/ECCV/2020/Conference/Reviewers',
                 tail=profile.id,
-                invitation='thecvf.com/ECCV/2020/Conference/{}/-/Custom_Load'.format(reviewer_group_name),
+                invitation='thecvf.com/ECCV/2020/Conference/Reviewers/-/Custom_Load',
                 readers=[
                     'thecvf.com/ECCV/2020/Conference',
                     'thecvf.com/ECCV/2020/Conference/Area_Chairs',
