@@ -30,6 +30,7 @@ function(){
             values: note.content['program_chair_emails'].concat(['OpenReview.net/Support'])
         }
       },
+      writers: ['OpenReview.net/Support'],
       signatures: ['OpenReview.net/Support']
     }
 
@@ -40,6 +41,7 @@ function(){
         referent: note.forum,
         forum: note.forum
       },
+      writers: ['OpenReview.net/Support'],
       signatures: ['OpenReview.net']
     }
 
