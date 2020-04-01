@@ -28,12 +28,41 @@ if __name__ == '__main__':
     ))
     print ('Posted group:', emergency_reviewer_group.id)
 
-    emergency_load_invitation = client.get_invitation('thecvf.com/ECCV/2020/Conference/Reviewers/-/Custom_Load')
-    emergency_load_invitation.id = 'thecvf.com/ECCV/2020/Conference/Reviewers/-/Emergency_Load'
-    emergency_load_invitation.reply['content']['head']['query'] = {'id' : 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers'}
-    emergency_load_invitation.reply['content']['tail']['query'] = {'id' : 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers'}
-    emergency_load_invitation = client.post_invitation(emergency_load_invitation)
-    
+    emergency_load_invitation = client.post_invitation(openreview.Invitation(
+        id='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_Max_Papers',
+        signatures=['thecvf.com/ECCV/2020/Conference'],
+        readers=[
+            'thecvf.com/ECCV/2020/Conference',
+            'thecvf.com/ECCV/2020/Conference/Area_Chairs'],
+        writers=['thecvf.com/ECCV/2020/Conference'],
+        invitees=['thecvf.com/ECCV/2020/Conference'],
+        reply = {
+            'readers': {'values-copied': [
+                'thecvf.com/ECCV/2020/Conference',
+                'thecvf.com/ECCV/2020/Conference/Area_Chairs',
+                '{tail}']},
+            'nonreaders': {'values-regex': 'thecvf.com/ECCV/2020/Conference/Paper.*/Authors'},
+            'writers': {'values': ['thecvf.com/ECCV/2020/Conference']},
+            'signatures': {'values': ['thecvf.com/ECCV/2020/Conference']},
+            'content': {
+                'head': {
+                    'query' : {'id': 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers'},
+                    'type': 'Group'
+                },
+                'tail': {
+                    'query' : {'invitation': 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission'},
+                    'type': 'Note'
+                },
+                'weight': {
+                    'value-regex': '[-+]?[0-9]*\\.?[0-9]*'
+                },
+                'label': {
+                    'value-regex': '.*'
+                }
+            }
+        }
+    ))
+    print ('Posted invitation:', emergency_load_invitation.id)
     
     confirmations = {}
     confirmation_notes = openreview.tools.iterget_notes(
@@ -58,20 +87,10 @@ if __name__ == '__main__':
         if member.startswith('~'):
             tildes.append(member)
 
-    active = 0
     tilde_profiles=client.search_profiles(ids=tildes)
-
-    inactives = []
 
     for profile in tilde_profiles:
         profile_map[profile.id] = profile
-        if profile.active and profile.password:
-            active+=1
-        else:
-            inactives.append(profile.id)
-
-    print ('Number of active profiles:', active)
-    print ('Number of inactive profiles:', len(inactives))
 
     emergency_load_edges = []
 
@@ -81,7 +100,6 @@ if __name__ == '__main__':
         profile = profile_map.get(reviewer, None)
         if not profile:
             print ('Issue with reviewer:', reviewer)
-            # profile = openreview.tools.get_profile(client, reviewer)
 
         confirmation = None
         if profile:
@@ -96,7 +114,7 @@ if __name__ == '__main__':
                 edge = openreview.Edge(
                     head = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers',
                     tail = profile.id,
-                    invitation = 'thecvf.com/ECCV/2020/Conference/Reviewers/-/Emergency_Load',
+                    invitation = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_Max_Papers',
                     readers = [
                         'thecvf.com/ECCV/2020/Conference',
                         'thecvf.com/ECCV/2020/Conference/Area_Chairs',
@@ -109,14 +127,11 @@ if __name__ == '__main__':
                 emergency_load_edges.append(edge)
                 emergency_reviewer_group.members.append(profile.id)
 
-    print('posting updated emergency grp')
     x = client.post_group(emergency_reviewer_group)
-    print('posted updated emergency grp')
+    print('posted updated emergency reviewers group')
     print ('Posting {0} edges'.format(len(emergency_load_edges)))
     posted_edges = openreview.tools.post_bulk_edges(client, emergency_load_edges)
     print ('Posted {0} edges'.format(len(posted_edges)))
-
-
 
     map_submissions = {note.number: note for note in openreview.tools.iterget_notes(client, invitation = 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission')}
     all_reviews = openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/-/Official_Review')
@@ -133,13 +148,50 @@ if __name__ == '__main__':
         if paper_num not in map_paper_to_reviews:
             map_paper_to_reviews[paper_num] = []
 
+    emergency_demand_invitation = client.post_invitation(openreview.Invitation(
+        id='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_Max_Users',
+        signatures=['thecvf.com/ECCV/2020/Conference'],
+        readers=[
+            'thecvf.com/ECCV/2020/Conference',
+            'thecvf.com/ECCV/2020/Conference/Area_Chairs'],
+        writers=['thecvf.com/ECCV/2020/Conference'],
+        invitees=['thecvf.com/ECCV/2020/Conference'],
+        reply = {
+            'readers': {'values-copied': [
+                'thecvf.com/ECCV/2020/Conference',
+                'thecvf.com/ECCV/2020/Conference/Area_Chairs',
+                '{tail}']},
+            'nonreaders': {'values-regex': 'thecvf.com/ECCV/2020/Conference/Paper.*/Authors'},
+            'writers': {'values': ['thecvf.com/ECCV/2020/Conference']},
+            'signatures': {'values': ['thecvf.com/ECCV/2020/Conference']},
+            'content': {
+                'head': {
+                    'query' : {'invitation': 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission'},
+                    'type': 'Note'
+                },
+                'tail': {
+                    'query' : {'id': 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers'},
+                    'type': 'Group'
+                },
+                'weight': {
+                    'value-regex': '[-+]?[0-9]*\\.?[0-9]*'
+                },
+                'label': {
+                    'value-regex': '.*'
+                }
+            }
+        }
+    ))
+    print ('Posted invitation:', emergency_demand_invitation.id)
+
     emergency_review_demands = []
+    # TODO: Need to add a conflict edge for the reviewers of the existing reviews for a paper ?
     for paper_num, reviews in map_paper_to_reviews.items():
         if len(reviews) < 3:
             emergency_review_demands.append(openreview.Edge(
                 head = map_submissions[paper_num].id,
-                tail = map_submissions[paper_num].id,
-                invitation = 'thecvf.com/ECCV/2020/Conference/Reviewers/-/Emergency_Demand',
+                tail = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers',
+                invitation = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_Max_Users',
                 readers = [
                     'thecvf.com/ECCV/2020/Conference',
                     'thecvf.com/ECCV/2020/Conference/Area_Chairs',
@@ -148,22 +200,6 @@ if __name__ == '__main__':
                 signatures = ['thecvf.com/ECCV/2020/Conference'],
                 weight = 3 - len(reviews)
             ))
-    
-    # Need to add a conflict edge for the reviewers of the existing reviews for a paper
-
-    emergency_demand_invitation = client.get_invitation('thecvf.com/ECCV/2020/Conference/Reviewers/-/Custom_Load')
-    emergency_demand_invitation.id = 'thecvf.com/ECCV/2020/Conference/Reviewers/-/Emergency_Demand'
-    emergency_demand_invitation.reply['content']['head'] = {
-        'query' : {'invitation': 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission'},
-        'type': 'Note'
-    }
-
-    emergency_demand_invitation.reply['content']['tail'] = {
-        'query' : {'invitation': 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission'},
-        'type': 'Note'
-    }
-
-    emergency_demand_invitation = client.post_invitation(emergency_demand_invitation)
 
     print ('Posting {0} edges'.format(len(emergency_review_demands)))
     posted_edges = openreview.tools.post_bulk_edges(client, emergency_review_demands)
