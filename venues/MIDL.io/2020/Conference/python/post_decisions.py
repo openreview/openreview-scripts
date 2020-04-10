@@ -37,7 +37,7 @@ args = parser.parse_args()
 client = Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print("Connecting to "+client.baseurl)
 
-subject_line = "MIDL Submission decision"
+subject_line = "MIDL Submission Decision"
 message = {}
 message['Reject']='''Dear Author,
 
@@ -72,7 +72,7 @@ def post_decision(paper_num, decision, add_text):
             forum= submissions[int(paper_num)].id,
             signatures= ['MIDL.io/2020/Conference/Program_Chairs'],
             writers= ['MIDL.io/2020/Conference'],
-            readers= ['everyone'],
+            readers= ['MIDL.io/2020/Conference/Paper' + paper_num + '/Authors'],
             content= {
                 'title':'Decision',
                 'decision':decision
