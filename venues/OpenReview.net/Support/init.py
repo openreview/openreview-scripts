@@ -441,13 +441,13 @@ review_stage_content = {
     'release_reviews_to_reviewers': {
         'description': 'Should the reviews be visible to the reviewers',
         'value-radio': [
-            'Reviews should be immediately revealed to the all paper\'s reviewers',
-            'Reviews should be immediately revealed to the assigned paper\'s reviewers',
-            'Reviews should be immediately revealed only to the reviewers who have already reviewed the paper',
-            'Review should be only visible to the reviewer, author of the review'
+            'Reviews should be immediately revealed to all reviewers',
+            'Reviews should be immediately revealed to the paper\'s reviewers',
+            'Reviews should be immediately revealed to the paper\'s reviewers who have already submitted their review',
+            'Review should not be revealed to any reviewer, except to the author of the review'
         ],
         'required': True,
-        'default': 'Review should be only visible to the reviewer, author of the review',
+        'default': 'Review should not be revealed to any reviewer, except to the author of the review',
         'order': 26
     },
     'email_program_chairs_about_reviews': {
