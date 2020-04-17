@@ -149,7 +149,7 @@ if __name__ == '__main__':
             map_paper_to_reviews[paper_num] = []
 
     emergency_demand_invitation = client.post_invitation(openreview.Invitation(
-        id='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_Max_Users',
+        id='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_User_Demands',
         signatures=['thecvf.com/ECCV/2020/Conference'],
         readers=[
             'thecvf.com/ECCV/2020/Conference',
@@ -191,7 +191,7 @@ if __name__ == '__main__':
             emergency_review_demands.append(openreview.Edge(
                 head = map_submissions[paper_num].id,
                 tail = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers',
-                invitation = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_Max_Users',
+                invitation = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_User_Demands',
                 readers = [
                     'thecvf.com/ECCV/2020/Conference',
                     'thecvf.com/ECCV/2020/Conference/Area_Chairs',
