@@ -34,18 +34,18 @@ if __name__ == '__main__':
                 'fname': line[1].strip(),
                 'lname': line[2].strip()}
         map_profiles = client.search_profiles(emails=list(map_email_to_details.keys()))
+        map_profiles_done = {}
         csv_writer = csv.writer(f2)
         csv_writer.writerow(['email', 'firstName', 'lastName', 'profile found', 'active', 'count of publications', 'dblp'])
         for email, content in tqdm(map_email_to_details.items()):
             profile = map_profiles.get(email)
+            if profile:
+                if profile.id in map_profiles_done:
+                    print('Found repeated profile id {} with emails: {}, {}'.format(profile.id, map_profiles_done[profile.id], email))
+                else:
+                    map_profiles_done[profile.id] = email
+
             subs = get_publications(client, profile.id if profile else email)
             active_status = (True if profile.active and profile.password else False) if profile else False
             dblp_url = profile.content.get('dblp', '') if profile else ''
-            csv_writer.writerow([
-                email, 
-                content['fname'], 
-                content['lname'], 
-                True if profile else False, 
-                active_status, 
-                len(subs), 
-                dblp_url])
+            csv_writer.writerow([email, content['fname'], content['lname'], True if profile else False, active_status, len(subs), dblp_url])
