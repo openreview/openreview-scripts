@@ -595,6 +595,16 @@ decision_stage_content = {
         'required': True,
         'default': 'No, decisions should not be immediately revealed to the paper\'s reviewers',
         'order': 33
+    },
+    'notify_to_authors': {
+        'description': 'Should we notify the authors the decision has been posted?, this option is only available when the decision is released to the authors or public',
+        'value-radio': [
+            'Yes, send an email notification to the authors',
+            'No, I will send the emails to the authors'
+        ],
+        'required': True,
+        'default': 'No, I will send the emails to the authors',
+        'order': 34
     }
 }
 
