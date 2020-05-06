@@ -63,10 +63,11 @@ if __name__ == '__main__':
         }
     ))
     print ('Posted invitation:', emergency_load_invitation.id)
-    
+    client.delete_edges(invitation=emergency_load_invitation.id)
+
     confirmations = {}
     confirmation_notes = openreview.tools.iterget_notes(
-        client, 
+        client,
         invitation='thecvf.com/ECCV/2020/Conference/Reviewers/-/Profile_Confirmation')
 
     for note in tqdm(confirmation_notes):
@@ -96,7 +97,7 @@ if __name__ == '__main__':
 
     for reviewer in tqdm(reviewer_group.members):
         review_capacity = 0
-        
+
         profile = profile_map.get(reviewer, None)
         if not profile:
             print ('Issue with reviewer:', reviewer)
@@ -184,6 +185,8 @@ if __name__ == '__main__':
         }
     ))
     print ('Posted invitation:', emergency_demand_invitation.id)
+    client.delete_edges(invitation=emergency_demand_invitation.id)
+
 
     emergency_review_demands = []
     # TODO: Need to add a conflict edge for the reviewers of the existing reviews for a paper ?
