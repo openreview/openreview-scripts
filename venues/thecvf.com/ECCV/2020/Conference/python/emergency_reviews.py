@@ -129,12 +129,13 @@ if __name__ == '__main__':
 
     x = client.post_group(emergency_reviewer_group)
     print('posted updated emergency reviewers group')
-    print ('Posting {0} edges'.format(len(emergency_load_edges)))
+    print('Posting {0} edges'.format(len(emergency_load_edges)))
     posted_edges = openreview.tools.post_bulk_edges(client, emergency_load_edges)
-    print ('Posted {0} edges'.format(len(posted_edges)))
+    print('Posted {0} edges'.format(len(posted_edges)))
 
     map_submissions = {note.number: note for note in openreview.tools.iterget_notes(client, invitation = 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission')}
-    all_reviews = openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/-/Official_Review')
+    all_reviews = list(openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/-/Official_Review$'))
+    print('Found {} official reviews'.format(len(all_reviews)))
     map_paper_to_reviews = {}
     for review in all_reviews:
         paper_num = int(review.invitation.split('Paper')[1].split('/')[0])
