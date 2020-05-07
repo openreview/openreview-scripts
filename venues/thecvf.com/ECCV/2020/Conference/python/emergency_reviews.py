@@ -212,5 +212,41 @@ if __name__ == '__main__':
     posted_edges = openreview.tools.post_bulk_edges(client, emergency_review_demands)
     print('Custom_User_Demands: Posted {0} edges\n'.format(len(posted_edges)))
 
+    emergency_aggregate_invitation = client.post_invitation(openreview.Invitation(
+        id='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Aggregate_Score',
+        signatures=['thecvf.com/ECCV/2020/Conference'],
+        readers=[
+            'thecvf.com/ECCV/2020/Conference',
+            'thecvf.com/ECCV/2020/Conference/Area_Chairs'],
+        writers=['thecvf.com/ECCV/2020/Conference'],
+        invitees=['thecvf.com/ECCV/2020/Conference'],
+        reply = {
+            'readers': {'values-copied': [
+                'thecvf.com/ECCV/2020/Conference',
+                'thecvf.com/ECCV/2020/Conference/Area_Chairs',
+                '{tail}']},
+            'nonreaders': {'values-regex': 'thecvf.com/ECCV/2020/Conference/Paper.*/Authors'},
+            'writers': {'values': ['thecvf.com/ECCV/2020/Conference']},
+            'signatures': {'values': ['thecvf.com/ECCV/2020/Conference']},
+            'content': {
+                'head': {
+                    'query' : {'id': 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission'},
+                    'type': 'Note'
+                },
+                'tail': {
+                    'query' : {'invitation': 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers'},
+                    'type': 'Profile'
+                },
+                'weight': {
+                    'value-regex': '[-+]?[0-9]*\\.?[0-9]*'
+                },
+                'label': {
+                    'value-regex': '.*'
+                }
+            }
+        }
+    ))
+    print('Posted invitation:', emergency_aggregate_invitation.id)
+
     print('\nTotal Emergency Review Demand: {}'.format(total_review_demand))
     print('\nTotal Emergency Review Supply: {}'.format(total_review_capacity))
