@@ -195,9 +195,8 @@ if __name__ == '__main__':
     total_review_demand = 0
     for paper_num, reviews in map_paper_to_reviews.items():
         if len(reviews) < 3:
-            paper_note = map_submissions[paper_num]
             emergency_review_demands.append(openreview.Edge(
-                head=paper_note.id,
+                head=map_submissions[paper_num].id,
                 tail='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers',
                 invitation='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_User_Demands',
                 readers=[
@@ -218,10 +217,10 @@ if __name__ == '__main__':
     reviewer_groups = list(openreview.tools.iterget_groups(client, regex='thecvf.com/ECCV/2020/Conference/Paper.*/AnonReviewer[0-9]*$'))
     print('Found {} anonymous reviewer groups'.format(len(reviewer_groups)))
     for grp in reviewer_groups:
-        paper_number = int(grp.id.split('Paper')[1].split('/')[0])
-        if paper_number in map_submissions and grp.members:
+        paper_num = int(grp.id.split('Paper')[1].split('/')[0])
+        if paper_num in map_submissions and grp.members:
             conflicts.append(openreview.Edge(
-                head=paper_note.id,
+                head=map_submissions[paper_num].id,
                 tail=grp.members[0],
                 invitation='thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict',
                 readers=[
@@ -240,3 +239,9 @@ if __name__ == '__main__':
 
     print('\nTotal Emergency Review Demand: {}'.format(total_review_demand))
     print('\nTotal Emergency Review Supply: {}'.format(total_review_capacity))
+
+    conference = openreview.helpers.get_conference(
+        client, 
+        request_form_id='Skx6tVahYB')
+    
+    conference.setup_matching(delete_existing_conflicts=False)
