@@ -17,9 +17,8 @@ if __name__ == '__main__':
         client,
         invitation = 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission')}
     
-    # Create a map of paper reviewer groups to group members
     conflicts = []
-    
+
     reviewer_groups = list(openreview.tools.iterget_groups(client, regex='thecvf.com/ECCV/2020/Conference/Paper.*/AnonReviewer[0-9]*$'))
     print('Found {} anonymous reviewer groups'.format(len(reviewer_groups)))
 
