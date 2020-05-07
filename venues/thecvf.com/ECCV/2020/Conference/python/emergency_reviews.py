@@ -191,7 +191,6 @@ if __name__ == '__main__':
     client.delete_edges(invitation=emergency_demand_invitation.id)
 
     emergency_review_demands = []
-    conflicts = []
     total_review_demand = 0
     for paper_num, reviews in map_paper_to_reviews.items():
         if len(reviews) < 3:
@@ -213,35 +212,5 @@ if __name__ == '__main__':
     posted_edges = openreview.tools.post_bulk_edges(client, emergency_review_demands)
     print('Custom_User_Demands: Posted {0} edges\n'.format(len(posted_edges)))
 
-    # Create a map of paper reviewer groups to group members
-    reviewer_groups = list(openreview.tools.iterget_groups(client, regex='thecvf.com/ECCV/2020/Conference/Paper.*/AnonReviewer[0-9]*$'))
-    print('Found {} anonymous reviewer groups'.format(len(reviewer_groups)))
-    for grp in reviewer_groups:
-        paper_num = int(grp.id.split('Paper')[1].split('/')[0])
-        if paper_num in map_submissions and grp.members:
-            conflicts.append(openreview.Edge(
-                head=map_submissions[paper_num].id,
-                tail=grp.members[0],
-                invitation='thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict',
-                readers=[
-                    'thecvf.com/ECCV/2020/Conference',
-                    'thecvf.com/ECCV/2020/Conference/Area_Chairs'
-                ],
-                writers=['thecvf.com/ECCV/2020/Conference'],
-                signatures=['thecvf.com/ECCV/2020/Conference'],
-                weight=-1,
-                label='Already Assigned'
-            ))
-
-    print ('thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict: Posting {0} edges'.format(len(conflicts)))
-    posted_edges = openreview.tools.post_bulk_edges(client, conflicts)
-    print ('thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict: Posted {0} edges'.format(len(posted_edges)))
-
     print('\nTotal Emergency Review Demand: {}'.format(total_review_demand))
     print('\nTotal Emergency Review Supply: {}'.format(total_review_capacity))
-
-    conference = openreview.helpers.get_conference(
-        client, 
-        request_form_id='Skx6tVahYB')
-    
-    conference.setup_matching(delete_existing_conflicts=False)
