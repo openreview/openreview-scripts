@@ -62,7 +62,8 @@ if __name__ == '__main__':
             }
         }
     ))
-    print ('Posted invitation:', emergency_load_invitation.id)
+    print('Posted invitation:', emergency_load_invitation.id)
+    print('Deleting edges for invitation', emergency_load_invitation.id)
     client.delete_edges(invitation=emergency_load_invitation.id)
 
     confirmations = {}
@@ -94,6 +95,7 @@ if __name__ == '__main__':
         profile_map[profile.id] = profile
 
     emergency_load_edges = []
+    total_review_capacity = 0
 
     for reviewer in tqdm(reviewer_group.members):
         review_capacity = 0
@@ -112,6 +114,7 @@ if __name__ == '__main__':
         if confirmation:
             review_capacity = int(confirmation.content.get('emergency_review_count', '0'))
             if review_capacity:
+                total_review_capacity += review_capacity
                 edge = openreview.Edge(
                     head = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers',
                     tail = profile.id,
@@ -119,8 +122,7 @@ if __name__ == '__main__':
                     readers = [
                         'thecvf.com/ECCV/2020/Conference',
                         'thecvf.com/ECCV/2020/Conference/Area_Chairs',
-                        profile.id
-                        ],
+                        profile.id],
                     writers = ['thecvf.com/ECCV/2020/Conference'],
                     signatures = ['thecvf.com/ECCV/2020/Conference'],
                     weight = review_capacity
@@ -132,11 +134,11 @@ if __name__ == '__main__':
     print('posted updated emergency reviewers group')
     print('Posting {0} edges'.format(len(emergency_load_edges)))
     posted_edges = openreview.tools.post_bulk_edges(client, emergency_load_edges)
-    print('Posted {0} edges'.format(len(posted_edges)))
+    print('Posted {0} edges\n'.format(len(posted_edges)))
 
     map_submissions = {note.number: note for note in openreview.tools.iterget_notes(client, invitation = 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission')}
     all_reviews = list(openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/-/Official_Review$'))
-    print('Found {} official reviews'.format(len(all_reviews)))
+    print('Found {} official reviews\n'.format(len(all_reviews)))
     map_paper_to_reviews = {}
     for review in all_reviews:
         paper_num = int(review.invitation.split('Paper')[1].split('/')[0])
@@ -184,27 +186,57 @@ if __name__ == '__main__':
             }
         }
     ))
-    print ('Posted invitation:', emergency_demand_invitation.id)
+    print('Posted invitation', emergency_demand_invitation.id, '\n')
+    print('Deleting old edges for invitation {}\n'.format(emergency_demand_invitation.id))
     client.delete_edges(invitation=emergency_demand_invitation.id)
 
-
     emergency_review_demands = []
-    # TODO: Need to add a conflict edge for the reviewers of the existing reviews for a paper ?
+    conflicts = []
+    total_review_demand = 0
     for paper_num, reviews in map_paper_to_reviews.items():
         if len(reviews) < 3:
+            paper_note = map_submissions[paper_num]
             emergency_review_demands.append(openreview.Edge(
-                head = map_submissions[paper_num].id,
-                tail = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers',
-                invitation = 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_User_Demands',
-                readers = [
+                head=paper_note.id,
+                tail='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers',
+                invitation='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_User_Demands',
+                readers=[
                     'thecvf.com/ECCV/2020/Conference',
                     'thecvf.com/ECCV/2020/Conference/Area_Chairs',
                     ],
-                writers = ['thecvf.com/ECCV/2020/Conference'],
-                signatures = ['thecvf.com/ECCV/2020/Conference'],
-                weight = 3 - len(reviews)
+                writers=['thecvf.com/ECCV/2020/Conference'],
+                signatures=['thecvf.com/ECCV/2020/Conference'],
+                weight=3-len(reviews)
+            ))
+            total_review_demand += 3-len(reviews)
+
+    print('Custom_User_Demands: Posting {0} edges'.format(len(emergency_review_demands)))
+    posted_edges = openreview.tools.post_bulk_edges(client, emergency_review_demands)
+    print('Custom_User_Demands: Posted {0} edges\n'.format(len(posted_edges)))
+
+    # Create a map of paper reviewer groups to group members
+    reviewer_groups = list(openreview.tools.iterget_groups(client, regex='thecvf.com/ECCV/2020/Conference/Paper.*/AnonReviewer[0-9]*$'))
+    print('Found {} anonymous reviewer groups'.format(len(reviewer_groups)))
+    for grp in reviewer_groups:
+        paper_number = int(grp.id.split('Paper')[1].split('/')[0])
+        if paper_number in map_submissions and grp.members:
+            conflicts.append(openreview.Edge(
+                head=paper_note.id,
+                tail=grp.members[0],
+                invitation='thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict',
+                readers=[
+                    'thecvf.com/ECCV/2020/Conference',
+                    'thecvf.com/ECCV/2020/Conference/Area_Chairs'
+                ],
+                writers=['thecvf.com/ECCV/2020/Conference'],
+                signatures=['thecvf.com/ECCV/2020/Conference'],
+                weight=-1,
+                label='Already Assigned'
             ))
 
-    print ('Posting {0} edges'.format(len(emergency_review_demands)))
-    posted_edges = openreview.tools.post_bulk_edges(client, emergency_review_demands)
-    print ('Posted {0} edges'.format(len(emergency_review_demands)))
+    print ('thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict: Posting {0} edges'.format(len(conflicts)))
+    posted_edges = openreview.tools.post_bulk_edges(client, conflicts)
+    print ('thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict: Posted {0} edges'.format(len(posted_edges)))
+
+    print('\nTotal Emergency Review Demand: {}'.format(total_review_demand))
+    print('\nTotal Emergency Review Supply: {}'.format(total_review_capacity))
