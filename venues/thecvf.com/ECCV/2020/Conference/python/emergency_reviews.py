@@ -26,7 +26,7 @@ if __name__ == '__main__':
         'thecvf.com/ECCV/2020/Conference/Area_Chairs'],
         members = []
     ))
-    print ('Posted group:', emergency_reviewer_group.id)
+    print ('Posted group: {}\n'.format(emergency_reviewer_group.id))
 
     emergency_load_invitation = client.post_invitation(openreview.Invitation(
         id='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_Max_Papers',
@@ -62,8 +62,8 @@ if __name__ == '__main__':
             }
         }
     ))
-    print('Posted invitation:', emergency_load_invitation.id)
-    print('Deleting edges for invitation', emergency_load_invitation.id)
+    print('Posted invitation:{}\n'.format(emergency_load_invitation.id))
+    print('Deleting edges for invitation {}\n'.format(emergency_load_invitation.id))
     client.delete_edges(invitation=emergency_load_invitation.id)
 
     confirmations = {}
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         else:
             confirmations[note.tauthor] = note
 
-    print ('Confirmations received: ', len(confirmations))
+    print ('Confirmations received: {}\n'.format(len(confirmations)))
 
     profile_map = {}
     tildes = []
@@ -131,7 +131,8 @@ if __name__ == '__main__':
                 emergency_reviewer_group.members.append(profile.id)
 
     x = client.post_group(emergency_reviewer_group)
-    print('posted updated emergency reviewers group')
+    print('Created updated emergency reviewers group\n')
+
     print('Posting {0} edges'.format(len(emergency_load_edges)))
     posted_edges = openreview.tools.post_bulk_edges(client, emergency_load_edges)
     print('Posted {0} edges\n'.format(len(posted_edges)))
@@ -186,7 +187,7 @@ if __name__ == '__main__':
             }
         }
     ))
-    print('Posted invitation', emergency_demand_invitation.id, '\n')
+    print('Posted invitation {}\n'.format(emergency_demand_invitation.id))
     print('Deleting old edges for invitation {}\n'.format(emergency_demand_invitation.id))
     client.delete_edges(invitation=emergency_demand_invitation.id)
 
@@ -246,7 +247,55 @@ if __name__ == '__main__':
             }
         }
     ))
-    print('Posted invitation:', emergency_aggregate_invitation.id)
+    print('Posted invitation {}\n'.format(emergency_aggregate_invitation.id))
+
+    conflicts = []
+
+    print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict" and label: "Already Assigned"\n')
+    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict', label='Already Assigned')
+
+    reviewer_groups = list(openreview.tools.iterget_groups(
+        client, 
+        regex='thecvf.com/ECCV/2020/Conference/Paper.*/AnonReviewer[0-9]*$'))
+    print('\nFound {} anonymous reviewer groups'.format(len(reviewer_groups)))
+
+    for grp in reviewer_groups:
+        paper_num = int(grp.id.split('Paper')[1].split('/')[0])
+        if paper_num in map_submissions and grp.members:
+            conflicts.append(openreview.Edge(
+                head=map_submissions[paper_num].id,
+                tail=grp.members[0],
+                invitation='thecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict',
+                readers=[
+                    'thecvf.com/ECCV/2020/Conference',
+                    'thecvf.com/ECCV/2020/Conference/Area_Chairs'
+                ],
+                writers=['thecvf.com/ECCV/2020/Conference'],
+                signatures=['thecvf.com/ECCV/2020/Conference'],
+                weight=-1,
+                label='Already Assigned'
+            ))
+
+    print('\nthecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict: Posting {0} edges'.format(len(conflicts)))
+    posted_edges = openreview.tools.post_bulk_edges(client, conflicts)
+    print('\nthecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict: Posted  {0} edges'.format(len(posted_edges)))
+
+    print('\nChecking if emergency reviewer matching is set up already')
+    emergency_assignment_invi = client.get_invitation('thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Assignment_Configuration')
+    
+    if emergency_assignment_invi:
+        print('\nEmergency Reviewer matching has been setup already')
+    else:
+        print('Emergency Reviewer matching not set up. Setting it up now.')
+        conference = openreview.helpers.get_conference(
+            client, 
+            request_form_id='Skx6tVahYB')
+        
+        # Setting conference reviewers group to "Emergency_Reviewers"
+        conference.set_reviewers_name('Emergency_Reviewers')
+        conference.setup_matching()
+        print('Emergency Reviewer match setup done.')
+
 
     print('\nTotal Emergency Review Demand: {}'.format(total_review_demand))
-    print('\nTotal Emergency Review Supply: {}'.format(total_review_capacity))
+    print('\nTotal Emergency Review Supply: {}\n'.format(total_review_capacity))
