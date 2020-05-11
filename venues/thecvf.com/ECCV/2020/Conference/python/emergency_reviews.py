@@ -281,7 +281,7 @@ if __name__ == '__main__':
     print('\nthecvf.com/ECCV/2020/Conference/Reviewers/-/Conflict: Posted  {0} edges'.format(len(posted_edges)))
 
     print('\nChecking if emergency reviewer matching is set up already')
-    emergency_assignment_invi = client.get_invitation('thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Assignment_Configuration')
+    emergency_assignment_invi = openreview.tools.get_invitation(client, 'thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Assignment_Configuration')
     
     if emergency_assignment_invi:
         print('\nEmergency Reviewer matching has been setup already')
