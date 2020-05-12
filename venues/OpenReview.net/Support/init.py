@@ -439,13 +439,15 @@ review_stage_content = {
         'order': 25
     },
     'release_reviews_to_reviewers': {
-        'description': 'Should the reviews be visible immediately upon posting to paper\'s reviewers regardless of whether they have submitted their review or not? Default is "No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper".',
+        'description': 'Should the reviews be visible to the reviewers',
         'value-radio': [
-            'Yes, reviews should be immediately revealed to the all paper\'s reviewers',
-            'No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper'
+            'Reviews should be immediately revealed to all reviewers',
+            'Reviews should be immediately revealed to the paper\'s reviewers',
+            'Reviews should be immediately revealed to the paper\'s reviewers who have already submitted their review',
+            'Review should not be revealed to any reviewer, except to the author of the review'
         ],
         'required': True,
-        'default': 'No, reviews should be immediately revealed only to the reviewers who have already reviewed the paper',
+        'default': 'Review should not be revealed to any reviewer, except to the author of the review',
         'order': 26
     },
     'email_program_chairs_about_reviews': {
@@ -593,6 +595,16 @@ decision_stage_content = {
         'required': True,
         'default': 'No, decisions should not be immediately revealed to the paper\'s reviewers',
         'order': 33
+    },
+    'notify_to_authors': {
+        'description': 'Should we notify the authors the decision has been posted?, this option is only available when the decision is released to the authors or public',
+        'value-radio': [
+            'Yes, send an email notification to the authors',
+            'No, I will send the emails to the authors'
+        ],
+        'required': True,
+        'default': 'No, I will send the emails to the authors',
+        'order': 34
     }
 }
 

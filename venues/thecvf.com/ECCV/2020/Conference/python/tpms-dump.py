@@ -43,9 +43,9 @@ valid_ac_profiles = {'areachairs' : get_valid_profiles(client, 'thecvf.com/ECCV/
 
 all_user_profiles = [valid_ac_profiles, valid_reviewer_profiles]
 
-rows = []
-
 for profile_group in all_user_profiles:
+    rows = []
+
     user_type, user_profiles = list(profile_group.items())[0]
     for profile in tqdm(user_profiles):
         row = []
