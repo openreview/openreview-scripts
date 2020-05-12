@@ -17,6 +17,10 @@ def process(client, note, invitation):
         conference.set_reviewers()
         if conference.use_area_chairs:
             conference.set_area_chairs()
+        if invitation_type == 'Bid_Stage':
+            conference.setup_matching(build_conflicts=True)
+            if forum_note.content.get('Area Chairs (Metareviewers)', '') == 'Yes, our venue has Area Chairs':
+                conference.setup_matching(is_area_chair=True, build_conflicts=True)
 
     if invitation_type == 'Bid_Stage':
         conference.set_bid_stage(openreview.helpers.get_bid_stage(client, forum_note))
