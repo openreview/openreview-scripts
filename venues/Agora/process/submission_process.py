@@ -158,7 +158,7 @@ To view your article, click here: https://openreview.net/forum?id={forum}
                 #     reviewers_group_id
                 # ],
                 # Temporally use everyone only.
-                'values': ['everyone']
+                'values': ['everyone'],
                 'default': ['everyone']
             },
             'writers': {
@@ -170,5 +170,27 @@ To view your article, click here: https://openreview.net/forum?id={forum}
         }
     )
     client.post_invitation(review_invitation)
+
+    suggest_reviewer_invitation = openreview.Invitation(
+        id = '{}/-/Suggest_Reviewer'.format(article_group.id),
+        super = '-Agora/Covid-19/-/Suggest_Reviewer',
+        invitees = ['~'],
+        writers = [support],
+        signatures = [support],
+        reply = {
+            'forum': note.forum,
+            'replyto': note.forum,
+            'readers': {
+                'values': ['everyone']
+            },
+            'writers': {
+                'values-copied': ['{signatures}', support]
+            },
+            'signatures': {
+                'values-regex': '~.*|{}'.format(support)
+            }
+        }
+    )
+    client.post_invitation(suggest_reviewer_invitation)
 
 
