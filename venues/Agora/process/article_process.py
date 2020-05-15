@@ -160,7 +160,7 @@ def process_update(client, note, invitation, existing_note):
     comment_invitation = openreview.Invitation(
         id = '{}/-/Comment'.format(article_group.id),
         super = '-Agora/Covid-19/-/Comment',
-        invitees = ['~'],
+        invitees = [support, editor, editors_group_id, reviewers_group_id],
         writers = [support],
         signatures = [support],
         reply = {
