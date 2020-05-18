@@ -229,7 +229,7 @@ if __name__ == '__main__':
             else:
                 ac_with_missing_recs.add(ac)
 
-            if (len(map_paper_to_reviewers[paper_num]) <= 3 and missing_reviews > 0) or (len(map_paper_to_reviewers[paper_num]) > 3 and missing_reviews > 1):
+            if (len(map_paper_to_reviewers[paper_num]) <= 3) or (len(map_paper_to_reviewers[paper_num]) > 3 and missing_reviews > 1):
                 # Don't use papers with 1 missing review AND more than 3 assigned reviewers
                 emergency_review_demands.append(openreview.Edge(
                     head=paper_note.id,
