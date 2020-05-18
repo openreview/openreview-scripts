@@ -191,12 +191,23 @@ if __name__ == '__main__':
     print('Deleting old edges for invitation {}\n'.format(emergency_demand_invitation.id))
     client.delete_edges(invitation=emergency_demand_invitation.id)
 
+    ac_recommendation_edges = list(openreview.tools.iterget_edges(
+        client, 
+        invitation='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Recommendation'))
+
+    papers_with_recommendations = set()
+    for edge in ac_recommendation_edges:
+        papers_with_recommendations.add(edge.head)
+
+    print('Found {} papers with AC recommendations\n'.format(len(papers_with_recommendations)))
+
     emergency_review_demands = []
     total_review_demand = 0
     for paper_num, reviews in map_paper_to_reviews.items():
-        if len(reviews) < 3:
+        paper_note = map_submissions[paper_num]
+        if len(reviews) < 3 and paper_note.id in papers_with_recommendations:
             emergency_review_demands.append(openreview.Edge(
-                head=map_submissions[paper_num].id,
+                head=paper_note.id,
                 tail='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers',
                 invitation='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Custom_User_Demands',
                 readers=[
@@ -287,14 +298,14 @@ if __name__ == '__main__':
         print('\nEmergency Reviewer matching has been setup already')
     else:
         print('Emergency Reviewer matching not set up. Setting it up now.')
-        conference = openreview.helpers.get_conference(
-            client, 
-            request_form_id='Skx6tVahYB')
+        # conference = openreview.helpers.get_conference(
+        #     client, 
+        #     request_form_id='Skx6tVahYB')
         
-        # Setting conference reviewers group to "Emergency_Reviewers"
-        conference.set_reviewers_name('Emergency_Reviewers')
-        conference.setup_matching()
-        print('Emergency Reviewer match setup done.')
+        # # Setting conference reviewers group to "Emergency_Reviewers"
+        # conference.set_reviewers_name('Emergency_Reviewers')
+        # conference.setup_matching()
+        # print('Emergency Reviewer match setup done.')
 
 
     print('\nTotal Emergency Review Demand: {}'.format(total_review_demand))
