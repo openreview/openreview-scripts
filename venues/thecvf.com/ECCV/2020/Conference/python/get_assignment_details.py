@@ -21,12 +21,6 @@ def write_assignments(client, submissions_map, user_type='reviewers'):
 
     with open(outfile, 'w') as f:
         json.dump(map_member_to_anon, f)
-        # csv_writer = csv.writer(f)
-        # csv_writer.writerow(['Reviewer ID', '# of papers assigned', 'assigned paper numbers,ids'])
-        # for user, papers in map_member_to_anon.items():
-        #     row = [user, len(papers)]
-        #     row.extend(papers)
-        #     csv_writer.writerow(row)
 
     print ('Finished writing {}'.format(outfile))
 
