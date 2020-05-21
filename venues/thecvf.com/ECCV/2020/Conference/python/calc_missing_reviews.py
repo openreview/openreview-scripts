@@ -182,8 +182,8 @@ if __name__ == '__main__':
                     reviewer_group = map_group_id_to_anon_group[reviewer_id]
                     if reviewer_group.members:
                         user = reviewer_group.members[0]
-                        openreview.tools.assign(
-                            client, 
-                            paper_number=number, 
-                            conference='thecvf.com/ECCV/2020/Conference',
-                            reviewer_to_remove=user)
+                        # openreview.tools.assign(
+                        #     client, 
+                        #     paper_number=number, 
+                        #     conference='thecvf.com/ECCV/2020/Conference',
+                        #     reviewer_to_remove=user)
