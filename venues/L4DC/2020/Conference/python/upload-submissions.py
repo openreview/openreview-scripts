@@ -5,7 +5,7 @@ import openreview
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--l4dc_papers', help='csv file')
+parser.add_argument('l4dc_papers', help='csv file')
 parser.add_argument('--pdfs_filepath', help='filepath to directory with pdfs')
 parser.add_argument('--author_details', help='file with author names and emails')
 parser.add_argument('--baseurl', help='base url')
@@ -68,8 +68,8 @@ with open(args.l4dc_papers) as csv_file:
                 'authorids': authorids,
                 'abstract': row[3],
                 'venue': 'L4DC 2020', 
+                'venueid': 'L4DC.org/2020/Conference',
                 'pdf': pdf_link
-
             }
         )
 
