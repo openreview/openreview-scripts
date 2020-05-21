@@ -2,6 +2,7 @@ import openreview
 import csv
 from tqdm import tqdm
 import argparse
+from datetime import datetime
 
 pc_out_file = 'eccv20_reviewer_stats_21_may.csv'
 or_out_file = 'eccv20_internal_paper_reviewer_stats_21_may.csv'
@@ -40,10 +41,10 @@ if __name__ == '__main__':
     print('{} official reviews found'.format(len(official_reviews)))
 
     all_assignments = list(openreview.tools.iterget_groups(
-        client, 
+        client,
         regex='^thecvf.com/ECCV/2020/Conference/Paper[0-9]*/AnonReviewer[0-9]*$'))
     print('{} reviewer assignments found'.format(len(all_assignments)))
-    
+
     map_normal_assignments = {}
     map_ac_assignments = {}
     map_paper_to_assignments = {}
@@ -80,20 +81,20 @@ if __name__ == '__main__':
     print('\nFreezing existing reviews')
     for review in tqdm(official_reviews):
         review.writers = []
-        # client.post_note(review)
+        #client.post_note(review)
         paper_number = int(review.invitation.split('Paper')[1].split('/')[0])
         if paper_number in map_number_to_submission:
             if review.signatures[0] in map_group_to_review:
                 print('Multiple reviews by ', review.signatures[0])
             map_group_to_review[review.signatures[0]] = review
-            
+
             if paper_number not in map_paper_to_reviews:
                 map_paper_to_reviews[paper_number] = []
             map_paper_to_reviews[paper_number].append(review)
 
             if paper_number not in map_paper_to_completed_reviewers:
-                map_paper_to_completed_reviewers[paper_number] = []
-            map_paper_to_completed_reviewers[paper_number].append(review.signatures[0])
+                map_paper_to_completed_reviewers[paper_number] = {}
+            map_paper_to_completed_reviewers[paper_number][review.signatures[0]] = review.tcdate
 
     print('\n{} reviews are now frozen'.format(len(official_reviews)))
 
@@ -101,9 +102,9 @@ if __name__ == '__main__':
     # Stats for ECCV PCs
     # Write a CSV recording each reviewers assigned by matcher results, how many reviews were missed by them
     ##########
-    
+
     print('\nWriting stats for ECCV PCs to {}'.format(pc_out_file))
-    
+
     map_user_to_reviews = {}
     map_user_to_missing_reviews = {}
     for paper, groups in map_normal_assignments.items():
@@ -146,11 +147,11 @@ if __name__ == '__main__':
             if name_obj:
                 full_name = ' '.join([name for name in [name_obj.get('first'), name_obj.get('last'), name_obj.get('middle')] if name])
             csv_writer.writerow([
-                user, 
-                full_name, 
-                email, 
-                len(reviews), 
-                len(missing_reviews), 
+                user,
+                full_name,
+                email,
+                len(reviews),
+                len(missing_reviews),
                 ','.join(missing_reviews)])
 
     ##########
@@ -161,15 +162,15 @@ if __name__ == '__main__':
     print('\nWriting stats for OpenReview to {}'.format(or_out_file))
     with open(or_out_file, 'w') as f:
         csv_writer = csv.writer(f)
-        csv_writer.writerow(['Paper', 'Reviewer', 'Review Completed', 'Assigned by'])
+        csv_writer.writerow(['Paper', 'Reviewer', 'Review Completed at', 'Assigned by', 'Assigned at'])
         for number, paper in map_number_to_submission.items():
             reviewers = map_paper_to_assignments[number]
             for reviewer_id in reviewers:
                 reviewer_group = map_group_id_to_anon_group[reviewer_id]
                 if reviewer_group.members:
                     user = reviewer_group.members[0]
-                    review_completed = True if reviewer_id in map_paper_to_completed_reviewers.get(number, []) else False
-                    csv_writer.writerow([number, user, review_completed, reviewer_group.signatures[0]])
+                    review = map_paper_to_completed_reviewers.get(number, {}).get(reviewer_id, None)
+                    csv_writer.writerow([number, user, review, reviewer_group.signatures[0], reviewer_group.tmdate])
 
     print('\nUnassigning late reviewers from papers where they are not needed')
     for number, note in map_number_to_submission.items():
@@ -182,8 +183,9 @@ if __name__ == '__main__':
                     reviewer_group = map_group_id_to_anon_group[reviewer_id]
                     if reviewer_group.members:
                         user = reviewer_group.members[0]
+                        print('unassign', user, number, reviewer_group.id)
                         # openreview.tools.assign(
-                        #     client, 
-                        #     paper_number=number, 
+                        #     client,
+                        #     paper_number=number,
                         #     conference='thecvf.com/ECCV/2020/Conference',
                         #     reviewer_to_remove=user)
