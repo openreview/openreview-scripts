@@ -77,7 +77,7 @@ if __name__ == '__main__':
     map_paper_to_reviews = {}
     map_paper_to_completed_reviewers = {}
     # Freeze reviews
-    print('Freezing existing reviews')
+    print('\nFreezing existing reviews')
     for review in tqdm(official_reviews):
         review.writers = []
         # client.post_note(review)
@@ -95,14 +95,14 @@ if __name__ == '__main__':
                 map_paper_to_completed_reviewers[paper_number] = []
             map_paper_to_completed_reviewers[paper_number].append(review.signatures[0])
 
-    print('{} reviews are now frozen'.format(len(official_reviews)))
+    print('\n{} reviews are now frozen'.format(len(official_reviews)))
 
     ##########
     # Stats for ECCV PCs
     # Write a CSV recording each reviewers assigned by matcher results, how many reviews were missed by them
     ##########
     
-    print('Writing stats for ECCV PCs to {}'.format(pc_out_file))
+    print('\nWriting stats for ECCV PCs to {}'.format(pc_out_file))
     
     map_user_to_reviews = {}
     map_user_to_missing_reviews = {}
@@ -117,7 +117,8 @@ if __name__ == '__main__':
                 map_user_to_reviews[user].append(review)
                 if user not in map_user_to_missing_reviews:
                     map_user_to_missing_reviews[user] = []
-                map_user_to_missing_reviews[user].append(paper)
+                if not review:
+                    map_user_to_missing_reviews[user].append(str(paper))
 
     map_user_to_profiles = {}
     profiles = client.search_profiles(ids=list(map_user_to_reviews.keys()))
@@ -144,14 +145,20 @@ if __name__ == '__main__':
             full_name = ''
             if name_obj:
                 full_name = ' '.join([name for name in [name_obj.get('first'), name_obj.get('last'), name_obj.get('middle')] if name])
-            csv_writer.writerow([user, full_name, email, len(reviews), len(missing_reviews), missing_reviews])
+            csv_writer.writerow([
+                user, 
+                full_name, 
+                email, 
+                len(reviews), 
+                len(missing_reviews), 
+                ','.join(missing_reviews)])
 
     ##########
     # Stats for OpenReview's records
     # Write a CSV recording each paper's reviewers, if they were added normally or by AC/PC, if they have completed their review
     ##########
 
-    print('Writing stats for OpenReview to {}'.format(or_out_file))
+    print('\nWriting stats for OpenReview to {}'.format(or_out_file))
     with open(or_out_file, 'w') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow(['Paper', 'Reviewer', 'Review Completed', 'Assigned by'])
@@ -164,7 +171,7 @@ if __name__ == '__main__':
                     review_completed = True if reviewer_id in map_paper_to_completed_reviewers.get(number, []) else False
                     csv_writer.writerow([number, user, review_completed, reviewer_group.signatures[0]])
 
-    # Un-assign late reviewers from papers where they are not needed
+    print('\nUnassigning late reviewers from papers where they are not needed')
     for number, note in map_number_to_submission.items():
         reviews = map_paper_to_reviews.get(number, [])
         reviewers = map_paper_to_assignments[number]
