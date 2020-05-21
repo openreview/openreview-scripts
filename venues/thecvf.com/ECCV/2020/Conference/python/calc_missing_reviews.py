@@ -105,15 +105,19 @@ if __name__ == '__main__':
     print('Writing stats for ECCV PCs to {}'.format(pc_out_file))
     
     map_user_to_reviews = {}
+    map_user_to_missing_reviews = {}
     for paper, groups in map_normal_assignments.items():
         for group_id in groups:
             reviewer_group = map_group_id_to_anon_group[group_id]
             if reviewer_group.members:
-                reviewer = reviewer_group.members[0]
+                user = reviewer_group.members[0]
                 review = map_group_to_review.get(group_id, None)
-                if reviewer not in map_user_to_reviews:
-                    map_user_to_reviews[reviewer] = []
-                map_user_to_reviews[reviewer].append(review)
+                if user not in map_user_to_reviews:
+                    map_user_to_reviews[user] = []
+                map_user_to_reviews[user].append(review)
+                if user not in map_user_to_missing_reviews:
+                    map_user_to_missing_reviews[user] = []
+                map_user_to_missing_reviews[user].append(paper)
 
     map_user_to_profiles = {}
     profiles = client.search_profiles(ids=list(map_user_to_reviews.keys()))
@@ -122,10 +126,9 @@ if __name__ == '__main__':
 
     with open(pc_out_file, 'w') as f:
         csv_writer = csv.writer(f)
-        csv_writer.writerow(['OpenReview Id', 'Name', 'Email', 'Reviews Assigned', 'Reviews Missing'])
+        csv_writer.writerow(['OpenReview Id', 'Name', 'Email', 'Reviews Assigned', 'Reviews Missing', 'Papers with missing reviews'])
         for user, reviews in tqdm(sorted(map_user_to_reviews.items(), key=lambda x:x)):
-            assigned_reviews = len(reviews)
-            available_reviews = len([review for review in reviews if review])
+            missing_reviews = map_user_to_missing_reviews.get(user)
             profile = map_user_to_profiles.get(user)
             if not profile:
                 if user.startswith('~'):
@@ -141,7 +144,7 @@ if __name__ == '__main__':
             full_name = ''
             if name_obj:
                 full_name = ' '.join([name for name in [name_obj.get('first'), name_obj.get('last'), name_obj.get('middle')] if name])
-            csv_writer.writerow([user, full_name, email, assigned_reviews, assigned_reviews - available_reviews])
+            csv_writer.writerow([user, full_name, email, len(reviews), len(missing_reviews), missing_reviews])
 
     ##########
     # Stats for OpenReview's records
@@ -163,15 +166,17 @@ if __name__ == '__main__':
 
     # Un-assign late reviewers from papers where they are not needed
     for number, note in map_number_to_submission.items():
-        reviews = map_paper_to_reviews[number]
+        reviews = map_paper_to_reviews.get(number, [])
         reviewers = map_paper_to_assignments[number]
         if len(reviews) >= 3:
             # find late reviewers of this paper
             for reviewer_id in reviewers:
                 if reviewer_id not in map_paper_to_completed_reviewers.get(number, []):
-                    user = map_group_id_to_anon_group[reviewer_id].members[0]
-                    openreview.tools.assign(
-                        client, 
-                        paper_number=number, 
-                        conference='thecvf.com/ECCV/2020/Conference',
-                        reviewer_to_remove=user)
+                    reviewer_group = map_group_id_to_anon_group[reviewer_id]
+                    if reviewer_group.members:
+                        user = reviewer_group.members[0]
+                        openreview.tools.assign(
+                            client, 
+                            paper_number=number, 
+                            conference='thecvf.com/ECCV/2020/Conference',
+                            reviewer_to_remove=user)
