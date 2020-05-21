@@ -3,6 +3,9 @@ import csv
 from tqdm import tqdm
 import argparse
 
+pc_out_file = 'eccv20_reviewer_stats_21_may.csv'
+or_out_file = 'eccv20_internal_paper_reviewer_stats_21_may.csv'
+
 def get_pref_name(profile):
     names = profile.content.get('names', [])
     for name in names:
@@ -95,11 +98,12 @@ if __name__ == '__main__':
     print('{} reviews are now frozen'.format(len(official_reviews)))
 
     ##########
-    # TODO: Stats for ECCV PCs
+    # Stats for ECCV PCs
     # Write a CSV recording each reviewers assigned by matcher results, how many reviews were missed by them
     ##########
-    out_file = '/Users/muniyal/Desktop/eccv20_reviewer_stats_21_may.csv'
-
+    
+    print('Writing stats for ECCV PCs to {}'.format(pc_out_file))
+    
     map_user_to_reviews = {}
     for paper, groups in map_normal_assignments.items():
         for group_id in groups:
@@ -116,8 +120,7 @@ if __name__ == '__main__':
     for profile in profiles:
         map_user_to_profiles[profile.id] = profile
 
-    print('Writing stats for ECCV PCs to {}'.format(out_file))
-    with open(out_file, 'w') as f:
+    with open(pc_out_file, 'w') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow(['OpenReview Id', 'Name', 'Email', 'Reviews Assigned', 'Reviews Missing'])
         for user, reviews in tqdm(sorted(map_user_to_reviews.items(), key=lambda x:x)):
@@ -141,29 +144,34 @@ if __name__ == '__main__':
             csv_writer.writerow([user, full_name, email, assigned_reviews, assigned_reviews - available_reviews])
 
     ##########
-    # TODO: Stats for OpenReview's records
+    # Stats for OpenReview's records
     # Write a CSV recording each paper's reviewers, if they were added normally or by AC/PC, if they have completed their review
     ##########
-    internal_out_file = '/Users/muniyal/Desktop/eccv20_internal_paper_reviewer_stats_21_may.csv'
 
-    with open(internal_out_file, 'w') as f:
+    print('Writing stats for OpenReview to {}'.format(or_out_file))
+    with open(or_out_file, 'w') as f:
         csv_writer = csv.writer(f)
-        csv_writer.writerow([['Paper', 'Reviewer', 'Review Completed', 'Matcher Assignment']])
-        # for paper in 
+        csv_writer.writerow(['Paper', 'Reviewer', 'Review Completed', 'Assigned by'])
+        for number, paper in map_number_to_submission.items():
+            reviewers = map_paper_to_assignments[number]
+            for reviewer_id in reviewers:
+                reviewer_group = map_group_id_to_anon_group[reviewer_id]
+                if reviewer_group.members:
+                    user = reviewer_group.members[0]
+                    review_completed = True if reviewer_id in map_paper_to_completed_reviewers.get(number, []) else False
+                    csv_writer.writerow([number, user, review_completed, reviewer_group.signatures[0]])
 
+    # Un-assign late reviewers from papers where they are not needed
     for number, note in map_number_to_submission.items():
         reviews = map_paper_to_reviews[number]
         reviewers = map_paper_to_assignments[number]
         if len(reviews) >= 3:
             # find late reviewers of this paper
-            for reviewer in reviewers:
-                # print('Checking {}'.format(reviewer))
-                if reviewer not in map_paper_to_completed_reviewers[number]:
-                    user = map_group_id_to_anon_group[reviewer].members[0]
-                    # print('Removing {}'.format(user))
+            for reviewer_id in reviewers:
+                if reviewer_id not in map_paper_to_completed_reviewers.get(number, []):
+                    user = map_group_id_to_anon_group[reviewer_id].members[0]
                     openreview.tools.assign(
                         client, 
                         paper_number=number, 
                         conference='thecvf.com/ECCV/2020/Conference',
                         reviewer_to_remove=user)
-                    # print('Paper {} Removed {}'.format(number, user))
