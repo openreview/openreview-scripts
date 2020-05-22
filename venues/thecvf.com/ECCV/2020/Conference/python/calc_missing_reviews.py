@@ -152,7 +152,7 @@ if __name__ == '__main__':
                 email,
                 len(reviews),
                 len(missing_reviews),
-                ','.join(missing_reviews)])
+                missing_reviews])
 
     ##########
     # Stats for OpenReview's records
