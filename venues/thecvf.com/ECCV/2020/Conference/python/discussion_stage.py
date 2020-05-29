@@ -89,3 +89,9 @@ if __name__ == '__main__':
                 'thecvf.com/ECCV/2020/Conference/Paper{}/Reviewers'.format(paper_num),
                 'thecvf.com/ECCV/2020/Conference/Paper{}/Authors'.format(paper_num)]
             updated_note = client.post_note(note)
+
+    # 5. Enable review revisions
+    # 6. Disable confidential comments for Authors \
+    # (remove Authors from both invitation.invitees and invitation.readers)
+    # 7. Enable meta-reviews for ACs
+    # 8. Enable review ratings for ACs
