@@ -65,7 +65,6 @@ if __name__ == '__main__':
         }))
     print('Posted aggregate score invitation:', aggregate_score_invitation.id)
 
-    # thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands
     map_submissions = {note.number: note for note in openreview.tools.iterget_notes(client, invitation = 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission')}
     
     all_meta_reviews = list(openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/-/Meta_Review$'))
