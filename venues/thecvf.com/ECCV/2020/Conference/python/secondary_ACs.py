@@ -69,7 +69,7 @@ if __name__ == '__main__':
     map_submissions = {note.number: note for note in openreview.tools.iterget_notes(client, invitation = 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission')}
     
     all_meta_reviews = list(openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/-/Meta_Review$'))
-    print('Found {} official reviews\n'.format(len(all_meta_reviews)))
+    print('Found {} official meta reviews\n'.format(len(all_meta_reviews)))
     set_reject_papers = set()
     for meta in all_meta_reviews:
         paper_num = int(meta.invitation.split('Paper')[1].split('/')[0])
