@@ -1,11 +1,12 @@
 import openreview
 import argparse
 import csv
+import json
 from tqdm import tqdm
 from collections import defaultdict
 
 def write_assignments(client, submissions_map, user_type='reviewers'):
-    outfile = 'reviewer_alloc.csv' if user_type.lower() == 'reviewers' else 'areachair_alloc.csv'
+    outfile = 'reviewer_alloc.json' if user_type.lower() == 'reviewers' else 'areachair_alloc.json'
     regex = 'thecvf.com/ECCV/2020/Conference/Paper[0-9]*/' + ('AnonReviewer[0-9]*' if user_type.lower() == 'reviewers' else 'Area_Chair1' ) + '$'
 
     user_grps = list(openreview.tools.iterget_groups(client=client, regex=regex))
@@ -16,16 +17,11 @@ def write_assignments(client, submissions_map, user_type='reviewers'):
         paper_num = int(grp.id.split('Paper')[1].split('/')[0])
         paper_note = submissions_map.get(paper_num)
         if paper_note and grp.members:
-            map_member_to_anon[grp.members[0]].append(str(paper_num) + ',' + paper_note.id)
+            map_member_to_anon[grp.members[0]].append({ 'paper_number': paper_num, 'paper_id': paper_note.id, 'anon_group_id': grp.id})
 
     with open(outfile, 'w') as f:
-        csv_writer = csv.writer(f)
-        csv_writer.writerow(['Reviewer ID', '# of papers assigned', 'assigned paper numbers,ids'])
-        for user, papers in map_member_to_anon.items():
-            row = [user, len(papers)]
-            row.extend(papers)
-            csv_writer.writerow(row)
-    
+        json.dump(map_member_to_anon, f)
+
     print ('Finished writing {}'.format(outfile))
 
 if __name__ == '__main__':
@@ -44,4 +40,3 @@ if __name__ == '__main__':
     write_assignments(client, submissions_map, user_type='Reviewers')
 
     write_assignments(client, submissions_map, user_type='Area_Chairs')
-    
