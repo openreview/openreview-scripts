@@ -396,8 +396,8 @@ var renderHeader = function() {
   ]);
 };
 
-var renderTable = function(rows, container, showRankings) {
-  renderTableRows(rows, container);
+var renderTable = function(rows, container, showRankings, secondary_meta) {
+  renderTableRows(rows, container, secondary_meta);
   if (showRankings) {
     postRenderTable(rows);
   }
@@ -627,56 +627,13 @@ var renderSecondaryStatusTable = function(profiles, notes, allInvitations, compl
     return buildTableRow(note, revIds, noteCompletedReviews, secondaryMetaReviews, secondaryMetaReviewInvitation, {}, {});
   });
 
-  // Sort form handler
-  var order = 'desc';
-  var sortOptions = {
-    Paper_Number: function(row) { return row[1].number; },
-    Paper_Title: function(row) { return _.toLower(_.trim(row[2].content.title)); },
-    Number_of_Reviews_Submitted: function(row) { return row[3].numSubmittedReviews; },
-    Number_of_Reviews_Missing: function(row) { return row[3].numReviewers - row[3].numSubmittedReviews; },
-    Average_Rating: function(row) { return row[3].averageRating === 'N/A' ? 0 : row[3].averageRating; },
-    Max_Rating: function(row) { return row[3].maxRating === 'N/A' ? 0 : row[3].maxRating; },
-    Min_Rating: function(row) { return row[3].minRating === 'N/A' ? 0 : row[3].minRating; },
-    Average_Confidence: function(row) { return row[3].averageConfidence === 'N/A' ? 0 : row[3].averageConfidence; },
-    Max_Confidence: function(row) { return row[3].maxConfidence === 'N/A' ? 0 : row[3].maxConfidence; },
-    Min_Confidence: function(row) { return row[3].minConfidence === 'N/A' ? 0 : row[3].minConfidence; },
-    Meta_Review_Rating: function(row) { return row[4].recommendation ? _.toInteger(row[4].recommendation.split(':')[0]) : 0; }
-  };
-
-  var sortResults = function(newOption, switchOrder) {
-    if (switchOrder) {
-      order = order === 'asc' ? 'desc' : 'asc';
-    }
-    renderTable(_.orderBy(rows, sortOptions[newOption], order), container);
-  }
-
-  var sortOptionHtml = Object.keys(sortOptions).map(function(option) {
-    return '<option value="' + option + '">' + option.replace(/_/g, ' ') + '</option>';
-  }).join('\n');
-
-  var sortBarHtml = '<form class="form-inline search-form clearfix" role="search">' +
-    '<div class="pull-right">' +
-    '<strong>Sort By:</strong> ' +
-    '<select id="form-sort-secondary" class="form-control">' + sortOptionHtml + '</select>' +
-    '<button id="form-order-secondary" class="btn btn-icon"><span class="glyphicon glyphicon-sort"></span></button>' +
-    '</div>' +
-  '</form>';
+  var sortBarHtml = '<form class="form-inline search-form clearfix" role="search">' + '</form>';
   if (rows.length) {
     $(container).empty().append(sortBarHtml);
   }
 
-  // Need to add event handlers for these controls inside this function so they have access to row
-  // data
-  $('#form-sort').on('change', function(e) {
-    sortResults($(e.target).val(), false);
-  });
-  $('#form-order').on('click', function(e) {
-    sortResults($(this).prev().val(), true);
-    return false;
-  });
-
   if (rows.length) {
-    renderTable(rows, container);
+    renderTable(rows, container, null, true);
   } else {
     $(container).empty().append('<p class="empty-message">No assigned papers. ' +
     'Check back later or contact info@openreview.net if you believe this to be an error.</p>');
@@ -739,7 +696,7 @@ var updateReviewerContainer = function (paperNumber, renderEmptyDropdown) {
   $addReviewerContainer.append('<button class="btn btn-xs btn-assign-reviewer" data-paper-number=' + paperNumber + ' data-paper-forum=' + paperForum +'>Assign</button>');
 }
 
-var renderTableRows = function(rows, container) {
+var renderTableRows = function(rows, container, secondary_meta) {
   var templateFuncs = [
     function(data) {
       var checked = data.selected ? 'checked="checked"' : '';
@@ -760,10 +717,11 @@ var renderTableRows = function(rows, container) {
     });
   });
 
+  var meta_review_col_heading = secondary_meta ? 'Secondary Meta Review Status' : 'Meta Review Status';
   var tableHtml = Handlebars.templates['components/table']({
     headings: [
       '<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary',
-      'Review Progress', 'Meta Review Status'
+      'Review Progress', meta_review_col_heading
     ],
     rows: rowsHtml,
     extraClasses: 'ac-console-table'
