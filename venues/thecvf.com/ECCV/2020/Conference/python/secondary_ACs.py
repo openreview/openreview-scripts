@@ -112,9 +112,9 @@ if __name__ == '__main__':
     ))
     print('Posted invitation {}\n'.format(custom_demand_invitation.id))
 
-    print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands"\n')
-    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands')
-    time.sleep(10)
+    # print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands"\n')
+    # client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands')
+    # time.sleep(10)
 
     secondary_ac_demands = []
     total_review_demand = 0
@@ -141,9 +141,9 @@ if __name__ == '__main__':
 
     conflicts = []
 
-    print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict" and label: "Already Assigned"\n')
-    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict', label='Already Assigned')
-    time.sleep(10)
+    # print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict" and label: "Already Assigned"\n')
+    # client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict', label='Already Assigned')
+    # time.sleep(10)
 
     area_chair_groups = list(openreview.tools.iterget_groups(
         client, 
