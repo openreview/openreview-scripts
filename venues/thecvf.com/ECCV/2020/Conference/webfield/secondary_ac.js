@@ -675,36 +675,6 @@ var renderSecondaryStatusTable = function(profiles, notes, allInvitations, compl
     return false;
   });
 
-  $('#div-msg-reviewers').find('a').on('click', function(e) {
-    var filter = $(this)[0].id;
-    $('#message-reviewers-modal').remove();
-
-    var defaultBody = '';
-    if (filter === 'msg-unsubmitted-reviewers'){
-    defaultBody = 'This is a reminder to please submit your review for ' + SHORT_PHRASE + '.\n\n';
-    }
-    defaultBody += 'Click on the link below to go to the review page:\n\n[[SUBMIT_REVIEW_LINK]]' +
-    '\n\nThank you,\n' + SHORT_PHRASE + ' Area Chair';
-
-    var modalHtml = Handlebars.templates.messageReviewersModalFewerOptions({
-    filter: filter,
-    defaultSubject: SHORT_PHRASE + ' Reminder',
-    defaultBody: defaultBody,
-    });
-    $('body').append(modalHtml);
-
-    $('#message-reviewers-modal .btn-primary.step-1').on('click', sendReviewerReminderEmailsStep1);
-    $('#message-reviewers-modal .btn-primary.step-2').on('click', sendReviewerReminderEmailsStep2);
-    $('#message-reviewers-modal form').on('submit', sendReviewerReminderEmailsStep1);
-
-    $('#message-reviewers-modal').modal();
-
-    if ($('.ac-console-table input.select-note-reviewers:checked').length) {
-    $('#message-reviewers-modal select[name="group"]').val('selected');
-    }
-    return false;
-  });
-
   if (rows.length) {
     renderTable(rows, container);
   } else {
