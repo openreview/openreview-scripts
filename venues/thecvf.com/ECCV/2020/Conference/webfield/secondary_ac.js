@@ -616,15 +616,15 @@ var renderSecondaryStatusTable = function(profiles, notes, allInvitations, compl
   var rows = _.map(notes, function(note) {
     var revIds = reviewerIds[note.number] || Object.create(null);
     for (var revNumber in revIds) {
-    var uId = revIds[revNumber];
-    revIds[revNumber] = findProfile(profiles, uId);
+      var uId = revIds[revNumber];
+      revIds[revNumber] = findProfile(profiles, uId);
     }
 
-    var secondaryMetaReviews = _.find(secondaryMetaReviews, ['invitation', getInvitationId(OFFICIAL_SECONDARY_META_REVIEW_NAME, note.number)]);
+    secondaryMetaReviews = _.find(secondaryMetaReviews, ['invitation', getInvitationId(OFFICIAL_SECONDARY_META_REVIEW_NAME, note.number)]);
     var noteCompletedReviews = completedReviews[note.number] || Object.create(null);
     var secondaryMetaReviewInvitation = _.find(allInvitations, ['id', getInvitationId(OFFICIAL_SECONDARY_META_REVIEW_NAME, note.number)]);
 
-    return buildTableRow(note, revIds, noteCompletedReviews, secondaryMetaReviews, secondaryMetaReviewInvitation, {}, {});
+    return buildTableRow(note, revIds, noteCompletedReviews, secondaryMetaReviews, secondaryMetaReviewInvitation, {}, {}, 'secondary');
   });
 
   var sortBarHtml = '<form class="form-inline search-form clearfix" role="search">' + '</form>';
@@ -697,6 +697,13 @@ var updateReviewerContainer = function (paperNumber, renderEmptyDropdown) {
 }
 
 var renderTableRows = function(rows, container, secondary_meta) {
+  var formatMetaReviewData = function(data) {
+    if (secondary_meta) {
+        return data.invitationUrl ? (data.editUrl ? '<h4><a href="' + data.editUrl + '" target="_blank">Read/Edit</a></h4>' : '<h4><a href="' + data.invitationUrl + '" target="_blank">Submit</a></h4>') : '<h4>Not Available</h4>';
+    } else {
+        return Handlebars.templates.noteMetaReviewStatus(data);
+    }
+  };
   var templateFuncs = [
     function(data) {
       var checked = data.selected ? 'checked="checked"' : '';
@@ -708,7 +715,12 @@ var renderTableRows = function(rows, container, secondary_meta) {
     },
     Handlebars.templates.noteSummary,
     Handlebars.templates.noteReviewers,
-    Handlebars.templates.noteMetaReviewStatus
+    function(data) {
+      if (secondary_meta) {
+        return data.invitationUrl ? (data.editUrl ? '<h4><a href="' + data.editUrl + '" target="_blank">Read/Edit</a></h4>' : '<h4><a href="' + data.invitationUrl + '" target="_blank">Submit</a></h4>') : '<h4>Not Available</h4>';
+      }
+      return Handlebars.templates.noteMetaReviewStatus(data);
+    }
   ];
 
   var rowsHtml = rows.map(function(row) {
@@ -729,7 +741,7 @@ var renderTableRows = function(rows, container, secondary_meta) {
 
   $('.table-container', container).remove();
   $(container).append(tableHtml);
-}
+};
 
 var postRenderTable = function(rows) {
   if (paperRankingInvitation) {
@@ -855,7 +867,8 @@ var renderTableAndTasks = function(fetchedData) {
 
 var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, metaReviewInvitation, acPaperRanking, reviewerPaperRanking, typeMetaReviewer) {
   var cellCheck = { selected: false, noteId: note.id };
-  var referrerUrl = encodeURIComponent('[Area Chair Console](/group?id=' + CONFERENCE_ID + '/' + AREA_CHAIR_NAME + '#assigned-papers)');
+  var referrerContainer = typeMetaReviewer === 'secondary' ? '#secondary-papers' : '#assigned-papers' ;
+  var referrerUrl = encodeURIComponent('[Area Chair Console](/group?id=' + CONFERENCE_ID + '/' + AREA_CHAIR_NAME + referrerContainer + ')');
 
   // Paper number cell
   var cell0 = {
@@ -965,16 +978,11 @@ var buildTableRow = function(note, reviewerIds, completedReviews, metaReview, me
     ranking: acPaperRanking
   };
   if (metaReview) {
-      if (typeMetaReviewer === 'secondary') {
-        cell3.recommendation = metaReview.content.agreement;
-      } else {
-        cell3.recommendation = metaReview.content.recommendation;
-      }
-    
+    cell3.recommendation = typeMetaReviewer === 'secondary' ? metaReview.content.agreement : metaReview.content.recommendation;
     cell3.editUrl = '/forum?id=' + note.forum + '&noteId=' + metaReview.id + '&referrer=' + referrerUrl;
   }
   if (metaReviewInvitation) {
-    cell3.invitationUrl = '/forum?' + $.param(invitationUrlParams);
+    cell3.invitationUrl = '/forum?id=' + note.forum + '&invitationId=' + cell3InvitationId + '&referrer=' + referrerUrl;
   }
 
   return [cellCheck, cell0, cell1, cell2, cell3];
