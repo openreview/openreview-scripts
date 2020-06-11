@@ -73,7 +73,7 @@ if __name__ == '__main__':
     for meta in all_meta_reviews:
         paper_num = int(meta.invitation.split('Paper')[1].split('/')[0])
         if paper_num in map_submissions:
-            if meta.content['clear_reject'] == 'no':
+            if meta.content['clear_reject'] == 'yes':
                 set_reject_papers.add(paper_num)
 
     custom_demand_invitation = client.post_invitation(openreview.Invitation(
