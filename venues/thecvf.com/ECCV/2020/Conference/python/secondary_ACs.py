@@ -76,6 +76,7 @@ if __name__ == '__main__':
             if meta.content['clear_reject'] == 'Yes':
                 set_reject_papers.add(paper_num)
 
+    print('Found {} submissions with clear rejects'.format(len(set_reject_papers)))
     custom_demand_invitation = client.post_invitation(openreview.Invitation(
         id='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands',
         signatures=['thecvf.com/ECCV/2020/Conference'],
@@ -112,9 +113,9 @@ if __name__ == '__main__':
     ))
     print('Posted invitation {}\n'.format(custom_demand_invitation.id))
 
-    # print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands"\n')
-    # client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands')
-    # time.sleep(10)
+    print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands"')
+    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands')
+    print('Done Deleting old edges\n')
 
     secondary_ac_demands = []
     total_review_demand = 0
@@ -138,12 +139,11 @@ if __name__ == '__main__':
     posted_edges = openreview.tools.post_bulk_edges(client, secondary_ac_demands)
     print('Custom_User_Demands: Posted {0} edges\n'.format(len(posted_edges)))
 
-
     conflicts = []
 
-    # print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict" and label: "Already Assigned"\n')
-    # client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict', label='Already Assigned')
-    # time.sleep(10)
+    print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict" and label: "Already Assigned"')
+    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict', label='Already Assigned')
+    print('Done Deleting old edges\n')
 
     area_chair_groups = list(openreview.tools.iterget_groups(
         client, 
@@ -177,7 +177,7 @@ if __name__ == '__main__':
         client, 
         'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Assignment_Configuration')
     
-    if secondary_ac_assignment_config:
+    if not secondary_ac_assignment_config:
         print('\nSecondary ac matching has been setup already')
     else:
         print('Secondary ac matching not set up. Setting it up now.')
@@ -243,9 +243,24 @@ if __name__ == '__main__':
                             'description': 'Manually entered JSON score specification',
                             'order': 8,
                             'default': {
-                                'thecvf.com/ECCV/2020/Conference/Reviewers/-/Recommendation': {
-                                    'weight': 1,
-                                    'default': 0
+                                'thecvf.com/ECCV/2020/Conference/Area_Chairs/-/TPMS_Score': {
+                                    'default': 0,
+                                    'weight': 1
+                                },
+                                'thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Affinity_Score': {
+                                    'default': 0,
+                                    'weight': 0.5
+                                },
+                                'thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Bid': {
+                                    'translate_map': {
+                                        'Neutral': 0,
+                                        'Very High': 0.15,
+                                        'High': 0.1,
+                                        'Low': -0.5,
+                                        'Very Low': -1
+                                    },
+                                    'default': 0,
+                                    'weight': 1
                                 }
                             }
                         },
@@ -258,7 +273,7 @@ if __name__ == '__main__':
                         },
                         'conflicts_invitation': {
                             'value-regex': 'thecvf.com/ECCV/2020/Conference/.*',
-                            'default': 'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Conflict',
+                            'default': 'thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict',
                             'required': True,
                             'description': 'Invitation to store conflict scores',
                             'order': 10
@@ -317,6 +332,39 @@ if __name__ == '__main__':
                 }
             )
         )
+
+        print('\nPosting invitation "thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Paper_Assignment"')
+        client.post_invitation(openreview.Invitation(
+            id='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Paper_Assignment',
+            readers=['thecvf.com/ECCV/2020/Conference', 'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs'],
+            writers=['thecvf.com/ECCV/2020/Conference'],
+            invitees=['thecvf.com/ECCV/2020/Conference'],
+            signatures=['thecvf.com/ECCV/2020/Conference'],
+            multiReply=True,
+            reply={
+                'readers': {
+                    'values-copied': [
+                        'thecvf.com/ECCV/2020/Conference',
+                        '{tail}'
+                    ]
+                },
+                'nonreaders': {'values-regex': 'thecvf.com/ECCV/2020/Conference/Paper.*/Authors'},
+                'writers': {'values': ['thecvf.com/ECCV/2020/Conference']},
+                'signatures': {'values': ['thecvf.com/ECCV/2020/Conference']},
+                'content': {
+                    'tail': {
+                        'query': {'group': 'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs'},
+                        'type': 'Profile'
+                    },
+                    'label': {'value-regex': '.*'},
+                    'weight': {'value-regex': '[-+]?[0-9]*\\.?[0-9]*'},
+                    'head': {
+                        'query': {'invitation': 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission'},
+                        'type': 'Note'
+                    }
+                }
+            }
+        ))
 
         print('Secondary_Area_Chairs match setup done.')
 
