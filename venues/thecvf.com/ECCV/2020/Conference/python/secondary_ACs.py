@@ -113,6 +113,43 @@ if __name__ == '__main__':
     ))
     print('Posted invitation {}\n'.format(custom_demand_invitation.id))
 
+    print('\nPosting Custom_Max_Papers invitation')
+    custom_max_papers_invitation = client.post_invitation(openreview.Invitation(
+        id='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_Max_Papers',
+        signatures=['thecvf.com/ECCV/2020/Conference'],
+        readers=[
+            'thecvf.com/ECCV/2020/Conference',
+            'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs'],
+        writers=['thecvf.com/ECCV/2020/Conference'],
+        invitees=['thecvf.com/ECCV/2020/Conference'],
+        reply = {
+            'readers': {'values-copied': [
+                'thecvf.com/ECCV/2020/Conference',
+                'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs',
+                '{tail}']},
+            'nonreaders': {'values-regex': 'thecvf.com/ECCV/2020/Conference/Paper.*/Authors'},
+            'writers': {'values': ['thecvf.com/ECCV/2020/Conference']},
+            'signatures': {'values': ['thecvf.com/ECCV/2020/Conference']},
+            'content': {
+                'head': {
+                    'query' : {'id': 'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs'},
+                    'type': 'Profile'
+                },
+                'tail': {
+                    'query' : {'invitation': 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission'},
+                    'type': 'Note'
+                },
+                'weight': {
+                    'value-regex': '[-+]?[0-9]*\\.?[0-9]*'
+                },
+                'label': {
+                    'value-regex': '.*'
+                }
+            }
+        }
+    ))
+    print('Done posting Custom_Max_Papers invitation\n')
+
     print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands"')
     client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands')
     print('Done Deleting old edges\n')
@@ -121,19 +158,22 @@ if __name__ == '__main__':
     total_review_demand = 0
     print('Accumulating Custom_User_Demand edges')
     for paper_num, sub in tqdm(map_submissions.items()):
+        weight = 0
         if paper_num not in set_reject_papers:
-            secondary_ac_demands.append(openreview.Edge(
-                head=sub.id,
-                tail='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs',
-                weight=1,
-                invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands',
-                readers=[
-                    'thecvf.com/ECCV/2020/Conference',
-                    ],
-                writers=['thecvf.com/ECCV/2020/Conference'],
-                signatures=['thecvf.com/ECCV/2020/Conference']
-            ))
+            weight = 1
             total_review_demand += 1
+        
+        secondary_ac_demands.append(openreview.Edge(
+            head=sub.id,
+            tail='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs',
+            weight=weight,
+            invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands',
+            readers=[
+                'thecvf.com/ECCV/2020/Conference',
+                ],
+            writers=['thecvf.com/ECCV/2020/Conference'],
+            signatures=['thecvf.com/ECCV/2020/Conference']
+        ))
 
     print('Custom_User_Demands: Posting {0} edges'.format(len(secondary_ac_demands)))
     posted_edges = openreview.tools.post_bulk_edges(client, secondary_ac_demands)
