@@ -217,7 +217,7 @@ if __name__ == '__main__':
         client, 
         'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Assignment_Configuration')
     
-    if not secondary_ac_assignment_config:
+    if secondary_ac_assignment_config:
         print('\nSecondary ac matching has been setup already')
     else:
         print('Secondary ac matching not set up. Setting it up now.')
