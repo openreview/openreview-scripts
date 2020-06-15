@@ -66,7 +66,7 @@ if __name__ == '__main__':
     print('Posted aggregate score invitation:', aggregate_score_invitation.id)
 
     map_submissions = {note.number: note for note in openreview.tools.iterget_notes(client, invitation = 'thecvf.com/ECCV/2020/Conference/-/Blind_Submission')}
-    
+
     all_meta_reviews = list(openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/-/Meta_Review$'))
     print('Found {} official meta reviews\n'.format(len(all_meta_reviews)))
     set_reject_papers = set()
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     print('Done posting Custom_Max_Papers invitation\n')
 
     print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands"')
-    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands')
+    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Custom_User_Demands', wait_to_finish=True)
     print('Done Deleting old edges\n')
 
     secondary_ac_demands = []
@@ -162,7 +162,7 @@ if __name__ == '__main__':
         if paper_num not in set_reject_papers:
             weight = 1
             total_review_demand += 1
-        
+
         secondary_ac_demands.append(openreview.Edge(
             head=sub.id,
             tail='thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs',
@@ -182,11 +182,11 @@ if __name__ == '__main__':
     conflicts = []
 
     print('\nDeleting old edges for invitation:"thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict" and label: "Already Assigned"')
-    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict', label='Already Assigned')
+    client.delete_edges(invitation='thecvf.com/ECCV/2020/Conference/Area_Chairs/-/Conflict', label='Already Assigned', wait_to_finish=True)
     print('Done Deleting old edges\n')
 
     area_chair_groups = list(openreview.tools.iterget_groups(
-        client, 
+        client,
         regex='^thecvf.com/ECCV/2020/Conference/Paper.*/Area_Chair1$'))
     print('\nFound {} area chair groups'.format(len(area_chair_groups)))
 
@@ -214,9 +214,9 @@ if __name__ == '__main__':
 
     print('\nChecking if Secondary_Area_Chairs matching is set up already')
     secondary_ac_assignment_config = openreview.tools.get_invitation(
-        client, 
+        client,
         'thecvf.com/ECCV/2020/Conference/Secondary_Area_Chairs/-/Assignment_Configuration')
-    
+
     if secondary_ac_assignment_config:
         print('\nSecondary ac matching has been setup already')
     else:
