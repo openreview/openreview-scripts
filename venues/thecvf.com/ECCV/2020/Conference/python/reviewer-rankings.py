@@ -5,6 +5,46 @@ from tqdm import tqdm
 import argparse
 from collections import defaultdict
 
+reviewer_email_dict = {}
+
+def get_profile(id):
+    if id in reviewer_email_dict:
+        return reviewer_email_dict.get(id)
+    else:
+        if '@' in id:
+            profiles = client.search_profiles(emails=[id])
+            reviewer_email_dict[id] = profiles.get(id)
+            return reviewer_email_dict[id]
+        else:
+            profiles = client.search_profiles(ids=[id])
+            return profiles[0] if profiles else None
+
+def get_reviewer_details(tilde):
+    profile = get_profile(tilde)
+    
+    if not profile:
+        print('Line#27: profile not found for', tilde)
+        return {'tilde':'', 'name': '', 'email': tilde}
+
+    pref_name = []
+    for name in profile.content['names']:
+        if name.get('preferred'):
+            pref_name = [name.get('first'), name.get('last')]
+            if name.get('middle'):
+                pref_name.insert(1, name.get('middle'))
+
+    if not pref_name:
+        name = profile.content['names'][0]
+        pref_name = [name.get('first'), name.get('last')]
+        if name.get('middle'):
+            pref_name.insert(1, name.get('middle'))
+
+    pref_email = profile.content.get('preferredEmail')
+    if not pref_email:
+        pref_email = profile.content['emailsConfirmed'][0]
+    
+    return {'tilde': profile.id, 'name': ' '.join(pref_name), 'email': pref_email}
+
 if __name__ == '__main__':
     ## Argument handling
     parser = argparse.ArgumentParser()
@@ -21,9 +61,10 @@ if __name__ == '__main__':
     withdrawn_notes = {note.id: note for note in openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/-/Withdrawn_Submission')}
 
 
+
     # Step 1: Gather all reviewers
 
-    # Step 1.1: Reviewers from reviewer group
+    # Step 1.1: Reviewers from 21May file
     file_reviewers_ds = defaultdict(dict)
     with open('eccv20_internal_paper_reviewer_stats_21_may.csv', 'r') as f:
         csv_reader = csv.reader(f)
@@ -38,7 +79,11 @@ if __name__ == '__main__':
                 'assigned_by': line[3],
                 'emergency': emergency
             }
+            if '@' in reviewer:
+                details = get_reviewer_details(reviewer)
+                reviewer = details['tilde']
             file_reviewers_ds[reviewer][paper_number] = record
+
 
     # Step 1.2: Gather new reviewers since this file was created
     reviewer_group = client.get_group('thecvf.com/ECCV/2020/Conference/Reviewers')
@@ -52,6 +97,11 @@ if __name__ == '__main__':
         if group.members:
             paper_number = grp_id.split('Paper')[1].split('/')[0]
             reviewer = group.members[0]
+            if reviewer not in file_reviewers_ds:
+                reviewer_profile = get_profile(reviewer)
+                if reviewer_profile:
+                    reviewer = reviewer_profile.id
+
             if reviewer not in file_reviewers_ds or paper_number not in file_reviewers_ds.get(reviewer, {}):
                 emergency = False if group.signatures[0] == 'thecvf.com/ECCV/2020/Conference' else True
                 record = {
@@ -62,6 +112,8 @@ if __name__ == '__main__':
                 }
                 file_reviewers_ds[reviewer][paper_number] = record
 
+
+
     # Step 2: Find ALL reviews (regardless of whether the paper is withdrawn or not)
     reviews = openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]+/-/Official_Reviews$')
     for review in reviews:
@@ -69,9 +121,10 @@ if __name__ == '__main__':
         reviewer = review
         record = file_reviewers_ds.get(reviewer).get(paper_number)
         if not record:
-            print('Not found paper {} - reviewer {}'.format(paper_number, reviewer))
+            print('Line#125: Not found paper {} - reviewer {}'.format(paper_number, reviewer))
         if not record['completed_at']:
             record['completed_at'] = review.tcdate
+
 
 
     # Step 3: Get emergency assignment edges to identify emergency assignments
@@ -82,12 +135,21 @@ if __name__ == '__main__':
 
     for idx, edge in enumerate(emergency_edges):
         paper = blind_notes.get(edge.head) or withdrawn_notes.get(edge.head)
-        paper_number = str(paper.number)
+        paper_number = str(paper.number) if paper else None
+        if not paper_number:
+            print('Line#141: Paper not found in ds: edge.id:{}, paper:{}'.format(edge.id, paper_number))
+
         reviewer = edge.tail
+
         # find this record and set emergency=True
-        record = file_reviewers_ds[reviewer][paper_number]
-        record['emergency'] = True
-    print('Updated {} edges'.format(idx))
+        record = file_reviewers_ds.get(reviewer, {}).get(paper_number)
+        if record:
+            record['emergency'] = True
+        else:
+            print('Line#150: Edge not found in ds: reviewer:{}, paper:{}'.format(reviewer, paper_number))
+    print('Line#151: Updated {} edges'.format(idx))
+
+
 
     # Step 4: Get all review ratings and organize it
     map_ratings = defaultdict(dict)
@@ -101,15 +163,45 @@ if __name__ == '__main__':
         reviewer_group = map_current_reviewer_groups.get(anon_rev_group)
         if not reviewer_group:
             print('{} not found in current reviewer groups'.format(anon_rev_group))
-            break
         reviewer = reviewer_group.members[0]
-        map_ratings[reviewer][paper_number] = rating.content['rating']
+        map_ratings[reviewer][paper_number] = int(rating.content['rating'].split(':'))
+
+
+
 
     # Step 4: Aggregate data for each reviewer
-    final_result_map = defaultdict()
+    final_result_map = []
     for reviewer, records in file_reviewers_ds.items():
-        count_completed_reviews = len(list(filter(lambda rec:rec['completed_at'], records.values())))
-        emergency_reviews = len(list(filter(lambda rec:rec['emergency'], records.values())))
+        score = 0
+
+        count_assigned_reviews = len(records)
+        count_emergency_reviews = len(list(filter(lambda x:records[x]['emergency'], records)))
+
+        completed_reviews = list(filter(lambda x:records[x]['completed_at'], records))
+
+        for record in completed_reviews:
+            rating = map_ratings.get(reviewer, {}).get(paper_number)
+            if rating:
+                # Add rating received from AC
+                score += rating
+            else:
+                # Add 1 in case rating is not available
+                score += 1
+
+        # Add 1 for each emergency review done by this reviewer
+        score += count_emergency_reviews
+
+        # Subtract 1 for each missing review (assigned reviews MINUS completed reviews)
+        score -= (len(records) - len(completed_reviews))
+
+        reviewer_record = {
+            'tilde': reviewer,
+            'reviews_assigned': len(records),
+            'reviews_completed': len(completed_reviews),
+            'total_score': score
+        }
+        final_result_map.append(reviewer_record)
+
 
 
     # Step 5: Output CSV with (reviewer name, reviewer email, number of reviews, total score)
@@ -117,31 +209,9 @@ if __name__ == '__main__':
 
     with open('final_reviewer_ratings.csv', 'w') as f:
         csv_writer = csv.writer(f)
-        csv_writer.writerow(['Reviewer Name', 'Email', 'Number of Reviews','Total Score'])
+        csv_writer.writerow(['Reviewer ID', 'Reviewer Name', 'Email', 'Assigned Reviews', 'Completed Reviews', 'Total Score'])
         for result in final_result_map:
-            reviewer_details = get_reviewer_details(tilde=result[0])
-            csv_writer.writerow(reviewer_details['name'], reviewer_details['email'], result[1], result[2])
-
-
-def get_reviewer_details(tilde):
-    profile = client.search_profiles(ids=[tilde])
-    pref_name = None
-    for name in profile.content['names']:
-        if name.get('preferred'):
-            pref_name = [name.get('first')]
-            if name.get('middle'):
-                pref_name.append(name.get('middle'))
-            pref_name.append(name.get('last'))
-    if not pref_name:
-        name = profile.content['names'][0]
-        pref_name = name.get('first')
-        if name.get('middle'):
-            pref_name.append(name.get('middle'))
-        pref_name.append(name.get('last'))
-
-    pref_email = profile.content.get('preferredEmail')
-    if not pref_email:
-        pref_email = profile.content['emailsConfirmed'][0]
-    
-    return {'name': pref_name, 'email': pref_email}
-
+            reviewer_details = get_reviewer_details(tilde=result['tilde'])
+            if not reviewer_details['name']:
+                print('Not found ', reviewer_details['tilde'])
+            csv_writer.writerow([result['tilde'], reviewer_details['name'], reviewer_details['email'], result['reviews_assigned'], result['reviews_completed'], result['total_score']])
