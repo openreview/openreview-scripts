@@ -5,19 +5,21 @@ from tqdm import tqdm
 import argparse
 from collections import defaultdict
 
-reviewer_email_dict = {}
+reviewer_id_dict = {}
 
 def get_profile(id):
-    if id in reviewer_email_dict:
-        return reviewer_email_dict.get(id)
+    if id in reviewer_id_dict:
+        return reviewer_id_dict.get(id)
     else:
         if '@' in id:
             profiles = client.search_profiles(emails=[id])
-            reviewer_email_dict[id] = profiles.get(id)
-            return reviewer_email_dict[id]
+            reviewer_id_dict[id] = profiles.get(id)
+            return reviewer_id_dict[id]
         else:
             profiles = client.search_profiles(ids=[id])
-            return profiles[0] if profiles else None
+            if profiles:
+                reviewer_id_dict[id] = profiles[0]
+            return reviewer_id_dict[id] if profiles else None
 
 def get_reviewer_details(tilde):
     profile = get_profile(tilde)
@@ -86,9 +88,8 @@ if __name__ == '__main__':
                 'assigned_by': line[3],
                 'emergency': emergency
             }
-            if '@' in reviewer:
-                details = get_reviewer_details(reviewer)
-                reviewer = details['tilde']
+            details = get_reviewer_details(reviewer)
+            reviewer = details['tilde']
             file_reviewers_ds[reviewer][paper_number] = record
             count += 1
         print('Found {} records from file'.format(count))
