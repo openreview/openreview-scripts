@@ -105,8 +105,7 @@ if __name__ == '__main__':
             reviewer = group.members[0]
             if reviewer not in file_reviewers_ds:
                 reviewer_profile = get_profile(reviewer)
-                if reviewer_profile:
-                    reviewer = reviewer_profile.id
+                reviewer = reviewer_profile.id
 
             if reviewer not in file_reviewers_ds or paper_number not in file_reviewers_ds.get(reviewer, {}):
                 emergency = False if group.signatures[0] == 'thecvf.com/ECCV/2020/Conference' else True
@@ -131,14 +130,15 @@ if __name__ == '__main__':
         if reviewer_group:
             reviewer = reviewer_group.members[0]
         else:
-            print('Line#134: Reviewer not found for {}'.format(reviewer_group))
+            print('Line#133: Reviewer not found for {}'.format(reviewer_group))
             reviewer = get_profile(review.tauthor).id
-            print('Line#136: Found id {}'.format(reviewer))
+            print('Line#135: Found id {}'.format(reviewer))
 
-        reviewer_from_file = file_reviewers_ds.get(reviewer, {})
-        record = reviewer_from_file.get(paper_number, {})
-        if not reviewer_from_file or not record:
-            print('Line#141: Not found paper {} - reviewer {}'.format(paper_number, reviewer))
+        reviewer_records = file_reviewers_ds.get(reviewer, {})
+        if not reviewer_records:
+            print('Line#139: Not found reviewer {} for paper {}'.format(reviewer, paper_number))
+
+        record = reviewer_records.get(paper_number, {})
         if record and not record['completed_at']:
             record['completed_at'] = review.tcdate
         count += 1
@@ -160,7 +160,7 @@ if __name__ == '__main__':
         paper_number = str(paper.number) if paper else None
         if not paper_number:
             # This must be a desk rejected paper
-            print('Line#158: Paper not found in ds: edge.id:{}, paper:{}'.format(edge.id, paper_number))
+            print('Line#163: Paper not found in ds: edge.id:{}, paper:{}'.format(edge.id, paper_number))
             continue
 
         reviewer = edge.tail
@@ -170,14 +170,14 @@ if __name__ == '__main__':
         if record:
             record['emergency'] = True
         else:
-            print('Line#168: Assignment missing for edge: reviewer:{}, paper:{}'.format(reviewer, paper_number))
+            print('Line#173: Assignment missing for edge: reviewer:{}, paper:{}'.format(reviewer, paper_number))
             file_reviewers_ds[reviewer][paper_number] = {
                 'completed_at': None,
                 'assigned_at': None,
                 'assigned_by': None,
                 'emergency': True
             }
-            
+
     print('Processed {} edges'.format(idx+1))
 
 
@@ -187,17 +187,18 @@ if __name__ == '__main__':
     map_ratings = defaultdict(dict)
     review_ratings = openreview.tools.iterget_notes(
         client,
-        invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/AnonReviewer[0-9]*/-/Review_Rating'
+        invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/AnonReviewer[0-9]*/-/Review_Rating$'
     )
     print('Processing Review Ratings')
     for idx, rating in enumerate(review_ratings):
         paper_number = rating.invitation.split('Paper')[1].split('/')[0]
-        anon_rev_group = rating.invitation.split('/-/'[0])
+        anon_rev_group = rating.invitation.split('/-/')[0]
         reviewer_group = map_current_reviewer_groups.get(anon_rev_group)
         if not reviewer_group:
-            print('Line#193: {} not found in current reviewer groups'.format(anon_rev_group))
+            print('Line#198: {} not found in current reviewer groups'.format(anon_rev_group))
         reviewer = reviewer_group.members[0]
-        map_ratings[reviewer][paper_number] = int(rating.content['rating'].split(':'))
+        map_ratings[reviewer][paper_number] = int(rating.content['rating'].split(':')[0])
+
     print('Processed {} review ratings'.format(idx+1))
 
 
@@ -213,7 +214,7 @@ if __name__ == '__main__':
 
         completed_reviews = list(filter(lambda x:records[x]['completed_at'], records))
 
-        for record in completed_reviews:
+        for paper_number in completed_reviews:
             rating = map_ratings.get(reviewer, {}).get(paper_number)
             if rating:
                 # Add rating received from AC
@@ -247,6 +248,4 @@ if __name__ == '__main__':
         csv_writer.writerow(['Reviewer ID', 'Reviewer Name', 'Email', 'Assigned Reviews', 'Completed Reviews', 'Total Score'])
         for result in tqdm(final_result_map):
             reviewer_details = get_reviewer_details(tilde=result['tilde'])
-            if not reviewer_details['name']:
-                print('Not found ', reviewer_details['tilde'])
             csv_writer.writerow([result['tilde'], reviewer_details['name'], reviewer_details['email'], result['reviews_assigned'], result['reviews_completed'], result['total_score']])
