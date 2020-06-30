@@ -51,7 +51,9 @@ if __name__ == '__main__':
     parser.add_argument('--baseurl', help='base url')
     parser.add_argument('--username')
     parser.add_argument('--password')
+    parser.add_argument('--outfile')
     args = parser.parse_args()
+    outfile = args.outfile if args.outfile else 'final_reviewer_ratings.csv'
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
@@ -59,6 +61,8 @@ if __name__ == '__main__':
     blind_notes = {note.id: note for note in openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/-/Blind_Submission')}
 
     withdrawn_notes = {note.id: note for note in openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/-/Withdrawn_Submission')}
+
+    desk_rejected_notes = {note.id: note for note in openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/-/Desk_Rejected_Submission')}
 
 
 
@@ -87,11 +91,8 @@ if __name__ == '__main__':
 
 
     # Step 1.2: Gather new reviewers since the time this file was created
-    reviewer_group = client.get_group('thecvf.com/ECCV/2020/Conference/Reviewers')
-    reviewers = set(reviewer_group.members)
-
     map_current_reviewer_groups = {grp.id: grp for grp in openreview.tools.iterget_groups(
-        client, 
+        client,
         regex='thecvf.com/ECCV/2020/Conference/Paper[0-9]+/AnonReviewer[0-9]+$')}
 
     for grp_id, group in map_current_reviewer_groups.items():
@@ -137,7 +138,7 @@ if __name__ == '__main__':
         label='emergency-assignment-4')
 
     for idx, edge in enumerate(emergency_edges):
-        paper = blind_notes.get(edge.head) or withdrawn_notes.get(edge.head)
+        paper = blind_notes.get(edge.head) or withdrawn_notes.get(edge.head) or desk_rejected_notes.get(edge.head)
         paper_number = str(paper.number) if paper else None
         if not paper_number:
             # This must be a desk rejected paper
@@ -159,7 +160,7 @@ if __name__ == '__main__':
                 'emergency': True
             }
             
-    print('Line#154: Updated {} edges'.format(idx))
+    print('Line#154: Processed {} edges'.format(idx))
 
 
 
@@ -221,7 +222,7 @@ if __name__ == '__main__':
     # Step 5: Output CSV with (reviewer name, reviewer email, number of reviews, total score)
     # Total score = SUM(all the scores received from ACs) + 1 for each review that was not rated (because the AC did not rate it or because the paper was withdrawn) - 1 for each missing review + 1 for each delivered emergency review.
 
-    with open('final_reviewer_ratings.csv', 'w') as f:
+    with open(outfile, 'w') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow(['Reviewer ID', 'Reviewer Name', 'Email', 'Assigned Reviews', 'Completed Reviews', 'Total Score'])
         for result in tqdm(final_result_map):
