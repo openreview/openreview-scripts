@@ -93,7 +93,7 @@ if __name__ == '__main__':
             count += 1
         print('Found {} records from file'.format(count))
 
-
+    
     # Step 1.2: Gather new reviewers since the time this file was created
     map_current_reviewer_groups = {grp.id: grp for grp in openreview.tools.iterget_groups(
         client,
@@ -128,7 +128,7 @@ if __name__ == '__main__':
         reviewer_group_id = review.signatures[0]
         reviewer_group = map_current_reviewer_groups.get(reviewer_group_id)
         if reviewer_group:
-            reviewer = reviewer_group.members[0]
+            reviewer = get_profile(reviewer_group.members[0]).id
         else:
             print('Line#133: Reviewer not found for {}'.format(reviewer_group))
             reviewer = get_profile(review.tauthor).id
@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
         reviewer_records = file_reviewers_ds.get(reviewer, {})
         if not reviewer_records:
-            print('Line#139: Not found reviewer {} for paper {}'.format(reviewer, paper_number))
+            print('Line#139: Not found reviewer {} in group {}'.format(reviewer, reviewer_group_id))
 
         record = reviewer_records.get(paper_number, {})
         if record and not record['completed_at']:
