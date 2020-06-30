@@ -71,9 +71,11 @@ if __name__ == '__main__':
 
     # Step 1.1: Reviewers from 21May file
     file_reviewers_ds = defaultdict(dict)
+    print('Reading from file')
     with open('eccv20_internal_paper_reviewer_stats_21_may.csv', 'r') as f:
         csv_reader = csv.reader(f)
         next(csv_reader)
+        count = 0
         for line in csv_reader:
             reviewer = line[1]
             paper_number = line[0]
@@ -88,13 +90,15 @@ if __name__ == '__main__':
                 details = get_reviewer_details(reviewer)
                 reviewer = details['tilde']
             file_reviewers_ds[reviewer][paper_number] = record
+            count += 1
+        print('Found {} records from file'.format(count))
 
 
     # Step 1.2: Gather new reviewers since the time this file was created
     map_current_reviewer_groups = {grp.id: grp for grp in openreview.tools.iterget_groups(
         client,
-        regex='thecvf.com/ECCV/2020/Conference/Paper[0-9]+/AnonReviewer[0-9]+$')}
-
+        regex='thecvf.com/ECCV/2020/Conference/Paper[0-9]+/AnonReviewer[0-9]+$') if len(grp.members)}
+    print('Processing AnonReviewer groups')
     for grp_id, group in map_current_reviewer_groups.items():
         if group.members:
             paper_number = grp_id.split('Paper')[1].split('/')[0]
@@ -113,20 +117,33 @@ if __name__ == '__main__':
                     'emergency': emergency
                 }
                 file_reviewers_ds[reviewer][paper_number] = record
-
+    print('Processed {} AnonReviewer groups'.format(len(map_current_reviewer_groups)))
 
 
 
     # Step 2: Find ALL reviews (regardless of whether the paper is withdrawn or not)
-    reviews = openreview.tools.iterget_notes(client, invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]+/-/Official_Reviews$')
-    for review in reviews:
+    reviews = openreview.tools.iterget_notes(client, invitation='^thecvf.com/ECCV/2020/Conference/Paper[0-9]+/-/Official_Review$')
+    print('Processing Official reviews')
+    for idx, review in enumerate(reviews):
         paper_number = review.invitation.split('Paper')[1].split('/')[0]
-        reviewer = review
-        record = file_reviewers_ds.get(reviewer).get(paper_number)
-        if not record:
-            print('Line#125: Not found paper {} - reviewer {}'.format(paper_number, reviewer))
-        if not record['completed_at']:
+        reviewer_group_id = review.signatures[0]
+        reviewer_group = map_current_reviewer_groups.get(reviewer_group_id)
+        if reviewer_group:
+            reviewer = reviewer_group.members[0]
+        else:
+            print('Line#134: Reviewer not found for {}'.format(reviewer_group))
+            reviewer = get_profile(review.tauthor).id
+            print('Line#136: Found id {}'.format(reviewer))
+
+        reviewer_from_file = file_reviewers_ds.get(reviewer, {})
+        record = reviewer_from_file.get(paper_number, {})
+        if not reviewer_from_file or not record:
+            print('Line#141: Not found paper {} - reviewer {}'.format(paper_number, reviewer))
+        if record and not record['completed_at']:
             record['completed_at'] = review.tcdate
+        count += 1
+    
+    print('Processed {} official reviews'.format(idx+1))
 
 
 
@@ -137,12 +154,13 @@ if __name__ == '__main__':
         invitation='thecvf.com/ECCV/2020/Conference/Emergency_Reviewers/-/Paper_Assignment',
         label='emergency-assignment-4')
 
+    print('Processing Emergency assignment edges')
     for idx, edge in enumerate(emergency_edges):
         paper = blind_notes.get(edge.head) or withdrawn_notes.get(edge.head) or desk_rejected_notes.get(edge.head)
         paper_number = str(paper.number) if paper else None
         if not paper_number:
             # This must be a desk rejected paper
-            print('Line#141: Paper not found in ds: edge.id:{}, paper:{}'.format(edge.id, paper_number))
+            print('Line#158: Paper not found in ds: edge.id:{}, paper:{}'.format(edge.id, paper_number))
             continue
 
         reviewer = edge.tail
@@ -152,7 +170,7 @@ if __name__ == '__main__':
         if record:
             record['emergency'] = True
         else:
-            print('Line#151: Assignment not found for edge: reviewer:{}, paper:{}'.format(reviewer, paper_number))
+            print('Line#168: Assignment missing for edge: reviewer:{}, paper:{}'.format(reviewer, paper_number))
             file_reviewers_ds[reviewer][paper_number] = {
                 'completed_at': None,
                 'assigned_at': None,
@@ -160,7 +178,7 @@ if __name__ == '__main__':
                 'emergency': True
             }
             
-    print('Line#154: Processed {} edges'.format(idx))
+    print('Processed {} edges'.format(idx+1))
 
 
 
@@ -171,24 +189,26 @@ if __name__ == '__main__':
         client,
         invitation='thecvf.com/ECCV/2020/Conference/Paper[0-9]*/AnonReviewer[0-9]*/-/Review_Rating'
     )
-    for rating in review_ratings:
+    print('Processing Review Ratings')
+    for idx, rating in enumerate(review_ratings):
         paper_number = rating.invitation.split('Paper')[1].split('/')[0]
         anon_rev_group = rating.invitation.split('/-/'[0])
         reviewer_group = map_current_reviewer_groups.get(anon_rev_group)
         if not reviewer_group:
-            print('Line#174: {} not found in current reviewer groups'.format(anon_rev_group))
+            print('Line#193: {} not found in current reviewer groups'.format(anon_rev_group))
         reviewer = reviewer_group.members[0]
         map_ratings[reviewer][paper_number] = int(rating.content['rating'].split(':'))
+    print('Processed {} review ratings'.format(idx+1))
 
 
 
 
     # Step 4: Aggregate data for each reviewer
+    print('Aggregating scores')
     final_result_map = []
     for reviewer, records in file_reviewers_ds.items():
         score = 0
 
-        count_assigned_reviews = len(records)
         count_completed_emergency_reviews = len(list(filter(lambda x:(records[x]['emergency'] and records[x]['completed_at']), records)))
 
         completed_reviews = list(filter(lambda x:records[x]['completed_at'], records))
@@ -221,7 +241,7 @@ if __name__ == '__main__':
 
     # Step 5: Output CSV with (reviewer name, reviewer email, number of reviews, total score)
     # Total score = SUM(all the scores received from ACs) + 1 for each review that was not rated (because the AC did not rate it or because the paper was withdrawn) - 1 for each missing review + 1 for each delivered emergency review.
-
+    print('Writing to {}'.format(outfile))
     with open(outfile, 'w') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow(['Reviewer ID', 'Reviewer Name', 'Email', 'Assigned Reviews', 'Completed Reviews', 'Total Score'])
