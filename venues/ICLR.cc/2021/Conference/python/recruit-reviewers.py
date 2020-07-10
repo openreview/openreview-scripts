@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     conference = openreview.get_conference(client, 'tEEXdrgkqm')
 
-    title = 'Reviewer invitation for ICLR 2021 -- please respond by July 16th'
+    title = 'Reviewer invitation for ICLR 2021 -- please respond by July 17th'
     message = '''
 Summary: We would be delighted if you would agree to serve as a reviewer for the 2021 International Conference on Learning Representations (ICLR2021).
 
@@ -46,7 +46,7 @@ To DECLINE the invitation, please click on the following link:
 
 {decline_url}
 
-We would appreciate an answer by July 16th (in 7 days).
+We would appreciate an answer by July 17th (in 7 days).
 
 If you have any questions, please don’t hesitate to reach out to us at iclr2021programchairs@googlegroups.com.
 
