@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     conference = openreview.get_conference(client, 'tEEXdrgkqm')
 
-    title = 'Reviewer invitation for ICLR 2021 -- please respond by July 17th (please ignore the previous reviewer recruitment mail)'
+    title = 'Reviewer invitation for ICLR 2021 -- please respond by August 6th'
     message = '''
 Summary: We would be delighted if you would agree to serve as a reviewer for the 2021 International Conference on Learning Representations (ICLR2021).
 
@@ -46,7 +46,7 @@ To DECLINE the invitation, please click on the following link:
 
 {decline_url}
 
-We would appreciate an answer by July 17th.
+We would appreciate an answer by August 6th.
 
 If you have any questions, please don’t hesitate to reach out to us at iclr2021programchairs@googlegroups.com.
 
@@ -60,7 +60,7 @@ Naila Murray, Katja Hofmann, Alice Oh, and Ivan Titov
     names_list = []
     emails_list = []
 
-    with open('ICLR_2021_invited_reviewers_wave1_final.tsv', 'r') as f:
+    with open('ICLR_2021_invited_reviewers_wave2_final2.tsv', 'r') as f:
         content = f.read().split('\n')
         for line in content[1:]:
             if line:
@@ -68,11 +68,12 @@ Naila Murray, Katja Hofmann, Alice Oh, and Ivan Titov
                 names_list.append(' '.join([n.strip() for n in elements[2:5] if n.strip()]))
                 emails_list.append(elements[5].strip().lower())
 
+    print(len(names_list))
+    print(len(emails_list))
     conference.recruit_reviewers(
         title=title,
         invitees=emails_list,
         invitee_names=names_list,
         reviewers_name='Reviewers',
-        message=message,
-        baseurl='https://openreview.net'
+        message=message
     )
