@@ -12,59 +12,13 @@ parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
 
-# client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-
-baseUrl = "http://localhost:3000"
-superUser = 'OpenReview.net'
-password = 'OpenReview_dev'
-client = openreview.Client(baseurl=baseUrl, username=superUser, password=password)
-
+client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 CONFERENCE_ID = 'ML_Reproducibility_Challenge/2020'
 PROGRAM_CHAIRS_ID = CONFERENCE_ID + '/Program_Chairs'
 SUBMISSION_ID = CONFERENCE_ID + '/-/Submission'
 AUTHORS_ID = CONFERENCE_ID + '/Authors'
 ACCEPTED_PAPER_ID = CONFERENCE_ID + '/-/Accepted_Papers'
-
-# builder = openreview.builder.ConferenceBuilder(client)
-# builder.set_CONFERENCE_ID(CONFERENCE_ID)
-# builder.set_conference_name('ML Reproducibility Challenge 2020')
-
-# builder.set_homepage_header({
-#     'title': 'NeurIPS 2019 Reproducibility Challenge',
-#     'deadline': 'Submission Claims accepted from 2019-Sept-7, to 2019-Nov-1 (GMT)',
-#     'date': 'December 13-14, 2019',
-#     'website': 'https://reproducibility-challenge.github.io/neurips2019/dates/',
-#     'location': 'Vancouver, Canada',
-# })
-
-# # WARNING: this submission stage is being set as "Public", even though it really shouldn't be.
-# # We're doing this because there are some behaviors that we don't understand about the builder
-# # that happen when you set public=False.
-# # The Report invitation is being made private manually below.
-# builder.set_submission_stage(
-#     name='Report',
-#     double_blind=True,
-#     public=True,
-#     additional_fields={
-#         'track': {
-#            'required': True,
-#            'value-dropdown': ['Baseline', 'Ablation', 'Replicability']
-#         },
-#         'NeurIPS_paper_id': {
-#                'required': False,
-#                'value-regex': '.*'
-#         }
-#     },
-#     remove_fields=['keywords', 'TL;DR'],
-#     start_date=datetime.datetime(2019, 11, 1),
-#     due_date=datetime.datetime(2019, 12, 2, 12)
-# )
-
-# builder.set_override_homepage(True)
-# conference = builder.get_result()
-
-# ~ Everything below is custom to the "Claims" mechanism(s) ~
 
 # replace the builder-generated webfield with the custom webfield
 with open('../webfield/conferenceWebfield.js') as f:
@@ -74,13 +28,6 @@ conference_group = client.get_group(CONFERENCE_ID)
 conference_group.web = homepage_webfield
 conference_group = client.post_group(conference_group)
 
-# program_chairs = conference.set_program_chairs([])
-
-# add venue to active because it doesn't have an invitation open to everyone
-# so it won't show up under Open for Submission
-# active_venues = client.get_group("active_venues")
-# active_venues.members.append(CONFERENCE_ID)
-# client.post_group(active_venues)
 
 # add the "Claimants" group
 client.post_group(openreview.Group(
@@ -109,13 +56,13 @@ report_invitation.reply['readers'] = {
     ]
 }
 
-# with open('../process/reportProcess.py') as f:
-#     report_invitation.process = f.read()
+with open('../process/reportProcess.py') as f:
+    report_invitation.process = f.read()
 
 report_invitation = client.post_invitation(report_invitation)
 
 # post the invitation used to upload accepted RL Accepted papers
-rl_accepted_paper_submission_invitation = client.post_invitation(openreview.Invitation(**{
+rc_accepted_paper_submission_invitation = client.post_invitation(openreview.Invitation(**{
     'id': ACCEPTED_PAPER_ID,
     'invitees': [PROGRAM_CHAIRS_ID],
     'readers': ['everyone'],

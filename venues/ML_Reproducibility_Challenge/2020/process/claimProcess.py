@@ -19,6 +19,6 @@ def process(client, note, invitation):
         title=submission.content['title'])
     client.send_mail("ML Reproducibility Challenge 2020 Claim", [note.tauthor], msg)
 
-    claimants = client.get_group(CONFERENCE_ID+'/Claimants')
+    claimants = client.get_group(CONFERENCE_ID + '/Claimants')
     claimants.members.append(note.tauthor)
     client.post_group(claimants)

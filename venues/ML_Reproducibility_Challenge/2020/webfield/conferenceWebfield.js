@@ -18,7 +18,7 @@ var REVIEWERS_ID = 'ML_Reproducibility_Challenge/2020/Reviewers';
 var PROGRAM_CHAIRS_ID = 'ML_Reproducibility_Challenge/2020/Program_Chairs';
 var AUTHORS_ID = 'ML_Reproducibility_Challenge/2020/Authors';
 var HEADER = {"title": "ML Reproducibility Challenge 2020", "subtitle": "RC2020", "location": null, "date": "Mar 12 2021", "website": "https://paperswithcode.com/rc2020", "instructions": null, "deadline": "Submission Start: Oct 05 2020 12:00AM UTC-0, End: Dec 04 2020 12:00AM UTC-0", "contact": "reproducibility.challenge@gmail.com", "reviewers_name": "Reviewers", "area_chairs_name": "Area_Chairs", "reviewers_id": "ML_Reproducibility_Challenge/2020/Reviewers", "authors_id": "ML_Reproducibility_Challenge/2020/Authors", "program_chairs_id": "ML_Reproducibility_Challenge/2020/Program_Chairs", "area_chairs_id": "ML_Reproducibility_Challenge/2020/Area_Chairs", "submission_id": "ML_Reproducibility_Challenge/2020/-/Submission", "blind_submission_id": "ML_Reproducibility_Challenge/2020/-/Blind_Submission", "withdrawn_submission_id": "ML_Reproducibility_Challenge/2020/-/Withdrawn_Submission", "desk_rejected_submission_id": "ML_Reproducibility_Challenge/2020/-/Desk_Rejected_Submission", "public": false};
-var PUBLIC = true;
+var PUBLIC = false;
 
 var CLAIM_HOLD_ID = CONFERENCE_ID + '/-/Claim_Hold'
 var CLAIM_ID = CONFERENCE_ID + '/-/Claim'
@@ -98,7 +98,7 @@ function load() {
 
     userGroupsP = Webfield.getAll('/groups', { regex: CONFERENCE_ID + '/.*', member: user.id, web: true });
 
-    authorNotesP = Webfield.api.getSubmissions(SUBMISSION_ID, {
+    authorNotesP = Webfield.api.getSubmissions(CLAIM_ID, {
       pageSize: PAGE_SIZE,
       'content.authorids': user.profile.id
     });
@@ -106,9 +106,10 @@ function load() {
 
   var allNotesP = Webfield.getAll('/notes', { invitation: ACCEPTED_PAPER_ID, details: 'replyCount,original' });
   var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_HOLD_ID, details: 'forumContent' });
+  var myClaimsP = Webfield.getAll('/notes', { invitation: CLAIM_ID, noDetails: true, tauthor: true });
 
 
-  return $.when(notesP, userGroupsP, activityNotesP, authorNotesP, withdrawnNotesP, deskRejectedNotesP, allNotesP, claimNotesP);
+  return $.when(notesP, userGroupsP, activityNotesP, authorNotesP, withdrawnNotesP, deskRejectedNotesP, allNotesP, claimNotesP, myClaimsP);
 }
 
 // Render functions
@@ -149,15 +150,11 @@ function renderConferenceTabs() {
     },
     {
       heading: 'All Papers',
-      id: 'unclaimed',
+      id: 'all-submissions',
     },
     {
       heading: 'Claimed',
       id: 'claimed',
-    },
-    {
-      heading: 'All Reports',
-      id: 'all-submissions',
     },
     {
       heading: 'Recent Activity',
@@ -211,11 +208,13 @@ function createConsoleLinks(allGroups) {
 
 }
 
-function renderContent(notesResponse, userGroups, activityNotes, authorNotes, withdrawnNotes, deskRejectedNotes, allNotesP, claimNotesP) {
+function renderContent(notesResponse, userGroups, activityNotes, authorNotes, withdrawnNotes, deskRejectedNotes, allNotesP, claimNotesP, myClaimsP) {
 
   // Your Consoles tab
   console.log('authorNotes', authorNotes);
-  if (userGroups.length || authorNotes.length) {
+  console.log('myClaimsP', myClaimsP);
+  console.log('userGroups', userGroups);
+  if (userGroups.length || authorNotes.length || myClaimsP.length) {
 
     var $container = $('#your-consoles').empty();
     $container.append('<ul class="list-unstyled submissions-list">');
@@ -228,6 +227,14 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, wi
       allConsoles.push(group.id);
     });
 
+    if (myClaimsP.length) {
+      $('#your-consoles .submissions-list').append([
+        '<li class="note invitation-link">',
+          '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
+        '</li>'
+      ].join(''));
+    }
+
     // Render all console links for the user
     createConsoleLinks(allConsoles);
 
@@ -239,17 +246,17 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, wi
   console.log('claimNotesP.length', claimNotesP.length);
   if (allNotesP.length) {
     console.log('allNotesP.length', allNotesP.length);
-    var $unclaimedContainer = $('#unclaimed').empty();
+    var $unclaimedContainer = $('#all-submissions').empty();
     $unclaimedContainer.append('<ul class="list-unstyled submissions-list">');
 
     var unclaimedResultListOptions = _.assign({}, paperDisplayOptions, {
-        container: '#unclaimed',
+        container: '#all-submissions',
         autoLoad: false
     });
 
     Webfield.ui.submissionList(allNotesP, {
         heading: null,
-        container: '#unclaimed',
+        container: '#all-submissions',
         search: {
           enabled: true,
           localSearch: false,
@@ -259,7 +266,7 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, wi
           },
           onReset: function() {
             Webfield.ui.searchResults(allNotesP, unclaimedResultListOptions);
-            $('#unclaimed').append(view.paginationLinks(allNotesP.length, PAGE_SIZE, 1));
+            $('#all-submissions').append(view.paginationLinks(allNotesP.length, PAGE_SIZE, 1));
           }
         },
         displayOptions: paperDisplayOptions,
@@ -275,10 +282,10 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, wi
         },
         fadeIn: false
     });
-    $('.tabs-container a[href="#unclaimed"]').parent().show();
+    $('.tabs-container a[href="#all-submissions"]').parent().show();
 
   } else {
-    $('.tabs-container a[href="#unclaimed"]').parent().hide();
+    $('.tabs-container a[href="#all-submissions"]').parent().hide();
   }
 
   if (claimNotesP.length) {
@@ -325,49 +332,6 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, wi
     $('.tabs-container a[href="#claimed"]').parent().hide();
   }
 
-  // All Submitted Papers tab
-  var notes = notesResponse.notes || [];
-  var noteCount = notesResponse.count || 0;
-
-  $('#all-submissions').empty();
-
-  if (noteCount) {
-    var searchResultsListOptions = _.assign({}, paperDisplayOptions, {
-      container: '#all-submissions',
-      autoLoad: false
-    });
-
-    Webfield.ui.submissionList(notes, {
-      heading: null,
-      container: '#all-submissions',
-      search: {
-        enabled: true,
-        localSearch: false,
-        invitation: BLIND_SUBMISSION_ID,
-        onResults: function(searchResults) {
-          Webfield.ui.searchResults(searchResults, searchResultsListOptions);
-        },
-        onReset: function() {
-          Webfield.ui.searchResults(notes, searchResultsListOptions);
-          $('#all-submissions').append(view.paginationLinks(noteCount, PAGE_SIZE, 1));
-        }
-      },
-      displayOptions: paperDisplayOptions,
-      autoLoad: false,
-      noteCount: noteCount,
-      pageSize: PAGE_SIZE,
-      onPageClick: function(offset) {
-        return Webfield.api.getSubmissions(BLIND_SUBMISSION_ID, {
-          details: 'replyCount,invitation,original',
-          pageSize: PAGE_SIZE,
-          offset: offset
-        });
-      },
-      fadeIn: false
-    });
-  } else {
-    $('.tabs-container a[href="#all-submissions"]').parent().hide();
-  }
 
   // Activity Tab
   if (activityNotes.length) {

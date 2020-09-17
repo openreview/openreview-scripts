@@ -1,4 +1,3 @@
-
 import argparse
 import datetime
 import openreview
@@ -14,7 +13,7 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print("Connected to "+client.baseurl)
-conference_id = 'NeurIPS.cc/2019/Reproducibility_Challenge'
+CONFERENCE_ID = 'ML_Reproducibility_Challenge/2020'
 
 def get_author_id(forumNote):
     # get submission author and add to email list if author hasn't set a notification tag
@@ -46,7 +45,7 @@ else:
     print("Invalid freq: "+args.freq)
     quit()
 
-comments = tools.iterget_notes(client, mintcdate = min_date, invitation = conference_id+'/.*/-/Comment')
+comments = tools.iterget_notes(client, mintcdate = min_date, invitation = CONFERENCE_ID+'/.*/-/Comment')
 comment_by_forum = {}
 for comment in comments:
     if comment.forum not in comment_by_forum:
@@ -56,20 +55,20 @@ for comment in comments:
 for forum in comment_by_forum.keys():
     forumNote = client.get_note(id=forum)
     # get all notification tags for this paper
-    tags = tools.iterget_tags(client, invitation=conference_id+'/-/Notification_Subscription', forum = forum, tag=args.freq)
+    tags = tools.iterget_tags(client, invitation=CONFERENCE_ID+'/-/Notification_Subscription', forum = forum, tag=args.freq)
     email_list = [tag.signatures[0] for tag in tags]
 
     if args.notify_author:
         # add paper author if they haven't set a notification frequency
         author_id = get_author_id(forumNote)
-        notify = client.get_tags(invitation=conference_id+'/-/Notification_Subscription', forum=forum, signature=author_id)
+        notify = client.get_tags(invitation=CONFERENCE_ID+'/-/Notification_Subscription', forum=forum, signature=author_id)
         if author_id and not notify:
             email_list.append(author_id)
 
     if email_list:
         # get paper info
-        subject = '[NeurIPS Reproducibility Challenge] Paper Title: "' + forumNote.content['title'] + '" comment ' + args.freq + ' report'
-        message = 'NeurIPS paper "'+forumNote.content['title']+'" received the following comments: \n\n'
+        subject = '[ML Reproducibility Challenge] Paper Title: "' + forumNote.content['title'] + '" comment ' + args.freq + ' report'
+        message = 'ML Reproducibility Challenge paper "'+forumNote.content['title']+'" received the following comments: \n\n'
         # show at most 3 comments
         max_comment = 3
         # assemble all comments into text

@@ -1,4 +1,3 @@
-
 import argparse
 import openreview
 from openreview import tools
@@ -11,19 +10,21 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 print("Connected to "+client.baseurl)
-conference_id = 'NeurIPS.cc/2019/Reproducibility_Challenge'
+CONFERENCE_ID = 'ML_Reproducibility_Challenge/2020'
+SUBMISSION_ID = CONFERENCE_ID + '/-/Submission'
+ACCEPTED_PAPER_ID = CONFERENCE_ID + '/-/Accepted_Papers'
 
 # create invitation for notification frequency tags
 notify_inv = openreview.Invitation(
-    id='{}/-/Notification_Subscription'.format(conference_id),
+    id='{}/-/Notification_Subscription'.format(CONFERENCE_ID),
     readers=['everyone'],
     invitees=['~'],
-    writers=[conference_id],
-    signatures=[conference_id],
+    writers=[CONFERENCE_ID],
+    signatures=[CONFERENCE_ID],
     details={'writable': True},
     multiReply=False,
     reply={
-        'invitation': conference_id+"/-/NeurIPS_Submission",
+        'invitation': ACCEPTED_PAPER_ID,
         'content': {
             "tag": {
                 "required": True,
@@ -42,10 +43,10 @@ notify_inv = openreview.Invitation(
         },
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values-copied': [conference_id, conference_id+'/Program_Chairs', '{signatures}']
+            'values-copied': [CONFERENCE_ID, CONFERENCE_ID+'/Program_Chairs', '{signatures}']
         },
         'writers': {
-            'values-copied': [conference_id, '{signatures}']
+            'values-copied': [CONFERENCE_ID, '{signatures}']
         }
     }
 )
@@ -58,17 +59,17 @@ notes = tools.iterget_notes(client,invitation=conference_id+'/-/NeurIPS_Submissi
 for note in notes:
     # need paper group to publish sub-groups
     paper_group = client.post_group(openreview.Group(
-        id='{conference_id}/{number}'.format(conference_id=conference_id, number=note.number),
-        signatures=[conference_id], signatories=[conference_id],
-        readers=[conference_id], writers=[conference_id]))
+        id='{conference_id}/{number}'.format(conference_id=CONFERENCE_ID, number=note.number),
+        signatures=[CONFERENCE_ID], signatories=[CONFERENCE_ID],
+        readers=[CONFERENCE_ID], writers=[CONFERENCE_ID]))
 
     # add comment invite
     comment_inv = openreview.Invitation(
         id=paper_group.id+'/-/Comment',
         readers=['everyone'],
         invitees=['~'],
-        writers=[conference_id],
-        signatures=[conference_id],
+        writers=[CONFERENCE_ID],
+        signatures=[CONFERENCE_ID],
         reply={
             'forum': note.forum,
             'replyto': None,
@@ -94,7 +95,7 @@ for note in notes:
                 'values': ['everyone']
             },
             'writers': {
-                'values-copied': [conference_id, '{signatures}']
+                'values-copied': [CONFERENCE_ID, '{signatures}']
             }
         },
         process='../process/commentProcess.py'
