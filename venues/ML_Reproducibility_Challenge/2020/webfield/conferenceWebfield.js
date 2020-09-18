@@ -33,7 +33,8 @@ var paperDisplayOptions = {
   pdfLink: true,
   replyCount: true,
   showContents: true,
-  showTags: false
+  showTags: false,
+  referrer: encodeURIComponent('[ML Reproducibility Challenge 2020](/group?id=' + CONFERENCE_ID + ')')
 };
 var commentDisplayOptions = {
   pdfLink: false,
