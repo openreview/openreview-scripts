@@ -38,7 +38,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 def post_paper(paper, client):
     authors = ""
-    if paper['Authors']:
+    if not math.isnan(paper['Authors']):
         authors = paper['Authors'].split(",") if "," in paper['Authors'] else [paper['Authors']]
 
     note = openreview.Note(invitation=ACCEPTED_PAPER_ID,
@@ -65,7 +65,6 @@ for index, paper in filtered_data.iterrows():
     except Exception as e:
         print("Error in paper: " + paper['Title'])
         print(e)
-        raise e
 
 print(filtered_data.iloc[0])
 print(filtered_data.size)
