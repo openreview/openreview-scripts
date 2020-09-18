@@ -19,8 +19,8 @@ venue_map = {'ICLR': 'ICLR 2020',
 
 # TODO check for paper with title 'ScriptWriter: Narrative-Guided Scrip'
 
-filtered_data = data[data['Title'].str.contains("Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics")]
-# filtered_data = data
+#filtered_data = data[data['Title'].str.contains("Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics")]
+filtered_data = data
 print("uniq", data['Conference'].unique())
 
 CONFERENCE_ID = 'ML_Reproducibility_Challenge/2020'
@@ -38,7 +38,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 def post_paper(paper, client):
     authors = ""
-    if not math.isnan(paper['Authors']):
+    if paper['Authors']:
         authors = paper['Authors'].split(",") if "," in paper['Authors'] else [paper['Authors']]
 
     note = openreview.Note(invitation=ACCEPTED_PAPER_ID,
@@ -65,6 +65,7 @@ for index, paper in filtered_data.iterrows():
     except Exception as e:
         print("Error in paper: " + paper['Title'])
         print(e)
+        raise e
 
 print(filtered_data.iloc[0])
 print(filtered_data.size)

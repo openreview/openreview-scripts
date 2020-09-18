@@ -77,7 +77,7 @@ rc_accepted_paper_submission_invitation = client.post_invitation(openreview.Invi
             'authors': {
                 'description': 'Comma separated list of author names.',
                 'values-regex': '.*',
-                'required': True
+                'required': False
             },
             'pdf': {
                 'description': 'PDF url',
