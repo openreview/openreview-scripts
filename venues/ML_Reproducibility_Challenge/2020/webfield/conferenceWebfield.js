@@ -20,9 +20,9 @@ var AUTHORS_ID = 'ML_Reproducibility_Challenge/2020/Authors';
 var HEADER = {"title": "ML Reproducibility Challenge 2020", "subtitle": "RC2020", "location": null, "date": "Mar 12 2021", "website": "https://paperswithcode.com/rc2020", "instructions": null, "deadline": "Submission Start: Oct 05 2020 12:00AM UTC-0, End: Dec 04 2020 12:00AM UTC-0", "contact": "reproducibility.challenge@gmail.com", "reviewers_name": "Reviewers", "area_chairs_name": "Area_Chairs", "reviewers_id": "ML_Reproducibility_Challenge/2020/Reviewers", "authors_id": "ML_Reproducibility_Challenge/2020/Authors", "program_chairs_id": "ML_Reproducibility_Challenge/2020/Program_Chairs", "area_chairs_id": "ML_Reproducibility_Challenge/2020/Area_Chairs", "submission_id": "ML_Reproducibility_Challenge/2020/-/Submission", "blind_submission_id": "ML_Reproducibility_Challenge/2020/-/Blind_Submission", "withdrawn_submission_id": "ML_Reproducibility_Challenge/2020/-/Withdrawn_Submission", "desk_rejected_submission_id": "ML_Reproducibility_Challenge/2020/-/Desk_Rejected_Submission", "public": false};
 var PUBLIC = false;
 
-var CLAIM_HOLD_ID = CONFERENCE_ID + '/-/Claim_Hold'
-var CLAIM_ID = CONFERENCE_ID + '/-/Claim'
-var ACCEPTED_PAPER_ID = CONFERENCE_ID + '/-/Accepted_Papers'
+var CLAIM_HOLD_ID = CONFERENCE_ID + '/-/Claim_Hold';
+var CLAIM_ID = CONFERENCE_ID + '/-/Claim';
+var ACCEPTED_PAPER_ID = CONFERENCE_ID + '/-/Accepted_Papers';
 
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/.*';
@@ -120,7 +120,7 @@ function renderConferenceHeader() {
 }
 
 function renderSubmissionButton() {
-  Webfield.api.getSubmissionInvitation(SUBMISSION_ID, {deadlineBuffer: BUFFER})
+  Webfield.api.getSubmissionInvitation(ACCEPTED_PAPER_ID, {deadlineBuffer: BUFFER})
     .then(function(invitation) {
       Webfield.ui.submissionButton(invitation, user, {
         onNoteCreated: function() {
