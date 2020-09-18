@@ -15,8 +15,9 @@ def process(client, note, invitation):
 
     # send confirmation email
     submission = client.get_note(note.forum)
-    msg = 'Your claim to ML Reproducibility Challenge 2020 Reproducibility Challenge for paper {title} has been posted.'.format(
-        title=submission.content['title'])
+    msg = 'Your claim to ML Reproducibility Challenge 2020 for paper {title} has been posted.'.format(
+        title=submission.content['title']) + '\n\nTo view the claim, click here: ' + \
+                        client.baseurl + '/forum?id=' + note.forum + '&noteId=' + note.id
     client.send_mail("ML Reproducibility Challenge 2020 Claim", [note.tauthor], msg)
 
     claimants = client.get_group(CONFERENCE_ID + '/Claimants')

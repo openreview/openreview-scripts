@@ -37,6 +37,8 @@ def post_paper(paper, client):
     authors = ""
     if paper['Authors']:
         authors = paper['Authors'].split(",") if "," in paper['Authors'] else [paper['Authors']]
+        for i in range(len(authors)):
+            authors[i] = str(authors[i]).strip()
 
     note = openreview.Note(invitation=ACCEPTED_PAPER_ID,
                            readers=['everyone'],

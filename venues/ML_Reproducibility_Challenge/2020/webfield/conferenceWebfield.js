@@ -49,7 +49,7 @@ function main() {
 
   renderConferenceHeader();
 
-  renderSubmissionButton();
+//  renderSubmissionButton();
 
   renderConferenceTabs();
 
@@ -162,8 +162,6 @@ function createConsoleLinks(allGroups) {
 function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myClaims) {
 
   // Your Consoles tab
-  console.log('myClaims', myClaims);
-  console.log('userGroups', userGroups);
   if (userGroups.length || myClaims.length) {
 
     var $container = $('#your-consoles').empty();
@@ -190,12 +188,10 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
     $('.tabs-container a[href="#your-consoles"]').parent().hide();
   }
 
-  console.log('claimNotes.length', claimNotes.length);
   var notes = notesResponse.notes || [];
   var noteCount = notesResponse.count || 0;
 
   if (noteCount) {
-    console.log('notes.length', notes.length);
 
     var unclaimedResultListOptions = _.assign({}, paperDisplayOptions, {
         container: '#all-accepted-papers',
