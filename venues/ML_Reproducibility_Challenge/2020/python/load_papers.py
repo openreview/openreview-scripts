@@ -17,9 +17,6 @@ venue_map = {'ICLR': 'ICLR 2020',
              'CVPR': 'CVPR 2020',
              'ECCV': 'ECCV 2020'}
 
-# TODO check for paper with title 'ScriptWriter: Narrative-Guided Scrip'
-
-#filtered_data = data[data['Title'].str.contains("Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics")]
 filtered_data = data
 print("uniq", data['Conference'].unique())
 
@@ -38,7 +35,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 def post_paper(paper, client):
     authors = ""
-    if not math.isnan(paper['Authors']):
+    if paper['Authors']:
         authors = paper['Authors'].split(",") if "," in paper['Authors'] else [paper['Authors']]
 
     note = openreview.Note(invitation=ACCEPTED_PAPER_ID,
@@ -60,7 +57,7 @@ def post_paper(paper, client):
 
 for index, paper in filtered_data.iterrows():
     try:
-        print(paper)
+        # print(paper)
         post_paper(paper, client)
     except Exception as e:
         print("Error in paper: " + paper['Title'])
