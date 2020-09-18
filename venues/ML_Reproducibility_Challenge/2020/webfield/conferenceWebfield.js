@@ -170,9 +170,6 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
     $container.append('<ul class="list-unstyled submissions-list">');
 
     var allConsoles = [];
-    if (authorNotes.length) {
-      allConsoles.push(AUTHORS_ID);
-    }
     userGroups.forEach(function(group) {
       allConsoles.push(group.id);
     });
