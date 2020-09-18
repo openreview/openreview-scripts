@@ -105,7 +105,7 @@ function load() {
   }
 
   var allNotesP = Webfield.getAll('/notes', { invitation: ACCEPTED_PAPER_ID, details: 'replyCount,original' });
-  var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_HOLD_ID, details: 'forumContent' });
+  var claimNotesP = Webfield.getAll('/notes', { invitation: CLAIM_HOLD_ID, details: 'replyCount,original,forumContent' });
   var myClaimsP = Webfield.getAll('/notes', { invitation: CLAIM_ID, noDetails: true, tauthor: true });
 
 
@@ -262,7 +262,7 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, wi
           localSearch: false,
           invitation: ACCEPTED_PAPER_ID,
           onResults: function(searchResults) {
-          Webfield.ui.searchResults(searchResults);
+            Webfield.ui.searchResults(searchResults, unclaimedResultListOptions);
           },
           onReset: function() {
             Webfield.ui.searchResults(allNotesP, unclaimedResultListOptions);
@@ -305,7 +305,7 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, wi
           localSearch: false,
           invitation: CLAIM_HOLD_ID,
           onResults: function(searchResults) {
-            Webfield.ui.searchResults(_.filter(searchResults, note=>_.has(claimsDict, note.forum)), claimedResultListOptions);
+            Webfield.ui.searchResults(searchResults, claimedResultListOptions);
           },
           onReset: function() {
             Webfield.ui.searchResults(claimNotesP, claimedResultListOptions);
@@ -318,7 +318,7 @@ function renderContent(notesResponse, userGroups, activityNotes, authorNotes, wi
         pageSize: PAGE_SIZE,
         onPageClick: function(offset) {
           return Webfield.api.getSubmissions(CLAIM_HOLD_ID, {
-            details: 'replyCount,original',
+            details: 'replyCount,original,forumContent',
             pageSize: PAGE_SIZE,
             offset: offset
           });
