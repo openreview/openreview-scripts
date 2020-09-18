@@ -119,7 +119,7 @@ function renderConferenceTabs() {
     },
     {
       heading: 'All Papers',
-      id: 'all-submissions',
+      id: 'all-accepted-papers',
     },
     {
       heading: 'Claimed',
@@ -200,13 +200,13 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
     console.log('notes.length', notes.length);
 
     var unclaimedResultListOptions = _.assign({}, paperDisplayOptions, {
-        container: '#all-submissions',
+        container: '#all-accepted-papers',
         autoLoad: false
     });
 
     Webfield.ui.submissionList(notes, {
         heading: null,
-        container: '#all-submissions',
+        container: '#all-accepted-papers',
         search: {
           enabled: true,
           localSearch: false,
@@ -216,7 +216,7 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
           },
           onReset: function() {
             Webfield.ui.searchResults(notes, unclaimedResultListOptions);
-            $('#all-submissions').append(view.paginationLinks(noteCount, PAGE_SIZE, 1));
+            $('#all-accepted-papers').append(view.paginationLinks(noteCount, PAGE_SIZE, 1));
           }
         },
         displayOptions: paperDisplayOptions,
@@ -233,7 +233,7 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
         fadeIn: false
     });
   } else {
-    $('.tabs-container a[href="#all-submissions"]').parent().hide();
+    $('.tabs-container a[href="#all-accepted-papers"]').parent().hide();
   }
 
   if (claimNotes.length) {
