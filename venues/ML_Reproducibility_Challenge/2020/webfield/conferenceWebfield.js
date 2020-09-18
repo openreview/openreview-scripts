@@ -209,6 +209,8 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
           enabled: true,
           localSearch: false,
           invitation: ACCEPTED_PAPER_ID,
+          subjectAreas: ['ACL 2020', 'CVPR 2020', 'ECCV 2020', 'ICLR 2020', 'ICML 2020'],
+          subjectAreaDropdown: 'basic',
           onResults: function(searchResults) {
             Webfield.ui.searchResults(searchResults, unclaimedResultListOptions);
           },
@@ -220,7 +222,7 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
         displayOptions: paperDisplayOptions,
         autoLoad: false,
         noteCount: noteCount,
-        pageSize: PAGE_SIZE,
+        pageSize: 1000,
         onPageClick: function(offset) {
           return Webfield.api.getSubmissions(ACCEPTED_PAPER_ID, {
             details: 'replyCount,invitation',
