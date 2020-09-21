@@ -218,7 +218,7 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
         displayOptions: paperDisplayOptions,
         autoLoad: false,
         noteCount: noteCount,
-        pageSize: 1000,
+        pageSize: 100,
         onPageClick: function(offset) {
           return Webfield.api.getSubmissions(ACCEPTED_PAPER_ID, {
             details: 'replyCount,invitation',
@@ -228,6 +228,9 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
         },
         fadeIn: false
     });
+    var subjectAreaLabel = $(".subject-area").find("label[for =subject-area-dropdown]")
+    console.log("subjectAreaLabel", subjectAreaLabel.text("Conference: "))
+    $('select option:contains("All Subject Areas")').text('All Conferences');
   } else {
     $('.tabs-container a[href="#all-accepted-papers"]').parent().hide();
   }

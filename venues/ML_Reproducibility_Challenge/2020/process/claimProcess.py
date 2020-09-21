@@ -17,10 +17,8 @@ def process_update(client, note, invitation, existing_note):
             writers=[CONFERENCE_ID],
             readers=['everyone'],
             content={
-                "title": "Claimed by",
+                "title": "Claimed",
                 "plan": "",
-                "track": "",
-                "compute_resources": "",
                 "team_members": "",
                 "team_emails": ""
             }

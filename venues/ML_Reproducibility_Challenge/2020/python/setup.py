@@ -138,16 +138,6 @@ claim_inv = client.post_invitation(openreview.Invitation(
                 'required': True,
                 'value-regex': '.{1,100}'
             },
-            'track': {
-                   'order': 3,
-                   'required': True,
-                   'value-dropdown': ['Baseline', 'Ablation', 'Replicability']
-            },
-            'compute_resources': {'description': 'Do you need compute resources?',
-                 'order': 4,
-                 'required': True,
-                 'value-radio': ['yes','no']
-            },
             "team_members": {
                 "description": "Comma separated list of team member names.",
                 "values-regex": ".*",
@@ -187,7 +177,7 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
     reply={
         'content': {
             'title': {
-                'value': 'Claimed by',
+                'value': 'Claimed',
                 'order': 0,
                 'required': True
             },
@@ -201,16 +191,6 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
                 'order': 2,
                 'required': False,
                 'value-regex': '.*'
-            },
-            'track': {
-                   'order': 3,
-                   'required': False,
-                   'value-regex': '.*'
-            },
-            'compute_resources': {'description': 'Do you need compute resources?',
-                 'order': 4,
-                 'required': False,
-                 'value-regex': '.*'
             },
             "team_members": {
                 "description": "Comma separated list of team member names.",
