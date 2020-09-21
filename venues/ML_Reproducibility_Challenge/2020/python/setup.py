@@ -117,9 +117,9 @@ claim_inv = client.post_invitation(openreview.Invitation(
     id='{}/-/Claim'.format(CONFERENCE_ID),
     readers=['everyone'],
     invitees=['~'],
-    noninvitees=[CONFERENCE_ID + '/Claimants'],
     writers=[CONFERENCE_ID],
     signatures=[CONFERENCE_ID],
+    multiReply=False,
     reply={
         'content': {
             'title': {
