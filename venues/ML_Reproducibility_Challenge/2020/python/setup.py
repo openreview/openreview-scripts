@@ -187,9 +187,42 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
     reply={
         'content': {
             'title': {
-                'value-regex': '.{1,120}',
+                'value': 'Claimed by',
                 'order': 0,
                 'required': True
+            },
+            'plan': {'description': 'Your plan to reproduce results(max 5000 chars).',
+                'order': 1,
+                'required': False,
+                'value-regex': '.*'
+            },
+            'institution': {
+                'description': 'Your institution or organization(max 100 chars).',
+                'order': 2,
+                'required': False,
+                'value-regex': '.*'
+            },
+            'track': {
+                   'order': 3,
+                   'required': False,
+                   'value-regex': '.*'
+            },
+            'compute_resources': {'description': 'Do you need compute resources?',
+                 'order': 4,
+                 'required': False,
+                 'value-regex': '.*'
+            },
+            "team_members": {
+                "description": "Comma separated list of team member names.",
+                "value-regex": ".*",
+                "order": 1,
+                "required": False
+            },
+            "team_emails": {
+                "description": "Comma separated list of team member email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author's profile.",
+                "value-regex": ".*",
+                "order": 2,
+                "required": False
             }
         },
         'invitation': ACCEPTED_PAPER_ID,
