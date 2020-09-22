@@ -28,7 +28,6 @@ conference_group = client.get_group(CONFERENCE_ID)
 conference_group.web = homepage_webfield
 conference_group = client.post_group(conference_group)
 
-
 # add the "Claimants" group
 client.post_group(openreview.Group(
     id=CONFERENCE_ID + '/Claimants',
@@ -42,16 +41,16 @@ client.post_group(openreview.Group(
 
 # modify the "Report" invitation such that only claimants can post
 report_invitation = client.get_invitation(SUBMISSION_ID)
-report_invitation.invitees = [CONFERENCE_ID+'/Claimants']
-report_invitation.noninvitees = [CONFERENCE_ID+'/Authors']
-report_invitation.readers = [CONFERENCE_ID+'/Claimants']
-report_invitation.nonreaders = [CONFERENCE_ID+'/Authors']
+report_invitation.invitees = [CONFERENCE_ID + '/Claimants']
+report_invitation.noninvitees = [CONFERENCE_ID + '/Authors']
+report_invitation.readers = [CONFERENCE_ID + '/Claimants']
+report_invitation.nonreaders = [CONFERENCE_ID + '/Authors']
 report_invitation.reply['readers'] = {
     'values-copied': [
         CONFERENCE_ID,
         "{content.authorids}",
         "{signatures}",
-        CONFERENCE_ID+"/Reviewers",
+        CONFERENCE_ID + "/Reviewers",
         PROGRAM_CHAIRS_ID
     ]
 }
@@ -119,7 +118,7 @@ claim_inv = client.post_invitation(openreview.Invitation(
     invitees=['~'],
     writers=[CONFERENCE_ID],
     signatures=[CONFERENCE_ID],
-    multiReply=False,
+    multiReply=True,
     reply={
         'content': {
             'title': {
@@ -128,10 +127,10 @@ claim_inv = client.post_invitation(openreview.Invitation(
                 'required': True
             },
             'plan': {'description': 'Your plan to reproduce results(max 5000 chars).',
-                'order': 1,
-                'required': True,
-                'value-regex': '[\\S\\s]{1,5000}'
-            },
+                     'order': 1,
+                     'required': True,
+                     'value-regex': '[\\S\\s]{1,5000}'
+                     },
             'institution': {
                 'description': 'Your institution or organization, comma separated if different institutions (max 100 chars)',
                 'order': 2,
@@ -161,12 +160,11 @@ claim_inv = client.post_invitation(openreview.Invitation(
             'values-copied': [PROGRAM_CHAIRS_ID, '{signatures}']
         },
         'writers': {
-            'values-copied': [CONFERENCE_ID,'{signatures}']
+            'values-copied': [CONFERENCE_ID, '{signatures}']
         }
     },
     process='../process/claimProcess.py'
 ))
-
 
 claim_hold_inv = client.post_invitation(openreview.Invitation(
     id='{}/-/Claim_Hold'.format(CONFERENCE_ID),
@@ -182,10 +180,10 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
                 'required': True
             },
             'plan': {'description': 'Your plan to reproduce results(max 5000 chars).',
-                'order': 1,
-                'required': False,
-                'value-regex': '.*'
-            },
+                     'order': 1,
+                     'required': False,
+                     'value-regex': '.*'
+                     },
             'institution': {
                 'description': 'Your institution or organization(max 100 chars).',
                 'order': 2,
@@ -217,7 +215,6 @@ claim_hold_inv = client.post_invitation(openreview.Invitation(
     }
 ))
 
-
 with open('../webfield/pcWebfield.js') as f:
     program_chairs = client.get_group(PROGRAM_CHAIRS_ID)
     program_chairs.web = f.read()
@@ -227,3 +224,74 @@ with open('../webfield/authorWebfield.js') as f:
     authors = client.get_group(AUTHORS_ID)
     authors.web = f.read()
     authors = client.post_group(authors)
+
+report_submission_invitation = client.post_invitation(openreview.Invitation(
+    id=SUBMISSION_ID,
+    readers=['everyone'],
+    invitees= [CONFERENCE_ID + '/Claimants'],
+    writers=[CONFERENCE_ID],
+    signatures=[CONFERENCE_ID],
+    reply={
+        'readers': {
+            'values-copied': [
+                'ML_Reproducibility_Challenge/2020',
+                '{content.authorids}',
+                '{signatures}'
+            ]
+        },
+        'writers': {
+            "values-copied": [
+                "ML_Reproducibility_Challenge/2020",
+                "{content.authorids}",
+                "{signatures}"
+            ]
+        },
+        'signatures': {
+            "values-regex": "~.*"
+        },
+        "content": {
+            "title": {
+                "description": "Title of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$",
+                "order": 1,
+                "value-regex": ".{1,250}",
+                "required": True
+            },
+            "authors": {
+                "description": "Comma separated list of author names.",
+                "order": 2,
+                "values-regex": "[^;,\\n]+(,[^,\\n]+)*",
+                "required": True,
+                "hidden": True
+            },
+            "authorids": {
+                "description": "Comma separated list of author email addresses, lowercased, in the same order as above. For authors with existing OpenReview accounts, please make sure that the provided email address(es) match those listed in the author's profile.",
+                "order": 3,
+                "values-regex": "~.*|([a-z0-9_\\-\\.]{1,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,},){0,}([a-z0-9_\\-\\.]{1,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,})",
+                "required": True
+            },
+            "abstract": {
+                "description": "Abstract of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$",
+                "order": 8,
+                "value-regex": "[\\S\\s]{1,5000}",
+                "required": True
+            },
+            "pdf": {
+                "description": "Upload a PDF file that ends with .pdf",
+                "order": 9,
+                "value-file": {
+                    "fileTypes": [
+                        "pdf"
+                    ],
+                    "size": 50
+                },
+                "required": True
+            },
+            "paper_url": {
+                "description": "Please provide the OpenReview's forum url",
+                "required": True,
+                "value-regex": "http.*",
+                "order": 11
+            }
+        }
+    }
+))

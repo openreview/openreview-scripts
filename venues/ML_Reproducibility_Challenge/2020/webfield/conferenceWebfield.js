@@ -27,7 +27,7 @@ var ACCEPTED_PAPER_ID = CONFERENCE_ID + '/-/Accepted_Papers';
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/.*';
 var BUFFER = 0;  // deprecated
-var PAGE_SIZE = 50;
+var PAGE_SIZE = 100;
 
 var paperDisplayOptions = {
   pdfLink: true,
@@ -49,7 +49,7 @@ function main() {
 
   renderConferenceHeader();
 
-//  renderSubmissionButton();
+  renderSubmissionButton();
 
   renderConferenceTabs();
 
@@ -218,7 +218,7 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
         displayOptions: paperDisplayOptions,
         autoLoad: false,
         noteCount: noteCount,
-        pageSize: 100,
+        pageSize: PAGE_SIZE,
         onPageClick: function(offset) {
           return Webfield.api.getSubmissions(ACCEPTED_PAPER_ID, {
             details: 'replyCount,invitation',
@@ -248,7 +248,7 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
         heading: null,
         container: '#claimed',
         search: {
-          enabled: true,
+          enabled: false,
           localSearch: false,
           invitation: CLAIM_HOLD_ID,
           onResults: function(searchResults) {
