@@ -133,7 +133,7 @@ claim_inv = client.post_invitation(openreview.Invitation(
                 'value-regex': '[\\S\\s]{1,5000}'
             },
             'institution': {
-                'description': 'Your institution or organization(max 100 chars).',
+                'description': 'Your institution or organization, comma separated if different institutions (max 100 chars)',
                 'order': 2,
                 'required': True,
                 'value-regex': '.{1,100}'
