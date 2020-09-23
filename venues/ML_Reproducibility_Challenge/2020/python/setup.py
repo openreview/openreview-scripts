@@ -28,37 +28,20 @@ conference_group = client.get_group(CONFERENCE_ID)
 conference_group.web = homepage_webfield
 conference_group = client.post_group(conference_group)
 
-# add the "Claimants" group
-client.post_group(openreview.Group(
-    id=CONFERENCE_ID + '/Claimants',
-    readers=[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
-    nonreaders=[],
-    writers=[CONFERENCE_ID],
-    signatories=[CONFERENCE_ID],
-    signatures=[CONFERENCE_ID],
-    members=[])
-)
-
-# modify the "Report" invitation such that only claimants can post
-report_invitation = client.get_invitation(SUBMISSION_ID)
-report_invitation.invitees = [CONFERENCE_ID + '/Claimants']
-report_invitation.noninvitees = [CONFERENCE_ID + '/Authors']
-report_invitation.readers = [CONFERENCE_ID + '/Claimants']
-report_invitation.nonreaders = [CONFERENCE_ID + '/Authors']
-report_invitation.reply['readers'] = {
-    'values-copied': [
-        CONFERENCE_ID,
-        "{content.authorids}",
-        "{signatures}",
-        CONFERENCE_ID + "/Reviewers",
-        PROGRAM_CHAIRS_ID
-    ]
-}
-
-with open('../process/reportProcess.py') as f:
-    report_invitation.process = f.read()
-
-report_invitation = client.post_invitation(report_invitation)
+try:
+    claimants_group = client.get_group(CONFERENCE_ID + '/Claimants')
+except openreview.OpenReviewException as e:
+    # add the "Claimants" group
+    print("adding the Claimants group")
+    client.post_group(openreview.Group(
+        id=CONFERENCE_ID + '/Claimants',
+        readers=[CONFERENCE_ID, PROGRAM_CHAIRS_ID],
+        nonreaders=[],
+        writers=[CONFERENCE_ID],
+        signatories=[CONFERENCE_ID],
+        signatures=[CONFERENCE_ID],
+        members=[])
+    )
 
 # post the invitation used to upload accepted RL Accepted papers
 rc_accepted_paper_submission_invitation = client.post_invitation(openreview.Invitation(**{
@@ -293,5 +276,6 @@ report_submission_invitation = client.post_invitation(openreview.Invitation(
                 "order": 11
             }
         }
-    }
+    },
+    process='../process/reportProcess.py'
 ))

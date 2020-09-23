@@ -173,11 +173,7 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
     });
 
     if (myClaims.length) {
-      $('#your-consoles .submissions-list').append([
-        '<li class="note invitation-link">',
-          '<a href="/group?id=' + AUTHORS_ID + '">Author Console</a>',
-        '</li>'
-      ].join(''));
+      allConsoles.push(AUTHORS_ID)
     }
 
     // Render all console links for the user
