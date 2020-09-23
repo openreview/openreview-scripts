@@ -98,7 +98,7 @@ rc_accepted_paper_submission_invitation = client.post_invitation(openreview.Invi
 claim_inv = client.post_invitation(openreview.Invitation(
     id='{}/-/Claim'.format(CONFERENCE_ID),
     readers=['everyone'],
-    invitees=['~'],
+    invitees=['everyone'],
     writers=[CONFERENCE_ID],
     signatures=[CONFERENCE_ID],
     multiReply=True,
@@ -210,6 +210,9 @@ with open('../webfield/authorWebfield.js') as f:
 
 report_submission_invitation = client.post_invitation(openreview.Invitation(
     id=SUBMISSION_ID,
+    cdate=1601856000000,
+    duedate=1607040000000,
+    expdate=1607041800000,
     readers=['everyone'],
     invitees= [CONFERENCE_ID + '/Claimants'],
     writers=[CONFERENCE_ID],
