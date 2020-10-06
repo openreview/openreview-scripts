@@ -5,7 +5,6 @@ def process(client, note, invitation):
     # get all notification tags for this paper
     notifications = client.get_tags(forum=note.forum, invitation=NOTIFICATION_SUBSCRIPTION_ID)
 
-# TODO check for subscribe instead
     email_list = [tag.signatures[0] for tag in notifications if tag.tag == 'Subscribe']
     all_notifiers = [tag.signatures[0] for tag in notifications]
 
