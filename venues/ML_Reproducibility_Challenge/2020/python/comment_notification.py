@@ -28,12 +28,10 @@ notify_inv = openreview.Invitation(
         'content': {
             "tag": {
                 "required": True,
-                "description": "Select Frequency",
+                "description": "Subscription type",
                 "value-dropdown": [
-                    "Immediate",
-                    "Daily",
-                    "Weekly",
-                    "Never"
+                    "Subscribe",
+                    "Unsubscribe"
                 ]
             }
         },
@@ -54,9 +52,10 @@ client.post_invitation(notify_inv)
 
 # for each submission, create group (so sub invites can be published)
 # create invite for comment
-notes = tools.iterget_notes(client,invitation=conference_id+'/-/NeurIPS_Submission')
+notes = tools.iterget_notes(client,invitation=ACCEPTED_PAPER_ID)
 
 for note in notes:
+    print("Processing: " + str(note.number))
     # need paper group to publish sub-groups
     paper_group = client.post_group(openreview.Group(
         id='{conference_id}/{number}'.format(conference_id=CONFERENCE_ID, number=note.number),
