@@ -37,7 +37,29 @@ client.post_group(openreview.Group(id=f"{virtual_group_id}/Sponsors",
                  writers=[conference_id],
                  signatures=[conference_id],
                  signatories=[],
-                 members=["microsoft", "amazon", "vmware"]))
+                 members=[f"{virtual_group_id}/Sponsors/Diamond", f"{virtual_group_id}/Sponsors/Gold", f"{virtual_group_id}/Sponsors/Silver"]))
+
+client.post_group(openreview.Group(id=f"{virtual_group_id}/Sponsors/Diamond",
+                 readers=['everyone'],
+                 writers=[conference_id],
+                 signatures=[conference_id],
+                 signatories=[],
+                 members=["deepmind", "facebook", "googleresearch"]))
+
+client.post_group(openreview.Group(id=f"{virtual_group_id}/Sponsors/Gold",
+                 readers=['everyone'],
+                 writers=[conference_id],
+                 signatures=[conference_id],
+                 signatories=[],
+                 members=["amazon", "ibm", "openai"]))
+
+client.post_group(openreview.Group(id=f"{virtual_group_id}/Sponsors/Silver",
+                 readers=['everyone'],
+                 writers=[conference_id],
+                 signatures=[conference_id],
+                 signatories=[],
+                 members=["apple", "microsoft", "elementai"]))
+
 
 client.post_group(openreview.Group(id=f"{virtual_group_id}/Organizers",
                  readers=['everyone'],
