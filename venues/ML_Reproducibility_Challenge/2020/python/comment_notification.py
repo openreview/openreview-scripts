@@ -82,6 +82,7 @@ for note in notes:
                     'description': 'Your comment or reply (max 5000 characters).',
                     'order': 1,
                     'required': True,
+                    'markdown': True,
                     'value-regex': '[\\S\\s]{1,5000}'
                 }
             },
