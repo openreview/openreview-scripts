@@ -19,7 +19,7 @@ if __name__ == '__main__':
     confirmation_notes = openreview.tools.iterget_notes(
                 client,
                 invitation='ICLR.cc/2021/Conference/Reviewers/-/Registration')
-    max3_accepted_users = { n.content['user'] for n in openreview.tools.iterget_notes(
+    max3_accepted_users = { n.content['user']: n for n in openreview.tools.iterget_notes(
                 client,
                 invitation='ICLR.cc/2021/Conference/-/Recruit_Reviewers',
                 content={ 'response': 'Yes' },
