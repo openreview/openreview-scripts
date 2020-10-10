@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
         if custom_load:
             review_capacity = int(custom_load) - emergency_review_count
-        else if max3_accepted:
+        elif max3_accepted:
             review_capacity = 3 - emergency_review_count
         else:
             review_capacity = 5 - emergency_review_count
