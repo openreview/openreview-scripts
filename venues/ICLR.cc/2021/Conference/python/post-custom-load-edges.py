@@ -13,12 +13,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-    
+
     reviewer_group = client.get_group('ICLR.cc/2021/Conference/Reviewers')
     confirmations = {}
     confirmation_notes = openreview.tools.iterget_notes(
                 client,
                 invitation='ICLR.cc/2021/Conference/Reviewers/-/Registration')
+    max3_accepted_users = { n.content['user'] for n in openreview.tools.iterget_notes(
+                client,
+                invitation='ICLR.cc/2021/Conference/-/Recruit_Reviewers',
+                content={ 'response': Yes },
+                mintcdate=1598590800000)} # August 28th
+
     for note in tqdm(confirmation_notes):
         # Check if this user has posted multiple confirmations
         if note.tauthor in confirmations:
@@ -63,28 +69,33 @@ if __name__ == '__main__':
 
     for reviewer in tqdm(reviewer_group.members):
         review_capacity = 0
-        
+
         profile = profile_map.get(reviewer, None)
         if not profile:
             users_without_profiles.append(reviewer)
             continue
-        
+
         confirmation = None
         custom_load = None
-        
+        max3_accepted = None
+
         ids = profile.content['emailsConfirmed'] + [ n['username'] for n in profile.content['names'] if 'username' in n]
         for i in ids:
             if not confirmation and (i in confirmations):
                 confirmation = confirmations[i]
             if not custom_load and (i in reduced_loads):
                 custom_load = reduced_loads[i]
-        
+            if not max3_accepted and (i in max3_accepted_users):
+                max3_accepted = max3_accepted_users[i]
+
         emergency_review_count = int(confirmation.content.get('emergency_review_count')) if confirmation else 0
 
         if custom_load:
             review_capacity = int(custom_load) - emergency_review_count
+        else if max3_accepted:
+            review_capacity = 3 - emergency_review_count
         else:
-            review_capacity = 4 - emergency_review_count
+            review_capacity = 5 - emergency_review_count
 
         if review_capacity < 0:
             print(reviewer)
