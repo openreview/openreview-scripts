@@ -22,7 +22,7 @@ if __name__ == '__main__':
     max3_accepted_users = { n.content['user'] for n in openreview.tools.iterget_notes(
                 client,
                 invitation='ICLR.cc/2021/Conference/-/Recruit_Reviewers',
-                content={ 'response': Yes },
+                content={ 'response': 'Yes' },
                 mintcdate=1598590800000)} # August 28th
 
     for note in tqdm(confirmation_notes):
