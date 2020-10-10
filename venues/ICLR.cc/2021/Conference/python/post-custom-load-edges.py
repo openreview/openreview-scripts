@@ -98,10 +98,10 @@ if __name__ == '__main__':
             review_capacity = 5 - emergency_review_count
 
         if review_capacity < 0:
-            print(reviewer)
-            continue
+            print(reviewer, review_capacity, emergency_review_count)
+            review_capacity = 0
 
-        if review_capacity != 4:
+        if review_capacity != 5:
             edge = openreview.Edge(
                 head='ICLR.cc/2021/Conference/Reviewers',
                 tail=profile.id,
