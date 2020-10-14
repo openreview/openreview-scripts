@@ -4,18 +4,20 @@ import pandas as pd
 import openreview
 import argparse
 
-data = pd.read_csv("rc2020-papers.csv")
+data = pd.read_csv("rc2020-papers-neurips2020.csv")
 venueid_map = {'ICLR': 'ICLR.cc/2020/Conference',
                'ICML': 'ICML.cc/2020/Conference',
                'ACL': 'aclweb.org/ACL/2020/Conference',
                'CVPR': 'thecvf.com/CVPR/2020/Conference',
-               'ECCV': 'thecvf.com/ECCV/2020/Conference'}
+               'ECCV': 'thecvf.com/ECCV/2020/Conference',
+               'NeurIPS': 'NeurIPS.cc/2020/Conference'}
 
 venue_map = {'ICLR': 'ICLR 2020',
              'ICML': 'ICML 2020',
              'ACL': 'ACL 2020',
              'CVPR': 'CVPR 2020',
-             'ECCV': 'ECCV 2020'}
+             'ECCV': 'ECCV 2020',
+             'NeurIPS': 'NeurIPS 2020'}
 
 filtered_data = data
 print("uniq", data['Conference'].unique())
