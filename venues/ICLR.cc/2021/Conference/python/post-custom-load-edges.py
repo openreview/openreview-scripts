@@ -22,7 +22,9 @@ if __name__ == '__main__':
         writers=['ICLR.cc/2021/Conference'],
         signatures=['ICLR.cc/2021/Conference'],
         reply={
-            'readers': readers,
+            'readers': {
+                'values-copied': ['ICLR.cc/2021/Conference', 'ICLR.cc/2021/Conference/Area_Chairs','{tail}']
+            },
             'nonreaders': {
                 'values-regex': 'ICLR.cc/2021/Conference/Paper.*/Authors'
             },
@@ -62,7 +64,9 @@ if __name__ == '__main__':
         writers=['ICLR.cc/2021/Conference'],
         signatures=['ICLR.cc/2021/Conference'],
         reply={
-            'readers': readers,
+            'readers': {
+                'values-copied': ['ICLR.cc/2021/Conference', 'ICLR.cc/2021/Conference/Area_Chairs','{tail}']
+            },
             'nonreaders': {
                 'values-regex': 'ICLR.cc/2021/Conference/Paper.*/Authors'
             },
