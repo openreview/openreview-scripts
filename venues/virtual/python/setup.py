@@ -20,6 +20,45 @@ meta_data = {
     "title": "ICLR 2020 Conference Virtual"
 }
 
+## metadata for the home/sponsor/organizer page
+meta_data_home = {
+    "date": "2020-05-01",
+    "title": "ICLR 2020 Conference Virtual",
+    "layout": [
+        {
+            "name": "Markdown",
+            "option": " _ italic formatted with markdown _"
+        },
+        {
+            "name": "Organizers"
+        },
+        {
+            "name": "Sponsors"
+        },
+        {
+            "name": "JumbotronImage"
+        }
+    ]
+}
+
+meta_data_sponsors={
+    "layout":[
+        {
+            "name":"Markdown",
+            "option":"~~content of sponsors page formatted with markdown~~"
+        }
+    ]
+}
+
+meta_data_organizers={
+    "layout":[
+        {
+            "name":"Markdown",
+            "option":"_ content of organizers page formatted with markdown _"
+        }
+    ]
+}
+
 ## Main conference virtual group
 conference_id='ICLR.cc/2020/Conference'
 virtual_group_id='ICLR.cc/2020/Conference/Virtual'
@@ -29,7 +68,7 @@ client.post_group(openreview.Group(id=virtual_group_id,
                  signatures=[conference_id],
                  signatories=[],
                  members=[],
-                 web_string=json.dumps(meta_data)))
+                 web_string=json.dumps(meta_data_home)))
 
 
 client.post_group(openreview.Group(id=f"{virtual_group_id}/Sponsors",
@@ -37,7 +76,8 @@ client.post_group(openreview.Group(id=f"{virtual_group_id}/Sponsors",
                  writers=[conference_id],
                  signatures=[conference_id],
                  signatories=[],
-                 members=[f"{virtual_group_id}/Sponsors/Diamond", f"{virtual_group_id}/Sponsors/Gold", f"{virtual_group_id}/Sponsors/Silver"]))
+                 members=[f"{virtual_group_id}/Sponsors/Diamond", f"{virtual_group_id}/Sponsors/Gold", f"{virtual_group_id}/Sponsors/Silver"],
+                 web_string=json.dumps(meta_data_sponsors)))
 
 client.post_group(openreview.Group(id=f"{virtual_group_id}/Sponsors/Diamond",
                  readers=['everyone'],
@@ -66,7 +106,8 @@ client.post_group(openreview.Group(id=f"{virtual_group_id}/Organizers",
                  writers=[conference_id],
                  signatures=[conference_id],
                  signatories=[],
-                 members=["~Alexander_Rush1", "~Shakir_Mohamed1", "~Martha_White1", "~Kyunghyun_Cho1", "~Dawn_Song1"]))
+                 members=["~Alexander_Rush1", "~Shakir_Mohamed1", "~Martha_White1", "~Kyunghyun_Cho1", "~Dawn_Song1"],
+                 web_string=json.dumps(meta_data_organizers)))
 
 ## Session invitation
 session_invitation_id=f"{virtual_group_id}/-/Session"
@@ -83,7 +124,8 @@ client.post_invitation(openreview.Invitation(
         'content': {
             'start': { 'value-regex': '.*' },
             'end': { 'value-regex': '.*' },
-            'title': { 'value-regex': '.*' }
+            'title': { 'value-regex': '.*' },
+            'description': { 'value-regex': '.*' }
         }
     }
 ))
@@ -99,7 +141,8 @@ sessions.append(client.post_note(openreview.Note(
     content={
         'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 2, 15, 0)),
         'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 2, 18, 0)),
-        'title': 'Session 1'
+        'title': 'Session 1',
+        'description':'this is the description of session 1'
     }
 )))
 sessions.append(client.post_note(openreview.Note(
@@ -110,7 +153,8 @@ sessions.append(client.post_note(openreview.Note(
     content={
         'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 2, 18, 0)),
         'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 2, 20, 0)),
-        'title': 'Session 2'
+        'title': 'Session 2',
+        'description':'this is the description of session 2'
     }
 )))
 sessions.append(client.post_note(openreview.Note(
@@ -119,9 +163,10 @@ sessions.append(client.post_note(openreview.Note(
     writers=[conference_id],
     signatures=[conference_id],
     content={
-        'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 3, 9, 0)),
-        'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 3, 10, 0)),
-        'title': 'Session 3'
+        'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 5, 9, 0)),
+        'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 5, 10, 0)),
+        'title': 'Session 3',
+        'description':'this is the description of session 3'
     }
 )))
 sessions.append(client.post_note(openreview.Note(
@@ -130,9 +175,10 @@ sessions.append(client.post_note(openreview.Note(
     writers=[conference_id],
     signatures=[conference_id],
     content={
-        'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 3, 10, 0)),
-        'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 3, 12, 0)),
-        'title': 'Session 4'
+        'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 5, 10, 0)),
+        'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 5, 12, 0)),
+        'title': 'Session 4',
+        'description':'this is the description of session 4'
     }
 )))
 
@@ -150,8 +196,7 @@ client.post_invitation(openreview.Invitation(
         'writers': { 'values': [conference_id] },
         'signatures': { 'values': [conference_id] },
         'content': {
-            'video': { 'value-regex': '.*' },
-            'slides': { 'value-regex': '.*' },
+            'slideslive': { 'value-regex': '.*' },
             'chat': { 'value-regex': '.*' },
             'live': { 'value-regex': '.*' },
             'session': { 'value-regex': '.*' }
@@ -172,11 +217,9 @@ for s in tqdm(submissions):
         writers=[conference_id],
         signatures=[conference_id],
         content={
-            'video': 'https://youtube.com/paper',
-            'slides': 'https://slideslive.com/paper',
+            'slideslive': '38915149',
             'chat': 'https://rocketchat.com/paper',
             'live': 'https://zoom.us/paper',
             'session': sessions[randrange(4)].id
         }
     ))
-
