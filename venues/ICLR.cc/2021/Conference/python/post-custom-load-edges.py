@@ -14,6 +14,87 @@ if __name__ == '__main__':
 
     client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
+
+    invitation = openreview.Invitation(
+        id='ICLR.cc/2021/Conference/Reviewers/-/Max_Load_Papers',
+        invitees=['ICLR.cc/2021/Conference'],
+        readers=['ICLR.cc/2021/Conference'],
+        writers=['ICLR.cc/2021/Conference'],
+        signatures=['ICLR.cc/2021/Conference'],
+        reply={
+            'readers': readers,
+            'nonreaders': {
+                'values-regex': 'ICLR.cc/2021/Conference/Paper.*/Authors'
+            },
+            'writers': {
+                'values': ['ICLR.cc/2021/Conference']
+            },
+            'signatures': {
+                'values': ['ICLR.cc/2021/Conference']
+            },
+            'content': {
+                'head': {
+                    'type': 'Group',
+                    'query' : {
+                        'id' : 'ICLR.cc/2021/Conference/Reviewers'
+                    }
+                },
+                'tail': {
+                    'type': 'Profile',
+                    'query' : {
+                        'group' : 'ICLR.cc/2021/Conference/Reviewers'
+                    }
+                },
+                'weight': {
+                    'value-regex': r'[-+]?[0-9]*\.?[0-9]*'
+                },
+                'label': {
+                    'value-regex': '.*'
+                }
+            }
+        })
+    client.post_invitation(invitation)
+
+    invitation = openreview.Invitation(
+        id='ICLR.cc/2021/Conference/Reviewers/-/Emergency_Load_Papers',
+        invitees=['ICLR.cc/2021/Conference'],
+        readers=['ICLR.cc/2021/Conference'],
+        writers=['ICLR.cc/2021/Conference'],
+        signatures=['ICLR.cc/2021/Conference'],
+        reply={
+            'readers': readers,
+            'nonreaders': {
+                'values-regex': 'ICLR.cc/2021/Conference/Paper.*/Authors'
+            },
+            'writers': {
+                'values': ['ICLR.cc/2021/Conference']
+            },
+            'signatures': {
+                'values': ['ICLR.cc/2021/Conference']
+            },
+            'content': {
+                'head': {
+                    'type': 'Group',
+                    'query' : {
+                        'id' : 'ICLR.cc/2021/Conference/Reviewers'
+                    }
+                },
+                'tail': {
+                    'type': 'Profile',
+                    'query' : {
+                        'group' : 'ICLR.cc/2021/Conference/Reviewers'
+                    }
+                },
+                'weight': {
+                    'value-regex': r'[-+]?[0-9]*\.?[0-9]*'
+                },
+                'label': {
+                    'value-regex': '.*'
+                }
+            }
+        })
+    client.post_invitation(invitation)
+
     reviewer_group = client.get_group('ICLR.cc/2021/Conference/Reviewers')
     confirmations = {}
     confirmation_notes = openreview.tools.iterget_notes(
@@ -66,6 +147,8 @@ if __name__ == '__main__':
 
     users_without_profiles = []
     custom_load_edges = []
+    emergency_load_edges = []
+    max_load_edges = []
 
     for reviewer in tqdm(reviewer_group.members):
         review_capacity = 0
@@ -92,14 +175,55 @@ if __name__ == '__main__':
 
         if custom_load:
             review_capacity = int(custom_load) - emergency_review_count
+            edge = openreview.Edge(
+                head='ICLR.cc/2021/Conference/Reviewers',
+                tail=profile.id,
+                invitation='ICLR.cc/2021/Conference/Reviewers/-/Max_Load_Papers',
+                readers=[
+                    'ICLR.cc/2021/Conference',
+                    'ICLR.cc/2021/Conference/Area_Chairs',
+                    profile.id],
+                writers=['ICLR.cc/2021/Conference'],
+                signatures=['ICLR.cc/2021/Conference'],
+                weight=int(custom_load)
+            )
+            max_load_edges.append(edge)
         elif max3_accepted:
             review_capacity = 3 - emergency_review_count
+            edge = openreview.Edge(
+                head='ICLR.cc/2021/Conference/Reviewers',
+                tail=profile.id,
+                invitation='ICLR.cc/2021/Conference/Reviewers/-/Max_Load_Papers',
+                readers=[
+                    'ICLR.cc/2021/Conference',
+                    'ICLR.cc/2021/Conference/Area_Chairs',
+                    profile.id],
+                writers=['ICLR.cc/2021/Conference'],
+                signatures=['ICLR.cc/2021/Conference'],
+                weight=3
+            )
+            max_load_edges.append(edge)
         else:
             review_capacity = 5 - emergency_review_count
 
         if review_capacity < 0:
             print(reviewer, review_capacity, emergency_review_count)
             review_capacity = 0
+
+        if emergency_review_count:
+            edge = openreview.Edge(
+                head='ICLR.cc/2021/Conference/Reviewers',
+                tail=profile.id,
+                invitation='ICLR.cc/2021/Conference/Reviewers/-/Emergency_Load_Papers',
+                readers=[
+                    'ICLR.cc/2021/Conference',
+                    'ICLR.cc/2021/Conference/Area_Chairs',
+                    profile.id],
+                writers=['ICLR.cc/2021/Conference'],
+                signatures=['ICLR.cc/2021/Conference'],
+                weight=emergency_review_count
+            )
+            emergency_load_edges.append(edge)
 
         if review_capacity != 5:
             edge = openreview.Edge(
@@ -116,8 +240,16 @@ if __name__ == '__main__':
             )
             custom_load_edges.append(edge)
 
-    print ('Posting {0} edges'.format(len(custom_load_edges)))
-    posted_edges = openreview.tools.post_bulk_edges(client, custom_load_edges)
-    print ('Posted {0} edges'.format(len(posted_edges)))
+    # print ('Posting {0} custom load edges'.format(len(custom_load_edges)))
+    # posted_edges = openreview.tools.post_bulk_edges(client, custom_load_edges)
+    # print ('Posted {0} custom load edges'.format(len(posted_edges)))
+
+    print ('Posting {0} emergency load edges'.format(len(emergency_load_edges)))
+    posted_edges = openreview.tools.post_bulk_edges(client, emergency_load_edges)
+    print ('Posted {0} emergency load edges'.format(len(posted_edges)))
+
+    print ('Posting {0} max load edges'.format(len(max_load_edges)))
+    posted_edges = openreview.tools.post_bulk_edges(client, max_load_edges)
+    print ('Posted {0} max load edges'.format(len(posted_edges)))
 
     print ('Users with no profiles:', users_without_profiles)
