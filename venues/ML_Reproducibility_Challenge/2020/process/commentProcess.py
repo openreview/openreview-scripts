@@ -5,7 +5,7 @@ def process(client, note, invitation):
     # get all notification tags for this paper
     notifications = client.get_tags(forum=note.forum, invitation=NOTIFICATION_SUBSCRIPTION_ID)
 
-    email_list = [tag.signatures[0] for tag in notifications if tag.tag == 'Immediate']
+    email_list = [tag.signatures[0] for tag in notifications if tag.tag == 'Subscribe']
     all_notifiers = [tag.signatures[0] for tag in notifications]
 
     # get submission author and add to email list if author hasn't set a notification tag
