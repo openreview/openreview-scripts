@@ -27,6 +27,9 @@ meta_data_home = {
             }
         },
         {
+            "name": "HappeningNow"
+        },
+        {
             "name": "Organizers"
         },
         {
