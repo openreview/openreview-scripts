@@ -37,6 +37,9 @@ meta_data_home = {
         },
         {
             "name": "JumbotronImage"
+        },
+        {
+            "name": "Footer"
         }
     ]
 }
