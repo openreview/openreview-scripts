@@ -22,8 +22,8 @@ meta_data_home = {
         {
             "name": "Markdown",
             "option": {
-                "center":"true",
-                "content":" _ italic formatted with markdown _"
+                "center": "true",
+                "content": " _ italic formatted with markdown _"
             }
         },
         {
@@ -41,7 +41,112 @@ meta_data_home = {
         {
             "name": "Footer"
         }
-    ]
+    ],
+    "footer": {
+        "color": "lightgray",
+        "columns": [
+            {
+                "id": "1",
+                "type": "imageText",
+                "hideOnSmallScreen": "true",
+                "image": "/navlogo.png",
+                "imageWidth": "80%",
+                "textContents": [
+                    "The International Conference on Learning Representations(ICLR).",
+                    "All Rights Reserved.",
+                ],
+            },
+            {
+                "id": "2",
+                "type": "list",
+                "title": "About",
+                "links": [
+                    {
+                        "text": "ICLR Board",
+                        "url": "",
+                    },
+                    {
+                        "text": "Organizing Committee",
+                        "url": "",
+                    },
+                    {
+                        "text": "Program Committee",
+                        "url": "",
+                    },
+                    {
+                        "text": "ICLR Archived",
+                        "url": "",
+                    },
+                    {
+                        "text": "Contact ICLR",
+                        "url": "",
+                    },
+                ],
+            },
+            {
+                "id": "3",
+                "type": "list",
+                "title": "Submissions",
+                "links": [
+                    {
+                        "text": "Deadlines",
+                        "url": "",
+                    },
+                    {
+                        "text": "Papers",
+                        "url": "",
+                    },
+                    {
+                        "text": "Workshops",
+                        "url": "",
+                    },
+                    {
+                        "text": "Socials",
+                        "url": "",
+                    },
+                    {
+                        "text": "Reviewers",
+                        "url": "",
+                    },
+                    {
+                        "text": "Sponsor Expo",
+                        "url": "",
+                    },
+                ],
+            },
+            {
+                "id": "4",
+                "type": "list",
+                "title": "Attending",
+                "links": [
+                    {
+                        "text": "Registration",
+                        "url": "",
+                    },
+                    {
+                        "text": "Code of Conduct",
+                        "url": "",
+                    },
+                    {
+                        "text": "Schedule",
+                        "url": "/event/calendar2",
+                    },
+                    {
+                        "text": "Accessibility",
+                        "url": "",
+                    },
+                    {
+                        "text": "Privacy",
+                        "url": "",
+                    },
+                    {
+                        "text": "FAQ",
+                        "url": "",
+                    },
+                ],
+            },
+        ],
+    }
 }
 
 meta_data_sponsors={
