@@ -1294,7 +1294,7 @@ client.post_invitation(openreview.Invitation(
     }
 ))
 
-def create_session(day, number, start, end, presentation_type):
+def create_poster_session(day, number, start, end):
     return client.post_note(openreview.Note(
         invitation=session_invitation_id,
         readers=['everyone'],
@@ -1304,7 +1304,7 @@ def create_session(day, number, start, end, presentation_type):
             'start': openreview.tools.datetime_millis(start),
             'end': openreview.tools.datetime_millis(end),
             'title': '{day} Session {number}'.format(day=day, number=number),
-            'description': presentation_type,
+            'description': 'poster',
         }
     ))
 
@@ -1315,12 +1315,41 @@ sessions = {}
 ## make sure the first day is a monday
 first_day = datetime.datetime(2020, 10, 27, 0, 0)
 
+## create poster sessions
 for i, day in enumerate(days):
     for j, time in enumerate(times):
         start = first_day + datetime.timedelta(days=i) + datetime.timedelta(hours=time)
         end = start + datetime.timedelta(hours=2)
-        session = create_session(day, j+1, start, end, 'poster')
+        session = create_poster_session(day, j+1, start, end)
         sessions[session.content['title']] = session
+
+## create qa and expo sessions
+## Download the file from https://iclr.cc/virtual/schedule.json
+with open('/Users/mbok/iesl/data/iclr2021/schedule.json') as f:
+    data = json.load(f)
+    for i,d in enumerate(data['conference']):
+        for e in d['events']:
+            if e['type'] != 'poster':
+                time = int(e['slot'][:-1])
+                if time == 330:
+                    time = 3
+                if e['slot'][-1] == 'p':
+                    time += 12
+                start = first_day + datetime.timedelta(days=i) + datetime.timedelta(hours=time)
+                end = start + datetime.timedelta(hours=1)
+                session = client.post_note(openreview.Note(
+                    invitation=session_invitation_id,
+                    readers=['everyone'],
+                    writers=[conference_id],
+                    signatures=[conference_id],
+                    content={
+                        'start': openreview.tools.datetime_millis(start),
+                        'end': openreview.tools.datetime_millis(end),
+                        'title': e['name'],
+                        'description': e['type'],
+                    }
+                ))
+                sessions[session.content['title']] = session
 
 
 ## Presentation invitation
@@ -1341,39 +1370,121 @@ client.post_invitation(openreview.Invitation(
             'zoom_links': { 'values-regex': '.*' },
             'sessions': { 'values-regex': '.*' },
             'presentation_type': { 'value-regex': '.*' },
-            'topic': { 'value-regex': '.*' }
+            'topic': { 'value-regex': '.*' },
+            'title': { 'value-regex': '.*' },
+            'abstract': { 'value-regex': '.*' },
+            'bio': { 'value-regex': '.*' },
+            'authors': { 'values-regex': '.*' },
+            'authorids': { 'values-regex': '.*' }
         }
     }
 ))
 
 
 ## Download the file from https://iclr.cc/virtual/papers.json
-with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
-    data = json.load(f)
-    for e in data:
-        paper_id = e['id']
-        session_names = e['content']['session']
-        session_times = e['content']['session_times']
-        zoom_links = e['content']['session_links']
-        session_ids = []
-        for i,s in enumerate(session_names):
-            if session_times[i]:
-                session_ids.append(sessions[s].id)
-            else:
-                topic = session_names[i].split(':')[-1].strip()
+# with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
+#     data = json.load(f)
+#     for e in data:
+#         paper_id = e['id']
+#         session_names = e['content']['session']
+#         session_times = e['content']['session_times']
+#         zoom_links = e['content']['session_links']
+#         session_ids = []
+#         for i,s in enumerate(session_names):
+#             if session_times[i]:
+#                 session_ids.append(sessions[s].id)
+#             else:
+#                 topic = session_names[i].split(':')[-1].strip()
 
-        presentation_1 = client.post_note(openreview.Note(
-            invitation=presentation_invitation_id,
-            original=paper_id,
-            readers=['everyone'],
-            writers=[conference_id],
-            signatures=[conference_id],
-            content={
-                'slideslive': '38915149',
-                'chat': 'https://rocketchat.com/paper',
-                'zoom_links': zoom_links,
-                'sessions': session_ids,
-                'presentation_type': 'poster',
-                'topic': topic
-            }
-        ))
+#         presentation_1 = client.post_note(openreview.Note(
+#             invitation=presentation_invitation_id,
+#             original=paper_id,
+#             readers=['everyone'],
+#             writers=[conference_id],
+#             signatures=[conference_id],
+#             content={
+#                 'slideslive': '38915149',
+#                 'chat': 'https://rocketchat.com/paper',
+#                 'zoom_links': zoom_links,
+#                 'sessions': session_ids,
+#                 'presentation_type': 'poster',
+#                 'topic': topic
+#             }
+#         ))
+
+## Speaker presentations
+presentation_1 = client.post_note(openreview.Note(
+    invitation=presentation_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    signatures=[conference_id],
+    content={
+        'slideslive': '38915149',
+        'chat': 'https://rocketchat.com/paper',
+        'zoom_links': [],
+        'sessions': [sessions['Live QA: Aisha Walcott-Bryant'].id],
+        'presentation_type': 'qa',
+        'title': 'AI + Africa = Global Innovation',
+        'authors': ['Aisha Walcott-Bryant'],
+        'authorids': ['~Aisha_Walcott-Bryant1'],
+        'abstract': "Artificial Intelligence (AI) has for some time stoked the creative fires of computer scientists and researchers world-wide -- even before the so-called AI winter. After emerging from the winter, with much improved compute, vast amounts of data, and new techniques, AI has ignited our collective imaginations. We have been captivated by its promise while wary of its possible misuse in applications. AI has certainly demonstrated its enormous potential especially in fields such as healthcare. There, it has been used to support radiologists and to further precision medicine; conversely it has been used to generate photorealistic videos which distort our concept of what is real. Hence, we must thoughtfully harness AI to address the myriad of scientific and societal challenges; and open pathways to opportunities in governance, policy, and management. In this talk, I will share innovative solutions which leverage AI for global health with a focus on Africa. I will present a vision for the collaborations in hopes to inspire our community to join on this journey to transform Africa and impact the world.",
+        'bio': "Dr. Aisha Walcott-Bryant is a research scientist and manager of the AI Science and Engineering team at IBM Research, Africa. She is passionate about healthcare, interactive systems, and on addressing Africa's diverse challenges.In addition, Dr. Walcott-Bryant leads a team of researchers and engineers who are working on transformational innovations in global health and development while advancing the state of the art in AI, Blockchain, and other technologies.She and her team are engaged in projects in Maternal Newborn Child Health (MNCH), Family Planning (FP), disease intervention planning, and water access and management. Her team's recent healthcare work on \"Enabling Care Continuity Using a Digital Health Wallet\" was awarded Honorable Mention at the International Conference on Health Informatics, ICHI2019.Prior to her career at IBM Research Africa, Dr. Walcott-Bryant worked in Spain. There, she took on projects in the area of Smarter Cities at Barcelona Digital and Telefonica with a focus on physical systems for social media engagement, and multi-modal trip planning and recommending. Dr. Walcott-Bryant earned her PhD in Electrical Engineering and Computer Science at MIT where she conducted research on mobile robot navigation in dynamic environments at their Computer Science and Artificial Intelligence Lab (CSAIL)."
+    }
+))
+
+presentation_1 = client.post_note(openreview.Note(
+    invitation=presentation_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    signatures=[conference_id],
+    content={
+        'slideslive': '38915149',
+        'chat': 'https://rocketchat.com/paper',
+        'zoom_links': [],
+        'sessions': [sessions['Live QA: Leslie Kaebling'].id],
+        'presentation_type': 'qa',
+        'title': 'Doing for Our Robots What Nature Did For Us',
+        'authors': ['Leslie Kaelbling'],
+        'authorids': ['~Leslie_Pack_Kaelbling1'],
+        'abstract': "Artificial Intelligence (AI) has for some time stoked the creative fires of computer scientists and researchers world-wide -- even before the so-called AI winter. After emerging from the winter, with much improved compute, vast amounts of data, and new techniques, AI has ignited our collective imaginations. We have been captivated by its promise while wary of its possible misuse in applications. AI has certainly demonstrated its enormous potential especially in fields such as healthcare. There, it has been used to support radiologists and to further precision medicine; conversely it has been used to generate photorealistic videos which distort our concept of what is real. Hence, we must thoughtfully harness AI to address the myriad of scientific and societal challenges; and open pathways to opportunities in governance, policy, and management. In this talk, I will share innovative solutions which leverage AI for global health with a focus on Africa. I will present a vision for the collaborations in hopes to inspire our community to join on this journey to transform Africa and impact the world.",
+        'bio': "Dr. Aisha Walcott-Bryant is a research scientist and manager of the AI Science and Engineering team at IBM Research, Africa. She is passionate about healthcare, interactive systems, and on addressing Africa's diverse challenges.In addition, Dr. Walcott-Bryant leads a team of researchers and engineers who are working on transformational innovations in global health and development while advancing the state of the art in AI, Blockchain, and other technologies.She and her team are engaged in projects in Maternal Newborn Child Health (MNCH), Family Planning (FP), disease intervention planning, and water access and management. Her team's recent healthcare work on “Enabling Care Continuity Using a Digital Health Wallet” was awarded Honorable Mention at the International Conference on Health Informatics, ICHI2019.Prior to her career at IBM Research Africa, Dr. Walcott-Bryant worked in Spain. There, she took on projects in the area of Smarter Cities at Barcelona Digital and Telefonica with a focus on physical systems for social media engagement, and multi-modal trip planning and recommending. Dr. Walcott-Bryant earned her PhD in Electrical Engineering and Computer Science at MIT where she conducted research on mobile robot navigation in dynamic environments at their Computer Science and Artificial Intelligence Lab (CSAIL)."
+    }
+))
+
+presentation_1 = client.post_note(openreview.Note(
+    invitation=presentation_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    signatures=[conference_id],
+    content={
+        'slideslive': '38915149',
+        'chat': 'https://rocketchat.com/paper',
+        'zoom_links': [],
+        'sessions': [sessions['Live QA: Leslie Kaebling'].id],
+        'presentation_type': 'qa',
+        'title': 'Doing for Our Robots What Nature Did For Us',
+        'authors': ['Leslie Kaelbling'],
+        'authorids': ['~Leslie_Pack_Kaelbling1'],
+        'abstract': "We, as robot engineers, have to think hard about our role in the design of robots and how it interacts with learning, both in 'the factory' (that is, at engineering time) and in 'the wild' (that is, when the robot is delivered to a customer). I will share some general thoughts about the strategies for robot design and then talk in detail about some work I have been involved in, both in the design of an overall architecture for an intelligent robot and in strategies for learning to integrate new skills into the repertoire of an already competent robot.",
+        'bio': "Leslie Pack Kaelbling is the Panasonic Professor of Computer Science and Engineering at the Computer Science and Artificial Intelligence Laboratory (CSAIL) at the Massachusetts Institute of Technology. She has made research contributions to decision-making under uncertainty, learning, and sensing with applications to robotics, with a particular focus on reinforcement learning and planning in partially observable domains. She holds an A.B in Philosophy and a Ph.D. in Computer Science from Stanford University, and has had research positions at SRI International and Teleos Research and a faculty position at Brown University. She is the recipient of the US National Science Foundation Presidential Faculty Fellowship, the IJCAI Computers and Thought Award, and several teaching prizes; she has been elected a fellow of the AAAI. She was the founder and editor-in-chief of the Journal of Machine Learning Research."
+    }
+))
+
+presentation_1 = client.post_note(openreview.Note(
+    invitation=presentation_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    signatures=[conference_id],
+    content={
+        'slideslive': '38915149',
+        'chat': 'https://rocketchat.com/paper',
+        'zoom_links': [],
+        'sessions': [sessions['Live QA: Leslie Kaebling'].id],
+        'presentation_type': 'qa',
+        'title': '2020 Vision: Reimagining the Default Settings of Technology & Society',
+        'authors': ['Ruha Benjamin'],
+        'authorids': [],
+        'abstract': "From everyday apps to complex algorithms, technology has the potential to hide, speed, and even deepen discrimination, while appearing neutral and even benevolent when compared to racist practices of a previous era. In this talk, I explore a range of discriminatory designs that encode inequity: by explicitly amplifying racial hierarchies, by ignoring but thereby replicating social divisions, or by aiming to fix racial bias but ultimately doing quite the opposite. This presentation takes us into the world of biased bots, altruistic algorithms, and their many entanglements, and provides conceptual tools to decode tech promises with sociologically informed skepticism. In doing so, it challenges us to question not only the technologies we are sold, but also the ones we manufacture ourselves.",
+        'bio': "Dr. Ruha Benjamin is Associate Professor of African American Studies at Princeton University, founder of the JUST DATA Lab, and author of People’s Science: Bodies and Rights on the Stem Cell Frontier (2013) and Race After Technology: Abolitionist Tools for the New Jim Code (2019) among other publications. Her work investigates the social dimensions of science, medicine, and technology with a focus on the relationship between innovation and inequity, health and justice, knowledge and power. Professor Benjamin is the recipient of numerous awards and fellowships including from the American Council of Learned Societies, National Science Foundation, Institute for Advanced Study, and the President’s Award for Distinguished Teaching at Princeton. For more info visit www.ruhabenjamin.com"
+    }
+))
