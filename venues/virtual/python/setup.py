@@ -54,14 +54,14 @@ View ICLR 2021 sponsors »
 
 Sponsor payments are due Mar 31, 2021 (anywhere on earth).
 
-Read the information below and then 
+Read the information below and then
 
 ### ICLR 2021 Sponsorship
 Due to growing concerns about COVID-19, ICLR 2020 has decided to cancel its physical conference this year, instead shifting to a fully virtual conference.
 
 We were very excited to hold ICLR in Addis Ababa, Ethiopia and it is disappointing that we will not all be able to come together in person in April. However, this unfortunate event does give us the opportunity to innovate on how to host an effective remote conference. The organizing committees are now working to create a virtual conference that will be valuable and engaging for both presenters and attendees.
 
-Your sponsorship of the ICLR conference is greatly appreciated, and necessary, whether it has a physical or virtual presence this year.  We anticipate more participation of registered attendees with the virtual conference this year - especially given the current situation.  As a sponsor you will still receive many of the same benefits as listed in the sponsorship prospectus, specifically: 
+Your sponsorship of the ICLR conference is greatly appreciated, and necessary, whether it has a physical or virtual presence this year.  We anticipate more participation of registered attendees with the virtual conference this year - especially given the current situation.  As a sponsor you will still receive many of the same benefits as listed in the sponsorship prospectus, specifically:
 
 Access to opt-in database and registrant CVs who are interested in recruiting contact
 - Opportunity to participate in EXPO Lunch Talks (Bronze level excluded)
@@ -88,7 +88,7 @@ mobile: +1 714-213-1616
 For sponsors, the annual ICLR conference is an extraordinary opportunity for recruiting, branding, and communicating with **the most highly skilled people in the international community of artificial intelligence research**.
 
 Sponsorship funds have been critical in ensuring the continued success of the conference, and importantly, make it possible for future leaders in the field to attend and present their research. ICLR appreciates your support and participation and will do its best to ensure that your sponsorship meets the needs of your company.
- 
+
 
 #### Benefits of Sponsorship
 - **Branding opportunity** to position your company, products and services **to, approximately, 2,000 professionals in the field of deep learning**—the pivotal technology responsible for recent advancements in the fields of artificial intelligence, statistics and data science, and important application areas such as machine vision, computational biology, speech recognition, and robotics
@@ -100,7 +100,7 @@ Sponsorship funds have been critical in ensuring the continued success of the co
 - **March 27**: Deadline to send booth design drawings for inspection and approval to ICLR Management
 - **March 27**: Deadline to assign complimentary full-access conference registrations
 - **March 27**: Deadline to submit Exhibitor Appointed Contractor (EAC) notification forms to ICLR Management
-- **March 31**: Deadline to submit Booth Equipment Details order form and any additional orders for in-booth internet service, AV service, furnishings or catering to Flawless Events 
+- **March 31**: Deadline to submit Booth Equipment Details order form and any additional orders for in-booth internet service, AV service, furnishings or catering to Flawless Events
 - **April 14**: Deadline to assign exhibitor badges
 - **April 14**: Deadline to return Sponsor Certificate of Insurance
 - **April 14**: Deadline to return executed EAC Agreements along with EAC Certificates of Insurance and the names of all EAC personnel who will be working in the exhibit hall to ICLR Management
@@ -121,25 +121,25 @@ ICLR discourages corporate events that conflict with any official conference act
 To start the application, it's helpful to gather some information up front. When you are ready, please  Enter the Sponsor Portal » button to begin.
 
 1. **Company PO number**. After you complete the application, you may email yourself an invoice from ICLR.cc for the amount of the sponsorship. If you need that invoice to have a PO number from your company on it, then you will need to add that PO number in section 3 of the application.
- 
+
 2. **Will you host an event?** If you intend to host an event during the conference, you will be asked about the type of event you will host, your target audience, and how will attend. We collect this information so we can align our goals with yours.
- 
+
 3. **Branding**. Our sponsor page highlights your company **logo**, provides a **link to your website**, and displays a **paragraph about your company**. You will be asked for each of these in various steps.
- 
+
 4. **Vector logo**. We need a high-quality vector version of your logo in .pdf, .ai, or .svg format. This logo may be enlarged for a sponsor poster, so it is important that it be a high-quality image in vector format.
- 
+
 5. **Payment**. Sponsorship and exhibitor payment is due by **March 31, 2021, 4 p.m.**. Your invoice will be generated in section 4 of the application.
 ### Questions? Contact us
 
 To find out more detailed information about being a Sponsor Enter the Sponsor Portal »
 
-If we can supply any additional information or be of further assistance, please do not hesitate to email: [Chris Brown](mailto:chris.brown@aicons.org?subject=ICLR%20Sponsor%20Portal%20Assistance) 
+If we can supply any additional information or be of further assistance, please do not hesitate to email: [Chris Brown](mailto:chris.brown@aicons.org?subject=ICLR%20Sponsor%20Portal%20Assistance)
 
 Thank you for your interest and we look forward to seeing you in Addis Ababa, Ethiopia.
 
 ## Venue Information
 ### Setup, Exhibit Hours and Teardown
-<u>**Move-in**</u>: 
+<u>**Move-in**</u>:
 
 Saturday, May 4 from 12:00pm-5:00pm and
 
@@ -149,7 +149,7 @@ If you need extra time to set up your booth, please contact Freeman Exhibitor Se
 
 *** Early move-in requests are not guaranteed, although we will do all that we can to support your request.
 
-<u>**Exhibitor Hours**</u>: 
+<u>**Exhibitor Hours**</u>:
 
 Mon, May 6:  10:00am - 7:30pm
 
@@ -161,13 +161,13 @@ Thur, May 9:   10:00am - 5:00pm
 
 **There will be a Monday evening reception, 6:30 pm - 7:30 pm, in the Sponsor’s Hall**
 
-<u>**Move-out**</u>: 
+<u>**Move-out**</u>:
 
 Thur, May 9:  5:00pm to 10:00pm and
 
 Fri, May 10:   8:00am - 12:00pm
 
- 
+
 
 ### Shipping & Customs Information
 <h4 style="margin:0;text-decoration:underline">Advanced Warehouse Shipping Information</h4>
@@ -183,7 +183,7 @@ BOOTH #: (<u style="font-style:italic">booth number will be provided by Sponsor/
 
 NO:\_\_\_\_\_ of\_\_\_\_\_ PCS
 
-For shipping questions, please contact: 
+For shipping questions, please contact:
 
 **FREEMAN EXHIBIT TRANSPORTATION**
 
@@ -197,7 +197,7 @@ exhibit .transportation@freeman.com
 
 FreemanNewOrleansES@freeman.com
 
- 
+
 
 #### <u>Customs Information</u>
 **FREEMAN** is our designated official freight forwarder.
@@ -205,24 +205,24 @@ FreemanNewOrleansES@freeman.com
 Anyone sending exhibit material to New Orleans from outside the United States needs to contact Freeman at [international.freight@freemanco.com](mailto:international.freight@freemanco.com) or +1.817.607.5183 prior to shipping.
 
 If you have vendors shipping from outside the United States on your behalf, please notify them in advance to contact Freeman’s freight forwarding group using that same contact information.
- 
+
 
 ### Exclusive Service Providers & Designated Official Contractors
 #### Designated Official Exhibitor Services Contractor
 **FREEMAN** is the designated official exhibitor services contractor at ICLR 2019 in New Orleans. Please refer to [Freeman’s Online Service Kit](https://www.freemanco.com/store/show/landing?referer=s&nav=02&showID=480482)  or [Freemans's Service Kit (PDF)](https://media.neurips.cc/Conferences/ICLR2019/Freeman/Freeman_Service_Kit.pdf) for booth information, including rules, regulations and forms.
 
 If you choose to use Exhibitor Appointed Contractors (EACs) for any service that is not exclusively provided, you must follow the procedure in section 9.
- 
+
 
 #### Ordering Materials Handling Service
 **Materials Handling Services will be exclusively managed by FREEMAN**. Please notify your carrier and exhibit designer / producer. All advanced and onsite orders need to come through FREEMAN. Shipping and customs information is provided in section 7.
- 
+
 
 #### Ordering Rigging Service
 Rigging will be exclusively managed by FREEMAN if you need rigging, please contact Freeman Exhibitor Services at [FreemanNewOrleansES@freeman.com](mailto:FreemanNewOrleansES@freeman.com) to make arrangements.
 
 If you intend to have a hanging sign or graphics above your booth, you must contact Freeman Exhibitor Services at [FreemanNewOrleansES@freeman.com](mailto:FreemanNewOrleansES@freeman.com) to coordinate the installation.
- 
+
 
 #### Ordering Electrical, Plumbing & All Other Utilities Services
 **Electrical, Plumbing & All Other Utilities Services will be exclusively managed by New Orleans Ernest N. Morial Convention Center (MCCNO)**.
@@ -233,7 +233,7 @@ CREATE AN ACCOUNT AND PLACE YOUR ORDER ONLINE AT:
 
 Contact the convention center’s Exhibit Services staff at exhibit_services@mccno.com or by phone at 504-582-3036 if you still have questions or need additional information.
 
- 
+
 
 #### Ordering Internet, WiFi & All Other Telecommunications Services
 **Internet, WiFi & All Other Telecommunications Services will be exclusively managed by New Orleans Ernest N. Morial Convention Center (MCCNO)**.
@@ -244,7 +244,7 @@ CREATE AN ACCOUNT AND PLACE YOUR ORDER ONLINE AT:
 
 Contact Marquita Sparks, Technology Services Coordinator, at [msparks@mccno.com](mailto:msparks@mccno.com) or by phone at [(504) 582-3147](tel:(504) 582-3147) if you still have questions or need additional information.
 
- 
+
 
 #### Ordering Audio-Visual Service
 FREEMAN is the designated official **Audio-Visual Service** provider for exhibitors at ICLR 2019 in New Orleans.
@@ -266,12 +266,12 @@ Contact Linsey Normand-Marriott, the convention center’s Catering Sales Manage
 
 #### Ordering Booth Security
 COMING SOON.
- 
+
 
 #### Ordering Booth Cleaning Service
 **Booth Cleaning Service will be exclusively provided by FREEMAN**. If you need booth cleaning, please contact Freeman Exhibitor Services at [FreemanNewOrleansES@freeman.com](mailto:FreemanNewOrleansES@freeman.com) to make arrangements.
 
- 
+
 
 ### Exhibitor Appointed Contractors (EACs)
 An Exhibitor Appointed Contractor (EAC) is any company other than the designated official contractors which a Sponsor wants to employ inside the exhibit hall before, during or after the conference. This includes all EAC exhibit designers/producers, booth security contractors, labor, supervisors and any other third party appointed by the Sponsor.
@@ -290,11 +290,11 @@ No permission will be given to use an EAC or sub-EAC for the performance of the 
 
 - Materials Handling
 - Rigging
-- Electrical, Plumbing & All Other Utilities 
+- Electrical, Plumbing & All Other Utilities
 - Internet, WiFi & All Other Telecommunications
 - Food & Beverage
 - Booth Cleaning
-Go to EAC Notification Form » 
+Go to EAC Notification Form »
 
 ### Exhibitor Badges
 To access the exhibit hall, everyone will need a badge, either as an exhibitor-only or a full-access conference registrant. An Exhibitor Badge only grants access to the exhibit hall and public areas, not to any other academic conference activities. A full-access Conference Badge allows access to all events including academic events.
@@ -323,7 +323,7 @@ meta_data_codeofconduct={
 
 The open exchange of ideas, the freedom of thought and expression, and respectful scientific debate are central to the goals of this conference on machine learning; this requires a community and an environment that recognizes and respects the inherent worth of every person.
 
-# Who 
+# Who
 All participants---attendees, organizers, reviewers, speakers, sponsors, and volunteers at our conference, workshops, and conference-sponsored social events---are required to agree with this Code of Conduct both during the event and on official communication channels, including social media. Organizers will enforce this code, and we expect cooperation from all participants to help ensure a safe and productive environment for everybody.
 
 # Scope
@@ -355,21 +355,21 @@ The schedule of events for diversity groups will appear here once it's known.
 #### Diversity & Inclusion
 The International Conference on Learning Representations is taking seriously questions of diversity, equity, and inclusion in our conference. Our efforts are building on several grassroots efforts from the Women in Machine Learning, Black in AI, Queer in AI and LatinX in AI.  ICLR is working to expand these efforts to make the conference as welcoming as possible to all.
 
-In addition to hosting diversity-related events, the conference is also making and considering structural changes. These include a new [Code of Conduct](/event/group?id=ICLR.cc/2020/Conference/Virtual/CodeOfConduct) introduced in 2018. We are actively working to make the conference event itself more inclusive, including supporting childcare, nursing mothers, attendees with disabilities, and gender inclusive measures.  We are also exploring options with the venue and caterers to ensure that everyone can have a positive, equitable conference experience. 
+In addition to hosting diversity-related events, the conference is also making and considering structural changes. These include a new [Code of Conduct](/event/group?id=ICLR.cc/2020/Conference/Virtual/CodeOfConduct) introduced in 2018. We are actively working to make the conference event itself more inclusive, including supporting childcare, nursing mothers, attendees with disabilities, and gender inclusive measures.  We are also exploring options with the venue and caterers to ensure that everyone can have a positive, equitable conference experience.
 
 #### WIML
-WiML is holding a Virtual Social @ ICLR 2020, involving a Virtual Panel and a Mentoring Session, to discuss how COVID-19 has impacted our daily lives and our work and about ongoing research on COVID-19. 
+WiML is holding a Virtual Social @ ICLR 2020, involving a Virtual Panel and a Mentoring Session, to discuss how COVID-19 has impacted our daily lives and our work and about ongoing research on COVID-19.
 
 Date: Thursday, April 30th, 2020, 9.00am-11.00am PST
 
-Event details: https://wimlworkshop.org/sh_events/wiml-iclr/ 
+Event details: https://wimlworkshop.org/sh_events/wiml-iclr/
 
 Everyone registered for ICLR is encouraged to attend. The event is limited to 500 attendees and will operate on a first-come first-served basis. Information about how to participate in the event will be posted on https://iclr.cc/virtual/socials.html. Join the #wiml channel in the ICLR chat for more event announcements.
 
 Additionally, as part of our efforts to support our community in this time of COVID-19, WiML introduced a new initiative to fund registration fees for students and individuals in-need from all over the world to attend the virtual ICLR conference. With this new initiative, we hope to extend WiML's geographic reach and impact beyond individuals who are able to attend conferences in-person. The application was due on April 21. With the support of WiML Corporate Partners (https://wimlworkshop.org/partners/), we were able to offer ICLR 2020 registration fee funding to a total of 103 individuals.
 
 #### {Dis}Abilities in AI
-Please contact us with any assistance needs at the conference. 
+Please contact us with any assistance needs at the conference.
 
 #### Safety Guide
 To help LGBTQ+, and all other attendees, make informed decisions and have an understanding of some safety aspects of attending the conference, please see this SAFETY GUIDE."""
@@ -419,7 +419,7 @@ Thank you for agreeing to serve as an ICLR 2021 reviewer. Your contribution as a
 
 1. Your reviews are timely and substantive.
 
-2. You follow the reviewing guidelines below. 
+2. You follow the reviewing guidelines below.
 
 3. You adhere to our Code of Ethics in your role as a reviewer. You must also adhere to our [Code of Conduct](/event/group?id=ICLR.cc/2020/Conference/Virtual/CodeOfConduct).
 
@@ -440,12 +440,12 @@ This guide is intended to help you understand the ICLR 2021 decision process and
 <h2 style="color:#337ab7">We’re counting on you</h2>
 As a reviewer you are on the front line of the program creation process for ICLR 2021. Your ACs and the PCs will rely greatly on your expertise and your diligent and thorough reviews to make decisions on each paper. Therefore, your role as a reviewer is critical to ensuring a strong program for ICLR 2021.
 
- 
+
 High-quality reviews are also very valuable for helping authors improve their work, whether it is eventually accepted by ICLR 2021, or not. Therefore it is important to treat each valid ICLR 2021 submission with equal care.
 
-As a token of our appreciation for your essential work, all reviewers will be acknowledged during the opening ceremony. Top reviewers will receive special acknowledgement and free registration to ICLR 2021. 
+As a token of our appreciation for your essential work, all reviewers will be acknowledged during the opening ceremony. Top reviewers will receive special acknowledgement and free registration to ICLR 2021.
 
- 
+
 ---
 <h2 id="review_process" style="color:#337ab7">The global review process</h2>
 
@@ -471,7 +471,7 @@ The main reviewer tasks and dates are as follows:
 <h2 id="step_by_step" style="color:#337ab7">Reviewing a submission: step-by-step</h2>
 Summarized in one line, a review aims to determine whether a submission will bring sufficient value to the community and contribute new knowledge. The process can be broken down into the following main reviewer tasks:
 
- 
+
 1. **Read the paper**: It’s important to carefully read through the entire paper, and to look up any related work and citations that will help you comprehensively evaluate it. Be sure to give yourself sufficient time for this step.
 
 2. **While reading, consider the following**:
@@ -492,7 +492,7 @@ Summarized in one line, a review aims to determine whether a submission will bri
 
 	3. Does the paper support the claims? This includes determining if results, whether theoretical or empirical, are correct and if they are scientifically rigorous.
 
-4. **Write your initial review, organizing it as follows**: 
+4. **Write your initial review, organizing it as follows**:
 
 	1. Summarize what the paper claims to contribute. Be positive and generous.
 
@@ -502,7 +502,7 @@ Summarized in one line, a review aims to determine whether a submission will bri
 
 	4. Provide supporting arguments for your recommendation.
 
-	5. Ask questions you would like answered by the authors to help you clarify your understanding of the paper and provide the additional evidence you need to be confident in your assessment. 
+	5. Ask questions you would like answered by the authors to help you clarify your understanding of the paper and provide the additional evidence you need to be confident in your assessment.
 
 	6. Provide additional feedback with the aim to improve the paper. Make it clear that these points are here to help, and not necessarily part of your decision assessment.
 
@@ -512,7 +512,7 @@ Summarized in one line, a review aims to determine whether a submission will bri
 
 7. **Provide final recommendation**: Update your review, taking into account the new information collected during the discussion phase, and any revisions to the submission. Maintain a spirit of openness to changing your initial recommendation (either to a more positive or more negative) rating.
 
- 
+
 **For great in-depth resources on reviewing, see these resources:**
 
 - Daniel Dennet, [Criticising with Kindness](https://www.brainpickings.org/2014/03/28/daniel-dennett-rapoport-rules-criticism/).
@@ -528,174 +528,174 @@ Summarized in one line, a review aims to determine whether a submission will bri
 <h2 id="examples" style="color:#337ab7">Review Examples</h2>
 Below are two reviews, copied verbatim from previous ICLR conferences, that adhere well to our guidelines above: one for an "Accept" recommendation, and the other for a "Reject" recommendation. Note that while each review is formatted differently according to each reviewer's style, both reviews are well-structured and therefore easy to navigate.
 
- 
+
 
 ### Example 1: Recommendation to Accept
- 
+
 ##########################################################################
 
 Summary:
 
- 
+
 The paper provides a interesting direction in the meta-learning filed. In particular, it proposes to enhance meta learning performance by fully exploring relations across multiple tasks. To capture such information, the authors develop a heterogeneity-aware meta-learning framework by introducing a novel architecture--meta-knowledge graph, which can dynamically find the most relevant structure for new tasks.
 
 ##########################################################################
 
-Reasons for score: 
+Reasons for score:
 
- 
-Overall, I vote for accepting. I like the idea of mining the relation between tasks and handle it by the proposed meta-knowledge graph. My major concern is about the clarity of the paper and some additional ablation models (see cons below). Hopefully the authors can address my concern in the rebuttal period. 
 
- 
-##########################################################################Pros: 
+Overall, I vote for accepting. I like the idea of mining the relation between tasks and handle it by the proposed meta-knowledge graph. My major concern is about the clarity of the paper and some additional ablation models (see cons below). Hopefully the authors can address my concern in the rebuttal period.
 
- 
-1. The paper takes one of the most important issue of meta-learning: task heterogeneity. For me, the problem itself is real and practical. 
 
- 
-2. The proposed meta-knowledge graph is novel for capturing the relation between tasks and address the problem of task heterogeneity. Graph structure provides a more flexible way of modeling relations. The design for using the prototype-based relational graph to query the meta-knowledge graph is reasonable and interesting. 
+##########################################################################Pros:
 
- 
-3. This paper provides comprehensive experiments, including both qualitative analysis and quantitative results, to show the effectiveness of the proposed framework. The newly constructed Art-Multi dataset further enhances the difficulty of tasks and makes the performance more convincing. 
 
- 
+1. The paper takes one of the most important issue of meta-learning: task heterogeneity. For me, the problem itself is real and practical.
+
+
+2. The proposed meta-knowledge graph is novel for capturing the relation between tasks and address the problem of task heterogeneity. Graph structure provides a more flexible way of modeling relations. The design for using the prototype-based relational graph to query the meta-knowledge graph is reasonable and interesting.
+
+
+3. This paper provides comprehensive experiments, including both qualitative analysis and quantitative results, to show the effectiveness of the proposed framework. The newly constructed Art-Multi dataset further enhances the difficulty of tasks and makes the performance more convincing.
+
+
 ##########################################################################
 
-Cons: 
+Cons:
 
- 
-1. Although the proposed method provides several ablation studies, I still suggest the authors to conduct the following ablation studies to enhance the quality of the paper: 
 
-	(1) It might be valuable to investigate the modulation function. In the paper, the authors compare sigmoid, tanh, and Film layer. Can the authors analyze the results by reducing the number of gating parameters in Eq. 10 by sharing the gate value of each filter in Conv layers? 
+1. Although the proposed method provides several ablation studies, I still suggest the authors to conduct the following ablation studies to enhance the quality of the paper:
 
- 
-	(2) What is the performance of the proposed model by changing the type of aggregators? 
+	(1) It might be valuable to investigate the modulation function. In the paper, the authors compare sigmoid, tanh, and Film layer. Can the authors analyze the results by reducing the number of gating parameters in Eq. 10 by sharing the gate value of each filter in Conv layers?
 
- 
-2. For the autoencoder aggregator, it would be better to provide more details about it, which seems not very clear to me. 
 
- 
-3. In the qualitative analysis (i.e., Figure 2 and Figure 3), the authors provide one visualization for each task. It would be more convincing if the authors can provide more cases in the rebuttal period. 
+	(2) What is the performance of the proposed model by changing the type of aggregators?
 
- 
+
+2. For the autoencoder aggregator, it would be better to provide more details about it, which seems not very clear to me.
+
+
+3. In the qualitative analysis (i.e., Figure 2 and Figure 3), the authors provide one visualization for each task. It would be more convincing if the authors can provide more cases in the rebuttal period.
+
+
 ##########################################################################
 
-Questions during rebuttal period: 
+Questions during rebuttal period:
 
- 
-Please address and clarify the cons above 
 
- 
+Please address and clarify the cons above
+
+
 #########################################################################
 
-Some typos: 
+Some typos:
 
-(1) Table 7: I. no sample-level graph -> I. no prototype-based graph 
+(1) Table 7: I. no sample-level graph -> I. no prototype-based graph
 
-(2) 5.1 Hyperparameter Settings: we try both sigmoid, tanh Film -> we try both sigmoid, tanh, Film. 
+(2) 5.1 Hyperparameter Settings: we try both sigmoid, tanh Film -> we try both sigmoid, tanh, Film.
 
-(3) parameteric -> parametric 
+(3) parameteric -> parametric
 
-(4) Table 2: Origninal -> original 
+(4) Table 2: Origninal -> original
 
-(5) Section 4 first paragraph: The enhanced prototype representation -> The enhanced prototype representations 
+(5) Section 4 first paragraph: The enhanced prototype representation -> The enhanced prototype representations
 
- 
+
 Updates: Thanks for the authors' response. The newly added experimental results address my concerns. I believe this paper will provide new insights for this field and I recommend this paper to be accepted.
 
- 
+
 
 ### Example 2: Recommendation to Reject
- 
 
-Review: This paper proposes Recency Bias, an adaptive mini batch selection method for training deep neural networks. To select informative minibatches for training, the proposed method maintains a fixed size sliding window of past model predictions for each data sample. At a given iteration, samples which have highly inconsistent predictions within the sliding window are added to the minibatch. The main contribution of this paper is the introduction of sliding window to remember past model predictions, as an improvement over the SOTA approach: Active Bias, which maintains a growing window of model predictions. Empirical studies are performed to show the superiority of Recency Bias over two SOTA approaches. Results are shown on the task of (1) image classification from scratch and (2) image classification by fine-tuning pretrained networks. 
 
- 
-+ves: 
+Review: This paper proposes Recency Bias, an adaptive mini batch selection method for training deep neural networks. To select informative minibatches for training, the proposed method maintains a fixed size sliding window of past model predictions for each data sample. At a given iteration, samples which have highly inconsistent predictions within the sliding window are added to the minibatch. The main contribution of this paper is the introduction of sliding window to remember past model predictions, as an improvement over the SOTA approach: Active Bias, which maintains a growing window of model predictions. Empirical studies are performed to show the superiority of Recency Bias over two SOTA approaches. Results are shown on the task of (1) image classification from scratch and (2) image classification by fine-tuning pretrained networks.
 
-\+ The idea of using a sliding window over a growing window in active batch selection is interesting. 
 
-\+ Overall, the paper is well written. In particular, the Related Work section has a nice flow and puts the proposed method into context. Despite the method having limited novelty (sliding window instead of a growing window), the method has been well motivated by pointing out the limitations in SOTA methods. 
++ves:
 
-\+ The results section is well structured. It's nice to see hyperparameter tuning results; and loss convergence graphs in various learning settings for each dataset. 
+\+ The idea of using a sliding window over a growing window in active batch selection is interesting.
 
- 
-Concerns: 
+\+ Overall, the paper is well written. In particular, the Related Work section has a nice flow and puts the proposed method into context. Despite the method having limited novelty (sliding window instead of a growing window), the method has been well motivated by pointing out the limitations in SOTA methods.
+
+\+ The results section is well structured. It's nice to see hyperparameter tuning results; and loss convergence graphs in various learning settings for each dataset.
+
+
+Concerns:
 
 \- The key concern about the paper is the lack of rigorous experimentation to study the usefulness of the proposed method. Despite the paper stating that there have been earlier work (Joseph et al, 2019 and Wang et al, 2019) that attempt mini-batch selection, the paper does not compare with them. This is limiting. Further, since the proposed method is not specific to the domain of images, evaluating it on tasks other than image classification, such as text classification for instance, would have helped validate its applicability across domains.
 
- 
-\- Considering the limited results, a deeper analysis of the proposed method would have been nice. The idea of a sliding window over a growing window is a generic one, and there have been many efforts to theoretically analyze active learning over the last two decades. How does the proposed method fit in there? (For e.g., how does the expected model variance change in this setting?) Some form of theoretical/analytical reasoning behind the effectiveness of recency bias (which is missing) would provide greater insights to the community and facilitate further research in this direction. 
 
- 
-\- The claim of 20.5% reduction in test error mentioned in the abstract has not been clearly addressed and pointed out in the results section of the paper. 
+\- Considering the limited results, a deeper analysis of the proposed method would have been nice. The idea of a sliding window over a growing window is a generic one, and there have been many efforts to theoretically analyze active learning over the last two decades. How does the proposed method fit in there? (For e.g., how does the expected model variance change in this setting?) Some form of theoretical/analytical reasoning behind the effectiveness of recency bias (which is missing) would provide greater insights to the community and facilitate further research in this direction.
 
- 
-\- On the same note, the results are not conclusively in favor of the proposed method, and only is marginally better than the competitors. Why does online batch perform consistently than the proposed method? There is no discussion of these inferences from the results. 
 
- 
-\- The results would have been more complete if results were shown in a setting where just recency bias is used without the use of the selection pressure parameter. In other words, an ablation study on the effect of the selection pressure parameter would have been very useful. 
+\- The claim of 20.5% reduction in test error mentioned in the abstract has not been clearly addressed and pointed out in the results section of the paper.
 
- 
-\- How important is the warm-up phase to the proposed method? Considering the paper states that this is required to get good estimates of the quantization index of the samples, some ablation studies on reducing/increasing the warm-up phase and showing the results would have been useful to understand this. 
 
- 
-\- Fig 4: Why are there sharp dips periodically in all the graphs? What do these correspond to? 
+\- On the same note, the results are not conclusively in favor of the proposed method, and only is marginally better than the competitors. Why does online batch perform consistently than the proposed method? There is no discussion of these inferences from the results.
 
- 
-\- The intuition behind the method is described well, however, the proposed method would have been really solidified if it were analysed in the context of a simple machine learning problem (such as logistic regression). As an example, verifying if the chosen minibatch samples are actually close to the decision boundary of a model (even if the model is very simple) would have helped analyze the proposed method well. 
 
- 
-Minor comments: 
+\- The results would have been more complete if results were shown in a setting where just recency bias is used without the use of the selection pressure parameter. In other words, an ablation study on the effect of the selection pressure parameter would have been very useful.
 
-\* It would have been nice to see the relation between the effect of using recency bias and the difficulty of the task/dataset. 
 
-\* In the 2nd line in Introduction, it should be "deep networks" instead of "deep networks netowrks". 
+\- How important is the warm-up phase to the proposed method? Considering the paper states that this is required to get good estimates of the quantization index of the samples, some ablation studies on reducing/increasing the warm-up phase and showing the results would have been useful to understand this.
 
-\* Since both tasks in the experiments are about image classification, it would be a little misleading to present them as "image classification" and "finetuning". A more informative way of titling them would be "image classification from scratch" and "image classification by finetuning". 
 
-\* In Section 3.1, in the LHS of equation 3, it would be appropriate to use P(y_i/x_i; q) instead of P(y/x_i; q) since the former term was used in the paragraph. 
+\- Fig 4: Why are there sharp dips periodically in all the graphs? What do these correspond to?
 
- 
-=====POST-REBUTTAL COMMENTS======== 
+
+\- The intuition behind the method is described well, however, the proposed method would have been really solidified if it were analysed in the context of a simple machine learning problem (such as logistic regression). As an example, verifying if the chosen minibatch samples are actually close to the decision boundary of a model (even if the model is very simple) would have helped analyze the proposed method well.
+
+
+Minor comments:
+
+\* It would have been nice to see the relation between the effect of using recency bias and the difficulty of the task/dataset.
+
+\* In the 2nd line in Introduction, it should be "deep networks" instead of "deep networks netowrks".
+
+\* Since both tasks in the experiments are about image classification, it would be a little misleading to present them as "image classification" and "finetuning". A more informative way of titling them would be "image classification from scratch" and "image classification by finetuning".
+
+\* In Section 3.1, in the LHS of equation 3, it would be appropriate to use P(y_i/x_i; q) instead of P(y/x_i; q) since the former term was used in the paragraph.
+
+
+=====POST-REBUTTAL COMMENTS========
 
 I thank the authors for the response and the efforts in the updated draft. Some of my queries were clarified. However, unfortunately, I still think more needs to be done to explain the consistency of the results and to study the generalizability of this work across datasets. I retain my original decision for these reasons.
 
- 
+
 <h2 id="faq" style="color:#337ab7">FAQ</h2>
 
 **Q**: How should I use supplementary material?
 
 **A**: It is not necessary to read supplementary material but such material can often answer questions that arise while reading the main paper, so consider looking there before asking authors.
 
- 
+
 **Q**: How should I handle a policy violation?
 
 **A**: To flag a CoE violation related to a submission, please indicate it when submitting the CoE report for that paper. The AC will work with the PC and the ethics board to resolve the case. To discuss other violations (e.g. plagiarism, double submission, paper length, formatting, etc.), please contact either the AC or the PC as appropriate. You can do this by sending an offical comment with the appropriate readership restrictions.
 
- 
+
 
 **Q**: How can I contact the AC for a paper?
 
 **A**: To contact the AC for a paper: (i) go to the OpenReview page for that paper (while being logged into OpenReview); (ii) click the button to add an official comment and fill out the comment form; (iii) add the ACs to the list of "Readers".
 
- 
+
 **Q**: Am I allowed to ask for additional experiments?
 
 **A**: You can ask for additional experiments. New experiments should not significantly change the content of the submission. Rather, they should be limited in scope and serve to more thoroughly validate existing results from the submission.
 
- 
+
 **Q**: If a submission does not achieve state-of-the-art results, is that grounds for rejection?
 
 **A**: No, a lack of state-of-the-art results does not by itself constitute grounds for rejection. Submissions bring value to the ICLR community when they convincingly demonstrate new, relevant, impactful knowledge. Submissions can achieve this without achieving state-of-the-art results.
 
- 
+
 
 **Q**: Are authors expected to cite and compare with very recent work? What about non peer-reviewed (e.g., ArXiv) papers?
 
 **A**: We consider papers contemporaneous if they are published within the last two months. That means, since our full paper deadline is Oct 2, if a paper was published on or after Aug 2, 2020, authors are not required to compare their own work to that paper. Authors are encouraged to cite and discuss all relevant papers, but they may be excused for not knowing about papers not published in peer-reviewed conference proceedings or journals.
 
- 
+
 
 **Q**: How can I avoid being assigned papers that present a conflict of interest?
 
@@ -718,24 +718,24 @@ Area Chairs play a critical role in curating the technical programme for ICLR. U
 - Check Assignments & Recommend Reviewers: Tues, Oct 6 to Thurs, Oct 8
 - Check Reviewer Fit: Mon, Oct 12 to Thur, Oct 16
 - Review Period: Mon, Oct 12 to Wed, Oct 28
-- Substitute Reviewing Period: Thurs, Oct 29 - Mon, Nov 9 
+- Substitute Reviewing Period: Thurs, Oct 29 - Mon, Nov 9
 - Review Release: Tues, Nov 10
 * Discussion Stage 1:  Tues, Nov 10 - Tues, Nov 17
     + Discussions among Reviewers/Authors/Public.
     + Anyone may post comments, but they must be logged in, and their names will be shown. Reviewers remain anonymous (R1, R2, etc.).
-* Discussion Stage 2 - Tues, Nov 17 - Tues, Nov 24  
+* Discussion Stage 2 - Tues, Nov 17 - Tues, Nov 24
     + Discussions among authors, reviewers and AC.
     + Comments are all anonymous.
-    + ACs encourage reviewers to acknowledge and respond to author responses. 
+    + ACs encourage reviewers to acknowledge and respond to author responses.
 
 * Discussion Stage 3 - Tues, Nov 24 - Mon, Nov 30
     + Discussions among reviewers and AC.
     + Comments are all anonymous and not visible to authors.
- 
-* Meta-review Period: Mon, Nov 30 - Fri, Dec 11 
+
+* Meta-review Period: Mon, Nov 30 - Fri, Dec 11
     + No public comments allowed.
     + PC/AC Calibration Period: Fri, Dec 11 - Fri, Dec 18
-    
+
 - Decision Notification: Thurs, Jan 14, 2021
 - Best Paper Selections: Subset of ACs will be asked to form a committee to select the best papers and mentions during January and February, 2021
 - Conference: May 4-8, 2021
@@ -744,17 +744,17 @@ Area Chairs play a critical role in curating the technical programme for ICLR. U
 ## Abstract Submission
 This year, we added an abstract submission deadline. Having the abstracts a few days earlier will allow ACs to bid on the abstracts, recommend appropriate reviewers, and check the reviewer fit early in the reviewing period.
 
-## Code of Ethics 
-This year, ICLR is adopting the new Code of Ethics which needs to be acknowledged and adhered to by all participants including authors and reviewers. If any submission, review, or discussion comments raise ethical concerns, please flag the problematic content and contact the Program Chairs. 
+## Code of Ethics
+This year, ICLR is adopting the new Code of Ethics which needs to be acknowledged and adhered to by all participants including authors and reviewers. If any submission, review, or discussion comments raise ethical concerns, please flag the problematic content and contact the Program Chairs.
 
 ## Multi-Stage Discussion
-Similar to last year, the review process is designed to maximize discussions while clearly distinguishing the different stages of discussion. After the initial review period, during which each assigned reviewer is required to submit a formal review, there will be three stages of discussion. 
+Similar to last year, the review process is designed to maximize discussions while clearly distinguishing the different stages of discussion. After the initial review period, during which each assigned reviewer is required to submit a formal review, there will be three stages of discussion.
 
-- In the first stage (Public Discussion), anyone can post a comment on a submission. Authors may post any clarification anonymously, and the assigned reviewers and AC may post further comments. Public commentators can also participate and leave comments, but cannot do so anonymously, of which the decision was made to avoid any potential adverse behavior. 
+- In the first stage (Public Discussion), anyone can post a comment on a submission. Authors may post any clarification anonymously, and the assigned reviewers and AC may post further comments. Public commentators can also participate and leave comments, but cannot do so anonymously, of which the decision was made to avoid any potential adverse behavior.
 
-- In the second stage (Author/Reviewer/AC Discussion), the authors, assigned reviewers and AC are allowed to post their comments, while posts from the public will be blinded (they will eventually appear after the decision notifications are sent.) 
+- In the second stage (Author/Reviewer/AC Discussion), the authors, assigned reviewers and AC are allowed to post their comments, while posts from the public will be blinded (they will eventually appear after the decision notifications are sent.)
 
-- During the final review stage (Reviewer/AC Discussion) only the assigned reviewers and ACs discuss the merits of each submission. Discussions in this final stage remain private to the assigned reviewers and ACs, as well as the Program Chairs. 
+- During the final review stage (Reviewer/AC Discussion) only the assigned reviewers and ACs discuss the merits of each submission. Discussions in this final stage remain private to the assigned reviewers and ACs, as well as the Program Chairs.
 
 This design of the three-stage discussion addresses the concerns that were raised during past iterations of ICLR. First, it clearly designates a fixed period over which authors are expected to respond to the reviewers', ACs’ and public’s comments, thereby removing the burden of non-stop commitment of several months on the authors. Second, by gradually reducing the size of participants toward a core set of decision makers (assigned reviewers and ACs), we facilitate the convergence of discussion toward the final decision. Lastly, each comment on a submission is marked with the stage in which it was made. This is expected to help ACs and PCs easily identify the maturity/stage of each comment, which in turn gives us a better ability to judge the merit and significance of these comments when making the final decision.
 
@@ -762,7 +762,7 @@ This design of the three-stage discussion addresses the concerns that were raise
 We have substantially more Area Chairs for ICLR 2021 compared to previous years, which means your initial set of assignments is likely smaller. This is good news for all of us, as you can devote more of your time and efforts to the assigned submissions. However, we expect some conflicts and unforeseen circumstances that require us to re-assign some of the papers during the reviewing process. You can expect an additional small batch of papers to handle for discussions and metareviews starting from mid-October to mid-December. The later the re-assignment, the less time we expect you to devote to those submissions. We will, of course, ask you before these re-assignments are made.
 
 ## Your Roles and Action Items
-### Reviewing Process Manager 
+### Reviewing Process Manager
 Your first role is to help the Program Chairs manage the reviewing process for the thousands of submissions we expect to receive. When you are assigned a batch of papers to handle based on your bids on the abstracts, please recommend a set of appropriate reviewers (you may skip this, and the reviewers will be assigned based on their bids only), and when some of those reviewers are delinquent or not responsive, please help us assign alternate reviewers in a timely manner so that every submission gets a chance to be judged fairly and expertly.
 
 - Bid on abstracts
@@ -796,17 +796,17 @@ We have invited you to serve as an AC because of your expertise and reputation. 
 
 **Q**: When do we seek emergency/additional reviewers?
 
-**A**: In two cases: 
+**A**: In two cases:
 
-1. Assigned reviewers are unresponsive and are close to missing the deadline. 
+1. Assigned reviewers are unresponsive and are close to missing the deadline.
 
-2. Additional reviews could improve the confidence in your recommendation. This is an important part of your responsibility, as we strive to provide timely feedback to the authors so that they can appropriately and fairly respond to these feedback. Especially if a review had not been submitted by the review deadline, immediately start looking for and recruiting an emergency reviewer. 
+2. Additional reviews could improve the confidence in your recommendation. This is an important part of your responsibility, as we strive to provide timely feedback to the authors so that they can appropriately and fairly respond to these feedback. Especially if a review had not been submitted by the review deadline, immediately start looking for and recruiting an emergency reviewer.
 
-**Q**: How do we assign emergency/additional reviewers? 
+**Q**: How do we assign emergency/additional reviewers?
 
 **A**: When you find an emergency reviewer, you will be able to assign them to the paper using the links in   your AC console. If you struggle to find an emergency reviewer, please get in touch with us ([iclr2021programchairs@googlegroups.com](mailto:iclr2021programchairs@googlegroups.com)) as soon as possible.
 
-**Q**: How do we identify and respond to potential breaches of the Code of Ethics? 
+**Q**: How do we identify and respond to potential breaches of the Code of Ethics?
 
 **A**: All authors, reviewers, and Area Chairs must adhere to the Code of Ethics. If reviewers flag submissions, or if authors raise issues with reviewers/commenters, first carefully consider the facts of the situation, and if you find it is indeed problematic, please contact the Program Chairs.
 
@@ -822,7 +822,7 @@ meta_data_metaReviewGuide={
         {
             "name":"Markdown",
             "option":"""# Meta-review Guidelines
-As an AC, we trust you to make a reasonable recommendation based on reasonable bases and to clearly and thoroughly convey this recommendation and reasoning behind it to the authors. We recommend that your meta-review contain the following sections, and hasat least 100 words. You will have an AC buddy, so you should read the meta-reviews from your partner ACs and give them feedback for any cases you think could need a second opinion.  
+As an AC, we trust you to make a reasonable recommendation based on reasonable bases and to clearly and thoroughly convey this recommendation and reasoning behind it to the authors. We recommend that your meta-review contain the following sections, and hasat least 100 words. You will have an AC buddy, so you should read the meta-reviews from your partner ACs and give them feedback for any cases you think could need a second opinion.
 
 1. **A concise description of the submission’s main content** (scientific claims and findings) based on your own reading and reviewers’ characterization. Ideally this description should contain both what have been discussed in the submission and what are missing from the submission.
 
@@ -846,14 +846,14 @@ For detailed submission instructions, including paper length and style file, ple
 **Source code submission**: Source code associated with a paper can be uploaded as part of the supplementary material. Code submission gives more information to reviewers, especially for replicability of the paper. We encourage all authors to submit code as part of their submission. Note that reviewers are encouraged, but not required to review supplementary material during the review process. All supplementary material must be self-contained and zipped into a single file. Note that supplementary material will be visible to reviewers and the public throughout and after the review period, and ensure all material is anonymized.
 
 ## Code of Ethics
-All ICLR participants, including authors, are required to adhere to the ICLR Code of Ethics (https://iclr.cc/public/CodeOfEthics). All authors of submitted papers are required to read the Code of Ethics, adhere to it, and explicitly acknowledge this during the submission process. The Code of Ethics applies to all conference participation, including paper submission, reviewing, and paper discussion. 
+All ICLR participants, including authors, are required to adhere to the ICLR Code of Ethics (https://iclr.cc/public/CodeOfEthics). All authors of submitted papers are required to read the Code of Ethics, adhere to it, and explicitly acknowledge this during the submission process. The Code of Ethics applies to all conference participation, including paper submission, reviewing, and paper discussion.
 
 As part of the review process, reviewers will be encouraged to raise potential violations of the ICLR Code of Ethics. If authors feel that their paper submission raises questions regarding the Code of Ethics, they are encouraged to discuss any potential issues as part of their submission. This discussion is not counted against the maximum page limit of the paper and should be included as a separate section.
 
 Authors who encounter potential violations of the Code of Ethics, e.g., as part of the review or public discussion, should raise these issues in a private message to their paper’s Area Chair through the open review interface.
 
 ## Reviewing Process
-Submissions to ICLR are uploaded on OpenReview, which enables public discussion during the review process public discussion phase, which lasts until November 17, 2020, as well as further discussion between authors, reviewers and area chairs until November 24, 2020. 
+Submissions to ICLR are uploaded on OpenReview, which enables public discussion during the review process public discussion phase, which lasts until November 17, 2020, as well as further discussion between authors, reviewers and area chairs until November 24, 2020.
 
 Authors are encouraged to participate in the public discussion of their paper, as well as of any other paper submitted to the conference. Submissions and reviews are both anonymous and visible as follows:
 
@@ -911,7 +911,7 @@ If you are still having problems accessing your submission, follow these steps:
 
 1. Go to your submission and hover over your name in the ‘Authors’ field.
 
-2. If your name is associated with an email address that is not currently on your profile, add this email address to your OpenReview profile and confirm it. This will give you access to your submission and the ‘Revision’ button. 
+2. If your name is associated with an email address that is not currently on your profile, add this email address to your OpenReview profile and confirm it. This will give you access to your submission and the ‘Revision’ button.
 
 3. If your name is associated with another profile that is not the profile you submitted the paper with, contact the OpenReview team at info@openreview.net so they can merge your profiles.
 
@@ -931,7 +931,7 @@ Saturday, May 8, 2021
 
 Virtual Conference (formerly Vienna), AUSTRIA
 
-ICLR Workshop Co-Chairs 
+ICLR Workshop Co-Chairs
 
 - Chelsea Finn, Stanford University & Google Research
 - Sanmi Koyejo, University of Illinois at Urbana-Champaign & Google Research
@@ -949,14 +949,14 @@ This is the third year that ICLR will have workshops. With the rapid growth and 
 
 5. Mandatory Accept/Reject Notification Date: Mar 26, 2021
 
-Note that the final submission date for workshop contributions is suggested, and there is a trade-off between how much time workshops give authors to submit versus reviewers to review in the period between December 11, 2020 and March 26, 2021. 
+Note that the final submission date for workshop contributions is suggested, and there is a trade-off between how much time workshops give authors to submit versus reviewers to review in the period between December 11, 2020 and March 26, 2021.
 
-Workshops that do not meet this accept/reject notification deadline will have their speaker tickets withheld. 
+Workshops that do not meet this accept/reject notification deadline will have their speaker tickets withheld.
 
- 
+
 
 ### Selection Criteria
-1. Degree to which the proposal is focused on an important and topical problem, and the degree to which it is expected that the community will find the workshop interesting, exciting, and valuable. 
+1. Degree to which the proposal is focused on an important and topical problem, and the degree to which it is expected that the community will find the workshop interesting, exciting, and valuable.
 
 2. Intellectual excitement of the topic. Is it likely to break new ground, or merely reiterate tired, old debates?
 
@@ -974,7 +974,7 @@ Workshops that do not meet this accept/reject notification deadline will have th
 
 9. Points of difference. What makes this workshop enticingly different to the ICLR workshops held previously?
 
- 
+
 
 ### Assessment Process and Criteria
 The workshop chairs will appoint a number of reviewers who will provide written assessments of the proposals against the criteria listed above. Their reports will be considered by the workshop chairs who will jointly decide upon the selected workshops (subject to the notes on COIs listed below). The final decisions will be made by the workshop chairs via consensus and judgement; we will not simply add up scores assigned to the different criteria.
@@ -995,12 +995,12 @@ The workshop chairs will appoint a number of reviewers who will provide written 
 
 - Workshop organizers cannot give talks at the workshops they organize. They can give a brief introduction to the workshop and/or act as a panel moderator.
 
-- Workshop organizers should state in their proposal how they will manage conflicts of interest in assessing submitted contributions. At a minimum, an organizer should not be involved in the assessment of a submission from someone within the same organization. 
+- Workshop organizers should state in their proposal how they will manage conflicts of interest in assessing submitted contributions. At a minimum, an organizer should not be involved in the assessment of a submission from someone within the same organization.
 
-### Other Guidance and Expectations for Workshop Proposals 
+### Other Guidance and Expectations for Workshop Proposals
 1. We encourage, and expect, diversity in the organizing team and speakers. This includes diversity of viewpoint and thinking regarding the topics discussed at the workshop, gender, race, affiliations, seniority, geographic location, etc. If a workshop is part of a series, the organizer list should include people who have not organized in the past. Organizers should articulate how they have addressed diversity in their proposal in each of these senses.
 
-2. Since the goal of the workshop is to generate discussion, sufficient time and structure needs to be included in the program for this. Proposals should explicitly articulate how they will encourage broad discussion. 
+2. Since the goal of the workshop is to generate discussion, sufficient time and structure needs to be included in the program for this. Proposals should explicitly articulate how they will encourage broad discussion.
 
 3. Workshop proposals should list explicitly what the problems are they would like to see solved, or at least advances made, as part of their workshop. They should explain why these are important problems and how the holding of their proposed workshop will contribute to their solution.
 
@@ -1014,12 +1014,12 @@ The workshop chairs will appoint a number of reviewers who will provide written 
 
 8. Organizing a workshop is a complex task, and proposals should outline the organizational experience and skills of the proposed organizers (as a team). We encourage junior researchers to be involved in workshop organization, but prefer some collective experience in organizing a complex event.
 
- 
+
 
 ### Example Successful Proposals
 With permission of the respective workshop organizers, we are providing the successful proposals of past ICLR workshops as examples: [the ICLR 2020 BeTR-RL Workshop](https://drive.google.com/file/d/1sxNAQAi-depxbd7IwyaTsCdMSajY1sme/view?usp=sharing) and [the ICLR 2020 Workshop on Neural Architecture Search](https://drive.google.com/file/d/1CIDK-3iiZTdl6M8z7d6lM-8WMjb7kPEV/view?usp=sharing).
 
- 
+
 
 ### Frequently Asked Questions From Past Workshops
 **Workshop Series**
@@ -1036,7 +1036,7 @@ We will not forcibly merge proposals.  If multiple strong proposals are submitte
 
 When publicizing your workshop, you may mention the hashtag #ICLR2021
 
- 
+
 
  """
         }
@@ -1189,57 +1189,33 @@ client.post_invitation(openreview.Invitation(
     }
 ))
 
+def create_session(day, number, start, end, presentation_type):
+    return client.post_note(openreview.Note(
+        invitation=session_invitation_id,
+        readers=['everyone'],
+        writers=[conference_id],
+        signatures=[conference_id],
+        content={
+            'start': openreview.tools.datetime_millis(start),
+            'end': openreview.tools.datetime_millis(end),
+            'title': '{day} Session {number}'.format(day=day, number=number),
+            'description': presentation_type,
+        }
+    ))
 
-## Create two sessions
-sessions = []
-sessions.append(client.post_note(openreview.Note(
-    invitation=session_invitation_id,
-    readers=['everyone'],
-    writers=[conference_id],
-    signatures=[conference_id],
-    content={
-        'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 2, 15, 0)),
-        'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 2, 18, 0)),
-        'title': 'Session 1',
-        'description':'this is the description of session 1'
-    }
-)))
-sessions.append(client.post_note(openreview.Note(
-    invitation=session_invitation_id,
-    readers=['everyone'],
-    writers=[conference_id],
-    signatures=[conference_id],
-    content={
-        'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 2, 18, 0)),
-        'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 2, 20, 0)),
-        'title': 'Session 2',
-        'description':'this is the description of session 2'
-    }
-)))
-sessions.append(client.post_note(openreview.Note(
-    invitation=session_invitation_id,
-    readers=['everyone'],
-    writers=[conference_id],
-    signatures=[conference_id],
-    content={
-        'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 5, 9, 0)),
-        'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 5, 10, 0)),
-        'title': 'Session 3',
-        'description':'this is the description of session 3'
-    }
-)))
-sessions.append(client.post_note(openreview.Note(
-    invitation=session_invitation_id,
-    readers=['everyone'],
-    writers=[conference_id],
-    signatures=[conference_id],
-    content={
-        'start': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 5, 10, 0)),
-        'end': openreview.tools.datetime_millis(datetime.datetime(2020, 10, 5, 12, 0)),
-        'title': 'Session 4',
-        'description':'this is the description of session 4'
-    }
-)))
+days = ['Mon', 'Tues', 'Wed', 'Thurs']
+times = [5, 8, 12, 17, 20]
+
+sessions = {}
+## make sure the first day is a monday
+first_day = datetime.datetime(2020, 10, 27, 0, 0)
+
+for i, day in enumerate(days):
+    for j, time in enumerate(times):
+        start = first_day + datetime.timedelta(days=i) + datetime.timedelta(hours=time)
+        end = start + datetime.timedelta(hours=2)
+        session = create_session(day, j+1, start, end, 'poster')
+        sessions[session.content['title']] = session
 
 
 ## Presentation invitation
@@ -1257,28 +1233,42 @@ client.post_invitation(openreview.Invitation(
         'content': {
             'slideslive': { 'value-regex': '.*' },
             'chat': { 'value-regex': '.*' },
-            'live': { 'value-regex': '.*' },
-            'session': { 'value-regex': '.*' }
+            'zoom_links': { 'values-regex': '.*' },
+            'sessions': { 'values-regex': '.*' },
+            'presentation_type': { 'value-regex': '.*' },
+            'topic': { 'value-regex': '.*' }
         }
     }
 ))
 
 
-submissions = client.get_notes(invitation='ICLR.cc/2020/Conference/-/Submission')
+## Download the file from https://iclr.cc/virtual/papers.json
+with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
+    data = json.load(f)
+    for e in data:
+        paper_id = e['id']
+        session_names = e['content']['session']
+        session_times = e['content']['session_times']
+        zoom_links = e['content']['session_links']
+        session_ids = []
+        for i,s in enumerate(session_names):
+            if session_times[i]:
+                session_ids.append(sessions[s].id)
+            else:
+                topic = session_names[i].split(':')[-1].strip()
 
-
-for s in tqdm(submissions):
-    ## Create presentations based on ICLR accepted papers
-    presentation_1 = client.post_note(openreview.Note(
-        invitation=presentation_invitation_id,
-        original=s.id,
-        readers=['everyone'],
-        writers=[conference_id],
-        signatures=[conference_id],
-        content={
-            'slideslive': '38915149',
-            'chat': 'https://rocketchat.com/paper',
-            'live': 'https://zoom.us/paper',
-            'session': sessions[randrange(4)].id
-        }
-    ))
+        presentation_1 = client.post_note(openreview.Note(
+            invitation=presentation_invitation_id,
+            original=paper_id,
+            readers=['everyone'],
+            writers=[conference_id],
+            signatures=[conference_id],
+            content={
+                'slideslive': '38915149',
+                'chat': 'https://rocketchat.com/paper',
+                'zoom_links': zoom_links,
+                'sessions': session_ids,
+                'presentation_type': 'poster',
+                'topic': topic
+            }
+        ))
