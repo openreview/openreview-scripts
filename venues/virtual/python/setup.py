@@ -1382,35 +1382,35 @@ client.post_invitation(openreview.Invitation(
 
 
 ## Download the file from https://iclr.cc/virtual/papers.json
-# with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
-#     data = json.load(f)
-#     for e in data:
-#         paper_id = e['id']
-#         session_names = e['content']['session']
-#         session_times = e['content']['session_times']
-#         zoom_links = e['content']['session_links']
-#         session_ids = []
-#         for i,s in enumerate(session_names):
-#             if session_times[i]:
-#                 session_ids.append(sessions[s].id)
-#             else:
-#                 topic = session_names[i].split(':')[-1].strip()
+with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
+    data = json.load(f)
+    for e in data:
+        paper_id = e['id']
+        session_names = e['content']['session']
+        session_times = e['content']['session_times']
+        zoom_links = e['content']['session_links']
+        session_ids = []
+        for i,s in enumerate(session_names):
+            if session_times[i]:
+                session_ids.append(sessions[s].id)
+            else:
+                topic = session_names[i].split(':')[-1].strip()
 
-#         presentation_1 = client.post_note(openreview.Note(
-#             invitation=presentation_invitation_id,
-#             original=paper_id,
-#             readers=['everyone'],
-#             writers=[conference_id],
-#             signatures=[conference_id],
-#             content={
-#                 'slideslive': '38915149',
-#                 'chat': 'https://rocketchat.com/paper',
-#                 'zoom_links': zoom_links,
-#                 'sessions': session_ids,
-#                 'presentation_type': 'poster',
-#                 'topic': topic
-#             }
-#         ))
+        presentation_1 = client.post_note(openreview.Note(
+            invitation=presentation_invitation_id,
+            original=paper_id,
+            readers=['everyone'],
+            writers=[conference_id],
+            signatures=[conference_id],
+            content={
+                'slideslive': '38915149',
+                'chat': 'https://rocketchat.com/paper',
+                'zoom_links': zoom_links,
+                'sessions': session_ids,
+                'presentation_type': 'poster',
+                'topic': topic
+            }
+        ))
 
 ## Speaker presentations
 presentation_1 = client.post_note(openreview.Note(
