@@ -129,7 +129,7 @@ meta_data_home = {
                     },
                     {
                         "text": "Schedule",
-                        "url": "/event/calendar2",
+                        "url": "/event/calendar/ICLR.cc/2020/Conference/Virtual",
                     },
                     {
                         "text": "Accessibility",
