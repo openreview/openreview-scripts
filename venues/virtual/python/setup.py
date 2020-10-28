@@ -1342,7 +1342,7 @@ times = [5, 8, 12, 17, 20]
 
 sessions = {}
 ## make sure the first day is a monday
-first_day = datetime.datetime(2020, 10, 27, 0, 0)
+first_day = datetime.datetime(2020, 11, 2, 0, 0)
 
 ## create poster sessions
 for i, day in enumerate(days):
