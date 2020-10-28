@@ -13,6 +13,7 @@ args = parser.parse_args()
 
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
+live_client = openreview.Client(baseurl='https://api.openreview.net')
 
 ## metadata for the home/sponsor/organizer/diversity/codeofconduct page
 meta_data_home = {
@@ -1273,8 +1274,19 @@ client.post_group(openreview.Group(id=f"{virtual_group_id}/Guides/WorkshopOrgani
                 members=[],
                 web_string=json.dumps(meta_data_workshopOrganizerGuide)))
 
+
+
 ## Session invitation
 session_invitation_id=f"{virtual_group_id}/-/Session"
+
+## Clear the data first
+print("Clear sesssion data...")
+session_notes = list(openreview.tools.iterget_notes(client, invitation=session_invitation_id))
+for s in session_notes:
+    client.delete_note(s.id)
+
+print("Post sesssion data...")
+
 client.post_invitation(openreview.Invitation(
     id=session_invitation_id,
     readers=['everyone'],
@@ -1305,7 +1317,23 @@ def create_poster_session(day, number, start, end):
             'start': openreview.tools.datetime_millis(start),
             'end': openreview.tools.datetime_millis(end),
             'title': '{day} Session {number}'.format(day=day, number=number),
-            'description': 'poster',
+            'description': 'Post Session',
+            'type': 'poster'
+        }
+    ))
+
+def create_presentation_session(day, start, end):
+    return client.post_note(openreview.Note(
+        invitation=session_invitation_id,
+        readers=['everyone'],
+        writers=[conference_id],
+        signatures=[conference_id],
+        content={
+            'start': openreview.tools.datetime_millis(start),
+            'end': openreview.tools.datetime_millis(end),
+            'title': '{day} Presentation Session'.format(day=day),
+            'description': 'Presentation Session',
+            'type': 'presentation'
         }
     ))
 
@@ -1323,6 +1351,10 @@ for i, day in enumerate(days):
         end = start + datetime.timedelta(hours=2)
         session = create_poster_session(day, j+1, start, end)
         sessions[session.content['title']] = session
+    start = first_day + datetime.timedelta(days=i) + datetime.timedelta(hours=14)
+    end = start + datetime.timedelta(hours=2)
+    session = create_presentation_session(day, start, end)
+    sessions[session.content['title']] = session
 
 ## create qa and expo sessions
 ## Download the file from https://iclr.cc/virtual/schedule.json
@@ -1348,7 +1380,7 @@ with open('/Users/mbok/iesl/data/iclr2021/schedule.json') as f:
                         'end': openreview.tools.datetime_millis(end),
                         'title': e['name'],
                         'type': e['type'],
-                        'description': 'session description'
+                        'description': e['type'].upper() + ' Session'
                     }
                 ))
                 sessions[session.content['title']] = session
@@ -1356,6 +1388,15 @@ with open('/Users/mbok/iesl/data/iclr2021/schedule.json') as f:
 
 ## Presentation invitation
 presentation_invitation_id=f"{virtual_group_id}/-/Presentation"
+
+## Clear the data first
+print("Clear presentation data...")
+presentation_notes = list(openreview.tools.iterget_notes(client, invitation=presentation_invitation_id))
+for s in presentation_notes:
+    client.delete_note(s.id)
+
+print("Post presentation data...")
+
 client.post_invitation(openreview.Invitation(
     id=presentation_invitation_id,
     readers=['everyone'],
@@ -1385,35 +1426,72 @@ client.post_invitation(openreview.Invitation(
 
 
 ## Download the file from https://iclr.cc/virtual/papers.json
-# with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
-#     data = json.load(f)
-#     for e in data:
-#         paper_id = e['id']
-#         session_names = e['content']['session']
-#         session_times = e['content']['session_times']
-#         zoom_links = e['content']['session_links']
-#         session_ids = []
-#         for i,s in enumerate(session_names):
-#             if session_times[i]:
-#                 session_ids.append(sessions[s].id)
-#             else:
-#                 topic = session_names[i].split(':')[-1].strip()
+with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
+    data = json.load(f)
+    for e in data:
+        paper_id = e['id']
+        session_names = e['content']['session']
+        session_times = e['content']['session_times']
+        zoom_links = e['content']['session_links']
+        session_ids = []
+        for i,s in enumerate(session_names):
+            if session_times[i]:
+                session_ids.append(sessions[s].id)
+            else:
+                topic = session_names[i].split(':')[-1].strip()
 
-#         presentation_1 = client.post_note(openreview.Note(
-#             invitation=presentation_invitation_id,
-#             original=paper_id,
-#             readers=['everyone'],
-#             writers=[conference_id],
-#             signatures=[conference_id],
-#             content={
-#                 'slideslive': '38915149',
-#                 'chat': 'https://rocketchat.com/paper',
-#                 'zoom_links': zoom_links,
-#                 'sessions': session_ids,
-#                 'presentation_type': 'poster',
-#                 'topic': topic
-#             }
-#         ))
+        paper_note = live_client.get_note(paper_id)
+
+        print("Posting", paper_note.content['title'])
+        original_note = client.post_note(openreview.Note(
+            invitation=f"{conference_id}/-/Submission",
+            readers=['everyone'],
+            writers=[conference_id],
+            signatures=[conference_id],
+            content={
+                'title': paper_note.content['title'],
+                'authors': paper_note.content['authors'],
+                'authorids': paper_note.content['authorids'],
+                'abstract': paper_note.content['abstract'],
+                'TL;DR': paper_note.content.get('TL;DR'),
+                'keywords': paper_note.content['keywords'],
+                '_bibtex': paper_note.content['_bibtex'],
+                'pdf': paper_note.content['pdf']
+            }
+        ))
+
+        presentation_1 = client.post_note(openreview.Note(
+            invitation=presentation_invitation_id,
+            original=original_note.id,
+            readers=['everyone'],
+            writers=[conference_id],
+            signatures=[conference_id],
+            content={
+                'slideslive': '38915149',
+                'chat': 'https://rocketchat.com/paper',
+                'zoom_links': zoom_links,
+                'sessions': session_ids,
+                'presentation_type': 'poster',
+                'topic': topic
+            }
+        ))
+
+## Presentation presentations
+index=0
+papers = client.get_notes(invitation=presentation_invitation_id)
+for day in days:
+    for n in range(0, 6):
+        presentation_note = papers[index]
+        presentation_note.content = {
+            'slideslive': '38915149',
+            'chat': 'https://rocketchat.com/paper',
+            'zoom_links': presentation_note.content['zoom_links'],
+            'sessions': [sessions[f'{day} Presentation Session'].id],
+            'presentation_type': 'presentation',
+            'topic': presentation_note.content['topic'],
+        }
+        client.post_note(presentation_note)
+        index+=10
 
 ## Speaker presentations
 presentation_1 = client.post_note(openreview.Note(
