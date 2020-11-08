@@ -52,7 +52,12 @@ def process_update(client, note, invitation, existing_note):
         msg = 'Your claim to ML Reproducibility Challenge 2020 for paper {title} has been posted.'.format(
             title=submission.content['title']) + '\n\nTo view the claim, click here: ' + \
                             client.baseurl + '/forum?id=' + note.forum + '&noteId=' + note.id
-        client.post_message("ML Reproducibility Challenge 2020 Claim", [note.tauthor], msg)
+
+        to_send = [note.tauthor]
+        if note.content['team_emails'] is not None:
+            to_send.extend(note.content['team_emails'])
+
+        client.post_message("ML Reproducibility Challenge 2020 Claim", to_send, msg)
 
         claimants = client.get_group(CONFERENCE_ID + '/Claimants')
         claimants.members.append(note.tauthor)
