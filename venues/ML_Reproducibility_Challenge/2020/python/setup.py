@@ -140,7 +140,7 @@ claim_inv = client.post_invitation(openreview.Invitation(
         },
         'readers': {
             'description': 'The users who will be allowed to read the above content.',
-            'values-copied': [PROGRAM_CHAIRS_ID, '{signatures}']
+            'values-copied': [PROGRAM_CHAIRS_ID, '{signatures}', '{content.team_emails}']
         },
         'writers': {
             'values-copied': [CONFERENCE_ID, '{signatures}']
