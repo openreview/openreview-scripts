@@ -5,6 +5,8 @@ import openreview
 import argparse
 
 data = pd.read_csv("rc2020-papers-neurips2020.csv")
+new_data = pd.read_csv("rc2020-papers-neurips2020_2.csv")
+
 venueid_map = {'ICLR': 'ICLR.cc/2020/Conference',
                'ICML': 'ICML.cc/2020/Conference',
                'ACL': 'aclweb.org/ACL/2020/Conference',
@@ -19,8 +21,13 @@ venue_map = {'ICLR': 'ICLR 2020',
              'ECCV': 'ECCV 2020',
              'NeurIPS': 'NeurIPS 2020'}
 
-filtered_data = data
+print("new_data.length: ", len(new_data))
+cond = new_data['Title'].isin(data['Title'])
+new_data.drop(new_data[cond].index, inplace = True)
+print("new_data.length: ", len(new_data))
+
 print("uniq", data['Conference'].unique())
+filtered_data = new_data
 
 CONFERENCE_ID = 'ML_Reproducibility_Challenge/2020'
 ACCEPTED_PAPER_ID = CONFERENCE_ID + '/-/Accepted_Papers'
