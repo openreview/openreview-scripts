@@ -201,7 +201,7 @@ function renderContent(notesResponse, userGroups, activityNotes, claimNotes, myC
           enabled: true,
           localSearch: false,
           invitation: ACCEPTED_PAPER_ID,
-          subjectAreas: ['ACL 2020', 'CVPR 2020', 'ECCV 2020', 'ICLR 2020', 'ICML 2020', 'NeurIPS 2020'],
+          subjectAreas: ['ACL 2020', 'CVPR 2020', 'ECCV 2020', 'ICLR 2020', 'ICML 2020', 'NeurIPS 2020', 'EMNLP 2020'],
           subjectAreaDropdown: 'basic',
           onResults: function(searchResults) {
             Webfield.ui.searchResults(searchResults, unclaimedResultListOptions);
