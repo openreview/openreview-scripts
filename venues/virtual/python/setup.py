@@ -626,7 +626,6 @@ with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
 index=0
 papers = client.get_notes(invitation=presentation_invitation_id)
 for day in days:
-    sessionNote = client.get_note(sessions[f'{day} Presentation Session'].id)
     for n in range(0, 6):
         presentation_note = papers[index]
         presentation_note.content = {
@@ -636,8 +635,8 @@ for day in days:
             'sessions': [sessions[f'{day} Presentation Session'].id],
             'presentation_type': 'presentation',
             'topic': presentation_note.content['topic'],
-            'start': sessionNote.content['start'], # set to be the same as session, ideally should distribute among presentations in the session
-            'end': sessionNote.content['end'],
+            'start': sessions[f'{day} Presentation Session'].content['start'] + n*20*60*1000,
+            'end': sessions[f'{day} Presentation Session'].content['start'] + n*20*60*1000 + 20*60*1000
         }
         client.post_note(presentation_note)
         index+=10
