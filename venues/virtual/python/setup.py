@@ -865,3 +865,22 @@ presentation_1 = client.post_note(openreview.Note(
         'site': 'https://iclr.6connex.com/event/VirtualEvent'
     }
 ))
+
+#create invitation for welcome wall
+presentation_invitation_id = f"{virtual_group_id}/-/welcomewall"
+client.post_invitation(openreview.Invitation(
+    id=presentation_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    invitees=[conference_id,'~'],
+    signatures=[conference_id],
+    reply={
+        'readers': {'values': ['everyone']},
+        'writers': {'values': [conference_id]},
+        'signatures': {'value-regex': '~.*'},
+        'content': {
+            'author': {'value-regex': '.*'},
+            'message': {'value-regex': '.*'},
+        }
+    }
+))
