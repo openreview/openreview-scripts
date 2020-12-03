@@ -880,7 +880,7 @@ client.post_invitation(openreview.Invitation(
         'signatures': {'value-regex': '~.*'},
         'content': {
             'author': {'value-regex': '.*'},
-            'message': {'value-regex': '.*'},
+            'message': {'value-regex': '[\s\S]*'},
         }
     }
 ))
