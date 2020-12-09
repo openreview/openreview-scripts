@@ -866,21 +866,162 @@ presentation_1 = client.post_note(openreview.Note(
     }
 ))
 
-#create invitation for welcome wall
-presentation_invitation_id = f"{virtual_group_id}/-/welcomewall"
+## create invitation for welcome wall
+welcome_wall_invitation_id = f"{virtual_group_id}/-/Welcome_Wall"
 client.post_invitation(openreview.Invitation(
-    id=presentation_invitation_id,
+    id=welcome_wall_invitation_id,
     readers=['everyone'],
     writers=[conference_id],
-    invitees=[conference_id,'~'],
+    invitees=[conference_id],
     signatures=[conference_id],
     reply={
         'readers': {'values': ['everyone']},
         'writers': {'values': [conference_id]},
-        'signatures': {'value-regex': '~.*'},
+        'signatures': {'values': [conference_id]},
         'content': {
-            'author': {'value-regex': '.*'},
-            'message': {'value-regex': '[\s\S]*'},
+            'title': {'value': 'Welcome Wall Channel'},
+            'abstract': {'value': 'This is a place to leave your welcome message to the community!'}
         }
     }
+))
+
+welcome_wall_note = client.post_note(openreview.Note(invitation=welcome_wall_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    signatures=[conference_id],
+    content={
+        'title': 'Welcome Wall Channel',
+        'abstract': 'This is a place to leave your welcome message to the community!'
+    }
+))
+
+comment_invitation_id = f"{virtual_group_id}/-/Comment"
+client.post_invitation(openreview.Invitation(
+    id=comment_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    invitees=[conference_id, 'everyone'],
+    signatures=[conference_id],
+    reply={
+        'invitation': welcome_wall_invitation_id,
+        'readers': {'values': ['everyone']},
+        'writers': {'values-copied': [conference_id, '{signatures}']},
+        'signatures': {'values-regex': '~.*'},
+        'content': {
+            'comment': {
+                'order': 1,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'description': 'Your comment or reply (max 5000 characters). Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq',
+                'required': True,
+                'markdown': True
+            }
+        }
+    }
+))
+
+## Create tag invitations
+## Bookmark presentations
+bookmark_invitation_id = f"{virtual_group_id}/-/Bookmark"
+client.post_invitation(openreview.Invitation(
+    id=bookmark_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    invitees=['~'],
+    signatures=[conference_id],
+    reply={
+        'invitation': presentation_invitation_id,
+        'readers': {
+            'values-copied': [conference_id, '{signatures}']
+        },
+        'signatures': {
+            'values-regex': '~.*'
+        },
+        'content': {
+            'tag': {
+                'value': 'Bookmarked'
+            }
+        }
+    }
+))
+
+## Recommended presentations
+recommended_invitation_id = f"{virtual_group_id}/-/Recommendation"
+client.post_invitation(openreview.Invitation(
+    id=recommended_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    invitees=[conference_id],
+    signatures=[conference_id],
+    reply={
+        'invitation': presentation_invitation_id,
+        'readers': {
+            'values-copied': [conference_id, '{signatures}']
+        },
+        'signatures': {
+            'values': [conference_id]
+        },
+        'content': {
+            'tag': {
+                'value-regex': r'[-+]?[0-9]*\.?[0-9]*'
+            }
+        }
+    }
+))
+
+## Free text tags
+tag_invitation_id = f"{virtual_group_id}/-/Tag"
+client.post_invitation(openreview.Invitation(
+    id=tag_invitation_id,
+    readers=['everyone'],
+    writers=[conference_id],
+    invitees=[conference_id],
+    signatures=[conference_id],
+    reply={
+        'invitation': presentation_invitation_id,
+        'readers': {
+            'values-copied': [conference_id, '{signatures}']
+        },
+        'signatures': {
+            'values': ['~.*']
+        },
+        'content': {
+            'tag': {
+                'value-regex': '.*'
+            }
+        }
+    }
+))
+
+## Create a few tags for ~Melisa_Bok1
+presentations = client.get_notes(invitation=presentation_invitation_id)
+client.post_tag(openreview.Tag(
+    invitation=bookmark_invitation_id,
+    readers=[conference_id, '~Melisa_Bok1'],
+    signatures=['~Melisa_Bok1'],
+    tag='Bookmarked',
+    forum=presentations[0].id
+))
+
+client.post_tag(openreview.Tag(
+    invitation=recommended_invitation_id,
+    readers=[conference_id, '~Melisa_Bok1'],
+    signatures=[conference_id],
+    tag='0.9',
+    forum=presentations[0].id
+))
+
+client.post_tag(openreview.Tag(
+    invitation=recommended_invitation_id,
+    readers=[conference_id, '~Melisa_Bok1'],
+    signatures=[conference_id],
+    tag='0.8',
+    forum=presentations[10].id
+))
+
+client.post_tag(openreview.Tag(
+    invitation=tag_invitation_id,
+    readers=[conference_id, '~Melisa_Bok1'],
+    signatures=['~Melisa_Bok1'],
+    tag='To Read',
+    forum=presentations[10].id
 ))
