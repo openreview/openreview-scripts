@@ -17,9 +17,6 @@ conference_id = 'MICCAI.org/2021/Challenges'
 
 submission_invitation = client.get_invitation('MICCAI.org/2021/Challenges/-/Submission')
 
-submission_invitation.reply['readers'] = {
-    'values': ['everyone']
-    }
 submission_invitation.reply['signatures'] =  {
     'values': [conference_id]
     }
@@ -39,12 +36,14 @@ with open(args.miccai_papers) as csv_file:
         pdf_link = client.put_attachment(args.pdfs_filepath+'/'+row[4], 'MICCAI.org/2021/Challenges/-/Submission', 'pdf')
         authors = [author.strip() for author in row[2].split(',')]
         authorids = [authorid.strip() for authorid in row[3].split(',')]
+        readers = [conference_id]
+        readers.extend(authorids)
 
         miccai_paper = openreview.Note(
             invitation=conference_id+'/-/Submission',
             signatures=[conference_id],
             writers=[conference_id, conference_id+'/Program_Chairs'],
-            readers=['everyone'],
+            readers = readers,
             content={
                 'title': row[0],
                 'authors': authors,
