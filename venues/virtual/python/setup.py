@@ -974,7 +974,7 @@ client.post_invitation(openreview.Invitation(
     id=tag_invitation_id,
     readers=['everyone'],
     writers=[conference_id],
-    invitees=[conference_id],
+    invitees=['~'],
     signatures=[conference_id],
     reply={
         'invitation': presentation_invitation_id,
