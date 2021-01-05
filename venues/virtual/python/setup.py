@@ -1036,7 +1036,7 @@ client.post_invitation(openreview.Invitation(
     reply={
         'invitation': f'{virtual_group_id}/-/Presentation',
         'readers': { 'values': ['everyone'] },
-        'writers': { 'values': [conference_id] },
+        'writers': { 'values-regex': '~.*' },
         'signatures': { 'values-regex': '~.*' },
         'content': {
             'message': {
