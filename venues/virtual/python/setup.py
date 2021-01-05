@@ -424,12 +424,12 @@ client.post_group(openreview.Group(id=f"{virtual_group_id}/Guides/WorkshopOrgani
 session_invitation_id=f"{virtual_group_id}/-/Session"
 
 ## Clear the data first
-print("Clear sesssion data...")
+print("Clear session data...")
 session_notes = list(openreview.tools.iterget_notes(client, invitation=session_invitation_id))
 for s in session_notes:
     client.delete_note(s.id)
 
-print("Post sesssion data...")
+print("Post session data...")
 
 client.post_invitation(openreview.Invitation(
     id=session_invitation_id,
