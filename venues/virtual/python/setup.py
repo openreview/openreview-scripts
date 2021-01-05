@@ -609,13 +609,13 @@ client.post_invitation(openreview.Invitation(
                 'order': 14
             },
             'image': {
-                "description": "Upload a PDF file that ends with .pdf. The maximum file size is 50MB. Note: optional before the abstract submission deadline.",
+                "description": "Upload a representative image for paper. The maximum file size is 2MB.",
                 "order": 15,
                 "value-file": {
                     "fileTypes": [
-                        "pdf"
+                        "jpg","jpeg","png"
                     ],
-                    "size": 50
+                    "size": 2
                 },
                 "required": False
             }
