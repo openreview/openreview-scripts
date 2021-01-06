@@ -424,12 +424,12 @@ client.post_group(openreview.Group(id=f"{virtual_group_id}/Guides/WorkshopOrgani
 session_invitation_id=f"{virtual_group_id}/-/Session"
 
 ## Clear the data first
-print("Clear sesssion data...")
+print("Clear session data...")
 session_notes = list(openreview.tools.iterget_notes(client, invitation=session_invitation_id))
 for s in session_notes:
     client.delete_note(s.id)
 
-print("Post sesssion data...")
+print("Post session data...")
 
 client.post_invitation(openreview.Invitation(
     id=session_invitation_id,
@@ -552,20 +552,73 @@ client.post_invitation(openreview.Invitation(
         'writers': { 'values': [conference_id] },
         'signatures': { 'values': [conference_id] },
         'content': {
-            'slideslive': { 'value-regex': '.*' },
-            'chat': { 'value-regex': '.*' },
-            'zoom_links': { 'values-regex': '.*' },
-            'sessions': { 'values-regex': '.*' },
-            'presentation_type': { 'value-regex': '.*' },
-            'topic': { 'value-regex': '.*' },
-            'title': { 'value-regex': '.*' },
-            'abstract': { 'value-regex': '.*' },
-            'bio': { 'value-regex': '.*' },
-            'site': { 'value-regex': '.*' },
-            'authors': { 'values-regex': '.*' },
-            'authorids': { 'values-regex': '.*' },
-            'start': {'value-regex': '.*'},
-            'end': {'value-regex': '.*'},
+            'title': {
+                'value-regex': '.*',
+                'order': 1
+            },
+            'abstract': {
+                'value-regex': '.*',
+                'order': 2
+            },
+            'authors': {
+                'values-regex': '.*',
+                'order': 3
+            },
+            'authorids': {
+                'values-regex': '.*',
+                'order': 4
+            },
+            'slideslive': {
+                'value-regex': '.*',
+                'order': 5
+            },
+            'chat': {
+                'value-regex': '.*',
+                'order': 6
+            },
+            'zoom_links': {
+                'values-regex': '.*',
+                'order': 7
+            },
+            'sessions': {
+                'values-regex': '.*',
+                'order': 8
+            },
+            'presentation_type': {
+                'value-regex': '.*',
+                'order': 9
+            },
+            'topic': {
+                'value-regex': '.*',
+                'order': 10
+            },
+            'bio': {
+                'value-regex': '.*',
+                'order': 11
+            },
+            'site': {
+                'value-regex': '.*',
+                'order': 12
+            },
+            'start': {
+                'value-regex': '.*',
+                'order': 13
+            },
+            'end': {
+                'value-regex': '.*',
+                'order': 14
+            },
+            'image': {
+                "description": "Upload a representative image for paper. The maximum file size is 2MB.",
+                "order": 15,
+                "value-file": {
+                    "fileTypes": [
+                        "jpg","jpeg","png"
+                    ],
+                    "size": 2
+                },
+                "required": False
+            }
         }
     }
 ))
@@ -586,25 +639,30 @@ with open('/Users/mbok/iesl/data/iclr2021/papers_iclr_2020.json') as f:
             else:
                 topic = session_names[i].split(':')[-1].strip()
 
-        paper_note = live_client.get_note(paper_id)
+        ## Try to get the note in localhost first
+        try:
+            paper_note = client.get_note(paper_id)
+            original_note = client.get_note(paper_note.original)
+        except:
+            paper_note = live_client.get_note(paper_id)
 
-        print("Posting", paper_note.content['title'])
-        original_note = client.post_note(openreview.Note(
-            invitation=f"{conference_id}/-/Submission",
-            readers=['everyone'],
-            writers=[conference_id],
-            signatures=[conference_id],
-            content={
-                'title': paper_note.content['title'],
-                'authors': paper_note.content['authors'],
-                'authorids': paper_note.content['authorids'],
-                'abstract': paper_note.content['abstract'],
-                'TL;DR': paper_note.content.get('TL;DR'),
-                'keywords': paper_note.content['keywords'],
-                '_bibtex': paper_note.content['_bibtex'],
-                'pdf': paper_note.content['pdf']
-            }
-        ))
+            print("Posting", paper_note.content['title'])
+            original_note = client.post_note(openreview.Note(
+                invitation=f"{conference_id}/-/Submission",
+                readers=['everyone'],
+                writers=[conference_id],
+                signatures=[conference_id],
+                content={
+                    'title': paper_note.content['title'],
+                    'authors': paper_note.content['authors'],
+                    'authorids': paper_note.content['authorids'],
+                    'abstract': paper_note.content['abstract'],
+                    'TL;DR': paper_note.content.get('TL;DR'),
+                    'keywords': paper_note.content['keywords'],
+                    '_bibtex': paper_note.content['_bibtex'],
+                    'pdf': paper_note.content['pdf']
+                }
+            ))
 
         presentation_1 = client.post_note(openreview.Note(
             invitation=presentation_invitation_id,
