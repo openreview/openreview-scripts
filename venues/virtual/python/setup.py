@@ -1025,3 +1025,25 @@ client.post_tag(openreview.Tag(
     tag='To Read',
     forum=presentations[10].id
 ))
+
+## Enable prensentation note comments
+client.post_invitation(openreview.Invitation(
+    id=f'{virtual_group_id}/-/Message',
+    readers=['everyone'],
+    writers=[conference_id],
+    invitees=['~'], ## only the registered people
+    signatures=[conference_id],
+    reply={
+        'invitation': f'{virtual_group_id}/-/Presentation',
+        'readers': { 'values': ['everyone'] },
+        'writers': { 'values-regex': '~.*' },
+        'signatures': { 'values-regex': '~.*' },
+        'content': {
+            'message': {
+                'required': True,
+                'value-regex': '[\\S\\s]{1,5000}',
+                'markdown': True
+            }
+        }
+    }
+))
