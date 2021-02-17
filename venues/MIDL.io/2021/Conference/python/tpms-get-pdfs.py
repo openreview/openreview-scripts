@@ -20,7 +20,8 @@ start = datetime.datetime.utcnow()
 submission_invitation = 'MIDL.io/2021/Conference/-/Submission'
 
 print('Get Submissions')
-submissions = openreview.tools.iterget_notes(client, invitation=submission_invitation)
+submissions = client.get_notes(invitation=submission_invitation)
+print('Number of submissions: ', len(submissions))
 
 if not os.path.exists('midl2021_pdfs'):
 	os.makedirs('midl2021_pdfs')

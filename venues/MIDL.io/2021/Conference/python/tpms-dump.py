@@ -21,8 +21,8 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 reviewers_group = client.get_group(id='MIDL.io/2021/Conference/Reviewers')
 
+no_profile = []
 rows = []
-count = 0
 for email in reviewers_group.members:
     row = []
     profile = openreview.tools.get_profile(client, email)
@@ -40,14 +40,15 @@ for email in reviewers_group.members:
         row.append(lastname)
         for email in [e for e in emails if e != preferred_email]:
             row.append(email)
+        rows.append(row)
     else:
-        count+=1
-        row.append(email)
-    rows.append(row)
+        no_profile.append(email)
+for email in no_profile:
+    rows.append([email])
 
 with open('MIDL2021-tpms-reviewers-dump.csv', 'w') as f:
     writer = csv.writer(f)
     for row in rows:
         writer.writerow(row)
 
-print(count, 'reviewers with no profile')
+print(len(no_profile), 'reviewers with no profile')
