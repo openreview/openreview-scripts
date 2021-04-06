@@ -39,7 +39,7 @@ def get_profile_info(i):
     common_domains = ['gmail.com', 'qq.com', '126.com', '163.com', 
                       'outloook.com', 'hotmail.com', 'yahoo.com', 'aol.com', 'msn.com', 'ymail.com', 'googlemail.com', 'live.com']
 
-    ## Institution section, get histroy within the last three years
+    ## Institution section, get history within the last three years
     for h in profile.content.get('history', []):
         if h.get('end') is None or int(h.get('end')) > 2017:
             domain = h.get('institution', {}).get('domain', '')
