@@ -2,20 +2,12 @@ import openreview
 import argparse
 
 
-def get_profile_info(i):
-
-    if '@' in i:
-        profile=client.search_profiles(emails=[i])[i]
-    elif '~' in i:
-        profile=client.search_profiles(ids=[i])[0]  
-    try:
-        test=profile.content
-    except:
-        return "profile not found: {}".format(i)
+def get_profile_info(profile):
     
     domains = set()
     emails=set()
     relations = set()
+    publications = set()
     common_domains = ['gmail.com', 'qq.com', '126.com', '163.com', 
                       'outloook.com', 'hotmail.com', 'yahoo.com', 'aol.com', 'msn.com', 'ymail.com', 'googlemail.com', 'live.com']
 
@@ -40,6 +32,11 @@ def get_profile_info(i):
         if not domains: 
             domains.update(openreview.tools.subdomains(email))
             
+    ## Publications section: get publications within last three years
+    for pub in openreview.tools.iterget_notes(client, content={'authorids': profile.id}):
+        if pub.content.get('_bibtex','') and int(pub.content['_bibtex'].split('year={')[1][:4]) > 2017:
+            publications.add(pub.id)       
+            
     ## Filter common domains
     for common_domain in common_domains:
         if common_domain in domains:
@@ -49,7 +46,8 @@ def get_profile_info(i):
         'id': profile.id,
         'domains': domains,
         'emails': emails,
-        'relations': relations
+        'relations': relations,
+        'publications': publications
     }
 
 
@@ -152,31 +150,35 @@ def _create_edge_invitation(edge_id, match_group, edited_by_assigned_ac=False):
     return invitation
 
 
-def build_conflicts(match_group):
+def build_conflicts(match_group, submissions):
     edges=[]
 
     invitation=_create_edge_invitation(conference.get_invitation_id('Conflict',prefix=match_group.id), match_group)
 
     for submission in submissions:
-        author_ids=submission.details['original']['content']['authorids']
 
         author_domains = set()
         author_emails = set()
         author_relations = set()
+        author_publications = set()
 
-        for author in author_ids:
+        author_profiles=openreview.matching._get_profiles(client, submission.details['original']['content']['authorids'])
+        for author in author_profiles:
             author_info = get_profile_info(author)
             author_domains.update(author_info['domains'])
             author_emails.update(author_info['emails'])
             author_relations.update(author_info['relations'])
+            author_publications.update(author_info['publications'])
 
-        for user in match_group.members:
+        user_profiles=openreview.matching._get_profiles(client, match_group.members)
+        for user in user_profiles:
             user_info = get_profile_info(user)
             conflicts = set()
             conflicts.update(author_domains.intersection(user_info['domains']))
             conflicts.update(author_relations.intersection(user_info['emails']))
             conflicts.update(author_emails.intersection(user_info['relations']))
             conflicts.update(author_emails.intersection(user_info['emails']))
+            conflicts.update(author_publications.intersection(user_info['publications']))
 
             if conflicts:
                 edges.append(openreview.Edge(
@@ -223,5 +225,5 @@ if __name__ == '__main__':
         is_area_chair = conference.get_area_chairs_id() == match_group.id
         is_senior_area_chair = conference.get_senior_area_chairs_id() == match_group.id
         should_read_by_area_chair = conference.get_reviewers_id() == match_group.id
-        post_edges=build_conflicts(match_group)
+        post_edges=build_conflicts(match_group, submissions)
 
