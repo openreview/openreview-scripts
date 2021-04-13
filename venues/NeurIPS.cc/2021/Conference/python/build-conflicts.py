@@ -35,7 +35,7 @@ def get_profile_info(profile):
             
     ## Publications section: get publications within last three years
     for pub in openreview.tools.iterget_notes(client, content={'authorids': profile.id}):
-        if int(datetime.fromtimestamp(pub.cdate/1000).year) > 2017:
+        if int(datetime.fromtimestamp(pub.tcdate/1000).year) > 2017:
             publications.add(pub.id)       
             
     ## Filter common domains
@@ -157,6 +157,7 @@ def build_conflicts(match_group, submissions):
     invitation=_create_edge_invitation(conference.get_invitation_id('Conflict',prefix=match_group.id), match_group)
     
     user_profiles=openreview.matching._get_profiles(client, match_group.members)
+    user_profiles_info = [get_profile_info(profile) for profile in user_profiles]
     
     for submission in submissions:
 
@@ -173,8 +174,7 @@ def build_conflicts(match_group, submissions):
             author_relations.update(author_info['relations'])
             author_publications.update(author_info['publications'])
 
-        for user in user_profiles:
-            user_info = get_profile_info(user)
+        for user_info in user_profiles_info:
             conflicts = set()
             conflicts.update(author_domains.intersection(user_info['domains']))
             conflicts.update(author_relations.intersection(user_info['emails']))
