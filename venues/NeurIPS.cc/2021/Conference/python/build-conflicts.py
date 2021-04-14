@@ -35,8 +35,12 @@ def get_profile_info(profile):
             
     ## Publications section: get publications within last three years
     for pub in openreview.tools.iterget_notes(client, content={'authorids': profile.id}):
-        if int(datetime.fromtimestamp(pub.tcdate/1000).year) > 2017:
-            publications.add(pub.id)       
+        if pub.cdate:
+            year = int(datetime.fromtimestamp(pub.cdate/1000).year)
+        else:
+            year = int(datetime.fromtimestamp(pub.tcdate/1000).year)
+        if year > 2017:
+            publications.add(pub.id)      
             
     ## Filter common domains
     for common_domain in common_domains:
