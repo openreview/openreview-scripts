@@ -29,8 +29,9 @@ def get_profile_info(profile):
     ## Emails section        
     for email in profile.content['emails']:
         emails.add(email)
-        # if institution section is empty, add email domains
-        if not domains: 
+    ## if institution section is empty, add email domains
+    if not domains: 
+        for email in profile.content['emails']:
             domains.update(openreview.tools.subdomains(email))
             
     ## Publications section: get publications within last three years
