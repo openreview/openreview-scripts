@@ -23,25 +23,26 @@ args = parser.parse_args()
 baseurl=args.baseurl
 venue_id=args.venue
 commitee_group_id=f'{venue_id}/Reviewers'
-submission_invitation_id = f'{venue_id}/-/Blind_Submission'
-cycle=venue_id.split('/')[-1]
+submission_invitation_id = f'{venue_id}/-/Submission'
+currentMonth = datetime.now().strftime("%B")
+cycle = venue_id.split('/')[-1]
 
 
 client = openreview.Client(baseurl=baseurl, username=args.username, password=args.password)
 
 
-active_submissions=list(openreview.tools.iterget_notes(client, invitation=f'{venue_id}/-/Blind_Submission'))
+active_submissions=list(openreview.tools.iterget_notes(client, invitation=submission_invitation_id))
 
 all_reviewers = set()
 
 for paper in active_submissions:
-    reviewer_group = client.get_group(f'{venue_id}/Paper{paper.number}/-/Reviewers')
+    reviewer_group = client.get_group(f'{venue_id}/Paper{paper.number}/Reviewers')
     all_reviewers.update(reviewer_group.members)
 
-subject = f'[ACL ARR] Reviews Due Soon ({cycle} 13)'
-message = '''Dear ACL ARR Reviewers,
+subject = f'[ACL ARR] Reviews Due Soon ({currentMonth} 13)'
+message = f'''Dear ACL ARR Reviewers,
 
-Thank you very much for helping out with the reviewing process in ACL ARR! This is just a reminder that your reviews are due in two days on {cycle} 13th.
+Thank you very much for helping out with the reviewing process in ACL ARR! This is just a reminder that your reviews are due on {currentMonth} 13th.
 
 If you have not completed the reviews, please log in through the following console and submit the reviews as soon as possible:
 https://openreview.net/group?id={commitee_group_id}
