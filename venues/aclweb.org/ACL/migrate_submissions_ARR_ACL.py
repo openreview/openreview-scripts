@@ -17,23 +17,34 @@ parser.add_argument('--password')
 args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
-# Iterate through all submissions submitted through commitment invitation 
+# Iterate through all commitment submissions 
 notes = openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Commitment')
-for note in tqdm(notes):
-    # Retrieve forum from link
-    link = note.content['link']
+for note in notes:
+    # For each, retrieve old paper from link
+    link = note.content['paper_link']
     forum = link.split('=')[1]
     old_note = client.get_note(client.get_note(forum).original)
-    new_fields = {
-        'link':note.content['link'],
-        'length':note.content['length'],
-        'track':note.content['track'],
-        'comment':note.content['comment']
+# Create JSON for new note with readers
+    JSON = {
+        "invitation": "aclweb.org/ACL/2022/Conference/-/Submission",
+        "readers": ["aclweb.org/ACL/2022/Program_Chairs","aclweb.org/ACL/2022"],
+        "writers": ["aclweb.org/ACL/2022/Conference"],
+        "signatures":["aclweb.org/ACL/2022/Conference"],
+        "content":{
+            "paper_link": note.content["paper_link"],
+            "paper_type":note.content["paper_type"],
+            "track":note.content["track"],
+            "comment":note.content["comment"],
+            "authorids":old_note.content["authorids"],
+            "authors": old_note.content["authors"],
+            "title":old_note.content["title"],
+            "abstract":old_note.content["abstract"],
+            "data":old_note.content.get("data"),
+            "software":old_note.content.get("software"),
+            "pdf":old_note.content.get("pdf")
+        }  
     }
-    
-    old_note.content.update(new_fields)
-    old_note.invitation = 'aclweb.org/ACL/2022/Conference/-/Submission'
-    old_note.readers = 'aclweb.org/ACL/2022/Conference/Program_Chairs'
-    old_note.writers = old_note.content['authorids'] + ['aclweb.org/ACL/2022/Conference']
-    old_note.replyto = old_note.id
-    client.post_note(old_note)
+    # Create note from JSON and post to ACL Submission invitation
+    acl_sub = openreview.Note.from_json(JSON)
+    print(acl_sub)
+    client.post_note(acl_sub)
