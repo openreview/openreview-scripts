@@ -161,7 +161,7 @@ blind = openreview.Invitation(
         "writers" : {"values-regex":".*"},
         "signatures" : {"values":['aclweb.org/ACL/2022/Conference']},
         "content" : {
-                    "authorids" : ".*",
+                    "authorids" : { "values-regex": ".*" },
                     "authors": { "values-regex": ".*" }
                 }
     }
