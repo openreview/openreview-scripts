@@ -153,7 +153,7 @@ blind = openreview.Invitation(
     id = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission',
     readers = ['everyone'],
     writers = ['aclweb.org/ACL/2022/Conference'],
-    invitees = ['~', 'OPenReview.net/Support'],
+    invitees = ['aclweb.org/ACL/2022/Conference'],
     signatures = ['aclweb.org/ACL/2022/Conference'],
     reply ={
         "readers" : {"values-regex":".*"},
