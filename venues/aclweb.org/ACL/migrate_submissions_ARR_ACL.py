@@ -27,7 +27,7 @@ submission_invitation = openreview.Invitation(
     readers = ["everyone"],
     invitees=["aclweb.org/ACL/2022/Conference"],
     reply={
-        "readers":{"values-copied":["aclweb.org/ACL/2022/Conference/Program_Chairs","aclweb.org/ACL/2022/Conference"]},
+        "readers":{"values":["aclweb.org/ACL/2022/Conference"]},
         "writers":{"values-copied":["aclweb.org/ACL/2022/Conference"]},
         "signatures":{"values-copied":["aclweb.org/ACL/2022/Conference"]},
         "content":{
