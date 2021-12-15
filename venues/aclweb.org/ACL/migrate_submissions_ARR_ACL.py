@@ -287,7 +287,6 @@ official_review = openreview.Invitation(
     reply = {
         "readers":{ 
             "values": [
-                'aclweb.org/ACL/2022/Conference',
                 'aclweb.org/ACL/2022/Conference/Program_Chairs'
         ]},
         "writers": {"values": [
@@ -468,7 +467,6 @@ metareview = openreview.Invitation(
     reply = {
         "readers": {
             "values": [
-                'aclweb.org/ACL/2022/Conference',
                 'aclweb.org/ACL/2022/Conference/Program_Chairs'
         ]},
         "writers": {
@@ -698,6 +696,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
     for arr_review in arr_reviews:
         print(arr_review.signatures)
         if(arr_review.signatures[0] not in acl_reviews_dictionary):
+            print('arr review signatures', arr_review.signatures)
             acl_review = openreview.Note(
                 forum = acl_blind_submission_forum,
                 replyto = acl_blind_submission_forum,
@@ -750,10 +749,9 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
 commitment_notes = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Commitment_Submission'))
 acl_submissions = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Submission'))
 blind_submissions = {note.original: note for note in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))}
-acl_reviews_dictionary = {review.signature : review.replyto for reviews in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/Paper.*/-/Official_Review'))}
-acl_metareviews_dictionary = {review.signatures : review.replyto for reviews in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/Paper.*/-/Meta_Review'))}
-
-
+acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review'))}
+acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Meta_Review'))}
+print(acl_reviews_dictionary)
 # Save all submissions in a dictionary by paper_link
 acl_submission_dict = {acl_submission.content['paper_link'].split('=')[1]:acl_submission for acl_submission in acl_submissions}
 
