@@ -215,8 +215,8 @@ commitment = openreview.Invitation(
         "everyone"
         ],
     reply={
-        "readers":{"values-copied":["aclweb.org/ACL/2022/Conference/Program_Chairs","aclweb.org/ACL/2022/Conference"]},
-        "signatures":{"values-copied":["aclweb.org/ACL/2022/Conference"]},
+        "readers":["aclweb.org/ACL/2022/Conference/Program_Chairs","aclweb.org/ACL/2022/Conference"],
+        "signatures":["aclweb.org/ACL/2022/Conference"],
         "content":{
             "paper_link": {
                 "description": "Provide the link to your previous ACL submission",
@@ -275,7 +275,7 @@ commitment = openreview.Invitation(
 
 official_review = openreview.Invitation(
     id = 'aclweb.org/ACL/2022/Conference/-/Official_Review',
-    signatures = [
+    signatures= [
         'aclweb.org/ACL/2022/Conference'
     ],
     readers = [
@@ -285,21 +285,38 @@ official_review = openreview.Invitation(
         'aclweb.org/ACL/2022/Conference'
     ],
     reply = {
-        "readers": {
-            "values-copied":[
+        "readers":{ 
+            "values": [
                 'aclweb.org/ACL/2022/Conference',
                 'aclweb.org/ACL/2022/Conference/Program_Chairs'
         ]},
-        "writers": {
-            "values-copied":[
+        "writers": {"values": [
                 'aclweb.org/ACL/2022/Conference'
         ]},
-        "signatures": {
-            "values-copied": [
-                'aclweb.org/ACL/2022/Conference'
-            ]
+        "signatures": 
+            {
+                "values-regex": ".*"
+                
         },
         "content":{
+            "title": {
+                "order": 1,
+                "value-regex": ".{0,500}",
+                "description": "Brief summary of your review.",
+                "required": False
+            },
+            "review": {
+                "order": 2,
+                "value-regex": "[\\S\\s]{1,200000}",
+                "description": "Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (max 200000 characters). Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq",
+                "required": False,
+                "markdown": True
+            },
+            "rating": {
+                "order": 3,
+                "value-regex": ".*",
+                "required": False
+            },
             "confidence": {
                 "value-radio": [
                     "5 = Positive that my evaluation is correct. I read the paper very carefully and am familiar with related work.",
@@ -308,34 +325,34 @@ official_review = openreview.Invitation(
                     "2 =  Willing to defend my evaluation, but it is fairly likely that I missed some details, didn't understand some central points, or can't be sure about the novelty of the work.",
                     "1 = Not my area, or paper is very hard to understand. My evaluation is just an educated guess."
                 ],
-                "required": True
+                "required": False
             },
             "paper_summary": {
                 "order": 1,
                 "description": "Describe what this paper is about. This should help action editors and area chairs to understand the topic of the work and highlight any possible misunderstandings. Maximum length 1000 characters.",
                 "value-regex": "[\\S\\s]{0,10000}",
-                "required": True,
+                "required": False,
                 "markdown": True
                 },
                 "summary_of_strengths": {
                     "order": 2,
                     "value-regex": "[\\S\\s]{0,5000}",
                     "description": "What are the major reasons to publish this paper at a selective *ACL venue? These could include novel and useful methodology, insightful empirical results or theoretical analysis, clear organization of related literature, or any other reason why interested readers of *ACL papers may find the paper useful. Maximum length 5000 characters.",
-                    "required": True,
+                    "required": False,
                     "markdown": True
                 },
                 "summary_of_weaknesses": {
                     "order": 3,
                     "value-regex": "[\\S\\s]{0,5000}",
                     "description": "What are the concerns that you have about the paper that would cause you to favor prioritizing other high-quality papers that are also under consideration for publication? These could include concerns about correctness of the results or argumentation, limited perceived impact of the methods or findings (note that impact can be significant both in broad or in narrow sub-fields), lack of clarity in exposition, or any other reason why interested readers of *ACL papers may gain less from this paper than they would from other papers under consideration. Where possible, please number your concerns so authors may respond to them individually. Maximum length 5000 characters.",
-                    "required": True,
+                    "required": False,
                     "markdown": True
                 },
                 "comments,_suggestions_and_typos": {
                     "order": 4,
                     "value-regex": "[\\S\\s]{0,5000}",
                     "description": "If you have any comments to the authors about how they may improve their paper, other than addressing the concerns above, please list them here.\n Maximum length 5000 characters.",
-                    "required": True,
+                    "required": False,
                     "markdown": True
                 },
                 "overall_assessment": {
@@ -351,7 +368,7 @@ official_review = openreview.Invitation(
                         "1.5 ",
                         "1 = Poor: This paper has significant flaws, and I would argue against publishing it at any *ACL venue."
                     ],
-                    "required": True
+                    "required": False
                 },
                 "best_paper": {
                     "order": 8,
@@ -380,7 +397,7 @@ official_review = openreview.Invitation(
                         "2 = They would be hard pressed to reproduce the results: The contribution depends on data that are simply not available outside the author's institution or consortium and/or not enough details are provided.",
                         "1 = They would not be able to reproduce the results here no matter how hard they tried."
                     ],
-                    "required": True
+                    "required": False
                 },
                 "datasets": {
                     "order": 12,
@@ -392,7 +409,7 @@ official_review = openreview.Invitation(
                         "2 = Documentary: The new datasets will be useful to study or replicate the reported research, although for other purposes they may have limited interest or limited usability. (Still a positive rating)",
                         "1 = No usable datasets submitted."
                     ],
-                    "required": True
+                    "required": False
                     },
                 "software": {
                     "order": 13,
@@ -404,7 +421,7 @@ official_review = openreview.Invitation(
                         "2 = Documentary: The new software will be useful to study or replicate the reported research, although for other purposes it may have limited interest or limited usability. (Still a positive rating)",
                         "1 = No usable software released."
                     ],
-                    "required": True
+                    "required": False
                 },
                 "author_identity_guess": {
                     "order": 14,
@@ -418,6 +435,13 @@ official_review = openreview.Invitation(
                     ],
                     "required": True
                 },
+                "ethical_concerns": {
+                    "order": 15,
+                    "value-regex": "[\\S\\s]{0,2000}",
+                    "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
+                    "required": False,
+                    "markdown": True
+                    },
                 "ethical_concernes": {
                     "order": 15,
                     "value-regex": "[\\S\\s]{0,2000}",
@@ -443,39 +467,37 @@ metareview = openreview.Invitation(
     ],
     reply = {
         "readers": {
-            "values-copied":[
+            "values": [
                 'aclweb.org/ACL/2022/Conference',
                 'aclweb.org/ACL/2022/Conference/Program_Chairs'
         ]},
         "writers": {
-            "values-copied":[
+            "values": [
                 'aclweb.org/ACL/2022/Conference'
         ]},
         "signatures": {
-            "values-copied": [
-                'aclweb.org/ACL/2022/Conference'
-            ]
+             "values-regex": '.*'
         },
         "content":{
             "metareview": {
                 "order": 1,
                 "value-regex": "[\\S\\s]{1,10000}",
                 "description": "Describe what this paper is about. This should help SACs at publication venues understand what sessions the paper might fit in. Maximum 5000 characters. Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq",
-                "required": True,
+                "required": False,
                 "markdown": True
                 },
             "summary_of_reasons_to_publish": {
                 "order": 2,
                 "value-regex": "[\\S\\s]{1,10000}",
                 "description": "What are the major reasons to publish this paper at a *ACL venue? This should help SACs at publication venues understand why they might want to accept the paper. Maximum 5000 characters.",
-                "required": True,
+                "required": False,
                 "markdown": True
                 },
             "summary_of_suggested_revisions": {
                 "order": 3,
                 "value-regex": "[\\S\\s]{1,10000}",
                 "description": "What revisions could the authors make to the research and the paper that would improve it? This should help authors understand the reviews in context, and help them plan any future resubmission. Maximum 5000 characters.",
-                "required": True,
+                "required": False,
                 "markdown": True
                 },
             "overall_assessment": {
@@ -487,7 +509,7 @@ metareview = openreview.Invitation(
                     "2 = The paper would need significant revisions to reach a publishable state",
                     "1 = Even after revisions, the paper is not likely to be publishable at an *ACL venue"
                 ],
-                "required": True
+                "required": False
                 },
             "suggested_venues": {
                 "order": 5,
@@ -508,17 +530,18 @@ metareview = openreview.Invitation(
     )
 client.post_invitation(metareview)
 
+
 # Creating SAC groups from Track Name 
-SAC_name_dictionary = {
-    'Ethics and NLP': 'Ethics_NLP', 
+sac_name_dictionary = {
+    'Ethics in NLP': 'Ethics_NLP', 
     'Linguistic theories, Cognitive Modeling and Psycholinguistics': 'LCMP', 
     'Machine Learning for NLP': 'Machine_Learning_NLP', 
     'Phonology, Morphology and Word Segmentation': 'Phonology_Morphology_Word_Segmentation', 
-    'Resources and Evaluation': 'Reources_Evaluation', 
+    'Resources and Evaluation': 'Resources_Evaluation', 
     'Semantics: Lexical': 'Semantics_Lexical', 
-    'Semantics: Sentence-level Semantics, Textual Inference and Other areas': 'Semantics_STO', 
+    'Semantics: Sentence-level Semantics, Textual Inference, and Other areas': 'Semantics_STO', 
     'Syntax: Tagging, Chunking and Parsing': 'Syntax_TCP', 
-    'Information Extraction': 'Information_Extraction', 
+    'Information Extvaluesraction': 'Information_Extraction', 
     'Computational Social Science and Cultural Analytics': 'CSSCA', 
     'Information Retrieval and Text Mining': 'Info_Retrieval_Text_Mining', 
     'Interpretability and Analysis of Models for NLP': 'IAM_for_NLP', 
@@ -528,72 +551,117 @@ SAC_name_dictionary = {
     'Dialogue and Interactive Systems': 'Dialogue_and_Interactive_Systems', 
     'Discourse and Pragmatics': 'Discourse_and_Pragmatics', 
     'Generation': 'Generation', 
-    'Language Grounding to Vision, Robotics and Beyond': 'LGVRB', 
+    'Language Grounding to Vision, Robotics, and Beyond': 'LGVRB', 
     'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM', 
     'Speech and Multimodality': 'Speech_and_Multimodality', 
     'Summarization': 'Summarization', 
     'Special Theme': 'Special_Theme'
     }
 
+# Post acl submission (calls post_blind_submission)
+def post_acl_submission(arr_submission_forum):
+    original_arr_sub_id = None
+    try:
+        original_arr_sub_id = client.get_note(arr_submission_forum).original
+    except:
+        print(f"Note {arr_submission_forum} does not exist")
+    if original_arr_sub_id and (client.get_note(original_arr_sub_id)).invitation.startswith("aclweb.org/ACL/ARR"):
+        original_arr_sub = client.get_note(original_arr_sub_id)
+        # Create new note to submit to ACL 
+        acl_sub = openreview.Note(
+            invitation="aclweb.org/ACL/2022/Conference/-/Submission",
+            readers = [
+                "aclweb.org/ACL/2022/Conference"
+                ], 
+            writers = [
+                "aclweb.org/ACL/2022/Conference"
+                ],
+            signatures = [
+                "aclweb.org/ACL/2022/Conference"
+                ],
+            content = {
+                "paper_link": note.content["paper_link"],
+                "paper_type":note.content["paper_type"],
+                "track":note.content["track"],
+                "comment":note.content.get("comment"),
+                "authorids":original_arr_sub.content["authorids"],
+                "authors": original_arr_sub.content["authors"],
+                "title":original_arr_sub.content["title"],
+                "abstract":original_arr_sub.content["abstract"],
+                "data":original_arr_sub.content.get("data"),
+                "software":original_arr_sub.content.get("software"),
+                "pdf":original_arr_sub.content.get("pdf")
+            }  
+        )
+        acl_submitted = client.post_note(acl_sub)
+        #print(acl_submitted.forum)
+        assert acl_submitted, print ('failed to post acl submission: ', acl_sub.id)
+        acl_submission_dict[acl_submitted.content['paper_link'].split('=')[1]]=acl_submitted
+        post_blind_submission(acl_submitted.id, acl_submitted, client.get_note(original_arr_sub_id))
+    else: 
+        print(f'Nothing posted for note {arr_submission_forum}')
+        
+# Post blind submission (calls post_reviews)
+def post_blind_submission(acl_submission_id, acl_submission, arr_submission):
+    # Post requisite groups 
+    number = acl_submission.number
+    # Create paperX/Authors 
+    authors = openreview.Group(
+        id = 'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number), 
+        signatures = [
+            'aclweb.org/ACL/2022/Conference'
+            ],
+        signatories = [
+            'aclweb.org/ACL/2022/Conference', 
+            'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
+            ],
+        readers = [
+            'aclweb.org/ACL/2022/Conference', 
+            'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
+            ],
+        writers = [
+            'aclweb.org/ACL/2022/Conference'
+            ],
+        members = acl_submission.content['authorids']
+    )
 
-# Retrieve all commitment submissions, ACL submissions, and ACL blind submissions  
-commitment_notes = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Commitment_Submission'))
-submissions = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Submission'))
-blind_submissions = {note.forum: note for note in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))}
+    authors_posted = client.post_group(authors)
+    assert authors_posted, print('Failed to post author groups: ', acl_submission_id)
 
-# Save all submissions in a dictionary by paper_link
-submission_dict = {submission.content['paper_link'].split('=')[1]:submission for submission in submissions}
-
-
-# Iterate through all commitment submissions  
-for note in tqdm(commitment_notes):
-    # For each, retrieve old paper from link
-    ARR_submission_forum = note.content['paper_link'].split('=')[1]
-    if ARR_submission_forum not in submission_dict:
-        original_arr_sub_id = list(openreview.tools.iterget_notes(client, forum = ARR_submission_forum))[0].original # gets the note by forum 
-        if original_arr_sub_id and (client.get_note(original_arr_sub_id)).invitation.startswith("aclweb.org/ACL/ARR"):
-            original_arr_sub = client.get_note(original_arr_sub_id)
-            # Create new note to submit to ACL 
-            acl_sub = openreview.Note(
-                invitation="aclweb.org/ACL/2022/Conference/-/Submission",
-                readers = [
-                    "aclweb.org/ACL/2022/Conference"
-                    ], 
-                writers = [
-                    "aclweb.org/ACL/2022/Conference"
-                    ],
-                signatures = [
-                    "aclweb.org/ACL/2022/Conference"
-                    ],
-                content = {
-                    "paper_link": note.content["paper_link"],
-                    "paper_type":note.content["paper_type"],
-                    "track":note.content["track"],
-                    "comment":note.content.get("comment"),
-                    "authorids":original_arr_sub.content["authorids"],
-                    "authors": original_arr_sub.content["authors"],
-                    "title":original_arr_sub.content["title"],
-                    "abstract":original_arr_sub.content["abstract"],
-                    "data":original_arr_sub.content.get("data"),
-                    "software":original_arr_sub.content.get("software"),
-                    "pdf":original_arr_sub.content.get("pdf")
-                }  
-            )
-            acl_sub = client.post_note(acl_sub)
-            submission_dict[acl_sub.content['paper_link'].split('=')[1]]=acl_sub
-
-# Iterate through submission dictionary, check if each has a blind submission, and create blind submission if not
-
-for ARR_submission_forum, acl_submission in tqdm(submission_dict.items()):
-    if acl_submission.forum not in blind_submissions:
-        # Post blind note with original = forum of ACL submission
-        blinded_note = openreview.Note(
+    # Create paperX/Conflicts
+    conf_id = arr_submission.invitation.rsplit('/', 2)[0]
+    arr_number = arr_submission.number
+    conflicts = openreview.Group(
+        id = 'aclweb.org/ACL/2022/Conference/Paper{number}/Conflicts'.format(number = number),
+        signatures = [
+            'aclweb.org/ACL/2022/Conference'
+            ],
+        signatories = [
+            'aclweb.org/ACL/2022/Conference'
+            ],
+        readers = [
+            'aclweb.org/ACL/2022/Conference'
+            ],
+        writers = [
+            'aclweb.org/ACL/2022/Conference'
+            ],
+        members = [
+            '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number),
+            '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number),
+            'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
+            ]
+    )
+    conflicts_posted = client.post_group(conflicts)
+    assert conflicts_posted, print('Failed to post conflict group: ', acl_submission_id)
+    
+    # post blinded note 
+    blinded_note = openreview.Note(
             invitation = "aclweb.org/ACL/2022/Conference/-/Blind_Submission",
-            original = acl_submission.id,
+            original = acl_submission_id,
             readers = [
                 "aclweb.org/ACL/2022/Conference/Program_Chairs",
                 "aclweb.org/ACL/2022/Conference", 
-                "aclweb.org/ACL/2022/Conference/{SAC_track}/Senior_Area_Chairs".format(SAC_track = SAC_name_dictionary[acl_submission.content['track']])
+                "aclweb.org/ACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']])
                 ],
             nonreaders = [
                 "aclweb.org/ACL/2022/Conference/Paper{number}/Conflicts".format(number = acl_submission.number)
@@ -610,109 +678,103 @@ for ARR_submission_forum, acl_submission in tqdm(submission_dict.items()):
             }
         )
         
-        blinded_note = client.post_note(blinded_note)
-        
-        blind_submissions[blinded_note.forum] = blinded_note 
-        
-        # Post requisite groups 
+    blinded_note_posted = client.post_note(blinded_note)
+    print(blinded_note_posted.forum)
+    assert blinded_note_posted, print('failed to post blind note: ', blinded_note_posted.forum)
+    blind_submissions[blinded_note_posted.original] = blinded_note_posted
+    post_reviews(blinded_note_posted.forum, blinded_note_posted, arr_submission)
 
-        number = blinded_note.number
-        # Create paperX/Authors -- do I need to check if the group already exists?
-        if not openreview.tools.get_group(client, 'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)):
-            authors = openreview.Group(
-                id = 'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number), 
-                signatures = [
-                    'aclweb.org/ACL/2022/Conference'
-                    ],
-                signatories = [
-                    'aclweb.org/ACL/2022/Conference', 
-                    'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
-                    ],
+# Post reviews (calls post_metareviews)
+def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submission):
+    # Migrate all reviews from the original ARR Submission 
+    # Get invitation for that month's reviews 
+    conf_id = arr_submission.invitation.rsplit('/', 2)[0]
+    review_invitation_arr = '{conf_id}/Paper{number}/-/Official_Review'.format(conf_id = conf_id,number = arr_submission.number)
+    
+    # Get all reviews from the original ARR Submission 
+    arr_reviews = openreview.tools.iterget_notes(client, invitation = review_invitation_arr)
+    
+    # Iterate through each review and for each, create and post a new review 
+    for arr_review in arr_reviews:
+        print(arr_review.signatures)
+        if(arr_review.signatures[0] not in acl_reviews_dictionary):
+            acl_review = openreview.Note(
+                forum = acl_blind_submission_forum,
+                replyto = acl_blind_submission_forum,
+                invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review',
+                signatures = arr_review.signatures,
                 readers = [
-                    'aclweb.org/ACL/2022/Conference', 
-                    'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
-                    ],
+                    'aclweb.org/ACL/2022/Conference',
+                    'aclweb.org/ACL/2022/Conference/Program_Chairs'
+                ],
                 writers = [
                     'aclweb.org/ACL/2022/Conference'
-                    ],
-                members = acl_submission.content['authorids']
+                ],
+                content = arr_review.content
             )
-            
-            client.post_group(authors)
+            acl_review_posted = client.post_note(acl_review)
+            assert acl_review_posted, print('failed to post review ', acl_review.id)
+            acl_reviews_dictionary[acl_review_posted.signatures[0]] = acl_review_posted.replyto
+            post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submission)
         
-        # Create paperX/Conflicts
-        if not openreview.tools.get_group(client, 'aclweb.org/ACL/2022/Conference/Paper{number}/Conflicts'.format(number = number)):
-            arr_submission = client.get_note(ARR_submission_forum)
-            conf_id = arr_submission.invitation.rsplit('/', 2)[0]
-            arr_number = arr_submission.number
-            conflicts = openreview.Group(
-                id = 'aclweb.org/ACL/2022/Conference/Paper{number}/Conflicts'.format(number = number),
-                signatures = [
-                    'aclweb.org/ACL/2022/Conference'
-                    ],
-                signatories = [
-                    'aclweb.org/ACL/2022/Conference'
-                    ],
+# Post metareviews 
+def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submission):
+    # Migrate all reviews from the original ARR Submission 
+    # Get invitation for that month's reviews 
+    conf_id = arr_submission.invitation.rsplit('/', 2)[0]
+    metareview_invitation_arr = '{conf_id}/Paper{number}/-/Meta_Review'.format(conf_id = conf_id,number = arr_submission.number)
+    
+    # Get all reviews from the original ARR Submission 
+    arr_metareviews = openreview.tools.iterget_notes(client, invitation = metareview_invitation_arr)
+    
+    # Iterate through each review and for each, create and post a new review 
+    for arr_metareview in arr_metareviews:
+        if(arr_metareview.signatures[0] not in acl_metareviews_dictionary):
+            acl_metareview = openreview.Note(
+                forum = acl_blind_submission_forum,
+                replyto = acl_blind_submission_forum,
+                invitation = f'aclweb.org/ACL/2022/Conference/-/Meta_Review',
+                signatures = arr_metareview.signatures,
                 readers = [
-                    'aclweb.org/ACL/2022/Conference'
-                    ],
+                    'aclweb.org/ACL/2022/Conference',
+                    'aclweb.org/ACL/2022/Conference/Program_Chairs'
+                ],
                 writers = [
                     'aclweb.org/ACL/2022/Conference'
-                    ],
-                members = [
-                    '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number),
-                    '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number),
-                    'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
-                    ]
+                ],
+                content = arr_metareview.content
             )
-            client.post_group(conflicts)
+            acl_metareview_posted = client.post_note(acl_metareview)
+            assert acl_metareview_posted, print('failed to post metareview ', acl_metareview.id)
+            acl_metareviews_dictionary[acl_metareview_posted.signatures[0]] = acl_metareview_posted.replyto
             
-            # Migrate all reviews from the original ARR Submission 
-            # Get invitation for that month's reviews 
-            review_invitation_ARR = '{conf_id}/Official_Review'.format(conf_id = conf_id)
-            metareview_invitation_ARR = '{conf_id}/Meta_Review'.format(conf_id = conf_id)
-            # Get all reviews from the original ARR Submission 
-            ARR_reviews = openreview.tools.iterget_notes(client, invitation = review_invitation_ARR, replyto = ARR_submission_forum)
-            ARR_metareviews = openreview.tools.iterget_notes(client, invitation = metareview_invitation_ARR, replyto = ARR_submission_forum)
-            
-            # Iterate through each review and for each, create and post a new review 
-            for ARR_review in ARR_reviews: 
-                ACL_review = openreview.Note(
-                    forum = acl_submission.forum,
-                    replyto = acl_submission.forum,
-                    invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review',
-                    signatures = [
-                        'aclweb.org/ACL/2022/Conference'
-                    ],
-                    readers = [
-                        'aclweb.org/ACL/2022/Conference',
-                        'aclweb.org/ACL/2022/Conference/Program_Chairs'
-                    ],
-                    writers = [
-                        'aclweb.org/ACL/2022/Conference'
-                    ],
-                    content = ARR_review.content
-                )
-                client.post_note(ACL_review)
-                
-            # Iterate through each metareview and for each, create and post a new metareview 
-            for ARR_metareview in ARR_metareviews: 
-                ACL_metareview = openreview.Note(
-                    forum = acl_submission.forum,
-                    replyto = acl_submission.forum,
-                    invitation = 'aclweb.org/ACL/2022/Conference/-/Meta_Review',
-                    signatures = [
-                        'aclweb.org/ACL/2022/Conference'
-                    ],
-                    readers = [
-                        'aclweb.org/ACL/2022/Conference',
-                        'aclweb.org/ACL/2022/Conference/Program_Chairs'
-                    ],
-                    writers = [
-                        'aclweb.org/ACL/2022/Conference'
-                    ],
-                    content = ARR_metareview.content
-                )
-                client.post_note(ACL_metareview)
-                
-            
+# Retrieve all commitment submissions, ACL submissions, ACL blind submissions, and ACL blind submission reviews  
+commitment_notes = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Commitment_Submission'))
+acl_submissions = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Submission'))
+blind_submissions = {note.original: note for note in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))}
+acl_reviews_dictionary = {review.signature : review.replyto for reviews in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/Paper.*/-/Official_Review'))}
+acl_metareviews_dictionary = {review.signatures : review.replyto for reviews in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/Paper.*/-/Meta_Review'))}
+
+
+# Save all submissions in a dictionary by paper_link
+acl_submission_dict = {acl_submission.content['paper_link'].split('=')[1]:acl_submission for acl_submission in acl_submissions}
+
+for note in commitment_notes: 
+    # Get the arr submission forum. Then check if that is in the submission dictionary. If it is, check for blind. If not, run post_acl
+    arr_submission_forum = note.content['paper_link'].split('=')[1]
+    if arr_submission_forum not in acl_submission_dict:
+        print('link of commitment note not found in submission dict: ', note.id)
+        post_acl_submission(arr_submission_forum)
+    
+    # Check if the acl_submission.id is in blind_submissions
+    elif acl_submission_dict[arr_submission_forum].id not in blind_submissions:
+        print('acl submission for this commitment note not in blind: ', note.id)
+        post_blind_submission(acl_submission_dict[arr_submission_forum].id, acl_submission_dict[arr_submission_forum], client.get_note(arr_submission_forum))
+    
+    # Check if the blind submission has reviews
+    else: 
+        print('acl submission for this commitment note does not have reviews: ', note.id)
+        post_reviews(blind_submissions[acl_submission_dict[arr_submission_forum].id].forum, blind_submissions[acl_submission_dict[arr_submission_forum].id], client.get_note(arr_submission_forum))
+    
+         
+
