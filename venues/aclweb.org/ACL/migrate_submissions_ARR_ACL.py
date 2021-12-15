@@ -704,7 +704,6 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
                 invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review',
                 signatures = arr_review.signatures,
                 readers = [
-                    'aclweb.org/ACL/2022/Conference',
                     'aclweb.org/ACL/2022/Conference/Program_Chairs'
                 ],
                 writers = [
@@ -736,7 +735,6 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
                 invitation = f'aclweb.org/ACL/2022/Conference/-/Meta_Review',
                 signatures = arr_metareview.signatures,
                 readers = [
-                    'aclweb.org/ACL/2022/Conference',
                     'aclweb.org/ACL/2022/Conference/Program_Chairs'
                 ],
                 writers = [
