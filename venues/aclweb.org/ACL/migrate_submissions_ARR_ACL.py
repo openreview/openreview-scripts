@@ -623,7 +623,7 @@ def post_acl_submission(arr_submission_forum):
             }  
         )
         acl_submitted = client.post_note(acl_sub)
-        #print(acl_submitted.forum)
+        
         assert acl_submitted, print ('failed to post acl submission: ', acl_sub.id)
         acl_submission_dict[acl_submitted.content['paper_link'].split('=')[1]]=acl_submitted
         post_blind_submission(acl_submitted.id, acl_submitted, client.get_note(original_arr_sub_id))
@@ -708,7 +708,6 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission):
         )
         
     blinded_note_posted = client.post_note(blinded_note)
-    print(blinded_note_posted.forum)
     assert blinded_note_posted, print('failed to post blind note: ', blinded_note_posted.forum)
     blind_submissions[blinded_note_posted.original] = blinded_note_posted
     post_reviews(blinded_note_posted.forum, blinded_note_posted, arr_submission)
@@ -725,9 +724,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
     
     # Iterate through each review and for each, create and post a new review 
     for arr_review in arr_reviews:
-        print(arr_review.signatures)
         if(arr_review.signatures[0] not in acl_reviews_dictionary):
-            print('arr review signatures', arr_review.signatures)
             acl_review = openreview.Note(
                 forum = acl_blind_submission_forum,
                 replyto = acl_blind_submission_forum,
@@ -742,7 +739,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
             acl_review_posted = client.post_note(acl_review)
             assert acl_review_posted, print('failed to post review ', acl_review.id)
             acl_reviews_dictionary[acl_review_posted.signatures[0]] = acl_review_posted.replyto
-            post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submission)
+        post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submission)
         
 # Post metareviews 
 def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submission):
@@ -778,7 +775,7 @@ acl_submissions = list(openreview.tools.iterget_notes(client,invitation='aclweb.
 blind_submissions = {note.original: note for note in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))}
 acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review'))}
 acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Meta_Review'))}
-print(acl_reviews_dictionary)
+
 # Save all submissions in a dictionary by paper_link
 acl_submission_dict = {acl_submission.content['paper_link'].split('=')[1]:acl_submission for acl_submission in acl_submissions}
 
@@ -786,17 +783,14 @@ for note in commitment_notes:
     # Get the arr submission forum. Then check if that is in the submission dictionary. If it is, check for blind. If not, run post_acl
     arr_submission_forum = note.content['paper_link'].split('=')[1]
     if arr_submission_forum not in acl_submission_dict:
-        print('link of commitment note not found in submission dict: ', note.id)
         post_acl_submission(arr_submission_forum)
     
     # Check if the acl_submission.id is in blind_submissions
     elif acl_submission_dict[arr_submission_forum].id not in blind_submissions:
-        print('acl submission for this commitment note not in blind: ', note.id)
         post_blind_submission(acl_submission_dict[arr_submission_forum].id, acl_submission_dict[arr_submission_forum], client.get_note(arr_submission_forum))
     
     # Check if the blind submission has reviews
     else: 
-        print('acl submission for this commitment note does not have reviews: ', note.id)
         post_reviews(blind_submissions[acl_submission_dict[arr_submission_forum].id].forum, blind_submissions[acl_submission_dict[arr_submission_forum].id], client.get_note(arr_submission_forum))
     
          
