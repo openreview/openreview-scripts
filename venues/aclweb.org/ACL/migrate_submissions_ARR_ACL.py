@@ -113,7 +113,7 @@ submission_invitation = openreview.Invitation(
                 "description": "Select if your paper is short or long",
                 "value-radio": [
                     "short",
-                    "long"
+                    "Long paper (up to eight pages of content + unlimited references and appendices)"
                 ],
                 "required": True,
                 "order": 11
