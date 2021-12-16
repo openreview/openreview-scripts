@@ -671,7 +671,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission):
                 "aclweb.org/ACL/2022/Conference"
                 ],
             content = {
-                "authorids" : ["Anonymous"],
+                "authorids" : [f"aclweb.org/ACL/2022/Conference/Paper{acl_submission.number}/Authors"],
                 "authors":["Anonymous"]
             }
         )
