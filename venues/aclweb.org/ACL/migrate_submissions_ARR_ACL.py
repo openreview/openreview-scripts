@@ -121,13 +121,13 @@ submission_invitation = openreview.Invitation(
             "track": {
                 "description": "Select the track that best fits your submission.",
                 "value-radio": [
-                    "Ethics and NLP",
+                    "Ethics in NLP",
                     "Linguistic theories, Cognitive Modeling and Psycholinguistics",
                     "Machine Learning for NLP",
                     "Phonology, Morphology and Word Segmentation",
                     "Resources and Evaluation",
                     "Semantics: Lexical",
-                    "Semantics: Sentence-level Semantics, Textual Inference and Other areas",
+                    "Semantics: Sentence-level Semantics, Textual Inference, and Other areas",
                     "Syntax: Tagging, Chunking and Parsing",
                     "Information Extraction",
                     "Computational Social Science and Cultural Analytics",
@@ -139,11 +139,11 @@ submission_invitation = openreview.Invitation(
                     "Dialogue and Interactive Systems",
                     "Discourse and Pragmatics",
                     "Generation",
-                    "Language Grounding to Vision, Robotics and Beyond",
+                    "Language Grounding to Vision, Robotics, and Beyond",
                     "Sentiment Analysis, Stylistic Analysis, and Argument Mining",
                     "Speech and Multimodality",
                     "Summarization",
-                    "Special Theme"
+                    "Special Theme on Language Diversity: From Low Resource to Endangered Languages"
                     ],
                 "required": True,
                 "order": 12
@@ -153,7 +153,15 @@ submission_invitation = openreview.Invitation(
                 "order": 13,
                 "value-regex": "[\\S\\s]{0,500}",
                 "required": False
-                }     
+                },
+            "author_checklist": {
+                "values-checkbox": [
+                    "I confirm that I am one of the authors of this paper",
+                    "I confirm that this link is for the latest version of the paper in ARR that has reviews"
+                ],
+                "required": True,
+                "order": 15
+            }
         }
     }
 )
@@ -215,9 +223,26 @@ commitment = openreview.Invitation(
         "everyone"
         ],
     reply={
-        "readers":["aclweb.org/ACL/2022/Conference/Program_Chairs","aclweb.org/ACL/2022/Conference"],
-        "signatures":["aclweb.org/ACL/2022/Conference"],
+        "readers":{
+            "values-copied":[
+                "aclweb.org/ACL/2022/Conference",
+                "{signatures}"
+            ]
+        },
+        "writers": {
+            "values-copied": [
+                "aclweb.org/ACL/2022/Conference",
+                "{signatures}"
+            ]
+        },
+        "signatures": { "values-regex": "~.*" },
         "content":{
+            "title": {
+            "description": "Enter the title of the ARR submission that you want to commit to ACL 2022",
+            "order": 10,
+            "value-regex": ".{1,250}",
+            "required": True
+            },
             "paper_link": {
                 "description": "Provide the link to your previous ACL submission",
                 "value-regex": "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
@@ -236,13 +261,13 @@ commitment = openreview.Invitation(
             "track": {
                 "description": "Select the track that best fits your submission.",
                 "value-radio": [
-                    "Ethics and NLP",
+                    "Ethics in NLP",
                     "Linguistic theories, Cognitive Modeling and Psycholinguistics",
                     "Machine Learning for NLP",
                     "Phonology, Morphology and Word Segmentation",
                     "Resources and Evaluation",
                     "Semantics: Lexical",
-                    "Semantics: Sentence-level Semantics, Textual Inference and Other areas",
+                    "Semantics: Sentence-level Semantics, Textual Inference, and Other areas",
                     "Syntax: Tagging, Chunking and Parsing",
                     "Information Extraction",
                     "Computational Social Science and Cultural Analytics",
@@ -254,11 +279,11 @@ commitment = openreview.Invitation(
                     "Dialogue and Interactive Systems",
                     "Discourse and Pragmatics",
                     "Generation",
-                    "Language Grounding to Vision, Robotics and Beyond",
+                    "Language Grounding to Vision, Robotics, and Beyond",
                     "Sentiment Analysis, Stylistic Analysis, and Argument Mining",
                     "Speech and Multimodality",
                     "Summarization",
-                    "Special Theme"
+                    "Special Theme on Language Diversity: From Low Resource to Endangered Languages"
                 ],
                 "required": True,
                 "order": 12
@@ -268,7 +293,15 @@ commitment = openreview.Invitation(
                 "order": 13,
                 "value-regex": "[\\S\\s]{0,500}",
                 "required": False
-                }
+                },
+            "author_checklist": {
+                "values-checkbox": [
+                    "I confirm that I am one of the authors of this paper",
+                    "I confirm that this link is for the latest version of the paper in ARR that has reviews"
+                ],
+                "required": True,
+                "order": 15
+            }
         }
     }
 )
@@ -285,10 +318,9 @@ official_review = openreview.Invitation(
         'aclweb.org/ACL/2022/Conference'
     ],
     reply = {
-        "readers":{ 
-            "values": [
-                'aclweb.org/ACL/2022/Conference/Program_Chairs'
-        ]},
+        "readers" : {
+            "values-regex":".*"
+            },
         "writers": {"values": [
                 'aclweb.org/ACL/2022/Conference'
         ]},
@@ -308,7 +340,7 @@ official_review = openreview.Invitation(
                 "order": 2,
                 "value-regex": "[\\S\\s]{1,200000}",
                 "description": "Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (max 200000 characters). Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq",
-                "required": False,
+                "required": True,
                 "markdown": True
             },
             "rating": {
@@ -465,10 +497,9 @@ metareview = openreview.Invitation(
         'aclweb.org/ACL/2022/Conference'
     ],
     reply = {
-        "readers": {
-            "values": [
-                'aclweb.org/ACL/2022/Conference/Program_Chairs'
-        ]},
+        "readers" : {
+            "values-regex":".*"
+            },
         "writers": {
             "values": [
                 'aclweb.org/ACL/2022/Conference'
@@ -553,7 +584,7 @@ sac_name_dictionary = {
     'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM', 
     'Speech and Multimodality': 'Speech_and_Multimodality', 
     'Summarization': 'Summarization', 
-    'Special Theme': 'Special_Theme'
+    'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme'
     }
 
 # Post acl submission (calls post_blind_submission)
@@ -702,9 +733,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
                 replyto = acl_blind_submission_forum,
                 invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review',
                 signatures = arr_review.signatures,
-                readers = [
-                    'aclweb.org/ACL/2022/Conference/Program_Chairs'
-                ],
+                readers = acl_blind_submission.readers,
                 writers = [
                     'aclweb.org/ACL/2022/Conference'
                 ],
@@ -733,9 +762,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
                 replyto = acl_blind_submission_forum,
                 invitation = f'aclweb.org/ACL/2022/Conference/-/Meta_Review',
                 signatures = arr_metareview.signatures,
-                readers = [
-                    'aclweb.org/ACL/2022/Conference/Program_Chairs'
-                ],
+                readers = acl_blind_submission.readers,
                 writers = [
                     'aclweb.org/ACL/2022/Conference'
                 ],
