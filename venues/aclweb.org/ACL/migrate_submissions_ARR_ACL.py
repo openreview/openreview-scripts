@@ -239,7 +239,6 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
         
 # Post metareviews 
 def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submission, submission_output_dict):
-    print('entered post metareview')
     # Migrate all reviews from the original ARR Submission 
     # Get invitation for that month's reviews 
     conf_id = arr_submission.invitation.rsplit('/', 2)[0]
@@ -248,7 +247,6 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
     # Get all reviews from the original ARR Submission 
     arr_metareviews = list(openreview.tools.iterget_notes(client, invitation = metareview_invitation_arr))
     submission_output_dict['num_metareviews'] = len(arr_metareviews)
-    print('length of arr_metareviews', len(arr_metareviews))
      
     
     # Iterate through each review and for each, create and post a new review 
