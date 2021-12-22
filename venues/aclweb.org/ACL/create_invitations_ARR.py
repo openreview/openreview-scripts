@@ -188,12 +188,32 @@ submission_invitation = openreview.Invitation(
             "required": False,
             "order": 16
             },
+            "preprint": {
+            "description": "Would the authors like to have a public anonymous pre-print of the submission? This includes PDF, abstract and all supplemental material.",
+            "value-radio": [
+                "yes",
+                "no"
+            ],
+            "required": False
+            },
             "existing_preprints": {
             "values-regex": ".{1,500}",
             "description": "If there are any publicly available non-anonymous preprints of this paper, please list them here (provide the URLs please).",
             "required": False,
             "order": 17
-            }
+            },
+            "previous_URL": {
+            "description": "Provide the URL of your previous submission to ACL Rolling Review if this is a resubmission",
+            "order": 16,
+            "value-regex": ".{0,500}",
+            "required": False
+            },
+            "TL;DR": {
+            "description": "\"Too Long; Didn't Read\": a short sentence describing your paper",
+            "order": 13,
+            "value-regex": "[^\\n]{0,250}",
+            "required": False
+        }
         }
     }  
 )

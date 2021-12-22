@@ -63,6 +63,7 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
     except:
         print(f"Note {arr_submission_forum} does not exist")
     if original_arr_sub_id and ((client.get_note(original_arr_sub_id)).invitation.startswith(tuple(eligible_arr_invitations))):
+        #print(original_arr_sub_id)
         original_arr_sub = client.get_note(original_arr_sub_id)
         submission_output_dict[acl_commitment_note.forum]['arr_submission_forum'] = original_arr_sub.forum
         if acl_commitment_note.signatures[0] in original_arr_sub.content['authorids']:
@@ -89,9 +90,12 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
                     "abstract":original_arr_sub.content["abstract"],
                     "data":original_arr_sub.content.get("data"),
                     "software":original_arr_sub.content.get("software"),
-                    "pdf":original_arr_sub.content.get("pdf"),
+                    "pdf":original_arr_sub.content.get("pdf"), #is it okay that this is the original note forum? 
                     "acl_preprint": note.content.get("ACL_preprint"),
-                    "existing_preprints": note.content.get("existing_preprints"),
+                    "existing_preprints": original_arr_sub.content.get("existing_preprints"),
+                    "preprint":original_arr_sub.content.get("preprint"),
+                    "TL;DR":original_arr_sub.content.get('TL;DR'),
+                    "previous_URL": original_arr_sub.content.get("previous_URL"),
                     "authorship": note.content.get("authorship"),
                     "paper_version": note.content.get("paper version"),
                     "anonymity_period": note.content.get("anonymity period"),
@@ -100,7 +104,7 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
             )
             acl_submitted = client.post_note(acl_sub)
             if(acl_submitted):
-                submission_output_dict['was_migrated'] = True
+                submission_output_dict[acl_commitment_note.forum]['was_migrated'] = True
                 acl_submission_dict[acl_submitted.content['paper_link'].split('=')[1]]=acl_submitted
                 post_blind_submission(acl_submitted.id, acl_submitted, client.get_note(original_arr_sub_id), submission_output_dict, acl_commitment_note)
             else: 
@@ -153,9 +157,9 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             ]
     author_group = openreview.tools.get_profiles(client, ids_or_emails = authors.members, with_publications=False)
     
-    print(acl_submission.content['track'])
+    #print(acl_submission.content['track'])
     for SAC in (openreview.tools.get_group(client, "aclweb.org/ACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']]))).members: 
-        print(SAC)
+        #print(SAC)
         SAC_profile = openreview.tools.get_profiles(client, SAC)
         if(SAC_profile):
             conflicts = openreview.tools.get_conflicts(author_group, SAC_profile[0])
@@ -291,7 +295,7 @@ acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review i
 
 # Save all submissions in a dictionary by paper_link
 acl_submission_dict = {acl_submission.content['paper_link'].split('=')[1]:acl_submission for acl_submission in acl_submissions}
-print("acl_commitment_forum", "acl_blind_submission_forum", "arr_submission_forum", "num_reviews", "num_metareviews", "is_latest_version", "was_migrated")
+#print("acl_commitment_forum", "acl_blind_submission_forum", "arr_submission_forum", "num_reviews", "num_metareviews", "is_latest_version", "was_migrated")
 # Create an empty list to store information about each paper for the PCs to view 
 submission_output_dict = {}
 for note in commitment_notes:
@@ -330,7 +334,7 @@ rows = []
 for key,value in submission_output_dict.items():
     list = [key, value['acl_blind_submission_forum'], value['arr_submission_forum'], value['num_reviews'], value['num_metareviews'], value['is_latest_version'], value['was_migrated']]
     rows.append(list)
-with open('output_data', 'w') as csvfile:
+with open('output_data.csv', 'w') as csvfile:
     csvwriter = csv.writer(csvfile) 
         
     # writing the fields 
