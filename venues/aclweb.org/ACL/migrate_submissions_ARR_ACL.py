@@ -157,7 +157,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         readers = [
-            'aclweb.org/ACL/2022/Conference', 
+            'aclweb.org/ACL/2022/Conference'
             #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         writers = [
