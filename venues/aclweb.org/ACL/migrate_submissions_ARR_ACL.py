@@ -267,7 +267,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
                     ],
                 content = arr_review.content
             )
-            acl_review.content['title'] = f'Official Review of Paper{acl_blind_submission.number} by Reviewer {arr_review.signatures[0].split("/")[-1].split("_")[-1]}'
+            acl_review.content['title'] = f'Official Review of Paper{acl_blind_submission.number} by {arr_review.invitation.split("/")[4]} Reviewer'
             acl_review.content['link_to_original_review'] = f'https://openreview.net/forum?id={arr_review.forum}&noteId={arr_review.id}'
             acl_review_posted = client.post_note(acl_review)
             assert acl_review_posted, print('failed to post review ', acl_review.id)
@@ -305,7 +305,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
                 content = arr_metareview.content
             )
             acl_metareview.content['link_to_original_metareview'] = f'https://openreview.net/forum?id={arr_metareview.forum}&noteId={arr_metareview.id}'
-            acl_metareview.content['title'] = f'Meta Review of Paper{acl_blind_submission.number} by Area Chair {arr_metareview.signatures[0].split("/")[-1].split("_")[-1]}'
+            acl_metareview.content['title'] = f'Meta Review of Paper{acl_blind_submission.number} by {arr_metareview.invitation.split("/")[4]} Area Chair'
             acl_metareview_posted = client.post_note(acl_metareview)
             assert acl_metareview_posted, print('failed to post metareview ', acl_metareview.id)
             acl_metareviews_dictionary[acl_metareview_posted.signatures[0]] = acl_metareview_posted.replyto
@@ -326,7 +326,7 @@ acl_submission_dict = {acl_submission.content['paper_link'].split('=')[1]:acl_su
 submission_output_dict = {}
 for note in commitment_notes:
     arr_submission_forum = note.content['paper_link'].split('=')[1]
-    submission_output_dict[note.forum] = {'acl_blind_submission_forum': None, 'arr_submission_forum': None, 'num_reviews':None, 'num_metareviews':None, 'is_latest_version':None, 'was_migrated':False}
+    submission_output_dict[note.forum] = {'acl_blind_submission_forum': None, 'arr_submission_forum': None, 'num_reviews':None, 'num_metareviews':None, 'later_versions':None, 'was_migrated':False}
 
     later_duplicates = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/ARR/2021/.*',content = {'previous_URL':f'https://openreview.net/forum?id={arr_submission_forum}'}))  
     if later_duplicates:
