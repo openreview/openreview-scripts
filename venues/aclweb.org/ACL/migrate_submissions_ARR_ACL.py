@@ -30,7 +30,7 @@ sac_name_dictionary = {
     'Semantics: Lexical': 'Semantics_Lexical', 
     'Semantics: Sentence level, Textual Inference and Other areas': 'Semantics_STO', 
     'Syntax: Tagging, Chunking and Parsing': 'Syntax_TCP', 
-    'Information Extvaluesraction': 'Information_Extraction', 
+    'Information Extraction': 'Information_Extraction', 
     'Computational Social Science and Cultural Analytics': 'CSSCA', 
     'Information Retrieval and Text Mining': 'Info_Retrieval_Text_Mining', 
     'Interpretability and Analysis of Models for NLP': 'IAM_for_NLP', 
@@ -80,10 +80,10 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
                     "aclweb.org/ACL/2022/Conference"
                     ],
                 content = {
-                    "paper_link": note.content["paper_link"],
-                    "paper_type":note.content["paper_type"],
-                    "track":note.content["track"],
-                    "comments_to_the_senior_area_chairs":note.content.get("comments_to_the_senior_area_chairs"),
+                    "paper_link": acl_commitment_note.content["paper_link"],
+                    "paper_type":acl_commitment_note.content["paper_type"],
+                    "track":acl_commitment_note.content["track"],
+                    "comments_to_the_senior_area_chairs":acl_commitment_note.content.get("comments to the senior area chairs"),
                     "authorids":original_arr_sub.content["authorids"],
                     "authors": original_arr_sub.content["authors"],
                     "title":original_arr_sub.content["title"],
@@ -91,14 +91,14 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
                     "data":original_arr_sub.content.get("data"),
                     "software":original_arr_sub.content.get("software"),
                     "pdf":original_arr_sub.content.get("pdf"), #is it okay that this is the original note forum? 
-                    "acl_preprint": note.content.get("ACL_preprint"),
+                    "acl_preprint": acl_commitment_note.content.get("ACL_preprint"),
                     "existing_preprints": original_arr_sub.content.get("existing_preprints"),
                     "preprint":original_arr_sub.content.get("preprint"),
                     "TL;DR":original_arr_sub.content.get('TL;DR'),
                     "previous_URL": original_arr_sub.content.get("previous_URL"),
-                    "authorship": note.content.get("authorship"),
-                    "paper_version": note.content.get("paper version"),
-                    "anonymity_period": note.content.get("anonymity period"),
+                    "authorship": acl_commitment_note.content.get("authorship"),
+                    "paper_version": acl_commitment_note.content.get("paper version"),
+                    "anonymity_period": acl_commitment_note.content.get("anonymity period"),
                     "commitment_note": f"https://openreview.net/forum?id={acl_commitment_note.forum}"
                 }  
             )

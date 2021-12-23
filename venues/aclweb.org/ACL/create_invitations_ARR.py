@@ -45,26 +45,26 @@ submission_invitation = openreview.Invitation(
         "content":{
             "title": {
                 "description": "Title of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$",
-                "order": 10,
+                "order": 1,
                 "value-regex": ".{1,250}",
                 "required": True
             },
             "authors": {
                 "description": "Comma separated list of author names.",
-                "order": 11,
+                "order": 2,
                 "values-regex": "[^;,\\n]+(,[^,\\n]+)*",
                 "required": True,
                 "hidden": True
             },
             "authorids": {
                 "description": "Search author profile by first, middle and last name or email address. If the profile is not found, you can add the author by completing first, middle, and last names as well as author email address.",
-                "order": 12,
+                "order": 3,
                 "values-regex": "~.*|([a-z0-9_\\-\\.]{1,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,},){0,}([a-z0-9_\\-\\.]{1,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,})",
                 "required": True
             },
             "abstract": {
                 "description": "Abstract of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$",
-                "order": 14,
+                "order": 4,
                 "value-regex": "[\\S\\s]{1,5000}",
                 "required": True
             },
@@ -127,7 +127,7 @@ submission_invitation = openreview.Invitation(
                     "Phonology, Morphology and Word Segmentation",
                     "Resources and Evaluation",
                     "Semantics: Lexical",
-                    "Semantics: Sentence-level, Textual Inference, and Other areas",
+                    "Semantics: Sentence level, Textual Inference, and Other areas",
                     "Syntax: Tagging, Chunking and Parsing",
                     "Information Extraction",
                     "Computational Social Science and Cultural Analytics",
@@ -150,7 +150,7 @@ submission_invitation = openreview.Invitation(
                 },
             "comments_to_the_senior_area_chairs": {
                 "description": "Comment to Senior Area Chairs (500 words)",
-                "order": 13,
+                "order": 50,
                 "value-regex": "[\\S\\s]{0,3000}",
                 "required": False
                 },
@@ -177,7 +177,8 @@ submission_invitation = openreview.Invitation(
             },
             "commitment_note":{
                 "value-regex":".*",
-                "required": True
+                "required": True,
+                "order": 30
             },
             "acl_preprint": {
             "description": "Would the authors like to have a public anonymous pre-print of the submission? This includes PDF, abstract and all supplemental material.",
@@ -194,7 +195,8 @@ submission_invitation = openreview.Invitation(
                 "yes",
                 "no"
             ],
-            "required": False
+            "required": False,
+            "order":31
             },
             "existing_preprints": {
             "values-regex": ".{1,500}",
@@ -344,7 +346,7 @@ commitment = openreview.Invitation(
                 "description": "Select the track that best fits your submission.",
                 "value-radio": [
                     "Ethics in NLP",
-                    "Linguistic theories, Cognitive Modeling and Psycholinguistics",
+                    "Linguistic Theories, Cognitive Modeling and Psycholinguistics",
                     "Machine Learning for NLP",
                     "Phonology, Morphology and Word Segmentation",
                     "Resources and Evaluation",
