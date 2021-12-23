@@ -418,6 +418,9 @@ official_review = openreview.Invitation(
         "readers" : {
             "values-regex":".*"
             },
+        "nonreaders" : {
+            "values-regex":".*"
+            },
         "writers": {"values": [
                 'aclweb.org/ACL/2022/Conference'
         ]},
@@ -576,6 +579,12 @@ official_review = openreview.Invitation(
                     "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
                     "required": False,
                     "markdown": True
+                    },
+                "link_to_original_review":{
+                    "value-regex": ".{0,500}",
+                    "description": "Link to the review on the original ARR submission",
+                    "required": True,
+                    "markdown": True
                     }
                 }
             }
@@ -597,6 +606,9 @@ metareview = openreview.Invitation(
         "readers" : {
             "values-regex":".*"
             },
+        "nonreaders" : {
+            "values-regex":".*"
+            },
         "writers": {
             "values": [
                 'aclweb.org/ACL/2022/Conference'
@@ -605,6 +617,12 @@ metareview = openreview.Invitation(
              "values-regex": '.*'
         },
         "content":{
+            "title": {
+                "description": "Title of your meta review",
+                "order": 1,
+                "value-regex": ".{1,250}",
+                "required": False
+            },
             "metareview": {
                 "order": 1,
                 "value-regex": "[\\S\\s]{1,10000}",
@@ -649,6 +667,12 @@ metareview = openreview.Invitation(
                 "value-regex": "[\\S\\s]{0,5000}",
                 "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
                 "required": False,
+                "markdown": True
+                },
+            "link_to_original_metareview":{
+                "value-regex": ".{0,500}",
+                "description": "Link to the metareview on the original ARR submission",
+                "required": True,
                 "markdown": True
                 }
             }
