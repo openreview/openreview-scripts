@@ -176,16 +176,17 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number),
             '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number)
             ]
-    author_group = openreview.tools.get_profiles(client, ids_or_emails = authors.members, with_publications=False)
+    author_group = openreview.tools.get_profiles(client, ids_or_emails = authors.members, with_publications=True)
     
     #print(acl_submission.content['track'])
     for SAC in (openreview.tools.get_group(client, "aclweb.org/ACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']]))).members: 
         #print(SAC)
-        SAC_profile = openreview.tools.get_profiles(client, SAC)
+        SAC_profile = openreview.tools.get_profiles(client, [SAC], with_publications = True)
         if(SAC_profile):
             conflicts = openreview.tools.get_conflicts(author_group, SAC_profile[0])
             if conflicts: 
                 conflict_members.append(SAC_profile[0].id)
+    
     conflicts = openreview.Group(
         id = 'aclweb.org/ACL/2022/Conference/Paper{number}/Conflicts'.format(number = number),
         signatures = [
