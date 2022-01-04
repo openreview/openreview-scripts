@@ -52,7 +52,6 @@ sac_name_dictionary = {
 
 # Post acl submission (calls post_blind_submission)
 def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_output_dict):
-    # Check for later duplicates 
     
     eligible_arr_invitations = ['aclweb.org/ACL/ARR/2021/May/', 'aclweb.org/ACL/ARR/2021/Jun/', 'aclweb.org/ACL/ARR/2021/July/', 'aclweb.org/ACL/ARR/2021/August/', 'aclweb.org/ACL/ARR/2021/September/','aclweb.org/ACL/ARR/2021/October/','aclweb.org/ACL/ARR/2021/November/']    
     original_arr_sub_id = None
@@ -69,7 +68,7 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
         #print(original_arr_sub_id)
         original_arr_sub = client.get_note(original_arr_sub_id)
         submission_output_dict[acl_commitment_note.forum]['arr_submission_forum'] = original_arr_sub.forum
-        if acl_commitment_note.signatures[0] in original_arr_sub.content['authorids']:
+        if (openreview.tools.get_profiles(client,[acl_commitment_note.signatures[0]])[0].id) in [profile.id for profile in openreview.tools.get_profiles(client, original_arr_sub.content['authorids'])]:
             # Create new note to submit to ACL 
             acl_sub = openreview.Note(
                 invitation="aclweb.org/ACL/2022/Conference/-/Submission",
@@ -169,6 +168,8 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     authors_posted = client.post_group(authors)
     assert authors_posted, print('Failed to post author groups: ', acl_submission_id)
 
+    
+
     # Create paperX/Conflicts
     conf_id = arr_submission.invitation.rsplit('/', 2)[0]
     arr_number = arr_submission.number
@@ -176,6 +177,31 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number),
             '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number)
             ]
+    # Find all previous & future submissions and for each one add the reviewers and ACs to the conflict group 
+    def get_reviewer_AC_conflicts(current_submission):
+        if current_submission.content.get('previous_URL'):
+            previous_forum = (current_submission.content.get('previous_URL').split('=')[1]).split('&')[0]
+            previous_submission = client.get_note(previous_forum)
+            conf_id = previous_submission.invitation.rsplit('/', 2)[0]
+            arr_number = previous_submission.number
+            reviewers = '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number)
+            area_chairs = '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number)
+            conflict_members.append(reviewers)
+            conflict_members.append(area_chairs)
+            get_reviewer_AC_conflicts(previous_submission)
+    
+    get_reviewer_AC_conflicts(arr_submission)
+    later_versions = submission_output_dict[acl_commitment_note.forum]['later_versions?']
+    if later_versions:
+        for version in later_versions: 
+            later_submission = client.get_note(version)
+            conf_id = later_submission.invitation.rsplit('/', 2)[0]
+            arr_number = later_submission.number
+            reviewers = '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number)
+            area_chairs = '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number)
+            conflict_members.append(reviewers)
+            conflict_members.append(area_chairs)
+    
     author_group = openreview.tools.get_profiles(client, ids_or_emails = authors.members, with_publications=True)
     
     #print(acl_submission.content['track'])
@@ -186,6 +212,8 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             conflicts = openreview.tools.get_conflicts(author_group, SAC_profile[0])
             if conflicts: 
                 conflict_members.append(SAC_profile[0].id)
+    
+    
     
     conflicts = openreview.Group(
         id = 'aclweb.org/ACL/2022/Conference/Paper{number}/Conflicts'.format(number = number),
@@ -270,6 +298,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
             )
             acl_review.content['title'] = f'Official Review of Paper{acl_blind_submission.number} by {arr_review.invitation.split("/")[4]} Reviewer'
             acl_review.content['link_to_original_review'] = f'https://openreview.net/forum?id={arr_review.forum}&noteId={arr_review.id}'
+            acl_review.content['reviewer_id'] = arr_review.tauthor
             acl_review_posted = client.post_note(acl_review)
             assert acl_review_posted, print('failed to post review ', acl_review.id)
             acl_reviews_dictionary[acl_review_posted.signatures[0]] = acl_review_posted.replyto
@@ -307,6 +336,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
             )
             acl_metareview.content['link_to_original_metareview'] = f'https://openreview.net/forum?id={arr_metareview.forum}&noteId={arr_metareview.id}'
             acl_metareview.content['title'] = f'Meta Review of Paper{acl_blind_submission.number} by {arr_metareview.invitation.split("/")[4]} Area Chair'
+            acl_metareview.content['area_chair_id'] = arr_metareview.tauthor
             acl_metareview_posted = client.post_note(acl_metareview)
             assert acl_metareview_posted, print('failed to post metareview ', acl_metareview.id)
             acl_metareviews_dictionary[acl_metareview_posted.signatures[0]] = acl_metareview_posted.replyto

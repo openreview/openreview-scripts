@@ -436,15 +436,20 @@ official_review = openreview.Invitation(
                 "description": "Brief summary of your review.",
                 "required": False
             },
-            "review": {
+            "reviewer_id":{
                 "order": 2,
+                "value-regex": ".*",
+                "required": True
+            },
+            "review": {
+                "order": 3,
                 "value-regex": "[\\S\\s]{1,200000}",
                 "description": "Please provide an evaluation of the quality, clarity, originality and significance of this work, including a list of its pros and cons (max 200000 characters). Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq",
                 "required": False,
                 "markdown": True
             },
             "rating": {
-                "order": 3,
+                "order": 4,
                 "value-regex": ".*",
                 "required": False
             },
@@ -459,35 +464,35 @@ official_review = openreview.Invitation(
                 "required": False
             },
             "paper_summary": {
-                "order": 1,
+                "order": 5,
                 "description": "Describe what this paper is about. This should help action editors and area chairs to understand the topic of the work and highlight any possible misunderstandings. Maximum length 1000 characters.",
                 "value-regex": "[\\S\\s]{0,10000}",
                 "required": False,
                 "markdown": True
                 },
                 "summary_of_strengths": {
-                    "order": 2,
-                    "value-regex": "[\\S\\s]{0,5000}",
+                    "order": 6,
+                    "value-regex": "[\\S\\s]{0,10000}",
                     "description": "What are the major reasons to publish this paper at a selective *ACL venue? These could include novel and useful methodology, insightful empirical results or theoretical analysis, clear organization of related literature, or any other reason why interested readers of *ACL papers may find the paper useful. Maximum length 5000 characters.",
                     "required": False,
                     "markdown": True
                 },
                 "summary_of_weaknesses": {
-                    "order": 3,
-                    "value-regex": "[\\S\\s]{0,5000}",
+                    "order": 7,
+                    "value-regex": "[\\S\\s]{0,10000}",
                     "description": "What are the concerns that you have about the paper that would cause you to favor prioritizing other high-quality papers that are also under consideration for publication? These could include concerns about correctness of the results or argumentation, limited perceived impact of the methods or findings (note that impact can be significant both in broad or in narrow sub-fields), lack of clarity in exposition, or any other reason why interested readers of *ACL papers may gain less from this paper than they would from other papers under consideration. Where possible, please number your concerns so authors may respond to them individually. Maximum length 5000 characters.",
                     "required": False,
                     "markdown": True
                 },
                 "comments,_suggestions_and_typos": {
-                    "order": 4,
-                    "value-regex": "[\\S\\s]{0,5000}",
+                    "order": 8,
+                    "value-regex": "[\\S\\s]{0,10000}",
                     "description": "If you have any comments to the authors about how they may improve their paper, other than addressing the concerns above, please list them here.\n Maximum length 5000 characters.",
                     "required": False,
                     "markdown": True
                 },
                 "overall_assessment": {
-                    "order": 5,
+                    "order": 9,
                     "value-radio": [
                         "5 = Top-Notch: This paper has great merit, and easily warrants acceptance in a *ACL top-tier venue.",
                         "4.5 ",
@@ -502,7 +507,7 @@ official_review = openreview.Invitation(
                     "required": False
                 },
                 "best_paper": {
-                    "order": 8,
+                    "order": 10,
                     "description": "Could this be a best paper in a top-tier *ACL venue?",
                     "value-radio": [
                         "Yes",
@@ -512,14 +517,14 @@ official_review = openreview.Invitation(
                     "required": True
                 },
                 "best_paper_justification": {
-                    "order": 9,
+                    "order": 11,
                     "description": "If the answer on best paper potential is Yes or Maybe, please justify your decision.",
-                    "value-regex": "[\\S\\s]{0,1000}",
+                    "value-regex": "[\\S\\s]{0,10000}",
                     "required": False,
                     "markdown": True
                     },
                 "replicability": {
-                    "order": 11,
+                    "order": 12,
                     "description": "Will members of the ACL community be able to reproduce or verify the results in this paper?",
                     "value-radio": [
                         "5 = They could easily reproduce the results.",
@@ -531,7 +536,7 @@ official_review = openreview.Invitation(
                     "required": False
                 },
                 "datasets": {
-                    "order": 12,
+                    "order": 13,
                     "description": "If the authors state (in anonymous fashion) that datasets will be released, how valuable will they be to others?",
                     "value-radio": [
                         "5 = Enabling: The newly released datasets should affect other people's choice of research or development projects to undertake.",
@@ -543,7 +548,7 @@ official_review = openreview.Invitation(
                     "required": False
                     },
                 "software": {
-                    "order": 13,
+                    "order": 14,
                     "description": "If the authors state (in anonymous fashion) that their software will be available, how valuable will it be to others?",
                     "value-radio": [
                         "5 = Enabling: The newly released software should affect other people's choice of research or development projects to undertake.",
@@ -555,7 +560,7 @@ official_review = openreview.Invitation(
                     "required": False
                 },
                 "author_identity_guess": {
-                    "order": 14,
+                    "order": 15,
                     "description": "Do you know the author identity or have an educated guess?",
                     "value-radio": [
                         "5 = From a violation of the anonymity-window or other double-blind-submission rules, I know/can guess at least one author's name.",
@@ -567,21 +572,21 @@ official_review = openreview.Invitation(
                     "required": True
                 },
                 "ethical_concerns": {
-                    "order": 15,
-                    "value-regex": "[\\S\\s]{0,2000}",
+                    "order": 16,
+                    "value-regex": "[\\S\\s]{0,10000}",
                     "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
                     "required": False,
                     "markdown": True
                     },
                 "ethical_concernes": {
-                    "order": 15,
-                    "value-regex": "[\\S\\s]{0,2000}",
+                    "order": 17,
+                    "value-regex": "[\\S\\s]{0,10000}",
                     "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
                     "required": False,
                     "markdown": True
                     },
                 "link_to_original_review":{
-                    "value-regex": ".{0,500}",
+                    "value-regex": ".{0,10000}",
                     "description": "Link to the review on the original ARR submission",
                     "required": True,
                     "markdown": True
@@ -623,29 +628,34 @@ metareview = openreview.Invitation(
                 "value-regex": ".{1,250}",
                 "required": False
             },
+            "area_chair_id":{
+                "order": 2,
+                "value-regex": ".*",
+                "required": True
+            },
             "metareview": {
-                "order": 1,
+                "order": 3,
                 "value-regex": "[\\S\\s]{1,10000}",
                 "description": "Describe what this paper is about. This should help SACs at publication venues understand what sessions the paper might fit in. Maximum 5000 characters. Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq",
                 "required": False,
                 "markdown": True
                 },
             "summary_of_reasons_to_publish": {
-                "order": 2,
+                "order": 4,
                 "value-regex": "[\\S\\s]{1,10000}",
                 "description": "What are the major reasons to publish this paper at a *ACL venue? This should help SACs at publication venues understand why they might want to accept the paper. Maximum 5000 characters.",
                 "required": False,
                 "markdown": True
                 },
             "summary_of_suggested_revisions": {
-                "order": 3,
+                "order": 5,
                 "value-regex": "[\\S\\s]{1,10000}",
                 "description": "What revisions could the authors make to the research and the paper that would improve it? This should help authors understand the reviews in context, and help them plan any future resubmission. Maximum 5000 characters.",
                 "required": False,
                 "markdown": True
                 },
             "overall_assessment": {
-                "order": 4,
+                "order": 6,
                 "value-radio": [
                     "5 = The paper is largely complete and there are no clear points of revision",
                     "4 = There are minor points that may be revised",
@@ -656,21 +666,21 @@ metareview = openreview.Invitation(
                 "required": False
                 },
             "suggested_venues": {
-                "order": 5,
+                "order": 7,
                 "description": "You are encouraged to suggest conferences or workshops that would be suitable for this paper.",
-                "value-regex": "[\\S\\s]{1,5000}",
+                "value-regex": "[\\S\\s]{1,10000}",
                 "markdown": True,
                 "required": False
                 },
             "ethical_concernes": {
-                "order": 6,
-                "value-regex": "[\\S\\s]{0,5000}",
+                "order": 8,
+                "value-regex": "[\\S\\s]{0,10000}",
                 "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
                 "required": False,
                 "markdown": True
                 },
             "link_to_original_metareview":{
-                "value-regex": ".{0,500}",
+                "value-regex": ".{0,10000}",
                 "description": "Link to the metareview on the original ARR submission",
                 "required": True,
                 "markdown": True
