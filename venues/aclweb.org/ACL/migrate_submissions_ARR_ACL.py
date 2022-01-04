@@ -357,7 +357,7 @@ acl_submission_dict = {acl_submission.content['paper_link'].split('=')[1]:acl_su
 submission_output_dict = {}
 for note in commitment_notes:
     arr_submission_forum = note.content['paper_link'].split('=')[1]
-    submission_output_dict[note.forum] = {'acl_blind_submission_forum': None, 'arr_submission_forum': None, 'num_reviews':None, 'num_metareviews':None, 'later_versions':None, 'was_migrated':False}
+    submission_output_dict[note.forum] = {'acl_blind_submission_forum': None, 'arr_submission_forum': None, 'num_reviews':None, 'num_metareviews':None, 'later_versions':None, 'duplicate_commitments':None,'was_migrated':False}
 
     later_duplicates = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/ARR/2021/.*',content = {'previous_URL':f'https://openreview.net/forum?id={arr_submission_forum}'}))  
     if later_duplicates:
@@ -386,10 +386,22 @@ for note in commitment_notes:
         #post_metareviews(blind_submissions[acl_submission_dict[arr_submission_forum].id].forum, blind_submissions[acl_submission_dict[arr_submission_forum].id], client.get_note(arr_submission_forum), submission_output_dict)
         #print(f"{submission_output_dict['acl_commitment_forum']},{submission_output_dict['acl_blind_submission_forum']},{submission_output_dict['arr_submission_forum']},{submission_output_dict['num_reviews']},{submission_output_dict['num_metareviews']}, {submission_output_dict['is_latest_version']}, {submission_output_dict['was_migrated']}")
 
-fields = ['acl_commitment_note', 'acl_blind_submission', 'original_arr_submission', 'num_reviews', 'num_metareviews', 'later_versions?', 'was_migrated']
+fields = ['acl_commitment_note', 'acl_blind_submission', 'original_arr_submission', 'num_reviews', 'num_metareviews', 'later_versions?', 'duplicate_commitments', 'was_migrated']
 rows = []
+commitment_links = {commitment.forum: commitment.content['paper_link'].split('=')[1] for commitment in commitment_notes}
+
 for key,value in submission_output_dict.items():
-    list = [key, value['acl_blind_submission_forum'], value['arr_submission_forum'], value['num_reviews'], value['num_metareviews'], value['later_versions?'], value['was_migrated']]
+    acl_submission = client.get_note(value['acl_blind_submission_forum'])
+    count = 0
+    duplicate_commitments = []
+    # Creates a list of commitment note forums with the same original arr paper link forum 
+    for forum, link in commitment_links.items(): # key is commitment note forum, value is link
+        if link == acl_submission.content['paper_link'].split('=')[1]:
+            count+=1
+            duplicate_commitments.append(forum)
+    if count > 1:
+        value['duplicate_commitments'] = duplicate_commitments
+    list = [key, value['acl_blind_submission_forum'], value['arr_submission_forum'], value['num_reviews'], value['num_metareviews'], value['later_versions?'], value['duplicate_commitments'], value['was_migrated']]
     rows.append(list)
 with open('output_data.csv', 'w') as csvfile:
     csvwriter = csv.writer(csvfile) 
