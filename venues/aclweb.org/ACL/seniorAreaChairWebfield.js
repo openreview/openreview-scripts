@@ -815,6 +815,8 @@ var buildPaperTableRow = function(note) {
   var metaReview = note.details.metaReview;
   var decision = note.details.decision;
   var cellCheck = { selected: false, noteId: note.id };
+  var cell1 = note;
+  cell1.referrer = paperTableReferrerUrl;
   var areaChairNames = { name: 'No Area Chair' };
   var areachairProgressData = {
     numMetaReview: metaReview ? 'One' : 'No',
