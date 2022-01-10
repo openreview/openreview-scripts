@@ -1004,7 +1004,7 @@ var displayPaperStatusTable = function() {
       var areachairHtml = Handlebars.templates.noteAreaChairs(d.areachairProgressData);
       var decisionHtml = '<h4>' + (d.decision ? d.decision.content.decision : 'No Decision') + '</h4>';
 
-      var rows = [checked, numberHtml, summaryHtml, reviewHtml];
+      var rows = [checked, numberHtml, summaryHtml];
       if (AREA_CHAIRS_ID) {
         rows.push(areachairHtml);
       }
@@ -1012,7 +1012,7 @@ var displayPaperStatusTable = function() {
       return rows;
     });
 
-    var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary', 'Review Progress'];
+    var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary'];
     if (AREA_CHAIRS_ID) {
       headings.push('Status');
     }
