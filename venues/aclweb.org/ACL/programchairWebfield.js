@@ -110,9 +110,7 @@ var main = function() {
   renderHeader();
 
   $.when(
-    getCommitteeMembers(REVIEWERS_ID),
-    getCommitteeMembers(AREA_CHAIRS_ID),
-    getCommitteeMembers(SENIOR_AREA_CHAIRS_ID),
+    getTrackGroups(),
     getGroups(),
     getBlindedNotes(),
     getCommitmentNotes(),
@@ -131,9 +129,7 @@ var main = function() {
     getInvitationMap(),
     getSACEdges()
   ).then(function(
-    reviewers,
-    areaChairs,
-    seniorAreaChairs,
+    trackGroups,
     groups,
     blindedNotes,
     commitmentNotes,
@@ -152,6 +148,10 @@ var main = function() {
     invitationMap,
     sacEdges
   ) {
+    var reviewers = [];
+    var areaChairs = [];
+    var seniorAreaChairs = [];
+    var SACByTrack = _.keyBy(trackGroups, 'id');
     var noteNumbers = blindedNotes.map(function(note) { return note.number; });
     var acRankingByPaper = {};
     var officialReviews = [];
@@ -197,7 +197,10 @@ var main = function() {
       submission.details.reviewers = reviewerGroupMaps.byNotes[submission.number];
       submission.details.areachairs = areaChairGroupMaps.byNotes[submission.number];
       submission.details.seniorAreaChairs = seniorAreaChairGroupMaps.byNotes[submission.number];
-
+      var conflicts = groups.conflictGroups[submission.number].filter(function(c) { return !c.startsWith('aclweb.org')});
+      var trackSACs = SACByTrack['aclweb.org/ACL/2022/Conference/' + sacNameDictionary[submission.content.track] + '/Senior_Area_Chairs'].members;
+      submission.details.conflicts = conflicts;
+      submission.details.assignedSACs = trackSACs.filter(function(s) { return !conflicts.includes(s); });
     })
 
     pcAssignmentTags.forEach(function(tag) {
@@ -210,7 +213,7 @@ var main = function() {
     conferenceStatusData = {
       reviewers: reviewers,
       areaChairs: areaChairs,
-      seniorAreaChairs: seniorAreaChairs,
+      seniorAreaChairs: [],
       sacByAc: sacByAc,
       acsBySac: acsBySac,
       blindedNotes: blindedNotes,
@@ -389,6 +392,13 @@ var getCommitteeMembers = function(committeeId) {
   });
 };
 
+var getTrackGroups = function() {
+  return Webfield.get('/groups', { regex: 'aclweb.org/ACL/2022/Conference/.*/Senior_Area_Chairs', select: 'id,members' })
+  .then(function(result) {
+    return result.groups;
+  });
+};
+
 var getBlindedNotes = function() {
   return Webfield.getAll('/notes', {
     invitation: BLIND_SUBMISSION_ID,
@@ -486,6 +496,7 @@ var getGroups = function() {
     var areaChairGroups = [];
     var anonAreaChairGroups = {};
     var seniorAreaChairGroups = [];
+    var conflictGroups = {};
     for (var groupIdx = 0; groupIdx < groups.length; groupIdx++) {
       var group = groups[groupIdx];
       if (group.id.endsWith('/Reviewers')) {
@@ -510,6 +521,9 @@ var getGroups = function() {
         }
       } else if (group.id.endsWith('Senior_Area_Chairs')) {
         seniorAreaChairGroups.push(group);
+      } else if (group.id.endsWith('/Conflicts')) {
+        var number = getNumberfromGroup(group.id, 'Paper');
+        conflictGroups[number] = group.members;
       }
     }
     return {
@@ -517,7 +531,8 @@ var getGroups = function() {
       reviewerGroups: reviewerGroups,
       anonAreaChairGroups: anonAreaChairGroups,
       areaChairGroups: areaChairGroups,
-      seniorAreaChairGroups: seniorAreaChairGroups
+      seniorAreaChairGroups: seniorAreaChairGroups,
+      conflictGroups: conflictGroups
     };
   });
 };
@@ -1708,7 +1723,17 @@ var displayPaperStatusTable = function() {
       var numberHtml = '<strong class="note-number">' + d.note.number + '</strong>';
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
       //var reviewHtml = Handlebars.templates.noteReviewers(d.reviewProgressData);
-      var areachairHtml = Handlebars.templates.noteAreaChairs(d.areachairProgressData);
+      var areachairHtml = '<div>' +
+      '<h4><a target="_blank" href="/group/info?id=aclweb.org/ACL/2022/Conference/' + sacNameDictionary[d.note.content.track] + '/Senior_Area_Chairs">Assigned SACs</a></h4>' +
+      '<lu>' +
+          d.note.details.assignedSACs.map(function(a) { return '<li><a target="_blank" href="/profile?id=' + a + '">' + view.prettyId(a) + '</a></li>'; }).join('\n') +
+      '</lu>' +
+      '</br>' +
+      '<h4><a target="_blank" href="/group/info?id=aclweb.org/ACL/2022/Conference/Paper' + d.note.number + '/Conflicts">Conflicted SACs</a></h4>' +
+      '<lu>' +
+          d.note.details.conflicts.filter(function(c) { return !c.startsWith('aclweb.org'); }).map(function(a) { return '<li><a target="_blank" href="/profile?id=' + a + '">' + view.prettyId(a) + '</a></li>'; }).join('\n') +
+      '</lu>' +
+      '</div>';
       var decisionHtml = '<h4>' + (d.decision.content.decision || 'No Decision') + '</h4>';
 
       var rows = [checked, numberHtml, summaryHtml];
@@ -1720,9 +1745,7 @@ var displayPaperStatusTable = function() {
     });
 
     var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary'];
-    if (AREA_CHAIRS_ID) {
-      headings.push('Status');
-    }
+    headings.push('Senior Area Chairs');
     headings.push('Decision');
 
     var $container = $(container);
@@ -3142,6 +3165,8 @@ var buildCSV = function(){
   'comments',
   'preprint',
   'commitment note',
+  'assigned SACs',
+  'conflicted SACs',
   'sac recommendation',
   'decision'].join(',') + '\n');
 
@@ -3198,6 +3223,8 @@ var buildCSV = function(){
     '"' + (paperTableRow.note.content['comments_to_the_senior_area_chairs'] || '').replace(/"/g, '""') + '"',
     '"' + paperTableRow.note.content.preprint + '"',
     '"' + paperTableRow.note.content.commitment_note + '"',
+    '"' + paperTableRow.note.details.assignedSACs.join('|') + '"',
+    '"' + paperTableRow.note.details.conflicts.join('|') + '"',
     paperTableRow.areachairProgressData.metaReview && paperTableRow.areachairProgressData.metaReview.content.recommendation,
     paperTableRow.decision && paperTableRow.decision.content && paperTableRow.decision.content.decision
     ].join(',') + '\n');
