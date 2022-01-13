@@ -47,16 +47,17 @@ var propertiesAllowed ={
     title:['note.content.title'],
     author:['note.content.authors','note.content.authorids'], // multi props
     keywords:['note.content.keywords'],
+    track:['note.content.track'],
     reviewer:['reviewProgressData.reviewers'],
-    numReviewersAssigned:['reviewProgressData.numReviewers'],
-    numReviewsDone:['reviewProgressData.numSubmittedReviews'],
-    areaChair:['areachairProgressData.areachair.name'],
-    ratingAvg:['reviewProgressData.averageRating'],
-    ratingMax:['reviewProgressData.maxRating'],
-    ratingMin:['reviewProgressData.minRating'],
-    confidenceAvg:['reviewProgressData.averageConfidence'],
-    confidenceMax:['reviewProgressData.maxConfidence'],
-    confidenceMin:['reviewProgressData.minConfidence'],
+    // numReviewersAssigned:['reviewProgressData.numReviewers'],
+    // numReviewsDone:['reviewProgressData.numSubmittedReviews'],
+    // areaChair:['areachairProgressData.areachair.name'],
+    // ratingAvg:['reviewProgressData.averageRating'],
+    // ratingMax:['reviewProgressData.maxRating'],
+    // ratingMin:['reviewProgressData.minRating'],
+    // confidenceAvg:['reviewProgressData.averageConfidence'],
+    // confidenceMax:['reviewProgressData.maxConfidence'],
+    // confidenceMin:['reviewProgressData.minConfidence'],
     replyCount:['reviewProgressData.forumReplyCount'],
     decision: ['decision.content.decision'],
 }
@@ -1426,7 +1427,7 @@ var displayCommitmentStatusTable = function() {
   var sortOptions = {
     Paper_Number: function(row) { return row.note.number; },
     Paper_Title: function(row) { return _.trim(row.note.content.title).toLowerCase(); },
-    Track: function(row){return row.note.content.track;}
+    Track: function(row){return _.trim(row.note.content.track).toLowerCase();}
   };
 
   var sortResults = function(newOption, switchOrder) {
@@ -1442,12 +1443,14 @@ var displayCommitmentStatusTable = function() {
   var searchResults = function(searchText) {
     $(container).data('lastPageNum', 1);
     $(container + ' .form-sort').val('Paper_Number');
+    $(container + ' .form-sort').val('Track');
 
     // Currently only searching on note number and note title
     var filterFunc = function(row) {
       return (
         (row.note.number + '').indexOf(searchText) === 0 ||
-        row.note.content.title.toLowerCase().indexOf(searchText) !== -1
+        row.note.content.title.toLowerCase().indexOf(searchText) !== -1 ||
+        row.note.content.track.toLowerCase().indexOf(searchText) !== -1
       );
     };
 
@@ -1582,7 +1585,8 @@ var displayPaperStatusTable = function() {
         row.note.content.title,
         row.note.content.keywords ? row.note.content.keywords.join('\n') : null,
         row.note.content.authors.join('\n'),
-        row.note.content.authorids.join('\n')
+        row.note.content.authorids.join('\n'),
+        row.note.content.track
       ].join('\n').toLowerCase()
       return search.indexOf(searchText) !== -1;
     };
@@ -3128,7 +3132,16 @@ var buildCSV = function(){
   'forum',
   'title',
   'abstract',
+  'TL;DR',
   'authors',
+  'paper link',
+  'paper type',
+  'track',
+  'ACL preprint',
+  'existing preprints',
+  'comments',
+  'preprint',
+  'commitment note',
   'sac recommendation',
   'decision'].join(',') + '\n');
 
@@ -3175,7 +3188,16 @@ var buildCSV = function(){
     '"https://openreview.net/forum?id=' + paperTableRow.note.id + '"',
     '"' + title + '"',
     '"' + abstract + '"',
+    '"' + (paperTableRow.note.content['TL;DR'] || '').replace(/"/g, '""') + '"',
     '"' + authors.join('|') + '"',
+    '"' + paperTableRow.note.content.paper_link + '"',
+    '"' + paperTableRow.note.content.paper_type + '"',
+    '"' + paperTableRow.note.content.track + '"',
+    '"' + paperTableRow.note.content.acl_preprint + '"',
+    '"' + paperTableRow.note.content.existing_preprints + '"',
+    '"' + (paperTableRow.note.content['comments_to_the_senior_area_chairs'] || '').replace(/"/g, '""') + '"',
+    '"' + paperTableRow.note.content.preprint + '"',
+    '"' + paperTableRow.note.content.commitment_note + '"',
     paperTableRow.areachairProgressData.metaReview && paperTableRow.areachairProgressData.metaReview.content.recommendation,
     paperTableRow.decision && paperTableRow.decision.content && paperTableRow.decision.content.decision
     ].join(',') + '\n');
@@ -3211,7 +3233,7 @@ var buildCommitmentsCSV = function(){
     '"' + note.content.track + '"',
     '"' + note.content.ACL_preprint + '"',
     '"' + note.content.existing_preprints + '"',
-    '"' + (note.content['comments to the senior area chairs'] || '') + '"',
+    '"' + (note.content['comments to the senior area chairs'] || '').replace(/"/g, '""') + '"',
     ].join(',') + '\n');
   });
 
