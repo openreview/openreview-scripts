@@ -150,8 +150,8 @@ var main = function() {
   ) {
     var reviewers = [];
     var areaChairs = [];
-    var seniorAreaChairs = [];
     var SACByTrack = _.keyBy(trackGroups, 'id');
+    var seniorAreaChairs = [];
     var noteNumbers = blindedNotes.map(function(note) { return note.number; });
     var acRankingByPaper = {};
     var officialReviews = [];
@@ -770,8 +770,8 @@ var getOfficialReviews = function(notes) {
   _.forEach(notes, function(n) {
     var anonId = getNumberfromGroup(n.signatures[0], ANON_REVIEWER_NAME);
     // Need to parse rating and confidence strings into ints
-    ratingNumber = n.content[REVIEW_RATING_NAME] ? n.content[REVIEW_RATING_NAME].substring(0, n.content[REVIEW_RATING_NAME].indexOf(':')) : null;
-    n.rating = ratingNumber ? parseInt(ratingNumber, 10) : null;
+    ratingNumber = n.content[REVIEW_RATING_NAME].split('=')[0];
+    n.rating = ratingNumber ? parseFloat(ratingNumber) : null;
     confidenceMatch = n.content[REVIEW_CONFIDENCE_NAME] && n.content[REVIEW_CONFIDENCE_NAME].match(ratingExp);
     n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
     reviewByAnonId[anonId] = n;
@@ -940,14 +940,14 @@ var renderHeader = function() {
     }
   ];
 
-  if (SENIOR_AREA_CHAIRS_ID) {
-    tabs.push({
-      heading: 'Senior Area Chair Status',
-      id: 'seniorareachair-status',
-      content: loadingMessage,
-      extraClasses: 'horizontal-scroll'
-    });
-  }
+  // if (SENIOR_AREA_CHAIRS_ID) {
+  //   tabs.push({
+  //     heading: 'Senior Area Chair Status',
+  //     id: 'seniorareachair-status',
+  //     content: loadingMessage,
+  //     extraClasses: 'horizontal-scroll'
+  //   });
+  // }
 
   Webfield.ui.tabPanel(tabs);
   $('.tabs-container .nav-tabs > li').not(':first-child').addClass('loading');
@@ -3167,6 +3167,10 @@ var buildCSV = function(){
   'commitment note',
   'assigned SACs',
   'conflicted SACs',
+  'review scores',
+  'reviewers',
+  'metareview',
+  'action editor',
   'sac recommendation',
   'decision'].join(',') + '\n');
 
@@ -3200,6 +3204,18 @@ var buildCSV = function(){
     var title = paperTableRow.note.content.title.replace(/"/g, '""');
     var abstract = paperTableRow.note.content.abstract.replace(/"/g, '""');
     var authors = originalNote.content.authors ? originalNote.content.authors : [];
+    var reviews = Object.values(paperTableRow.note.details.reviews);
+    var scores = reviews.map(function(r) { return r.rating; });
+    var reviewers = reviews.map(function(r) { var token = r.content.reviewer_id.split('=')[1]; return token.substring(0, token.length - 1); });
+    var metareview = paperTableRow.note.details.metaReview;
+    var metareviewScore = '';
+    var actionEditor = '';
+    if (metareview) {
+      console.log(metareview);
+      metareviewScore = metareview.content.overall_assessment ? metareview.content.overall_assessment.split('=')[0].trim() : '';
+      actionEditor = metareview.content.action_editor_id.split('=')[1];
+      actionEditor = actionEditor.substring(0, actionEditor.length - 1);
+      }
     // var reviewersData = _.values(paperTableRow.reviewProgressData.reviewers);
     // var allReviewers = [];
     // var missingReviewers = [];
@@ -3225,6 +3241,10 @@ var buildCSV = function(){
     '"' + paperTableRow.note.content.commitment_note + '"',
     '"' + paperTableRow.note.details.assignedSACs.join('|') + '"',
     '"' + paperTableRow.note.details.conflicts.join('|') + '"',
+    '"' + scores.join('|') + '"',
+    '"' + reviewers.join('|') + '"',
+    '"' + metareviewScore + '"',
+    '"' + actionEditor + '"',
     paperTableRow.areachairProgressData.metaReview && paperTableRow.areachairProgressData.metaReview.content.recommendation,
     paperTableRow.decision && paperTableRow.decision.content && paperTableRow.decision.content.decision
     ].join(',') + '\n');
