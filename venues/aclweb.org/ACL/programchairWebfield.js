@@ -49,15 +49,15 @@ var propertiesAllowed ={
     keywords:['note.content.keywords'],
     track:['note.content.track'],
     reviewer:['reviewProgressData.reviewers'],
-    // numReviewersAssigned:['reviewProgressData.numReviewers'],
-    // numReviewsDone:['reviewProgressData.numSubmittedReviews'],
-    // areaChair:['areachairProgressData.areachair.name'],
-    // ratingAvg:['reviewProgressData.averageRating'],
-    // ratingMax:['reviewProgressData.maxRating'],
-    // ratingMin:['reviewProgressData.minRating'],
-    // confidenceAvg:['reviewProgressData.averageConfidence'],
-    // confidenceMax:['reviewProgressData.maxConfidence'],
-    // confidenceMin:['reviewProgressData.minConfidence'],
+    numReviewersAssigned:['reviewProgressData.numReviewers'],
+    numReviewsDone:['reviewProgressData.numSubmittedReviews'],
+    areaChair:['areachairProgressData.areachair.name'],
+    ratingAvg:['reviewProgressData.averageRating'],
+    ratingMax:['reviewProgressData.maxRating'],
+    ratingMin:['reviewProgressData.minRating'],
+    confidenceAvg:['reviewProgressData.averageConfidence'],
+    confidenceMax:['reviewProgressData.maxConfidence'],
+    confidenceMin:['reviewProgressData.minConfidence'],
     replyCount:['reviewProgressData.forumReplyCount'],
     decision: ['decision.content.decision'],
 }
@@ -1556,17 +1556,17 @@ var displayPaperStatusTable = function() {
   var sortOptions = {
     Paper_Number: function(row) { return row.note.number; },
     Paper_Title: function(row) { return _.trim(row.note.content.title).toLowerCase(); },
-    //Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
-    //Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
-    //Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
-    //Rating_Range: function(row) { return toNumber(row.reviewProgressData.maxRating) - toNumber(row.reviewProgressData.minRating); },
-    //Average_Confidence: function(row) { return toNumber(row.reviewProgressData.averageConfidence); },
-    //Max_Confidence: function(row) { return toNumber(row.reviewProgressData.maxConfidence); },
-    //Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
-    //Confidence_Range: function(row) { return toNumber(row.reviewProgressData.maxConfidence) - toNumber(row.reviewProgressData.minConfidence); },
-    //Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
-    //Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
-    //Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
+    Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
+    Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
+    Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
+    Rating_Range: function(row) { return toNumber(row.reviewProgressData.maxRating) - toNumber(row.reviewProgressData.minRating); },
+    Average_Confidence: function(row) { return toNumber(row.reviewProgressData.averageConfidence); },
+    Max_Confidence: function(row) { return toNumber(row.reviewProgressData.maxConfidence); },
+    Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
+    Confidence_Range: function(row) { return toNumber(row.reviewProgressData.maxConfidence) - toNumber(row.reviewProgressData.minConfidence); },
+    Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
+    Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
+    Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
     Number_of_Forum_Replies: function(row) { return row.reviewProgressData.forumReplyCount; },
     Track: function(row){return row.note.content.track;}
   };
@@ -1722,8 +1722,9 @@ var displayPaperStatusTable = function() {
         d.note.id + '" ' + (selectedNotesById[d.note.id] ? 'checked="checked"' : '') + '></label>';
       var numberHtml = '<strong class="note-number">' + d.note.number + '</strong>';
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
-      //var reviewHtml = Handlebars.templates.noteReviewers(d.reviewProgressData);
-      var areachairHtml = '<div>' +
+      var reviewHtml = Handlebars.templates.noteReviewers(d.reviewProgressData);
+      var areachairHtml = Handlebars.templates.noteAreaChairs(d.areachairProgressData);
+      var assignedSACHtml = '<div>' +
       '<h4><a target="_blank" href="/group/info?id=aclweb.org/ACL/2022/Conference/' + sacNameDictionary[d.note.content.track] + '/Senior_Area_Chairs">Assigned SACs</a></h4>' +
       '<lu>' +
           d.note.details.assignedSACs.map(function(a) { return '<li><a target="_blank" href="/profile?id=' + a + '">' + view.prettyId(a) + '</a></li>'; }).join('\n') +
@@ -1736,15 +1737,16 @@ var displayPaperStatusTable = function() {
       '</div>';
       var decisionHtml = '<h4>' + (d.decision.content.decision || 'No Decision') + '</h4>';
 
-      var rows = [checked, numberHtml, summaryHtml];
+      var rows = [checked, numberHtml, summaryHtml, reviewHtml];
       if (AREA_CHAIRS_ID) {
         rows.push(areachairHtml);
       }
+      rows.push(assignedSACHtml);
       rows.push(decisionHtml);
       return rows;
     });
 
-    var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary'];
+    var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary', 'Reviews', 'Meta Review'];
     headings.push('Senior Area Chairs');
     headings.push('Decision');
 
@@ -1801,9 +1803,11 @@ var displayPaperStatusTable = function() {
     $(container + ' .console-table th').eq(0).css('width', '3%');
     $(container + ' .console-table th').eq(1).css('width', '3%');
     if (AREA_CHAIRS_ID) {
-      $(container + ' .console-table th').eq(2).css('width', '39%');
-      $(container + ' .console-table th').eq(3).css('width', '35%');
-      $(container + ' .console-table th').eq(4).css('width', '20%');
+      $(container + ' .console-table th').eq(2).css('width', '27%');
+      $(container + ' .console-table th').eq(3).css('width', '23%');
+      $(container + ' .console-table th').eq(4).css('width', '19%');
+      $(container + ' .console-table th').eq(5).css('width', '15%');
+      $(container + ' .console-table th').eq(6).css('width', '10%');
     } else {
       $(container + ' .console-table th').eq(2).css('width', '64%');
       $(container + ' .console-table th').eq(3).css('width', '20%');
@@ -2489,47 +2493,22 @@ var buildPaperTableRow = function(note) {
   var combinedObj = {};
   var ratings = [];
   var confidences = [];
-  for (var reviewerNum in reviewerIds) {
-    var reviewer = reviewerIds[reviewerNum];
-    if (reviewerNum in completedReviews || reviewer.id in completedReviews) {
-      reviewObj = completedReviews[reviewerNum] || completedReviews[reviewer.id];
-      combinedObj[reviewerNum] = _.assign({}, reviewer, {
-        id: reviewer.id,
-        name: reviewer.name,
-        email: reviewer.email,
-        completedReview: true,
-        forum: reviewObj.forum,
-        note: reviewObj.id,
-        rating: reviewObj.rating,
-        confidence: reviewObj.confidence,
-        reviewLength: reviewObj.content.review && reviewObj.content.review.length,
-      });
-      ratings.push(reviewObj.rating);
-      confidences.push(reviewObj.confidence);
-    } else {
-      var forumUrl = 'https://openreview.net/forum?' + $.param({
-        id: note.forum,
-        noteId: note.id,
-        invitationId: getInvitationId(OFFICIAL_REVIEW_NAME, note.number)
-      });
-      var lastReminderSent = localStorage.getItem(forumUrl + '|' + reviewer.id);
-      combinedObj[reviewerNum] = _.assign({}, reviewer, {
-        id: reviewer.id,
-        name: reviewer.name,
-        email: reviewer.email,
-        forum: note.forum,
-        forumUrl: '/forum?' + $.param({
-          id: note.forum,
-          noteId: note.id,
-          invitationId: getInvitationId(OFFICIAL_REVIEW_NAME, note.number)
-        }),
-        paperNumber: note.number,
-        reviewerNumber: reviewerNum,
-        lastReminderSent: lastReminderSent ?
-          new Date(parseInt(lastReminderSent)).toLocaleDateString() :
-          lastReminderSent
-      });
-    }
+  for (var reviewerNum in completedReviews) {
+    reviewObj = completedReviews[reviewerNum];
+    var reviewer = reviewObj.content.reviewer_id;
+    combinedObj[reviewerNum] = _.assign({}, {
+      id: reviewer,
+      name: view.prettyId(reviewer),
+      email: reviewer,
+      completedReview: true,
+      forum: reviewObj.forum,
+      note: reviewObj.id,
+      rating: reviewObj.rating,
+      confidence: reviewObj.confidence,
+      reviewLength: reviewObj.content.review && reviewObj.content.review.length,
+    });
+    ratings.push(reviewObj.rating);
+    confidences.push(reviewObj.confidence);
   }
   var averageRating = 'N/A';
   var minRating = 'N/A';
@@ -2554,7 +2533,7 @@ var buildPaperTableRow = function(note) {
     paperNumber: note.number,
     forumReplyCount: note.details['replyCount'],
     numSubmittedReviews: Object.keys(completedReviews).length,
-    numReviewers: Object.keys(reviewerIds).length,
+    numReviewers: Object.keys(completedReviews).length,
     reviewers: combinedObj,
     averageRating: averageRating,
     maxRating: maxRating,
@@ -2570,20 +2549,23 @@ var buildPaperTableRow = function(note) {
   };
   reviewerSummaryMap[note.number] = reviewProgressData;
 
-  var areaChairNames = { name: 'No Area Chair' };
+  var actionEditor = 'No Action Editor';
   if (areachairProfile.length) {
     areaChairNames.name = areachairProfile.map(function(p) { return p.name; }).join(', ');
     areaChairNames.email = areachairProfile.map(function(p) { return p.email; }).join(', ');
   }
+  if (metaReview) {
+    actionEditor = metaReview.content.action_editor_id;
+  }
   var areachairProgressData = {
     numMetaReview: metaReview ? 'One' : 'No',
-    areachair: areaChairNames,
+    areachair: { name: view.prettyId(actionEditor)},
     metaReview: metaReview,
     referrer: paperTableReferrerUrl,
-    actions: [
-      { name: 'Assigned SACs', url: '/group/info?id=aclweb.org/ACL/2022/Conference/' + sacNameDictionary[note.content.track] + '/Senior_Area_Chairs' },
-      { name: 'Conflicts detected', url: '/group/info?id=aclweb.org/ACL/2022/Conference/Paper' + note.number + '/Conflicts' }
-    ]
+    // actions: [
+    //   { name: 'Assigned SACs', url: '/group/info?id=aclweb.org/ACL/2022/Conference/' + sacNameDictionary[note.content.track] + '/Senior_Area_Chairs' },
+    //   { name: 'Conflicts detected', url: '/group/info?id=aclweb.org/ACL/2022/Conference/Paper' + note.number + '/Conflicts' }
+    // ]
   };
   if (seniorAreaChairProfile.length) {
     var seniorAreaChair = {
@@ -2596,8 +2578,9 @@ var buildPaperTableRow = function(note) {
   return {
     cellCheck: cellCheck,
     note: cell1,
-    //reviewProgressData: reviewProgressData,
+    reviewProgressData: reviewProgressData,
     areachairProgressData: areachairProgressData,
+    assignedSACs: {},
     decision: decision
   }
 };
@@ -3206,15 +3189,14 @@ var buildCSV = function(){
     var authors = originalNote.content.authors ? originalNote.content.authors : [];
     var reviews = Object.values(paperTableRow.note.details.reviews);
     var scores = reviews.map(function(r) { return r.rating; });
-    var reviewers = reviews.map(function(r) { var token = r.content.reviewer_id.split('=')[1]; return token.substring(0, token.length - 1); });
+    var reviewers = reviews.map(function(r) { return r.content.reviewer_id; });
     var metareview = paperTableRow.note.details.metaReview;
     var metareviewScore = '';
     var actionEditor = '';
     if (metareview) {
       console.log(metareview);
       metareviewScore = metareview.content.overall_assessment ? metareview.content.overall_assessment.split('=')[0].trim() : '';
-      actionEditor = metareview.content.action_editor_id.split('=')[1];
-      actionEditor = actionEditor.substring(0, actionEditor.length - 1);
+      actionEditor = metareview.content.action_editor_id;
       }
     // var reviewersData = _.values(paperTableRow.reviewProgressData.reviewers);
     // var allReviewers = [];
