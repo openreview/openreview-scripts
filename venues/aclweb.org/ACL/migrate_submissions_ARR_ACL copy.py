@@ -136,8 +136,8 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             'aclweb.org/ACL/2022/Conference'
             ],
         readers = [
-            'aclweb.org/ACL/2022/Conference'
-            #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
+            'aclweb.org/ACL/2022/Conference',
+            'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         writers = [
             'aclweb.org/ACL/2022/Conference'
@@ -152,12 +152,12 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             'aclweb.org/ACL/2022/Conference'
             ],
         signatories = [
-            'aclweb.org/ACL/2022/Conference'
-            #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
+            'aclweb.org/ACL/2022/Conference',
+            'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         readers = [
-            'aclweb.org/ACL/2022/Conference'
-            #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
+            'aclweb.org/ACL/2022/Conference',
+            'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         writers = [
             'aclweb.org/ACL/2022/Conference'
@@ -180,7 +180,6 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     # Find all previous & future submissions and for each one add the reviewers and ACs to the conflict group 
     def get_reviewer_AC_conflicts(current_submission):
         if current_submission.content.get('previous_URL'):
-            print(current_submission.forum)
             previous_forum = (current_submission.content.get('previous_URL').split('=')[1]).split('&')[0]
             previous_submission = client.get_note(previous_forum)
             conf_id = previous_submission.invitation.rsplit('/', 2)[0]
@@ -189,8 +188,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             area_chairs = '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number)
             conflict_members.append(reviewers)
             conflict_members.append(area_chairs)
-            if (previous_submission.forum != current_submission.forum) and (previous_submission.forum != current_submission.id):
-                get_reviewer_AC_conflicts(previous_submission)
+            get_reviewer_AC_conflicts(previous_submission)
     
     get_reviewer_AC_conflicts(arr_submission)
     later_versions = submission_output_dict[acl_commitment_note.forum]['later_versions?']
