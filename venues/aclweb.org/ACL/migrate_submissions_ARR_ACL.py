@@ -213,7 +213,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     
     # Get all SAC profiles from track dictionary, and for each one check conflicts 
     for SAC in track_SAC_profiles[acl_submission.content['track']]:
-        conflicts = openreview.tools.get_conflicts(author_group, SAC)
+        conflicts = openreview.tools.get_conflicts(author_group, SAC, policy = 'neurips', n_years=5)
         if conflicts: 
             conflict_members.append(SAC.id)
     #print(acl_submission.content['track'])
@@ -358,7 +358,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
 
             
 # Retrieve all commitment submissions, ACL submissions, ACL blind submissions, and ACL blind submission reviews  
-commitment_notes = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Commitment_Submission'))
+commitment_notes = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Commitment_Submission', sort= 'numbers:asc'))
 acl_submissions = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Submission'))
 blind_submissions = {note.original: note for note in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))}
 acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review'))}
