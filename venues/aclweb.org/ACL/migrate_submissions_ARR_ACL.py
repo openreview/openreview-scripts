@@ -367,7 +367,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
 
 print('Load commitment notes and rest of the data')
 # Retrieve all commitment submissions, ACL submissions, ACL blind submissions, and ACL blind submission reviews
-commitment_notes = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Commitment_Submission', sort= 'number:asc'))
+commitment_notes = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Commitment_Submission', sort= 'number:desc'))
 acl_submissions = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/ACL/2022/Conference/-/Submission'))
 blind_submissions = {note.original: note for note in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))}
 acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review'))}
