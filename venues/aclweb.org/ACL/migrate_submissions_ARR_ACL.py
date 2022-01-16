@@ -193,7 +193,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     def get_reviewer_AC_conflicts(current_submission):
         previous_url = current_submission.content.get('previous_URL')
         if previous_url and ("openreview.net" in previous_url):
-            print(current_submission.forum)
+            #print(current_submission.forum)
             previous_forum = (current_submission.content.get('previous_URL').split('=')[1]).split('&')[0]
             previous_submission = client.get_note(previous_forum)
             conf_id = previous_submission.invitation.rsplit('/', 2)[0]
