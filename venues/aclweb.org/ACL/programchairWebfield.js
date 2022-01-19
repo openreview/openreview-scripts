@@ -3150,6 +3150,9 @@ var buildCSV = function(){
   'commitment note',
   'assigned SACs',
   'conflicted SACs',
+  'min rating',
+  'max rating',
+  'average rating',
   'review scores',
   'reviewers',
   'metareview',
@@ -3189,6 +3192,14 @@ var buildCSV = function(){
     var authors = originalNote.content.authors ? originalNote.content.authors : [];
     var reviews = Object.values(paperTableRow.note.details.reviews);
     var scores = reviews.map(function(r) { return r.rating; });
+    var averageRating = 'N/A';
+    var minRating = 'N/A';
+    var maxRating = 'N/A';
+    if (scores.length) {
+      averageRating = _.round(_.sum(scores) / scores.length, 2);
+      minRating = _.min(scores);
+      maxRating = _.max(scores);
+    }
     var reviewers = reviews.map(function(r) { return r.content.reviewer_id; });
     var metareview = paperTableRow.note.details.metaReview;
     var metareviewScore = '';
@@ -3223,6 +3234,9 @@ var buildCSV = function(){
     '"' + paperTableRow.note.content.commitment_note + '"',
     '"' + paperTableRow.note.details.assignedSACs.join('|') + '"',
     '"' + paperTableRow.note.details.conflicts.join('|') + '"',
+    '"' + minRating + '"',
+    '"' + maxRating + '"',
+    '"' + averageRating + '"',
     '"' + scores.join('|') + '"',
     '"' + reviewers.join('|') + '"',
     '"' + metareviewScore + '"',
