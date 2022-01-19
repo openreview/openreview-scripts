@@ -6,7 +6,7 @@ var CONFERENCE_ID = 'aclweb.org/ACL/2022/Conference';
 var SHORT_PHRASE = 'ACL-2022';
 var BLIND_SUBMISSION_ID = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission';
 var OFFICIAL_REVIEW_NAME = 'Official_Review';
-var REVIEW_RATING_NAME = 'rating';
+var REVIEW_RATING_NAME = 'overall_assessment';
 var REVIEW_CONFIDENCE_NAME = 'confidence';
 var OFFICIAL_META_REVIEW_NAME = 'Meta_Review';
 var DECISION_NAME = '';
@@ -43,6 +43,33 @@ var propertiesAllowed = {
     replyCount:['reviewProgressData.forumReplyCount']
 }
 
+sacNameDictionary = {
+  'Ethics in NLP': 'Ethics_NLP',
+  'Linguistic theories, Cognitive Modeling and Psycholinguistics': 'LCMP',
+  'Linguistic Theories, Cognitive Modeling and Psycholinguistics': 'LCMP',
+  'Machine Learning for NLP': 'Machine_Learning_NLP',
+  'Phonology, Morphology and Word Segmentation': 'Phonology_Morphology_Word_Segmentation',
+  'Resources and Evaluation': 'Resources_Evaluation',
+  'Semantics: Lexical': 'Semantics_Lexical',
+  'Semantics: Sentence level, Textual Inference and Other areas': 'Semantics_STO',
+  'Syntax: Tagging, Chunking and Parsing': 'Syntax_TCP',
+  'Information Extraction': 'Information_Extraction',
+  'Computational Social Science and Cultural Analytics': 'CSSCA',
+  'Information Retrieval and Text Mining': 'Info_Retrieval_Text_Mining',
+  'Interpretability and Analysis of Models for NLP': 'IAM_for_NLP',
+  'Machine Translation and Multilinguality': 'Machine_Translation_Multilinguality',
+  'NLP Applications': 'NLP_Applications',
+  'Question Answering': 'Question_Answering',
+  'Dialogue and Interactive Systems': 'Dialogue_and_Interactive_Systems',
+  'Discourse and Pragmatics': 'Discourse_and_Pragmatics',
+  'Generation': 'Generation',
+  'Language Grounding to Vision, Robotics, and Beyond': 'LGVRB',
+  'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM',
+  'Speech and Multimodality': 'Speech_and_Multimodality',
+  'Summarization': 'Summarization',
+  'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme'
+}
+
 // Page State
 var conferenceStatusData = {};
 var selectedNotesById = {};
@@ -70,7 +97,7 @@ var renderHeader = function() {
   Webfield.ui.setup('#group-container', CONFERENCE_ID);
   Webfield.ui.header(HEADER.title, HEADER.instructions);
 
-  var loadingMessage = '<p class="empty-message">No assigned Area Chairs.</p>';
+  var loadingMessage = '<p class="empty-message">Loading data...</p>';
   var tabsList = [
     {
       heading: 'Paper Status',
@@ -242,8 +269,8 @@ var getOfficialReviews = function(notes) {
   _.forEach(notes, function(n) {
     var anonId = getNumberfromGroup(n.signatures[0], 'Reviewer_');
     // Need to parse rating and confidence strings into ints
-    ratingNumber = n.content[REVIEW_RATING_NAME] ? n.content[REVIEW_RATING_NAME].substring(0, n.content[REVIEW_RATING_NAME].indexOf(':')) : null;
-    n.rating = ratingNumber ? parseInt(ratingNumber, 10) : null;
+    ratingNumber = n.content[REVIEW_RATING_NAME].split('=')[0];
+    n.rating = ratingNumber ? parseFloat(ratingNumber) : null;
     confidenceMatch = n.content[REVIEW_CONFIDENCE_NAME] && n.content[REVIEW_CONFIDENCE_NAME].match(ratingExp);
     n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
     reviewByAnonId[anonId] = n;
@@ -301,13 +328,13 @@ var getAllInvitations = function() {
     details: 'replytoNote,repliedNotes'
   });
 
-  var edgeInvitationsP = Webfield.getAll('/invitations', {
-    regex: WILDCARD_INVITATION,
-    invitee: true,
-    duedate: true,
-    type: 'edges',
-    details: 'repliedEdges'
-  });
+  // var edgeInvitationsP = Webfield.getAll('/invitations', {
+  //   regex: WILDCARD_INVITATION,
+  //   invitee: true,
+  //   duedate: true,
+  //   type: 'edges',
+  //   details: 'repliedEdges'
+  // });
 
   var tagInvitationsP = Webfield.getAll('/invitations', {
     regex: WILDCARD_INVITATION,
@@ -323,10 +350,10 @@ var getAllInvitations = function() {
 
   return $.when(
     invitationsP,
-    edgeInvitationsP,
+    //edgeInvitationsP,
     tagInvitationsP
-  ).then(function(noteInvitations, edgeInvitations, tagInvitations) {
-    var invitations = noteInvitations.concat(edgeInvitations).concat(tagInvitations);
+  ).then(function(noteInvitations, tagInvitations) {
+    var invitations = noteInvitations.concat(tagInvitations);
     return _.filter(invitations, filterInvitee);
   });
 };
@@ -335,8 +362,8 @@ var formatData = function(submissions, invitations) {
 
   submissions.forEach(function(submission) {
     selectedNotesById[submission.id] = false;
-    submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', getInvitationId(OFFICIAL_REVIEW_NAME, submission.number)]));
-    submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', getInvitationId(OFFICIAL_META_REVIEW_NAME, submission.number)]);
+    submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Official_Review']));
+    submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Meta_Review']);
     submission.details.decision = _.find(submission.details.directReplies, ['invitation', getInvitationId(DECISION_NAME, submission.number)]);
   })
 
@@ -812,15 +839,80 @@ var buildPaperTableRow = function(note) {
 
   var paperTableReferrerUrl = encodeURIComponent('[Senior Area Chair Console](/group?id=' + CONFERENCE_ID + '/Senior_Area_Chairs#paper-status)');
 
+  var completedReviews = note.details.reviews;
   var metaReview = note.details.metaReview;
   var decision = note.details.decision;
   var cellCheck = { selected: false, noteId: note.id };
   var cell1 = note;
   cell1.referrer = paperTableReferrerUrl;
-  var areaChairNames = { name: 'No Area Chair' };
+
+  // Build Review Progress Cell
+  var reviewObj;
+  var combinedObj = {};
+  var ratings = [];
+  var confidences = [];
+  for (var reviewerNum in completedReviews) {
+    reviewObj = completedReviews[reviewerNum];
+    var reviewer = reviewObj.content.reviewer_id;
+    combinedObj[reviewerNum] = _.assign({}, {
+      id: reviewer,
+      name: view.prettyId(reviewer),
+      email: reviewer,
+      completedReview: true,
+      forum: reviewObj.forum,
+      note: reviewObj.id,
+      rating: reviewObj.rating,
+      confidence: reviewObj.confidence,
+      reviewLength: reviewObj.content.review && reviewObj.content.review.length,
+    });
+    ratings.push(reviewObj.rating);
+    confidences.push(reviewObj.confidence);
+  }
+  var averageRating = 'N/A';
+  var minRating = 'N/A';
+  var maxRating = 'N/A';
+  if (ratings.length) {
+    averageRating = _.round(_.sum(ratings) / ratings.length, 2);
+    minRating = _.min(ratings);
+    maxRating = _.max(ratings);
+  }
+
+  var averageConfidence = 'N/A';
+  var minConfidence = 'N/A';
+  var maxConfidence = 'N/A';
+  if (confidences.length) {
+    averageConfidence = _.round(_.sum(confidences) / confidences.length, 2);
+    minConfidence = _.min(confidences);
+    maxConfidence = _.max(confidences);
+  }
+
+  var reviewProgressData = {
+    noteId: note.id,
+    paperNumber: note.number,
+    forumReplyCount: note.details['replyCount'],
+    numSubmittedReviews: Object.keys(completedReviews).length,
+    numReviewers: Object.keys(completedReviews).length,
+    reviewers: combinedObj,
+    averageRating: averageRating,
+    maxRating: maxRating,
+    minRating: minRating,
+    averageConfidence: averageConfidence,
+    minConfidence: minConfidence,
+    maxConfidence: maxConfidence,
+    sendReminder: true,
+    showActivityModal: true,
+    expandReviewerList: false,
+    enableReviewerReassignment : false,
+    referrer: paperTableReferrerUrl
+  };
+
+  var actionEditor = 'No Action Editor';
+  if (metaReview) {
+    actionEditor = metaReview.content.action_editor_id;
+  }
   var areachairProgressData = {
     numMetaReview: metaReview ? 'One' : 'No',
-    areachair: areaChairNames,
+    areachair: { name: view.prettyId(actionEditor)},
     metaReview: metaReview,
     referrer: paperTableReferrerUrl
   };
@@ -828,7 +920,7 @@ var buildPaperTableRow = function(note) {
   return {
     cellCheck: cellCheck,
     note: cell1,
-    //reviewProgressData: reviewProgressData,
+    reviewProgressData: reviewProgressData,
     areachairProgressData: areachairProgressData,
     decision: decision
   }
@@ -849,17 +941,17 @@ var displayPaperStatusTable = function() {
   var sortOptions = {
     Paper_Number: function(row) { return row.note.number; },
     Paper_Title: function(row) { return _.trim(row.note.content.title).toLowerCase(); },
-    // Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
-    // Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
-    // Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
-    // Rating_Range: function(row) { return toNumber(row.reviewProgressData.maxRating) - toNumber(row.reviewProgressData.minRating); },
-    // Average_Confidence: function(row) { return toNumber(row.reviewProgressData.averageConfidence); },
-    // Max_Confidence: function(row) { return toNumber(row.reviewProgressData.maxConfidence); },
-    // Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
-    // Confidence_Range: function(row) { return toNumber(row.reviewProgressData.maxConfidence) - toNumber(row.reviewProgressData.minConfidence); },
-    // Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
-    // Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
-    // Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
+    Average_Rating: function(row) { return toNumber(row.reviewProgressData.averageRating); },
+    Max_Rating: function(row) { return toNumber(row.reviewProgressData.maxRating); },
+    Min_Rating: function(row) { return toNumber(row.reviewProgressData.minRating); },
+    Rating_Range: function(row) { return toNumber(row.reviewProgressData.maxRating) - toNumber(row.reviewProgressData.minRating); },
+    Average_Confidence: function(row) { return toNumber(row.reviewProgressData.averageConfidence); },
+    Max_Confidence: function(row) { return toNumber(row.reviewProgressData.maxConfidence); },
+    Min_Confidence: function(row) { return toNumber(row.reviewProgressData.minConfidence); },
+    Confidence_Range: function(row) { return toNumber(row.reviewProgressData.maxConfidence) - toNumber(row.reviewProgressData.minConfidence); },
+    Reviewers_Assigned: function(row) { return row.reviewProgressData.numReviewers; },
+    Reviews_Submitted: function(row) { return row.reviewProgressData.numSubmittedReviews; },
+    Reviews_Missing: function(row) { return row.reviewProgressData.numReviewers - row.reviewProgressData.numSubmittedReviews; },
     Number_of_Forum_Replies: function(row) { return row.reviewProgressData.forumReplyCount; },
   };
   if (AREA_CHAIRS_ID) {
@@ -1006,7 +1098,7 @@ var displayPaperStatusTable = function() {
       var areachairHtml = Handlebars.templates.noteAreaChairs(d.areachairProgressData);
       var decisionHtml = '<h4>' + (d.decision ? d.decision.content.decision : 'No Decision') + '</h4>';
 
-      var rows = [checked, numberHtml, summaryHtml];
+      var rows = [checked, numberHtml, summaryHtml, reviewHtml];
       if (AREA_CHAIRS_ID) {
         rows.push(areachairHtml);
       }
@@ -1014,10 +1106,7 @@ var displayPaperStatusTable = function() {
       return rows;
     });
 
-    var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary'];
-    if (AREA_CHAIRS_ID) {
-      headings.push('Status');
-    }
+    var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary', 'Reviews', 'Meta Review'];
     headings.push('Decision');
 
     var $container = $(container);
