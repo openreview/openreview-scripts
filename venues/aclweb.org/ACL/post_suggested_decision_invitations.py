@@ -97,6 +97,8 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
         super = "aclweb.org/ACL/2022/Conference/-/Suggested_Decision",
         invitees = [track_sac_id, program_chairs_id],
         signatures = ["aclweb.org/ACL/2022/Conference"],
+        multiReply= False,
+        process = './suggested_decision_process.py',
         reply = {
             "forum": acl_blind_submission.forum,
             "replyto": acl_blind_submission.forum,
