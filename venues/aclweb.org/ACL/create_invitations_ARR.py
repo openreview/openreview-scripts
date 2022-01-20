@@ -143,7 +143,8 @@ submission_invitation = openreview.Invitation(
                     "Sentiment Analysis, Stylistic Analysis, and Argument Mining",
                     "Speech and Multimodality",
                     "Summarization",
-                    "Special Theme on Language Diversity: From Low Resource to Endangered Languages"
+                    "Special Theme on Language Diversity: From Low Resource to Endangered Languages",
+                    "Conflicts"
                     ],
                 "required": True,
                 "order": 12
@@ -367,7 +368,8 @@ commitment = openreview.Invitation(
                     "Sentiment Analysis, Stylistic Analysis, and Argument Mining",
                     "Speech and Multimodality",
                     "Summarization",
-                    "Special Theme on Language Diversity: From Low Resource to Endangered Languages"
+                    "Special Theme on Language Diversity: From Low Resource to Endangered Languages",
+                    "Conflicts"
                 ],
                 "required": True,
                 "order": 12

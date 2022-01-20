@@ -34,7 +34,8 @@ function(){
         'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM',
         'Speech and Multimodality': 'Speech_and_Multimodality',
         'Summarization': 'Summarization',
-        'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme'
+        'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
+        'Conflicts': 'Conflicts'
         };
     or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token)
     .then(function(result) {

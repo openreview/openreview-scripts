@@ -42,7 +42,8 @@ sac_name_dictionary = {
     'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM',
     'Speech and Multimodality': 'Speech_and_Multimodality',
     'Summarization': 'Summarization',
-    'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme'
+    'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
+    'Conflicts': 'Conflicts'
 }
 
 suggested_decision_super = openreview.Invitation(
@@ -94,7 +95,7 @@ suggested_decision_super = openreview.Invitation(
             },
             "best_paper":{
                 "order":4, 
-                "values-checkbox": [
+                "value-radio": [
                     "Best Paper",
                     "Outstanding Paper"
                 ],

@@ -42,7 +42,8 @@ sac_name_dictionary = {
     'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM',
     'Speech and Multimodality': 'Speech_and_Multimodality',
     'Summarization': 'Summarization',
-    'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme'
+    'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
+    'Conflicts': 'Conflicts'
 }
 comment_super = openreview.Invitation(
     id = "aclweb.org/ACL/2022/Conference/-/Comment",
@@ -90,6 +91,9 @@ for acl_blind_submission in acl_blind_submissions:
                 },
                 "writers": {
                     "values": [f'aclweb.org/ACL/2022/Conference/{sac_name_dictionary[acl_submission.content["track"]]}/Senior_Area_Chairs', 'aclweb.org/ACL/2022/Conference/Program_Chairs']
+                },
+                "nonreaders": {
+                    "values": [f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Conflicts']
                 }
             }
         
