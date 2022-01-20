@@ -43,86 +43,59 @@ sac_name_dictionary = {
     'Speech and Multimodality': 'Speech_and_Multimodality',
     'Summarization': 'Summarization',
     'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
+    'Conflicts': 'Conflicts',
     'PC Track': 'PC_Track'
-    }
-
-desk_rejected_invitation = client.post_invitation(openreview.Invitation(
-    id = "aclweb.org/ACL/2022/Conference/-/Desk_Rejected_Submission", 
-    writers = ['aclweb.org/ACL/2022/Conference'],
-    readers = ['aclweb.org/ACL/2022/Conference'],
-    signatures = ['aclweb.org/ACL/2022/Conference'],
+}
+comment_super = openreview.Invitation(
+    id = "aclweb.org/ACL/2022/Conference/-/Comment",
+    readers = ["everyone"], 
+    writers = ["aclweb.org/ACL/2022/Conference"],
+    signatures = ["aclweb.org/ACL/2022/Conference"],
     reply = {
-        "readers": {
-            "values-regex": ".*"
-            },
-        "writers": {
-            "values": [
-            'aclweb.org/ACL/2022/Conference'
-            ]
-        },
-    "signatures": {
-        "values": [
-        'aclweb.org/ACL/2022/Conference'
-        ]
-    },
+    "replyto": None,
     "content": {
-    "authorids": {
-        "values-regex": ".*"
+        "title": {
+            "order": 0,
+            "value-regex": ".{1,500}",
+            "description": "Brief summary of your comment.",
+            "required": True
         },
-    "authors": {
-        "values": [
-            "Anonymous"
-        ]
+        "comment": {
+            "order": 1,
+            "value-regex": "[\\S\\s]{1,5000}",
+            "description": "Your comment or reply (max 5000 characters). Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq",
+            "required": True,
+            "markdown": True
+        }
     }
 }
-}
-))
-
-
-
-# Get all ACL 2022 Conference blind submissions 
+    
+)
+client.post_invitation(comment_super)
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))
-# For each blind submission, set the readers to the SAC track group 
+# For each blind submission, post the comment invitation   
 for acl_blind_submission in acl_blind_submissions:
     acl_submission = client.get_note(acl_blind_submission.original)
-    desk_reject = client.post_invitation(openreview.Invitation(
-        id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Desk_Reject",
-        invitees = ["aclweb.org/ACL/2022/Conference/Program_Chairs","OpenReview.net/Support"],
-        readers = ["everyone"],
-        writers = ["aclweb.org/ACL/2022/Conference"],
-        signatures = ["~Super_User1"],
+    comment = client.post_invitation(openreview.Invitation(
+        id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Comment",
+        super = "aclweb.org/ACL/2022/Conference/-/Comment", 
+        invitees = [f'aclweb.org/ACL/2022/Conference/{sac_name_dictionary[acl_submission.content["track"]]}/Senior_Area_Chairs', 'aclweb.org/ACL/2022/Conference/Program_Chairs'],
+        signatures = ["aclweb.org/ACL/2022/Conference"],
+        process = "./commentProcess.js",
         reply = {
             "forum": acl_blind_submission.forum,
-            "replyto": acl_blind_submission.forum,
-            "readers": {
-                "values": [
-                    "aclweb.org/ACL/2022/Conference"
-                ]
-                },
-            "writers": {
-                "values-copied": [
-                    "aclweb.org/ACL/2022/Conference",
-                    "{signatures}"
-                ]
-            },
             "signatures": {
-                "values": [
-                    "aclweb.org/ACL/2022/Conference/Program_Chairs"
-                ],
-                "description": "How your identity will be displayed."
+                "values-regex": f'aclweb.org/ACL/2022/Conference/{sac_name_dictionary[acl_submission.content["track"]]}/Senior_Area_Chairs',
+                "description": "How your identity will be displayed."},
+                "readers": {
+                    "values": [f'aclweb.org/ACL/2022/Conference/{sac_name_dictionary[acl_submission.content["track"]]}/Senior_Area_Chairs', 'aclweb.org/ACL/2022/Conference/Program_Chairs']
                 },
-            "content": {
-                "title": {
-                    "value": "Submission Desk Rejected by Program Chairs",
-                    "order": 1
+                "writers": {
+                    "values": [f'aclweb.org/ACL/2022/Conference/{sac_name_dictionary[acl_submission.content["track"]]}/Senior_Area_Chairs', 'aclweb.org/ACL/2022/Conference/Program_Chairs']
                 },
-                "desk_reject_comments": {
-                    "description": "Brief summary of reasons for marking this submission as desk rejected",
-                    "value-regex": "[\\S\\s]{1,10000}",
-                    "order": 2,
-                    "required": True
+                "nonreaders": {
+                    "values": [f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Conflicts']
                 }
-            }},
-            process = './desk-reject-ACL-process.py'
-                ))
-   
+            }
+        
+    ))

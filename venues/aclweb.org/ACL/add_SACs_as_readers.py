@@ -44,12 +44,35 @@ sac_name_dictionary = {
     'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM', 
     'Speech and Multimodality': 'Speech_and_Multimodality', 
     'Summarization': 'Summarization', 
-    'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme'
+    'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
+    'PC Track': 'PC_Track'
     }
 
-# For each submission in blind submissions, add correct SACs to readers
-acl_blind_submissions = list(openreview.tools.iterget_notes(client, invtiation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))
-for acl_blind_submission in acl_blind_submissions:
-    # Can also add authors here if PCs want them added at the same time 
-    acl_blind_submission.readers = acl_blind_submission.readers.append(f'aclweb.org/ACL/2022/Conference/{sac_name_dictionary[acl_blind_submission.content.get("track")]}/Senior_Area_Chairs')
+acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))
+acl_meta_reviews = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Meta_Review'))
+acl_reviews = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Official_Review'))
+reviews_by_forum = {}
+for metareview in acl_meta_reviews:
+    if metareview.forum in reviews_by_forum: 
+        reviews_by_forum[metareview.forum].append(metareview)
+    else:
+        reviews_by_forum[metareview.forum] = [metareview]
+for review in acl_reviews:
+    if review.forum in reviews_by_forum: 
+        reviews_by_forum[review.forum].append(review)
+    else:
+        reviews_by_forum[review.forum] = [review]
 
+# For each blind submission, set the readers to the SAC track group 
+for acl_blind_submission in acl_blind_submissions:
+    acl_submission = client.get_note(acl_blind_submission.original)
+    acl_blind_submission.readers.append(f'aclweb.org/ACL/2022/Conference/{sac_name_dictionary[acl_submission.content["track"]]}/Senior_Area_Chairs')
+    acl_blind_submission.content = {
+        'authors': ['Anonymous'],
+        'authorids': [f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Authors']
+    }
+    client.post_note(acl_blind_submission)
+    reviews = reviews_by_forum[acl_blind_submission.forum]
+    for review in reviews: 
+        review.readers.append(f'aclweb.org/ACL/2022/Conference/{sac_name_dictionary[acl_submission.content["track"]]}/Senior_Area_Chairs')
+        client.post_note(review)
