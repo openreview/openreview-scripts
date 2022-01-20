@@ -21,9 +21,10 @@ def process(client, note, invitation):
         client.post_invitation(invitation)
 
     # Mail to the submission readers
-    email_subject = '''{CONFERENCE_SHORT_NAME}: Paper #{paper_number} marked desk rejected by program chairs'''.format(
+    email_subject = '''{CONFERENCE_SHORT_NAME}: Paper #{paper_number} titled "{paper_title}" marked desk rejected by program chairs'''.format(
         CONFERENCE_SHORT_NAME=CONFERENCE_SHORT_NAME,
-        paper_number=forum_note.number
+        paper_number=forum_note.number,
+        paper_title=forum_note.content['title']
     )
     email_body = note.content['desk_reject_comments']
     client.post_message(subject=email_subject, recipients=forum_note.readers, message=email_body, ignoreRecipients=forum_note.nonreaders)
