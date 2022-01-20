@@ -45,7 +45,7 @@ sac_name_dictionary = {
     'Speech and Multimodality': 'Speech_and_Multimodality', 
     'Summarization': 'Summarization', 
     'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
-    'Conflicts': 'Conflicts'
+    'PC Track': 'PC_Track'
     }
 
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))

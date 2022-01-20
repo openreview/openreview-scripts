@@ -144,7 +144,7 @@ submission_invitation = openreview.Invitation(
                     "Speech and Multimodality",
                     "Summarization",
                     "Special Theme on Language Diversity: From Low Resource to Endangered Languages",
-                    "Conflicts"
+                    "PC Track"
                     ],
                 "required": True,
                 "order": 12
@@ -369,7 +369,7 @@ commitment = openreview.Invitation(
                     "Speech and Multimodality",
                     "Summarization",
                     "Special Theme on Language Diversity: From Low Resource to Endangered Languages",
-                    "Conflicts"
+                    "PC Track"
                 ],
                 "required": True,
                 "order": 12

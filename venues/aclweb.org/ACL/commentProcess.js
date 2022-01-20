@@ -35,7 +35,7 @@ function(){
         'Speech and Multimodality': 'Speech_and_Multimodality',
         'Summarization': 'Summarization',
         'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
-        'Conflicts': 'Conflicts'
+        'PC Track': 'PC_Track'
         };
     or3client.or3request(or3client.notesUrl + '?id=' + note.forum, {}, 'GET', token)
     .then(function(result) {
