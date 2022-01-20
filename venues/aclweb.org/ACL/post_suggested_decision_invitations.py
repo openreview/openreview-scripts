@@ -77,7 +77,7 @@ suggested_decision_super = openreview.Invitation(
                 "description": "Do you consider this paper either the best or an outstanding paper?",
                 "required": False
             }
-            }
+        }
     }
 
 )
@@ -86,9 +86,10 @@ client.post_invitation(suggested_decision_super)
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))
 program_chairs_id = 'aclweb.org/ACL/2022/Conference/Program_Chairs'
 
-for acl_blind_submission in acl_blind_submissions:
+for acl_blind_submission in tqdm(acl_blind_submissions):
     paper_track = sac_name_dictionary[acl_blind_submission.content["track"]]
     track_sac_id = f'aclweb.org/ACL/2022/Conference/{paper_track}/Senior_Area_Chairs'
+    conflict_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Conflicts'
     suggested_decision = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Suggested_Decision",
         super = "aclweb.org/ACL/2022/Conference/-/Suggested_Decision",
@@ -106,6 +107,9 @@ for acl_blind_submission in acl_blind_submissions:
             },
             "writers": {
                 "values": [program_chairs_id, track_sac_id]
+            },
+            "nonreaders": {
+                "values": [conflict_id]
             }
         }
     )
