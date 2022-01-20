@@ -21,67 +21,69 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 sac_name_dictionary = tracks.sac_name_dictionary
 
-suggested_decision_super = openreview.Invitation(
-    id = "aclweb.org/ACL/2022/Conference/-/Suggested_Decision",
-    readers = ["everyone"],
-    writers = ["aclweb.org/ACL/2022/Conference"],
-    signatures = ["aclweb.org/ACL/2022/Conference"],
-    reply = {
-        "readers":{
-            "values-copied": [
-                "aclweb.org/ACL/2022/Conference",
-                "aclweb.org/ACL/2022/Conference/Senior_Area_Chairs"
-                "{signatures}"
-            ]
-        },
-        "writers":{
-            "values-copied":[
-                "aclweb.org/ACL/2022/Conference",
-                "{signatures}"
-            ]
-        },
-        "signatures":{
-            "values-regex":"~.*"
-        },
-        "content": {
-            "suggested_decision": {
-                "order": 1,
-                "value-radio": [
-                    "1 - definite accept",
-                    "2 - possible accept to main conference",
-                    "3 - possible accept to findings",
-                    "4 - reject"
-                ],
-                "description": "Please select your suggested decision",
-                "required": True
-                },
-            "justification": {
-                "order": 3,
-                "value-regex": "[\\S\\s]{1,200000}",
-                "description": "Provide justification for your suggested decision. Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq.",
-                "required": True,
-                "markdown": True
-                },
-            "ranking":{
-                "order":2,
-                "value-regex": "^(5|\d)(\.\d{1,2})?$",
-                "description": "If you selected options 2 or 3, provide a numerical score for the paper. It should be a number between 1 and 5 with up to 2 decimal places.",
-                "required": False
+with open('suggested_decision_pre_process.py') as g:
+    pre_content = g.read()
+    suggested_decision_super = openreview.Invitation(
+        id = "aclweb.org/ACL/2022/Conference/-/Suggested_Decision",
+        readers = ["everyone"],
+        writers = ["aclweb.org/ACL/2022/Conference"],
+        signatures = ["aclweb.org/ACL/2022/Conference"],
+        reply = {
+            "readers":{
+                "values-copied": [
+                    "aclweb.org/ACL/2022/Conference",
+                    "aclweb.org/ACL/2022/Conference/Senior_Area_Chairs"
+                    "{signatures}"
+                ]
             },
-            "best_paper":{
-                "order":4,
-                "value-radio": [
-                    "Best Paper",
-                    "Outstanding Paper"
-                ],
-                "description": "Do you consider this paper either the best or an outstanding paper?",
-                "required": False
+            "writers":{
+                "values-copied":[
+                    "aclweb.org/ACL/2022/Conference",
+                    "{signatures}"
+                ]
+            },
+            "signatures":{
+                "values-regex":"~.*"
+            },
+            "content": {
+                "suggested_decision": {
+                    "order": 1,
+                    "value-radio": [
+                        "1 - definite accept",
+                        "2 - possible accept to main conference",
+                        "3 - possible accept to findings",
+                        "4 - reject"
+                    ],
+                    "description": "Please select your suggested decision",
+                    "required": True
+                    },
+                "justification": {
+                    "order": 3,
+                    "value-regex": "[\\S\\s]{1,200000}",
+                    "description": "Provide justification for your suggested decision. Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq.",
+                    "required": True,
+                    "markdown": True
+                    },
+                "ranking":{
+                    "order":2,
+                    "value-regex": "^(5|\d)(\.\d{1,2})?$",
+                    "description": "If you selected options 2 or 3, provide a numerical score for the paper. It should be a number between 1 and 5 with up to 2 decimal places.",
+                    "required": False
+                },
+                "best_paper":{
+                    "order":4,
+                    "value-radio": [
+                        "Best Paper",
+                        "Outstanding Paper"
+                    ],
+                    "description": "Do you consider this paper either the best or an outstanding paper?",
+                    "required": False
+                }
             }
-        }
-    }
-
-)
-client.post_invitation(suggested_decision_super)
+        },
+    preprocess=pre_content
+    )
+    client.post_invitation(suggested_decision_super)
 
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))
 program_chairs_id = 'aclweb.org/ACL/2022/Conference/Program_Chairs'
