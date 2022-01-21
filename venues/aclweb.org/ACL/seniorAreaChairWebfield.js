@@ -67,7 +67,8 @@ sacNameDictionary = {
   'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM',
   'Speech and Multimodality': 'Speech_and_Multimodality',
   'Summarization': 'Summarization',
-  'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme'
+  'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
+  'PC Track': 'PC_Track'
 }
 
 // Page State
@@ -364,7 +365,7 @@ var formatData = function(submissions, invitations) {
     selectedNotesById[submission.id] = false;
     submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Official_Review']));
     submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Meta_Review']);
-    submission.details.decision = _.find(submission.details.directReplies, ['invitation', getInvitationId(DECISION_NAME, submission.number)]);
+    submission.details.decision = _.find(submission.details.directReplies, ['invitation', getInvitationId('Suggested_Decision', submission.number)]);
   })
 
   conferenceStatusData = {
@@ -1096,7 +1097,7 @@ var displayPaperStatusTable = function() {
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
       var reviewHtml = Handlebars.templates.noteReviewers(d.reviewProgressData);
       var areachairHtml = Handlebars.templates.noteAreaChairs(d.areachairProgressData);
-      var decisionHtml = '<h4>' + (d.decision ? d.decision.content.decision : 'No Decision') + '</h4>';
+      var decisionHtml = '<h4>' + (d.decision ? d.decision.content.suggested_decision : 'No Decision') + '</h4>';
 
       var rows = [checked, numberHtml, summaryHtml, reviewHtml];
       if (AREA_CHAIRS_ID) {
@@ -1107,7 +1108,7 @@ var displayPaperStatusTable = function() {
     });
 
     var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary', 'Reviews', 'Meta Review'];
-    headings.push('Decision');
+    headings.push('Suggested Decision');
 
     var $container = $(container);
     var tableData = {

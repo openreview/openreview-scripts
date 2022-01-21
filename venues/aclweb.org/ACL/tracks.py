@@ -1,0 +1,28 @@
+# Creating SAC groups from Track Name
+sac_name_dictionary = {
+    'Ethics in NLP': 'Ethics_NLP',
+    'Linguistic theories, Cognitive Modeling and Psycholinguistics': 'LCMP',
+    'Linguistic Theories, Cognitive Modeling and Psycholinguistics': 'LCMP',
+    'Machine Learning for NLP': 'Machine_Learning_NLP',
+    'Phonology, Morphology and Word Segmentation': 'Phonology_Morphology_Word_Segmentation',
+    'Resources and Evaluation': 'Resources_Evaluation',
+    'Semantics: Lexical': 'Semantics_Lexical',
+    'Semantics: Sentence level, Textual Inference and Other areas': 'Semantics_STO',
+    'Syntax: Tagging, Chunking and Parsing': 'Syntax_TCP',
+    'Information Extraction': 'Information_Extraction',
+    'Computational Social Science and Cultural Analytics': 'CSSCA',
+    'Information Retrieval and Text Mining': 'Info_Retrieval_Text_Mining',
+    'Interpretability and Analysis of Models for NLP': 'IAM_for_NLP',
+    'Machine Translation and Multilinguality': 'Machine_Translation_Multilinguality',
+    'NLP Applications': 'NLP_Applications',
+    'Question Answering': 'Question_Answering',
+    'Dialogue and Interactive Systems': 'Dialogue_and_Interactive_Systems',
+    'Discourse and Pragmatics': 'Discourse_and_Pragmatics',
+    'Generation': 'Generation',
+    'Language Grounding to Vision, Robotics, and Beyond': 'LGVRB',
+    'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM',
+    'Speech and Multimodality': 'Speech_and_Multimodality',
+    'Summarization': 'Summarization',
+    'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
+    'PC Track': 'PC_Track'
+    }

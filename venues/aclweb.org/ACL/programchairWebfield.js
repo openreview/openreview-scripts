@@ -188,7 +188,7 @@ var main = function() {
       });
       var paperOfficialReviews = _.filter(submission.details.directReplies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Official_Review']);
       var paperMetaReviews = _.find(submission.details.directReplies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Meta_Review']);
-      var paperDecisions = _.find(submission.details.directReplies, ['invitation', getInvitationId(DECISION_NAME, submission.number)]) || { content: { decision: 'No Decision' } };
+      var paperDecisions = _.find(submission.details.directReplies, ['invitation', getInvitationId('Suggested_Decision', submission.number)]) || { content: { decision: 'No Decision' } };
       officialReviews = officialReviews.concat(paperOfficialReviews);
       metaReviews = metaReviews.concat(paperMetaReviews);
       decisions = decisions.concat(decisions);
@@ -1736,7 +1736,7 @@ var displayPaperStatusTable = function() {
           d.note.details.conflicts.filter(function(c) { return !c.startsWith('aclweb.org'); }).map(function(a) { return '<li><a target="_blank" href="/profile?id=' + a + '">' + view.prettyId(a) + '</a></li>'; }).join('\n') +
       '</lu>' +
       '</div>';
-      var decisionHtml = '<h4>' + (d.decision.content.decision || 'No Decision') + '</h4>';
+      var decisionHtml = '<h4>' + (d.decision.content.suggested_decision || 'No Decision') + '</h4>';
 
       var rows = [checked, numberHtml, summaryHtml, reviewHtml];
       if (AREA_CHAIRS_ID) {
@@ -1749,7 +1749,7 @@ var displayPaperStatusTable = function() {
 
     var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary', 'Reviews', 'Meta Review'];
     headings.push('Senior Area Chairs');
-    headings.push('Decision');
+    headings.push('Suggested Decision');
 
     var $container = $(container);
     var tableData = {
