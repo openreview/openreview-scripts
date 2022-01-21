@@ -47,11 +47,12 @@ def create_review_rating_invitation(nonreaders, sac_group, review):
                                         'values': [sac_group]
                                     },
                                     'content': {
-                                        'review_quality': {
-                                            'description': 'Please indicate if you consider this an outstanding review',
+                                        'outstanding_review': {
+                                            'description': 'Please indicate if you consider this an outstanding review.',
                                             'order': 1,
-                                            'required': False,
-                                            'value-checkbox': 'Outstanding review'
+                                            'required': True,
+                                            'value-radio': ['Yes', 'No'],
+                                            'default': 'No'
                                         }
                                     }
                                 }
@@ -86,11 +87,12 @@ def create_metareview_rating_invitation(nonreaders, sac_group, metareview):
                                         'values': [sac_group]
                                     },
                                     'content': {
-                                        'meta_review_quality': {
-                                            'description': 'Please indicate if you consider this an outstanding meta review',
+                                        'outstanding_meta_review': {
+                                            'description': 'Please indicate if you consider this an outstanding meta review.',
                                             'order': 1,
-                                            'required': False,
-                                            'value-checkbox': 'Outstanding meta review'
+                                            'required': True,
+                                            'value-radio': ['Yes', 'No'],
+                                            'default': 'No'
                                         }
                                     }
                                 }
