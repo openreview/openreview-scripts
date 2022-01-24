@@ -73,7 +73,7 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
             "replyto": acl_blind_submission.forum,
             "readers": {
                 "values": [
-                    "aclweb.org/ACL/2022/Conference",
+                    "aclweb.org/ACL/2022/Conference/Program_Chairs",
                     track_sac_id
                 ]
                 },
