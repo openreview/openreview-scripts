@@ -7,9 +7,9 @@ function(){
     var REVIEWERS_NAME = '';
     var AREA_CHAIRS_NAME = '';
     var SENIOR_AREA_CHAIRS_NAME = '';
-    var PROGRAM_CHAIRS_ID = '';
+    var PROGRAM_CHAIRS_ID = 'aclweb.org/ACL/2022/Conference/Program_Chairs';
     var USE_AREA_CHAIRS = false;
-    var EMAIL_PCs = false;
+    var EMAIL_PCs = true;
     var sac_name_dictionary = {
         'Ethics in NLP': 'Ethics_NLP',
         'Linguistic theories, Cognitive Modeling and Psycholinguistics': 'LCMP',
