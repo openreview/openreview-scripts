@@ -59,6 +59,9 @@ desk_rejected_invitation = client.post_invitation(openreview.Invitation(
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))
 # For each blind submission, set the readers to the SAC track group
 for acl_blind_submission in tqdm(acl_blind_submissions):
+    conflict_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Conflicts'
+    paper_track = sac_name_dictionary[acl_blind_submission.content["track"]]
+    track_sac_id = f'aclweb.org/ACL/2022/Conference/{paper_track}/Senior_Area_Chairs'
     desk_reject = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Desk_Reject",
         invitees = ["aclweb.org/ACL/2022/Conference/Program_Chairs","OpenReview.net/Support"],
@@ -70,7 +73,8 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
             "replyto": acl_blind_submission.forum,
             "readers": {
                 "values": [
-                    "aclweb.org/ACL/2022/Conference"
+                    "aclweb.org/ACL/2022/Conference",
+                    track_sac_id
                 ]
                 },
             "writers": {
@@ -78,6 +82,9 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
                     "aclweb.org/ACL/2022/Conference",
                     "{signatures}"
                 ]
+            },
+            "nonreaders": {
+                "values": [conflict_id]
             },
             "signatures": {
                 "values": [
