@@ -1181,19 +1181,19 @@ var displayPaperStatusTable = function() {
 
   if (rowData.length) {
     displaySortPanel(container, sortOptions, sortResults, searchResults, true);
-    $(container).find('form.search-form .pull-left').html('<div class="btn-group message-papers-container" role="group">' +
-      '<button type="button" class="message-papers-btn btn btn-icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select papers to message corresponding reviewers" disabled="disabled">' +
-        '<span class="glyphicon glyphicon-envelope"></span> &nbsp;Message Reviewers ' +
-        '<span class="caret"></span>' +
-      '</button>' +
-      '<ul class="dropdown-menu">' +
-        '<li><a class="msg-all-reviewers">All Reviewers of selected papers</a></li>' +
-        '<li><a class="msg-submitted-reviewers">Reviewers of selected papers with submitted reviews</a></li>' +
-        '<li><a class="msg-unsubmitted-reviewers">Reviewers of selected papers with unsubmitted reviews</a></li>' +
-      '</ul>' +
-    '</div>'
-    // '<div class="btn-group"><button class="btn btn-export-data" type="button">Export</button></div>'
-    );
+    // $(container).find('form.search-form .pull-left').html('<div class="btn-group message-papers-container" role="group">' +
+    //   '<button type="button" class="message-papers-btn btn btn-icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select papers to message corresponding reviewers" disabled="disabled">' +
+    //     '<span class="glyphicon glyphicon-envelope"></span> &nbsp;Message Reviewers ' +
+    //     '<span class="caret"></span>' +
+    //   '</button>' +
+    //   '<ul class="dropdown-menu">' +
+    //     '<li><a class="msg-all-reviewers">All Reviewers of selected papers</a></li>' +
+    //     '<li><a class="msg-submitted-reviewers">Reviewers of selected papers with submitted reviews</a></li>' +
+    //     '<li><a class="msg-unsubmitted-reviewers">Reviewers of selected papers with unsubmitted reviews</a></li>' +
+    //   '</ul>' +
+    // '</div>'
+    // // '<div class="btn-group"><button class="btn btn-export-data" type="button">Export</button></div>'
+    // );
     renderTable(container, rowData);
   } else {
     $(container).empty().append('<p class="empty-message">No papers have been submitted. ' +
