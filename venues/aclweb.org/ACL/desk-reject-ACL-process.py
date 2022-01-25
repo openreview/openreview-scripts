@@ -30,6 +30,6 @@ def process(client, note, invitation):
 
     PAPER_AUTHORS_ID = f'aclweb.org/ACL/2022/Conference/Paper{forum_note.number}/Authors'
 
-    recipients = forum_note.readers
+    recipients = note.readers
     recipients.append(PAPER_AUTHORS_ID)
-    client.post_message(subject=email_subject, recipients=recipients, message=email_body, ignoreRecipients=forum_note.nonreaders)
+    client.post_message(subject=email_subject, recipients=recipients, message=email_body, ignoreRecipients=note.nonreaders)
