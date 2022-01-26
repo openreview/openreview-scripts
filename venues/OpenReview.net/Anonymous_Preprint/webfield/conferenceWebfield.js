@@ -44,12 +44,14 @@ function renderConferenceHeader() {
           When you post a submission to this anonymous preprint server, please provide the real names and email addresses of authors in the submission form below.\
           An anonymous record of your paper will appear in the list below, and will be visible to the public. \
           The real name(s) are privately revealed to you and all the co-authors. \
-          The PDF in your submission should not contain the names of the authors. </p>\
+          If you would like your preprint to remain anonymous, the PDF in your submission should not contain the names of the authors. </p>\
           <p><strong>Revise your paper:</strong><br>\
           To add a new version of your paper, go to the forum page of your paper and click on the "Revision" button. \
           <p><strong>Withdraw your paper:</strong><br>\
           To withdraw your paper, navigate to the forum page and click on the "Withdraw" button. You will be asked to confirm your withdrawal. \
           Withdrawn submissions will be removed from the system entirely. \
+          <p><strong>De-anonymize your paper:</strong><br> \
+          If you want to de-anonymize your preprint, you will have the option to do so after you submit. A button labeled "Reveal Authors" will appear on the forum page of your submission. \
           <p><strong>Questions or Concerns:</strong><br> \
           Please contact the OpenReview support team at \
           <a href="mailto:info@openreview.net">info@openreview.net</a> with any questions or concerns. \</br>\</p>',
