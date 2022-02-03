@@ -54,6 +54,7 @@ ethics_reviewers = client.post_group(openreview.Group(
             ],
         readers = [
             'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
+            'aclweb.org/ACL/2022/Conference/Ethics_Reviewers',
             'aclweb.org/ACL/2022/Conference'
             ],
         writers = [
