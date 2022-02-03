@@ -29,7 +29,7 @@ assignment_invitation = openreview.Invitation(
     reply = {
         "readers": {
             "values-copied": [
-                "aclweb.org/ACL/2022/Conference"
+                "aclweb.org/ACL/2022/Conference",
                 "aclweb.org/ACL/2022/Conference/Ethics_Chairs",
                 "{tail}"
             ]
