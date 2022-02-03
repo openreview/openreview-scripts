@@ -30,7 +30,11 @@ decision_super = openreview.Invitation(
     invitees = ["aclweb.org/ACL/2022/Conference/Program_Chairs"],
     reply = {
         "readers":{
-            "values-copied": [
+            "values": [
+                 "aclweb.org/ACL/2022/Conference",
+                "aclweb.org/ACL/2022/Conference/Program_Chairs",
+                "aclweb.org/ACL/2022/Conference/Senior_Area_Chairs"
+             ]
                 "aclweb.org/ACL/2022/Conference",
                 "aclweb.org/ACL/2022/Conference/Senior_Area_Chairs"
                 "{signatures}"
