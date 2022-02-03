@@ -24,17 +24,21 @@ def assign_reviewer_to_paper(reviewer_id_or_email, paper_forum):
     print(paper)
     reviewer = client.get_profile(reviewer_id_or_email)
     client.post_edge(openreview.Edge(
-        invitation = 'aclweb.org/ACL/2022/Conference/Ethics_Reviewers/-/Assignment', 
-        head = paper,
-        tail = reviewer,
+        invitation = 'aclweb.org/ACL/2022/Conference/Ethics_Reviewers/-/Assignment',
+        head = paper.id,
+        tail = reviewer.id,
         weight = 1,
         readers = [
-            "aclweb.org/ACL/2022/Conference","aclweb.org/ACL/2022/Conference/Ethics_Chairs{tail}"
-            ],
-        nonreaders= ["aclweb.org/ACL/2022/Conference/Paper{head.number}/Authors"],
+            "aclweb.org/ACL/2022/Conference",
+            "aclweb.org/ACL/2022/Conference/Ethics_Chairs",
+            reviewer.id
+        ],
+        nonreaders= [f"aclweb.org/ACL/2022/Conference/Paper{paper.number}/Authors"],
         writers= [
+            "aclweb.org/ACL/2022/Conference",
             "aclweb.org/ACL/2022/Conference/Ethics_Chairs"
-            ],
+        ],
         signatures=["aclweb.org/ACL/2022/Conference/Ethics_Chairs"]
     ))
+
 assign_reviewer_to_paper('~Melisa_Bok1','Ofoi1kAeB5o')
