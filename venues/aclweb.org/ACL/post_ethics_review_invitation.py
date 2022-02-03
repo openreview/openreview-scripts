@@ -60,7 +60,7 @@ ethics_review_super = openreview.Invitation(
     }
 )
 client.post_invitation(ethics_review_super)
-submissions_forum_list = ['_SmerUlTll0']
+submissions_forum_list = ['Ofoi1kAeB5o']
 # For Each submission, create reviewer group, add reviewer group and AC group to readers 
 for submission_forum in tqdm(submissions_forum_list): 
     acl_blind_submission = client.get_note(submission_forum)
@@ -73,7 +73,7 @@ for submission_forum in tqdm(submissions_forum_list):
     ethics_review = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Ethics_Review",
         super = "aclweb.org/ACL/2022/Conference/-/Ethics_Review",
-        invitees = [ethics_reviewer_id, program_chairs_id, ethics_ac_id], 
+        invitees = [ethics_reviewer_id, program_chairs_id], 
         signatures = ["aclweb.org/ACL/2022/Conference"],
         multiReply= False,
         process = './ethics_review_process.py',
@@ -81,14 +81,14 @@ for submission_forum in tqdm(submissions_forum_list):
             "forum": acl_blind_submission.forum,
             "replyto": acl_blind_submission.forum,
             "signatures": {
-                "values-regex": f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Reviewer_.*|aclweb.org/ACL/2022/Conference/Ethics_Chairs|aclweb.org/ACL/2022/Conference/Program_Chairs', 
+                "values-regex": f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Reviewer_.*|aclweb.org/ACL/2022/Conference/Program_Chairs', 
                 "description": "How your identity will be displayed."
             },
             "readers": {
                 "values-copied": [program_chairs_id, ethics_ac_id, ethics_reviewer_id]
             },
             "writers": {
-                "values": [program_chairs_id, ethics_ac_id, ethics_reviewer_id]
+                "values": [program_chairs_id, ethics_reviewer_id]
             },
             "nonreaders": {
                 "values": [conflict_id]
