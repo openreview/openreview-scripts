@@ -32,7 +32,8 @@ ethics = client.post_group(openreview.Group(
         'aclweb.org/ACL/2022/Conference'
         ],
     readers = [
-        'aclweb.org/ACL/2022/Conference'
+        'aclweb.org/ACL/2022/Conference',
+        'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs'
     ],
     writers = [
             'aclweb.org/ACL/2022/Conference'
