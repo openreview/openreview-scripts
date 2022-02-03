@@ -20,8 +20,8 @@ parser.add_argument('--password')
 args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 sac_name_dictionary = tracks.sac_name_dictionary
+program_chairs_id = "aclweb.org/ACL/2022/Conference/Program_Chairs"
 
-print('running')
 decision_super = openreview.Invitation(
     id = "aclweb.org/ACL/2022/Conference/-/Decision",
     readers = ["everyone"],
@@ -31,11 +31,8 @@ decision_super = openreview.Invitation(
     reply = {
         "readers":{
             "values": [
-                 "aclweb.org/ACL/2022/Conference",
-                "aclweb.org/ACL/2022/Conference/Program_Chairs",
-                "aclweb.org/ACL/2022/Conference/Senior_Area_Chairs"
-             ]
                 "aclweb.org/ACL/2022/Conference",
+                "aclweb.org/ACL/2022/Conference/Program_Chairs",
                 "aclweb.org/ACL/2022/Conference/Senior_Area_Chairs"
                 "{signatures}"
             ]
@@ -47,20 +44,29 @@ decision_super = openreview.Invitation(
             ]
         },
         "signatures":{
-            "values-regex": program_chairs_id
+            "values-regex":program_chairs_id
         },
         "content": {
             "decision": {
                 "order": 1,
                 "value-radio": [
-                    "1 - Accept to main conference",
-                    "2 - Accept to findings",
-                    "3 - Reject"
+                    "Accept to main conference",
+                    "Accept to main conference - conditional",
+                    "Accept to findings",
+                    "Accept to findings - conditional"
+                    "Reject"
                 ],
                 "description": "Please select your decision",
                 "required": True
                 }
-        }
+        },
+        "comment": {
+                "order": 2,
+                "value-regex": "[\\S\\s]{1,200000}",
+                "description": "Provide an optional comment about your decision",
+                "required": False
+                }
+        
     }
 )
 client.post_invitation(decision_super)

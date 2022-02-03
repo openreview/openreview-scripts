@@ -39,8 +39,7 @@ ethics = client.post_group(openreview.Group(
             'aclweb.org/ACL/2022/Conference'
             ],
         members = [
-            '~Christiane_Fellbaum1', 
-            'blodgett@cs.umass.edu'
+
         ]
 ))
 # Create Ethics Reviewers Group 
@@ -53,6 +52,7 @@ ethics_reviewers = client.post_group(openreview.Group(
             'aclweb.org/ACL/2022/Conference'
             ],
         readers = [
+            'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs',
             'aclweb.org/ACL/2022/Conference'
             ],
         writers = [
@@ -88,7 +88,7 @@ for submission_forum in tqdm(submissions_forum_list):
         nonreaders= submission.nonreaders,
         anonids= True
         ))
-    client.add_members_to_group('aclweb.org/ACL/2022/Conference/Ethics_Reviewers', ethics_reviewers_paper.id)
+    
     submission.readers = [
         "aclweb.org/ACL/2022/Conference",
         "aclweb.org/ACL/2022/Conference/Program_Chairs",
