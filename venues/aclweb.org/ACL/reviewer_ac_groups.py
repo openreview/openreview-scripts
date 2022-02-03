@@ -24,7 +24,7 @@ sac_name_dictionary = tracks.sac_name_dictionary
 
 # Create Ethics AC group 
 ethics = client.post_group(openreview.Group(
-    id = 'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs',
+    id = 'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
     signatures = [
         'aclweb.org/ACL/2022/Conference'
         ],
@@ -33,7 +33,7 @@ ethics = client.post_group(openreview.Group(
         ],
     readers = [
         'aclweb.org/ACL/2022/Conference',
-        'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs'
+        'aclweb.org/ACL/2022/Conference/Ethics_Chairs'
     ],
     writers = [
             'aclweb.org/ACL/2022/Conference'
@@ -52,7 +52,7 @@ ethics_reviewers = client.post_group(openreview.Group(
             'aclweb.org/ACL/2022/Conference'
             ],
         readers = [
-            'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs',
+            'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
             'aclweb.org/ACL/2022/Conference'
             ],
         writers = [
@@ -79,7 +79,7 @@ for submission_forum in tqdm(submissions_forum_list):
             ],
         readers = [
             'aclweb.org/ACL/2022/Conference',
-            'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs',
+            'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
             f'aclweb.org/ACL/2022/Conference/Paper{submission.number}/Ethics_Reviewers'
             ],
         writers = [
@@ -93,7 +93,7 @@ for submission_forum in tqdm(submissions_forum_list):
         "aclweb.org/ACL/2022/Conference",
         "aclweb.org/ACL/2022/Conference/Program_Chairs",
         track_sac_id,
-        'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs',
+        'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
         ethics_reviewers_paper.id
     ]
     submission.nonreaders = [
@@ -109,7 +109,7 @@ for submission_forum in tqdm(submissions_forum_list):
         review.readers = [
             "aclweb.org/ACL/2022/Conference/Program_Chairs",
             track_sac_id,
-            'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs',
+            'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
             ethics_reviewers_paper.id
         ]
         review.nonreaders = [
@@ -121,7 +121,7 @@ for submission_forum in tqdm(submissions_forum_list):
         review.readers = [
             "aclweb.org/ACL/2022/Conference/Program_Chairs",
             track_sac_id,
-            'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs',
+            'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
             ethics_reviewers_paper.id
         ]
         review.nonreaders = [

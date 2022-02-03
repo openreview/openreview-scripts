@@ -68,7 +68,7 @@ for submission_forum in tqdm(submissions_forum_list):
     track_sac_id = f'aclweb.org/ACL/2022/Conference/{paper_track}/Senior_Area_Chairs'
     conflict_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Conflicts'
     ethics_reviewer_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Reviewers'
-    ethics_ac_id = f'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs'
+    ethics_ac_id = f'aclweb.org/ACL/2022/Conference/Ethics_Chairs'
     
     ethics_review = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Ethics_Review",
@@ -81,11 +81,11 @@ for submission_forum in tqdm(submissions_forum_list):
             "forum": acl_blind_submission.forum,
             "replyto": acl_blind_submission.forum,
             "signatures": {
-                "values-regex": f'aclweb.org/ACL/2022/Conference/Paper404/Ethics_Reviewer_.*|aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs|aclweb.org/ACL/2022/Conference/Program_Chairs', 
+                "values-regex": f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Reviewer_.*|aclweb.org/ACL/2022/Conference/Ethics_Chairs|aclweb.org/ACL/2022/Conference/Program_Chairs', 
                 "description": "How your identity will be displayed."
             },
             "readers": {
-                "values": [program_chairs_id, ethics_ac_id, ethics_reviewer_id]
+                "values-copied": [program_chairs_id, ethics_ac_id, ethics_reviewer_id]
             },
             "writers": {
                 "values": [program_chairs_id, ethics_ac_id, ethics_reviewer_id]
