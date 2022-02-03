@@ -47,7 +47,7 @@ decision_super = openreview.Invitation(
             ]
         },
         "signatures":{
-            "values-regex":"~.*"
+            "values-regex": program_chairs_id
         },
         "content": {
             "decision": {
