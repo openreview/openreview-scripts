@@ -21,6 +21,10 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 sac_name_dictionary = tracks.sac_name_dictionary
 
+preprocess = None
+with open('./ethics_reviewer_assignment_preprocess.py') as f:
+    preprocess = f.read()
+
 assignment_invitation = openreview.Invitation(
     id = "aclweb.org/ACL/2022/Conference/Ethics_Reviewers/-/Assignment",
     readers = ["aclweb.org/ACL/2022/Conference", "aclweb.org/ACL/2022/Conference/Ethics_Chairs"],
@@ -70,7 +74,7 @@ assignment_invitation = openreview.Invitation(
             }
         }
     },
-    preprocess='./ethics_reviewer_assignment_preprocess.py',
+    preprocess=preprocess,
     process='./ethics_reviewer_assignment_process.py'
 )
 client.post_invitation(assignment_invitation)
