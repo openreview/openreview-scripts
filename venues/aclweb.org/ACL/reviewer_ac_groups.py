@@ -60,7 +60,7 @@ ethics_reviewers = client.post_group(openreview.Group(
         ))
 # For submission in submissions, add paperx/Reviewers group and AC group as readers 
 # Currently assumes submissions_list is a list of Notes 
-submissions_forum_list = ['sDLKfwfSO9c']
+submissions_forum_list = ['_SmerUlTll0']
 # For Each submission, create reviewer group, add reviewer group and AC group to readers 
 for submission_forum in tqdm(submissions_forum_list): 
     submission = client.get_note(submission_forum)
@@ -84,8 +84,8 @@ for submission_forum in tqdm(submissions_forum_list):
         writers = [
             'aclweb.org/ACL/2022/Conference'
              ],
-        nonreaders= 
-            submission.nonreaders
+        nonreaders= submission.nonreaders,
+        anonids= True
         ))
     client.add_members_to_group('aclweb.org/ACL/2022/Conference/Ethics_Reviewers', ethics_reviewers_paper.id)
     submission.readers = [

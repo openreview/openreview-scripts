@@ -60,7 +60,7 @@ ethics_review_super = openreview.Invitation(
     }
 )
 client.post_invitation(ethics_review_super)
-submissions_forum_list = ['sDLKfwfSO9c']
+submissions_forum_list = ['_SmerUlTll0']
 # For Each submission, create reviewer group, add reviewer group and AC group to readers 
 for submission_forum in tqdm(submissions_forum_list): 
     acl_blind_submission = client.get_note(submission_forum)
@@ -68,7 +68,7 @@ for submission_forum in tqdm(submissions_forum_list):
     track_sac_id = f'aclweb.org/ACL/2022/Conference/{paper_track}/Senior_Area_Chairs'
     conflict_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Conflicts'
     ethics_reviewer_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Reviewers'
-    ethics_ac_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Area_Chairs'
+    ethics_ac_id = f'aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs'
     
     ethics_review = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Ethics_Review",
@@ -81,7 +81,7 @@ for submission_forum in tqdm(submissions_forum_list):
             "forum": acl_blind_submission.forum,
             "replyto": acl_blind_submission.forum,
             "signatures": {
-                "values-regex": f'{ethics_reviewer_id}|{ethics_ac_id}|{program_chairs_id}', #Why doesn't ethics AC id show up? 
+                "values-regex": f'aclweb.org/ACL/2022/Conference/Paper404/Ethics_Reviewer_.*|aclweb.org/ACL/2022/Conference/Ethics_Area_Chairs|aclweb.org/ACL/2022/Conference/Program_Chairs', 
                 "description": "How your identity will be displayed."
             },
             "readers": {
