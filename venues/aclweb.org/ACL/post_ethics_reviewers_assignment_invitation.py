@@ -41,7 +41,7 @@ assignment_invitation = openreview.Invitation(
         },
         "writers": {
             "values": [
-                "aclweb.org/ACL/2022/Conference"
+                "aclweb.org/ACL/2022/Conference",
                 "aclweb.org/ACL/2022/Conference/Ethics_Chairs"
             ]
         },
