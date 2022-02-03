@@ -49,7 +49,7 @@ ethics_review_super = openreview.Invitation(
                 "description": "Please select your ethical recommendation",
                 "required": True
                 },
-            "Ethics_Review": {
+            "ethics_review": {
                 "order": 3,
                 "value-regex": "[\\S\\s]{1,200000}",
                 "description": "Provide justification for your suggested ethics issues. Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq.",
