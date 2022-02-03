@@ -20,9 +20,8 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 
 def assign_reviewer_to_paper(reviewer_id_or_email, paper_forum):
-    paper = client.get_note(paper_forum)
-    print(paper)
     reviewer = client.get_profile(reviewer_id_or_email)
+    paper = client.get_note(paper_forum)
     client.post_edge(openreview.Edge(
         invitation = 'aclweb.org/ACL/2022/Conference/Ethics_Reviewers/-/Assignment',
         head = paper.id,
@@ -41,4 +40,4 @@ def assign_reviewer_to_paper(reviewer_id_or_email, paper_forum):
         signatures=["aclweb.org/ACL/2022/Conference/Ethics_Chairs"]
     ))
 
-assign_reviewer_to_paper('~Melisa_Bok1','Ofoi1kAeB5o')
+assign_reviewer_to_paper("","")
