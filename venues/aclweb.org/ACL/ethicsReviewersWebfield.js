@@ -12,7 +12,7 @@ var OFFICIAL_REVIEW_NAME = 'Ethics_Review';
 var REVIEW_RATING_NAME = 'rating';
 var LEGACY_INVITATION_ID = false;
 var REVIEW_LOAD = '';
-var CUSTOM_LOAD_INVITATION = '';
+var CUSTOM_LOAD_INVITATION = 'aclweb.org/ACL/2022/Conference/Ethics_Reviewers/-/Reduce_Load';
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/.*';
 var PAPER_RANKING_ID = CONFERENCE_ID + '/' + REVIEWER_NAME + '/-/Paper_Ranking';
