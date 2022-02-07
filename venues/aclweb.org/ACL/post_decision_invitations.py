@@ -53,19 +53,19 @@ decision_super = openreview.Invitation(
                     "Accept to main conference",
                     "Accept to main conference - conditional",
                     "Accept to findings",
-                    "Accept to findings - conditional"
+                    "Accept to findings - conditional",
                     "Reject"
                 ],
                 "description": "Please select your decision",
                 "required": True
-                }
-        },
-        "comment": {
+                },
+                "comment": {
                 "order": 2,
                 "value-regex": "[\\S\\s]{1,200000}",
                 "description": "Provide an optional comment about your decision",
                 "required": False
                 }
+        }
         
     }
 )

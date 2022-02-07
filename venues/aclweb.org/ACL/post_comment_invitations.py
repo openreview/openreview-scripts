@@ -58,20 +58,20 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
     comment = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Comment",
         super = "aclweb.org/ACL/2022/Conference/-/Comment",
-        invitees = [track_sac_id, 'aclweb.org/ACL/2022/Conference/Program_Chairs'],
+        invitees = [track_sac_id, 'aclweb.org/ACL/2022/Conference/Program_Chairs', 'aclweb.org/ACL/2022/Conference/Ethics_Chairs'],
         signatures = ["aclweb.org/ACL/2022/Conference"],
         process = "./commentProcess.js",
         reply = {
             "forum": acl_blind_submission.forum,
             "signatures": {
-                "values-regex": f'{program_chairs_id}|{track_sac_id}',
+                "values-regex": f'{program_chairs_id}|{track_sac_id}|aclweb.org/ACL/2022/Conference/Ethics_Chairs',
                 "description": "How your identity will be displayed."
             },
             "readers": {
-                "values": [program_chairs_id, track_sac_id]
+                "values": [program_chairs_id, track_sac_id, 'aclweb.org/ACL/2022/Conference/Ethics_Chairs']
             },
             "writers": {
-                "values": [program_chairs_id, track_sac_id]
+                "values": [program_chairs_id, track_sac_id, 'aclweb.org/ACL/2022/Conference/Ethics_Chairs']
             },
             "nonreaders": {
                 "values": [conflict_id]

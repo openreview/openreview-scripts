@@ -4,6 +4,7 @@ import openreview
 from tqdm import tqdm
 import csv
 import tracks
+import flagged_papers
 
 """
 OPTIONAL SCRIPT ARGUMENTS
@@ -22,48 +23,12 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 sac_name_dictionary = tracks.sac_name_dictionary
 
 
-# Create Ethics AC group 
-ethics = client.post_group(openreview.Group(
-    id = 'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
-    signatures = [
-        'aclweb.org/ACL/2022/Conference'
-        ],
-    signatories=[
-        'aclweb.org/ACL/2022/Conference',
-        'aclweb.org/ACL/2022/Conference/Ethics_Chairs'
-        ],
-    readers = [
-        'aclweb.org/ACL/2022/Conference',
-        'aclweb.org/ACL/2022/Conference/Ethics_Chairs'
-    ],
-    writers = [
-            'aclweb.org/ACL/2022/Conference'
-            ],
-    members = [
 
-    ]
-))
-# Create Ethics Reviewers Group 
-ethics_reviewers = client.post_group(openreview.Group(
-        id = f'aclweb.org/ACL/2022/Conference/Ethics_Reviewers',
-        signatures = [
-            'aclweb.org/ACL/2022/Conference'
-            ],
-        signatories=[
-            'aclweb.org/ACL/2022/Conference'
-            ],
-        readers = [
-            'aclweb.org/ACL/2022/Conference/Ethics_Chairs',
-            'aclweb.org/ACL/2022/Conference/Ethics_Reviewers',
-            'aclweb.org/ACL/2022/Conference'
-            ],
-        writers = [
-            'aclweb.org/ACL/2022/Conference'
-             ]
-        ))
 # For submission in submissions, add paperx/Reviewers group and AC group as readers 
 # Currently assumes submissions_list is a list of Notes 
-submissions_forum_list = ['Ofoi1kAeB5o']
+
+submissions_forum_list = flagged_papers.flagged_papers
+
 # For Each submission, create reviewer group, add reviewer group and AC group to readers 
 for submission_forum in tqdm(submissions_forum_list): 
     submission = client.get_note(submission_forum)
@@ -87,7 +52,8 @@ for submission_forum in tqdm(submissions_forum_list):
         writers = [
             'aclweb.org/ACL/2022/Conference'
              ],
-        nonreaders= submission.nonreaders
+        nonreaders= submission.nonreaders,
+        anonids=True
         ))
     
     submission.readers = [

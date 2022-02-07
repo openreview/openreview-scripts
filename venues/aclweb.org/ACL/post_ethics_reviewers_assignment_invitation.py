@@ -29,7 +29,7 @@ assignment_invitation = openreview.Invitation(
     id = "aclweb.org/ACL/2022/Conference/Ethics_Reviewers/-/Assignment",
     readers = ["aclweb.org/ACL/2022/Conference", "aclweb.org/ACL/2022/Conference/Ethics_Chairs"],
     writers = ["aclweb.org/ACL/2022/Conference"],
-    signatures = ["aclweb.org/ACL/2022/Conference"],
+    signatures = ["aclweb.org/ACL/2022/Conference/Program_Chairs"], ## can compute conflicts
     reply = {
         "readers": {
             "values-copied": [
