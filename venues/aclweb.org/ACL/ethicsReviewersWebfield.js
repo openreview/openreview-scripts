@@ -5,14 +5,14 @@
 var CONFERENCE_ID = 'aclweb.org/ACL/2022/Conference';
 var SUBMISSION_ID = 'aclweb.org/ACL/2022/Conference/-/Submission';
 var BLIND_SUBMISSION_ID = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission';
-var HEADER = {};
+var HEADER = {"title": "Ethics Reviewers Console", "instructions": "<p class=\"dark\">This page provides information and status             updates for the ACL-2022. It will be regularly updated as the conference             progresses, so please check back frequently.</p>", "schedule": ""};
 var REVIEWER_NAME = 'Ethics_Reviewers';
 var AREACHAIR_NAME = '';
 var OFFICIAL_REVIEW_NAME = 'Ethics_Review';
-var REVIEW_RATING_NAME = 'rating';
+var REVIEW_RATING_NAME = 'recommendation';
 var LEGACY_INVITATION_ID = false;
 var REVIEW_LOAD = '';
-var CUSTOM_LOAD_INVITATION = '';
+var CUSTOM_LOAD_INVITATION = 'aclweb.org/ACL/2022/Conference/Ethics_Reviewers/-/Reduce_Load';
 
 var WILDCARD_INVITATION = CONFERENCE_ID + '/.*';
 var PAPER_RANKING_ID = CONFERENCE_ID + '/' + REVIEWER_NAME + '/-/Paper_Ranking';
@@ -133,13 +133,13 @@ var getReviewerNoteNumbers = function() {
     member: user.id
   }).then(function(groups) {
 
-    var anonGroups = _.filter(groups, function(g) { return g.id.includes('/Reviewer_'); });
+    var anonGroups = _.filter(groups, function(g) { return g.id.includes('/Ethics_Reviewer_'); });
     var reviewerGroups = _.filter(groups, function(g) { return g.id.endsWith('/' + REVIEWER_NAME); });
 
     var groupByNumber = {};
     _.forEach(reviewerGroups, function(reviewerGroup) {
       var num = getNumberFromGroup(reviewerGroup.id, 'Paper');
-      var anonGroup = anonGroups.find(function(anonGroup) { return anonGroup.id.startsWith(CONFERENCE_ID + '/Paper' + num + '/Reviewer_'); });
+      var anonGroup = anonGroups.find(function(anonGroup) { return anonGroup.id.startsWith(CONFERENCE_ID + '/Paper' + num + '/Ethics_Reviewer_'); });
       if (anonGroup) {
         groupByNumber[num] = anonGroup.id;
       }
