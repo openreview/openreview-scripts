@@ -10,7 +10,7 @@ var REVIEW_RATING_NAME = 'overall_assessment';
 var REVIEW_CONFIDENCE_NAME = 'confidence';
 var OFFICIAL_META_REVIEW_NAME = 'Meta_Review';
 var DECISION_NAME = '';
-var HEADER = {"title": "Senior Area Chairs Console", "instructions": "<p class=\"dark\">This page provides information and status             updates for the ACL-2022. It will be regularly updated as the conference             progresses, so please check back frequently.</p>", "schedule": "<h4>Coming Soon</h4>            <p>                <em><strong>Please check back later for updates.</strong></em>            </p>"};
+var HEADER = {"title": "Ethics Chairs Console", "instructions": "<p class=\"dark\">This page provides information and status             updates for the ACL-2022. It will be regularly updated as the conference             progresses, so please check back frequently.</p>", "schedule": "<h4>Coming Soon</h4>            <p>                <em><strong>Please check back later for updates.</strong></em>            </p>"};
 var SENIOR_AREA_CHAIR_NAME = 'Ethics_Chairs';
 var AREA_CHAIRS_ID = 'aclweb.org/ACL/2022/Conference/Area_Chairs';
 var REVIEWERS_ID = 'aclweb.org/ACL/2022/Conference/Reviewers';
