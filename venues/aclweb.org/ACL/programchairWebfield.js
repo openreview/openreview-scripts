@@ -59,7 +59,7 @@ var propertiesAllowed ={
     confidenceMax:['reviewProgressData.maxConfidence'],
     confidenceMin:['reviewProgressData.minConfidence'],
     replyCount:['reviewProgressData.forumReplyCount'],
-    decision: ['decision.content.suggested_decision'],
+    suggested_decision: ['decision.content.suggested_decision'],
 }
 
 sacNameDictionary = {
@@ -1587,7 +1587,7 @@ var displayPaperStatusTable = function() {
   if (AREA_CHAIRS_ID) {
     sortOptions['Meta_Review_Missing'] = function(row) { return row.areachairProgressData.numMetaReview; }
   }
-  sortOptions['Decision'] = function (row) { return row.decision.content.suggested_decision || 'No Decision' }
+  sortOptions['Suggested_Decision'] = function (row) { return row.decision.content.suggested_decision || 'No Decision' }
   if (pcAssignmentTagInvitations && pcAssignmentTagInvitations.length) {
     sortOptions['Papers_Assigned_to_Me'] = function(row) {
       var tags = pcTags[row.note.id];
