@@ -14,8 +14,8 @@ def process(client, note, invitation):
     )
     email_body = f'An ethics review was posted to Paper #{forum_note.number} titled "{forum_note.content["title"]}":\n\nRecommendation: {note.content["recommendation"]}\n\nJustification: {note.content["ethics_review"]}'
 
-    PAPER_AUTHORS_ID = f'aclweb.org/ACL/2022/Conference/Paper{forum_note.number}/Authors'
+    
 
     recipients = note.readers
-    recipients.append(PAPER_AUTHORS_ID)
+    
     client.post_message(subject=email_subject, recipients=recipients, message=email_body, ignoreRecipients=note.nonreaders)
