@@ -32,8 +32,7 @@ decision_super = openreview.Invitation(
         "readers":{
             "values": [
                 "aclweb.org/ACL/2022/Conference",
-                "aclweb.org/ACL/2022/Conference/Program_Chairs",
-                "aclweb.org/ACL/2022/Conference/Senior_Area_Chairs"
+                "aclweb.org/ACL/2022/Conference/Program_Chairs"
                 "{signatures}"
             ]
         },
@@ -92,10 +91,10 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
                 "description": "How your identity will be displayed."
             },
             "readers": {
-                "values": [program_chairs_id, track_sac_id]
+                "values": [program_chairs_id]
             },
             "writers": {
-                "values": [program_chairs_id, track_sac_id]
+                "values": [program_chairs_id]
             },
             "nonreaders": {
                 "values": [conflict_id]
