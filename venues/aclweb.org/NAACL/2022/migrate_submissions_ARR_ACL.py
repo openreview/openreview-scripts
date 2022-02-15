@@ -28,7 +28,7 @@ track_SAC_profiles = {}
 track_groups = { group.id: group for group in client.get_groups('aclweb.org/NAACL/2022/Conference/.*/Senior_Area_Chairs')}
 profile_ids = []
 for track_name, group_abbreviation in sac_name_dictionary.items():
-    print(track_name)
+    #print(track_name)
     group = track_groups[f'aclweb.org/NAACL/2022/Conference/{group_abbreviation}/Senior_Area_Chairs']
     profile_ids = profile_ids + group.members
 
@@ -80,14 +80,14 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
                     "data":original_arr_sub.content.get("data"),
                     "software":original_arr_sub.content.get("software"),
                     "pdf":original_arr_sub.content.get("pdf"), #is it okay that this is the original note forum?
-                    "acl_preprint": acl_commitment_note.content.get("ACL_preprint"),
+                    "naacl_preprint": acl_commitment_note.content.get("naacl_preprint"),
                     "existing_preprints": original_arr_sub.content.get("existing_preprints"),
                     "preprint":original_arr_sub.content.get("preprint"),
                     "TL;DR":original_arr_sub.content.get('TL;DR'),
                     "previous_URL": original_arr_sub.content.get("previous_URL"),
                     "authorship": acl_commitment_note.content.get("authorship"),
-                    "paper_version": acl_commitment_note.content.get("paper version"),
-                    "anonymity_period": acl_commitment_note.content.get("anonymity period"),
+                    "paper_version": acl_commitment_note.content.get("paper_version"),
+                    "anonymity_period": acl_commitment_note.content.get("anonymity_period"),
                     "commitment_note": f"https://openreview.net/forum?id={acl_commitment_note.forum}"
                 }
             )
@@ -270,7 +270,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
     review_invitation_arr = '{conf_id}/Paper{number}/-/Official_Review'.format(conf_id = conf_id,number = arr_submission.number)
 
     # Get all reviews from the original ARR Submission
-    arr_reviews = list(openreview.tools.iterget_notes(client, invitation = review_invitation_arr))
+    arr_reviews = list(openreview.tools.iterget_notes(client, invitation = review_invitation_arr, sort= 'number:asc'))
 
     submission_output_dict[acl_commitment_note.forum]['num_reviews'] = len(arr_reviews)
 
@@ -280,7 +280,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
             acl_review = openreview.Note(
                 forum = acl_blind_submission_forum,
                 replyto = acl_blind_submission_forum,
-                invitation = 'aclweb.org/NAACL/2022/Conference/-/Official_Review',
+                invitation = 'aclweb.org/NAACL/2022/Conference/-/ARR_Official_Review',
                 signatures = arr_review.signatures,
                 readers = ['aclweb.org/NAACL/2022/Conference/Program_Chairs'],
                 writers = [
@@ -319,7 +319,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
             acl_metareview = openreview.Note(
                 forum = acl_blind_submission_forum,
                 replyto = acl_blind_submission_forum,
-                invitation = f'aclweb.org/NAACL/2022/Conference/-/Meta_Review',
+                invitation = f'aclweb.org/NAACL/2022/Conference/-/ARR_Meta_Review',
                 signatures = arr_metareview.signatures,
                 readers = ['aclweb.org/NAACL/2022/Conference/Program_Chairs'],
                 nonreaders=[
@@ -345,8 +345,8 @@ print('Load commitment notes and rest of the data')
 commitment_notes = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/NAACL/2022/Conference/-/Commitment_Submission', sort= 'number:desc'))
 acl_submissions = list(openreview.tools.iterget_notes(client,invitation='aclweb.org/NAACL/2022/Conference/-/Submission'))
 blind_submissions = {note.original: note for note in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Blind_Submission'))}
-acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Official_Review'))}
-acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Meta_Review'))}
+acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/ARR_Official_Review'))}
+acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/ARR_Meta_Review'))}
 
 # Save all submissions in a dictionary by paper_link
 acl_submission_dict = {(acl_submission.content['paper_link'].split('=')[1]).split('&')[0]:acl_submission for acl_submission in acl_submissions}
