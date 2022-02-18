@@ -59,7 +59,7 @@ var propertiesAllowed ={
     confidenceMax:['reviewProgressData.maxConfidence'],
     confidenceMin:['reviewProgressData.minConfidence'],
     replyCount:['reviewProgressData.forumReplyCount'],
-    decision: ['decision.content.decision'],
+    suggested_decision: ['decision.content.suggested_decision'],
 }
 
 sacNameDictionary = {
@@ -115,6 +115,7 @@ var main = function() {
     getGroups(),
     getBlindedNotes(),
     getCommitmentNotes(),
+    getEthicsReviewInvitations(),
     getWithdrawnNotesCount(),
     getDeskRejectedNotesCount(),
     getPcAssignmentTags(),
@@ -134,6 +135,7 @@ var main = function() {
     groups,
     blindedNotes,
     commitmentNotes,
+    ethicsReviewInvitations,
     withdrawnNotesCount,
     deskRejectedNotesCount,
     pcAssignmentTags,
@@ -152,6 +154,7 @@ var main = function() {
     var reviewers = [];
     var areaChairs = [];
     var SACByTrack = _.keyBy(trackGroups, 'id');
+    var ethicsReviewInvitationById = _.keyBy(ethicsReviewInvitations, 'id');
     var seniorAreaChairs = [];
     var noteNumbers = blindedNotes.map(function(note) { return note.number; });
     var acRankingByPaper = {};
@@ -189,12 +192,14 @@ var main = function() {
       var paperOfficialReviews = _.filter(submission.details.directReplies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Official_Review']);
       var paperMetaReviews = _.find(submission.details.directReplies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Meta_Review']);
       var paperDecisions = _.find(submission.details.directReplies, ['invitation', getInvitationId('Suggested_Decision', submission.number)]) || { content: { decision: 'No Decision' } };
+      var ethicsReview = _.find(submission.details.directReplies, ['invitation', getInvitationId('Ethics_Review', submission.number)]);
       officialReviews = officialReviews.concat(paperOfficialReviews);
       metaReviews = metaReviews.concat(paperMetaReviews);
       decisions = decisions.concat(decisions);
       submission.details.reviews = getOfficialReviews(paperOfficialReviews);
       submission.details.metaReview = paperMetaReviews;
       submission.details.decision = paperDecisions;
+      submission.details.ethicsReview = ethicsReview;
       submission.details.reviewers = reviewerGroupMaps.byNotes[submission.number];
       submission.details.areachairs = areaChairGroupMaps.byNotes[submission.number];
       submission.details.seniorAreaChairs = seniorAreaChairGroupMaps.byNotes[submission.number];
@@ -202,6 +207,7 @@ var main = function() {
       var trackSACs = SACByTrack['aclweb.org/ACL/2022/Conference/' + sacNameDictionary[submission.content.track] + '/Senior_Area_Chairs'].members;
       submission.details.conflicts = conflicts;
       submission.details.assignedSACs = trackSACs.filter(function(s) { return !conflicts.includes(s); });
+      submission.details.hasEthicsReview = ethicsReviewInvitationById[getInvitationId('Ethics_Review', submission.number)] ? 'Yes' : 'No';
     })
 
     pcAssignmentTags.forEach(function(tag) {
@@ -405,6 +411,13 @@ var getBlindedNotes = function() {
     invitation: BLIND_SUBMISSION_ID,
     details: 'invitation,tags,original,replyCount,directReplies',
     select: 'id,number,forum,content,details'
+  })
+};
+
+var getEthicsReviewInvitations = function() {
+  return Webfield.getAll('/invitations', {
+    regex: 'aclweb.org/ACL/2022/Conference/Paper.*/-/Ethics_Review',
+    select: 'id'
   })
 };
 
@@ -1574,7 +1587,7 @@ var displayPaperStatusTable = function() {
   if (AREA_CHAIRS_ID) {
     sortOptions['Meta_Review_Missing'] = function(row) { return row.areachairProgressData.numMetaReview; }
   }
-  sortOptions['Decision'] = function (row) { return row.decision.content.decision || 'No Decision' }
+  sortOptions['Suggested_Decision'] = function (row) { return row.decision.content.suggested_decision || 'No Decision' }
   if (pcAssignmentTagInvitations && pcAssignmentTagInvitations.length) {
     sortOptions['Papers_Assigned_to_Me'] = function(row) {
       var tags = pcTags[row.note.id];
@@ -3158,8 +3171,13 @@ var buildCSV = function(){
   'reviewers',
   'metareview',
   'action editor',
-  'sac recommendation',
-  'decision'].join(',') + '\n');
+  'suggested decision',
+  'justification',
+  'ranking',
+  'best_paper',
+  'ethics review',
+  'ethics review recommendation',
+  'ethics review text'].join(',') + '\n');
 
   _.forEach(notes, function(noteObj) {
     var paperTableRow = null;
@@ -3210,6 +3228,9 @@ var buildCSV = function(){
       metareviewScore = metareview.content.overall_assessment ? metareview.content.overall_assessment.split('=')[0].trim() : '';
       actionEditor = metareview.content.action_editor_id;
       }
+    var decision = paperTableRow.decision;
+    var hasEthicsReview = paperTableRow.note.details.hasEthicsReview;
+    var ethicsReview = paperTableRow.note.details.ethicsReview;
     // var reviewersData = _.values(paperTableRow.reviewProgressData.reviewers);
     // var allReviewers = [];
     // var missingReviewers = [];
@@ -3242,8 +3263,13 @@ var buildCSV = function(){
     '"' + reviewers.join('|') + '"',
     '"' + metareviewScore + '"',
     '"' + actionEditor + '"',
-    paperTableRow.areachairProgressData.metaReview && paperTableRow.areachairProgressData.metaReview.content.recommendation,
-    paperTableRow.decision && paperTableRow.decision.content && paperTableRow.decision.content.decision
+    '"' + ((decision && decision.content.suggested_decision) || '' ) + '"',
+    '"' + ((decision && decision.content.justification) || '').replace(/"/g, '""')  + '"',
+    '"' + ((decision && decision.content.ranking) || '' ) + '"',
+    '"' + ((decision && decision.content.best_paper) || '' ) + '"',
+    '"' + hasEthicsReview + '"',
+    '"' + ((ethicsReview && ethicsReview.content.recommendation) || '' ) + '"',
+    '"' + ((ethicsReview && ethicsReview.content.ethics_review) || '').replace(/"/g, '""')  + '"',
     ].join(',') + '\n');
   });
 
