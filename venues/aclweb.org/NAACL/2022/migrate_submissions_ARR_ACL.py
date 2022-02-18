@@ -28,15 +28,14 @@ track_SAC_profiles = {}
 track_groups = { group.id: group for group in client.get_groups('aclweb.org/NAACL/2022/Conference/.*/Senior_Area_Chairs')}
 profile_ids = []
 for track_name, group_abbreviation in sac_name_dictionary.items():
-    #print(track_name)
     group = track_groups[f'aclweb.org/NAACL/2022/Conference/{group_abbreviation}/Senior_Area_Chairs']
     profile_ids = profile_ids + group.members
 
+#print(openreview.tools.get_profiles(client, ['~He_He2'], with_publications = True))
 print(f'Load SAC {len(list(set(profile_ids)))} profiles')
 SAC_profiles = { p.id: p for p in openreview.tools.get_profiles(client, list(set(profile_ids)), with_publications = True)}
     # profiles = openreview.tools.get_profiles(client, group.members, with_publications = True)
     # track_SAC_profiles[track_name] = profiles
-
 
 # Post acl submission (calls post_blind_submission)
 def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_output_dict):
@@ -62,7 +61,7 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
                 invitation="aclweb.org/NAACL/2022/Conference/-/Submission",
                 readers = [
                     "aclweb.org/NAACL/2022/Conference"
-                    ],
+                    ], 
                 writers = [
                     "aclweb.org/NAACL/2022/Conference"
                     ],
@@ -88,7 +87,10 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
                     "authorship": acl_commitment_note.content.get("authorship"),
                     "paper_version": acl_commitment_note.content.get("paper_version"),
                     "anonymity_period": acl_commitment_note.content.get("anonymity_period"),
-                    "commitment_note": f"https://openreview.net/forum?id={acl_commitment_note.forum}"
+                    "commitment_note": f"https://openreview.net/forum?id={acl_commitment_note.forum}",
+                    "comment": acl_commitment_note.content.get("comment"),
+                    "author_profiles": acl_commitment_note.content.get("author_profiles"),
+                    "country_of_affiliation": acl_commitment_note.content["country_of_affiliation"]
                 }
             )
             acl_submitted = client.post_note(acl_sub)
@@ -193,8 +195,8 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             conflict_members.append(area_chairs)
 
     author_group = openreview.tools.get_profiles(client, ids_or_emails = authors.members, with_publications=True)
-
     # Get all SAC profiles from track dictionary, and for each one check conflicts
+    print(f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs")
     for SAC in track_groups[f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs"].members:
         conflicts = openreview.tools.get_conflicts(author_group, SAC_profiles[SAC], policy = 'neurips', n_years=5)
         if conflicts:

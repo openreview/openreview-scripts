@@ -5,6 +5,7 @@ import openreview
 from tqdm import tqdm
 import csv
 import tracks
+import countries
 
 """
 OPTIONAL SCRIPT ARGUMENTS
@@ -23,7 +24,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 sac_name_dictionary = tracks.sac_name_dictionary
 track_names = list(sac_name_dictionary.keys())
-
+countries = countries.countries
 # Post commitment invitation 
 preprocess = None
 with open('./commitmentPreProcess.py') as f:
@@ -108,13 +109,13 @@ commitment = client.post_invitation(openreview.Invitation(
                     "no"
                     ],
                 "required": True,
-                "order": 16
+                "order": 17
             },
             "existing_preprints": {
                 "values-regex": ".{1,500}",
                 "description": "If there are any publicly available non-anonymous preprints of this paper, please list them here (provide the URLs please).",
                 "required": False,
-                "order": 17
+                "order": 18
             },
             "authorship": {
                 "values-checkbox": [
@@ -122,6 +123,12 @@ commitment = client.post_invitation(openreview.Invitation(
                     ],
                 "required": True,
                 "order": 19
+            },
+            "author_profiles": {
+                "description": "Please confirm that the OpenReview profiles of all authors are up-to-date (with current email address, institution name, institution domain) by selecting 'Yes'.",
+                "value-checkbox": "Yes",
+                "required": True,
+                "order": 22
             },
             "paper_version": {
                 "values-checkbox": [
@@ -136,6 +143,32 @@ commitment = client.post_invitation(openreview.Invitation(
                     ],
                 "required": True,
                 "order": 21
+            },
+            "anonymity_period": {
+                "values-checkbox": [
+                    "I confirm that this submission complies with the anonymity period"
+                    ],
+                "required": True,
+                "order": 21
+            },
+            "comment": {
+                "description": "In rare cases where there are important factual errors in a review or meta-review, please use this field to point the Senior Area Chair(s) to the discrepancy between the review and the content of the paper (use line numbers to identify relevant passages in your submission). Note that SACs cannot communicate with ARR reviewers and action editors for discussion after the paper is committed to NAACL. To directly respond to reviewer comments, please resubmit to the ACL Rolling Review instead. (200 words)",
+                "order": 13,
+                "value-regex": "[\\S\\s]{0,800}",
+                "required": False
+                },
+            "country_of_affiliation": {
+                "order" : 16,
+                "description" : "Help us understand the geographic diversity of authors by indicating the country where you (the corresponding author) work",
+                "values-dropdown": countries,
+                "required": True
+                },
+            "reproducibility_track_survey":{
+                "values-checkbox": [
+                ],
+                "description": "Authors of accepted papers will have the opportunity to apply for badges recognizing practices that facilitate reproducibility. Please take a moment to fill out this short survey to help us plan resources for this track: https://forms.office.com/r/sq8dNp91qA",
+                "required": False,
+                "order": 19
             }
         }
     }
@@ -246,10 +279,10 @@ submission_invitation = client.post_invitation(openreview.Invitation(
                 "required": True,
                 "order": 12
                 },
-            "comments_to_the_senior_area_chairs": {
-                "description": "Comment to Senior Area Chairs (500 words)",
-                "order": 50,
-                "value-regex": "[\\S\\s]{0,3000}",
+            "comment": {
+                "description": "In rare cases where there are important factual errors in a review or meta-review, please use this field to point the Senior Area Chair(s) to the discrepancy between the review and the content of the paper (use line numbers to identify relevant passages in your submission). Note that SACs cannot communicate with ARR reviewers and action editors for discussion after the paper is committed to NAACL. To directly respond to reviewer comments, please resubmit to the ACL Rolling Review instead. (200 words)",
+                "order": 13,
+                "value-regex": "[\\S\\s]{0,800}",
                 "required": False
                 },
             "authorship": {
@@ -313,7 +346,19 @@ submission_invitation = client.post_invitation(openreview.Invitation(
             "order": 13,
             "value-regex": "[^\\n]{0,250}",
             "required": False
-        }
+        },
+        "author_profiles": {
+                "description": "Please confirm that the OpenReview profiles of all authors are up-to-date (with current email address, institution name, institution domain) by selecting 'Yes'.",
+                "value-checkbox": "Yes",
+                "required": True,
+                "order": 22
+            },
+        "country_of_affiliation": {
+                "order" : 16,
+                "description" : "Help us understand the geographic diversity of authors by indicating the country where you (the corresponding author) work",
+                "values-dropdown": countries,
+                "required": True
+                }
         }
     }  
 ))
@@ -409,13 +454,7 @@ official_review = openreview.Invitation(
                 "required": False
             },
             "confidence": {
-                "value-radio": [
-                    "5 = Positive that my evaluation is correct. I read the paper very carefully and am familiar with related work.",
-                    "4 = Quite sure. I tried to check the important points carefully. It's unlikely, though conceivable, that I missed something that should affect my ratings.",
-                    "3 =  Pretty sure, but there's a chance I missed something. Although I have a good feel for this area in general, I did not carefully check the paper's details, e.g., the math or experimental design.",
-                    "2 =  Willing to defend my evaluation, but it is fairly likely that I missed some details, didn't understand some central points, or can't be sure about the novelty of the work.",
-                    "1 = Not my area, or paper is very hard to understand. My evaluation is just an educated guess."
-                ],
+                "value-regex": '.*',
                 "required": False
             },
             "paper_summary": {
@@ -448,17 +487,7 @@ official_review = openreview.Invitation(
                 },
                 "overall_assessment": {
                     "order": 9,
-                    "value-radio": [
-                        "5 = Top-Notch: This paper has great merit, and easily warrants acceptance in a *ACL top-tier venue.",
-                        "4.5 ",
-                        "4 = Strong: This paper is of significant interest (for broad or narrow sub-communities), and warrants acceptance in a top-tier *ACL venue if space allows.",
-                        "3.5 ",
-                        "3 = Good: This paper is of interest to the *ACL audience and could be published, but might not be appropriate for a top-tier publication venue. It would likely be a strong paper in a suitable workshop.",
-                        "2.5 ",
-                        "2 = Borderline: This paper has some merit, but also significant flaws. It does not warrant publication at top-tier venues, but might still be a good pick for workshops.",
-                        "1.5 ",
-                        "1 = Poor: This paper has significant flaws, and I would argue against publishing it at any *ACL venue."
-                    ],
+                    "value-regex": '.*',
                     "required": False
                 },
                 "best_paper": {
@@ -481,49 +510,25 @@ official_review = openreview.Invitation(
                 "replicability": {
                     "order": 12,
                     "description": "Will members of the ACL community be able to reproduce or verify the results in this paper?",
-                    "value-radio": [
-                        "5 = They could easily reproduce the results.",
-                        "4 = They could mostly reproduce the results, but there may be some variation because of sample variance or minor variations in their interpretation of the protocol or method.",
-                        "3 = They could reproduce the results with some difficulty. The settings of parameters are underspecified or subjectively determined, and/or the training/evaluation data are not widely available.",
-                        "2 = They would be hard pressed to reproduce the results: The contribution depends on data that are simply not available outside the author's institution or consortium and/or not enough details are provided.",
-                        "1 = They would not be able to reproduce the results here no matter how hard they tried."
-                    ],
+                    "value-regex": '.*',
                     "required": False
                 },
                 "datasets": {
                     "order": 13,
                     "description": "If the authors state (in anonymous fashion) that datasets will be released, how valuable will they be to others?",
-                    "value-radio": [
-                        "5 = Enabling: The newly released datasets should affect other people's choice of research or development projects to undertake.",
-                        "4 = Useful: I would recommend the new datasets to other researchers or developers for their ongoing work.",
-                        "3 = Potentially useful: Someone might find the new datasets useful for their work.",
-                        "2 = Documentary: The new datasets will be useful to study or replicate the reported research, although for other purposes they may have limited interest or limited usability. (Still a positive rating)",
-                        "1 = No usable datasets submitted."
-                    ],
+                    "value-regex": '.*',
                     "required": False
                     },
                 "software": {
                     "order": 14,
                     "description": "If the authors state (in anonymous fashion) that their software will be available, how valuable will it be to others?",
-                    "value-radio": [
-                        "5 = Enabling: The newly released software should affect other people's choice of research or development projects to undertake.",
-                        "4 = Useful: I would recommend the new software to other researchers or developers for their ongoing work.",
-                        "3 = Potentially useful: Someone might find the new software useful for their work.",
-                        "2 = Documentary: The new software will be useful to study or replicate the reported research, although for other purposes it may have limited interest or limited usability. (Still a positive rating)",
-                        "1 = No usable software released."
-                    ],
+                    "value-regex": '.*',
                     "required": False
                 },
                 "author_identity_guess": {
                     "order": 15,
                     "description": "Do you know the author identity or have an educated guess?",
-                    "value-radio": [
-                        "5 = From a violation of the anonymity-window or other double-blind-submission rules, I know/can guess at least one author's name.",
-                        "4 = From an allowed pre-existing preprint or workshop paper, I know/can guess at least one author's name.",
-                        "3 = From the contents of the submission itself, I know/can guess at least one author's name.",
-                        "2 = From social media/a talk/other informal communication, I know/can guess at least one author's name.",
-                        "1 = I do not have even an educated guess about author identity."
-                    ],
+                    "value-regex": '.*',
                     "required": True
                 },
                 "ethical_concerns": {
@@ -545,7 +550,30 @@ official_review = openreview.Invitation(
                     "description": "Link to the review on the original ARR submission",
                     "required": True,
                     "markdown": True
-                    }
+                    },
+                "limitations_and_societal_impact": {
+                    "order": 9,
+                    "value-regex": "[\\S\\s]{0,10000}",
+                    "description": "Have the authors adequately discussed the limitations and potential positive and negative societal impacts of their work? If not, please include constructive suggestions for improvement. Authors should be rewarded rather than punished for being up front about the limitations of their work and any potential negative societal impact. You are encouraged to think through whether any critical points are missing and provide these as feedback for the authors. Consider, for example, cases of exclusion of user groups, overgeneralization of findings, unfair impacts on traditionally marginalized populations, bias confirmation, under- and overexposure of languages or approaches, and dual use (see Hovy and Spruit, 2016, for examples of those). Consider who benefits from the technology if it is functioning as intended, as well as who might be harmed, and how. Consider the failure modes, and in case of failure, who might be harmed and how.",
+                    "required": False,
+                    "markdown": True
+                    },
+                "needs_ethics_review": {
+                    "order": 11,
+                    "value-radio": [
+                        "Yes",
+                        "No"
+                    ],
+                    "description": "Should this paper be sent for an in-depth ethics review? We have a small ethics committee that can specially review very challenging papers when it comes to ethical issues. If this seems to be such a paper, then please explain why here, and we will try to ensure that it receives a separate review.",
+                    "required": False,
+                    "markdown": True
+                    },
+                "reproducibility": {
+                    "order": 12,
+                    "description": "Is there enough information in this paper for a reader to reproduce the main results, use results presented in this paper in future work (e.g., as a baseline), or build upon this work?",
+                    "value-regex": '.*',
+                    "required": True
+                    },
                 }
             }
         )
@@ -611,13 +639,7 @@ metareview = openreview.Invitation(
                 },
             "overall_assessment": {
                 "order": 6,
-                "value-radio": [
-                    "5 = The paper is largely complete and there are no clear points of revision",
-                    "4 = There are minor points that may be revised",
-                    "3 = There are major points that may be revised",
-                    "2 = The paper would need significant revisions to reach a publishable state",
-                    "1 = Even after revisions, the paper is not likely to be publishable at an *ACL venue"
-                ],
+                "value-regex": '.*',
                 "required": False
                 },
             "suggested_venues": {
