@@ -24,18 +24,21 @@ sac_name_dictionary = tracks.sac_name_dictionary
 
 
 
-# For submission in submissions, add paperx/Reviewers group and AC group as readers 
-# Currently assumes submissions_list is a list of Notes 
+# For submission in submissions, add paperx/Reviewers group and AC group as readers
+# Currently assumes submissions_list is a list of Notes
 
 submissions_forum_list = flagged_papers.flagged_papers
 
-# For Each submission, create reviewer group, add reviewer group and AC group to readers 
-for submission_forum in tqdm(submissions_forum_list): 
-    submission = client.get_note(submission_forum)
+blind_submission_by_number = { s.number: s for s in openreview.tools.iterget_notes(client, invitation='aclweb.org/ACL/2022/Conference/-/Blind_Submission')}
+
+
+# For Each submission, create reviewer group, add reviewer group and AC group to readers
+for submission_number in tqdm(submissions_forum_list):
+    submission = blind_submission_by_number[submission_number]
     paper_track = sac_name_dictionary[submission.content["track"]]
     track_sac_id = f'aclweb.org/ACL/2022/Conference/{paper_track}/Senior_Area_Chairs'
     conflict_id = f'aclweb.org/ACL/2022/Conference/Paper{submission.number}/Conflicts'
-    # Create Ethics Reviewer group 
+    # Create Ethics Reviewer group
     ethics_reviewers_paper = client.post_group(openreview.Group(
         id = f'aclweb.org/ACL/2022/Conference/Paper{submission.number}/Ethics_Reviewers',
         signatures = [
@@ -55,7 +58,7 @@ for submission_forum in tqdm(submissions_forum_list):
         nonreaders= submission.nonreaders,
         anonids=True
         ))
-    
+
     submission.readers = [
         "aclweb.org/ACL/2022/Conference",
         "aclweb.org/ACL/2022/Conference/Program_Chairs",
@@ -72,7 +75,7 @@ for submission_forum in tqdm(submissions_forum_list):
     }
     client.post_note(submission)
     metareviews = openreview.tools.iterget_notes(client, invitation = "aclweb.org/ACL/2022/Conference/-/Meta_Review", forum = submission.forum)
-    for review in metareviews: 
+    for review in metareviews:
         review.readers = [
             "aclweb.org/ACL/2022/Conference/Program_Chairs",
             track_sac_id,
@@ -84,7 +87,7 @@ for submission_forum in tqdm(submissions_forum_list):
         ]
         client.post_note(review)
     reviews = openreview.tools.iterget_notes(client, invitation = "aclweb.org/ACL/2022/Conference/-/Official_Review", forum = submission.forum)
-    for review in reviews: 
+    for review in reviews:
         review.readers = [
             "aclweb.org/ACL/2022/Conference/Program_Chairs",
             track_sac_id,
