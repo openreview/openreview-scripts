@@ -71,7 +71,7 @@ for submission_forum in tqdm(submissions_forum_list):
     conflict_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Conflicts'
     ethics_reviewer_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Reviewers'
     ethics_ac_id = f'aclweb.org/ACL/2022/Conference/Ethics_Chairs'
-    
+    author_group = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Authors'
     ethics_review = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Ethics_Review",
         super = "aclweb.org/ACL/2022/Conference/-/Ethics_Review",
@@ -87,7 +87,7 @@ for submission_forum in tqdm(submissions_forum_list):
                 "description": "How your identity will be displayed."
             },
             "readers": {
-                "values-copied": [program_chairs_id, ethics_ac_id, ethics_reviewer_id]
+                "values-copied": [program_chairs_id, ethics_ac_id, ethics_reviewer_id, author_group]
             },
             "writers": {
                 "values": [program_chairs_id, ethics_reviewer_id, ethics_ac_id]
