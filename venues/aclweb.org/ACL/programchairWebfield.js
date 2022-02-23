@@ -59,7 +59,8 @@ var propertiesAllowed ={
     confidenceMax:['reviewProgressData.maxConfidence'],
     confidenceMin:['reviewProgressData.minConfidence'],
     replyCount:['reviewProgressData.forumReplyCount'],
-    suggested_decision: ['decision.content.suggested_decision'],
+    suggested_decision: ['suggestedDecision.content.suggested_decision'],
+    decision: ['decision.content.decision'],
 }
 
 sacNameDictionary = {
@@ -191,7 +192,8 @@ var main = function() {
       });
       var paperOfficialReviews = _.filter(submission.details.replies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Official_Review']);
       var paperMetaReviews = _.find(submission.details.replies, ['invitation', 'aclweb.org/ACL/2022/Conference/-/Meta_Review']);
-      var paperDecisions = _.find(submission.details.replies, ['invitation', getInvitationId('Suggested_Decision', submission.number)]) || { content: { decision: 'No Decision' } };
+      var paperDecisions = _.find(submission.details.replies, ['invitation', getInvitationId('Decision', submission.number)]) || { content: { decision: 'No Decision' } };
+      var paperSuggestedDecisions = _.find(submission.details.replies, ['invitation', getInvitationId('Suggested_Decision', submission.number)]) || { content: { decision: 'No Decision' } };
       var ethicsReview = _.find(submission.details.replies, ['invitation', getInvitationId('Ethics_Review', submission.number)]);
       var reviewRatings = {};
       paperOfficialReviews.forEach(function(review) {
@@ -213,6 +215,7 @@ var main = function() {
       submission.details.reviews = getOfficialReviews(paperOfficialReviews);
       submission.details.metaReview = paperMetaReviews;
       submission.details.decision = paperDecisions;
+      submission.details.suggestedDecision = paperSuggestedDecisions;
       submission.details.ethicsReview = ethicsReview;
       submission.details.reviewers = reviewerGroupMaps.byNotes[submission.number];
       submission.details.areachairs = areaChairGroupMaps.byNotes[submission.number];
@@ -1603,7 +1606,8 @@ var displayPaperStatusTable = function() {
   if (AREA_CHAIRS_ID) {
     sortOptions['Meta_Review_Missing'] = function(row) { return row.areachairProgressData.numMetaReview; }
   }
-  sortOptions['Suggested_Decision'] = function (row) { return row.decision.content.suggested_decision || 'No Decision' }
+  sortOptions['Suggested_Decision'] = function (row) { return row.suggestedDecision.content.suggested_decision || 'No Decision' }
+  sortOptions['Decision'] = function (row) { return row.decision.content.decision || 'No Decision' }
   if (pcAssignmentTagInvitations && pcAssignmentTagInvitations.length) {
     sortOptions['Papers_Assigned_to_Me'] = function(row) {
       var tags = pcTags[row.note.id];
@@ -1765,13 +1769,15 @@ var displayPaperStatusTable = function() {
           d.note.details.conflicts.filter(function(c) { return !c.startsWith('aclweb.org'); }).map(function(a) { return '<li><a target="_blank" href="/profile?id=' + a + '">' + view.prettyId(a) + '</a></li>'; }).join('\n') +
       '</lu>' +
       '</div>';
-      var decisionHtml = '<h4>' + (d.decision.content.suggested_decision || 'No Decision') + '</h4>';
+      var suggestedDecisionHtml = '<h4>' + (d.suggestedDecision.content.suggested_decision || 'No Decision') + '</h4>';
+      var decisionHtml = '<h4>' + (d.decision.content.decision || 'No Decision') + '</h4>';
 
       var rows = [checked, numberHtml, summaryHtml, reviewHtml];
       if (AREA_CHAIRS_ID) {
         rows.push(areachairHtml);
       }
       rows.push(assignedSACHtml);
+      rows.push(suggestedDecisionHtml);
       rows.push(decisionHtml);
       return rows;
     });
@@ -1779,6 +1785,7 @@ var displayPaperStatusTable = function() {
     var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary', 'Reviews', 'Meta Review'];
     headings.push('Senior Area Chairs');
     headings.push('Suggested Decision');
+    headings.push('Decision');
 
     var $container = $(container);
     var tableData = {
@@ -1833,11 +1840,12 @@ var displayPaperStatusTable = function() {
     $(container + ' .console-table th').eq(0).css('width', '3%');
     $(container + ' .console-table th').eq(1).css('width', '3%');
     if (AREA_CHAIRS_ID) {
-      $(container + ' .console-table th').eq(2).css('width', '27%');
+      $(container + ' .console-table th').eq(2).css('width', '21%');
       $(container + ' .console-table th').eq(3).css('width', '23%');
-      $(container + ' .console-table th').eq(4).css('width', '19%');
+      $(container + ' .console-table th').eq(4).css('width', '14%');
       $(container + ' .console-table th').eq(5).css('width', '15%');
       $(container + ' .console-table th').eq(6).css('width', '10%');
+      $(container + ' .console-table th').eq(7).css('width', '10%');
     } else {
       $(container + ' .console-table th').eq(2).css('width', '64%');
       $(container + ' .console-table th').eq(3).css('width', '20%');
@@ -2499,6 +2507,7 @@ var buildPaperTableRow = function(note) {
   var completedReviews = note.details.reviews;
   var metaReview = note.details.metaReview;
   var decision = note.details.decision;
+  var suggestedDecision = note.details.suggestedDecision;
   var areachairProfile = [];
   var seniorAreaChairProfile = [];
 
@@ -2611,6 +2620,7 @@ var buildPaperTableRow = function(note) {
     reviewProgressData: reviewProgressData,
     areachairProgressData: areachairProgressData,
     assignedSACs: {},
+    suggestedDecision: suggestedDecision,
     decision: decision
   }
 };
@@ -3195,7 +3205,8 @@ var buildCSV = function(){
   'ethics review recommendation',
   'ethics review text',
   'review ratings',
-  'metareview ratings'].join(',') + '\n');
+  'metareview ratings',
+  'decision'].join(',') + '\n');
 
   _.forEach(notes, function(noteObj) {
     var paperTableRow = null;
@@ -3246,6 +3257,7 @@ var buildCSV = function(){
       metareviewScore = metareview.content.overall_assessment ? metareview.content.overall_assessment.split('=')[0].trim() : '';
       actionEditor = metareview.content.action_editor_id;
       }
+    var suggestedDecision = paperTableRow.suggestedDecision;
     var decision = paperTableRow.decision;
     var hasEthicsReview = paperTableRow.note.details.hasEthicsReview;
     var ethicsReview = paperTableRow.note.details.ethicsReview;
@@ -3281,15 +3293,16 @@ var buildCSV = function(){
     '"' + reviewers.join('|') + '"',
     '"' + metareviewScore + '"',
     '"' + actionEditor + '"',
-    '"' + ((decision && decision.content.suggested_decision) || '' ) + '"',
-    '"' + ((decision && decision.content.justification) || '').replace(/"/g, '""')  + '"',
-    '"' + ((decision && decision.content.ranking) || '' ) + '"',
-    '"' + ((decision && decision.content.best_paper) || '' ) + '"',
+    '"' + ((suggestedDecision && suggestedDecision.content.suggested_decision) || '' ) + '"',
+    '"' + ((suggestedDecision && suggestedDecision.content.justification) || '').replace(/"/g, '""')  + '"',
+    '"' + ((suggestedDecision && suggestedDecision.content.ranking) || '' ) + '"',
+    '"' + ((suggestedDecision && suggestedDecision.content.best_paper) || '' ) + '"',
     '"' + hasEthicsReview + '"',
     '"' + ((ethicsReview && ethicsReview.content.recommendation) || '' ) + '"',
     '"' + ((ethicsReview && ethicsReview.content.ethics_review) || '').replace(/"/g, '""')  + '"',
     '"' + Object.entries(paperTableRow.note.details.reviewRatings).join('|') + '"',
     '"' + Object.entries(paperTableRow.note.details.metaReviewRatings).join('|') + '"',
+    '"' + ((decision && decision.content.decision) || '' ) + '"',
     ].join(',') + '\n');
   });
 
