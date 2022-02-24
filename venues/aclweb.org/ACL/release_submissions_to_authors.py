@@ -1,4 +1,5 @@
 import argparse
+from importlib.util import decode_source
 from re import sub
 import openreview
 from tqdm import tqdm
@@ -22,14 +23,26 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 
 # Get all Ethics Review invitations 
 acl_ethics_review_invitations = list(openreview.tools.iterget_invitations(client, regex= 'aclweb.org/ACL/2022/Conference/Paper.*/-/Ethics_Review'))
+acl_decision_invitations = list(openreview.tools.iterget_invitations(client, regex= 'aclweb.org/ACL/2022/Conference/Paper.*/-/Decision'))
+
+acl_ethics_reviews = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/Paper.*/-/Ethics_Review'))
+acl_decisions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/Paper.*/-/Decision'))
+
+acl_decisions_dict = {d.invitation: d for d in acl_decisions}
+acl_ethics_dict = {d.invitation: d for d in acl_ethics_reviews}
+
 
 invitations_by_forum = {}
 original_acl_invitation = client.get_invitation('aclweb.org/ACL/2022/Conference/-/Submission')
 original_acl_invitation.reply['readers'] = {"values-regex": ".*"
   }
 client.post_invitation(original_acl_invitation)
+for acl_decision_invitation in acl_decision_invitations: 
+    invitations_by_forum[acl_decision_invitation.reply['forum']] = {'decision': acl_decision_invitation}
+
 for acl_ethics_review_invitation in acl_ethics_review_invitations: 
-    invitations_by_forum[acl_ethics_review_invitation.reply['forum']] = acl_ethics_review_invitation
+    invitations_by_forum[acl_ethics_review_invitation.reply['forum']]['ethics'] = acl_ethics_review_invitation
+    
 
 
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))
@@ -38,19 +51,26 @@ acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation =
 for acl_blind_submission in tqdm(acl_blind_submissions): 
     author_group = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Authors'
     # Need to add authors to ethics review invitation as readers
-    if(acl_blind_submission.forum in invitations_by_forum):
-        invitation = invitations_by_forum[acl_blind_submission.forum]
-        if author_group not in invitation.reply['readers']['values-copied']:
-            invitation.reply['readers'] = {
-                "values-copied": [
-                "aclweb.org/ACL/2022/Conference/Program_Chairs",
-                "aclweb.org/ACL/2022/Conference/Ethics_Chairs",
-                f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Reviewers",
-                author_group
-                ]
-            }
-        client.post_invitation(invitation)
+    invitations = invitations_by_forum[acl_blind_submission.forum]
+    ethics = invitations.get('ethics')
+    if ethics: 
+        if author_group not in ethics.reply['readers']['values-copied']:
+            ethics.reply['readers']['values-copied'].append(author_group)
+            client.post_invitation(ethics)
+        # Add authors as readers of ethics review 
+        ethics_review = acl_ethics_dict.get(ethics.id)
+        if ethics_review:
+            if author_group not in ethics_review.readers:
+                ethics_review.readers.append(author_group)
+                client.post_note(ethics_review)
+
+    # Need to add authors to decision invitation as readers
+    decision = invitations['decision']
+    if author_group not in decision.reply['readers']['values']:
+        decision.reply['readers']['values'].append(author_group)
+        client.post_invitation(decision)
     
+    # Add authors as readers of blind submission
     if author_group not in acl_blind_submission.readers:
         acl_blind_submission.readers.append(author_group)
         acl_blind_submission.content = {
@@ -59,21 +79,26 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
                 }
         client.post_note(acl_blind_submission)
     
-    ethics_review = client.get_notes(forum = acl_blind_submission.forum, invitation = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Ethics_Review')
-    if ethics_review:
-        if author_group not in ethics_review[0].readers:
-            ethics_review[0].readers.append(author_group)
-            client.post_note(ethics_review[0])
     
+
+    # Add authors as readers of the decision note 
+    decision_note = acl_decisions_dict.get(decision.id)
+    if decision_note:
+        if author_group not in decision_note.readers: 
+            decision_note.readers.append(author_group)
+            client.post_note(decision_note)
+   
+   # Add authors as readers of original submission
     original_submission = client.get_note(acl_blind_submission.original)
     if author_group not in original_submission.readers:
         original_submission.readers.append(author_group)
         client.post_note(original_submission)
     
+    # Make authors signatories and readers of the author group 
     group = client.get_group(author_group)
     group.signatories = ['aclweb.org/ACL/2022/Conference', author_group]
     group.readers = ['aclweb.org/ACL/2022/Conference', author_group]
     client.post_group(group)
-  
+
     
         
