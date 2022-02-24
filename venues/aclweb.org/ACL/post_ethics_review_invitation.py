@@ -73,7 +73,6 @@ for submission_number in tqdm(submissions_forum_list):
     conflict_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Conflicts'
     ethics_reviewer_id = f'aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Ethics_Reviewers'
     ethics_ac_id = f'aclweb.org/ACL/2022/Conference/Ethics_Chairs'
-
     ethics_review = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/-/Ethics_Review",
         super = "aclweb.org/ACL/2022/Conference/-/Ethics_Review",
