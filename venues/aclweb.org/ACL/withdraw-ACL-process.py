@@ -12,14 +12,6 @@ def process(client, note, invitation):
     }
     forum_note = client.post_note(forum_note)
 
-    # Expire available invitations
-    invitation_regex = CONFERENCE_ID + '/Paper' + str(forum_note.number) + '/-/.*'
-    all_paper_invitations = openreview.tools.iterget_invitations(client, regex=invitation_regex)
-    now = openreview.tools.datetime_millis(datetime.utcnow())
-    for invitation in all_paper_invitations:
-        invitation.expdate = now
-        client.post_invitation(invitation)
-
     # Mail to the submission readers
     email_subject = '''{CONFERENCE_SHORT_NAME}: Paper #{paper_number} titled "{paper_title}" withdrawn by authors'''.format(
         CONFERENCE_SHORT_NAME=CONFERENCE_SHORT_NAME,
