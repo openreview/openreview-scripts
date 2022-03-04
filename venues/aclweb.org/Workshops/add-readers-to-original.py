@@ -15,6 +15,7 @@ OPTIONAL SCRIPT ARGUMENTS
     confid - the user's conference 
 
 """
+# For workshops using their original venue -- PCs only posting decisions and Camera Ready Revision Invitations to Papers 
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
 parser.add_argument('--username')
@@ -31,35 +32,35 @@ confid = args.confid
 commitment_notes = list(openreview.tools.iterget_notes(client, invitation = f'{confid}/-/Commitment_Submission'))
 for commitment_note in commitment_notes: 
     paper_group = openreview.Group(
-        id = f'aclweb.org/ACL/2022/Conference/Paper{commitment_note.number}',
+        id = f'{confid}/Commitment{commitment_note.number}',
         signatures = [
-            'aclweb.org/ACL/2022/Conference'
+            confid
             ],
         signatories = [
-            'aclweb.org/ACL/2022/Conference'
+            confid
             ],
         readers = [
-            'aclweb.org/ACL/2022/Conference'
+            confid
             ],
         writers = [
-            'aclweb.org/ACL/2022/Conference'
+            confid
             ]
     )
     client.post_group(paper_group)
 
     # Create paperX/Authors
     authors = openreview.Group(
-        id = f'aclweb.org/ACL/2022/Conference/Paper{commitment_note.number}/Authors',
+        id = f'{confid}/Commitment{commitment_note.number}/Authors',
         signatures = [
             confid
             ],
         signatories = [
             confid,
-            f'aclweb.org/ACL/2022/Conference/Paper{commitment_note.number}/Authors'
+            f'{confid}/Commitment{commitment_note.number}/Authors'
             ],
         readers = [
             confid,
-            f'aclweb.org/ACL/2022/Conference/Paper{commitment_note.number}/Authors'
+            f'{confid}/Commitment{commitment_note.number}/Authors'
             ],
         writers = [
             confid
@@ -69,26 +70,7 @@ for commitment_note in commitment_notes:
 
     authors_posted = client.post_group(authors)
     assert authors_posted, print('Failed to post author groups: ', commitment_note.id)
-    blind_commitment_note = client.post_note(openreview.Note(
-            invitation = f"{confid}/-/Blind_Commitment_Submission",
-            original = commitment_note.id,
-            readers = [
-                "aclweb.org/ACL/2022/Conference/Program_Chairs",
-                "aclweb.org/ACL/2022/Conference",
-                f'aclweb.org/ACL/2022/Conference/Paper{commitment_note.number}/Authors'
-                ],
-            writers = [
-                confid
-                ],
-            signatures = [
-                confid
-                ],
-            content = {
-                "authorids" : [f"{confid}/Paper{commitment_note.number}/Authors"],
-                "authors":["Anonymous"]
-            }
-        )
-    )
+    
     arr_submission_forum = (commitment_note.content['paper_link'].split('=')[1]).split('&')[0]
     try:
         original_arr_sub = client.get_note(arr_submission_forum)
@@ -104,5 +86,4 @@ for commitment_note in commitment_notes:
         original_arr_sub.invitation.split('/')
         arr_reviewers = client.get_group(f'{arr_conf_id}/Paper{original_arr_sub.number}/Reviewers')
         client.add_members_to_group(arr_reviewers, f'{confid}/Program_Chairs')
-# post blind submissions of commitment notes 
-# Add all readers -- excluding authors--of note to reviewers group of original note 
+
