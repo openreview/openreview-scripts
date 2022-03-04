@@ -29,6 +29,9 @@ track_groups = { group.id: group for group in client.get_groups('aclweb.org/NAAC
 profile_ids = []
 for track_name, group_abbreviation in sac_name_dictionary.items():
     group = track_groups[f'aclweb.org/NAACL/2022/Conference/{group_abbreviation}/Senior_Area_Chairs']
+    print(group.members)
+    group.members = [(client.get_profile(member)).id for member in group.members]
+    print(group.members)
     profile_ids = profile_ids + group.members
 
 #print(openreview.tools.get_profiles(client, ['~He_He2'], with_publications = True))
@@ -36,6 +39,7 @@ print(f'Load SAC {len(list(set(profile_ids)))} profiles')
 SAC_profiles = { p.id: p for p in openreview.tools.get_profiles(client, list(set(profile_ids)), with_publications = True)}
     # profiles = openreview.tools.get_profiles(client, group.members, with_publications = True)
     # track_SAC_profiles[track_name] = profiles
+print(SAC_profiles.keys()) 
 
 # Post acl submission (calls post_blind_submission)
 def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_output_dict):
@@ -90,7 +94,7 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
                     "commitment_note": f"https://openreview.net/forum?id={acl_commitment_note.forum}",
                     "comment": acl_commitment_note.content.get("comment"),
                     "author_profiles": acl_commitment_note.content.get("author_profiles"),
-                    "country_of_affiliation": acl_commitment_note.content["country_of_affiliation"]
+                    "country_of_affiliation_of_corresponding_author": acl_commitment_note.content["country_of_affiliation_of_corresponding_author"]
                 }
             )
             acl_submitted = client.post_note(acl_sub)
@@ -117,7 +121,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     number = acl_submission.number
     # Create PaperX group
     paper_group = openreview.Group(
-        id = 'aclweb.org/NAACL/2022/Conference/Paper{number}'.format(number = number),
+        id = 'aclweb.org/NAACL/2022/Conference/Commitment{number}'.format(number = number),
         signatures = [
             'aclweb.org/NAACL/2022/Conference'
             ],
@@ -136,7 +140,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
 
     # Create paperX/Authors
     authors = openreview.Group(
-        id = 'aclweb.org/NAACL/2022/Conference/Paper{number}/Authors'.format(number = number),
+        id = 'aclweb.org/NAACL/2022/Conference/Commitment{number}/Authors'.format(number = number),
         signatures = [
             'aclweb.org/NAACL/2022/Conference'
             ],
@@ -171,7 +175,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
         previous_url = current_submission.content.get('previous_URL')
         if previous_url and ("openreview.net" in previous_url):
             #print(current_submission.forum)
-            previous_forum = (current_submission.content.get('previous_URL').split('=')[1]).split('&')[0]
+            previous_forum = (current_submission.content.get('previous_URL').split('=')[1]).split('&')[0].strip()
             previous_submission = client.get_note(previous_forum)
             conf_id = previous_submission.invitation.rsplit('/', 2)[0]
             arr_number = previous_submission.number
@@ -197,10 +201,13 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     author_group = openreview.tools.get_profiles(client, ids_or_emails = authors.members, with_publications=True)
     # Get all SAC profiles from track dictionary, and for each one check conflicts
     print(f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs")
+    print(track_groups[f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs"].members)
     for SAC in track_groups[f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs"].members:
+        print(SAC)
         conflicts = openreview.tools.get_conflicts(author_group, SAC_profiles[SAC], policy = 'neurips', n_years=5)
         if conflicts:
             conflict_members.append(SAC)
+        
     #print(acl_submission.content['track'])
     #for SAC in (openreview.tools.get_group(client, "aclweb.org/NAACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']]))).members:
         #print(SAC)
@@ -213,7 +220,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
 
 
     conflicts = openreview.Group(
-        id = 'aclweb.org/NAACL/2022/Conference/Paper{number}/Conflicts'.format(number = number),
+        id = 'aclweb.org/NAACL/2022/Conference/Commitment{number}/Conflicts'.format(number = number),
         signatures = [
             'aclweb.org/NAACL/2022/Conference'
             ],
@@ -241,7 +248,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
                 #"aclweb.org/NAACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']])
                 ],
             nonreaders = [
-                "aclweb.org/NAACL/2022/Conference/Paper{number}/Conflicts".format(number = acl_submission.number)
+                "aclweb.org/NAACL/2022/Conference/Commitment{number}/Conflicts".format(number = acl_submission.number)
                 ],
             writers = [
                 "aclweb.org/NAACL/2022/Conference"
@@ -250,7 +257,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
                 "aclweb.org/NAACL/2022/Conference"
                 ],
             content = {
-                "authorids" : [f"aclweb.org/NAACL/2022/Conference/Paper{acl_submission.number}/Authors"],
+                "authorids" : [f"aclweb.org/NAACL/2022/Conference/Commitment{acl_submission.number}/Authors"],
                 "authors":["Anonymous"]
             }
         )
@@ -289,7 +296,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
                     'aclweb.org/NAACL/2022/Conference'
                 ],
                 nonreaders=[
-                    "aclweb.org/NAACL/2022/Conference/Paper{number}/Conflicts".format(number = acl_blind_submission.number)
+                    "aclweb.org/NAACL/2022/Conference/Commitment{number}/Conflicts".format(number = acl_blind_submission.number)
                     ],
                 content = arr_review.content
             )
@@ -325,7 +332,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
                 signatures = arr_metareview.signatures,
                 readers = ['aclweb.org/NAACL/2022/Conference/Program_Chairs'],
                 nonreaders=[
-                    "aclweb.org/NAACL/2022/Conference/Paper{number}/Conflicts".format(number = acl_blind_submission.number)
+                    "aclweb.org/NAACL/2022/Conference/Commitment{number}/Conflicts".format(number = acl_blind_submission.number)
                     ],
                 writers = [
                     'aclweb.org/NAACL/2022/Conference'
@@ -351,16 +358,16 @@ acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in li
 acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/ARR_Meta_Review'))}
 
 # Save all submissions in a dictionary by paper_link
-acl_submission_dict = {(acl_submission.content['paper_link'].split('=')[1]).split('&')[0]:acl_submission for acl_submission in acl_submissions}
+acl_submission_dict = {(acl_submission.content['paper_link'].split('=')[1]).split('&')[0].strip():acl_submission for acl_submission in acl_submissions}
 #print("acl_commitment_forum", "acl_blind_submission_forum", "arr_submission_forum", "num_reviews", "num_metareviews", "is_latest_version", "was_migrated")
 # Create an empty list to store information about each paper for the PCs to view
 submission_output_dict = {}
 print(f'Start processing {len(commitment_notes)} notes...')
 for note in tqdm(commitment_notes):
-    arr_submission_forum = (note.content['paper_link'].split('=')[1]).split('&')[0]
+    arr_submission_forum = (note.content['paper_link'].split('=')[1]).split('&')[0].strip()
     submission_output_dict[note.forum] = {'acl_blind_submission_forum': None, 'arr_submission_forum': None, 'num_reviews':None, 'num_metareviews':None, 'later_versions':None, 'duplicate_commitments':None,'was_migrated':False}
 
-    later_duplicates = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/ARR/2021/.*',content = {'previous_URL':f'https://openreview.net/forum?id={arr_submission_forum}'}))
+    later_duplicates = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/ARR/.*',content = {'previous_URL':f'https://openreview.net/forum?id={arr_submission_forum}'}))
     if later_duplicates:
         submission_output_dict[note.forum]['later_versions?'] = [later_duplicate.forum for later_duplicate in later_duplicates]
     else:
@@ -389,7 +396,7 @@ for note in tqdm(commitment_notes):
 
 fields = ['acl_commitment_note', 'acl_blind_submission', 'original_arr_submission', 'num_reviews', 'num_metareviews', 'later_versions?', 'duplicate_commitments', 'was_migrated']
 rows = []
-commitment_links = {commitment.forum: (commitment.content['paper_link'].split('=')[1]).split('&')[0] for commitment in commitment_notes}
+commitment_links = {commitment.forum: (commitment.content['paper_link'].split('=')[1]).split('&')[0].strip() for commitment in commitment_notes}
 
 for key,value in submission_output_dict.items():
     acl_submission = client.get_note(value['acl_blind_submission_forum'])
