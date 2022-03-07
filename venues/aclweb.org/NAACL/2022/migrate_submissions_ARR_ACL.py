@@ -39,7 +39,7 @@ print(f'Load SAC {len(list(set(profile_ids)))} profiles')
 SAC_profiles = { p.id: p for p in openreview.tools.get_profiles(client, list(set(profile_ids)), with_publications = True)}
     # profiles = openreview.tools.get_profiles(client, group.members, with_publications = True)
     # track_SAC_profiles[track_name] = profiles
-print(SAC_profiles.keys()) 
+
 
 # Post acl submission (calls post_blind_submission)
 def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_output_dict):
@@ -175,7 +175,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
         previous_url = current_submission.content.get('previous_URL')
         if previous_url and ("openreview.net" in previous_url):
             #print(current_submission.forum)
-            previous_forum = (current_submission.content.get('previous_URL').split('=')[1]).split('&')[0].strip()
+            previous_forum = ((current_submission.content.get('previous_URL').split('=')[1]).split('&')[0]).strip()
             previous_submission = client.get_note(previous_forum)
             conf_id = previous_submission.invitation.rsplit('/', 2)[0]
             arr_number = previous_submission.number
@@ -200,8 +200,6 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
 
     author_group = openreview.tools.get_profiles(client, ids_or_emails = authors.members, with_publications=True)
     # Get all SAC profiles from track dictionary, and for each one check conflicts
-    print(f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs")
-    print(track_groups[f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs"].members)
     for SAC in track_groups[f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs"].members:
         print(SAC)
         conflicts = openreview.tools.get_conflicts(author_group, SAC_profiles[SAC], policy = 'neurips', n_years=5)
@@ -358,13 +356,13 @@ acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in li
 acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/ARR_Meta_Review'))}
 
 # Save all submissions in a dictionary by paper_link
-acl_submission_dict = {(acl_submission.content['paper_link'].split('=')[1]).split('&')[0].strip():acl_submission for acl_submission in acl_submissions}
+acl_submission_dict = {((acl_submission.content['paper_link'].split('=')[1]).split('&')[0]).strip():acl_submission for acl_submission in acl_submissions}
 #print("acl_commitment_forum", "acl_blind_submission_forum", "arr_submission_forum", "num_reviews", "num_metareviews", "is_latest_version", "was_migrated")
 # Create an empty list to store information about each paper for the PCs to view
 submission_output_dict = {}
 print(f'Start processing {len(commitment_notes)} notes...')
 for note in tqdm(commitment_notes):
-    arr_submission_forum = (note.content['paper_link'].split('=')[1]).split('&')[0].strip()
+    arr_submission_forum = ((note.content['paper_link'].split('=')[1]).split('&')[0]).strip()
     submission_output_dict[note.forum] = {'acl_blind_submission_forum': None, 'arr_submission_forum': None, 'num_reviews':None, 'num_metareviews':None, 'later_versions':None, 'duplicate_commitments':None,'was_migrated':False}
 
     later_duplicates = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/ARR/.*',content = {'previous_URL':f'https://openreview.net/forum?id={arr_submission_forum}'}))
@@ -388,7 +386,7 @@ for note in tqdm(commitment_notes):
     # Check if the blind submission has reviews (it is in blind submissions)
     else:
         submission_output_dict[note.forum]['arr_submission_forum'] = arr_submission_forum
-        submission_output_dict[note.forum]['acl_blind_submission_forum'] = blind_submissions[(acl_submission_dict[(note.content['paper_link'].split('=')[1]).split('&')[0]]).forum].forum
+        submission_output_dict[note.forum]['acl_blind_submission_forum'] = blind_submissions[(acl_submission_dict[((note.content['paper_link'].split('=')[1]).split('&')[0]).strip()]).forum].forum
         submission_output_dict[note.forum]['was_migrated'] = True
         post_reviews(blind_submissions[acl_submission_dict[arr_submission_forum].id].forum, blind_submissions[acl_submission_dict[arr_submission_forum].id], client.get_note(arr_submission_forum), submission_output_dict, note)
         #post_metareviews(blind_submissions[acl_submission_dict[arr_submission_forum].id].forum, blind_submissions[acl_submission_dict[arr_submission_forum].id], client.get_note(arr_submission_forum), submission_output_dict)
@@ -396,17 +394,24 @@ for note in tqdm(commitment_notes):
 
 fields = ['acl_commitment_note', 'acl_blind_submission', 'original_arr_submission', 'num_reviews', 'num_metareviews', 'later_versions?', 'duplicate_commitments', 'was_migrated']
 rows = []
-commitment_links = {commitment.forum: (commitment.content['paper_link'].split('=')[1]).split('&')[0].strip() for commitment in commitment_notes}
-
+# Create a dictionary of commitment note forum: paper link forum for every commitment note 
+commitment_links = {commitment.forum: ((commitment.content['paper_link'].split('=')[1]).split('&')[0]).strip() for commitment in commitment_notes}
+print(commitment_links)
+# For each commitment forum, output values, get the acl submission corresponding to the commitment note, then check for the paper link forum in commitment links
 for key,value in submission_output_dict.items():
     acl_submission = client.get_note(value['acl_blind_submission_forum'])
+    #print(acl_submission.forum, acl_submission.content.get('paper_link'))
     count = 0
     duplicate_commitments = []
     # Creates a list of commitment note forums with the same original arr paper link forum
     for forum, link in commitment_links.items(): # key is commitment note forum, value is link
-        if link == acl_submission.content.get('paper_link').split('=')[1]:
-            count+=1
-            duplicate_commitments.append(forum)
+        try:
+            if link == acl_submission.content.get('paper_link').split('=')[1]:
+                count+=1
+                duplicate_commitments.append(forum)
+        except: 
+            print('acl submission forum: ', acl_submission.forum)
+            print('submission dictionary acl blind submission forum', value['acl_blind_submission_forum'])
     if count > 1:
         value['duplicate_commitments'] = duplicate_commitments
     list = [key, value['acl_blind_submission_forum'], value['arr_submission_forum'], value['num_reviews'], value['num_metareviews'], value['later_versions?'], value['duplicate_commitments'], value['was_migrated']]
