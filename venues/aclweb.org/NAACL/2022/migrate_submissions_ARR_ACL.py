@@ -27,19 +27,20 @@ print('Load SAC groups')
 track_SAC_profiles = {}
 track_groups = { group.id: group for group in client.get_groups('aclweb.org/NAACL/2022/Conference/.*/Senior_Area_Chairs')}
 profile_ids = []
+# Create dictionary for SAC groups and members
+print('Load SAC groups')
+track_SAC_profiles = {}
+track_groups = { group.id: group for group in client.get_groups('aclweb.org/ACL/2022/Conference/.*/Senior_Area_Chairs')}
+profile_ids = []
 for track_name, group_abbreviation in sac_name_dictionary.items():
-    group = track_groups[f'aclweb.org/NAACL/2022/Conference/{group_abbreviation}/Senior_Area_Chairs']
-    print(group.members)
-    group.members = [(client.get_profile(member)).id for member in group.members]
-    print(group.members)
+    print(track_name)
+    group = track_groups[f'aclweb.org/ACL/2022/Conference/{group_abbreviation}/Senior_Area_Chairs']
     profile_ids = profile_ids + group.members
 
-#print(openreview.tools.get_profiles(client, ['~He_He2'], with_publications = True))
 print(f'Load SAC {len(list(set(profile_ids)))} profiles')
 SAC_profiles = { p.id: p for p in openreview.tools.get_profiles(client, list(set(profile_ids)), with_publications = True)}
     # profiles = openreview.tools.get_profiles(client, group.members, with_publications = True)
     # track_SAC_profiles[track_name] = profiles
-
 
 # Post acl submission (calls post_blind_submission)
 def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_output_dict):
