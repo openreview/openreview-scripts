@@ -30,7 +30,7 @@ preprocess = None
 with open('./commitmentPreProcess.py') as f:
     preprocess = f.read()
 
-commitment = client.post_invitation(openreview.Invitation(
+commitment = openreview.Invitation(
     id = 'aclweb.org/NAACL/2022/Conference/-/Commitment_Submission',
     signatures = [
         "aclweb.org/NAACL/2022/Conference"
@@ -157,7 +157,7 @@ commitment = client.post_invitation(openreview.Invitation(
                 "value-regex": "[\\S\\s]{0,800}",
                 "required": False
                 },
-            "country_of_affiliation": {
+            "country_of_affiliation_of_corresponding_author": {
                 "order" : 16,
                 "description" : "Help us understand the geographic diversity of authors by indicating the country where you (the corresponding author) work",
                 "values-dropdown": countries,
@@ -173,7 +173,7 @@ commitment = client.post_invitation(openreview.Invitation(
         }
     }
 )
-)
+
 
 # Posting submission invitation 
 submission_invitation = client.post_invitation(openreview.Invitation(
@@ -287,21 +287,21 @@ submission_invitation = client.post_invitation(openreview.Invitation(
                 },
             "authorship": {
                 "values-checkbox": [
-                    "I confirm that I am one of the authors of this paper"
+                    "I confirm that I am one of the authors of this paper."
                 ],
                 "required": True,
                 "order": 19
             },
             "paper_version": {
                 "values-checkbox": [
-                    "I confirm that this link is for the latest version of the paper in ARR that has reviews and a meta-review"
+                    "I confirm that this link is for the latest version of the paper in ARR that has reviews and a meta-review."
                 ],
                 "required": True,
                 "order": 20
             },
             "anonymity_period": {
                 "values-checkbox": [
-                "I confirm that this submission complies with the anonymity period"
+                "I confirm that this submission complies with the anonymity period."
                 ],
                 "required": True,
                 "order": 21
@@ -330,7 +330,7 @@ submission_invitation = client.post_invitation(openreview.Invitation(
             "order":31
             },
             "existing_preprints": {
-            "values-regex": ".{1,500}",
+            "value-regex": ".*",
             "description": "If there are any publicly available non-anonymous preprints of this paper, please list them here (provide the URLs please).",
             "required": False,
             "order": 17
@@ -347,13 +347,14 @@ submission_invitation = client.post_invitation(openreview.Invitation(
             "value-regex": "[^\\n]{0,250}",
             "required": False
         },
-        "author_profiles": {
-                "description": "Please confirm that the OpenReview profiles of all authors are up-to-date (with current email address, institution name, institution domain) by selecting 'Yes'.",
-                "value-checkbox": "Yes",
-                "required": True,
-                "order": 22
+                "author_profiles": {
+            "values-checkbox": [
+                "I confirm that the OpenReview profiles of all authors are up-to-date (with current email address, institution name, institution domain)."
+            ],
+            "required": True,
+            "order": 14
             },
-        "country_of_affiliation": {
+        "country_of_affiliation_of_corresponding_author": {
                 "order" : 16,
                 "description" : "Help us understand the geographic diversity of authors by indicating the country where you (the corresponding author) work",
                 "values-dropdown": countries,
@@ -480,7 +481,7 @@ official_review = openreview.Invitation(
                 },
                 "comments,_suggestions_and_typos": {
                     "order": 8,
-                    "value-regex": "[\\S\\s]{0,10000}",
+                    "value-regex": "[\\S\\s]{0,20000}",
                     "description": "If you have any comments to the authors about how they may improve their paper, other than addressing the concerns above, please list them here.\n Maximum length 5000 characters.",
                     "required": False,
                     "markdown": True
@@ -498,7 +499,7 @@ official_review = openreview.Invitation(
                         "Maybe",
                         "No"
                     ],
-                    "required": True
+                    "required": False
                 },
                 "best_paper_justification": {
                     "order": 11,
@@ -529,7 +530,7 @@ official_review = openreview.Invitation(
                     "order": 15,
                     "description": "Do you know the author identity or have an educated guess?",
                     "value-regex": '.*',
-                    "required": True
+                    "required": False
                 },
                 "ethical_concerns": {
                     "order": 16,
@@ -572,7 +573,7 @@ official_review = openreview.Invitation(
                     "order": 12,
                     "description": "Is there enough information in this paper for a reader to reproduce the main results, use results presented in this paper in future work (e.g., as a baseline), or build upon this work?",
                     "value-regex": '.*',
-                    "required": True
+                    "required": False
                     },
                 }
             }
@@ -639,7 +640,7 @@ metareview = openreview.Invitation(
                 },
             "overall_assessment": {
                 "order": 6,
-                "value-regex": '.*',
+                "value-regex": "[\\S\\s]{1,10000}",
                 "required": False
                 },
             "suggested_venues": {
@@ -650,6 +651,13 @@ metareview = openreview.Invitation(
                 "required": False
                 },
             "ethical_concernes": {
+                "order": 8,
+                "value-regex": "[\\S\\s]{0,10000}",
+                "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
+                "required": False,
+                "markdown": True
+                },
+                "ethical_concerns": {
                 "order": 8,
                 "value-regex": "[\\S\\s]{0,10000}",
                 "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
