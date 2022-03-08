@@ -28,7 +28,7 @@ track_SAC_profiles = {}
 track_groups = { group.id: group for group in client.get_groups('aclweb.org/ACL/2022/Conference/.*/Senior_Area_Chairs')}
 profile_ids = []
 for track_name, group_abbreviation in sac_name_dictionary.items():
-    print(track_name)
+    #print(track_name)
     group = track_groups[f'aclweb.org/ACL/2022/Conference/{group_abbreviation}/Senior_Area_Chairs']
     profile_ids = profile_ids + group.members
 
@@ -55,7 +55,9 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
         #print(original_arr_sub_id)
         original_arr_sub = client.get_note(original_arr_sub_id)
         submission_output_dict[acl_commitment_note.forum]['arr_submission_forum'] = original_arr_sub.forum
-        if (openreview.tools.get_profiles(client,[acl_commitment_note.signatures[0]])[0].id) in [profile.id for profile in openreview.tools.get_profiles(client, original_arr_sub.content['authorids'])]:
+        PC_IDs = ["~Xueyuan_Lin1","~Marine_Carpuat1"]
+        signature_profiles = (openreview.tools.get_profiles(client,[acl_commitment_note.signatures[0]])[0].id)
+        if (signature_profiles in [profile.id for profile in openreview.tools.get_profiles(client, original_arr_sub.content['authorids'])]) or (signature_profiles in PC_IDs):
             # Create new note to submit to ACL
             acl_sub = openreview.Note(
                 invitation="aclweb.org/NAACL/2022/Conference/-/Submission",
@@ -197,7 +199,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     author_group = openreview.tools.get_profiles(client, ids_or_emails = authors.members, with_publications=True)
     # Get all SAC profiles from track dictionary, and for each one check conflicts
     for SAC in track_groups[f"aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[acl_submission.content['track']]}/Senior_Area_Chairs"].members:
-        print(SAC)
+        #print(SAC)
         conflicts = openreview.tools.get_conflicts(author_group, SAC_profiles[SAC], policy = 'neurips', n_years=5)
         if conflicts:
             conflict_members.append(SAC)
@@ -392,7 +394,7 @@ fields = ['acl_commitment_note', 'acl_blind_submission', 'original_arr_submissio
 rows = []
 # Create a dictionary of commitment note forum: paper link forum for every commitment note 
 commitment_links = {commitment.forum: ((commitment.content['paper_link'].split('=')[1]).split('&')[0]).strip() for commitment in commitment_notes}
-print(commitment_links)
+#print(commitment_links)
 # For each commitment forum, output values, get the acl submission corresponding to the commitment note, then check for the paper link forum in commitment links
 for key,value in submission_output_dict.items():
     acl_submission = client.get_note(value['acl_blind_submission_forum'])
