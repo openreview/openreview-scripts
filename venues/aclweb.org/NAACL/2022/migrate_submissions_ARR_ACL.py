@@ -55,7 +55,9 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
         #print(original_arr_sub_id)
         original_arr_sub = client.get_note(original_arr_sub_id)
         submission_output_dict[acl_commitment_note.forum]['arr_submission_forum'] = original_arr_sub.forum
-        if (openreview.tools.get_profiles(client,[acl_commitment_note.signatures[0]])[0].id) in [profile.id for profile in openreview.tools.get_profiles(client, original_arr_sub.content['authorids'])]:
+        PC_IDs = ["~Xueyuan_Lin1","~Marine_Carpuat1"]
+        signature_profiles = (openreview.tools.get_profiles(client,[acl_commitment_note.signatures[0]])[0].id)
+        if (signature_profiles in [profile.id for profile in openreview.tools.get_profiles(client, original_arr_sub.content['authorids'])]) or (signature_profiles in PC_IDs):
             # Create new note to submit to ACL
             acl_sub = openreview.Note(
                 invitation="aclweb.org/NAACL/2022/Conference/-/Submission",
