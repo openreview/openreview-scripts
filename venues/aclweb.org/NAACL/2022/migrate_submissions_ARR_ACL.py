@@ -25,11 +25,6 @@ sac_name_dictionary = tracks.sac_name_dictionary
 # Create dictionary for SAC groups and members
 print('Load SAC groups')
 track_SAC_profiles = {}
-track_groups = { group.id: group for group in client.get_groups('aclweb.org/NAACL/2022/Conference/.*/Senior_Area_Chairs')}
-profile_ids = []
-# Create dictionary for SAC groups and members
-print('Load SAC groups')
-track_SAC_profiles = {}
 track_groups = { group.id: group for group in client.get_groups('aclweb.org/ACL/2022/Conference/.*/Senior_Area_Chairs')}
 profile_ids = []
 for track_name, group_abbreviation in sac_name_dictionary.items():
