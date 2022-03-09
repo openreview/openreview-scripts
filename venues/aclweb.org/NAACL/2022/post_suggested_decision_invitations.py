@@ -29,22 +29,6 @@ with open('suggested_decision_pre_process.py') as g:
         writers = ["aclweb.org/NAACL/2022/Conference"],
         signatures = ["aclweb.org/NAACL/2022/Conference"],
         reply = {
-            "readers":{
-                "values-copied": [
-                    "aclweb.org/NAACL/2022/Conference",
-                    "aclweb.org/NAACL/2022/Conference/Senior_Area_Chairs"
-                    "{signatures}"
-                ]
-            },
-            "writers":{
-                "values-copied":[
-                    "aclweb.org/NAACL/2022/Conference",
-                    "{signatures}"
-                ]
-            },
-            "signatures":{
-                "values-regex":"~.*"
-            },
             "content": {
                 "suggested_decision": {
                     "order": 1,
