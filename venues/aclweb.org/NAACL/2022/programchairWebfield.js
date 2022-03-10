@@ -1,4 +1,3 @@
-// webfield_template
 // Remove line above if you don't want this page to be overwriten
 
 // Constants
@@ -242,12 +241,9 @@ var main = function() {
           acRankingByPaper[submission.forum] = t;
         }
       });
-      var paperOfficialReviews = _.filter(submission.details.directReplies, ['invitation', getInvitationId(OFFICIAL_REVIEW_NAME, submission.number)]);
-      var paperMetaReviews = _.find(submission.details.directReplies, ['invitation', getInvitationId(OFFICIAL_META_REVIEW_NAME, submission.number)]);
-      var paperDecisions = _.find(submission.details.directReplies, ['invitation', getInvitationId(DECISION_NAME, submission.number)]) || { content: { decision: 'No Decision' } };
-      officialReviews = officialReviews.concat(paperOfficialReviews);
-      metaReviews = metaReviews.concat(paperMetaReviews);
-      decisions = decisions.concat(decisions);
+      var paperOfficialReviews = _.filter(submission.details.replies, ['invitation', getInvitationId(OFFICIAL_REVIEW_NAME, submission.number)]);
+      var paperMetaReviews = _.find(submission.details.replies, ['invitation', getInvitationId(OFFICIAL_META_REVIEW_NAME, submission.number)]);
+      var paperDecisions = _.find(submission.details.replies, ['invitation', getInvitationId(DECISION_NAME, submission.number)]) || { content: { decision: 'No Decision' } };
       submission.details.reviews = getSpecialThemeOfficialReviews(paperOfficialReviews);
       submission.details.metaReview = paperMetaReviews;
       submission.details.decision = paperDecisions;
