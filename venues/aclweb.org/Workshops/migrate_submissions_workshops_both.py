@@ -209,6 +209,30 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
                 "authors":["Anonymous"]
             }
         )
+    blinded_commitment_note = openreview.Note(
+            invitation = f"{confid}/-/Blind_Commitment_Submission",
+            original = acl_commitment_note.id,
+            readers = [
+                f"{confid}/Program_Chairs",
+                f"{confid}/Commitment{acl_commitment_note.number}/Authors",
+                confid
+                #"aclweb.org/ACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']])
+                ],
+            nonreaders = [
+                f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
+                ],
+            writers = [
+                confid
+                ],
+            signatures = [
+                confid
+                ],
+            content = {
+                "authorids" : [f"{confid}/Commitment{acl_commitment_note.number}/Authors"],
+                "authors":["Anonymous"]
+            }
+        )
+
 
     blinded_note_posted = client.post_note(blinded_note)
     if blinded_note_posted:
