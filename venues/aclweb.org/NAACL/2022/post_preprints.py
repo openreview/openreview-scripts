@@ -43,7 +43,7 @@ for blind_submission in tqdm(blind_submissions):
     original = client.get_note(blind_submission.original)
     if original.content['naacl_preprint'] == 'yes':
         content = {}
-        keep_keys = ['title', 'pdf', 'abstract','paper_link','country_of_affiliation_of_corresponding_author', 'track','paper_type']
+        keep_keys = ['title', 'pdf', 'abstract','paper_link','paper_type']
         for key in blind_submission.content: 
             if key not in keep_keys:
                 content[key] = ''
