@@ -42,7 +42,7 @@ blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'ac
 for blind_submission in tqdm(blind_submissions):
     if blind_submission.content['naacl_preprint'] == 'yes':
         content = {}
-        keep_keys = ['title', 'pdf', 'abstract']
+        keep_keys = ['title', 'pdf', 'abstract','paper_link','country_of_affiliation_of_corresponding_author', 'track','paper_type']
         for key in blind_submission.content: 
             if key not in keep_keys:
                 content[key] = ''
