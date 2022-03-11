@@ -208,7 +208,7 @@ client.post_invitation(blind)
 
 # Posting Blind Submission Invitation 
 blind_commitment = client.post_invitation(openreview.Invitation(
-    id = f'{confid}/-/Commitment_Blind_Submission',
+    id = f'{confid}/-/Blind_Commitment_Submission',
     readers = [
         'everyone'
         ],
