@@ -232,7 +232,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
                 "authors":["Anonymous"]
             }
         )
-
+    client.post_note(blinded_commitment_note)
 
     blinded_note_posted = client.post_note(blinded_note)
     if blinded_note_posted:
