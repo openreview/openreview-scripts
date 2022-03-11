@@ -24,7 +24,7 @@ confid = args.confid
 # Post acl submission (calls post_blind_submission)
 def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_output_dict):
     # Depends on the workshop
-    eligible_arr_invitations = ['aclweb.org/ACL/ARR/2021/May/', 'aclweb.org/ACL/ARR/2021/Jun/', 'aclweb.org/ACL/ARR/2021/July/', 'aclweb.org/ACL/ARR/2021/August/', 'aclweb.org/ACL/ARR/2021/September/','aclweb.org/ACL/ARR/2021/October/','aclweb.org/ACL/ARR/2021/November/']
+    eligible_arr_invitations = ['aclweb.org/ACL/ARR/2021/May/', 'aclweb.org/ACL/ARR/2021/Jun/', 'aclweb.org/ACL/ARR/2021/July/', 'aclweb.org/ACL/ARR/2021/August/', 'aclweb.org/ACL/ARR/2021/September/','aclweb.org/ACL/ARR/2021/October/','aclweb.org/ACL/ARR/2021/November/', 'aclweb.org/ACL/ARR/2021/December/', 'aclweb.org/ACL/ARR/2022/January/' ,'aclweb.org/ACL/ARR/2022/February/']
     original_arr_sub_id = None
     #submission_output_dict['acl_commitment_forum'] = acl_commitment_note.forum
     try:
@@ -87,7 +87,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     number = acl_submission.number
     # Create PaperX group
     paper_group = openreview.Group(
-        id = f'{confid}/Commitment{number}'.format(number = number),
+        id = f'{confid}/Commitment{acl_commitment_note.number}',
         signatures = [
             confid
             ],
@@ -106,16 +106,18 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
 
     # Create paperX/Authors
     authors = openreview.Group(
-        id = f'{confid}/Commitment{number}/Authors'.format(number = number),
+        id = f'{confid}/Commitment{acl_commitment_note.number}/Authors',
         signatures = [
             confid
             ],
         signatories = [
-            confid
+            confid,
+            f'{confid}/Commitment{acl_commitment_note.number}/Authors'
             #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         readers = [
-            confid
+            confid,
+            f'{confid}/Commitment{acl_commitment_note.number}/Authors'
             #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         writers = [
@@ -166,7 +168,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             conflict_members.append(area_chairs)
 
     conflicts = openreview.Group(
-        id = f'{confid}/Commitment{number}/Conflicts'.format(number = number),
+        id = f'{confid}/Commitment{acl_commitment_note.number}/Conflicts',
         signatures = [
             confid
             ],
@@ -194,7 +196,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
                 #"aclweb.org/ACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']])
                 ],
             nonreaders = [
-                f"{confid}/Commitment{number}/Conflicts".format(number = acl_submission.number)
+                f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
                 ],
             writers = [
                 confid
@@ -203,15 +205,17 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
                 confid
                 ],
             content = {
-                "authorids" : [f"{confid}/Commitment{acl_submission.number}/Authors"],
+                "authorids" : [f"{confid}/Commitment{acl_commitment_note.number}/Authors"],
                 "authors":["Anonymous"]
             }
         )
 
     blinded_note_posted = client.post_note(blinded_note)
     if blinded_note_posted:
+        # Repost the commitment note with a link to the blind submission 
+        acl_commitment_note.content['migrated_paper_link'] = f'https://openreview.net/forum?id={blinded_note_posted.forum}'
         #print(acl_commitment_note)
-        #print(blinded_note_posted.forum)
+        client.post_note(acl_commitment_note)
         submission_output_dict[acl_commitment_note.forum]['acl_blind_submission_forum'] = blinded_note_posted.forum
         blind_submissions[blinded_note_posted.original] = blinded_note_posted
         post_reviews(blinded_note_posted.forum, blinded_note_posted, arr_submission, submission_output_dict, acl_commitment_note)
@@ -242,7 +246,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
                     confid
                 ],
                 nonreaders=[
-                    f"{confid}/Commitment{acl_blind_submission.number}/Conflicts"
+                    f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
                     ],
                 content = arr_review.content
             )
@@ -278,7 +282,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
                 signatures = arr_metareview.signatures,
                 readers = [f'{confid}/Program_Chairs'],
                 nonreaders=[
-                    f"{confid}/Commitment{acl_blind_submission.number}/Conflicts"
+                    f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
                     ],
                 writers = [
                     confid
@@ -305,9 +309,16 @@ acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review i
 
 # Save all submissions in a dictionary by paper_link
 acl_submission_dict = {(acl_submission.content['paper_link'].split('=')[1]).split('&')[0]:acl_submission for acl_submission in acl_submissions}
-#print("acl_commitment_forum", "acl_blind_submission_forum", "arr_submission_forum", "num_reviews", "num_metareviews", "is_latest_version", "was_migrated")
-# Create an empty list to store information about each paper for the PCs to view
+
 submission_output_dict = {}
+commitment_invitation = client.get_invitation(f"{confid}/-/Commitment_Submission")
+commitment_invitation.reply['content']['migrated_paper_link'] = {
+                "description": "Link to the forum of migrated data",
+                "value-regex": "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+                "required": False,
+                "order": 20
+                } 
+client.post_invitation(commitment_invitation)
 print(f'Start processing {len(commitment_notes)} notes...')
 for note in tqdm(commitment_notes):
     arr_submission_forum = ((note.content['paper_link'].split('=')[1]).split('&')[0]).strip()

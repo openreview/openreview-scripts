@@ -92,7 +92,7 @@ submission_invitation_content = {"title": {
             "order":31
             },
             "existing_preprints": {
-            "values-regex": ".{1,500}",
+            "value-regex": ".*",
             "description": "If there are any publicly available non-anonymous preprints of this paper, please list them here (provide the URLs please).",
             "required": False,
             "order": 17
@@ -133,7 +133,8 @@ submission_invitation_content = {"title": {
                 } 
     }
 for key in commitment_invitation.reply['content'].keys(): 
-    submission_invitation_content[key] = commitment_invitation.reply['content'][key]
+    if key != 'existing_preprints':
+        submission_invitation_content[key] = commitment_invitation.reply['content'][key]
 # Posting submission invitation 
 submission_invitation = openreview.Invitation(
     id = f"{confid}/-/Migrated_Submission",
@@ -204,6 +205,49 @@ blind = openreview.Invitation(
     )
 
 client.post_invitation(blind)
+
+# Posting Blind Submission Invitation 
+blind_commitment = client.post_invitation(openreview.Invitation(
+    id = f'{confid}/-/Commitment_Blind_Submission',
+    readers = [
+        'everyone'
+        ],
+    writers = [
+        confid
+        ],
+    invitees = [
+        confid
+        ],
+    signatures = [
+        confid
+        ],
+    reply ={
+        "readers" : {
+            "values-regex":".*"
+            },
+        "nonreaders" : {
+            "values-regex":".*"
+            },
+        "writers" : {
+            "values-regex":".*"
+            },
+        "signatures" : {
+            "values":[
+                confid
+                ]
+            },
+        "content" : {
+            "authorids" : { 
+                "values-regex": ".*" 
+                },
+            "authors": {
+                "values-regex": ".*" 
+                }
+            }   
+        }
+    ))
+
+
 
 official_review = openreview.Invitation(
     id = f'{confid}/-/ARR_Official_Review',
@@ -290,17 +334,7 @@ official_review = openreview.Invitation(
                 },
                 "overall_assessment": {
                     "order": 9,
-                    "value-radio": [
-                        "5 = Top-Notch: This paper has great merit, and easily warrants acceptance in a *ACL top-tier venue.",
-                        "4.5 ",
-                        "4 = Strong: This paper is of significant interest (for broad or narrow sub-communities), and warrants acceptance in a top-tier *ACL venue if space allows.",
-                        "3.5 ",
-                        "3 = Good: This paper is of interest to the *ACL audience and could be published, but might not be appropriate for a top-tier publication venue. It would likely be a strong paper in a suitable workshop.",
-                        "2.5 ",
-                        "2 = Borderline: This paper has some merit, but also significant flaws. It does not warrant publication at top-tier venues, but might still be a good pick for workshops.",
-                        "1.5 ",
-                        "1 = Poor: This paper has significant flaws, and I would argue against publishing it at any *ACL venue."
-                    ],
+                    "value-regex": '.*',
                     "required": False
                 },
                 "best_paper": {
@@ -387,7 +421,36 @@ official_review = openreview.Invitation(
                     "description": "Link to the review on the original ARR submission",
                     "required": True,
                     "markdown": True
-                    }
+                    },
+                    "limitations_and_societal_impact": {
+      "order": 9,
+      "value-regex": "[\\S\\s]{0,10000}",
+      "description": "Have the authors adequately discussed the limitations and potential positive and negative societal impacts of their work? If not, please include constructive suggestions for improvement. Authors should be rewarded rather than punished for being up front about the limitations of their work and any potential negative societal impact. You are encouraged to think through whether any critical points are missing and provide these as feedback for the authors. Consider, for example, cases of exclusion of user groups, overgeneralization of findings, unfair impacts on traditionally marginalized populations, bias confirmation, under- and overexposure of languages or approaches, and dual use (see Hovy and Spruit, 2016, for examples of those). Consider who benefits from the technology if it is functioning as intended, as well as who might be harmed, and how. Consider the failure modes, and in case of failure, who might be harmed and how.",
+      "required": False,
+      "markdown": True
+    },
+    "needs_ethics_review": {
+      "order": 11,
+      "value-radio": [
+        "Yes",
+        "No"
+      ],
+      "description": "Should this paper be sent for an in-depth ethics review? We have a small ethics committee that can specially review very challenging papers when it comes to ethical issues. If this seems to be such a paper, then please explain why here, and we will try to ensure that it receives a separate review.",
+      "required": False,
+      "markdown": True
+    },
+    "reproducibility": {
+      "order": 12,
+      "description": "Is there enough information in this paper for a reader to reproduce the main results, use results presented in this paper in future work (e.g., as a baseline), or build upon this work?",
+      "value-radio": [
+        "5 = They could easily reproduce the results.",
+        "4 = They could mostly reproduce the results, but there may be some variation because of sample variance or minor variations in their interpretation of the protocol or method.",
+        "3 = They could reproduce the results with some difficulty. The settings of parameters are underspecified or subjectively determined, and/or the training/evaluation data are not widely available.",
+        "2 = They would be hard pressed to reproduce the results: The contribution depends on data that are simply not available outside the author's institution or consortium and/or not enough details are provided.",
+        "1 = They would not be able to reproduce the results here no matter how hard they tried."
+      ],
+      "required": False
+    },
                 }
             }
         )
@@ -476,7 +539,14 @@ metareview = openreview.Invitation(
                 "description": "Link to the metareview on the original ARR submission",
                 "required": True,
                 "markdown": True
-                }
+                },
+                "ethical_concerns": {
+      "order": 6,
+      "value-regex": "[\\S\\s]{0,2000}",
+      "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
+      "required": False,
+      "markdown": True
+    }
             }
         } 
     )
