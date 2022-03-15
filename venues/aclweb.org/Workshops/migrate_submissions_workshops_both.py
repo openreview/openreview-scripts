@@ -346,7 +346,7 @@ client.post_invitation(commitment_invitation)
 print(f'Start processing {len(commitment_notes)} notes...')
 for note in tqdm(commitment_notes):
     arr_submission_forum = ((note.content['paper_link'].split('=')[1]).split('&')[0]).strip()
-    submission_output_dict[note.forum] = {'acl_blind_submission_forum': None, 'arr_submission_forum': None, 'num_reviews':None, 'num_metareviews':None, 'later_versions':None, 'duplicate_commitments':None,'was_migrated':False}
+    submission_output_dict[note.forum] = {'acl_blind_submission_forum': None, 'arr_submission_forum': None, 'num_reviews':None, 'num_metareviews':None, 'later_versions?':None, 'duplicate_commitments':None,'was_migrated':False}
 
     later_duplicates = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/ARR/2021/.*',content = {'previous_URL':f'https://openreview.net/forum?id={arr_submission_forum}'}))
     later_duplicates = later_duplicates + list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/ARR/2022/.*',content = {'previous_URL':f'https://openreview.net/forum?id={arr_submission_forum}'}))
