@@ -73,7 +73,7 @@ with open('decision_process.py') as d:
     )
     client.post_invitation(decision_super)
 
-    acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = f'{confid}/-/Commitment_Submission'))
+    acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = f'{confid}/-/Blind_Commitment_Submission'))
     program_chairs_id = f'{confid}/Program_Chairs'
 
     for acl_blind_submission in tqdm(acl_blind_submissions):
