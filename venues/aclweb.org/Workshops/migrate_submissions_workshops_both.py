@@ -260,6 +260,9 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
     # Iterate through each review and for each, create and post a new review
     for arr_review in arr_reviews:
         if(arr_review.signatures[0] not in acl_reviews_dictionary):
+            content = arr_review.content
+            content['comments_suggestions_and_typos'] = arr_review.content.get('comments,_suggestions_and_typos')
+            del content['comments,_suggestions_and_typos']
             acl_review = openreview.Note(
                 forum = acl_blind_submission_forum,
                 replyto = acl_blind_submission_forum,
@@ -272,7 +275,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
                 nonreaders=[
                     f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
                     ],
-                content = arr_review.content
+                content = content
             )
             acl_review.content['title'] = f'Official Review of Paper{acl_blind_submission.number} by {arr_review.invitation.split("/")[4]} Reviewer'
             acl_review.content['link_to_original_review'] = f'https://openreview.net/forum?id={arr_review.forum}&noteId={arr_review.id}'
