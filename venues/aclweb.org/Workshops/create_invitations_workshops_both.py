@@ -325,7 +325,7 @@ official_review = openreview.Invitation(
                     "required": False,
                     "markdown": True
                 },
-                "comments,_suggestions_and_typos": {
+                "comments_suggestions_and_typos": {
                     "order": 8,
                     "value-regex": "[\\S\\s]{0,10000}",
                     "description": "If you have any comments to the authors about how they may improve their paper, other than addressing the concerns above, please list them here.\n Maximum length 5000 characters.",
