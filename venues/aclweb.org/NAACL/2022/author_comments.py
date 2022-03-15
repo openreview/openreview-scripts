@@ -22,9 +22,10 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 confid = 'aclweb.org/NAACL/2022/Conference'
 sac_name_dictionary = tracks.sac_name_dictionary
 blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Blind_Submission'))
+original_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Submission'))
 commitment_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Commitment_Submission'))
 commitment_by_forum = {commit.forum:commit for commit in commitment_submissions}
-
+original_by_forum = {original.forum: original for original in original_submissions}
 comment_super = openreview.Invitation(
     id = "aclweb.org/NAACL/2022/Conference/-/Comment_by_Authors",
     readers = ["everyone"],
@@ -54,7 +55,7 @@ client.post_invitation(comment_super)
 
 
 for blind_submission in blind_submissions: 
-    sac_id = f'aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[blind_submission.content["track"]]}/Senior_Area_Chairs'
+    sac_id = f'aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[blind_submission.details.original.content["track"]]}/Senior_Area_Chairs'
     pc_id = 'aclweb.org/NAACL/2022/Conference/Program_Chairs'
     author_id = f'aclweb.org/NAACL/2022/Conference/Commitment{blind_submission.number}/Authors'
     commitment_forum = blind_submission.content['commitment_note'].split('=')[1]
