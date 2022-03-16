@@ -64,7 +64,7 @@ for blind_submission in tqdm(blind_submissions):
         comment = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/NAACL/2022/Conference/Commitment{blind_submission.number}/-/Comment_by_Authors",
         super = "aclweb.org/NAACL/2022/Conference/-/Comment_by_Authors",
-        invitees = [author_id,confid], # Is this right? 
+        invitees = [confid], # Is this right? 
         signatures = ["aclweb.org/NAACL/2022/Conference"],
         reply = {
             "forum": blind_submission.forum,
