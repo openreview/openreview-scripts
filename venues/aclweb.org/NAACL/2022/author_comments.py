@@ -25,14 +25,13 @@ blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'ac
 original_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Submission'))
 commitment_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Commitment_Submission'))
 commitment_by_forum = {commit.forum:commit for commit in commitment_submissions}
-original_by_forum = {original.forum: original for original in original_submissions}
+original_by_forum = {original.id: original for original in original_submissions}
 comment_super = openreview.Invitation(
     id = "aclweb.org/NAACL/2022/Conference/-/Comment_by_Authors",
     readers = ["everyone"],
     writers = ["aclweb.org/NAACL/2022/Conference"],
     signatures = ["aclweb.org/NAACL/2022/Conference"],
     reply = {
-    "replyto": None,
     "content": {
         "title": {
             "order": 0,
@@ -54,11 +53,12 @@ comment_super = openreview.Invitation(
 client.post_invitation(comment_super)
 
 
-for blind_submission in blind_submissions: 
-    sac_id = f'aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[blind_submission.details.original.content["track"]]}/Senior_Area_Chairs'
+for blind_submission in tqdm(blind_submissions):
+    original_submission = original_by_forum[blind_submission.original] 
+    sac_id = f'aclweb.org/NAACL/2022/Conference/{sac_name_dictionary[original_submission.content["track"]]}/Senior_Area_Chairs'
     pc_id = 'aclweb.org/NAACL/2022/Conference/Program_Chairs'
     author_id = f'aclweb.org/NAACL/2022/Conference/Commitment{blind_submission.number}/Authors'
-    commitment_forum = blind_submission.content['commitment_note'].split('=')[1]
+    commitment_forum = original_submission.content['commitment_note'].split('=')[1]
     commitment_note = commitment_by_forum[commitment_forum]
     if commitment_note.content.get('optional_comments'):
         comment = client.post_invitation(openreview.Invitation(
@@ -68,6 +68,7 @@ for blind_submission in blind_submissions:
         signatures = ["aclweb.org/NAACL/2022/Conference"],
         reply = {
             "forum": blind_submission.forum,
+            "replyto": blind_submission.forum,
             "readers": {
                 "values": [pc_id, sac_id]
             },
@@ -78,7 +79,7 @@ for blind_submission in blind_submissions:
                 "values": [confid]
             },
             "nonreaders": {
-                "values": [blind_submission.nonreaders]
+                "values": blind_submission.nonreaders
             }
         }
     ))
