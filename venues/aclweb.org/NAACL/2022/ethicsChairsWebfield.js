@@ -362,15 +362,20 @@ var getAllInvitations = function() {
 
 var formatData = function(submissions, invitations) {
 
+  const track_submissions = [];
+
   submissions.forEach(function(submission) {
     selectedNotesById[submission.id] = false;
     submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/ARR_Official_Review']));
     submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/ARR_Meta_Review']);
     submission.details.decision = _.find(submission.details.directReplies, ['invitation', getInvitationId('Suggested_Decision', submission.number)]);
+    if (Object.keys(submission.details.reviews).length) {
+      track_submissions.push(submission);
+    }
   })
 
   conferenceStatusData = {
-    submissions: submissions,
+    submissions: track_submissions,
     invitations: invitations
   };
 };
