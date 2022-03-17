@@ -20,8 +20,10 @@ parser.add_argument('--confid')
 args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 confid = args.confid
-
-commitment_invitation = client.get_invitation(f"{confid}/-/Commitment_Submission")
+try: 
+    commitment_invitation = client.get_invitation(f"{confid}/-/Commitment_Submission")
+except: 
+    commitment_invitation = client.get_invitation(f"{confid}/-/Submission")
 submission_invitation_content = {"title": {
                 "description": "Title of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$",
                 "order": 1,
@@ -419,7 +421,7 @@ official_review = openreview.Invitation(
                 "link_to_original_review":{
                     "value-regex": ".{0,10000}",
                     "description": "Link to the review on the original ARR submission",
-                    "required": True,
+                    "required": False,
                     "markdown": True
                     },
                     "limitations_and_societal_impact": {
@@ -537,7 +539,7 @@ metareview = openreview.Invitation(
             "link_to_original_metareview":{
                 "value-regex": ".{0,10000}",
                 "description": "Link to the metareview on the original ARR submission",
-                "required": True,
+                "required": False,
                 "markdown": True
                 },
                 "ethical_concerns": {

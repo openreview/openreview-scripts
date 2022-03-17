@@ -278,7 +278,7 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
                 content = content
             )
             acl_review.content['title'] = f'Official Review of Paper{acl_blind_submission.number} by {arr_review.invitation.split("/")[4]} Reviewer'
-            acl_review.content['link_to_original_review'] = f'https://openreview.net/forum?id={arr_review.forum}&noteId={arr_review.id}'
+            #acl_review.content['link_to_original_review'] = f'https://openreview.net/forum?id={arr_review.forum}&noteId={arr_review.id}'
             #profile = client.get_profile(arr_review.tauthor)
             #acl_review.content['reviewer_id'] = f"{profile.id}"
             acl_review_posted = client.post_note(acl_review)
@@ -316,7 +316,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
                 ],
                 content = arr_metareview.content
             )
-            acl_metareview.content['link_to_original_metareview'] = f'https://openreview.net/forum?id={arr_metareview.forum}&noteId={arr_metareview.id}'
+            #acl_metareview.content['link_to_original_metareview'] = f'https://openreview.net/forum?id={arr_metareview.forum}&noteId={arr_metareview.id}'
             acl_metareview.content['title'] = f'Meta Review of Paper{acl_blind_submission.number} by {arr_metareview.invitation.split("/")[4]} Area Chair'
             #profile = client.get_profile(arr_metareview.tauthor)
             #acl_metareview.content['action_editor_id'] = f"{profile.id}"
