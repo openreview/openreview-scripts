@@ -1,16 +1,15 @@
-// webfield_template
 // Remove line above if you don't want this page to be overwriten
 
 // Constants
 var CONFERENCE_ID = 'aclweb.org/NAACL/2022/Conference';
-var SHORT_PHRASE = 'NAACL-2022';
-var BLIND_SUBMISSION_ID = 'aclweb.org/NAACL/2022/Conference/-/Blind_Submission';
+var SHORT_PHRASE = 'NAACL 2022';
+var BLIND_SUBMISSION_ID = 'aclweb.org/NAACL/2022/Conference/-/Blind_Special_Theme_Submission';
 var OFFICIAL_REVIEW_NAME = 'Official_Review';
 var REVIEW_RATING_NAME = 'overall_assessment';
 var REVIEW_CONFIDENCE_NAME = 'confidence';
 var OFFICIAL_META_REVIEW_NAME = 'Meta_Review';
 var DECISION_NAME = '';
-var HEADER = {"title": "Senior Area Chairs Console", "instructions": "<p class=\"dark\">This page provides information and status             updates for the ACL-2022. It will be regularly updated as the conference             progresses, so please check back frequently.</p>", "schedule": "<h4>Coming Soon</h4>            <p>                <em><strong>Please check back later for updates.</strong></em>            </p>"};
+var HEADER = {"title": "Senior Area Chairs Console", "instructions": "<p class=\"dark\">This page provides information and status             updates for the NAACL 2022. It will be regularly updated as the conference             progresses, so please check back frequently.</p>", "schedule": "<h4>Coming Soon</h4>            <p>                <em><strong>Please check back later for updates.</strong></em>            </p>"};
 var SENIOR_AREA_CHAIR_NAME = 'Senior_Area_Chairs';
 var AREA_CHAIRS_ID = 'aclweb.org/NAACL/2022/Conference/Area_Chairs';
 var REVIEWERS_ID = 'aclweb.org/NAACL/2022/Conference/Reviewers';
@@ -43,34 +42,6 @@ var propertiesAllowed = {
     replyCount:['reviewProgressData.forumReplyCount']
 }
 
-sacNameDictionary = {
-  'Ethics in NLP': 'Ethics_NLP',
-  'Linguistic theories, Cognitive Modeling and Psycholinguistics': 'LCMP',
-  'Linguistic Theories, Cognitive Modeling and Psycholinguistics': 'LCMP',
-  'Machine Learning for NLP': 'Machine_Learning_NLP',
-  'Phonology, Morphology and Word Segmentation': 'Phonology_Morphology_Word_Segmentation',
-  'Resources and Evaluation': 'Resources_Evaluation',
-  'Semantics: Lexical': 'Semantics_Lexical',
-  'Semantics: Sentence level, Textual Inference and Other areas': 'Semantics_STO',
-  'Syntax: Tagging, Chunking and Parsing': 'Syntax_TCP',
-  'Information Extraction': 'Information_Extraction',
-  'Computational Social Science and Cultural Analytics': 'CSSCA',
-  'Information Retrieval and Text Mining': 'Info_Retrieval_Text_Mining',
-  'Interpretability and Analysis of Models for NLP': 'IAM_for_NLP',
-  'Machine Translation and Multilinguality': 'Machine_Translation_Multilinguality',
-  'NLP Applications': 'NLP_Applications',
-  'Question Answering': 'Question_Answering',
-  'Dialogue and Interactive Systems': 'Dialogue_and_Interactive_Systems',
-  'Discourse and Pragmatics': 'Discourse_and_Pragmatics',
-  'Generation': 'Generation',
-  'Language Grounding to Vision, Robotics, and Beyond': 'LGVRB',
-  'Sentiment Analysis, Stylistic Analysis, and Argument Mining': 'SASAAM',
-  'Speech and Multimodality': 'Speech_and_Multimodality',
-  'Summarization': 'Summarization',
-  'Special Theme on Language Diversity: From Low Resource to Endangered Languages': 'Special_Theme',
-  'PC Track': 'PC_Track'
-}
-
 // Page State
 var conferenceStatusData = {};
 var selectedNotesById = {};
@@ -98,13 +69,20 @@ var renderHeader = function() {
   Webfield.ui.setup('#group-container', CONFERENCE_ID);
   Webfield.ui.header(HEADER.title, HEADER.instructions);
 
-  var loadingMessage = '<p class="empty-message">Loading data...</p>';
+  var loadingMessage = '<p class="empty-message">No assigned Area Chairs.</p>';
   var tabsList = [
     {
       heading: 'Paper Status',
       id: 'paper-status',
       content: loadingMessage,
       extraClasses: 'horizontal-scroll'
+    },
+    {
+      heading: 'Area Chair Status',
+      id: 'areachair-status',
+      content: loadingMessage,
+      extraClasses: 'horizontal-scroll',
+      active: true
     },
     {
       heading: 'Senior Area Chair Tasks',
@@ -116,7 +94,50 @@ var renderHeader = function() {
   Webfield.ui.tabPanel(tabsList);
 };
 
+var getGroups = function() {
+  return Webfield.getAll('/groups', {
+    id: CONFERENCE_ID + '/Paper.*',
+    select: 'id,members'
+  }).then(function(groups) {
+    var reviewerGroups = [];
+    var anonReviewerGroups = [];
+    var areaChairGroups = [];
+    var anonAreaChairGroups = [];
+    var seniorAreaChairGroups = [];
+    for (var groupIdx = 0; groupIdx < groups.length; groupIdx++) {
+      var group = groups[groupIdx];
+      if (group.id.endsWith('Reviewers')) {
+        reviewerGroups.push(group);
+      } else if (_.includes(group.id, 'Reviewer_')) {
+        anonReviewerGroups.push(group);
+      } else if (group.id.endsWith('/Area_Chairs')) {
+        areaChairGroups.push(group);
+      } else if (_.includes(group.id, 'Area_Chair_')) {
+        anonAreaChairGroups.push(group);
+      } else if (group.id.endsWith('/Senior_Area_Chairs')) {
+        seniorAreaChairGroups.push(group);
+      }
+    }
+    return {
+      anonReviewerGroups: anonReviewerGroups,
+      reviewerGroups: reviewerGroups,
+      anonAreaChairGroups: anonAreaChairGroups,
+      areaChairGroups: areaChairGroups,
+      seniorAreaChairGroups: seniorAreaChairGroups
+    };
+  });
+};
+
 var loadData = function() {
+
+  var assignmentsP = $.Deferred().resolve([]);
+  if (ASSIGNMENT_INVITATION) {
+    assignmentsP = Webfield.getAll('/edges', {
+      invitation: ASSIGNMENT_INVITATION,
+      label: ASSIGNMENT_LABEL,
+      tail: user.profile.id
+    });
+  }
 
   var submissionsP = Webfield.getAll('/notes', {
     invitation: BLIND_SUBMISSION_ID,
@@ -125,6 +146,8 @@ var loadData = function() {
   });
 
   return $.when(
+    getGroups(),
+    assignmentsP,
     submissionsP,
     getAllInvitations()
   );
@@ -270,8 +293,11 @@ var getOfficialReviews = function(notes) {
   _.forEach(notes, function(n) {
     var anonId = getNumberfromGroup(n.signatures[0], 'Reviewer_');
     // Need to parse rating and confidence strings into ints
-    ratingNumber = n.content[REVIEW_RATING_NAME].split('=')[0];
-    n.rating = ratingNumber ? parseFloat(ratingNumber) : null;
+    ratingNumber = n.content[REVIEW_RATING_NAME] ? n.content[REVIEW_RATING_NAME].substring(0, n.content[REVIEW_RATING_NAME].indexOf(':')) : null;
+    if (ratingNumber.length == 0) {
+      ratingNumber = n.content[REVIEW_RATING_NAME];
+    }
+    n.rating = ratingNumber ? parseFloat(ratingNumber, 10) : null;
     confidenceMatch = n.content[REVIEW_CONFIDENCE_NAME] && n.content[REVIEW_CONFIDENCE_NAME].match(ratingExp);
     n.confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : null;
     reviewByAnonId[anonId] = n;
@@ -329,13 +355,13 @@ var getAllInvitations = function() {
     details: 'replytoNote,repliedNotes'
   });
 
-  // var edgeInvitationsP = Webfield.getAll('/invitations', {
-  //   regex: WILDCARD_INVITATION,
-  //   invitee: true,
-  //   duedate: true,
-  //   type: 'edges',
-  //   details: 'repliedEdges'
-  // });
+  var edgeInvitationsP = Webfield.getAll('/invitations', {
+    regex: WILDCARD_INVITATION,
+    invitee: true,
+    duedate: true,
+    type: 'edges',
+    details: 'repliedEdges'
+  });
 
   var tagInvitationsP = Webfield.getAll('/invitations', {
     regex: WILDCARD_INVITATION,
@@ -351,27 +377,46 @@ var getAllInvitations = function() {
 
   return $.when(
     invitationsP,
-    //edgeInvitationsP,
+    edgeInvitationsP,
     tagInvitationsP
-  ).then(function(noteInvitations, tagInvitations) {
-    var invitations = noteInvitations.concat(tagInvitations);
+  ).then(function(noteInvitations, edgeInvitations, tagInvitations) {
+    var invitations = noteInvitations.concat(edgeInvitations).concat(tagInvitations);
     return _.filter(invitations, filterInvitee);
   });
 };
 
-var formatData = function(submissions, invitations) {
+var formatData = function(groups, assignmentEdges, submissions, invitations) {
 
-  submissions.forEach(function(submission) {
-    selectedNotesById[submission.id] = false;
-    submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/ARR_Official_Review']));
-    submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/ARR_Meta_Review']);
-    submission.details.decision = _.find(submission.details.directReplies, ['invitation', getInvitationId('Suggested_Decision', submission.number)]);
+  var noteNumbers = getPaperNumbersfromGroups(groups.seniorAreaChairGroups);
+  submissions = submissions.filter(function(s) { return noteNumbers.indexOf(s.number) >= 0; });
+  var areaChairGroupMaps = buildAreaChairGroupMaps(noteNumbers, groups.areaChairGroups, groups.anonAreaChairGroups);
+  var reviewerGroupMaps = buildReviewerGroupMaps(noteNumbers, groups.reviewerGroups, groups.anonReviewerGroups);
+
+  var areaChairs = assignmentEdges.map(function(edge) { return edge.head; });
+
+  var allProfileIds = _.uniq(areaChairs.concat(reviewerGroupMaps.profileIds).concat(areaChairGroupMaps.profileIds));
+
+  return getUserProfiles(allProfileIds)
+  .then(function(profiles) {
+    submissions.forEach(function(submission) {
+      selectedNotesById[submission.id] = false;
+      submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', getInvitationId(OFFICIAL_REVIEW_NAME, submission.number)]));
+      submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', getInvitationId(OFFICIAL_META_REVIEW_NAME, submission.number)]);
+      submission.details.decision = _.find(submission.details.directReplies, ['invitation', getInvitationId(DECISION_NAME, submission.number)]);
+      submission.details.reviewers = reviewerGroupMaps.byNotes[submission.number];
+      submission.details.areaChairs = areaChairGroupMaps.byNotes[submission.number];
+    })
+
+    conferenceStatusData = {
+      profiles: profiles,
+      areaChairs: areaChairs,
+      areaChairGroups: areaChairGroupMaps,
+      reviewerGroups: reviewerGroupMaps,
+      assignmentEdges: assignmentEdges,
+      submissions: submissions,
+      invitations: invitations
+    };
   })
-
-  conferenceStatusData = {
-    submissions: submissions,
-    invitations: invitations
-  };
 };
 
 var renderTasks = function(invitations) {
@@ -390,6 +435,8 @@ var renderTasks = function(invitations) {
 var renderTableAndTasks = function() {
 
   displayPaperStatusTable();
+  displayAreaChairsStatusTable();
+
   registerEventHandlers();
 
   Webfield.ui.done();
@@ -840,10 +887,21 @@ var buildPaperTableRow = function(note) {
 
   var paperTableReferrerUrl = encodeURIComponent('[Senior Area Chair Console](/group?id=' + CONFERENCE_ID + '/Senior_Area_Chairs#paper-status)');
 
+  var reviewerIds = note.details.reviewers;
+  var areachairIds = note.details.areaChairs;
   var completedReviews = note.details.reviews;
   var metaReview = note.details.metaReview;
   var decision = note.details.decision;
+  var areachairProfile = [];
+
+  for(var areaChairNum in areachairIds) {
+    areachairProfile.push(findProfile(areachairIds[areaChairNum]))
+  }
+
+  // Checkbox for selecting each row
   var cellCheck = { selected: false, noteId: note.id };
+
+  // Build Note Summary Cell
   var cell1 = note;
   cell1.referrer = paperTableReferrerUrl;
 
@@ -852,22 +910,47 @@ var buildPaperTableRow = function(note) {
   var combinedObj = {};
   var ratings = [];
   var confidences = [];
-  for (var reviewerNum in completedReviews) {
-    reviewObj = completedReviews[reviewerNum];
-    var reviewer = reviewObj.content.reviewer_id;
-    combinedObj[reviewerNum] = _.assign({}, {
-      id: reviewer,
-      name: view.prettyId(reviewer),
-      email: reviewer,
-      completedReview: true,
-      forum: reviewObj.forum,
-      note: reviewObj.id,
-      rating: reviewObj.rating,
-      confidence: reviewObj.confidence,
-      reviewLength: reviewObj.content.review && reviewObj.content.review.length,
-    });
-    ratings.push(reviewObj.rating);
-    confidences.push(reviewObj.confidence);
+  for (var reviewerNum in reviewerIds) {
+    var reviewer = findProfile(reviewerIds[reviewerNum]);
+    if (reviewerNum in completedReviews || reviewer.id in completedReviews) {
+      reviewObj = completedReviews[reviewerNum] || completedReviews[reviewer.id];
+      combinedObj[reviewerNum] = _.assign({}, reviewer, {
+        id: reviewer.id,
+        name: reviewer.name,
+        email: reviewer.email,
+        completedReview: true,
+        forum: reviewObj.forum,
+        note: reviewObj.id,
+        rating: reviewObj.rating,
+        confidence: reviewObj.confidence,
+        reviewLength: reviewObj.content.review && reviewObj.content.review.length,
+      });
+      ratings.push(reviewObj.rating);
+      confidences.push(reviewObj.confidence);
+    } else {
+      var forumUrl = 'https://openreview.net/forum?' + $.param({
+        id: note.forum,
+        noteId: note.id,
+        invitationId: getInvitationId(OFFICIAL_REVIEW_NAME, note.number)
+      });
+      var lastReminderSent = localStorage.getItem(forumUrl + '|' + reviewer.id);
+      combinedObj[reviewerNum] = _.assign({}, reviewer, {
+        id: reviewer.id,
+        name: reviewer.name,
+        email: reviewer.email,
+        forum: note.forum,
+        forumUrl: '/forum?' + $.param({
+          id: note.forum,
+          noteId: note.id,
+          invitationId: getInvitationId(OFFICIAL_REVIEW_NAME, note.number)
+        }),
+        paperNumber: note.number,
+        reviewerNumber: reviewerNum,
+        lastReminderSent: lastReminderSent ?
+          new Date(parseInt(lastReminderSent)).toLocaleDateString() :
+          lastReminderSent
+      });
+    }
   }
   var averageRating = 'N/A';
   var minRating = 'N/A';
@@ -892,7 +975,7 @@ var buildPaperTableRow = function(note) {
     paperNumber: note.number,
     forumReplyCount: note.details['replyCount'],
     numSubmittedReviews: Object.keys(completedReviews).length,
-    numReviewers: Object.keys(completedReviews).length,
+    numReviewers: Object.keys(reviewerIds).length,
     reviewers: combinedObj,
     averageRating: averageRating,
     maxRating: maxRating,
@@ -907,13 +990,14 @@ var buildPaperTableRow = function(note) {
     referrer: paperTableReferrerUrl
   };
 
-  var actionEditor = 'No Action Editor';
-  if (metaReview) {
-    actionEditor = metaReview.content.action_editor_id;
+  var areaChairNames = { name: 'No Area Chair' };
+  if (areachairProfile.length) {
+    areaChairNames.name = areachairProfile.map(function(p) { return p.name; }).join(', ');
+    areaChairNames.email = areachairProfile.map(function(p) { return p.email; }).join(', ');
   }
   var areachairProgressData = {
     numMetaReview: metaReview ? 'One' : 'No',
-    areachair: { name: view.prettyId(actionEditor)},
+    areachair: areaChairNames,
     metaReview: metaReview,
     referrer: paperTableReferrerUrl
   };
@@ -1097,7 +1181,7 @@ var displayPaperStatusTable = function() {
       var summaryHtml = Handlebars.templates.noteSummary(d.note);
       var reviewHtml = Handlebars.templates.noteReviewers(d.reviewProgressData);
       var areachairHtml = Handlebars.templates.noteAreaChairs(d.areachairProgressData);
-      var decisionHtml = '<h4>' + (d.decision ? d.decision.content.suggested_decision : 'No Decision') + '</h4>';
+      var decisionHtml = '<h4>' + (d.decision ? d.decision.content.decision : 'No Decision') + '</h4>';
 
       var rows = [checked, numberHtml, summaryHtml, reviewHtml];
       if (AREA_CHAIRS_ID) {
@@ -1107,8 +1191,11 @@ var displayPaperStatusTable = function() {
       return rows;
     });
 
-    var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary', 'Reviews', 'Meta Review'];
-    headings.push('Suggested Decision');
+    var headings = ['<input type="checkbox" id="select-all-papers">', '#', 'Paper Summary', 'Review Progress'];
+    if (AREA_CHAIRS_ID) {
+      headings.push('Status');
+    }
+    headings.push('Decision');
 
     var $container = $(container);
     var tableData = {
@@ -1181,19 +1268,19 @@ var displayPaperStatusTable = function() {
 
   if (rowData.length) {
     displaySortPanel(container, sortOptions, sortResults, searchResults, true);
-    // $(container).find('form.search-form .pull-left').html('<div class="btn-group message-papers-container" role="group">' +
-    //   '<button type="button" class="message-papers-btn btn btn-icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select papers to message corresponding reviewers" disabled="disabled">' +
-    //     '<span class="glyphicon glyphicon-envelope"></span> &nbsp;Message Reviewers ' +
-    //     '<span class="caret"></span>' +
-    //   '</button>' +
-    //   '<ul class="dropdown-menu">' +
-    //     '<li><a class="msg-all-reviewers">All Reviewers of selected papers</a></li>' +
-    //     '<li><a class="msg-submitted-reviewers">Reviewers of selected papers with submitted reviews</a></li>' +
-    //     '<li><a class="msg-unsubmitted-reviewers">Reviewers of selected papers with unsubmitted reviews</a></li>' +
-    //   '</ul>' +
-    // '</div>'
-    // // '<div class="btn-group"><button class="btn btn-export-data" type="button">Export</button></div>'
-    // );
+    $(container).find('form.search-form .pull-left').html('<div class="btn-group message-papers-container" role="group">' +
+      '<button type="button" class="message-papers-btn btn btn-icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select papers to message corresponding reviewers" disabled="disabled">' +
+        '<span class="glyphicon glyphicon-envelope"></span> &nbsp;Message Reviewers ' +
+        '<span class="caret"></span>' +
+      '</button>' +
+      '<ul class="dropdown-menu">' +
+        '<li><a class="msg-all-reviewers">All Reviewers of selected papers</a></li>' +
+        '<li><a class="msg-submitted-reviewers">Reviewers of selected papers with submitted reviews</a></li>' +
+        '<li><a class="msg-unsubmitted-reviewers">Reviewers of selected papers with unsubmitted reviews</a></li>' +
+      '</ul>' +
+    '</div>'
+    // '<div class="btn-group"><button class="btn btn-export-data" type="button">Export</button></div>'
+    );
     renderTable(container, rowData);
   } else {
     $(container).empty().append('<p class="empty-message">No papers have been submitted. ' +
