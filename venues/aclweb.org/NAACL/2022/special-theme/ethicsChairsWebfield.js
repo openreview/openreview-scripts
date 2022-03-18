@@ -333,35 +333,43 @@ var getAllInvitations = function() {
   });
 };
 
-var formatData = function(submissions, invitations) {
-  function invitationExists(id) {
-  return Webfield.get('/invitations', { id: id })
-    .then(function(result) {
-      return result.invitations && result.invitations.length
+var getAllEthicsReviewInvitationIds = function() {
+  return Webfield.getAll('/invitations', { regex: getInvitationId('Special_Theme_Ethics_Review', '.*'), select: 'id' })
+    .then(function(invitations) {
+      if (invitations.length) {
+        return invitations.map(function(inv) {
+          return inv.id;
+        });
+      }
+      return [];
     })
     .fail(function(error) {
-      return $.Deferred().resolve(false)
+      $.Deferred().resolve([]);
     })
-}
-  const track_submissions = [];
-  submissions.forEach(function(submission) {
-    selectedNotesById[submission.id] = false;
-    submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', getInvitationId('Official_Review', submission.number)]));
-    submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', getInvitationId('Meta_Review', submission.number)]);
-  
-    invitationExists(getInvitationId('Special_Theme_Ethics_Review', submission.number)).then(function(ethicsInvExists) {
-    if (Object.keys(submission.details.reviews).length && ethicsInvExists) {
-      track_submissions.push(submission);
-    }
-  })
- 
-    
-  })
+};
 
-  conferenceStatusData = {
-    submissions: track_submissions,
-    invitations: invitations
-  };
+var formatData = function(submissions, invitations) {
+  const trackSubmissions = [];
+
+  return getAllEthicsReviewInvitationIds.then(function(invitationIds) {
+    submissions.forEach(function(submission) {
+      selectedNotesById[submission.id] = false;
+      submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', getInvitationId('Official_Review', submission.number)]));
+      submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', getInvitationId('Meta_Review', submission.number)]);
+
+      var ethicsInvExists = invitationIds.find(function(id) {
+        return id === getInvitationId('Special_Theme_Ethics_Review', submission.number);
+      });
+      if (Object.keys(submission.details.reviews).length && ethicsInvExists) {
+        trackSubmissions.push(submission);
+      }
+    })
+
+    conferenceStatusData = {
+      submissions: trackSubmissions,
+      invitations: invitations
+    };
+  });
 };
 
 var renderTasks = function(invitations) {
