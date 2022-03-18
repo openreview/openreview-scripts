@@ -19,7 +19,7 @@ def process_update(client, edge, invitation, existing_edge):
         client.add_members_to_group(GROUP_ID, edge.tail)
 
         recipients=[edge.tail]
-        subject=f'[{SHORT_PHRASE}] You have been assigned as a Ethic Reviewer for paper number {note.number}'
+        subject=f'[{SHORT_PHRASE}] You have been assigned as an Ethic Reviewer for paper number {note.number}'
         message=f'''This is to inform you that you have been assigned as a Ethic Reviewer for paper number {note.number} for {SHORT_PHRASE}.
 
 To review this new assignment, please login to OpenReview and go to https://openreview.net/forum?id={note.forum}.
