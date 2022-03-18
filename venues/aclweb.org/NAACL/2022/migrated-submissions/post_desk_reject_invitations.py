@@ -60,7 +60,7 @@ desk_rejected_invitation = client.post_invitation(openreview.Invitation(
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Blind_Submission'))
 print(len(acl_blind_submissions))
 
-# For each blind submission, set the readers to the SAC track group
+# For each blind submission, post desk reject invitation
 for acl_blind_submission in tqdm(acl_blind_submissions):
     conflict_id = f'aclweb.org/NAACL/2022/Conference/Commitment{acl_blind_submission.number}/Conflicts'
     paper_track = sac_name_dictionary[acl_blind_submission.content["track"]]

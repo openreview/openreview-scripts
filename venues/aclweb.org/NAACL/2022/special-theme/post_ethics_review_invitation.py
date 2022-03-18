@@ -3,7 +3,6 @@ from re import sub
 import openreview
 from tqdm import tqdm
 import csv
-import tracks
 import flagged_papers
 
 """
@@ -20,12 +19,11 @@ parser.add_argument('--username')
 parser.add_argument('--password')
 args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
-sac_name_dictionary = tracks.sac_name_dictionary
 program_chairs_id = 'aclweb.org/NAACL/2022/Conference/Program_Chairs'
 
 
 ethics_review_super = openreview.Invitation(
-    id = "aclweb.org/NAACL/2022/Conference/-/Ethics_Review",
+    id = "aclweb.org/NAACL/2022/Conference/-/Special_Theme_Ethics_Review",
     readers = ["everyone"],
     writers = ["aclweb.org/NAACL/2022/Conference"],
     signatures = ["aclweb.org/NAACL/2022/Conference"],
@@ -63,20 +61,17 @@ ethics_review_super = openreview.Invitation(
 client.post_invitation(ethics_review_super)
 submissions_forum_list = flagged_papers.flagged_papers
 
-blind_submission_by_number = { s.number: s for s in openreview.tools.iterget_notes(client, invitation='aclweb.org/NAACL/2022/Conference/-/Blind_Submission')}
-submission_by_number = { s.number: s for s in openreview.tools.iterget_notes(client, invitation='aclweb.org/NAACL/2022/Conference/-/Submission')}
+blind_submission_by_number = { s.number: s for s in openreview.tools.iterget_notes(client, invitation='aclweb.org/NAACL/2022/Conference/-/Blind_Special_Theme_Submission')}
+submission_by_number = { s.number: s for s in openreview.tools.iterget_notes(client, invitation='aclweb.org/NAACL/2022/Conference/-/Special_Theme_Submission')}
 # For Each submission, create reviewer group, add reviewer group and AC group to readers
 for submission_number in tqdm(submissions_forum_list):
-    original_submission = submission_by_number[submission_number]
     acl_blind_submission = blind_submission_by_number[submission_number]
-    paper_track = sac_name_dictionary[original_submission.content["track"]]
-    track_sac_id = f'aclweb.org/NAACL/2022/Conference/{paper_track}/Senior_Area_Chairs'
-    conflict_id = f'aclweb.org/NAACL/2022/Conference/Commitment{acl_blind_submission.number}/Conflicts'
-    ethics_reviewer_id = f'aclweb.org/NAACL/2022/Conference/Commitment{acl_blind_submission.number}/Ethics_Reviewers'
-    ethics_ac_id = f'aclweb.org/NAACL/2022/Conference/Ethics_Chairs'
+    track_sac_id = f'aclweb.org/NAACL/2022/Conference/Senior_Area_Chairs'
+    ethics_reviewer_id = f'aclweb.org/NAACL/2022/Conference/Paper{acl_blind_submission.number}/Special_Theme_Ethics_Reviewers'
+    ethics_ac_id = f'aclweb.org/NAACL/2022/Conference/Special_Theme_Ethics_Chairs'
     ethics_review = client.post_invitation(openreview.Invitation(
-        id = f"aclweb.org/NAACL/2022/Conference/Commitment{acl_blind_submission.number}/-/Ethics_Review",
-        super = "aclweb.org/NAACL/2022/Conference/-/Ethics_Review",
+        id = f"aclweb.org/NAACL/2022/Conference/Paper{acl_blind_submission.number}/-/Special_Theme_Ethics_Review",
+        super = "aclweb.org/NAACL/2022/Conference/-/Special_Theme_Ethics_Review",
         invitees = [ethics_reviewer_id, program_chairs_id, ethics_ac_id],
         signatures = ["aclweb.org/NAACL/2022/Conference"],
         multiReply= False,
@@ -85,17 +80,14 @@ for submission_number in tqdm(submissions_forum_list):
             "forum": acl_blind_submission.forum,
             "replyto": acl_blind_submission.forum,
             "signatures": {
-                "values-regex": f'aclweb.org/NAACL/2022/Conference/Commitment{acl_blind_submission.number}/Ethics_Reviewer_.*|aclweb.org/NAACL/2022/Conference/Program_Chairs|aclweb.org/NAACL/2022/Conference/Ethics_Chairs',
+                "values-regex": f'aclweb.org/NAACL/2022/Conference/Paper{acl_blind_submission.number}/Special_Theme_Ethics_Reviewer_.*|aclweb.org/NAACL/2022/Conference/Program_Chairs|aclweb.org/NAACL/2022/Conference/Special_Theme_Ethics_Chairs',
                 "description": "How your identity will be displayed."
             },
             "readers": {
-                "values-copied": [program_chairs_id, ethics_ac_id, ethics_reviewer_id]
+                "values-copied": [program_chairs_id, ethics_ac_id, ethics_reviewer_id, track_sac_id]
             },
             "writers": {
                 "values": [program_chairs_id, ethics_reviewer_id, ethics_ac_id]
-            },
-            "nonreaders": {
-                "values": [conflict_id]
             }
         }
     )

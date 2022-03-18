@@ -25,11 +25,11 @@ sac_name_dictionary = tracks.sac_name_dictionary
 # Create dictionary for SAC groups and members
 print('Load SAC groups')
 track_SAC_profiles = {}
-track_groups = { group.id: group for group in client.get_groups('aclweb.org/ACL/2022/Conference/.*/Senior_Area_Chairs')}
+track_groups = { group.id: group for group in client.get_groups('aclweb.org/NAACL/2022/Conference/.*/Senior_Area_Chairs')}
 profile_ids = []
 for track_name, group_abbreviation in sac_name_dictionary.items():
     #print(track_name)
-    group = track_groups[f'aclweb.org/ACL/2022/Conference/{group_abbreviation}/Senior_Area_Chairs']
+    group = track_groups[f'aclweb.org/NAACL/2022/Conference/{group_abbreviation}/Senior_Area_Chairs']
     profile_ids = profile_ids + group.members
 
 print(f'Load SAC {len(list(set(profile_ids)))} profiles')
@@ -168,21 +168,25 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number),
             '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number)
             ]
+
     # Find all previous & future submissions and for each one add the reviewers and ACs to the conflict group
     def get_reviewer_AC_conflicts(current_submission):
         previous_url = current_submission.content.get('previous_URL')
         if previous_url and ("openreview.net" in previous_url):
             #print(current_submission.forum)
             previous_forum = ((current_submission.content.get('previous_URL').split('=')[1]).split('&')[0]).strip()
-            previous_submission = client.get_note(previous_forum)
-            conf_id = previous_submission.invitation.rsplit('/', 2)[0]
-            arr_number = previous_submission.number
-            reviewers = '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number)
-            area_chairs = '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number)
-            conflict_members.append(reviewers)
-            conflict_members.append(area_chairs)
-            if (previous_submission.forum != current_submission.forum) and (previous_submission.forum != current_submission.id):
-                get_reviewer_AC_conflicts(previous_submission)
+            try:
+                previous_submission = client.get_note(previous_forum)
+                conf_id = previous_submission.invitation.rsplit('/', 2)[0]
+                arr_number = previous_submission.number
+                reviewers = '{conf_id}/Paper{number}/Reviewers'.format(conf_id = conf_id, number = arr_number)
+                area_chairs = '{conf_id}/Paper{number}/Area_Chairs'.format(conf_id = conf_id, number = arr_number)
+                conflict_members.append(reviewers)
+                conflict_members.append(area_chairs)
+                if (previous_submission.forum != current_submission.forum) and (previous_submission.forum != current_submission.id):
+                    get_reviewer_AC_conflicts(previous_submission)
+            except:
+                print('no submission found for previous url: ', current_submission.content.get('previous_URL'))
 
     get_reviewer_AC_conflicts(arr_submission)
     later_versions = submission_output_dict[acl_commitment_note.forum]['later_versions?']

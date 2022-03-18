@@ -40,4 +40,4 @@ def assign_reviewer_to_paper(reviewer_id_or_email, paper_forum):
         signatures=["aclweb.org/NAACL/2022/Conference/Ethics_Chairs"]
     ))
 
-assign_reviewer_to_paper("email","forum")
+assign_reviewer_to_paper("","")
