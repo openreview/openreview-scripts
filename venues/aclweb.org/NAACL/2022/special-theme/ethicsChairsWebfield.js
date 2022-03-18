@@ -334,22 +334,27 @@ var getAllInvitations = function() {
 };
 
 var formatData = function(submissions, invitations) {
-
+  function invitationExists(id) {
+  return Webfield.get('/invitations', { id: id })
+    .then(function(result) {
+      return result.invitations && result.invitations.length
+    })
+    .fail(function(error) {
+      return $.Deferred().resolve(false)
+    })
+}
   const track_submissions = [];
-
   submissions.forEach(function(submission) {
     selectedNotesById[submission.id] = false;
-    submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/Official_Review']));
-    submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/Meta_Review']);
-    try{
-      ethics_invitation = Webfield.get('/invitations', { id: getInvitationId('Special_Theme_Ethics_Review', submission.number)});
-      if (Object.keys(submission.details.reviews).length && ethics_invitation) {
-        track_submissions.push(submission);
-      }
-    }catch{
-        
+    submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', getInvitationId('Official_Review', submission.number)]));
+    submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', getInvitationId('Meta_Review', submission.number)]);
+  
+    invitationExists(getInvitationId('Special_Theme_Ethics_Review', submission.number)).then(function(ethicsInvExists) {
+    if (Object.keys(submission.details.reviews).length && ethicsInvExists) {
+      track_submissions.push(submission);
     }
-    
+  })
+ 
     
   })
 
