@@ -29,13 +29,24 @@ acl_blind_submission_invitation.reply['content']["copyright_consent_signature_(t
     "value-regex": ".*",
       "required": False
     }
+acl_blind_submission_invitation.reply['content']["copyright_consent"] = {
+    "value-regex": ".*",
+      "required": False
+    }
+acl_blind_submission_invitation.reply['content']["copyright_consent_job_title"] = {
+    "value-regex": ".*",
+      "required": False
+    }
+
 client.post_invitation(acl_blind_submission_invitation)
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation="aclweb.org/ACL/2022/Conference/-/Blind_Submission"))
-for acl_blind_submission in acl_blind_submissions:
+for acl_blind_submission in tqdm(acl_blind_submissions):
     acl_blind_submission.content = {
                         "authorids" : [f"aclweb.org/ACL/2022/Conference/Paper{acl_blind_submission.number}/Authors"],
                         "authors":["Anonymous"],
                         "copyright_consent_signature_(type_name_or_NA_if_not_transferrable)": "", 
-                        "copyright_consent_name_and_address": ""
+                        "copyright_consent_name_and_address": "",
+                        "copyright_consent": "",
+                        "copyright_consent_job_title": ""
                     }
     client.post_note(acl_blind_submission)
