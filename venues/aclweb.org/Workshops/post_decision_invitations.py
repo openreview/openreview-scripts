@@ -77,6 +77,7 @@ with open('decision_process.py') as d:
     program_chairs_id = f'{confid}/Program_Chairs'
 
     for acl_blind_submission in tqdm(acl_blind_submissions):
+        author_id = f'{confid}/Commitment{acl_blind_submission.number}/Authors'
         conflict_id = f'{confid}/Commitment{acl_blind_submission.number}/Conflicts'
         decision = client.post_invitation(openreview.Invitation(
             id = f"{confid}/Commitment{acl_blind_submission.number}/-/Decision",

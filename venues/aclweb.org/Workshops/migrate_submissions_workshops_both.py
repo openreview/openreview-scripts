@@ -279,8 +279,8 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
             )
             acl_review.content['title'] = f'Official Review of Paper{acl_blind_submission.number} by {arr_review.invitation.split("/")[4]} Reviewer'
             #acl_review.content['link_to_original_review'] = f'https://openreview.net/forum?id={arr_review.forum}&noteId={arr_review.id}'
-            #profile = client.get_profile(arr_review.tauthor)
-            #acl_review.content['reviewer_id'] = f"{profile.id}"
+            profile = client.get_profile(arr_review.tauthor)
+            acl_review.content['reviewer_id'] = f"{profile.id}"
             acl_review_posted = client.post_note(acl_review)
             assert acl_review_posted, print('failed to post review ', acl_review.id)
             acl_reviews_dictionary[acl_review_posted.signatures[0]] = acl_review_posted.replyto
@@ -318,8 +318,8 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
             )
             #acl_metareview.content['link_to_original_metareview'] = f'https://openreview.net/forum?id={arr_metareview.forum}&noteId={arr_metareview.id}'
             acl_metareview.content['title'] = f'Meta Review of Paper{acl_blind_submission.number} by {arr_metareview.invitation.split("/")[4]} Area Chair'
-            #profile = client.get_profile(arr_metareview.tauthor)
-            #acl_metareview.content['action_editor_id'] = f"{profile.id}"
+            profile = client.get_profile(arr_metareview.tauthor)
+            acl_metareview.content['action_editor_id'] = f"{profile.id}"
             acl_metareview_posted = client.post_note(acl_metareview)
             assert acl_metareview_posted, print('failed to post metareview ', acl_metareview.id)
             acl_metareviews_dictionary[acl_metareview_posted.signatures[0]] = acl_metareview_posted.replyto
@@ -328,7 +328,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
 
 print('Load commitment notes and rest of the data')
 # Retrieve all commitment submissions, ACL submissions, ACL blind submissions, and ACL blind submission reviews
-commitment_notes = list(openreview.tools.iterget_notes(client,invitation=f'{confid}/-/Commitment_Submission', sort= 'number:desc'))
+commitment_notes = list(openreview.tools.iterget_notes(client,invitation=f'{confid}/-/Commitment_Submission', sort= 'number:asc'))
 acl_submissions = list(openreview.tools.iterget_notes(client,invitation=f'{confid}/-/Migrated_Submission'))
 blind_submissions = {note.original: note for note in list(openreview.tools.iterget_notes(client, invitation = f'{confid}/-/Migrated_Blind_Submission'))}
 acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = f'{confid}/-/ARR_Official_Review'))}

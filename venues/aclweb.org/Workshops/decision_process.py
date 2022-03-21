@@ -2,7 +2,7 @@ def process(client, note, invitation):
     from datetime import datetime
     CONFERENCE_ID = ''
     CONFERENCE_SHORT_NAME = ''
-    EMAIL_AUTHORS = False
+    EMAIL_AUTHORS = True
     #DESK_REJECTED_SUBMISSION_ID = 'aclweb.org/ACL/2022/Conference/-/Desk_Rejected_Submission'
 
     forum_note = client.get_note(note.forum)
@@ -31,4 +31,4 @@ def process(client, note, invitation):
         email_body = f'A decision was posted to Paper #{forum_note.number} titled "{forum_note.content["title"]}"".\n\n Decision: {note.content["decision"]}.'
 
         recipients = forum_note.content['authorids']
-        client.post_message(subject=email_subject, recipients=recipients, message=email_body, ignoreRecipients=note.nonreaders)
+        client.post_message(subject=email_subject, recipients=recipients, message=email_body)
