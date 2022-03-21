@@ -37,7 +37,10 @@ acl_blind_submission_invitation.reply['content']["copyright_consent_job_title"] 
     "value-regex": ".*",
       "required": False
     }
-
+acl_blind_submission_invitation.reply['content']["pdf"] = {
+    "value-regex": ".*",
+      "required": False
+    }
 client.post_invitation(acl_blind_submission_invitation)
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation="aclweb.org/ACL/2022/Conference/-/Blind_Submission"))
 for acl_blind_submission in tqdm(acl_blind_submissions):
@@ -47,6 +50,7 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
                         "copyright_consent_signature_(type_name_or_NA_if_not_transferrable)": "", 
                         "copyright_consent_name_and_address": "",
                         "copyright_consent": "",
-                        "copyright_consent_job_title": ""
+                        "copyright_consent_job_title": "",
+                        "pdf": ""
                     }
     client.post_note(acl_blind_submission)
