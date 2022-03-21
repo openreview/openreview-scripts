@@ -351,7 +351,7 @@ var getAllEthicsReviewInvitationIds = function() {
 var formatData = function(submissions, invitations) {
   const trackSubmissions = [];
 
-  return getAllEthicsReviewInvitationIds.then(function(invitationIds) {
+  return getAllEthicsReviewInvitationIds().then(function(invitationIds) {
     submissions.forEach(function(submission) {
       selectedNotesById[submission.id] = false;
       submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', getInvitationId('Official_Review', submission.number)]));

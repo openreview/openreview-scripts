@@ -359,26 +359,45 @@ var getAllInvitations = function() {
     return _.filter(invitations, filterInvitee);
   });
 };
-
+var getAllEthicsReviewInvitationIds = function() {
+  return Webfield.getAll('/invitations', { regex: getInvitationId('Ethics_Review', '.*'), select: 'id' })
+    .then(function(invitations) {
+      if (invitations.length) {
+        return invitations.map(function(inv) {
+          return inv.id;
+        });
+      }
+      return [];
+    })
+    .fail(function(error) {
+      $.Deferred().resolve([]);
+    })
+};
 var formatData = function(submissions, invitations) {
 
-  const track_submissions = [];
+  const trackSubmissions = [];
 
-  submissions.forEach(function(submission) {
-    selectedNotesById[submission.id] = false;
-    submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/ARR_Official_Review']));
+  return getAllEthicsReviewInvitationIds().then(function(invitationIds) {
+    submissions.forEach(function(submission) {
+      selectedNotesById[submission.id] = false;
+      submission.details.reviews = getOfficialReviews(_.filter(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/ARR_Official_Review']));
     submission.details.metaReview = _.find(submission.details.directReplies, ['invitation', 'aclweb.org/NAACL/2022/Conference/-/ARR_Meta_Review']);
     submission.details.decision = _.find(submission.details.directReplies, ['invitation', getInvitationId('Suggested_Decision', submission.number)]);
-    if (Object.keys(submission.details.reviews).length) {
-      track_submissions.push(submission);
-    }
-  })
+      var ethicsInvExists = invitationIds.find(function(id) {
+        return id === getInvitationId('Ethics_Review', submission.number);
+      });
+      if (Object.keys(submission.details.reviews).length && ethicsInvExists) {
+        trackSubmissions.push(submission);
+      }
+    })
 
-  conferenceStatusData = {
-    submissions: track_submissions,
-    invitations: invitations
-  };
+    conferenceStatusData = {
+      submissions: trackSubmissions,
+      invitations: invitations
+    };
+  });
 };
+
 
 var renderTasks = function(invitations) {
   //  My Tasks tab
