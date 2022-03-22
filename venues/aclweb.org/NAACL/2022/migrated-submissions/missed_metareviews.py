@@ -24,7 +24,7 @@ papers_missing_metas = [826,393,334,306,275,175,53,37,36,10]
 
 for number in papers_missing_metas: 
     blind_submission = client.get_notes(invitation = 'aclweb.org/NAACL/2022/Conference/-/Blind_Submission', number = number)[0]
-    example_review = client.get_notes('aclweb.org/NAACL/2022/Conference/-/ARR_Official_Review', forum = blind_submission.forum)[0]
+    example_review = client.get_notes(invitation='aclweb.org/NAACL/2022/Conference/-/ARR_Official_Review', forum = blind_submission.forum)[0]
     original_submission_forum = blind_submission.content['paper_link'].split('=')[1]
     original_submission = client.get_note(original_submission_forum)
 
@@ -50,7 +50,7 @@ for number in papers_missing_metas:
             content = arr_metareview.content
         )
         acl_metareview.content['link_to_original_metareview'] = f'https://openreview.net/forum?id={arr_metareview.forum}&noteId={arr_metareview.id}'
-        acl_metareview.content['title'] = f'Meta Review of Paper{original_submission.number} by {arr_metareview.invitation.split("/")[4]} Area Chair'
+        acl_metareview.content['title'] = f'Meta Review of Paper{blind_submission.number} by {arr_metareview.invitation.split("/")[4]} Area Chair'
         profile = client.get_profile(arr_metareview.tauthor)
         acl_metareview.content['action_editor_id'] = f"{profile.id}"
         acl_metareview_posted = client.post_note(acl_metareview)
