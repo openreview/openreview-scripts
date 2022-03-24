@@ -21,8 +21,8 @@ args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 confid = args.confid
 
-commitment_invitation = client.get_invitation(f"{confid}/-/Commitment_Submission")
-
+ 
+commitment_invitation = client.get_invitation(f"{confid}/-/Submission")
 submission_invitation_content = {"title": {
                 "description": "Title of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$",
                 "order": 1,
@@ -206,48 +206,6 @@ blind = openreview.Invitation(
     )
 
 client.post_invitation(blind)
-
-# Posting Blind Submission Invitation 
-blind_commitment = client.post_invitation(openreview.Invitation(
-    id = f'{confid}/-/Blind_Commitment_Submission',
-    readers = [
-        'everyone'
-        ],
-    writers = [
-        confid
-        ],
-    invitees = [
-        confid
-        ],
-    signatures = [
-        confid
-        ],
-    reply ={
-        "readers" : {
-            "values-regex":".*"
-            },
-        "nonreaders" : {
-            "values-regex":".*"
-            },
-        "writers" : {
-            "values-regex":".*"
-            },
-        "signatures" : {
-            "values":[
-                confid
-                ]
-            },
-        "content" : {
-            "authorids" : { 
-                "values-regex": ".*" 
-                },
-            "authors": {
-                "values-regex": ".*" 
-                }
-            }   
-        }
-    ))
-
 
 
 official_review = openreview.Invitation(
