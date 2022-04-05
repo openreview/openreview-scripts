@@ -162,8 +162,8 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             later_submission = client.get_note(version)
             arr_conf_id = later_submission.invitation.rsplit('/', 2)[0]
             arr_number = later_submission.number
-            reviewers = '{conf_id}/Paper{number}/Reviewers'.format(arr_conf_id = arr_conf_id, number = arr_number)
-            area_chairs = '{conf_id}/Paper{number}/Area_Chairs'.format(arr_conf_id = arr_conf_id, number = arr_number)
+            reviewers = '{arr_conf_id}/Paper{number}/Reviewers'.format(arr_conf_id = arr_conf_id, number = arr_number)
+            area_chairs = '{arr_conf_id}/Paper{number}/Area_Chairs'.format(arr_conf_id = arr_conf_id, number = arr_number)
             conflict_members.append(reviewers)
             conflict_members.append(area_chairs)
 
@@ -217,9 +217,6 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
                 f"{confid}/Commitment{acl_commitment_note.number}/Authors",
                 confid
                 #"aclweb.org/ACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']])
-                ],
-            nonreaders = [
-                f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
                 ],
             writers = [
                 confid

@@ -244,7 +244,7 @@ official_review = openreview.Invitation(
             "reviewer_id":{
                 "order": 2,
                 "value-regex": ".*",
-                "required": True
+                "required": False
             },
             "review": {
                 "order": 3,
@@ -455,7 +455,7 @@ metareview = openreview.Invitation(
             "action_editor_id":{
                 "order": 2,
                 "value-regex": ".*",
-                "required": True
+                "required": False
             },
             "metareview": {
                 "order": 3,

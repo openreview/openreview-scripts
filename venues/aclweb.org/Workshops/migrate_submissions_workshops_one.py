@@ -87,7 +87,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
     number = acl_submission.number
     # Create PaperX group
     paper_group = openreview.Group(
-        id = f'{confid}/Commitment{acl_commitment_note.number}',
+        id = f'{confid}/Paper{acl_commitment_note.number}',
         signatures = [
             confid
             ],
@@ -103,21 +103,21 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             ]
     )
     client.post_group(paper_group)
-
+    '''
     # Create paperX/Authors
     authors = openreview.Group(
-        id = f'{confid}/Commitment{acl_commitment_note.number}/Authors',
+        id = f'{confid}/Paper{acl_commitment_note.number}/Authors',
         signatures = [
             confid
             ],
         signatories = [
             confid,
-            f'{confid}/Commitment{acl_commitment_note.number}/Authors'
+            f'{confid}/Paper{acl_commitment_note.number}/Authors'
             #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         readers = [
             confid,
-            f'{confid}/Commitment{acl_commitment_note.number}/Authors'
+            f'{confid}/Paper{acl_commitment_note.number}/Authors'
             #'aclweb.org/ACL/2022/Conference/Paper{number}/Authors'.format(number = number)
             ],
         writers = [
@@ -128,7 +128,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
 
     authors_posted = client.post_group(authors)
     assert authors_posted, print('Failed to post author groups: ', acl_submission_id)
-
+    '''
 
 
     # Create paperX/Conflicts
@@ -168,7 +168,7 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             conflict_members.append(area_chairs)
 
     conflicts = openreview.Group(
-        id = f'{confid}/Commitment{acl_commitment_note.number}/Conflicts',
+        id = f'{confid}/Paper{acl_commitment_note.number}/Conflicts',
         signatures = [
             confid
             ],
@@ -192,11 +192,12 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
             original = acl_submission_id,
             readers = [
                 f"{confid}/Program_Chairs",
-                confid
+                confid,
+                f"{confid}/Paper{acl_commitment_note.number}/Reviewers", f"{confid}/Paper{acl_commitment_note.number}/Area_Chairs"
                 #"aclweb.org/ACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']])
                 ],
             nonreaders = [
-                f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
+                f"{confid}/Paper{acl_commitment_note.number}/Conflicts"
                 ],
             writers = [
                 confid
@@ -205,34 +206,10 @@ def post_blind_submission(acl_submission_id, acl_submission, arr_submission, sub
                 confid
                 ],
             content = {
-                "authorids" : [f"{confid}/Commitment{acl_commitment_note.number}/Authors"],
+                "authorids" : [f"{confid}/Paper{acl_commitment_note.number}/Authors"],
                 "authors":["Anonymous"]
             }
         )
-    blinded_commitment_note = openreview.Note(
-            invitation = f"{confid}/-/Blind_Commitment_Submission",
-            original = acl_commitment_note.id,
-            readers = [
-                f"{confid}/Program_Chairs",
-                f"{confid}/Commitment{acl_commitment_note.number}/Authors",
-                confid
-                #"aclweb.org/ACL/2022/Conference/{sac_track}/Senior_Area_Chairs".format(sac_track = sac_name_dictionary[acl_submission.content['track']])
-                ],
-            nonreaders = [
-                f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
-                ],
-            writers = [
-                confid
-                ],
-            signatures = [
-                confid
-                ],
-            content = {
-                "authorids" : [f"{confid}/Commitment{acl_commitment_note.number}/Authors"],
-                "authors":["Anonymous"]
-            }
-        )
-    client.post_note(blinded_commitment_note)
 
     blinded_note_posted = client.post_note(blinded_note)
     if blinded_note_posted:
@@ -268,19 +245,19 @@ def post_reviews(acl_blind_submission_forum, acl_blind_submission, arr_submissio
                 replyto = acl_blind_submission_forum,
                 invitation = f'{confid}/-/ARR_Official_Review',
                 signatures = arr_review.signatures,
-                readers = [f'{confid}/Program_Chairs'],
+                readers = [f'{confid}/Program_Chairs', f"{confid}/Paper{acl_commitment_note.number}/Reviewers", f"{confid}/Paper{acl_commitment_note.number}/Area_Chairs"],
                 writers = [
                     confid
                 ],
                 nonreaders=[
-                    f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
+                    f"{confid}/Paper{acl_commitment_note.number}/Conflicts"
                     ],
                 content = content
             )
             acl_review.content['title'] = f'Official Review of Paper{acl_blind_submission.number} by {arr_review.invitation.split("/")[4]} Reviewer'
             #acl_review.content['link_to_original_review'] = f'https://openreview.net/forum?id={arr_review.forum}&noteId={arr_review.id}'
-            profile = client.get_profile(arr_review.tauthor)
-            acl_review.content['reviewer_id'] = f"{profile.id}"
+            #profile = client.get_profile(arr_review.tauthor)
+            #acl_review.content['reviewer_id'] = f"{profile.id}"
             acl_review_posted = client.post_note(acl_review)
             assert acl_review_posted, print('failed to post review ', acl_review.id)
             acl_reviews_dictionary[acl_review_posted.signatures[0]] = acl_review_posted.replyto
@@ -307,9 +284,9 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
                 replyto = acl_blind_submission_forum,
                 invitation = f'{confid}/-/ARR_Meta_Review',
                 signatures = arr_metareview.signatures,
-                readers = [f'{confid}/Program_Chairs'],
+                readers = [f'{confid}/Program_Chairs', f"{confid}/Paper{acl_commitment_note.number}/Reviewers", f"{confid}/Paper{acl_commitment_note.number}/Area_Chairs"],
                 nonreaders=[
-                    f"{confid}/Commitment{acl_commitment_note.number}/Conflicts"
+                    f"{confid}/Paper{acl_commitment_note.number}/Conflicts"
                     ],
                 writers = [
                     confid
@@ -318,8 +295,8 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
             )
             #acl_metareview.content['link_to_original_metareview'] = f'https://openreview.net/forum?id={arr_metareview.forum}&noteId={arr_metareview.id}'
             acl_metareview.content['title'] = f'Meta Review of Paper{acl_blind_submission.number} by {arr_metareview.invitation.split("/")[4]} Area Chair'
-            profile = client.get_profile(arr_metareview.tauthor)
-            acl_metareview.content['action_editor_id'] = f"{profile.id}"
+            #profile = client.get_profile(arr_metareview.tauthor)
+            #acl_metareview.content['action_editor_id'] = f"{profile.id}"
             acl_metareview_posted = client.post_note(acl_metareview)
             assert acl_metareview_posted, print('failed to post metareview ', acl_metareview.id)
             acl_metareviews_dictionary[acl_metareview_posted.signatures[0]] = acl_metareview_posted.replyto
@@ -328,7 +305,7 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
 
 print('Load commitment notes and rest of the data')
 # Retrieve all commitment submissions, ACL submissions, ACL blind submissions, and ACL blind submission reviews
-commitment_notes = list(openreview.tools.iterget_notes(client,invitation=f'{confid}/-/Commitment_Submission', sort= 'number:asc'))
+commitment_notes = list(openreview.tools.iterget_notes(client,invitation=f'{confid}/-/Submission', sort= 'number:asc'))
 acl_submissions = list(openreview.tools.iterget_notes(client,invitation=f'{confid}/-/Migrated_Submission'))
 blind_submissions = {note.original: note for note in list(openreview.tools.iterget_notes(client, invitation = f'{confid}/-/Migrated_Blind_Submission'))}
 acl_reviews_dictionary = {review.signatures[0] : review.replyto for review in list(openreview.tools.iterget_notes(client, invitation = f'{confid}/-/ARR_Official_Review'))}
@@ -338,7 +315,7 @@ acl_metareviews_dictionary = {review.signatures[0] : review.replyto for review i
 acl_submission_dict = {(acl_submission.content['paper_link'].split('=')[1]).split('&')[0]:acl_submission for acl_submission in acl_submissions}
 
 submission_output_dict = {}
-commitment_invitation = client.get_invitation(f"{confid}/-/Commitment_Submission")
+commitment_invitation = client.get_invitation(f"{confid}/-/Submission")
 commitment_invitation.reply['content']['migrated_paper_link'] = {
                 "description": "Link to the forum of migrated data",
                 "value-regex": "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",

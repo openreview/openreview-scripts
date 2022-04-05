@@ -93,13 +93,10 @@ with open('decision_process.py') as d:
                     "description": "How your identity will be displayed."
                 },
                 "readers": {
-                    "values": [program_chairs_id]
+                    "values": [program_chairs_id, author_id]
                 },
                 "writers": {
                     "values": [program_chairs_id]
-                },
-                "nonreaders": {
-                    "values": [conflict_id]
                 }
             }
         )

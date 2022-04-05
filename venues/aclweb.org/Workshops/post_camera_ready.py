@@ -23,59 +23,69 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 confid = args.confid
 super_invitation = openreview.Invitation(
     id=f'{confid}/-/Commitment_Camera_Ready_Revision',
-    duedate=1647388799000, # March 15
+    duedate=1650045782000, # March 15
     multiReply=True,
     readers=['everyone'],
     writers=[confid],
     signatures=[confid],
     reply={
-        "content": {"pdf": {
-          "description": "Upload a single PDF containing the paper, references and any appendices",
-          "order": 1,
-          "value-file": {
-            "fileTypes": [
-              "pdf"
-            ],
-            "size": 80
-          },
-          "required": True
-        },
-        "copyright_consent": {
-            "description": "Check to submit",
-            "value-checkbox": "I consent ACL Conference Copyright",
-            "order": 2,
-            "required": True
-        },
-        "dataset": {
-            "description": "Dataset zip file. The maximum file size is 100MB.",
-            "order": 3,
-            "value-file": {
-                "fileTypes": [
-                    "zip"
-                ],
-                "size": 100
-            },
-            "required": False
-        },
-        "code": {
-            "description": "Code zip file. The maximum file size is 100MB.",
-            "order": 4,
-            "value-file": {
-                "fileTypes": [
-                    "zip"
-                ],
-                "size": 100
-            },
-            "required": False
-        }}
+        "content": {
+            "title": {
+      "description": "Enter the title of the ARR submission that you want to commit to SPA-NLP",
+      "order": 1,
+      "value-regex": ".{1,250}",
+      "required": False
+    },
+    "existing_preprints": {
+      "values-regex": ".{1,500}",
+      "description": "If there are any publicly available non-anonymous preprints of this paper, please list them here (provide the URLs please).",
+      "required": False,
+      "order": 17
+    },
+    "paper_link": {
+      "description": "Provide the link to your previous ACL submission",
+      "value-regex": "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+      "required": False,
+      "order": 10
+    },
+    "paper_type": {
+      "description": "Select if your paper is short or long",
+      "value-radio": [
+        "short",
+        "long"
+      ],
+      "required": False,
+      "order": 11
+    },
+    "abstract": {
+      "description": "Abstract of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$.",
+      "order": 14,
+      "value-regex": "[\\S\\s]{1,5000}",
+      "required": False
+    },
+    "pdf": {
+      "description": "Upload a single PDF containing the paper, references and any appendices. Please refer to the CFP (https://aclrollingreview.org/cfp) and author checklist (https://aclrollingreview.org/authorchecklist). Failure to follow the rules regarding format, anonymization, authorship, citation and comparison, and multiple submission will lead to desk rejection.",
+      "order": 15,
+      "value-file": {
+        "fileTypes": [
+          "pdf"
+        ],
+        "size": 80
+      },
+      "required": False
+    }
+        }
     }
     
 )
 client.post_invitation(super_invitation)
-submissions=list(openreview.tools.iterget_notes(client, invitation=f'{confid}/-/Commitment_Submission'))
+submissions=list(openreview.tools.iterget_notes(client, invitation=f'{confid}/-/Blind_Commitment_Submission'))
 decision_by_forum={ d.forum: d for d in list(openreview.tools.iterget_notes(client, invitation=f'{confid}/Commitment.*/-/Decision'))}
 
 for submission in tqdm(submissions):
+    #author_group = f'{confid}/Commitment{submission.number}/Authors'
+    original_submission = client.get_note(submission.original)
+    
     decision = decision_by_forum.get(submission.id)
     if decision:
         if 'Accept' in decision.content['decision']:
@@ -87,8 +97,8 @@ for submission in tqdm(submissions):
                 readers=['everyone'],
                 invitees=[confid, f'{confid}/Commitment{submission.number}/Authors'],
                 reply={
-                    'forum': submission.id,
-                    'referent': submission.id,
+                    'forum': original_submission.id,
+                    'referent': original_submission.id,
                     'readers': {
                         'values': [
                             confid,
@@ -106,6 +116,6 @@ for submission in tqdm(submissions):
                     }                    
                 }
             ))
-            print(r)
+            
     else:
         print('decision not found')
