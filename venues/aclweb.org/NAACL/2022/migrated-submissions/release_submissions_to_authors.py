@@ -36,8 +36,8 @@ for acl_blind_submission in tqdm(acl_blind_submissions):
     author_group = f'aclweb.org/NAACL/2022/Conference/Commitment{acl_blind_submission.number}/Authors'
     
     # Add authors as readers of blind submission
-    if author_group not in acl_blind_submission.readers:
-        print(acl_blind_submission.forum)
+    if author_group not in acl_blind_submission.readers and len(acl_blind_submission.readers) >1:
+        
         acl_blind_submission.readers.append(author_group)
         acl_blind_submission.content = {
                     "authorids" : [author_group],
