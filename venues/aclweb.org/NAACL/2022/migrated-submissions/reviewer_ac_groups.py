@@ -21,6 +21,7 @@ parser.add_argument('--password')
 args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
 sac_name_dictionary = tracks.sac_name_dictionary
+'''
 # Create Ethics AC group 
 ethics = client.post_group(openreview.Group(
     id = 'aclweb.org/NAACL/2022/Conference/Ethics_Chairs',
@@ -60,7 +61,7 @@ ethics_reviewers = client.post_group(openreview.Group(
             'aclweb.org/NAACL/2022/Conference'
              ]
         ))
-
+'''
 
 # For submission in submissions, add paperx/Reviewers group and AC group as readers
 # Currently assumes submissions_list is a list of Notes

@@ -23,7 +23,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 sac_name_dictionary = tracks.sac_name_dictionary
 program_chairs_id = 'aclweb.org/NAACL/2022/Conference/Program_Chairs'
 
-
+'''
 ethics_review_super = openreview.Invitation(
     id = "aclweb.org/NAACL/2022/Conference/-/Ethics_Review",
     readers = ["everyone"],
@@ -61,6 +61,7 @@ ethics_review_super = openreview.Invitation(
     }
 )
 client.post_invitation(ethics_review_super)
+'''
 submissions_forum_list = flagged_papers.flagged_papers
 
 blind_submission_by_number = { s.number: s for s in openreview.tools.iterget_notes(client, invitation='aclweb.org/NAACL/2022/Conference/-/Blind_Submission')}
