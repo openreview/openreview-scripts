@@ -39,7 +39,7 @@ best_paper_committee = client.post_group(openreview.Group(
             'aclweb.org/ACL/2022/Conference'
             ],
     members = [
-        '~Timothy_Baldwin1', '~David_Chiang1', '~Kathleen_McKeown1','~Min-Yen_Kan1', '~Taro_Watanabe1'
+        
     ]
 ))
 submissions_by_number = {s.number: s for s in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/ACL/2022/Conference/-/Blind_Submission'))}
