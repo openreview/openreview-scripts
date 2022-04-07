@@ -3,12 +3,12 @@
 
 // Constants
 var CONFERENCE_ID = 'aclweb.org/NAACL/2022/Conference';
-var SUBMISSION_ID = 'aclweb.org/NAACL/2022/Conference/-/Submission';
-var BLIND_SUBMISSION_ID = 'aclweb.org/NAACL/2022/Conference/-/Blind_Submission';
+var SUBMISSION_ID = 'aclweb.org/NAACL/2022/Conference/-/Special_Theme_Submission';
+var BLIND_SUBMISSION_ID = 'aclweb.org/NAACL/2022/Conference/-/Blind_Special_Theme_Submission';
 var HEADER = {"title": "Ethics Reviewers Console", "instructions": "<p class=\"dark\">This page provides information and status             updates for the NAACL-2022. It will be regularly updated as the conference             progresses, so please check back frequently.</p>", "schedule": ""};
-var REVIEWER_NAME = 'Ethics_Reviewers';
+var REVIEWER_NAME = 'Special_Theme_Ethics_Reviewers';
 var AREACHAIR_NAME = '';
-var OFFICIAL_REVIEW_NAME = 'Ethics_Review';
+var OFFICIAL_REVIEW_NAME = 'Special_Theme_Ethics_Review';
 var REVIEW_RATING_NAME = 'recommendation';
 var LEGACY_INVITATION_ID = false;
 var REVIEW_LOAD = '';
@@ -133,13 +133,13 @@ var getReviewerNoteNumbers = function() {
     member: user.id
   }).then(function(groups) {
 
-    var anonGroups = _.filter(groups, function(g) { return g.id.includes('/Ethics_Reviewer_'); });
+    var anonGroups = _.filter(groups, function(g) { return g.id.includes('/Special_Theme_Ethics_Reviewer_'); });
     var reviewerGroups = _.filter(groups, function(g) { return g.id.endsWith('/' + REVIEWER_NAME); });
 
     var groupByNumber = {};
     _.forEach(reviewerGroups, function(reviewerGroup) {
-      var num = getNumberFromGroup(reviewerGroup.id, 'Commitment');
-      var anonGroup = anonGroups.find(function(anonGroup) { return anonGroup.id.startsWith(CONFERENCE_ID + '/Commitment' + num + '/Ethics_Reviewer_'); });
+      var num = getNumberFromGroup(reviewerGroup.id, 'Paper');
+      var anonGroup = anonGroups.find(function(anonGroup) { return anonGroup.id.startsWith(CONFERENCE_ID + '/Paper' + num + '/Special_Theme_Ethics_Reviewer_'); });
       if (anonGroup) {
         groupByNumber[num] = anonGroup.id;
       }
@@ -152,14 +152,14 @@ var getReviewerNoteNumbers = function() {
 
 var getAreaChairGroups = function() {
   var allAreaChairGroupsP = Webfield.getAll('/groups', {
-    regex: CONFERENCE_ID + '/Commitment.*/Area_Chairs',
+    regex: CONFERENCE_ID + '/Paper.*/Area_Chairs',
     select: 'id,members'
   })
   .then(function(groups) {
 
     var groupByNumber = {};
     _.forEach(groups, function(group) {
-      var num = getNumberFromGroup(group.id, 'Commitment');
+      var num = getNumberFromGroup(group.id, 'Paper');
       groupByNumber[num] = group.members[0];
     });
 
@@ -403,7 +403,7 @@ var displayPaperRanking = function(notes, paperRankingInvitation, paperRankingTa
             id: id,
             tag: value,
             signatures: [groupByNumber[note.number]],
-            readers: [CONFERENCE_ID, CONFERENCE_ID + '/Commitment' + note.number + '/' + AREACHAIR_NAME, groupByNumber[note.number]],
+            readers: [CONFERENCE_ID, CONFERENCE_ID + '/Paper' + note.number + '/' + AREACHAIR_NAME, groupByNumber[note.number]],
             forum: note.id,
             invitation: invitationId,
             ddate: deleted ? Date.now() : null
