@@ -71,20 +71,15 @@ decision_super = openreview.Invitation(
 client.post_invitation(decision_super)
 
 acl_blind_submissions = list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Blind_Submission'))
-acl_submissions_by_forum = {d.id: d for d in list(openreview.tools.iterget_notes(client, invitation = 'aclweb.org/NAACL/2022/Conference/-/Submission'))}
 program_chairs_id = 'aclweb.org/NAACL/2022/Conference/Program_Chairs'
 
 for acl_blind_submission in tqdm(acl_blind_submissions):
-    original = acl_submissions_by_forum[acl_blind_submission.original]
-    paper_track = sac_name_dictionary[original.content["track"]]
-    track_sac_id = f'aclweb.org/NAACL/2022/Conference/{paper_track}/Senior_Area_Chairs'
     conflict_id = f'aclweb.org/NAACL/2022/Conference/Commitment{acl_blind_submission.number}/Conflicts'
     decision = client.post_invitation(openreview.Invitation(
         id = f"aclweb.org/NAACL/2022/Conference/Commitment{acl_blind_submission.number}/-/Decision",
         super = "aclweb.org/NAACL/2022/Conference/-/Commitment_Decision",
         signatures = ["aclweb.org/NAACL/2022/Conference"],
         multiReply= False,
-        process = './decision_process.py',
         reply = {
             "forum": acl_blind_submission.forum,
             "replyto": acl_blind_submission.forum,
