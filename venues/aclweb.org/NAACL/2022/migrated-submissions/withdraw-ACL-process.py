@@ -6,16 +6,20 @@ def process(client, note, invitation):
 
     forum_note = client.get_note(note.forum)
     forum_note.invitation = WITHDRAWN_SUBMISSION_ID
-    forum_note.content = {
-        'authors': forum_note.content['authors'],
-        'authorids': forum_note.content['authorids'],
-    }
+    
     if len(forum_note.readers) == 1: 
         content = {}
         keep_keys = ['title', 'pdf', 'abstract','paper_link','paper_type']
         for key in forum_note.content: 
             if key not in keep_keys:
                 content[key] = ''
+        forum_note.content = content
+    else:
+        forum_note.content = {
+        'authors': forum_note.content['authors'],
+        'authorids': forum_note.content['authorids'],
+        'country_of_affiliation_of_corresponding_author': ''
+    }
     forum_note = client.post_note(forum_note)
 
 
@@ -33,5 +37,5 @@ def process(client, note, invitation):
     PAPER_AUTHORS_ID = f'aclweb.org/NAACL/2022/Conference/Commitment{forum_note.number}/Authors'
 
     recipients = note.readers
-    #recipients.append(PAPER_AUTHORS_ID)
+    recipients.append(PAPER_AUTHORS_ID)
     client.post_message(subject=email_subject, recipients=recipients, message=email_body, ignoreRecipients=note.nonreaders)
