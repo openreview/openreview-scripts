@@ -13,6 +13,8 @@ def process(client, note, invitation):
         for key in forum_note.content: 
             if key not in keep_keys:
                 content[key] = ''
+        content['authorids']=forum_note.content['authorids']
+        content['authors']=forum_note.content['authors']
         forum_note.content = content
     else:
         forum_note.content = {
