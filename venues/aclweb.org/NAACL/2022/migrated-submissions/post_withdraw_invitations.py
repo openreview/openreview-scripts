@@ -48,7 +48,67 @@ desk_rejected_invitation = client.post_invitation(openreview.Invitation(
                 "values": [
                     "Anonymous"
                 ]
-            }
+            },
+            "title": {
+      "value-regex": ".*"
+    },
+    "abstract": {
+      "value-regex": ".*"
+    },
+    "pdf": {
+      "value-regex": ".*"
+    },
+    "software": {
+      "value-regex": ".*"
+    },
+    "data": {
+      "value-regex": ".*"
+    },
+    "paper_link": {
+      "value-regex": ".*"
+    },
+    "paper_type": {
+      "value-regex": ".*"
+    },
+    "track": {
+      "value-regex": ".*"
+    },
+    "comment": {
+      "value-regex": ".*"
+    },
+    "authorship": {
+      "value-regex": ".*"
+    },
+    "paper_version": {
+      "value-regex": ".*"
+    },
+    "anonymity_period": {
+      "value-regex": ".*"
+    },
+    "commitment_note": {
+      "value-regex": ".*"
+    },
+    "naacl_preprint": {
+      "value-regex": ".*"
+    },
+    "preprint": {
+      "value-regex": ".*"
+    },
+    "existing_preprints": {
+      "value-regex": ".*"
+    },
+    "previous_URL": {
+      "value-regex": ".*"
+    },
+    "TL;DR": {
+      "value-regex": ".*"
+    },
+    "author_profiles": {
+      "value-regex": ".*"
+    },
+    "country_of_affiliation_of_corresponding_author": {
+      "value-regex": ".*"
+    }
         }
     }
 ))
