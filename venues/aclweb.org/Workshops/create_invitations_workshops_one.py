@@ -131,7 +131,16 @@ submission_invitation_content = {"title": {
                 "value-regex": "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
                 "required": True,
                 "order": 10
-                } 
+                } ,
+                "paper_type": {
+      "description": "Short or long. See the CFP for the requirements for short and long papers.",
+      "value-radio": [
+        "long",
+        "short"
+      ],
+      "order": 17,
+      "required": False
+    },
     }
 for key in commitment_invitation.reply['content'].keys(): 
     if key != 'existing_preprints':

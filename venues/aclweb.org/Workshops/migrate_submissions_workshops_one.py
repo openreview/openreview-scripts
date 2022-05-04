@@ -24,7 +24,7 @@ confid = args.confid
 # Post acl submission (calls post_blind_submission)
 def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_output_dict):
     # Depends on the workshop
-    eligible_arr_invitations = ['aclweb.org/ACL/ARR/2021/May/', 'aclweb.org/ACL/ARR/2021/Jun/', 'aclweb.org/ACL/ARR/2021/July/', 'aclweb.org/ACL/ARR/2021/August/', 'aclweb.org/ACL/ARR/2021/September/','aclweb.org/ACL/ARR/2021/October/','aclweb.org/ACL/ARR/2021/November/', 'aclweb.org/ACL/ARR/2021/December/', 'aclweb.org/ACL/ARR/2022/January/' ,'aclweb.org/ACL/ARR/2022/February/']
+    eligible_arr_invitations = ['aclweb.org/ACL/ARR/2021/May/', 'aclweb.org/ACL/ARR/2021/Jun/', 'aclweb.org/ACL/ARR/2021/July/', 'aclweb.org/ACL/ARR/2021/August/', 'aclweb.org/ACL/ARR/2021/September/','aclweb.org/ACL/ARR/2021/October/','aclweb.org/ACL/ARR/2021/November/', 'aclweb.org/ACL/ARR/2021/December/', 'aclweb.org/ACL/ARR/2022/January/' ,'aclweb.org/ACL/ARR/2022/February/', 'aclweb.org/ACL/ARR/2022/March/', 'aclweb.org/ACL/ARR/2022/April/']
     original_arr_sub_id = None
     #submission_output_dict['acl_commitment_forum'] = acl_commitment_note.forum
     try:

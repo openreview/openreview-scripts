@@ -23,7 +23,7 @@ client = openreview.Client(baseurl=args.baseurl, username=args.username, passwor
 confid = args.confid
 super_invitation = openreview.Invitation(
     id=f'{confid}/-/Commitment_Camera_Ready_Revision',
-    duedate=1650045782000, # March 15
+    duedate=1651622834000, # March 15
     multiReply=True,
     readers=['everyone'],
     writers=[confid],
@@ -35,6 +35,19 @@ super_invitation = openreview.Invitation(
       "order": 1,
       "value-regex": ".{1,250}",
       "required": False
+    },
+    "authors": {
+      "description": "The author information entered in this field is only for communication purposes. Please remember that the list of authors and their order cannot be changed and should be the same as what was submitted to ARR. Comma separated list of author names.",
+      "order": 11,
+      "values-regex": "[^;,\\n]+(,[^,\\n]+)*",
+      "required": False,
+      "hidden": True
+    },
+    "authorids": {
+      "description": "The author information entered in this field is only for communication purposes. Please remember that the list of authors and their order cannot be changed and should be the same as what was submitted to ARR. Search author profile by first, middle and last name or email address. If the profile is not found, you can add the author by completing first, middle, and last names as well as author email address.",
+      "order": 12,
+      "values-regex": "~.*|([a-z0-9_\\-\\.]{1,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,},){0,}([a-z0-9_\\-\\.]{1,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,})",
+      "required": True
     },
     "existing_preprints": {
       "values-regex": ".{1,500}",
@@ -81,9 +94,13 @@ super_invitation = openreview.Invitation(
 client.post_invitation(super_invitation)
 submissions=list(openreview.tools.iterget_notes(client, invitation=f'{confid}/-/Blind_Commitment_Submission'))
 decision_by_forum={ d.forum: d for d in list(openreview.tools.iterget_notes(client, invitation=f'{confid}/Commitment.*/-/Decision'))}
-
+short_phrase = confid.split('/')[-1]  
 for submission in tqdm(submissions):
-    #author_group = f'{confid}/Commitment{submission.number}/Authors'
+    with open('camera_ready_process.py') as d:
+      content = d.read()
+      short_phrase = confid.split('/')[-1]
+      process = content.replace("SHORT_PHRASE = ''", f"SHORT_PHRASE = '{short_phrase}'")
+      process = process.replace("AUTHOR_ID = ''", f"AUTHOR_ID = '{confid}/Commitment{submission.number}/Authors'")
     original_submission = client.get_note(submission.original)
     
     decision = decision_by_forum.get(submission.id)
@@ -96,6 +113,7 @@ for submission in tqdm(submissions):
                 signatures=[confid],
                 readers=['everyone'],
                 invitees=[confid, f'{confid}/Commitment{submission.number}/Authors'],
+                process_string = process,
                 reply={
                     'forum': original_submission.id,
                     'referent': original_submission.id,
