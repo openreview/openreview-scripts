@@ -524,6 +524,29 @@ metareview = openreview.Invitation(
       "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
       "required": False,
       "markdown": True
+    },
+    "needs_ethics_review": {
+      "order": 7,
+      "value-radio": [
+        "Yes"
+      ],
+      "description": "Should this paper be sent for an in-depth ethics review? We have a small ethics committee that can specially review very challenging papers when it comes to ethical issues. If this seems to be such a paper, then please explain why here, and we will try to ensure that it receives a separate review.",
+      "required": False,
+      "markdown": True
+    },
+    "great_reviews": {
+      "order": 8,
+      "value-regex": "[\\S\\s]{0,2000}",
+      "description": "Please list the ids of all reviewers who went beyond expectations in terms of providing informative and constructive reviews and discussion. For example: jAxb, zZac",
+      "required": False,
+      "markdown": True
+    },
+    "poor_reviews": {
+      "order": 9,
+      "value-regex": "[\\S\\s]{0,2000}",
+      "description": "Please list the ids of all reviewers whose reviews did not meet expectations. For example: jAxb, zZac",
+      "required": False,
+      "markdown": True
     }
             }
         } 

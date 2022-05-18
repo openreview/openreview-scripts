@@ -131,7 +131,29 @@ submission_invitation_content = {"title": {
                 "value-regex": "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
                 "required": True,
                 "order": 10
-                } 
+                },
+                "previous_PDF": {
+"description": "If this is a resubmission, upload a single PDF of your previous submission to ACL Rolling Review.",
+"order": 19,
+"value-file": {
+"fileTypes": [
+"pdf"
+],
+"size": 80
+},
+"required": False
+},
+"response_PDF": {
+"description": "If this is a resubmission, upload a single PDF of your responses to the previous reviews to ACL Rolling Review.",
+"order": 20,
+"value-file": {
+"fileTypes": [
+"pdf"
+],
+"size": 80
+},
+"required": False
+} 
     }
 for key in commitment_invitation.reply['content'].keys(): 
     if key != 'existing_preprints':
@@ -557,7 +579,21 @@ metareview = openreview.Invitation(
       "description": "Independent of your judgement of the quality of the work, please review the ACL code of ethics (https://www.aclweb.org/portal/content/acl-code-ethics) and list any ethical concerns related to this paper. Maximum length 2000 characters.",
       "required": False,
       "markdown": True
-    }
+    },
+    "great_reviews": {
+"order": 7,
+"value-regex": "[\\S\\s]{0,2000}",
+"description": "Please list the ids of all reviewers who went beyond expectations in terms of providing informative and constructive reviews and discussion. For example: jAxb, zZac",
+"required": False,
+"markdown": True
+},
+"poor_reviews": {
+"order": 8,
+"value-regex": "[\\S\\s]{0,2000}",
+"description": "Please list the ids of all reviewers whose reviews did not meet expectations. For example: jAxb, zZac",
+"required": False,
+"markdown": True
+}
             }
         } 
     )
