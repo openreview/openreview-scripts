@@ -118,4 +118,4 @@ To view more details, click here: https://openreview.net/forum?id={forum_id}&not
 
     #delete proposed assignment edges
     print('deleting proposed edges')
-    edges = client.delete_edges(invitation='NeurIPS.cc/2022/Conference/Reviewers/-/Proposed_Assignment', label='kc-test-final-2', head=forum_note.id)
+    edges = client.delete_edges(invitation='NeurIPS.cc/2022/Conference/Reviewers/-/Proposed_Assignment', label='kc-test-final-2', head=forum_note.id, soft_delete=True)
