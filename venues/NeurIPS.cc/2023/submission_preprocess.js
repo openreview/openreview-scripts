@@ -49,33 +49,10 @@ async function process(client, edit, invitation) {
       acMembers[ac] = true
     }
 
-    // var allIds; 
-    // profiles.forEach(async function(profile) {
-    //   const emails = profile.content.emails
-    //   const usernames = profile.content.names.map(name => name.username)
-    //   allIds = emails.concat(usernames)
-    //   for (const username of allIds) {
-    //     if (reviewerMembers[username]) {
-    //       const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Reviewers/-/Registration', signatures: [allIds] })
-    //       if (noteCount === 0) {
-    //         return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Reviewer ' + username + ' has not completed the Reviewer Registration.' }))
-    //       }
-    //     }
-    //     if (acMembers[username]) {
-    //       const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Area_Chairs/-/Registration', signatures: [allIds] })
-    //       if (noteCount === 0) {
-    //         return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Area Chair ' + username + ' has not completed the Area Chair Registration.' }))
-    //       }
-    //     }
-    //   }
-    // })
-
-    var allIds; 
-    for(var i=0;i<profiles.length;i++) {
-      const profile = profiles[i]
+    for (const profile of profiles) {
       const emails = profile.content.emails
       const usernames = profile.content.names.map(name => name.username)
-      allIds = emails.concat(usernames)
+      const allIds = emails.concat(usernames)
       for (const username of allIds) {
         if (reviewerMembers[username]) {
           const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Reviewers/-/Registration', signatures: [allIds] })
