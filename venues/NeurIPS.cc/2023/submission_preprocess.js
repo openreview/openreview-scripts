@@ -41,27 +41,26 @@ async function process(client, edit, invitation) {
       reviewerMembers[reviewer] = true
     }
 
-    const { groups: acGroups } = await client.getGroups({ id: invitation.domain + '/Area_Chairs' })
-    const acs = acGroups[0].members;
-    
-    const acMembers = {}
-    for (const ac of acs) {
-      acMembers[ac] = true
-    }
-
     for (const profile of profiles) {
       const emails = profile.content.emails
       const usernames = profile.content.names.map(name => name.username)
       const allIds = emails.concat(usernames)
       for (const username of allIds) {
         if (reviewerMembers[username]) {
-          const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Reviewers/-/Registration', signatures: [allIds] })
+          const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Reviewers/-/Registration', signatures: allIds })
           if (noteCount === 0) {
             return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Reviewer ' + client.tools.prettyId(username) + ' has not completed the Reviewer Registration.' }))
           }
         }
+        const { groups: acGroups } = await client.getGroups({ id: invitation.domain + '/Area_Chairs' })
+        const acs = acGroups[0].members;
+        
+        const acMembers = {}
+        for (const ac of acs) {
+          acMembers[ac] = true
+        }
         if (acMembers[username]) {
-          const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Area_Chairs/-/Registration', signatures: [allIds] })
+          const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Area_Chairs/-/Registration', signatures: allIds })
           if (noteCount === 0) {
             return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Area chair ' + client.tools.prettyId(username) + ' has not completed the Area Chair Registration.' }))
           }
