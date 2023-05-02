@@ -43,7 +43,7 @@ async function process(client, edit, invitation) {
 
     for (const profile of profiles) {
       const emails = profile.content.emails
-      const usernames = profile.content.names.map(name => name.username)
+      const usernames = profile.content.names.map(name => name.username).filter(username => username);
       const cleanUsernames = usernames.filter(function( element ) {
         return element !== undefined;
       });
