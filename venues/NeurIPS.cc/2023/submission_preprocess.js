@@ -12,7 +12,7 @@ async function process(client, edit, invitation) {
 
     const primaryAuthorField = note.content.corresponding_author.value
     const primaryAuthorProfile = await client.tools.getProfiles([primaryAuthorField])
-    const primaryAuthor = primaryAuthorProfile ? primaryAuthorProfile[0].id : primaryAuthorField
+    const primaryAuthor = primaryAuthorProfile[0].id
     if (!profileIds.includes(primaryAuthor)) {
       return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Select a paper co-author as corresponding author, ' + primaryAuthorField + ' does not appear in the author list' }))
     }
@@ -20,7 +20,7 @@ async function process(client, edit, invitation) {
     if (note.content.financial_support) {
       const financialSupportField = note.content.financial_support.value
       const financialSupportProfile = await client.tools.getProfiles([financialSupportField])
-      const financialSupport = financialSupportProfile ? financialSupportProfile[0].id : financialSupportField
+      const financialSupport = financialSupportProfile[0].id
       if (!profileIds.includes(financialSupport)) {
         return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Select a paper co-author for financial support, ' + financialSupportField + ' does not appear in the author list' }))
       }
@@ -28,7 +28,7 @@ async function process(client, edit, invitation) {
 
     const reviewerNominationField = note.content.reviewer_nomination.value
     const reviewerNominationProfile = await client.tools.getProfiles([reviewerNominationField])
-    const reviewerNomination = reviewerNominationProfile ? reviewerNominationProfile[0].id : reviewerNominationField
+    const reviewerNomination = reviewerNominationProfile[0].id
     if (!profileIds.includes(reviewerNomination)) {
       return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Select a paper co-author to nominate as reviewer, ' + reviewerNominationField + ' does not appear in the author list' }))
     }
@@ -57,13 +57,13 @@ async function process(client, edit, invitation) {
         if (reviewerMembers[username]) {
           const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Reviewers/-/Registration', signatures: [allIds] })
           if (noteCount === 0) {
-            return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Reviewer ' + username + ' has not completed the Reviewer Registration.' }))
+            return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Reviewer ' + client.tools.prettyId(username) + ' has not completed the Reviewer Registration.' }))
           }
         }
         if (acMembers[username]) {
           const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Area_Chairs/-/Registration', signatures: [allIds] })
           if (noteCount === 0) {
-            return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Area Chair ' + username + ' has not completed the Area Chair Registration.' }))
+            return Promise.reject(new OpenReviewError({ name: 'Error', message: 'Area chair ' + client.tools.prettyId(username) + ' has not completed the Area Chair Registration.' }))
           }
         }
       }
