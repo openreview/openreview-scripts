@@ -44,10 +44,7 @@ async function process(client, edit, invitation) {
     for (const profile of profiles) {
       const emails = profile.content.emails
       const usernames = profile.content.names.map(name => name.username).filter(username => username);
-      const cleanUsernames = usernames.filter(function( element ) {
-        return element !== undefined;
-      });
-      const allIds = emails.concat(cleanUsernames)
+      const allIds = emails.concat(usernames)
       for (const username of allIds) {
         if (reviewerMembers[username]) {
           const { count: noteCount } = await client.getNotes({ invitation: 'NeurIPS.cc/2023/Conference/Reviewers/-/Registration', signatures: allIds })
