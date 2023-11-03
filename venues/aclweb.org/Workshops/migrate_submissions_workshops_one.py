@@ -360,28 +360,59 @@ def post_metareviews(acl_blind_submission_forum, acl_blind_submission, arr_submi
 
     # Iterate through each review and for each, create and post a new review
     for arr_metareview in arr_metareviews:
+
         if(arr_metareview.signatures[0] not in acl_metareviews_dictionary):
-            acl_metareview = openreview.Note(
-                forum = acl_blind_submission_forum,
-                replyto = acl_blind_submission_forum,
-                invitation = f'{confid}/-/ARR_Meta_Review',
+            content = arr_metareview.content
+            new_content = {}
+            for key in content.keys():
+                if key not in new_content.keys():
+                    new_content[key] = {}
+                new_content[key]['value'] = content[key]
+
+            if isinstance(acl_blind_submission, openreview.api.Note):
+                existing_reviews = [
+                    r for r in acl_blind_submission.details['directReplies']
+                    if True in ['Meta_Review' in inv for inv in r['invitations']]
+                ]
+                already_posted = True in [new_content['metareview']['value'] == r['content']['metareview']['value'] for r in existing_reviews]
+            else:
+                already_posted = False
+
+            if already_posted:
+                continue
+
+            acl_metareview = openreview.api.Note(
                 signatures = arr_metareview.signatures,
-                readers = [f'{confid}/Program_Chairs', f"{confid}/Paper{acl_commitment_note.number}/Reviewers", f"{confid}/Paper{acl_commitment_note.number}/Area_Chairs"],
+                readers = [f'{confid}/Program_Chairs', f"{confid}/Submission{acl_commitment_note.number}/Reviewers", f"{confid}/Submission{acl_commitment_note.number}/Area_Chairs", f"{confid}/Submission{acl_commitment_note.number}/Senior_Area_Chairs"],
                 nonreaders=[
-                    f"{confid}/Paper{acl_commitment_note.number}/Conflicts"
-                    ],
+                    f"{confid}/Submission{acl_commitment_note.number}/Conflicts"
+                ],
                 writers = [
                     confid
                 ],
-                content = arr_metareview.content
+                content = new_content
             )
             #acl_metareview.content['link_to_original_metareview'] = f'https://openreview.net/forum?id={arr_metareview.forum}&noteId={arr_metareview.id}'
-            acl_metareview.content['title'] = f'Meta Review of Paper{acl_blind_submission.number} by {arr_metareview.invitation.split("/")[4]} Area Chair'
+            submission_number = acl_blind_submission['number'] if isinstance(acl_blind_submission, dict) else acl_blind_submission.number
+            acl_metareview.content['title'] = {}
+            acl_metareview.content['title']['value'] = f"Meta Review of Submission{submission_number} by {arr_metareview.invitation.split('/')[4]} Action Editor"
             #profile = client.get_profile(arr_metareview.tauthor)
             #acl_metareview.content['action_editor_id'] = f"{profile.id}"
-            acl_metareview_posted = client.post_note(acl_metareview)
+
+            acl_metareview_posted = client_v2.post_note_edit( # CHANGE: Move to note edit
+                invitation = f"{confid}/Submission{submission_number}/-/ARR_Meta_Review",
+                signatures=[confid],
+                readers = [f'{confid}/Program_Chairs', f"{confid}/Submission{acl_commitment_note.number}/Reviewers", f"{confid}/Submission{acl_commitment_note.number}/Area_Chairs", f"{confid}/Submission{acl_commitment_note.number}/Senior_Area_Chairs"],
+                writers = [
+                    confid
+                ],
+                nonreaders=[
+                    f"{confid}/Submission{acl_commitment_note.number}/Conflicts"
+                ],
+                note=acl_metareview
+            )
             assert acl_metareview_posted, print('failed to post metareview ', acl_metareview.id)
-            acl_metareviews_dictionary[acl_metareview_posted.signatures[0]] = acl_metareview_posted.replyto
+            acl_metareviews_dictionary[acl_metareview_posted['note']['signatures'][0]] = acl_metareview_posted['note']['replyto']
     return submission_output_dict
 
 
