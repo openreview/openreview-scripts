@@ -14,11 +14,13 @@ OPTIONAL SCRIPT ARGUMENTS
 """
 parser = argparse.ArgumentParser()
 parser.add_argument('--baseurl', help="base URL")
+parser.add_argument('--baseurl_v2', help="base URL")
 parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--confid')
 args = parser.parse_args()
 client = openreview.Client(baseurl=args.baseurl, username=args.username, password=args.password)
+client_v2 = openreview.api.OpenReviewClient(baseurl=args.baseurl_v2, username=args.username, password=args.password)
 confid = args.confid
 
 # Post acl submission (calls post_blind_submission)
