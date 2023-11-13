@@ -31,7 +31,7 @@ super_invitation = openreview.Invitation(
     reply={
         "content": {
             "title": {
-      "description": "Enter the title of the ARR submission that you want to commit to SPA-NLP",
+      "description": "Enter the title of the ARR submission that you want to commit to MIA",
       "order": 1,
       "value-regex": ".{1,250}",
       "required": False
@@ -61,15 +61,15 @@ super_invitation = openreview.Invitation(
       "required": False,
       "order": 10
     },
-    "paper_type": {
-      "description": "Select if your paper is short or long",
-      "value-radio": [
-        "short",
-        "long"
-      ],
-      "required": False,
-      "order": 11
-    },
+    "archival": {
+"description": "Please indicate if you want your paper to be archival or non-archival.",
+"value-radio": [
+"Archival",
+"Non-Archival"
+],
+"order": 13,
+"required": False
+},
     "abstract": {
       "description": "Abstract of paper. Add TeX formulas using the following formats: $In-line Formula$ or $$Block Formula$$.",
       "order": 14,
