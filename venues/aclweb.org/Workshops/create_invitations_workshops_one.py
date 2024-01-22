@@ -370,7 +370,7 @@ official_review_content = {
         }
     },
     "paper_summary": {
-        "order": 5,
+        "order": 3,
         "description": "Describe what this paper is about. This should help action editors and area chairs to understand the topic of the work and highlight any possible misunderstandings. Maximum length 1000 characters.",
         "value": {
             "param": {
@@ -383,7 +383,7 @@ official_review_content = {
         }
     },
     "summary_of_strength": {
-        "order": 6,
+        "order": 4,
         "description": "What are the major reasons to publish this paper at a selective *ACL venue? These could include novel and useful methodology, insightful empirical results or theoretical analysis, clear organization of related literature, or any other reason why interested readers of *ACL papers may find the paper useful. Maximum length 5000 characters.",
         "value": {
             "param": {
@@ -396,7 +396,7 @@ official_review_content = {
         }
     },
     "summary_of_strengths": {
-        "order": 6,
+        "order": 5,
         "description": "What are the major reasons to publish this paper at a selective *ACL venue? These could include novel and useful methodology, insightful empirical results or theoretical analysis, clear organization of related literature, or any other reason why interested readers of *ACL papers may find the paper useful. Maximum length 5000 characters.",
         "value": {
             "param": {
@@ -409,7 +409,7 @@ official_review_content = {
         }
     },
     "summary_of_weaknesses": {
-        "order": 7,
+        "order": 6,
         "description": "What are the concerns that you have about the paper that would cause you to favor prioritizing other high-quality papers that are also under consideration for publication? These could include concerns about correctness of the results or argumentation, limited perceived impact of the methods or findings (note that impact can be significant both in broad or in narrow sub-fields), lack of clarity in exposition, or any other reason why interested readers of *ACL papers may gain less from this paper than they would from other papers under consideration. Where possible, please number your concerns so authors may respond to them individually. Maximum length 5000 characters.",
         "value": {
             "param": {
@@ -422,7 +422,7 @@ official_review_content = {
         }
     },
     "comments_suggestions_and_typos": {
-        "order": 8,
+        "order": 7,
         "description": "If you have any comments to the authors about how they may improve their paper, other than addressing the concerns above, please list them here.\n Maximum length 5000 characters.",
         "value": {
             "param": {
@@ -433,6 +433,28 @@ official_review_content = {
                 "input": "textarea"
             }
         }
+    },
+    "soundness": {
+        "order": 8,
+        "value": {
+            "param": {
+                "type": "string",
+                "enum": [
+                    "5 = Excellent: This study is one of the most thorough I have seen, given its type.",
+                    "4.5 ",
+                    "4 = Strong: This study provides sufficient support for all of its claims/arguments. Some extra experiments could be nice, but not essential.",
+                    "3.5 ",
+                    "3 = Acceptable: This study provides sufficient support for its major claims/arguments. Some minor points may need extra support or details.",
+                    "2.5 ",
+                    "2 = Poor: Some of the main claims/arguments are not sufficiently supported. There are major technical/methodological problems.",
+                    "1.5 ",
+                    "1 = Major Issues: This study is not yet sufficiently thorough to warrant publication or is not relevant to ACL."
+                    ],
+                    "input": "radio",
+                    "optional": True
+                }
+            },
+        "description": "How sound and thorough is this study? Does the paper clearly state scientific claims and provide adequate support for them? For experimental papers: consider the depth and/or breadth of the research questions investigated, technical soundness of experiments, methodological validity of evaluation. For position papers, surveys: consider the current state of the field is adequately represented, and main counter-arguments acknowledged. For resource papers: consider the data collection methodology, resulting data & the difference from existing resources are described in sufficient detail. Please adjust your baseline to account for the length of the paper."
     },
     "overall_assessment": {
         "order": 9,
@@ -539,7 +561,8 @@ official_review_content = {
                     "2 = From social media/a talk/other informal communication, I know/can guess at least one author's name.",
                     "1 = I do not have even an educated guess about author identity."
                 ],
-                "input": "radio"
+                "input": "radio",
+                "optional": True
             }
         }
     },
@@ -905,6 +928,24 @@ meta_review_content = {
                 "markdown": True,
                 "optional": True,
                 "input": "textarea"
+            }
+        }
+    },
+    "author_identity_guess": {
+        "order": 15,
+        "description": "Do you know the author identity or have an educated guess?",
+        "value": {
+            "param": {
+                "type": "string",
+                "enum": [
+                    "5 = From a violation of the anonymity-window or other double-blind-submission rules, I know/can guess at least one author's name.",
+                    "4 = From an allowed pre-existing preprint or workshop paper, I know/can guess at least one author's name.",
+                    "3 = From the contents of the submission itself, I know/can guess at least one author's name.",
+                    "2 = From social media/a talk/other informal communication, I know/can guess at least one author's name.",
+                    "1 = I do not have even an educated guess about author identity."
+                ],
+                "input": "radio",
+                "optional": True
             }
         }
     }

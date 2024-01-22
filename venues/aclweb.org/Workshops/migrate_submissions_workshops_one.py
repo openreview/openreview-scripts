@@ -213,6 +213,7 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
             if blinded_note_posted:
                 # Repost the commitment note with a link to the blind submission
                 #print(acl_commitment_note)
+                print(blinded_note_posted)
 
                 # Post review and meta-review invitation edits
                 paper_official_review_edit = client_v2.post_invitation_edit(
@@ -253,14 +254,14 @@ def post_acl_submission(arr_submission_forum, acl_commitment_note, submission_ou
                         id=acl_commitment_note.id,
                         content={
                             'migrated_paper_link': {
-                                'value': f"https://openreview.net/forum?id={blinded_note_posted['note']['forum']}"
+                                'value': f"https://openreview.net/forum?id={blinded_note_posted['note']['id']}"
                             }
                         }
                     )
                 )
 
                 submission_output_dict[acl_commitment_note.forum]['was_migrated'] = True
-                submission_output_dict[acl_commitment_note.forum]['acl_blind_submission_forum'] = blinded_note_posted['note']['forum']
+                submission_output_dict[acl_commitment_note.forum]['acl_blind_submission_forum'] = blinded_note_posted['note']['id']
                 acl_submission_dict[acl_submitted['note']['content']['paper_link']['value'].split('=')[1]]=acl_submitted
                 blind_submissions[blinded_note_posted['note']['id']] = blinded_note_posted['note']
                 post_reviews(blinded_note_posted['note']['id'], blinded_note_posted['note'], arr_submission, submission_output_dict, acl_commitment_note)
@@ -441,6 +442,10 @@ commitment_invitation.edit['note']['content']['migrated_paper_link'] = {
         }
     }
 }
+
+if 'license' in commitment_invitation.edit: ## Remove licenses from edits
+    del commitment_invitation.edit['license']
+
 client_v2.post_invitation_edit(invitations=f"{confid}/-/Edit",
     readers=[confid],
     writers=[confid],
@@ -469,10 +474,10 @@ for note in tqdm(commitment_notes):
     # Check if the blind submission has reviews (it is in blind submissions)
     else:
         submission_output_dict[note.forum]['arr_submission_forum'] = arr_submission_forum
-        submission_output_dict[note.forum]['acl_blind_submission_forum'] = blind_submissions[(acl_submission_dict[(note.content['paper_link']['value'].split('=')[1]).split('&')[0]]).forum].forum
+        submission_output_dict[note.forum]['acl_blind_submission_forum'] = blind_submissions[(acl_submission_dict[(note.content['paper_link']['value'].split('=')[1]).split('&')[0]])['note']['id']]['id']
         submission_output_dict[note.forum]['was_migrated'] = True
-        post_reviews(blind_submissions[acl_submission_dict[arr_submission_forum].id].forum, blind_submissions[acl_submission_dict[arr_submission_forum].id], client.get_note(arr_submission_forum), submission_output_dict, note)
-        post_metareviews(blind_submissions[acl_submission_dict[arr_submission_forum].id].forum, blind_submissions[acl_submission_dict[arr_submission_forum].id], client.get_note(arr_submission_forum), submission_output_dict, note)
+        post_reviews(blind_submissions[acl_submission_dict[arr_submission_forum]['note']['id']]['id'], blind_submissions[acl_submission_dict[arr_submission_forum]['note']['id']], client.get_note(arr_submission_forum), submission_output_dict, note)
+        post_metareviews(blind_submissions[acl_submission_dict[arr_submission_forum]['note']['id']]['id'], blind_submissions[acl_submission_dict[arr_submission_forum]['note']['id']], client.get_note(arr_submission_forum), submission_output_dict, note)
         #print(f"{submission_output_dict['acl_commitment_forum']},{submission_output_dict['acl_blind_submission_forum']},{submission_output_dict['arr_submission_forum']},{submission_output_dict['num_reviews']},{submission_output_dict['num_metareviews']}, {submission_output_dict['is_latest_version']}, {submission_output_dict['was_migrated']}")
 
 fields = ['acl_commitment_note', 'acl_blind_submission', 'original_arr_submission', 'num_reviews', 'num_metareviews', 'later_versions?', 'duplicate_commitments', 'was_migrated']
