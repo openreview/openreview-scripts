@@ -3,26 +3,8 @@ from re import sub
 import openreview
 from tqdm import tqdm
 import csv
+from typing import *
 
-"""
-OPTIONAL SCRIPT ARGUMENTS
-
-    baseurl -  the URL of the OpenReview server to connect to (live site: https://openreview.net)
-    username - the email address of the logging in user
-    password - the user's password
-
-"""
-parser = argparse.ArgumentParser()
-parser.add_argument('--baseurl', help="base URL")
-parser.add_argument('--username')
-parser.add_argument('--password')
-parser.add_argument('--confid')
-args = parser.parse_args()
-client = openreview.api.OpenReviewClient(baseurl=args.baseurl, username=args.username, password=args.password)
-confid = args.confid
-
- 
-commitment_invitation = client.get_invitation(f"{confid}/-/Submission")
 submission_invitation_content = {
             "title": {
                 "order": 1,
@@ -97,7 +79,8 @@ submission_invitation_content = {
                         "type": "string",
                         "minLength": 1,
                         "markdown": True,
-                        "input": "textarea"
+                        "input": "textarea",
+                        "optional": True
                     }
                 }
             },
@@ -110,7 +93,8 @@ submission_invitation_content = {
                         "maxSize": 50,
                         "extensions": [
                             "pdf"
-                        ]
+                        ],
+                        "optional": True
                     }
                 }
             },
@@ -204,6 +188,16 @@ submission_invitation_content = {
                     }
                 }
             },
+            "migrated_paper_link": {
+                "order": 30,
+                "value": {
+                    "param": {
+                        "type": "string",
+                        "minLength": 1,
+                        "optional": True
+                    }
+                }
+            },
             "paper_link": {
                 "order": 10,
                 "value": {
@@ -253,60 +247,6 @@ submission_invitation_content = {
                 }
             },
     }
-
-# Also overwrite authorids to allow emails
-# Older ARR submissions have optional keywords
-for key in commitment_invitation.edit['note']['content'].keys(): 
-    if key not in ['existing_preprints', 'authors', 'authorids', 'keywords']:
-        submission_invitation_content[key] = commitment_invitation.edit['note']['content'][key]
-
-submission_invitation = openreview.api.Invitation(
-        id=f"{confid}/-/Migrated_Submission",
-        invitees = ['~'],
-        signatures = [confid],
-        readers = ['everyone'],
-        writers = [confid],
-        edit = {
-            'signatures': [confid],
-            'readers': { 'param': { 'regex': '.*' } },
-            'nonreaders': { 'param': { 'regex': '.*' } },
-            'writers': [confid],
-            'ddate': {
-                'param': {
-                    'range': [ 0, 9999999999999 ],
-                    'optional': True,
-                    'deletable': True
-                }
-            },                
-            'note': {
-                'id': {
-                    'param': {
-                        'withInvitation': f"{confid}/-/Migrated_Submission",
-                        'optional': True
-                    }
-                },
-                'ddate': {
-                    'param': {
-                        'range': [ 0, 9999999999999 ],
-                        'optional': True,
-                        'deletable': True
-                    }
-                },
-                'signatures': [confid],
-                'readers': { 'param': { 'regex': '.*' } },
-                'nonreaders': { 'param': { 'regex': '.*' } },
-                'writers': [confid],
-                'content': submission_invitation_content
-            }
-        }
-    )
-
-client.post_invitation_edit(invitations=f"{confid}/-/Edit",
-    readers=[confid],
-    writers=[confid],
-    signatures=[confid],
-    invitation=submission_invitation
-)
 
 official_review_content = {
     "title": {
@@ -652,85 +592,6 @@ official_review_content = {
     }
 }
 
-official_review = openreview.api.Invitation(
-    id=f"{confid}/-/ARR_Official_Review",
-    invitees=[confid],
-    signatures = [confid],
-    readers = ['everyone'],
-    writers = [confid],
-    edit = {
-        'signatures': [confid],
-        'readers': [confid],
-        'writers': [confid],
-        'content': {
-            'noteNumber': { 
-                'value': {
-                    'param': {
-                        'regex': '.*', 'type': 'integer' 
-                    }
-                }
-            },
-            'noteId': {
-                'value': {
-                    'param': {
-                        'regex': '.*', 'type': 'string' 
-                    }
-                }
-            }
-        },
-        'replacement': True,
-        'invitation': {
-            'id': confid + '/Submission${2/content/noteNumber/value}/-/ARR_Official_Review',
-            'signatures': [confid],
-            'readers': [confid],
-            'writers': [confid],
-            'invitees': [confid],
-            'edit': {     
-                'signatures': { 'param': { 'regex': '.*' } },
-                'readers': { 'param': { 'regex': '.*' } },
-                'nonreaders': { 'param': { 'regex': '.*' } },
-                'writers': [confid],
-                'note': {
-                    'ddate': {
-                        'param': {
-                            'range': [ 0, 9999999999999 ],
-                            'optional': True,
-                            'deletable': True
-                        }
-                    },
-                    'id': {
-                        'param': {
-                            'withInvitation': confid + '/Submission${6/content/noteNumber/value}/-/ARR_Official_Review',
-                            'optional': True
-                        }
-                    },
-                    'forum': '${4/content/noteId/value}',
-                    'replyto': '${4/content/noteId/value}',
-                    'ddate': {
-                        'param': {
-                            'range': [ 0, 9999999999999 ],
-                            'optional': True,
-                            'deletable': True
-                        }
-                    },
-                    'signatures': { 'param': { 'regex': '.*' } },
-                    'readers': { 'param': { 'regex': '.*' } },
-                    'nonreaders': { 'param': { 'regex': '.*' } },
-                    'writers': [confid],
-                    'content': official_review_content
-                }
-            }
-        }
-    }
-)
-
-client.post_invitation_edit(invitations=f"{confid}/-/Edit",
-    readers=[confid],
-    writers=[confid],
-    signatures=[confid],
-    invitation=official_review
-)
-
 meta_review_content = {
     "title": {
         "order": 1,
@@ -951,81 +812,610 @@ meta_review_content = {
     }
 }
 
-metareview = openreview.api.Invitation(
-    id=f"{confid}/-/ARR_Meta_Review",
-    invitees=[confid],
-    signatures = [confid],
-    readers = ['everyone'],
-    writers = [confid],
-    edit = {
-        'signatures': [confid],
-        'readers': [confid],
-        'writers': [confid],
-        'content': {
-            'noteNumber': { 
-                'value': {
-                    'param': {
-                        'regex': '.*', 'type': 'integer' 
-                    }
-                }
-            },
-            'noteId': {
-                'value': {
-                    'param': {
-                        'regex': '.*', 'type': 'string' 
-                    }
-                }
+ethics_review_content = {
+    "title": {
+        "order": 1,
+        "description": "Brief summary of your review.",
+        "value": {
+            "param": {
+                "type": "string",
+                "minLength": 1,
+                "optional": True
             }
-        },
-        'replacement': True,
-        'invitation': {
-            'id': confid + '/Submission${2/content/noteNumber/value}/-/ARR_Meta_Review',
-            'signatures': [confid],
-            'readers': [confid],
-            'writers': [confid],
-            'invitees': [confid],
-            'edit': {     
-                'signatures': { 'param': { 'regex': '.*' } },
-                'readers': { 'param': { 'regex': '.*' } },
-                'nonreaders': { 'param': { 'regex': '.*' } },
-                'writers': [confid],
-                'note': {
-                    'ddate': {
-                        'param': {
-                            'range': [ 0, 9999999999999 ],
-                            'optional': True,
-                            'deletable': True
-                        }
-                    },
-                    'id': {
-                        'param': {
-                            'withInvitation': confid + '/Submission${6/content/noteNumber/value}/-/ARR_Meta_Review',
-                            'optional': True
-                        }
-                    },
-                    'forum': '${4/content/noteId/value}',
-                    'replyto': '${4/content/noteId/value}',
-                    'ddate': {
-                        'param': {
-                            'range': [ 0, 9999999999999 ],
-                            'optional': True,
-                            'deletable': True
-                        }
-                    },
-                    'signatures': { 'param': { 'regex': '.*' } },
-                    'readers': { 'param': { 'regex': '.*' } },
-                    'nonreaders': { 'param': { 'regex': '.*' } },
-                    'writers': [confid],
-                    'content': meta_review_content
-                }
+        }
+    },
+    "recommendation": {
+        "order": 9,
+        "value": {
+            "param": {
+                "type": "string",
+                "minLength": 1,
+                "optional": True
+            }
+        }
+    },
+    "issues": {
+        "order": 9,
+        "value": {
+            "param": {
+                "type": "string[]",
+                "enum": [
+                    "1.1 Contribute to society and to human well-being, acknowledging that all people are stakeholders in computing",
+                    "1.2 Avoid harm",
+                    "1.3 Be honest and trustworthy",
+                    "1.4 Be fair and take action not to discriminate",
+                    "1.5 Respect the work required to produce new ideas, inventions, creative works, and computing artifacts",
+                    "1.6 Respect privacy",
+                    "1.7 Honor confidentiality",
+                    "2.1 Strive to achieve high quality in both the processes and products of professional work",
+                    "2.2 Maintain high standards of professional competence, conduct, and ethical practice",
+                    "2.3 Know and respect existing rules pertaining to professional work",
+                    "2.4 Accept and provide appropriate professional review",
+                    "2.5 Give comprehensive and thorough evaluations of computer systems and their impacts, including analysis of possible risks",
+                    "2.6 Perform work only in areas of competence",
+                    "2.7 Foster public awareness and understanding of computing, related technologies, and their consequences",
+                    "2.8 Access computing and communication resources only when authorized or when compelled by the public good",
+                    "2.9 Design and implement systems that are robustly and usably secure",
+                    "3.1 Ensure that the public good is the central concern during all professional computing work",
+                    "3.2 Articulate, encourage acceptance of, and evaluate fulfillment of social responsibilities by members of the organization or group",
+                    "3.3 Manage personnel and resources to enhance the quality of working life",
+                    "3.4 Articulate, apply, and support policies and processes that reflect the principles of the Code",
+                    "3.5 Create opportunities for members of the organization or group to grow as professionals",
+                    "3.6 Use care when modifying or retiring systems",
+                    "3.7 Recognize and take special care of systems that become integrated into the infrastructure of society",
+                    "4.1 Uphold, promote, and respect the principles of the Code",
+                    "4.2 Treat violations of the Code as inconsistent with membership in the ACM",
+                    "None"
+                ],
+                "optional": True
+            }
+        }
+    },
+    "explanation": {
+        "order": 9,
+        "value": {
+            "param": {
+                "type": "string",
+                "minLength": 1,
+                "optional": True
             }
         }
     }
-)
+}
 
-client.post_invitation_edit(invitations=f"{confid}/-/Edit",
-    readers=[confid],
-    writers=[confid],
-    signatures=[confid],
-    invitation=metareview
-)
+official_comment_content = {
+    'title': {
+        'order': 1,
+        'description': '(Optional) Brief summary of your comment.',
+        'value': {
+            'param': {
+                'type': 'string',
+                'minLength': 1,
+                'optional': True,
+                'deletable': True
+            }
+        }
+    },
+    'comment': {
+        'order': 2,
+        'description': 'Your comment or reply (max 5000 characters). Add formatting using Markdown and formulas using LaTeX. For more information see https://openreview.net/faq',
+        'value': {
+            'param': {
+                'type': 'string',
+                'minLength': 1,
+                'markdown': True,
+                'input': 'textarea'
+            }
+        }
+    }
+}
+
+def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openreview.api.Note]], commitment_dict: dict, previous_dict: dict, invitation_info: dict, migrated_prefix: str = 'ARR'):
+    """
+    Posts replies from the original submissions to the new venue
+
+    venue_id (str): The destination conference that the data is being imported into
+    submissions (list[Union[openreview.Note, openreview.api.Note]]): A list of submission notes
+    commitment_dict (dict): Maps the commitment submission IDs to the ID of the migrated submission
+    previous_dict (dict): Maps the commitment submission IDs to the previous note
+    invitation_info (dict): Mapping from invitation suffixes to content dicts - used to keep track of which submission invitations to make
+    migrated_prefix (str): Used to indicate the venue that these replies are coming from
+    """
+    # Get previous notes
+    for submission in tqdm(submissions, total=len(submissions)):
+        prev = previous_dict[submission.id]
+        print(f"building replies for {submission.id} to migrated note {commitment_dict[submission.id]} using note {prev.id}")
+
+        paper_prefix = f"{venue_id}/Submission{submission.number}"
+        authors = f"{paper_prefix}/Authors"
+        acs = f"{paper_prefix}/Area_Chairs"
+        sacs = f"{paper_prefix}/Senior_Area_Chairs"
+        pcs = f"{venue_id}/Program_Chairs"
+
+        reply_queue = [prev.id]
+        replyto_map = {prev.id: commitment_dict[submission.id]} ## Used to properly post comments
+        while len(reply_queue) > 0:
+            # Use BFS to parse reply tree and include author-reviewer responses
+            prev.details['replies'].sort(key = lambda x: x['cdate']) ## Post older notes first
+            curr_replyto = reply_queue.pop(0)
+            filtered_replies = [reply for reply in prev.details['replies'] if reply['replyto'] == curr_replyto]
+
+            for reply in filtered_replies:
+                for suffix in invitation_info.keys(): ## Find what kind of reply this is
+                    if suffix in reply['invitation']:
+                        # Copy content fields and set title
+                        new_content = {}
+                        content = reply['content']
+                        for key in content.keys():
+                            if key not in new_content.keys():
+                                new_content[key] = {}
+                            new_content[key]['value'] = content[key]
+
+                        new_content['title'] = {}
+                        new_content['title']['value'] = f"{suffix.replace('_', ' ')} of Submission{submission.number} by {reply['invitation'].split('/')[4]} {reply['signatures'][0].split('/')[-1].replace('_', ' ')}"
+
+                        # Special cases for content fields
+                        ## TODO: Move this to content parsing
+                        if 'Official_Review' in suffix:
+                            if 'comments,_suggestions_and_typos' in reply['content'].keys():
+                                new_content['comments_suggestions_and_typos'] = {'value': reply['content'].get('comments,_suggestions_and_typos')}
+                                del new_content['comments,_suggestions_and_typos']
+                        if 'Official_Comment' in suffix:
+
+                            ## Only include comments between reviewers and authors
+                            if not (any('Authors' in reader for reader in reply['readers']) and any('Reviewers' in reader for reader in reply['readers'])):
+                                continue
+
+                            if 'Author' in reply['signatures'][0]:
+                                new_content['title']['value'] = new_content['title']['value'].replace('Comment', 'Rebuttal')
+                            elif 'Reviewer' in reply['signatures'][0]:
+                                new_content['title']['value'] = new_content['title']['value'].replace('Comment', 'Response')
+
+                        # Set replyto
+                        replyTo = commitment_dict[submission.id] if invitation_info[suffix]['type'] != 'comment' else replyto_map[curr_replyto]
+
+                        rev = client.post_note_edit(
+                            invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
+                            readers=[pcs, sacs, acs, venue_id],
+                            writers=[venue_id],
+                            signatures=[venue_id],
+                            nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                            note=openreview.api.Note(
+                                forum=commitment_dict[submission.id],
+                                replyto=replyTo,
+                                signatures=[venue_id],
+                                readers=[pcs, sacs, acs, venue_id],
+                                writers=[venue_id],
+                                nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                                content=new_content
+                            )
+                        )
+                        replyto_map[reply['id']] = rev['note']['id']
+                        reply_queue.append(reply['id'])
+                    ## TODO: Handle this better
+                    if reply['invitation'].endswith('Rebuttal'): ## Special cases for non 1-1 mappings between invitations
+                        suffix = 'Official_Comment'
+
+                        new_content = {}
+                        content = reply['content']
+                        for key in content.keys():
+                            if key == 'rebuttal':
+                                new_content['comment'] = {}
+                                new_content['comment']['value'] = content[key]
+                            else:
+                                if key not in new_content.keys():
+                                    new_content[key] = {}
+
+                        new_content['title'] = {}
+                        new_content['title']['value'] = f"Rebuttal of Submission{submission.number} by {reply['invitation'].split('/')[4]} {reply['signatures'][0].split('/')[-1].replace('_', ' ')}"
+
+                        rev = client.post_note_edit(
+                            invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
+                            readers=[pcs, sacs, acs, venue_id],
+                            writers=[venue_id],
+                            signatures=[venue_id],
+                            nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                            note=openreview.api.Note(
+                                forum=commitment_dict[submission.id],
+                                replyto=replyto_map[curr_replyto],
+                                signatures=[pcs],
+                                readers=[pcs, sacs],
+                                writers=[venue_id],
+                                nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                                content=new_content
+                            )
+                        )
+                        replyto_map[reply['id']] = rev['note']['id']
+                        reply_queue.append(reply['id'])
+
+def post_submission_invitations(venue_id: str, forums: dict, invitation_info: dict, migrated_prefix: str = 'ARR'):
+    """
+    Creates new submission invitations for posting notes to the destination forums
+
+    Args:
+        venue_id (str): The destination conference that the data is being imported into
+        forums (dict): Maps commitment paper number to migrated forum ID
+        invitation_info (dict): Mapping from super invitation IDs to content dicts - used to keep track of which submission invitations to make
+        migrated_prefix (str): Used to indicate the venue that these replies are coming from
+    """
+    for commitment_paper_number, migrated_forum in forums.items():
+        for invitation_suffix, metadata in invitation_info.items():
+            print(f"creating submission invitations for {venue_id}/-/{migrated_prefix}_{invitation_suffix}")
+            if metadata['type'] != 'submission':
+                client.post_invitation_edit(
+                    invitations=f"{venue_id}/-/{migrated_prefix}_{invitation_suffix}",
+                    readers=[venue_id],
+                    writers=[venue_id],
+                    signatures=[venue_id],
+                    content={
+                        'noteId': {
+                            'value': migrated_forum
+                        },
+                        'noteNumber': {
+                            'value': commitment_paper_number
+                        }
+                    },
+                    invitation=openreview.api.Invitation()
+                )
+
+def post_super_invitations(venue_id: str, invitation_info: dict, migrated_prefix: str = 'ARR'):
+    """
+    Creates new invitations for posting child invitations to the destination forums
+
+    Args:
+        venue_id (str): The destination conference that the data is being imported into
+        invitation_info (dict): Mapping from super invitation IDs to content dicts for the note
+        migrated_prefix (str): Used to indicate the venue that these replies are coming from
+    """
+    def _set_submission_invitation (invitation_name: str, content: dict):
+        # Change venueid to match new invitation
+        content['venueid']['value']['param']['const'] = content['venueid']['value']['param']['const'].replace('Submission', invitation_name)
+        content['venue']['value']['param']['const'] = content['venue']['value']['param']['const'].replace('Submission', invitation_name.replace('_', ' '))
+
+        submission_invitation = openreview.api.Invitation(
+            id=f"{venue_id}/-/{migrated_prefix}_{invitation_name}",
+            invitees = ['~'],
+            signatures = [venue_id],
+            readers = ['everyone'],
+            writers = [venue_id],
+            edit = {
+                'signatures': [venue_id],
+                'readers': { 'param': { 'regex': '.*' } },
+                'nonreaders': { 'param': { 'regex': '.*' } },
+                'writers': [venue_id],
+                'ddate': {
+                    'param': {
+                        'range': [ 0, 9999999999999 ],
+                        'optional': True,
+                        'deletable': True
+                    }
+                },                
+                'note': {
+                    'id': {
+                        'param': {
+                            'withInvitation': f"{migrated_prefix}_{invitation_name}",
+                            'optional': True
+                        }
+                    },
+                    'ddate': {
+                        'param': {
+                            'range': [ 0, 9999999999999 ],
+                            'optional': True,
+                            'deletable': True
+                        }
+                    },
+                    'signatures': [venue_id],
+                    'readers': { 'param': { 'regex': '.*' } },
+                    'nonreaders': { 'param': { 'regex': '.*' } },
+                    'writers': [venue_id],
+                    'content': content
+                }
+            }
+        )
+        client.post_invitation_edit(
+            invitations=f"{venue_id}/-/Edit",
+            readers=[venue_id],
+            writers=[venue_id],
+            signatures=[venue_id],
+            invitation=submission_invitation
+        )
+        print(f'posting {venue_id}/-/{invitation_name}')
+    def _set_forum_reply_invitation (invitation_name: str, content: dict, is_comment: bool = False):
+        forum_reply_invitation = openreview.api.Invitation(
+            id=f"{venue_id}/-/{migrated_prefix}_{invitation_name}",
+            invitees=[venue_id],
+            signatures = [venue_id],
+            readers = ['everyone'],
+            writers = [venue_id],
+            edit = {
+                'signatures': [venue_id],
+                'readers': [venue_id],
+                'writers': [venue_id],
+                'content': {
+                    'noteNumber': { 
+                        'value': {
+                            'param': {
+                                'regex': '.*', 'type': 'integer' 
+                            }
+                        }
+                    },
+                    'noteId': {
+                        'value': {
+                            'param': {
+                                'regex': '.*', 'type': 'string' 
+                            }
+                        }
+                    }
+                },
+                'replacement': True,
+                'invitation': {
+                    'id': venue_id + '/Submission${2/content/noteNumber/value}/-/' + f"{migrated_prefix}_{invitation_name}",
+                    'signatures': [venue_id],
+                    'readers': [venue_id],
+                    'writers': [venue_id],
+                    'invitees': [venue_id],
+                    'edit': {     
+                        'signatures': { 'param': { 'regex': '.*' } },
+                        'readers': { 'param': { 'regex': '.*' } },
+                        'nonreaders': { 'param': { 'regex': '.*' } },
+                        'writers': [venue_id],
+                        'note': {
+                            'ddate': {
+                                'param': {
+                                    'range': [ 0, 9999999999999 ],
+                                    'optional': True,
+                                    'deletable': True
+                                }
+                            },
+                            'id': {
+                                'param': {
+                                    'withInvitation': venue_id + '/Submission${6/content/noteNumber/value}/-/' + f"{migrated_prefix}_{invitation_name}",
+                                    'optional': True
+                                }
+                            },
+                            'forum': '${4/content/noteId/value}',
+                            'replyto': '${4/content/noteId/value}' if not is_comment else
+                                { 
+                                    'param': {
+                                        'withForum': '${6/content/noteId/value}', 
+                                    }
+                                },
+                            'ddate': {
+                                'param': {
+                                    'range': [ 0, 9999999999999 ],
+                                    'optional': True,
+                                    'deletable': True
+                                }
+                            },
+                            'signatures': { 'param': { 'regex': '.*' } },
+                            'readers': { 'param': { 'regex': '.*' } },
+                            'nonreaders': { 'param': { 'regex': '.*' } },
+                            'writers': [venue_id],
+                            'content': content
+                        }
+                    }
+                }
+            }
+        )
+        client.post_invitation_edit(
+            invitations=f"{venue_id}/-/Edit",
+            readers=[venue_id],
+            writers=[venue_id],
+            signatures=[venue_id],
+            invitation=forum_reply_invitation
+        )
+        print(f'posting {venue_id}/-/{migrated_prefix}_{invitation_name}')
+    for invitation_suffix, metadata in invitation_info.items():
+        inv_type, content = metadata.get('type'), metadata.get('content', {})
+        if inv_type == 'submission':
+            _set_submission_invitation(invitation_suffix, content)
+        elif inv_type == 'forum_reply':
+            _set_forum_reply_invitation(invitation_suffix, content)
+        elif inv_type == 'comment':
+            _set_forum_reply_invitation(invitation_suffix, content, is_comment=True)
+
+
+def update_existing_invitations(invitation_info: dict):
+    """
+    Updates the existing invitations with new inferred content
+
+    Args:
+        invitation_info (dict): Mapping from super invitation IDs to content dicts for the note
+    """
+    def __update_invitation():
+        pass
+    pass
+
+def post_migrated_submissions(venue_id: str, submissions: list[Union[openreview.Note, openreview.api.Note]], migrated_prefix: str = 'ARR', submission_name: str = 'Submission'):
+    """
+    Creates new submission invitations for posting notes to the destination forums
+
+    Args:
+        venue_id (str): The destination conference that the data is being imported into
+        submissions (list[Union[openreview.Note, openreview.api.Note]]): A list of submission notes
+        migrated_prefix (str): Used to indicate the venue that these replies are coming from
+        submission_name (str): The invitation name for submissions
+    Returns:
+        dict: Maps the commitment submission IDs to the ID of the migrated submission and the commitment paper number
+    """
+
+    commitment_dict = {}
+    for submission in submissions:
+        # Manual changes to content fields
+        submission.content['commitment_note'] = {}
+        submission.content['commitment_note']['value'] = f"https://openreview.net/forum?id={submission.id}"
+        submission.content['authors']['readers'] = [
+            venue_id,
+            f"{venue_id}/Submission{submission.number}/Authors"
+        ]
+        submission.content['authorids']['readers'] = [
+            venue_id,
+            f"{venue_id}/Submission{submission.number}/Authors"
+        ]
+        submission.content['venueid']['value'] = submission.content['venueid']['value'].replace('Submission', f"{submission_name}")
+        submission.content['venue']['value'] = submission.content['venue']['value'].replace('Submission', f"{submission_name.replace('_', ' ')}")
+
+        # Build and post note
+        blinded_note = openreview.api.Note(
+            readers = [
+                f"{venue_id}/Program_Chairs",
+                venue_id,
+                f"{venue_id}/Submission{submission.number}/Reviewers", f"{venue_id}/Submission{submission.number}/Area_Chairs", f"{venue_id}/Submission{submission.number}/Senior_Area_Chairs"
+            ],
+            nonreaders = [
+                f"{venue_id}/Submission{submission.number}/Conflicts"
+            ],
+            writers = [
+                venue_id
+            ],
+            signatures = [
+                venue_id
+            ],
+            content = submission.content
+        )
+        blinded_note_posted = client.post_note_edit(
+            invitation = f"{venue_id}/-/{migrated_prefix}_{submission_name}",
+            signatures=[venue_id],
+            readers = [
+                f"{venue_id}/Program_Chairs",
+                venue_id,
+                f"{venue_id}/Submission{submission.number}/Reviewers", f"{venue_id}/Submission{submission.number}/Area_Chairs", f"{venue_id}/Submission{submission.number}/Senior_Area_Chairs"
+            ],
+            nonreaders = [
+                f"{venue_id}/Submission{submission.number}/Conflicts"
+            ],
+            writers = [
+                venue_id
+            ],
+            note=blinded_note
+        )
+        print(f"posted {blinded_note_posted['note']['id']} for commitment {submission.id}")
+        commitment_dict[submission.id] = {'migrated_id': blinded_note_posted['note']['id'], 'commitment_number': submission.number}
+
+        # Update commitment note with link
+        client.post_note_edit(
+            invitation = f"{venue_id}/-/Edit",
+            signatures=[venue_id],
+            readers = [venue_id],
+            nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+            writers = [venue_id],
+            note=openreview.api.Note(
+                id=submission.id,
+                content={'migrated_paper_link': {'value': f"https://openreview.net/forum?id={blinded_note_posted['note']['id']}"}}
+            )
+        )
+
+    return commitment_dict
+
+
+def infer_content_from_invitations(venue_id: str, venue_ids: List[str], invitation_suffixes: List[str]):
+    """
+    Fetches the reply content for each venue for each invitation and returns a content dict
+    that allows for all previously submitted fields
+
+    Args:
+        venue_id (str): The destination conference that the data is being imported into
+        venue_ids (List[str]): A list of valid venue IDs
+        invitation_suffixes (List[str]): Extracted from the invitation IDs - the string following /-/
+
+    Returns:
+        dict: Maps the invitation IDs to the final content dicts
+
+    Raises:
+        OpenReviewException: If a venue or invitation does not exist
+    """
+    def _get_content(invitation: openreview.api.Invitation):
+        pass
+    if any('ACL/ARR' in venue for venue in venue_ids):
+        # Do some additional filtering on submission content
+        ## TODO: Parameterize Submission and Official_Comment invitation names
+        commitment_invitation = client.get_invitation(f"{venue_id}/-/Submission")
+        for key in commitment_invitation.edit['note']['content'].keys(): 
+            if key not in ['existing_preprints', 'authors', 'authorids', 'keywords']:
+                submission_invitation_content[key] = commitment_invitation.edit['note']['content'][key]
+        return {
+            'Official_Review': {
+                'type': 'forum_reply',
+                'content': official_review_content
+            },
+            'Meta_Review': {
+                'type': 'forum_reply',
+                'content': meta_review_content
+            },
+            'Ethics_Review': {
+                'type': 'forum_reply',
+                'content': ethics_review_content
+            },
+            'Migrated_Submission': {
+                'type': 'submission',
+                'content': submission_invitation_content
+            },
+            'Official_Comment': {
+                'type': 'comment',
+                'content': official_comment_content
+            }
+        }
+
+"""
+OPTIONAL SCRIPT ARGUMENTS
+
+    baseurl -  the URL of the OpenReview server to connect to (live site: https://openreview.net)
+    username - the email address of the logging in user
+    password - the user's password
+
+"""
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseurl_v1', help="base URL pointing to API2", default='http://localhost:3000')
+parser.add_argument('--baseurl_v2', help="base URL pointing to API1", default='http://localhost:3001')
+parser.add_argument('--username')
+parser.add_argument('--password')
+parser.add_argument('--confid')
+parser.add_argument('--paper_link_field', default='paper_link')
+parser.add_argument('--post_to_commitment', action='store_true')
+args = parser.parse_args()
+client = openreview.api.OpenReviewClient(baseurl=args.baseurl_v2, username=args.username, password=args.password)
+client_v1 = openreview.Client(baseurl=args.baseurl_v1, username=args.username, password=args.password)
+confid = args.confid
+paper_link_field = args.paper_link_field
+post_to_commitment = args.post_to_commitment
+
+# TODO: Build content dicts from invitations so they never go out of date
+# TODO: Add support for migration_prefix = None -> removes _
+# TODO: Add better support for posting other invitations as comments (Rebuttal -> Official_Comment)
+# TODO: Move content parsing from migrate_notes to infer_content
+# TODO: Post comment to commitment submissions with migrated paper link
+# TODO: Add support for posting directly to the official/meta review invitations for venues that don't require reviewers/ACs so correct information is shown in the consoles
+# TODO: Migrate conflict logic
+
+# Load migration invitation contents
+submission_invitation_name = ''
+invitation_info = infer_content_from_invitations(confid, ['ACL/ARR'], [])
+for name, info in invitation_info.items():
+    if info['type'] == 'submission':
+        submission_invitation_name = name
+print(f"Migrating replies from {invitation_info.keys()}")
+
+# Post/update super invitations
+post_super_invitations(confid, invitation_info)
+
+# Get all submissions + map submission IDs to previous paper (if not blind copy, get blind copy)
+previous_dict = {}
+submissions = client.get_all_notes(content={ 'venueid': f"{confid}/Submission" }, details='replies', sort='cdate:desc')
+for submission in submissions:
+    previous_id = submission.content[paper_link_field]['value'].split('?id=')[1].split('&')[0]
+    previous_dict[submission.id] = client_v1.get_all_notes(id=previous_id, details='replies')[0]
+
+# Post migrated submissions
+if not post_to_commitment:
+    migration = post_migrated_submissions(confid, submissions, 'ARR', submission_invitation_name)
+    forums = {v['commitment_number']: v['migrated_id'] for v in migration.values()}
+    commitment_dict = {k: v['migrated_id'] for k, v in migration.items()}
+else:
+    forums = {submission.number: submission.forum for submission in submissions}
+    commitment_dict = {submission.id: submission.id for submission in submissions}
+
+# Post/update submission invitations
+post_submission_invitations(confid, forums, invitation_info, migrated_prefix='ARR')
+
+# Migrate replies to migrated submissions
+migrate_notes(confid, submissions, commitment_dict, previous_dict, invitation_info)
