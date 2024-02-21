@@ -79,7 +79,8 @@ submission_invitation_content = {
                         "type": "string",
                         "minLength": 1,
                         "markdown": True,
-                        "input": "textarea"
+                        "input": "textarea",
+                        "optional": True
                     }
                 }
             },
@@ -92,7 +93,8 @@ submission_invitation_content = {
                         "maxSize": 50,
                         "extensions": [
                             "pdf"
-                        ]
+                        ],
+                        "optional": True
                     }
                 }
             },
@@ -811,6 +813,17 @@ meta_review_content = {
 }
 
 ethics_review_content = {
+    "title": {
+        "order": 1,
+        "description": "Brief summary of your review.",
+        "value": {
+            "param": {
+                "type": "string",
+                "minLength": 1,
+                "optional": True
+            }
+        }
+    },
     "recommendation": {
         "order": 9,
         "value": {
@@ -877,7 +890,7 @@ official_comment_content = {
         'value': {
             'param': {
                 'type': 'string',
-                'maxLength': 500,
+                'minLength': 1,
                 'optional': True,
                 'deletable': True
             }
@@ -889,7 +902,7 @@ official_comment_content = {
         'value': {
             'param': {
                 'type': 'string',
-                'maxLength': 5000,
+                'minLength': 1,
                 'markdown': True,
                 'input': 'textarea'
             }
@@ -923,6 +936,7 @@ def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openre
         replyto_map = {prev.id: commitment_dict[submission.id]} ## Used to properly post comments
         while len(reply_queue) > 0:
             # Use BFS to parse reply tree and include author-reviewer responses
+            prev.details['replies'].sort(key = lambda x: x['cdate']) ## Post older notes first
             curr_replyto = reply_queue.pop(0)
             filtered_replies = [reply for reply in prev.details['replies'] if reply['replyto'] == curr_replyto]
 
@@ -983,10 +997,14 @@ def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openre
                         suffix = 'Official_Comment'
 
                         new_content = {}
+                        content = reply['content']
                         for key in content.keys():
-                            if key not in new_content.keys():
-                                new_content[key] = {}
-                            new_content[key]['value'] = content[key]
+                            if key == 'rebuttal':
+                                new_content['comment'] = {}
+                                new_content['comment']['value'] = content[key]
+                            else:
+                                if key not in new_content.keys():
+                                    new_content[key] = {}
 
                         new_content['title'] = {}
                         new_content['title']['value'] = f"Rebuttal of Submission{submission.number} by {reply['invitation'].split('/')[4]} {reply['signatures'][0].split('/')[-1].replace('_', ' ')}"
@@ -1353,11 +1371,13 @@ parser.add_argument('--username')
 parser.add_argument('--password')
 parser.add_argument('--confid')
 parser.add_argument('--paper_link_field', default='paper_link')
+parser.add_argument('--post_to_commitment', action='store_true')
 args = parser.parse_args()
 client = openreview.api.OpenReviewClient(baseurl=args.baseurl_v2, username=args.username, password=args.password)
 client_v1 = openreview.Client(baseurl=args.baseurl_v1, username=args.username, password=args.password)
 confid = args.confid
 paper_link_field = args.paper_link_field
+post_to_commitment = args.post_to_commitment
 
 # TODO: Build content dicts from invitations so they never go out of date
 # TODO: Add support for migration_prefix = None -> removes _
@@ -1380,15 +1400,19 @@ post_super_invitations(confid, invitation_info)
 
 # Get all submissions + map submission IDs to previous paper (if not blind copy, get blind copy)
 previous_dict = {}
-submissions = client.get_all_notes(content={ 'venueid': f"{confid}/Submission" }, details='replies')
+submissions = client.get_all_notes(content={ 'venueid': f"{confid}/Submission" }, details='replies', sort='cdate:desc')
 for submission in submissions:
-    previous_id = submission.content[paper_link_field]['value'].split('?id=')[1]
+    previous_id = submission.content[paper_link_field]['value'].split('?id=')[1].split('&')[0]
     previous_dict[submission.id] = client_v1.get_all_notes(id=previous_id, details='replies')[0]
 
 # Post migrated submissions
-migration = post_migrated_submissions(confid, submissions, 'ARR', submission_invitation_name)
-forums = {v['commitment_number']: v['migrated_id'] for v in migration.values()}
-commitment_dict = {k: v['migrated_id'] for k, v in migration.items()}
+if not post_to_commitment:
+    migration = post_migrated_submissions(confid, submissions, 'ARR', submission_invitation_name)
+    forums = {v['commitment_number']: v['migrated_id'] for v in migration.values()}
+    commitment_dict = {k: v['migrated_id'] for k, v in migration.items()}
+else:
+    forums = {submission.number: submission.forum for submission in submissions}
+    commitment_dict = {submission.id: submission.id for submission in submissions}
 
 # Post/update submission invitations
 post_submission_invitations(confid, forums, invitation_info, migrated_prefix='ARR')
