@@ -296,13 +296,13 @@ official_review_content = {
     "confidence": {
         "value": {
             "param": {
-                "type": "string",
+                "type": "integer",
                 "enum": [
-                    "5 = Positive that my evaluation is correct. I read the paper very carefully and am familiar with related work.",
-                    "4 = Quite sure. I tried to check the important points carefully. It's unlikely, though conceivable, that I missed something that should affect my ratings.",
-                    "3 =  Pretty sure, but there's a chance I missed something. Although I have a good feel for this area in general, I did not carefully check the paper's details, e.g., the math or experimental design.",
-                    "2 =  Willing to defend my evaluation, but it is fairly likely that I missed some details, didn't understand some central points, or can't be sure about the novelty of the work.",
-                    "1 = Not my area, or paper is very hard to understand. My evaluation is just an educated guess."
+                    { 'value': 5, 'description': '5 = Positive that my evaluation is correct. I read the paper very carefully and am familiar with related work.'},
+                    { 'value': 4, 'description': "4 = Quite sure. I tried to check the important points carefully. It's unlikely, though conceivable, that I missed something that should affect my ratings."},
+                    { 'value': 3, 'description': "3 = Pretty sure, but there's a chance I missed something. Although I have a good feel for this area in general, I did not carefully check the paper's details, e.g., the math or experimental design."},
+                    { 'value': 2, 'description': "2 = Willing to defend my evaluation, but it is fairly likely that I missed some details, didn't understand some central points, or can't be sure about the novelty of the work."},
+                    { 'value': 1, 'description': "1 = Not my area, or paper is very hard to understand. My evaluation is just an educated guess."}
                 ],
                 "input": "radio",
                 "optional": True
@@ -378,17 +378,17 @@ official_review_content = {
         "order": 8,
         "value": {
             "param": {
-                "type": "string",
+                "type": "float",
                 "enum": [
-                    "5 = Excellent: This study is one of the most thorough I have seen, given its type.",
-                    "4.5 ",
-                    "4 = Strong: This study provides sufficient support for all of its claims/arguments. Some extra experiments could be nice, but not essential.",
-                    "3.5 ",
-                    "3 = Acceptable: This study provides sufficient support for its major claims/arguments. Some minor points may need extra support or details.",
-                    "2.5 ",
-                    "2 = Poor: Some of the main claims/arguments are not sufficiently supported. There are major technical/methodological problems.",
-                    "1.5 ",
-                    "1 = Major Issues: This study is not yet sufficiently thorough to warrant publication or is not relevant to ACL."
+                    { 'value': 5, 'description': "5 = Excellent: This study is one of the most thorough I have seen, given its type."},
+                    { 'value': 4.5, 'description': '4.5'},
+                    { 'value': 4, 'description': "4 = Strong: This study provides sufficient support for all of its claims/arguments. Some extra experiments could be nice, but not essential."},
+                    { 'value': 3.5, 'description': '3.5'},
+                    { 'value': 3, 'description': "3 = Acceptable: This study provides sufficient support for its major claims/arguments. Some minor points may need extra support or details."},
+                    { 'value': 2.5, 'description': '2.5'},
+                    { 'value': 2, 'description': "2 = Poor: Some of the main claims/arguments are not sufficiently supported. There are major technical/methodological problems."},
+                    { 'value': 1.5, 'description': '1.5'},
+                    { 'value': 1, 'description': "1 = Major Issues: This study is not yet sufficiently thorough to warrant publication or is not relevant to ACL."}
                     ],
                     "input": "radio",
                     "optional": True
@@ -400,9 +400,21 @@ official_review_content = {
         "order": 9,
         "value": {
             "param": {
-                "type": "string",
-                "minLength": 1,
-                "optional": True
+                "type": "float",
+                "enum": [
+                    { 'value': 5, 'description': "5 = Top-Notch: This is one of the best papers I read recently, of great interest for the (broad or narrow) sub-communities that might build on it."},
+                    { 'value': 4.5, 'description': '4.5'},
+                    { 'value': 4, 'description': "4 = This paper represents solid work, and is of significant interest for the (broad or narrow) sub-communities that might build on it."},
+                    { 'value': 3.5, 'description': '3.5'},
+                    { 'value': 3, 'description': "3 = Good: This paper makes a reasonable contribution, and might be of interest for some (broad or narrow) sub-communities, possibly with minor revisions."},
+                    { 'value': 2.5, 'description': '2.5'},
+                    { 'value': 2, 'description': "2 = Revisions Needed: This paper has some merit, but also significant flaws, and needs work before it would be of interest to the community."},
+                    { 'value': 1.5, 'description': '1.5'},
+                    { 'value': 1, 'description': "1 = Major Revisions Needed: This paper has significant flaws, and needs substantial work before it would be of interest to the community."},
+                    { 'value': 0.5, 'description': "0.5 = This paper is not relevant to the *ACL community (for example, is in no way related to natural language processing)."}
+                ],
+                    "input": "radio",
+                    "optional": True
             }
         }
     },
@@ -439,13 +451,13 @@ official_review_content = {
         "description": "Will members of the ACL community be able to reproduce or verify the results in this paper?",
         "value": {
             "param": {
-                "type": "string",
+                "type": "integer",
                 "enum": [
-                    "5 = They could easily reproduce the results.",
-                    "4 = They could mostly reproduce the results, but there may be some variation because of sample variance or minor variations in their interpretation of the protocol or method.",
-                    "3 = They could reproduce the results with some difficulty. The settings of parameters are underspecified or subjectively determined, and/or the training/evaluation data are not widely available.",
-                    "2 = They would be hard pressed to reproduce the results: The contribution depends on data that are simply not available outside the author's institution or consortium and/or not enough details are provided.",
-                    "1 = They would not be able to reproduce the results here no matter how hard they tried."
+                    { 'value': 5, 'description': "5 = They could easily reproduce the results."},
+                    { 'value': 4, 'description': "4 = They could mostly reproduce the results, but there may be some variation because of sample variance or minor variations in their interpretation of the protocol or method."},
+                    { 'value': 3, 'description': "3 = They could reproduce the results with some difficulty. The settings of parameters are underspecified or subjectively determined, and/or the training/evaluation data are not widely available."},
+                    { 'value': 2, 'description': "2 = They would be hard pressed to reproduce the results: The contribution depends on data that are simply not available outside the author's institution or consortium and/or not enough details are provided."},
+                    { 'value': 1, 'description': "1 = They would not be able to reproduce the results here no matter how hard they tried."}
                 ],
                 "input": "radio",
                 "optional": True
@@ -457,13 +469,13 @@ official_review_content = {
         "description": "If the authors state (in anonymous fashion) that datasets will be released, how valuable will they be to others?",
         "value": {
             "param": {
-                "type": "string",
+                "type": "integer",
                 "enum": [
-                    "5 = Enabling: The newly released datasets should affect other people's choice of research or development projects to undertake.",
-                    "4 = Useful: I would recommend the new datasets to other researchers or developers for their ongoing work.",
-                    "3 = Potentially useful: Someone might find the new datasets useful for their work.",
-                    "2 = Documentary: The new datasets will be useful to study or replicate the reported research, although for other purposes they may have limited interest or limited usability. (Still a positive rating)",
-                    "1 = No usable datasets submitted."
+                    { 'value': 5, 'description': "5 = Enabling: The newly released datasets should affect other people's choice of research or development projects to undertake."},
+                    { 'value': 4, 'description': "4 = Useful: I would recommend the new datasets to other researchers or developers for their ongoing work."},
+                    { 'value': 3, 'description': "3 = Potentially useful: Someone might find the new datasets useful for their work."},
+                    { 'value': 2, 'description': "2 = Documentary: The new datasets will be useful to study or replicate the reported research, although for other purposes they may have limited interest or limited usability. (Still a positive rating)"},
+                    { 'value': 1, 'description': "1 = No usable datasets submitted."}
                 ],
                 "input": "radio",
                 "optional": True
@@ -475,13 +487,13 @@ official_review_content = {
         "description": "If the authors state (in anonymous fashion) that their software will be available, how valuable will it be to others?",
         "value": {
             "param": {
-                "type": "string",
+                "type": "integer",
                 "enum": [
-                    "5 = Enabling: The newly released software should affect other people's choice of research or development projects to undertake.",
-                    "4 = Useful: I would recommend the new software to other researchers or developers for their ongoing work.",
-                    "3 = Potentially useful: Someone might find the new software useful for their work.",
-                    "2 = Documentary: The new software will be useful to study or replicate the reported research, although for other purposes it may have limited interest or limited usability. (Still a positive rating)",
-                    "1 = No usable software released."
+                    { 'value': 5, 'description': "5 = Enabling: The newly released software should affect other people's choice of research or development projects to undertake."},
+                    { 'value': 4, 'description': "4 = Useful: I would recommend the new software to other researchers or developers for their ongoing work."},
+                    { 'value': 3, 'description': "3 = Potentially useful: Someone might find the new software useful for their work."},
+                    { 'value': 2, 'description': "2 = Documentary: The new software will be useful to study or replicate the reported research, although for other purposes it may have limited interest or limited usability. (Still a positive rating)"},
+                    { 'value': 1, 'description': "1 = No usable software released."}
                 ],
                 "input": "radio",
                 "optional": True
@@ -493,13 +505,13 @@ official_review_content = {
         "description": "Do you know the author identity or have an educated guess?",
         "value": {
             "param": {
-                "type": "string",
+                "type": "integer",
                 "enum": [
-                    "5 = From a violation of the anonymity-window or other double-blind-submission rules, I know/can guess at least one author's name.",
-                    "4 = From an allowed pre-existing preprint or workshop paper, I know/can guess at least one author's name.",
-                    "3 = From the contents of the submission itself, I know/can guess at least one author's name.",
-                    "2 = From social media/a talk/other informal communication, I know/can guess at least one author's name.",
-                    "1 = I do not have even an educated guess about author identity."
+                    { 'value': 5, 'description': "5 = From a violation of the anonymity-window or other double-blind-submission rules, I know/can guess at least one author's name."},
+                    { 'value': 4, 'description': "4 = From an allowed pre-existing preprint or workshop paper, I know/can guess at least one author's name."},
+                    { 'value': 3, 'description': "3 = From the contents of the submission itself, I know/can guess at least one author's name."},
+                    { 'value': 2, 'description': "2 = From social media/a talk/other informal communication, I know/can guess at least one author's name."},
+                    { 'value': 1, 'description': "1 = I do not have even an educated guess about author identity."}
                 ],
                 "input": "radio",
                 "optional": True
@@ -577,13 +589,13 @@ official_review_content = {
         "description": "Is there enough information in this paper for a reader to reproduce the main results, use results presented in this paper in future work (e.g., as a baseline), or build upon this work?",
         "value": {
             "param": {
-                "type": "string",
+                "type": "integer",
                 "enum": [
-                    "5 = They could easily reproduce the results.",
-                    "4 = They could mostly reproduce the results, but there may be some variation because of sample variance or minor variations in their interpretation of the protocol or method.",
-                    "3 = They could reproduce the results with some difficulty. The settings of parameters are underspecified or subjectively determined, and/or the training/evaluation data are not widely available.",
-                    "2 = They would be hard pressed to reproduce the results: The contribution depends on data that are simply not available outside the author's institution or consortium and/or not enough details are provided.",
-                    "1 = They would not be able to reproduce the results here no matter how hard they tried."
+                    { 'value': 5, 'description': "5 = They could easily reproduce the results."},
+                    { 'value': 4, 'description': "4 = They could mostly reproduce the results, but there may be some variation because of sample variance or minor variations in their interpretation of the protocol or method."},
+                    { 'value': 3, 'description': "3 = They could reproduce the results with some difficulty. The settings of parameters are underspecified or subjectively determined, and/or the training/evaluation data are not widely available."},
+                    { 'value': 2, 'description': "2 = They would be hard pressed to reproduce the results: The contribution depends on data that are simply not available outside the author's institution or consortium and/or not enough details are provided."},
+                    { 'value': 1, 'description': "1 = They would not be able to reproduce the results here no matter how hard they tried."}
                 ],
                 "input": "radio",
                 "optional": True
@@ -657,13 +669,13 @@ meta_review_content = {
         "order": 6,
         "value": {
             "param": {
-                "type": "string",
+                "type": "integer",
                 "enum": [
-                    "5 = The paper is largely complete and there are no clear points of revision",
-                    "4 = There are minor points that may be revised",
-                    "3 = There are major points that may be revised",
-                    "2 = The paper would need significant revisions to reach a publishable state",
-                    "1 = Even after revisions, the paper is not likely to be publishable at an *ACL venue"
+                    { 'value': 5, 'description': "5 = The paper is largely complete and there are no clear points of revision"},
+                    { 'value': 4, 'description': "4 = There are minor points that may be revised"},
+                    { 'value': 3, 'description': "3 = There are major points that may be revised"},
+                    { 'value': 2, 'description': "2 = The paper would need significant revisions to reach a publishable state"},
+                    { 'value': 1, 'description': "1 = Even after revisions, the paper is not likely to be publishable at an *ACL venue"}
                 ],
                 "input": "radio",
                 "optional": True
@@ -797,13 +809,13 @@ meta_review_content = {
         "description": "Do you know the author identity or have an educated guess?",
         "value": {
             "param": {
-                "type": "string",
+                "type": "integer",
                 "enum": [
-                    "5 = From a violation of the anonymity-window or other double-blind-submission rules, I know/can guess at least one author's name.",
-                    "4 = From an allowed pre-existing preprint or workshop paper, I know/can guess at least one author's name.",
-                    "3 = From the contents of the submission itself, I know/can guess at least one author's name.",
-                    "2 = From social media/a talk/other informal communication, I know/can guess at least one author's name.",
-                    "1 = I do not have even an educated guess about author identity."
+                    { 'value': 5, 'description': "5 = From a violation of the anonymity-window or other double-blind-submission rules, I know/can guess at least one author's name."},
+                    { 'value': 4, 'description': "4 = From an allowed pre-existing preprint or workshop paper, I know/can guess at least one author's name."},
+                    { 'value': 3, 'description': "3 = From the contents of the submission itself, I know/can guess at least one author's name."},
+                    { 'value': 2, 'description': "2 = From social media/a talk/other informal communication, I know/can guess at least one author's name."},
+                    { 'value': 1, 'description': "1 = I do not have even an educated guess about author identity."}
                 ],
                 "input": "radio",
                 "optional": True
@@ -957,9 +969,30 @@ def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openre
                         # Special cases for content fields
                         ## TODO: Move this to content parsing
                         if 'Official_Review' in suffix:
+                            for key in content.keys():
+                                if key == 'comments,_suggestions_and_typos':
+                                    continue
+                                if 'type' in official_review_content[key]['value']['param'] and official_review_content[key]['value']['param']['type'] in ['integer', 'float'] and 'enum' in official_review_content[key]['value']['param']:
+                                    if official_review_content[key]['value']['param']['type'] == 'integer':
+                                        new_content[key]['value'] = int(content[key].split(' = ')[0])
+                                    elif official_review_content[key]['value']['param']['type'] == 'float':
+                                        val = float(content[key].split(' = ')[0])
+                                        if val == 0:
+                                            val = 0.5
+                                        new_content[key]['value'] = val
                             if 'comments,_suggestions_and_typos' in reply['content'].keys():
                                 new_content['comments_suggestions_and_typos'] = {'value': reply['content'].get('comments,_suggestions_and_typos')}
                                 del new_content['comments,_suggestions_and_typos']
+                        if 'Meta_Review' in suffix:
+                            for key in content.keys():
+                                if 'type' in meta_review_content[key]['value']['param'] and meta_review_content[key]['value']['param']['type'] in ['integer', 'float'] and 'enum' in meta_review_content[key]['value']['param']:
+                                    if meta_review_content[key]['value']['param']['type'] == 'integer':
+                                        new_content[key]['value'] = int(content[key].split(' = ')[0])
+                                    elif meta_review_content[key]['value']['param']['type'] == 'float':
+                                        val = float(content[key].split(' = ')[0])
+                                        if val == 0:
+                                            val = 0.5
+                                        new_content[key]['value'] = val 
                         if 'Official_Comment' in suffix:
 
                             ## Only include comments between reviewers and authors
