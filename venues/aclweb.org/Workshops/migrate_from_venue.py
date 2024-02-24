@@ -4,6 +4,7 @@ import openreview
 from tqdm import tqdm
 import csv
 from typing import *
+import json
 
 submission_invitation_content = {
             "title": {
@@ -922,7 +923,7 @@ official_comment_content = {
     }
 }
 
-def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openreview.api.Note]], commitment_dict: dict, previous_dict: dict, invitation_info: dict, migrated_prefix: str = 'ARR'):
+def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openreview.api.Note]], commitment_dict: dict, previous_dict: dict, invitation_info: dict, migrated_notes: dict, migrated_prefix: str = 'ARR'):
     """
     Posts replies from the original submissions to the new venue
 
@@ -931,11 +932,26 @@ def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openre
     commitment_dict (dict): Maps the commitment submission IDs to the ID of the migrated submission
     previous_dict (dict): Maps the commitment submission IDs to the previous note
     invitation_info (dict): Mapping from invitation suffixes to content dicts - used to keep track of which submission invitations to make
+    migrated_notes (dict): Mapping from migrated note ID to the note
     migrated_prefix (str): Used to indicate the venue that these replies are coming from
     """
+
+    def _is_identical_content(reply_to_post, replies):
+        for reply in replies:
+            is_identical = True
+            if set(reply['content'].keys()) != set(reply_to_post.keys()):
+                continue
+            for k, v in reply_to_post.items():
+                if v['value'] != reply['content'][k]['value']:
+                    is_identical = False
+            if is_identical:
+                return reply
+        return None
+
     # Get previous notes
     for submission in tqdm(submissions, total=len(submissions)):
         prev = previous_dict[submission.id]
+        current_migrated = migrated_notes[commitment_dict[submission.id]]
         print(f"building replies for {submission.id} to migrated note {commitment_dict[submission.id]} using note {prev.id}")
 
         paper_prefix = f"{venue_id}/Submission{submission.number}"
@@ -1007,24 +1023,30 @@ def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openre
                         # Set replyto
                         replyTo = commitment_dict[submission.id] if invitation_info[suffix]['type'] != 'comment' else replyto_map[curr_replyto]
 
-                        rev = client.post_note_edit(
-                            invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
-                            readers=[pcs, sacs, acs, venue_id],
-                            writers=[venue_id],
-                            signatures=[venue_id],
-                            nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
-                            note=openreview.api.Note(
-                                forum=commitment_dict[submission.id],
-                                replyto=replyTo,
-                                signatures=[venue_id],
+                        already_posted = _is_identical_content(new_content, current_migrated.details['replies'])
+                        if already_posted is None:
+                            rev = client.post_note_edit(
+                                invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
                                 readers=[pcs, sacs, acs, venue_id],
                                 writers=[venue_id],
+                                signatures=[venue_id],
                                 nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
-                                content=new_content
+                                note=openreview.api.Note(
+                                    forum=commitment_dict[submission.id],
+                                    replyto=replyTo,
+                                    signatures=[venue_id],
+                                    readers=[pcs, sacs, acs, venue_id],
+                                    writers=[venue_id],
+                                    nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                                    content=new_content
+                                )
                             )
-                        )
-                        replyto_map[reply['id']] = rev['note']['id']
-                        reply_queue.append(reply['id'])
+                            replyto_map[reply['id']] = rev['note']['id']
+                            reply_queue.append(reply['id'])
+                            print(f"posting {new_content['title']}")
+                        else:
+                            replyto_map[reply['id']] = already_posted['id']
+                            reply_queue.append(reply['id'])
                     ## TODO: Handle this better
                     if reply['invitation'].endswith('Rebuttal'): ## Special cases for non 1-1 mappings between invitations
                         suffix = 'Official_Comment'
@@ -1042,24 +1064,30 @@ def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openre
                         new_content['title'] = {}
                         new_content['title']['value'] = f"Rebuttal of Submission{submission.number} by {reply['invitation'].split('/')[4]} {reply['signatures'][0].split('/')[-1].replace('_', ' ')}"
 
-                        rev = client.post_note_edit(
-                            invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
-                            readers=[pcs, sacs, acs, venue_id],
-                            writers=[venue_id],
-                            signatures=[venue_id],
-                            nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
-                            note=openreview.api.Note(
-                                forum=commitment_dict[submission.id],
-                                replyto=replyto_map[curr_replyto],
-                                signatures=[pcs],
-                                readers=[pcs, sacs],
+                        already_posted = _is_identical_content(new_content, current_migrated.details['replies'])
+                        if already_posted is None:
+                            rev = client.post_note_edit(
+                                invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
+                                readers=[pcs, sacs, acs, venue_id],
                                 writers=[venue_id],
+                                signatures=[venue_id],
                                 nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
-                                content=new_content
+                                note=openreview.api.Note(
+                                    forum=commitment_dict[submission.id],
+                                    replyto=replyto_map[curr_replyto],
+                                    signatures=[pcs],
+                                    readers=[pcs, sacs],
+                                    writers=[venue_id],
+                                    nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                                    content=new_content
+                                )
                             )
-                        )
-                        replyto_map[reply['id']] = rev['note']['id']
-                        reply_queue.append(reply['id'])
+                            print(f"posting {new_content['title']}")
+                            replyto_map[reply['id']] = rev['note']['id']
+                            reply_queue.append(reply['id'])
+                        else:
+                            replyto_map[reply['id']] = already_posted['id']
+                            reply_queue.append(reply['id'])
 
 def post_submission_invitations(venue_id: str, forums: dict, invitation_info: dict, migrated_prefix: str = 'ARR'):
     """
@@ -1071,9 +1099,8 @@ def post_submission_invitations(venue_id: str, forums: dict, invitation_info: di
         invitation_info (dict): Mapping from super invitation IDs to content dicts - used to keep track of which submission invitations to make
         migrated_prefix (str): Used to indicate the venue that these replies are coming from
     """
-    for commitment_paper_number, migrated_forum in forums.items():
+    for commitment_paper_number, migrated_forum in tqdm(forums.items(), total=len(forums)):
         for invitation_suffix, metadata in invitation_info.items():
-            print(f"creating submission invitations for {venue_id}/-/{migrated_prefix}_{invitation_suffix}")
             if metadata['type'] != 'submission':
                 client.post_invitation_edit(
                     invitations=f"{venue_id}/-/{migrated_prefix}_{invitation_suffix}",
@@ -1447,8 +1474,13 @@ else:
     forums = {submission.number: submission.forum for submission in submissions}
     commitment_dict = {submission.id: submission.id for submission in submissions}
 
+# Retrieve migrated notes with forum
+migrated_notes = {}
+for v in tqdm(commitment_dict.values(), total=len(commitment_dict.values())):
+    migrated_notes[v] = client.get_note(v, details='replies')
+
 # Post/update submission invitations
 post_submission_invitations(confid, forums, invitation_info, migrated_prefix='ARR')
 
 # Migrate replies to migrated submissions
-migrate_notes(confid, submissions, commitment_dict, previous_dict, invitation_info)
+migrate_notes(confid, submissions, commitment_dict, previous_dict, invitation_info, migrated_notes)
