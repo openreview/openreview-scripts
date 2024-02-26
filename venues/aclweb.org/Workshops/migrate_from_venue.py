@@ -930,7 +930,7 @@ def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openre
     venue_id (str): The destination conference that the data is being imported into
     submissions (list[Union[openreview.Note, openreview.api.Note]]): A list of submission notes
     commitment_dict (dict): Maps the commitment submission IDs to the ID of the migrated submission
-    previous_dict (dict): Maps the commitment submission IDs to the previous note
+    previous_dict (dict): Maps the commitment submission IDs to a list of previous notes
     invitation_info (dict): Mapping from invitation suffixes to content dicts - used to keep track of which submission invitations to make
     migrated_notes (dict): Mapping from migrated note ID to the note
     migrated_prefix (str): Used to indicate the venue that these replies are coming from
@@ -950,144 +950,143 @@ def migrate_notes(venue_id: str, submissions: list[Union[openreview.Note, openre
 
     # Get previous notes
     for submission in tqdm(submissions, total=len(submissions)):
-        prev = previous_dict[submission.id]
-        current_migrated = migrated_notes[commitment_dict[submission.id]]
-        print(f"building replies for {submission.id} to migrated note {commitment_dict[submission.id]} using note {prev.id}")
+        for prev in previous_dict[submission.id]:
+            current_migrated = migrated_notes[commitment_dict[submission.id]]
+            print(f"building replies for {submission.id} to migrated note {commitment_dict[submission.id]} using note {prev.id}")
 
-        paper_prefix = f"{venue_id}/Submission{submission.number}"
-        authors = f"{paper_prefix}/Authors"
-        acs = f"{paper_prefix}/Area_Chairs"
-        sacs = f"{paper_prefix}/Senior_Area_Chairs"
-        pcs = f"{venue_id}/Program_Chairs"
+            paper_prefix = f"{venue_id}/Submission{submission.number}"
+            authors = f"{paper_prefix}/Authors"
+            acs = f"{paper_prefix}/Area_Chairs"
+            sacs = f"{paper_prefix}/Senior_Area_Chairs"
+            pcs = f"{venue_id}/Program_Chairs"
 
-        reply_queue = [prev.id]
-        replyto_map = {prev.id: commitment_dict[submission.id]} ## Used to properly post comments
-        while len(reply_queue) > 0:
-            # Use BFS to parse reply tree and include author-reviewer responses
-            prev.details['replies'].sort(key = lambda x: x['cdate']) ## Post older notes first
-            curr_replyto = reply_queue.pop(0)
-            filtered_replies = [reply for reply in prev.details['replies'] if reply['replyto'] == curr_replyto]
+            reply_queue = [prev.id]
+            replyto_map = {prev.id: commitment_dict[submission.id]} ## Maps note IDs from the previous submission to migrated forum
+            while len(reply_queue) > 0:
+                # Use BFS to parse reply tree and include author-reviewer responses
+                prev.details['replies'].sort(key = lambda x: x['cdate']) ## Post older notes first
+                curr_replyto = reply_queue.pop(0)
+                filtered_replies = [reply for reply in prev.details['replies'] if reply['replyto'] == curr_replyto]
 
-            for reply in filtered_replies:
-                for suffix in invitation_info.keys(): ## Find what kind of reply this is
-                    if suffix in reply['invitation']:
-                        # Copy content fields and set title
-                        new_content = {}
-                        content = reply['content']
-                        for key in content.keys():
-                            if key not in new_content.keys():
-                                new_content[key] = {}
-                            new_content[key]['value'] = content[key]
-
-                        new_content['title'] = {}
-                        new_content['title']['value'] = f"{suffix.replace('_', ' ')} of Submission{submission.number} by {reply['invitation'].split('/')[4]} {reply['signatures'][0].split('/')[-1].replace('_', ' ')}"
-
-                        # Special cases for content fields
-                        ## TODO: Move this to content parsing
-                        if 'Official_Review' in suffix:
+                for reply in filtered_replies: ## For each reply of the current note in the tree
+                    for suffix in invitation_info.keys(): ## Find what kind of reply this is
+                        if suffix in reply['invitation']:
+                            # Copy content fields and set title
+                            new_content = {}
+                            content = reply['content']
                             for key in content.keys():
-                                if key == 'comments,_suggestions_and_typos':
-                                    continue
-                                if 'type' in official_review_content[key]['value']['param'] and official_review_content[key]['value']['param']['type'] in ['integer', 'float'] and 'enum' in official_review_content[key]['value']['param']:
-                                    if official_review_content[key]['value']['param']['type'] == 'integer':
-                                        new_content[key]['value'] = int(content[key].split(' = ')[0])
-                                    elif official_review_content[key]['value']['param']['type'] == 'float':
-                                        val = float(content[key].split(' = ')[0])
-                                        if val == 0:
-                                            val = 0.5
-                                        new_content[key]['value'] = val
-                            if 'comments,_suggestions_and_typos' in reply['content'].keys():
-                                new_content['comments_suggestions_and_typos'] = {'value': reply['content'].get('comments,_suggestions_and_typos')}
-                                del new_content['comments,_suggestions_and_typos']
-                        if 'Meta_Review' in suffix:
-                            for key in content.keys():
-                                if 'type' in meta_review_content[key]['value']['param'] and meta_review_content[key]['value']['param']['type'] in ['integer', 'float'] and 'enum' in meta_review_content[key]['value']['param']:
-                                    if meta_review_content[key]['value']['param']['type'] == 'integer':
-                                        new_content[key]['value'] = int(content[key].split(' = ')[0])
-                                    elif meta_review_content[key]['value']['param']['type'] == 'float':
-                                        val = float(content[key].split(' = ')[0])
-                                        if val == 0:
-                                            val = 0.5
-                                        new_content[key]['value'] = val 
-                        if 'Official_Comment' in suffix:
-
-                            ## Only include comments between reviewers and authors
-                            if not (any('Authors' in reader for reader in reply['readers']) and any('Reviewers' in reader for reader in reply['readers'])):
-                                continue
-
-                            if 'Author' in reply['signatures'][0]:
-                                new_content['title']['value'] = new_content['title']['value'].replace('Comment', 'Rebuttal')
-                            elif 'Reviewer' in reply['signatures'][0]:
-                                new_content['title']['value'] = new_content['title']['value'].replace('Comment', 'Response')
-
-                        # Set replyto
-                        replyTo = commitment_dict[submission.id] if invitation_info[suffix]['type'] != 'comment' else replyto_map[curr_replyto]
-
-                        already_posted = _is_identical_content(new_content, current_migrated.details['replies'])
-                        if already_posted is None:
-                            rev = client.post_note_edit(
-                                invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
-                                readers=[pcs, sacs, acs, venue_id],
-                                writers=[venue_id],
-                                signatures=[venue_id],
-                                nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
-                                note=openreview.api.Note(
-                                    forum=commitment_dict[submission.id],
-                                    replyto=replyTo,
-                                    signatures=[venue_id],
-                                    readers=[pcs, sacs, acs, venue_id],
-                                    writers=[venue_id],
-                                    nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
-                                    content=new_content
-                                )
-                            )
-                            replyto_map[reply['id']] = rev['note']['id']
-                            reply_queue.append(reply['id'])
-                            print(f"posting {new_content['title']}")
-                        else:
-                            replyto_map[reply['id']] = already_posted['id']
-                            reply_queue.append(reply['id'])
-                    ## TODO: Handle this better
-                    if reply['invitation'].endswith('Rebuttal'): ## Special cases for non 1-1 mappings between invitations
-                        suffix = 'Official_Comment'
-
-                        new_content = {}
-                        content = reply['content']
-                        for key in content.keys():
-                            if key == 'rebuttal':
-                                new_content['comment'] = {}
-                                new_content['comment']['value'] = content[key]
-                            else:
                                 if key not in new_content.keys():
                                     new_content[key] = {}
+                                new_content[key]['value'] = content[key]
 
-                        new_content['title'] = {}
-                        new_content['title']['value'] = f"Rebuttal of Submission{submission.number} by {reply['invitation'].split('/')[4]} {reply['signatures'][0].split('/')[-1].replace('_', ' ')}"
+                            new_content['title'] = {}
+                            new_content['title']['value'] = f"{suffix.replace('_', ' ')} of Submission{submission.number} by {reply['invitation'].split('/')[4]} {reply['signatures'][0].split('/')[-1].replace('_', ' ')}"
 
-                        already_posted = _is_identical_content(new_content, current_migrated.details['replies'])
-                        if already_posted is None:
-                            rev = client.post_note_edit(
-                                invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
-                                readers=[pcs, sacs, acs, venue_id],
-                                writers=[venue_id],
-                                signatures=[venue_id],
-                                nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
-                                note=openreview.api.Note(
-                                    forum=commitment_dict[submission.id],
-                                    replyto=replyto_map[curr_replyto],
-                                    signatures=[pcs],
-                                    readers=[pcs, sacs],
+                            # Special cases for content fields
+                            ## TODO: Move this to content parsing
+                            if 'Official_Review' in suffix:
+                                for key in content.keys():
+                                    if key == 'comments,_suggestions_and_typos':
+                                        continue
+                                    if 'type' in official_review_content[key]['value']['param'] and official_review_content[key]['value']['param']['type'] in ['integer', 'float'] and 'enum' in official_review_content[key]['value']['param']:
+                                        if official_review_content[key]['value']['param']['type'] == 'integer':
+                                            new_content[key]['value'] = int(content[key].split(' = ')[0])
+                                        elif official_review_content[key]['value']['param']['type'] == 'float':
+                                            val = float(content[key].split(' = ')[0])
+                                            if val == 0:
+                                                val = 0.5
+                                            new_content[key]['value'] = val
+                                if 'comments,_suggestions_and_typos' in reply['content'].keys():
+                                    new_content['comments_suggestions_and_typos'] = {'value': reply['content'].get('comments,_suggestions_and_typos')}
+                                    del new_content['comments,_suggestions_and_typos']
+                            if 'Meta_Review' in suffix:
+                                for key in content.keys():
+                                    if 'type' in meta_review_content[key]['value']['param'] and meta_review_content[key]['value']['param']['type'] in ['integer', 'float'] and 'enum' in meta_review_content[key]['value']['param']:
+                                        if meta_review_content[key]['value']['param']['type'] == 'integer':
+                                            new_content[key]['value'] = int(content[key].split(' = ')[0])
+                                        elif meta_review_content[key]['value']['param']['type'] == 'float':
+                                            val = float(content[key].split(' = ')[0])
+                                            if val == 0:
+                                                val = 0.5
+                                            new_content[key]['value'] = val 
+                            if 'Official_Comment' in suffix:
+                                ## Only include comments between reviewers and authors
+                                if not (any('Authors' in reader for reader in reply['readers']) and any('Reviewers' in reader for reader in reply['readers'])):
+                                    continue
+
+                                if 'Author' in reply['signatures'][0]:
+                                    new_content['title']['value'] = new_content['title']['value'].replace('Comment', 'Rebuttal')
+                                elif 'Reviewer' in reply['signatures'][0]:
+                                    new_content['title']['value'] = new_content['title']['value'].replace('Comment', 'Response')
+
+                            # Set replyto - non comments are direct replies, comments need to map back into migration
+                            replyTo = commitment_dict[submission.id] if invitation_info[suffix]['type'] != 'comment' else replyto_map[curr_replyto]
+
+                            already_posted = _is_identical_content(new_content, current_migrated.details['replies'])
+                            if already_posted is None:
+                                rev = client.post_note_edit(
+                                    invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
+                                    readers=[pcs, sacs, acs, venue_id],
                                     writers=[venue_id],
+                                    signatures=[venue_id],
                                     nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
-                                    content=new_content
+                                    note=openreview.api.Note(
+                                        forum=commitment_dict[submission.id],
+                                        replyto=replyTo,
+                                        signatures=[venue_id],
+                                        readers=[pcs, sacs, acs, venue_id],
+                                        writers=[venue_id],
+                                        nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                                        content=new_content
+                                    )
                                 )
-                            )
-                            print(f"posting {new_content['title']}")
-                            replyto_map[reply['id']] = rev['note']['id']
-                            reply_queue.append(reply['id'])
-                        else:
-                            replyto_map[reply['id']] = already_posted['id']
-                            reply_queue.append(reply['id'])
+                                replyto_map[reply['id']] = rev['note']['id']
+                                reply_queue.append(reply['id'])
+                                print(f"posting {new_content['title']}")
+                            else:
+                                replyto_map[reply['id']] = already_posted['id']
+                                reply_queue.append(reply['id'])
+                        ## TODO: Handle this better
+                        if reply['invitation'].endswith('Rebuttal'): ## Special cases for non 1-1 mappings between invitations
+                            suffix = 'Official_Comment'
+
+                            new_content = {}
+                            content = reply['content']
+                            for key in content.keys():
+                                if key == 'rebuttal':
+                                    new_content['comment'] = {}
+                                    new_content['comment']['value'] = content[key]
+                                else:
+                                    if key not in new_content.keys():
+                                        new_content[key] = {}
+
+                            new_content['title'] = {}
+                            new_content['title']['value'] = f"Rebuttal of Submission{submission.number} by {reply['invitation'].split('/')[4]} {reply['signatures'][0].split('/')[-1].replace('_', ' ')}"
+
+                            already_posted = _is_identical_content(new_content, current_migrated.details['replies'])
+                            if already_posted is None:
+                                rev = client.post_note_edit(
+                                    invitation=f"{paper_prefix}/-/{migrated_prefix}_{suffix}",
+                                    readers=[pcs, sacs, acs, venue_id],
+                                    writers=[venue_id],
+                                    signatures=[venue_id],
+                                    nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                                    note=openreview.api.Note(
+                                        forum=commitment_dict[submission.id],
+                                        replyto=replyto_map[curr_replyto],
+                                        signatures=[pcs],
+                                        readers=[pcs, sacs],
+                                        writers=[venue_id],
+                                        nonreaders = [f"{venue_id}/Submission{submission.number}/Conflicts"],
+                                        content=new_content
+                                    )
+                                )
+                                print(f"posting {new_content['title']}")
+                                replyto_map[reply['id']] = rev['note']['id']
+                                reply_queue.append(reply['id'])
+                            else:
+                                replyto_map[reply['id']] = already_posted['id']
+                                reply_queue.append(reply['id'])
 
 def post_submission_invitations(venue_id: str, forums: dict, invitation_info: dict, migrated_prefix: str = 'ARR'):
     """
@@ -1432,12 +1431,14 @@ parser.add_argument('--password')
 parser.add_argument('--confid')
 parser.add_argument('--paper_link_field', default='paper_link')
 parser.add_argument('--post_to_commitment', action='store_true')
+parser.add_argument('--rerunning', action='store_true')
 args = parser.parse_args()
 client = openreview.api.OpenReviewClient(baseurl=args.baseurl_v2, username=args.username, password=args.password)
 client_v1 = openreview.Client(baseurl=args.baseurl_v1, username=args.username, password=args.password)
 confid = args.confid
 paper_link_field = args.paper_link_field
 post_to_commitment = args.post_to_commitment
+rerunning = args.rerunning
 
 # TODO: Build content dicts from invitations so they never go out of date
 # TODO: Add support for migration_prefix = None -> removes _
@@ -1456,14 +1457,40 @@ for name, info in invitation_info.items():
 print(f"Migrating replies from {invitation_info.keys()}")
 
 # Post/update super invitations
-post_super_invitations(confid, invitation_info)
+if not rerunning:
+    post_super_invitations(confid, invitation_info)
 
 # Get all submissions + map submission IDs to previous paper (if not blind copy, get blind copy)
 previous_dict = {}
 submissions = client.get_all_notes(content={ 'venueid': f"{confid}/Submission" }, details='replies', sort='cdate:desc')
-for submission in submissions:
+for submission in tqdm(submissions, total=len(submissions)):
     previous_id = submission.content[paper_link_field]['value'].split('?id=')[1].split('&')[0]
-    previous_dict[submission.id] = client_v1.get_all_notes(id=previous_id, details='replies')[0]
+    prev_note = client_v1.get_all_notes(id=previous_id, details='replies')[0]
+
+    # Check if original - need to store blind submissions
+    if prev_note.invitation.endswith('/Submission'):
+        blind_prev = client_v1.get_all_notes(original=prev_note.id, details='replies')[0]
+        previous_dict[submission.id] = [blind_prev]
+    else:
+        previous_dict[submission.id] = [prev_note]
+        prev_note = client_v1.get_note(prev_note.original)
+
+    while 'previous_URL' in prev_note.content and len(prev_note.content['previous_URL']) > 0:
+        pp_url = prev_note.content['previous_URL']
+        try:
+            prev_prev_note = client_v1.get_all_notes(id=pp_url.split('?id=')[1].split('&')[0], details='replies')[0]
+        except:
+            print(f"{submission.id} invalid recursive previous url {pp_url}")
+            break
+        
+        # Check if original - need to store blind submissions
+        prev_note = prev_prev_note
+        if prev_note.invitation.endswith('/Submission'):
+            blind_prev = client_v1.get_all_notes(original=prev_note.id, details='replies')[0]
+            previous_dict[submission.id].append(blind_prev)
+        else:
+            previous_dict[submission.id].append(prev_note)
+            prev_note = client_v1.get_note(prev_note.original)
 
 # Post migrated submissions
 if not post_to_commitment:
@@ -1480,7 +1507,8 @@ for v in tqdm(commitment_dict.values(), total=len(commitment_dict.values())):
     migrated_notes[v] = client.get_note(v, details='replies')
 
 # Post/update submission invitations
-post_submission_invitations(confid, forums, invitation_info, migrated_prefix='ARR')
+if not rerunning:
+    post_submission_invitations(confid, forums, invitation_info, migrated_prefix='ARR')
 
 # Migrate replies to migrated submissions
 migrate_notes(confid, submissions, commitment_dict, previous_dict, invitation_info, migrated_notes)
