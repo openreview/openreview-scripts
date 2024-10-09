@@ -12,4 +12,36 @@ Once your conference has been approved, we will provide you with an administrato
 
 OpenReview can also be used as an internal paper archive and reviewing system for labs and other organizations.
 
-## 1.1 Hello World
+## ARR Commitments
+
+There are two ways of migrating commitment submissions, (1) posting the ARR submission replies directly to the commitment submissions or (2) posting the original ARR submissions and their contents to the receiving venue and they're accessed via a `migration_link` field added to the commitment submission.
+
+The scripts for both methods are found at `openreview-scripts/venues/aclweb.org/Workshops`
+
+(1) The script: `migrate_from_venue.py`
+
+Run in your terminal:
+`python migrate_from_venue.py --baseurl_v1 '' --baseurl_v2 ''  --username '' --password '' --confid '' --post_to_commitment`
+
+baseurl_v1: api 1 url  
+baseurl_v2: api 2 url  
+confid: the venue ID of the venue you want to migrate the replies to  
+
+(2) The scripts:
+
+Make sure that the venueid of the mirgated submissions are /Migrated_Submission
+
+First, run `create_invitations_workshops_one.py` to create the invitations for the migrating notes.
+`python create_invitations_workshops_one.py --baseurl '' --username '' --password '' --confid ''`
+
+baseurl: api 2 url
+
+Second, run `migrate_submissions_workshops_one.py` to migrate the submissions and replies.
+`python migrate_submissions_workshops_one.py --baseurl '' --baseurl_v2 '' --username '' --password '' --confid ''`
+
+baseurl: api 1 url  
+baseurl_v2: api 2 url  
+confid: the venue ID of the venue you want to migrate the notes to
+
+
+
