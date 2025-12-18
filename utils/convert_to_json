@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#
+# Convert BSON files from a MongoDB dump into JSON files
+
+set -eEuo pipefail
+
+main() {
+  require_deps bsondump
+
+  local dump_dir
+  dump_dir="./openreview"
+
+  if [[ ! -d "$dump_dir" ]]; then
+    echo "Error: directory $dump_dir does not exist"
+    exit 1
+  fi
+
+  local allowed_collections
+  allowed_collections=(
+    "profiles"
+    "groups"
+    "group_edits"
+    "invitations"
+    "invitations_v2"
+    "invitation_edits"
+    "notes"
+    "notes_v2"
+    "note_edits"
+    "invitation_edits"
+    "edges"
+    "tags"
+  )
+
+  local short_name
+  local full_name
+  local new_name
+  for collection in "${allowed_collections[@]}"; do
+    short_name="openreview_$collection.bson"
+    full_name="$dump_dir/$short_name"
+    new_name="${full_name/bson/json}"
+
+    rm -f "${new_name}"
+
+    if [[ -f "${full_name}" ]]; then
+      echo "Converting $short_name..."
+      bsondump "$full_name" --outFile="$new_name"
+      sed -i '' -e 's/\\/\\\\/g' -e 's/\\u0000//g' "$new_name"
+    fi
+  done
+
+  echo "Done converting bson files!"
+}
+
+require_deps() {
+  for dep in "$@"; do
+    command -v "${dep}" >/dev/null 2>&1 || {
+      echo "Required command ${dep} not found" >&2
+      exit 1
+    }
+  done
+}
+
+main "$@"
