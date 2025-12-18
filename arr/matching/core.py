@@ -1,0 +1,621 @@
+import datetime
+import openreview
+from typing import Dict, List, Optional
+from .assignments import AssignmentsBuilder
+from .sanity import SanityChecker
+from .registration_actions import RegistrationBuilder
+
+from .profile_utils import ProfileUtils
+
+from openreview.arr.management.setup_reviewer_matching import process as setup_reviewer_matching
+from openreview.arr.management.setup_ae_matching import process as setup_ac_matching
+from openreview.arr.management.setup_sae_matching import process as setup_sac_matching
+
+from .sac_core import SACACMatching
+
+from .constants import PROFILE_ID_FIELD, DEFAULT_REGISTRATION_CONTENT, EMERGENCY_FORM_MAPPING, LICENSE_FORM_MAPPING, REGISTRATION_FORM_MAPPING
+
+class ARRMatcher(object):
+    def __init__(
+            self,
+            client: openreview.api.OpenReviewClient,
+            request_form_id: str
+    ):
+        baseurl_v1, _baseurl_v2 = openreview.tools.get_base_urls(client)
+        self.client_v1 = openreview.Client(baseurl=baseurl_v1, token=client.token)
+        self.client = client
+        self.request_form_id = request_form_id
+
+        request_form_note = self.client_v1.get_note(request_form_id)
+        support_group = request_form_note.invitation.split('/-/')[0]
+        self.venue = openreview.helpers.get_conference(
+            self.client_v1,
+            request_form_id,
+            support_group
+        )
+        print(f"Loaded venue: {self.venue.id}")
+
+        self.assignments_builder = AssignmentsBuilder(self)
+        self.sanity_checker = SanityChecker(self)
+        self.registration_builder = RegistrationBuilder(self)
+
+    #region ====== Workflow functions ======
+
+    # -- Pre-matching --
+
+    def load_sacs_into_group(
+        self,
+        sac_tilde_ids: List[str],
+        sac_to_priority_track: Dict[str, str],
+        sac_to_all_tracks: Dict[str, List[str]],
+        dry_run: bool = False
+    ) -> Dict[str, int]:
+        """
+        Loads SACs from variables into the SAC group, posting registration notes if they are missing.
+        
+        This method validates that all provided SAC profile IDs exist, validates that the specified
+        tracks are valid, and ensures registration notes are posted/updated for each SAC.
+        If any SAC does not have a profile, an error is raised.
+
+        NOTE: The priority track should also be in the all tracks list. It will be added if not.
+        
+        Args:
+            sac_tilde_ids: List of SAC profile IDs to load into the SAC group
+            sac_to_priority_track: Dictionary mapping SAC profile ID to their priority track
+            sac_to_all_tracks: Dictionary mapping SAC profile ID to list of all tracks they are assigned to
+            dry_run: If True, skip confirmation prompt and return without making changes
+        
+        Returns:
+            Dictionary containing statistics about the operation:
+            - registration_notes_posted: Number of registration notes that were created
+            - registration_notes_existing: Number of registration notes that already existed but edited
+        
+        Raises:
+            ValueError: If any SAC profile ID does not have a corresponding profile
+            ValueError: If any track name in the mappings is not valid for the venue
+        """
+        # Load profile data
+        profiles: List[openreview.Profile] = ProfileUtils.get_valid_profiles(self.client, sac_tilde_ids)
+        all_names: List[str] = ProfileUtils.get_all_profile_names(profiles)
+
+        # Reset SAC group
+        sac_profile_ids = [profile.id for profile in profiles]
+        reset_group_members_result = ProfileUtils.reset_group_members(
+            client=self.client,
+            group_id=self.venue.get_senior_area_chairs_id(),
+            target_members=sac_profile_ids,
+            dry_run=dry_run
+        )
+        print(f"Reset SAC group members: {reset_group_members_result}")
+
+        # Validate tracks
+        for tracks in sac_to_all_tracks.values():
+            self.sanity_checker.check_valid_tracks(tracks)
+        for priority_track in sac_to_priority_track.values():
+            self.sanity_checker.check_valid_tracks([priority_track])
+        
+        # Clear registration notes
+        clear_registration_notes_result = self.registration_builder.clear_registration_notes(
+            invitation=f'{self.venue.get_senior_area_chairs_id()}/-/Registration',
+            valid_signatures=all_names,
+            dry_run=dry_run
+        )
+        print(f"Clear registration notes: {clear_registration_notes_result}")
+
+        # Build subset of content for research areas
+        sac_to_raw_content: Dict[str, Dict] = {}
+        for profile_id in sac_tilde_ids:
+            # Validate priority track is in all tracks
+            # If no tracks, set to priority track
+            priority_track = sac_to_priority_track[profile_id]
+            if priority_track not in sac_to_all_tracks[profile_id]:
+                sac_to_all_tracks[profile_id].append(priority_track)
+            if len(sac_to_all_tracks[profile_id]) == 0:
+                sac_to_all_tracks[profile_id] = [priority_track]
+
+            sac_to_raw_content[profile_id] = {
+                'priority_research_area': {
+                    'value': sac_to_priority_track[profile_id]
+                },
+                'research_area': {
+                    'value': sac_to_all_tracks[profile_id]
+                }
+            }
+
+        # Post registration notes
+        posted_data = self.registration_builder.post_generic_registration_notes(
+            invitation=f'{self.venue.get_senior_area_chairs_id()}/-/Registration',
+            profiles=profiles,
+            profile_ids_to_raw_content=sac_to_raw_content,
+            dry_run=dry_run
+        )
+        print(f"Post registration notes: {posted_data}")
+
+        return posted_data
+
+    def register_authors_as_reviewers(
+        self,
+        author_tilde_ids: List[str],
+        author_to_load: Dict[str, int],
+        dry_run: bool = False
+    ):
+        if not dry_run:
+            self.client.add_members_to_group(
+                self.venue.get_reviewers_id(),
+                author_tilde_ids
+            )
+        return self.sync_reviewer_loads(
+            forced_loads=author_to_load,
+            dry_run=dry_run
+        )
+
+    def register_authors_as_acs(
+        self,
+        author_tilde_ids: List[str],
+        author_to_load: Dict[str, int],
+        dry_run: bool = False
+    ):
+        if not dry_run:
+            self.client.add_members_to_group(
+                self.venue.get_area_chairs_id(),
+                author_tilde_ids
+            )
+        return self.sync_ac_loads(
+            forced_loads=author_to_load,
+            dry_run=dry_run
+        )
+
+    def make_reviewers_available(
+        self,
+        reviewer_to_load: Dict[str, int],
+        dry_run: bool = False
+    ):
+        return self.sync_reviewer_loads(
+            forced_loads=reviewer_to_load,
+            dry_run=dry_run
+        )
+
+    def make_acs_available(
+        self,
+        ac_to_load: Dict[str, int],
+        dry_run: bool = False
+    ):
+        return self.sync_ac_loads(
+            forced_loads=ac_to_load,
+            dry_run=dry_run
+        )
+
+    def transfer_reviewers_to_acs(
+        self,
+        reviewer_tilde_ids: List[str],
+        dry_run: bool = False
+    ):
+        return self.registration_builder.shift_roles(
+            tilde_ids=reviewer_tilde_ids,
+            source_group_id=self.venue.get_reviewers_id(),
+            target_group_id=self.venue.get_area_chairs_id(),
+            default_load=1,
+            dry_run=dry_run
+        )
+
+    def transfer_acs_to_reviewers(
+        self,
+        ac_tilde_ids: List[str],
+        dry_run: bool = False
+    ):
+        return self.registration_builder.shift_roles(
+            tilde_ids=ac_tilde_ids,
+            source_group_id=self.venue.get_area_chairs_id(),
+            target_group_id=self.venue.get_reviewers_id(),
+            default_load=1,
+            dry_run=dry_run
+        )
+
+    def check_reviewer_ac_overlap(self):
+        """Checks if there is any overlap between the reviewers and area chairs groups.
+
+        Returns:
+            Dictionary containing statistics about the overlap
+            - members_in_overlap: Number of members that are in both groups
+            - members_not_in_overlap: Number of members that are not in either group
+            - members_not_in_first_group: Number of members that are not in the first group
+            - members_not_in_second_group: Number of members that are not in the second group
+        """
+        return self.sanity_checker.check_role_overlap(
+            first_group_id=self.venue.get_reviewers_id(),
+            second_group_id=self.venue.get_area_chairs_id()
+        )
+
+    def check_ac_sac_overlap(self):
+        """Checks if there is any overlap between the area chairs and senior area chairs groups.
+
+        Returns:
+            Dictionary containing statistics about the overlap
+            - members_in_overlap: Number of members that are in both groups
+            - members_not_in_overlap: Number of members that are not in either group
+            - members_not_in_first_group: Number of members that are not in the first group
+            - members_not_in_second_group: Number of members that are not in the second group
+        """
+        return self.sanity_checker.check_role_overlap(
+            first_group_id=self.venue.get_area_chairs_id(),
+            second_group_id=self.venue.get_senior_area_chairs_id()
+        )
+
+    def check_sac_reviewer_overlap(self):
+        """Checks if there is any overlap between the senior area chairs and reviewers groups.
+
+        Returns:
+            Dictionary containing statistics about the overlap
+            - members_in_overlap: Number of members that are in both groups
+            - members_not_in_overlap: Number of members that are not in either group
+            - members_not_in_first_group: Number of members that are not in the first group
+            - members_not_in_second_group: Number of members that are not in the second group
+        """
+        return self.sanity_checker.check_role_overlap(
+            first_group_id=self.venue.get_senior_area_chairs_id(),
+            second_group_id=self.venue.get_reviewers_id()
+        )
+
+    def setup_reviewer_matching_data(self):
+        """
+        Sets up reviewer matching data.
+
+        Specifically, this function handles:
+
+        1) Creating the submitted reviewers groups early
+        2) Resetting the custom max papers edges to the values in the maximmum load notes
+        3) Updating the affinity scores for resubmissions
+            - 3 for requesting the same reviewer, 0 for requesting a different reviewer
+        4) Posting the research area edges (reviewer -> paper with a matching track)
+        5) Posting status edges to indicate reassigned or requested
+        6) Posting seniority edges
+        """
+        invitation_id = f'{self.venue.id}/-/Setup_Reviewer_Matching'
+        invitation = self.client.get_invitation(invitation_id)
+
+        setup_reviewer_matching.__globals__.setdefault('openreview', openreview)
+        setup_reviewer_matching.__globals__.setdefault('datetime', datetime)
+
+        return setup_reviewer_matching(client=self.client, invitation=invitation)
+
+    def setup_ac_matching_data(self):
+        """
+        Sets up area chair matching data.
+
+        Specifically, this function handles:
+
+        1) Resetting the custom max papers edges to the values in the maximmum load notes
+        2) Updating the affinity scores for resubmissions
+            - 3 for requesting the same area chair, 0 for requesting a different area chair
+        3) Posting the research area edges (area chair -> paper with a matching track)
+        4) Posting status edges to indicate reassigned or requested
+        """
+        invitation_id = f'{self.venue.id}/-/Setup_AE_Matching'
+        invitation = self.client.get_invitation(invitation_id)
+
+        setup_ac_matching.__globals__.setdefault('openreview', openreview)
+        setup_ac_matching.__globals__.setdefault('datetime', datetime)
+
+        return setup_ac_matching(client=self.client, invitation=invitation)
+
+    def setup_sac_matching_data(self):
+        """
+        Sets up senior area chair matching data.
+
+        Specifically, this function handles:
+
+        1) Resetting the custom max papers edges assume equal loads per track
+        3) Posting the research area edges (senior area chair -> paper with a matching track)
+        """
+        invitation_id = f'{self.venue.id}/-/Setup_SAE_Matching'
+        invitation = self.client.get_invitation(invitation_id)
+
+        setup_sac_matching.__globals__.setdefault('openreview', openreview)
+        setup_sac_matching.__globals__.setdefault('datetime', datetime)
+
+        return setup_sac_matching(client=self.client, invitation=invitation)
+
+    # -- Matching Stages --
+
+    def run_ac_matching(
+        self, 
+        num_years: int,
+        dry_run: bool = False
+    ):
+
+        # TODO: Decorator should display already posted data and check for missing data
+        self.compute_ac_affinity_scores(dry_run=dry_run)
+        self.compute_ac_conflicts(num_years=num_years, dry_run=dry_run)
+        self.sync_ac_loads(dry_run=dry_run)
+        self.sync_ac_tracks(dry_run=dry_run)
+        return self.assignments_builder.run_automatic_assignment(
+            group_id=self.venue.get_area_chairs_id(),
+            dry_run=dry_run
+        )
+
+    def run_reviewer_matching(
+        self,
+        num_years: int,
+        dry_run: bool = False
+    ):
+
+        self.compute_reviewer_affinity_scores(dry_run=dry_run)
+        self.compute_reviewer_conflicts(num_years=num_years, dry_run=dry_run)
+        self.sync_reviewer_loads(dry_run=dry_run)
+        self.sync_reviewer_tracks(dry_run=dry_run)
+        return self.assignments_builder.run_automatic_assignment(
+            group_id=self.venue.get_reviewers_id(),
+            dry_run=dry_run
+        )
+
+    def run_sac_ac_matching(
+        self,
+        threshold: float = 1.0,
+        sac_title: Optional[str] = None,
+        ac_title: Optional[str] = None,
+        reset_data: Optional[Dict[str, bool]] = None,
+        matcher_baseurl: str = 'http://localhost:5000',
+        dry_run: bool = False
+    ):
+        """
+        Runs the SAC-AC matching workflow.
+        
+        This method creates a SACACMatching instance and calls its run_matching() method
+        to execute the complete SAC-AC matching process.
+        
+        Args:
+            threshold: Threshold for track balancing (default: 1.0)
+            sac_title: Optional title for SAC matching (default: "sac-matching")
+            ac_title: Optional title for AC matching (default: "ac-matching")
+            reset_data: Optional dict with keys 'reset_sac_tracks' and 'reset_ac_tracks' 
+                       to control resetting track edges (default: None, no reset)
+            matcher_baseurl: Base URL for the matcher service (default: 'http://localhost:5000')
+            dry_run: If True, skip confirmation prompts and return without making changes
+        
+        Returns:
+            Result from SACACMatching.run_matching()
+        """
+        # Create SACACMatching instance
+        sac_ac_matcher = SACACMatching(
+            client_v1=self.client_v1,
+            client_v2=self.client,
+            request_form_id=self.request_form_id,
+            matcher_baseurl=matcher_baseurl,
+            cutoff=None,
+            checkpoint={}
+        )
+        
+        # Run the matching workflow
+        return sac_ac_matcher.run_matching(
+            threshold=threshold,
+            sac_title=sac_title,
+            ac_title=ac_title,
+            reset_data=reset_data
+        )
+
+    # -- Post-matching --
+
+    def run_sanity_checks(
+        self,
+        sac_assignment_title: Optional[str] = None,
+        ac_assignment_title: Optional[str] = None,
+        reviewer_assignment_title: Optional[str] = None
+    ):
+        return self.sanity_checker.run_sanity_checks(
+            sac_assignment_title=sac_assignment_title,
+            ac_assignment_title=ac_assignment_title,
+            reviewer_assignment_title=reviewer_assignment_title
+        )
+
+    def recommend_reviewers(
+        self,
+        num_required_assignments: int,
+        reviewer_assignment_title: Optional[str] = None,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.recommend_assignments(
+            group_id=self.venue.get_reviewers_id(),
+            num_required_assignments=num_required_assignments,
+            assignment_title=reviewer_assignment_title,
+            dry_run=dry_run
+        )
+
+    def recommend_acs(
+        self,
+        num_required_assignments: int,
+        ac_assignment_title: Optional[str] = None,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.recommend_assignments(
+            group_id=self.venue.get_area_chairs_id(),
+            num_required_assignments=num_required_assignments,
+            assignment_title=ac_assignment_title,
+            dry_run=dry_run
+        )
+
+    #endregion ====== End of Workflow functions ======
+
+
+    #region ====== Helper functions ======
+
+    def compute_reviewer_conflicts(
+        self,
+        num_years: int,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.compute_conflicts(
+            group_id=self.venue.get_reviewers_id(),
+            num_years=num_years,
+            dry_run=dry_run
+        )
+
+    def compute_ac_conflicts(
+        self,
+        num_years: int,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.compute_conflicts(
+            group_id=self.venue.get_area_chairs_id(),
+            num_years=num_years,
+            dry_run=dry_run
+        )
+
+    def compute_sac_conflicts(
+        self,
+        num_years: int,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.compute_conflicts(
+            group_id=self.venue.get_senior_area_chairs_id(),
+            num_years=num_years,
+            dry_run=dry_run
+        )
+
+    def compute_reviewer_affinity_scores(
+        self,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.compute_affinity_scores(
+            group_id=self.venue.get_reviewers_id(),
+            dry_run=dry_run
+        )
+
+    def compute_ac_affinity_scores(
+        self,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.compute_affinity_scores(
+            group_id=self.venue.get_area_chairs_id(),
+            dry_run=dry_run
+        )
+
+    def compute_sac_affinity_scores(
+        self,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.compute_affinity_scores(
+            group_id=self.venue.get_senior_area_chairs_id(),
+            dry_run=dry_run
+        )
+
+    def sync_reviewer_loads(
+        self,
+        forced_loads: Optional[Dict[str, int]] = None,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.sync_max_loads(
+            group_id=self.venue.get_reviewers_id(),
+            forced_loads=forced_loads,
+            dry_run=dry_run
+        )
+
+    def sync_reviewer_tracks(
+        self,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.sync_research_areas(
+            group_id=self.venue.get_reviewers_id(),
+            dry_run=dry_run
+        )
+
+    def sync_ac_loads(
+        self,
+        forced_loads: Optional[Dict[str, int]] = None,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.sync_max_loads(
+            group_id=self.venue.get_area_chairs_id(),
+            forced_loads=forced_loads,
+            dry_run=dry_run
+        )
+
+    def sync_ac_tracks(
+        self,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.sync_research_areas(
+            group_id=self.venue.get_area_chairs_id(),
+            dry_run=dry_run
+        )
+
+    def sync_sac_loads(
+        self,
+        forced_loads: Optional[Dict[str, int]] = None,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.sync_max_loads(
+            group_id=self.venue.get_senior_area_chairs_id(),
+            forced_loads=forced_loads,
+            dry_run=dry_run
+        )
+
+    def sync_sac_tracks(
+        self,
+        dry_run: bool = False
+    ):
+        return self.assignments_builder.sync_research_areas(
+            group_id=self.venue.get_senior_area_chairs_id(),
+            dry_run=dry_run
+        )
+
+    #endregion ====== End of Helper functions ======
+
+
+
+
+
+    # structural ideas
+    '''
+    - decorator to require user input on data deletion
+    - helpers for grouping by head/tail and label
+    - consistent label management (e.g., 'rev-matching-1' → 'rev-matching-2')
+    - consistent readers/nonreaders on proposed edges
+    '''
+
+    # pre-matching
+    '''
+    1) registration actions
+    - registering authors as reviewers
+    - shifting from one role to another (ac to reviewer)
+    - posting availability for profiles
+    - import SAC lists from CSV and validate against profiles
+    - map ACs/SACs to tracks from registration forms
+    - validate track names with fuzzy matching suggestions
+    - configure submission forms, hide/show fields via meta invitation
+    2) run arr setup matching scripts
+    - delete/reset edges (conflicts, affinity scores) when re-running setup
+    - setup_committee_matching for Reviewers/ACs with chosen scorers
+    - seed or reset Custom_Max_Papers (CMP) as baseline
+    3) check for ac/reviewer capacity via naive matching
+    - compute loads against CMP and availability notes
+    - quick capacity audit before expensive matching
+    '''
+    # mid-matching
+    '''
+    1) run sac-ac matching
+    - various clean up and retry logic
+    - ensure SAC↔AC assignments respect COIs and track constraints
+    - detect ACs with paper assignments but no SAC (debug helper)
+    2) run reviewer matching
+    - produce Proposed_Assignment edges for multiple labels (iterations)
+    - carry over a subset of Proposed_Assignment edges across labels
+    - rebuild readers/nonreaders on Proposed_Assignment edges if needed
+    3) run partial matchings
+    - easy interface to post 0 load custom user demands
+    - automatically adjust shared cmp while grounding to notes
+    - fill per-paper gaps to target (e.g., fill to 3) using CUD edges
+    - move assignments between users to rebalance loads
+    - clear or prune Proposed_Assignment edges by label/head/tail
+    - support a secondary CMP channel (e.g., Custom_Max_Papers_2)
+    '''
+    # post-matching
+    '''
+    1) find reviewer assignments
+    - convert Proposed_Assignment → Assignment edges by committee
+    2) sanity checks
+    - COI coverage, min-per-paper, max-load violations, group membership
+    - tracks without SACs; ACs with papers but without SAC
+    3) removing reviewer assignments
+    - targeted cleanup utilities (by label, by user, by head)
+    - snapshot + rollback helpers for edge changes
+    '''
