@@ -141,8 +141,7 @@ class MatchingData:
         logger = logging.getLogger(__name__)
         logger.debug("Fetching matching data")
         fallback_path = os.path.join(os.path.dirname(__file__), 'arr_track_fallback.json')
-        with open(fallback_path, 'r') as f:
-            self.track_fallback = json.load(f)
+        self.track_fallback = {}
 
         self._populate_submissions(logger)
         self._populate_reviewers_and_tracks(logger)
@@ -627,7 +626,7 @@ class SACACMatching:
     # workflow functions
     # ---------------------------------------------------------------------- #
 
-    def create_priority_track_plan(self, ptl_cfg):
+    def create_priority_track_load_plan(self, ptl_cfg):
         papers_by_track = {t: len(self.matching_data.submissions_by_track.get(t, [])) for t in self.matching_data.submissions_by_track}
         sac_priority_tracks = getattr(self.matching_data, 'sac_priority_tracks', None) or self.matching_data.sac_to_tracks
         sac_ids = list(self.matching_data.sac_reg.keys())
