@@ -23,7 +23,7 @@ client_v1 = openreview.Client(
 )
 venue = openreview.helpers.get_conference(client_v1, req_form_id)
 ```
-For production/live, you can use the baseurls: `https://api.openreview.net` and `https://api2.openreview.net`
+For production/live, you should use the baseurls: `https://api.openreview.net` and `https://api2.openreview.net` and your usual username and password for the live site.
 
 You can create an `SACACMatching` instance with:
 ```python
@@ -41,6 +41,7 @@ matching.run_matching(
     sac_title='sac-matching'
 )
 ```
+This will run 2 intermediate AC matchings to produce 1 final AC matching and 1 final SAC matching
 
 ### Running the ARR-specific Matching Setup
 Below is an example that runs the ARR matching scripts, which computes and uploads research area edges. These scripts get run in the OpenReview backend via a dateprocess function:
