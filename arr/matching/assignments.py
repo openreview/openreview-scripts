@@ -227,7 +227,7 @@ class AssignmentsBuilder(object):
     def compute_conflicts(
         self,
         group_id: str,
-        num_years: int,
+        num_years: int = None,
         dry_run: bool = False,
         force: bool = False
     ):
@@ -242,6 +242,14 @@ class AssignmentsBuilder(object):
             force: If True, skip confirmation prompt but still perform the operation.
         """
         if not dry_run:
+
+            EdgeUtils.delete_edges_with_polling(
+                client=self.client,
+                invitation=f"{group_id}/-/Conflict",
+                soft_delete=False,
+                poll_interval_seconds=30,
+            )
+
             return self.venue.setup_committee_matching(
                 group_id,
                 None,
@@ -344,7 +352,9 @@ class AssignmentsBuilder(object):
         for research_area in all_profile_research_areas:
             if research_area not in research_area_to_submissions:
                 raise ValueError(f"Research area {research_area} not found in research_area_to_submissions")
-
+        
+        print(f"profiles with research areas: {len(profile_id_to_research_areas)}")
+        print(f"total submissions: {sum(len(research_area_to_submissions[research_area]) for research_area in research_area_to_submissions)}")
         for profile_id, research_areas in profile_id_to_research_areas.items():
             for research_area in research_areas:
                 for submission_id in research_area_to_submissions[research_area]:
@@ -356,13 +366,21 @@ class AssignmentsBuilder(object):
                     )
                     edges_to_post.append(
                         openreview.api.Edge(
+                            invitation=f"{group_id}/-/Research_Area",
                             head=submission_id,
                             tail=profile_id,
                             label=research_area,
+                            weight=1,
                             **permissions
                         )
                     )
 
+        EdgeUtils.delete_edges_with_polling(
+            client=self.client,
+            invitation=f"{group_id}/-/Research_Area",
+            soft_delete=False,
+            poll_interval_seconds=10,
+        )
         post_return = EdgeUtils.post_bulk_edges(
             client=self.client,
             edges=edges_to_post,
@@ -429,11 +447,19 @@ class AssignmentsBuilder(object):
                 tail=profile_id
             )
             edges_to_post.append(openreview.api.Edge(
-                head=profile_id,
+                invitation=f"{group_id}/-/Custom_Max_Papers",
+                head=group_id,
                 tail=profile_id,
                 weight=load,
                 **permissions
             ))
+
+        EdgeUtils.delete_edges_with_polling(
+            client=self.client,
+            invitation=f"{group_id}/-/Custom_Max_Papers",
+            soft_delete=False,
+            poll_interval_seconds=10,
+        )
 
         post_return = EdgeUtils.post_bulk_edges(
             client=self.client,

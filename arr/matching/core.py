@@ -3,7 +3,8 @@ import openreview
 from typing import Dict, List, Optional
 from .assignments import AssignmentsBuilder
 from .sanity import SanityChecker
-from .registration_actions import RegistrationBuilder
+from .registration import RegistrationDataLoader
+from .registration import transfer_between
 
 from .profile_utils import ProfileUtils
 
@@ -37,7 +38,7 @@ class ARRMatcher(object):
 
         self.assignments_builder = AssignmentsBuilder(self)
         self.sanity_checker = SanityChecker(self)
-        self.registration_builder = RegistrationBuilder(self)
+        self.registration_builder = RegistrationDataLoader(self, self.venue)
 
     #region ====== Workflow functions ======
 
@@ -190,11 +191,11 @@ class ARRMatcher(object):
         reviewer_tilde_ids: List[str],
         dry_run: bool = False
     ):
-        return self.registration_builder.shift_roles(
-            tilde_ids=reviewer_tilde_ids,
-            source_group_id=self.venue.get_reviewers_id(),
-            target_group_id=self.venue.get_area_chairs_id(),
-            default_load=1,
+        return transfer_between(
+            from_group=self.venue.get_reviewers_id(),
+            to_group=self.venue.get_area_chairs_id(),
+            members=reviewer_tilde_ids,
+            client=self.client,
             dry_run=dry_run
         )
 
@@ -203,11 +204,11 @@ class ARRMatcher(object):
         ac_tilde_ids: List[str],
         dry_run: bool = False
     ):
-        return self.registration_builder.shift_roles(
-            tilde_ids=ac_tilde_ids,
-            source_group_id=self.venue.get_area_chairs_id(),
-            target_group_id=self.venue.get_reviewers_id(),
-            default_load=1,
+        return transfer_between(
+            from_group=self.venue.get_area_chairs_id(),
+            to_group=self.venue.get_reviewers_id(),
+            members=ac_tilde_ids,
+            client=self.client,
             dry_run=dry_run
         )
 
@@ -440,7 +441,7 @@ class ARRMatcher(object):
 
     def compute_reviewer_conflicts(
         self,
-        num_years: int,
+        num_years: int = None,
         dry_run: bool = False
     ):
         return self.assignments_builder.compute_conflicts(
@@ -451,7 +452,7 @@ class ARRMatcher(object):
 
     def compute_ac_conflicts(
         self,
-        num_years: int,
+        num_years: int = None,
         dry_run: bool = False
     ):
         return self.assignments_builder.compute_conflicts(
@@ -462,7 +463,7 @@ class ARRMatcher(object):
 
     def compute_sac_conflicts(
         self,
-        num_years: int,
+        num_years: int = None,
         dry_run: bool = False
     ):
         return self.assignments_builder.compute_conflicts(
