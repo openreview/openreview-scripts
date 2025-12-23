@@ -498,6 +498,8 @@ class AssignmentsBuilder(object):
             - papers_processed: Number of papers that needed more assignments
             - papers_filled: Number of papers that reached the target number of assignments
         """
+        members = self.client.get_group(group_id).members
+        profiles = ProfileUtils.get_valid_profiles(self.client, list(members))
         
         # Fetch submissions
         submissions = self.venue.get_submissions()
@@ -551,21 +553,9 @@ class AssignmentsBuilder(object):
             group_id
         )
         
-        # Fetch load notes and map to profile IDs
-        load_notes = self.client.get_all_notes(
-            invitation=f"{group_id}/-/Max_Load_And_Unavailability_Request"
+        profile_id_to_max_load = self.registration_loader.get_loads(
+            members
         )
-        profile_id_to_load_note = NoteUtils.map_profile_id_to_note(
-            self.client,
-            load_notes
-        )
-        
-        # Build profile_id_to_max_load mapping
-        profile_id_to_max_load = {}
-        for profile_id, note in profile_id_to_load_note.items():
-            profile_id_to_max_load[profile_id] = int(
-                note.content['maximum_load_this_cycle']['value']
-            )
         
         # Get group members
         group_members = set(self.client.get_group(group_id).members)
@@ -626,11 +616,6 @@ class AssignmentsBuilder(object):
             
             # Score available users
             user_scores = {}
-            paper_research_areas = set(
-                _as_string_list(
-                    submissions_by_id[paper_id].content.get('research_area', {}).get('value')
-                )
-            )
             
             for user_id in available_users:
                 score = 0.0
@@ -642,7 +627,7 @@ class AssignmentsBuilder(object):
                 
                 # Add research area
                 user_research_areas = set(research_areas_by_user.get(user_id, []))
-                if paper_research_areas & user_research_areas:
+                if paper_id in user_research_areas:
                     score += 1.0
                 
                 user_scores[user_id] = score
