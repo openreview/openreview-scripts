@@ -102,6 +102,7 @@ class RegistrationDataLoader(object):
         profile_id_to_notes = {}  # profile_id -> list of (note, timestamp) tuples
         
         # Process registration notes
+        print(f"Processing {len(all_registration_notes)} registration notes")
         for note in all_registration_notes:
             signature = note.signatures[0] if getattr(note, 'signatures', None) else None
             if isinstance(getattr(note, 'content', None), dict) and PROFILE_ID_FIELD in note.content:
@@ -166,13 +167,13 @@ class RegistrationDataLoader(object):
                     logger.debug(f"Error extracting research areas from note {note.id}: {e}")
                     continue
 
-                if research_areas:
-                    profile_id_to_research_areas[profile_id] = research_areas
-                    mapped_members += 1
-                else:
-                    missing_members.append(profile_id)
+            if research_areas:
+                profile_id_to_research_areas[profile_id] = research_areas
+                mapped_members += 1
+            else:
+                missing_members.append(profile_id)
         
-        logger.info(f"get_research_areas: notes_loaded_total={notes_loaded_total}, "
+        print(f"get_research_areas: notes_loaded_total={notes_loaded_total}, "
                    f"mapped_members={mapped_members}, missing_members={len(missing_members)}")
         
         return profile_id_to_research_areas
@@ -349,13 +350,6 @@ def transfer_between(
     name_to_profile_id = ProfileUtils.map_profile_names_to_profile_id(profiles)
     name_to_all_names = ProfileUtils.map_profile_names_to_all_names(profiles)
     
-    # Build reverse mapping: all names -> canonical profile ID
-    name_to_profile_id = {}
-    for name, all_names in name_to_all_names.items():
-        canonical_id = name_to_profile_id[name]
-        for alt_name in all_names:
-            name_to_profile_id[alt_name] = canonical_id
-    
     # Get current group memberships
     from_group_obj = client.get_group(from_group)
     to_group_obj = client.get_group(to_group)
@@ -382,19 +376,9 @@ def transfer_between(
     members_skipped_not_in_source = 0
     members_skipped_already_in_target = 0
     
-    # Build profile_id -> all_names mapping
-    profile_id_to_all_names = {}
-    for profile in profiles:
-        all_names = [
-            name_obj['username']
-            for name_obj in profile.content.get('names', [])
-            if 'username' in name_obj and len(name_obj['username']) > 0
-        ]
-        profile_id_to_all_names[profile.id] = all_names
-    
     for profile_id in profile_ids:
         # Get all names for this profile
-        all_names_for_profile = profile_id_to_all_names.get(profile_id, [profile_id])
+        all_names_for_profile = name_to_all_names.get(profile_id, [profile_id])
         
         # Check if member is in source group (by any name)
         in_source = False
@@ -433,16 +417,12 @@ def transfer_between(
     
     if not dry_run:
         # Remove from source group
-        for member in members_to_remove:
-            if member in from_group_obj.members:
-                client.remove_members_from_group(from_group_obj, member)
-                members_removed += 1
+        client.delete_members_from_group(from_group_obj, members_to_remove)
+        members_removed += len(members_to_remove)
         
         # Add to target group
-        for member in members_to_add:
-            if member not in to_group_obj.members:
-                client.add_members_to_group(to_group_obj, member)
-                members_added += 1
+        client.add_members_to_group(to_group_obj, members_to_add)
+        members_added += len(members_to_add)
     
     logger.info(f"transfer_between: members_added={members_added}, members_removed={members_removed}")
     
