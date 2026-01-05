@@ -316,7 +316,8 @@ def transfer_between(
     to_group: str,
     members: Optional[Sequence[str]],
     client: openreview.api.OpenReviewClient,
-    dry_run: bool = False
+    dry_run: bool = False,
+    force: bool = False
 ) -> Dict[str, int]:
     """
     Transfer members from one group to another
@@ -330,6 +331,7 @@ def transfer_between(
         members: Explicit list of members to transfer (required, cannot be None).
         client: OpenReview API client.
         dry_run: If True, do not mutate group membership.
+        force: If True, skip any confirmation prompts (for API consistency).
     
     Returns:
         Dict[str, int] with summary counts:

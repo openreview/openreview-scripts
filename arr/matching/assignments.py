@@ -186,21 +186,24 @@ class AssignmentsBuilder(object):
     def run_automatic_assignment(
         self,
         group_id: str,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         """Runs the automatic assignment process.
 
         Args:
             group_id: The ID of the group to run the automatic assignment process on.
             dry_run: If True, skip confirmation prompt and return without running the automatic assignment process.
+            force: If True, skip confirmation prompts but still perform the operation.
         """
         config_note_edit = self.matcher.post_configuration_note_edit(
             committee_name=group_id,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
         config_note_id = config_note_edit['note']['id']
         title = config_note_edit['note']['content']['title']['value']
-        response = self.matcher.post_matcher(config_note_id, dry_run=dry_run)
+        response = self.matcher.post_matcher(config_note_id, dry_run=dry_run, force=force)
         # Wait for complete or error
         termination_states = [
             "Error",
@@ -248,6 +251,7 @@ class AssignmentsBuilder(object):
                 invitation=f"{group_id}/-/Conflict",
                 soft_delete=False,
                 poll_interval_seconds=30,
+                force=force,
             )
 
             return self.venue.setup_committee_matching(
@@ -289,12 +293,14 @@ class AssignmentsBuilder(object):
     def sync_research_areas(
         self,
         group_id: str,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ) -> Dict[str, int]:
         """Syncs the research areas for a given group by looking at the registration notes
         Args:
             group_id: The ID of the group to sync the research areas for.
             dry_run: If True, skip confirmation prompt and return without syncing the research areas.
+            force: If True, skip confirmation prompts but still perform the operation.
         """
         # Load members and get research areas using the loader
         members = self.client.get_group(group_id)
@@ -306,7 +312,8 @@ class AssignmentsBuilder(object):
         return self.post_research_areas(
             group_id=group_id,
             profile_id_to_research_areas=profile_id_to_research_areas,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     @require_confirmation
@@ -380,11 +387,13 @@ class AssignmentsBuilder(object):
             invitation=f"{group_id}/-/Research_Area",
             soft_delete=False,
             poll_interval_seconds=10,
+            force=force,
         )
         post_return = EdgeUtils.post_bulk_edges(
             client=self.client,
             edges=edges_to_post,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force,
         )
         return {
             'research_areas_posted': post_return['edges_posted'],
@@ -394,7 +403,8 @@ class AssignmentsBuilder(object):
         self,
         group_id: str,
         forced_loads: Optional[Dict[str, int]] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         """Syncs the max loads for a given group to their responses to the maximum load form
         This is useful to ensure that the matcher max loads are consistent with the responses to the maximum load form.
@@ -402,6 +412,7 @@ class AssignmentsBuilder(object):
             group_id: The ID of the group to sync the max loads for.
             forced_loads: Optional mapping from user identifier/profile id to forced capacity.
             dry_run: If True, skip confirmation prompt and return without syncing the max loads.
+            force: If True, skip confirmation prompts but still perform the operation.
         """
         # Load members and get loads using the loader
         members = self.client.get_group(group_id)
@@ -414,7 +425,8 @@ class AssignmentsBuilder(object):
         return self.post_max_loads(
             group_id=group_id,
             profile_id_to_loads=profile_id_to_max_load,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     @require_confirmation
@@ -459,12 +471,14 @@ class AssignmentsBuilder(object):
             invitation=f"{group_id}/-/Custom_Max_Papers",
             soft_delete=False,
             poll_interval_seconds=10,
+            force=force,
         )
 
         post_return = EdgeUtils.post_bulk_edges(
             client=self.client,
             edges=edges_to_post,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force,
         )
         return {
             'loads_posted': post_return['edges_posted'],
