@@ -997,11 +997,9 @@ Provides utilities for extracting profile information from notes.
 
 ## ARR SAC-Matching Core (`arr/matching/sac_core.py`)
 
-The `sac_core.py` module implements a sophisticated multi-stage SAC-AC matching workflow. Unlike the simpler reviewer/AC matching which runs a single optimization pass, SAC-AC matching requires multiple iterations to properly handle the hierarchical assignment structure.
+The `sac_core.py` module implements a sophisticated multi-stage SAC-AC matching workflow. Unlike the simpler reviewer matching which runs a single optimization pass, SAC-AC matching requires multiple iterations to properly handle the hierarchical assignment structure.
 
-The core challenge is that SACs are assigned to tracks, ACs are assigned to papers, and we need ACs to work with SACs in their assigned tracks. The solution is an iterative refinement approach: first run AC matching without constraints to infer track affinities, then constrain subsequent matchings based on those inferences.
-
-The workflow is resumable—if interrupted, it can detect completed steps and resume from where it left off using a checkpoint system.
+The core challenge is that SACs must be assigned to papers, ACs are assigned to papers, and we need ACs to only have 1 SAC. We cannot assign SACs to ACs because they need to have authority over the paper, which can only be done if they are assigned to papers. The solution is an iterative refinement approach: first run AC matching without constraints to infer track affinities, then constrain subsequent matchings based on those inferences.
 
 ### High-Level Steps in run_matching()
 
