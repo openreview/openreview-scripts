@@ -822,8 +822,6 @@ Moves members from one committee role to another, handling profile name variants
 
 The `sanity.py` module validates matching results before they are deployed to production. The main entry point, `run_sanity_checks()`, runs a comprehensive suite of validation checks and returns a dictionary of results with counts of any violations found.
 
-Workflow chairs should run sanity checks after matching completes but before deploying assignments. Zero counts across all checks indicates the matching is ready for deployment. Non-zero counts indicate issues that should be investigated—for example, papers with too few reviewers, users assigned beyond their stated capacity, or accidental conflicts of interest.
-
 #### Technical Dive
 
 **SanityChecker.run_sanity_checks()**
