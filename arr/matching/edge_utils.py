@@ -29,6 +29,8 @@ class EdgeUtils(object):
         soft_delete: bool = False,
         poll_interval_seconds: int = 30,
         max_polls: int = 40,
+        dry_run: bool = False,
+        force: bool = False,
     ) -> None:
         """
         Trigger asynchronous edge deletion and poll until the matching edges disappear.
@@ -36,7 +38,13 @@ class EdgeUtils(object):
         Parameters mirror ``OpenReviewClient.delete_edges`` with two extra controls:
         ``poll_interval_seconds`` and ``max_polls``. The function raises if the edges do
         not disappear within ``poll_interval_seconds * max_polls`` seconds.
+
+        Args:
+            dry_run: If True, skip confirmation prompt and return without deleting edges.
+            force: If True, skip confirmation prompt but still perform the deletion.
         """
+        if dry_run:
+            return
 
         if not invitation:
             raise ValueError("invitation is required to delete edges")
@@ -52,6 +60,8 @@ class EdgeUtils(object):
             delete_filters["head"] = head
         if tail:
             delete_filters["tail"] = tail
+
+        print(f"Deleting {invitation} edges with filters: {delete_filters}")
 
         client.delete_edges(
             **delete_filters,

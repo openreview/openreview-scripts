@@ -92,33 +92,33 @@ class SanityChecker(object):
             'reviewer_max_papers_exceeding_max_load_note': 0
         }
 
-        ac_custom_max_papers = EdgeUtils.get_custom_max_papers(self.client, self.venue.get_area_chairs_id(), by=EdgeGroupBy.user)
-        reviewer_custom_max_papers = EdgeUtils.get_custom_max_papers(self.client, self.venue.get_reviewers_id(), by=EdgeGroupBy.user)
+        reviewers_members = self.client.get_group(self.venue.get_reviewers_id()).members
+        ac_members = self.client.get_group(self.venue.get_area_chairs_id()).members
 
-        ac_max_load_notes = self.client.get_all_notes(
-            invitation=f"{self.venue.get_area_chairs_id()}/-/Max_Load_And_Unavailability_Request"
+        ac_custom_max_papers = EdgeUtils.get_custom_max_papers(self.client, self.venue.get_area_chairs_id())
+        reviewer_custom_max_papers = EdgeUtils.get_custom_max_papers(self.client, self.venue.get_reviewers_id())
+
+        reviewer_id_to_max_load = self.registration_loader.get_loads(
+            reviewers_members
         )
-        ac_id_to_note = NoteUtils.map_profile_id_to_note(self.client, ac_max_load_notes)
-        reviewer_max_load_notes = self.client.get_all_notes(
-            invitation=f"{self.venue.get_reviewers_id()}/-/Max_Load_And_Unavailability_Request"
+
+        ac_id_to_max_load = self.registration_loader.get_loads(
+            ac_members
         )
-        reviewer_id_to_note = NoteUtils.map_profile_id_to_note(self.client, reviewer_max_load_notes)
 
         for ac_id, ac_max_papers in ac_custom_max_papers.items():
-            ac_note = ac_id_to_note.get(ac_id, None)
-            if ac_note is None:
+            ac_max_load = ac_id_to_max_load.get(ac_id)
+            if ac_max_load is None:
                 results['ac_max_papers_exceeding_max_load_note'] += 1
             else:
-                ac_max_load = int(ac_note.content['maximum_load_this_cycle']['value'])
                 if ac_max_papers > ac_max_load:
                     results['ac_max_papers_exceeding_max_load_note'] += 1
 
         for reviewer_id, reviewer_max_papers in reviewer_custom_max_papers.items():
-            reviewer_note = reviewer_id_to_note.get(reviewer_id, None)
-            if reviewer_note is None:
+            reviewer_max_load = reviewer_id_to_max_load.get(reviewer_id)
+            if reviewer_max_load is None:
                 results['reviewer_max_papers_exceeding_max_load_note'] += 1
             else:
-                reviewer_max_load = int(reviewer_note.content['maximum_load_this_cycle']['value'])
                 if reviewer_max_papers > reviewer_max_load:
                     results['reviewer_max_papers_exceeding_max_load_note'] += 1
 
@@ -184,7 +184,7 @@ class SanityChecker(object):
         }
         sac_assignments = EdgeUtils.get_assignments(self.client, self.venue.get_senior_area_chairs_id(), by=EdgeGroupBy.user, title=sac_assignment_title)
         ac_assignments = EdgeUtils.get_assignments(self.client, self.venue.get_area_chairs_id(), by=EdgeGroupBy.user, title=ac_assignment_title)
-        ac_assignments_by_head = EdgeUtils.get_assignments(self.client, self.venue.get_area_chairs_id(), by=EdgeGroupBy.head, title=ac_assignment_title)
+        ac_assignments_by_head = EdgeUtils.get_assignments(self.client, self.venue.get_area_chairs_id(), by=EdgeGroupBy.paper, title=ac_assignment_title)
         for sac, assigned_papers in sac_assignments.items():
             # get acs assigned to papers that are assigned to sac
             assigned_acs = set()
