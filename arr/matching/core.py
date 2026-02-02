@@ -3,7 +3,8 @@ import openreview
 from typing import Dict, List, Optional
 from .assignments import AssignmentsBuilder
 from .sanity import SanityChecker
-from .registration_actions import RegistrationBuilder
+from .registration import RegistrationDataLoader
+from .registration import transfer_between
 
 from .profile_utils import ProfileUtils
 
@@ -37,7 +38,7 @@ class ARRMatcher(object):
 
         self.assignments_builder = AssignmentsBuilder(self)
         self.sanity_checker = SanityChecker(self)
-        self.registration_builder = RegistrationBuilder(self)
+        self.registration_builder = RegistrationDataLoader(self, self.venue)
 
     #region ====== Workflow functions ======
 
@@ -137,7 +138,8 @@ class ARRMatcher(object):
         self,
         author_tilde_ids: List[str],
         author_to_load: Dict[str, int],
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         if not dry_run:
             self.client.add_members_to_group(
@@ -146,14 +148,16 @@ class ARRMatcher(object):
             )
         return self.sync_reviewer_loads(
             forced_loads=author_to_load,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def register_authors_as_acs(
         self,
         author_tilde_ids: List[str],
         author_to_load: Dict[str, int],
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         if not dry_run:
             self.client.add_members_to_group(
@@ -162,53 +166,62 @@ class ARRMatcher(object):
             )
         return self.sync_ac_loads(
             forced_loads=author_to_load,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def make_reviewers_available(
         self,
         reviewer_to_load: Dict[str, int],
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.sync_reviewer_loads(
             forced_loads=reviewer_to_load,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def make_acs_available(
         self,
         ac_to_load: Dict[str, int],
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.sync_ac_loads(
             forced_loads=ac_to_load,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def transfer_reviewers_to_acs(
         self,
         reviewer_tilde_ids: List[str],
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
-        return self.registration_builder.shift_roles(
-            tilde_ids=reviewer_tilde_ids,
-            source_group_id=self.venue.get_reviewers_id(),
-            target_group_id=self.venue.get_area_chairs_id(),
-            default_load=1,
-            dry_run=dry_run
+        return transfer_between(
+            from_group=self.venue.get_reviewers_id(),
+            to_group=self.venue.get_area_chairs_id(),
+            members=reviewer_tilde_ids,
+            client=self.client,
+            dry_run=dry_run,
+            force=force
         )
 
     def transfer_acs_to_reviewers(
         self,
         ac_tilde_ids: List[str],
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
-        return self.registration_builder.shift_roles(
-            tilde_ids=ac_tilde_ids,
-            source_group_id=self.venue.get_area_chairs_id(),
-            target_group_id=self.venue.get_reviewers_id(),
-            default_load=1,
-            dry_run=dry_run
+        return transfer_between(
+            from_group=self.venue.get_area_chairs_id(),
+            to_group=self.venue.get_reviewers_id(),
+            members=ac_tilde_ids,
+            client=self.client,
+            dry_run=dry_run,
+            force=force
         )
 
     def check_reviewer_ac_overlap(self):
@@ -318,34 +331,38 @@ class ARRMatcher(object):
     # -- Matching Stages --
 
     def run_ac_matching(
-        self, 
+        self,
         num_years: int,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
 
         # TODO: Decorator should display already posted data and check for missing data
-        self.compute_ac_affinity_scores(dry_run=dry_run)
-        self.compute_ac_conflicts(num_years=num_years, dry_run=dry_run)
-        self.sync_ac_loads(dry_run=dry_run)
-        self.sync_ac_tracks(dry_run=dry_run)
+        self.compute_ac_affinity_scores(dry_run=dry_run, force=force)
+        self.compute_ac_conflicts(num_years=num_years, dry_run=dry_run, force=force)
+        self.sync_ac_loads(dry_run=dry_run, force=force)
+        self.sync_ac_tracks(dry_run=dry_run, force=force)
         return self.assignments_builder.run_automatic_assignment(
             group_id=self.venue.get_area_chairs_id(),
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def run_reviewer_matching(
         self,
         num_years: int,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
 
-        self.compute_reviewer_affinity_scores(dry_run=dry_run)
-        self.compute_reviewer_conflicts(num_years=num_years, dry_run=dry_run)
-        self.sync_reviewer_loads(dry_run=dry_run)
-        self.sync_reviewer_tracks(dry_run=dry_run)
+        self.compute_reviewer_affinity_scores(dry_run=dry_run, force=force)
+        self.compute_reviewer_conflicts(num_years=num_years, dry_run=dry_run, force=force)
+        self.sync_reviewer_loads(dry_run=dry_run, force=force)
+        self.sync_reviewer_tracks(dry_run=dry_run, force=force)
         return self.assignments_builder.run_automatic_assignment(
             group_id=self.venue.get_reviewers_id(),
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def run_sac_ac_matching(
@@ -411,26 +428,30 @@ class ARRMatcher(object):
         self,
         num_required_assignments: int,
         reviewer_assignment_title: Optional[str] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.recommend_assignments(
             group_id=self.venue.get_reviewers_id(),
             num_required_assignments=num_required_assignments,
             assignment_title=reviewer_assignment_title,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def recommend_acs(
         self,
         num_required_assignments: int,
         ac_assignment_title: Optional[str] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.recommend_assignments(
             group_id=self.venue.get_area_chairs_id(),
             num_required_assignments=num_required_assignments,
             assignment_title=ac_assignment_title,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     #endregion ====== End of Workflow functions ======
@@ -440,122 +461,146 @@ class ARRMatcher(object):
 
     def compute_reviewer_conflicts(
         self,
-        num_years: int,
-        dry_run: bool = False
+        num_years: int = None,
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.compute_conflicts(
             group_id=self.venue.get_reviewers_id(),
             num_years=num_years,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def compute_ac_conflicts(
         self,
-        num_years: int,
-        dry_run: bool = False
+        num_years: int = None,
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.compute_conflicts(
             group_id=self.venue.get_area_chairs_id(),
             num_years=num_years,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def compute_sac_conflicts(
         self,
-        num_years: int,
-        dry_run: bool = False
+        num_years: int = None,
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.compute_conflicts(
             group_id=self.venue.get_senior_area_chairs_id(),
             num_years=num_years,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def compute_reviewer_affinity_scores(
         self,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.compute_affinity_scores(
             group_id=self.venue.get_reviewers_id(),
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def compute_ac_affinity_scores(
         self,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.compute_affinity_scores(
             group_id=self.venue.get_area_chairs_id(),
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def compute_sac_affinity_scores(
         self,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.compute_affinity_scores(
             group_id=self.venue.get_senior_area_chairs_id(),
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def sync_reviewer_loads(
         self,
         forced_loads: Optional[Dict[str, int]] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.sync_max_loads(
             group_id=self.venue.get_reviewers_id(),
             forced_loads=forced_loads,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def sync_reviewer_tracks(
         self,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.sync_research_areas(
             group_id=self.venue.get_reviewers_id(),
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def sync_ac_loads(
         self,
         forced_loads: Optional[Dict[str, int]] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.sync_max_loads(
             group_id=self.venue.get_area_chairs_id(),
             forced_loads=forced_loads,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def sync_ac_tracks(
         self,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.sync_research_areas(
             group_id=self.venue.get_area_chairs_id(),
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def sync_sac_loads(
         self,
         forced_loads: Optional[Dict[str, int]] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.sync_max_loads(
             group_id=self.venue.get_senior_area_chairs_id(),
             forced_loads=forced_loads,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     def sync_sac_tracks(
         self,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         return self.assignments_builder.sync_research_areas(
             group_id=self.venue.get_senior_area_chairs_id(),
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     #endregion ====== End of Helper functions ======

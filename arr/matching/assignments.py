@@ -186,21 +186,24 @@ class AssignmentsBuilder(object):
     def run_automatic_assignment(
         self,
         group_id: str,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         """Runs the automatic assignment process.
 
         Args:
             group_id: The ID of the group to run the automatic assignment process on.
             dry_run: If True, skip confirmation prompt and return without running the automatic assignment process.
+            force: If True, skip confirmation prompts but still perform the operation.
         """
         config_note_edit = self.matcher.post_configuration_note_edit(
             committee_name=group_id,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
         config_note_id = config_note_edit['note']['id']
         title = config_note_edit['note']['content']['title']['value']
-        response = self.matcher.post_matcher(config_note_id, dry_run=dry_run)
+        response = self.matcher.post_matcher(config_note_id, dry_run=dry_run, force=force)
         # Wait for complete or error
         termination_states = [
             "Error",
@@ -227,7 +230,7 @@ class AssignmentsBuilder(object):
     def compute_conflicts(
         self,
         group_id: str,
-        num_years: int,
+        num_years: int = None,
         dry_run: bool = False,
         force: bool = False
     ):
@@ -242,6 +245,15 @@ class AssignmentsBuilder(object):
             force: If True, skip confirmation prompt but still perform the operation.
         """
         if not dry_run:
+
+            EdgeUtils.delete_edges_with_polling(
+                client=self.client,
+                invitation=f"{group_id}/-/Conflict",
+                soft_delete=False,
+                poll_interval_seconds=30,
+                force=force,
+            )
+
             return self.venue.setup_committee_matching(
                 group_id,
                 None,
@@ -281,12 +293,14 @@ class AssignmentsBuilder(object):
     def sync_research_areas(
         self,
         group_id: str,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ) -> Dict[str, int]:
         """Syncs the research areas for a given group by looking at the registration notes
         Args:
             group_id: The ID of the group to sync the research areas for.
             dry_run: If True, skip confirmation prompt and return without syncing the research areas.
+            force: If True, skip confirmation prompts but still perform the operation.
         """
         # Load members and get research areas using the loader
         members = self.client.get_group(group_id)
@@ -298,7 +312,8 @@ class AssignmentsBuilder(object):
         return self.post_research_areas(
             group_id=group_id,
             profile_id_to_research_areas=profile_id_to_research_areas,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     @require_confirmation
@@ -344,7 +359,9 @@ class AssignmentsBuilder(object):
         for research_area in all_profile_research_areas:
             if research_area not in research_area_to_submissions:
                 raise ValueError(f"Research area {research_area} not found in research_area_to_submissions")
-
+        
+        print(f"profiles with research areas: {len(profile_id_to_research_areas)}")
+        print(f"total submissions: {sum(len(research_area_to_submissions[research_area]) for research_area in research_area_to_submissions)}")
         for profile_id, research_areas in profile_id_to_research_areas.items():
             for research_area in research_areas:
                 for submission_id in research_area_to_submissions[research_area]:
@@ -356,17 +373,27 @@ class AssignmentsBuilder(object):
                     )
                     edges_to_post.append(
                         openreview.api.Edge(
+                            invitation=f"{group_id}/-/Research_Area",
                             head=submission_id,
                             tail=profile_id,
                             label=research_area,
+                            weight=1,
                             **permissions
                         )
                     )
 
+        EdgeUtils.delete_edges_with_polling(
+            client=self.client,
+            invitation=f"{group_id}/-/Research_Area",
+            soft_delete=False,
+            poll_interval_seconds=10,
+            force=force,
+        )
         post_return = EdgeUtils.post_bulk_edges(
             client=self.client,
             edges=edges_to_post,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force,
         )
         return {
             'research_areas_posted': post_return['edges_posted'],
@@ -376,7 +403,8 @@ class AssignmentsBuilder(object):
         self,
         group_id: str,
         forced_loads: Optional[Dict[str, int]] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
+        force: bool = False
     ):
         """Syncs the max loads for a given group to their responses to the maximum load form
         This is useful to ensure that the matcher max loads are consistent with the responses to the maximum load form.
@@ -384,6 +412,7 @@ class AssignmentsBuilder(object):
             group_id: The ID of the group to sync the max loads for.
             forced_loads: Optional mapping from user identifier/profile id to forced capacity.
             dry_run: If True, skip confirmation prompt and return without syncing the max loads.
+            force: If True, skip confirmation prompts but still perform the operation.
         """
         # Load members and get loads using the loader
         members = self.client.get_group(group_id)
@@ -396,7 +425,8 @@ class AssignmentsBuilder(object):
         return self.post_max_loads(
             group_id=group_id,
             profile_id_to_loads=profile_id_to_max_load,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force
         )
 
     @require_confirmation
@@ -429,16 +459,26 @@ class AssignmentsBuilder(object):
                 tail=profile_id
             )
             edges_to_post.append(openreview.api.Edge(
-                head=profile_id,
+                invitation=f"{group_id}/-/Custom_Max_Papers",
+                head=group_id,
                 tail=profile_id,
                 weight=load,
                 **permissions
             ))
 
+        EdgeUtils.delete_edges_with_polling(
+            client=self.client,
+            invitation=f"{group_id}/-/Custom_Max_Papers",
+            soft_delete=False,
+            poll_interval_seconds=10,
+            force=force,
+        )
+
         post_return = EdgeUtils.post_bulk_edges(
             client=self.client,
             edges=edges_to_post,
-            dry_run=dry_run
+            dry_run=dry_run,
+            force=force,
         )
         return {
             'loads_posted': post_return['edges_posted'],
@@ -472,6 +512,8 @@ class AssignmentsBuilder(object):
             - papers_processed: Number of papers that needed more assignments
             - papers_filled: Number of papers that reached the target number of assignments
         """
+        members = self.client.get_group(group_id).members
+        profiles = ProfileUtils.get_valid_profiles(self.client, list(members))
         
         # Fetch submissions
         submissions = self.venue.get_submissions()
@@ -525,21 +567,9 @@ class AssignmentsBuilder(object):
             group_id
         )
         
-        # Fetch load notes and map to profile IDs
-        load_notes = self.client.get_all_notes(
-            invitation=f"{group_id}/-/Max_Load_And_Unavailability_Request"
+        profile_id_to_max_load = self.registration_loader.get_loads(
+            members
         )
-        profile_id_to_load_note = NoteUtils.map_profile_id_to_note(
-            self.client,
-            load_notes
-        )
-        
-        # Build profile_id_to_max_load mapping
-        profile_id_to_max_load = {}
-        for profile_id, note in profile_id_to_load_note.items():
-            profile_id_to_max_load[profile_id] = int(
-                note.content['maximum_load_this_cycle']['value']
-            )
         
         # Get group members
         group_members = set(self.client.get_group(group_id).members)
@@ -600,11 +630,6 @@ class AssignmentsBuilder(object):
             
             # Score available users
             user_scores = {}
-            paper_research_areas = set(
-                _as_string_list(
-                    submissions_by_id[paper_id].content.get('research_area', {}).get('value')
-                )
-            )
             
             for user_id in available_users:
                 score = 0.0
@@ -616,7 +641,7 @@ class AssignmentsBuilder(object):
                 
                 # Add research area
                 user_research_areas = set(research_areas_by_user.get(user_id, []))
-                if paper_research_areas & user_research_areas:
+                if paper_id in user_research_areas:
                     score += 1.0
                 
                 user_scores[user_id] = score
