@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# Download the most recent MongoDB dump from Google Cloud Storage and unarchive
+# it. Requires gcloud command to be installed and configured.
+
+set -eEuo pipefail
+IFS=$'\n\t'
+
+readonly BUCKET="gs://openreview-mongodb-dumps"
+
+main() {
+  require_deps gcloud
+
+  local latest
+  latest="$(gcloud storage ls $BUCKET | tail -n 1)"
+  local filename
+  filename="${latest/#$BUCKET\//}"
+
+  gcloud storage cp "${latest}" .
+
+  rm -rf ./openreview
+
+  echo "Unarchiving ${filename}..."
+  tar -zxf "${filename}" --directory .
+
+  echo "Download complete!"
+}
+
+require_deps() {
+  for dep in "$@"; do
+    command -v "${dep}" >/dev/null 2>&1 || {
+      echo "Required command ${dep} not found" >&2
+      exit 1
+    }
+  done
+}
+
+main "$@"
