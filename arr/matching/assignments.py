@@ -120,10 +120,12 @@ class MatcherInterface:
             run_content['title']['value'] = title
         run_content['status']['value'] = 'Initialized'
 
-        if self.venue_id in committee_name:
-            invitation = f"{self.venue_id}/{committee_name}/-/Assignment_Configuration"
+        if committee_name.startswith(f"{self.venue_id}/"):
+            group_id = committee_name
         else:
-            invitation = f"{committee_name}/-/Assignment_Configuration"
+            group_id = f"{self.venue_id}/{committee_name}"
+
+        invitation = f"{group_id}/-/Assignment_Configuration"
 
         if not dry_run:
             config_note_edit = self.client.post_note_edit(
