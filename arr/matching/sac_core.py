@@ -725,8 +725,29 @@ class SACACMatching:
                 label=matching_title
             )
         }
+        eligible_acs = {
+            ac_id
+            for ac_id in getattr(self.matching_data.acs, 'members', [])
+            if self.matching_data.ac_cmp.get(ac_id, 0) > 0
+        }
+        registration_ac_tracks = {
+            ac_id: ac_reg.content['research_area']['value']
+            for ac_id, ac_reg in self.matching_data.ac_reg.items()
+        }
+        final_ac_tracks = {
+            ac_id: tracks
+            for ac_id, tracks in registration_ac_tracks.items()
+            if ac_id in eligible_acs
+        }
+        final_ac_tracks.update({
+            ac_id: tracks
+            for ac_id, tracks in ac_tracks.items()
+            if ac_id in eligible_acs
+        })
+        for ac_id in eligible_acs:
+            final_ac_tracks.setdefault(ac_id, [])
         sac_to_acs = assign_acs_to_sac(
-            ac_tracks,
+            final_ac_tracks,
             sac_tracks,
             self.matching_data.sac_to_tracks,
             track_graph,
@@ -747,11 +768,8 @@ class SACACMatching:
         new_conflicts = []
         for sac_id, acs in sac_to_acs.items():
             for ac_id in acs:
-                if ac_id not in ac_cois:
-                    print(f"no cois for {ac_id}")
-                    continue
                 for coi_to_add in sac_cois.get(sac_id, []):
-                    if coi_to_add not in ac_cois[ac_id]:
+                    if coi_to_add not in ac_cois.get(ac_id, []):
                         new_conflicts.append(openreview.api.Edge(
                             invitation=f"{self.venue_id}/Area_Chairs/-/Conflict",
                             head=coi_to_add,

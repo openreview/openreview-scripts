@@ -63,6 +63,12 @@ class EdgeUtils(object):
 
         print(f"Deleting {invitation} edges with filters: {delete_filters}")
 
+        existing_invitation = openreview.tools.get_invitation(
+            client, invitation
+        )
+        if existing_invitation is None:
+            return
+
         client.delete_edges(
             **delete_filters,
             wait_to_finish=False,

@@ -537,9 +537,6 @@ def assign_acs_to_sac(
     acs_with_valid_tracks = set()
     
     for ac, tracks in ac_tracks.items():
-        if ac not in ac_asms:
-            print(f"AC {ac} has no asms")
-            continue    # AC is not assigned any papers
         if not tracks:
             print(f"AC {ac} has no tracks")
             unassigned_acs.append(ac)  # Collect trackless ACs
@@ -609,7 +606,8 @@ def assign_acs_to_sac(
                 eligible_sacs,
                 key=lambda sac: (
                     len(asms_set & set(sac_cois.get(sac, []))),  # (a) fewest conflicts
-                    sac_load[sac]                               # (b) lightest current load
+                    sac_load[sac],                              # (b) lightest current load
+                    sac_ac_count[sac]                           # (c) fewest owned ACs
                 )
             )
             # Commit the assignment
